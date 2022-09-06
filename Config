@@ -1,4 +1,4 @@
-package.Digital-evidence-archive = {
+package.Cdk-solution-init-pkg = {
     interfaces = (1.0);
 
     # Use NoOpBuild. See https://w.amazon.com/index.php/BrazilBuildSystem/NoOpBuild
