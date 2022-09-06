@@ -1,0 +1,8 @@
+{
+  "app": "npx ts-node bin/cdk-solution.ts",
+  "context": {
+    "solution_id": "%%SOLUTION_ID%%",
+    "solution_name": "digital-evidence-archive",
+    "solution_version": "%%VERSION%%"
+  }
+}
