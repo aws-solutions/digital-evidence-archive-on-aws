@@ -1,0 +1,3 @@
+[submodule "source/solution-spark-on-aws"]
+	path = source/solution-spark-on-aws
+	url = https://github.com/awslabs/solution-spark-on-aws.git
