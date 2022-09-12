@@ -1,5 +1,5 @@
 {
-  "name": "dea-app",
+  "name": "@aws/dea-app",
   "version": "1.0.0",
   "description": "This package sets up API routes for DEA",
   "main": "index.js",
