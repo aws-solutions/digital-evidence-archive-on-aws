@@ -8,7 +8,7 @@ Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest 
 - Use the following command to checkout solution spark
 
 ```
-git submodule update --init --recursive
+git submodule update --init --recursive --remote
 ```
 
 ## Running unit tests for customization
