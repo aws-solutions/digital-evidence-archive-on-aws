@@ -96,12 +96,6 @@
       "shouldPublish": true
     },
     {
-      "packageName": "@aws/example-ui-app",
-      "projectFolder": "solution-spark-on-aws/solutions/example-ui-app",
-      "reviewCategory": "prototypes",
-      "shouldPublish": false
-    },
-    {
       "packageName": "@aws/workbench-core-datasets",
       "projectFolder": "solution-spark-on-aws/workbench-core/datasets",
       "reviewCategory": "production",
@@ -130,12 +124,6 @@
       "projectFolder": "solution-spark-on-aws/workbench-core/infrastructure",
       "reviewCategory": "production",
       "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/swb-ui-infrastructure",
-      "projectFolder": "solution-spark-on-aws/solutions/swb-ui/infrastructure",
-      "reviewCategory": "production",
-      "shouldPublish": false
     }
   ]
 }
