@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/rush.schema.json",
-  "rushVersion": "5.77.3",
-  "pnpmVersion": "6.7.1",
+  "rushVersion": "5.62.1",
+  "pnpmVersion": "6.30.0",
   "pnpmOptions": {
     "strictPeerDependencies": true,
     "useWorkspaces": true
@@ -13,13 +13,14 @@
     "reviewCategories": ["production", "tools", "prototypes"],
     "ignoredNpmScopes": ["@types"]
   },
+  /*
   "gitPolicy": {
     "versionBumpCommitMessage": "Bump versions [skip ci]",
     "changeLogUpdateCommitMessage": "Update changelogs [skip ci]"
-  },
+  },*/
   "repository": {
-    "url": "https://github.com/awslabs/solution-spark-on-aws.git",
-    "defaultBranch": "main"
+    "url": "ssh://git.amazon.com/pkg/Digital-evidence-archive",
+    "defaultBranch": "mainline"
   },
   "eventHooks": {
     "preRushInstall": [],
@@ -30,32 +31,32 @@
   "variants": [],
   "projects": [
     {
-      "packageName": "@aws/dea-app",
-      "projectFolder": "dea-app",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
       "packageName": "@aws/dea-backend",
       "projectFolder": "dea-backend",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
-      "packageName": "@aws/dea-ui",
-      "projectFolder": "dea-ui",
+      "packageName": "@aws/swb-app",
+      "projectFolder": "solution-spark-on-aws/solutions/swb-app",
       "reviewCategory": "production",
-      "shouldPublish": false
+      "shouldPublish": true
     },
     {
-      "packageName": "@aws/dea-ui-infrastructure",
-      "projectFolder": "dea-ui/infrastructure",
+      "packageName": "@aws/swb-reference",
+      "projectFolder": "solution-spark-on-aws/solutions/swb-reference",
       "reviewCategory": "production",
       "shouldPublish": false
     },
     {
       "packageName": "@aws/workbench-core-environments",
       "projectFolder": "solution-spark-on-aws/workbench-core/environments",
+      "reviewCategory": "production",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@aws/workbench-core-swb-common-ui",
+      "projectFolder": "solution-spark-on-aws/workbench-core/swb-common-ui",
       "reviewCategory": "production",
       "shouldPublish": true
     },
@@ -96,8 +97,20 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@aws/example-ui-app",
+      "projectFolder": "solution-spark-on-aws/solutions/example-ui-app",
+      "reviewCategory": "prototypes",
+      "shouldPublish": false
+    },
+    {
       "packageName": "@aws/workbench-core-datasets",
       "projectFolder": "solution-spark-on-aws/workbench-core/datasets",
+      "reviewCategory": "production",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@aws/workbench-core-datasets-ui",
+      "projectFolder": "solution-spark-on-aws/workbench-core/datasets-ui",
       "reviewCategory": "production",
       "shouldPublish": true
     },
@@ -114,6 +127,12 @@
       "shouldPublish": false
     },
     {
+      "packageName": "@aws/swb-ui",
+      "projectFolder": "solution-spark-on-aws/solutions/swb-ui",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
       "packageName": "@aws/workbench-core-repo-toolbox",
       "projectFolder": "solution-spark-on-aws/workbench-core/repo-scripts/repo-toolbox",
       "reviewCategory": "production",
@@ -124,6 +143,12 @@
       "projectFolder": "solution-spark-on-aws/workbench-core/infrastructure",
       "reviewCategory": "production",
       "shouldPublish": true
+    },
+    {
+      "packageName": "@aws/swb-ui-infrastructure",
+      "projectFolder": "solution-spark-on-aws/solutions/swb-ui/infrastructure",
+      "reviewCategory": "production",
+      "shouldPublish": false
     }
   ]
 }
