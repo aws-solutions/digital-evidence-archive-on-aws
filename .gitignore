@@ -73,7 +73,6 @@ workbench-core/base/temp/
 
 #Typscript
 dist
-lib
 *.js
 !jest.config.js
 *.d.ts
