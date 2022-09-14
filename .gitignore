@@ -60,22 +60,18 @@ jspm_packages/
 .DS_Store
 
 # Rush temporary files
-common/deploy/
-common/temp/
-common/autoinstallers/*/.npmrc
+source/common/deploy/
+source/common/temp/
+source/common/autoinstallers/*/.npmrc
 **/.rush/temp/
 **/temp/
-workbench-core/environments/temp/
-workbench-core/base/temp/
 
 # Heft
 .heft
 
 #Typscript
 dist
-*.js
-!jest.config.js
-*.d.ts
+lib
 
 #cdk
 cdk.out
@@ -87,5 +83,9 @@ cdk-outputs.json
 out.txt
 build/
 
-
 .idea
+.pnpm-store/
+
+# local environment variables
+.env*.local
+
