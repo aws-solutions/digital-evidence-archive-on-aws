@@ -1,6 +1,6 @@
+import { LoggingService } from "@aws/workbench-core-logging";
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { LoggingService } from "@aws/workbench-core-logging";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class DeaBackendStack extends cdk.Stack {
