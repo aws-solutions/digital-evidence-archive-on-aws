@@ -55,6 +55,12 @@
       "shouldPublish": true
     },
     {
+      "packageName": "@aws/workbench-core-swb-common-ui",
+      "projectFolder": "solution-spark-on-aws/workbench-core/swb-common-ui",
+      "reviewCategory": "production",
+      "shouldPublish": true
+    },
+    {
       "packageName": "@aws/workbench-core-logging",
       "projectFolder": "solution-spark-on-aws/workbench-core/logging",
       "reviewCategory": "production",
