@@ -99,6 +99,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@aws/workbench-core-accounts-ui",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws/workbench-core-audit",
       "allowedCategories": [ "production", "prototypes" ]
     },
@@ -124,6 +128,10 @@
     },
     {
       "name": "@aws/workbench-core-environments",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@aws/workbench-core-environments-ui",
       "allowedCategories": [ "production" ]
     },
     {
