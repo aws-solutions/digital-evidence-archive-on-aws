@@ -37,26 +37,20 @@
       "shouldPublish": false
     },
     {
-      "packageName": "@aws/swb-app",
-      "projectFolder": "solution-spark-on-aws/solutions/swb-app",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/swb-reference",
-      "projectFolder": "solution-spark-on-aws/solutions/swb-reference",
-      "reviewCategory": "production",
-      "shouldPublish": false
-    },
-    {
       "packageName": "@aws/workbench-core-environments",
       "projectFolder": "solution-spark-on-aws/workbench-core/environments",
       "reviewCategory": "production",
       "shouldPublish": true
     },
     {
-      "packageName": "@aws/workbench-core-swb-common-ui",
-      "projectFolder": "solution-spark-on-aws/workbench-core/swb-common-ui",
+      "packageName": "@aws/workbench-core-environments-ui",
+      "projectFolder": "solution-spark-on-aws/workbench-core/environments-ui",
+      "reviewCategory": "production",
+      "shouldPublish": true
+    },
+    {
+      "packageName": "@aws/workbench-core-accounts-ui",
+      "projectFolder": "solution-spark-on-aws/workbench-core/accounts-ui",
       "reviewCategory": "production",
       "shouldPublish": true
     },
@@ -127,12 +121,6 @@
       "shouldPublish": false
     },
     {
-      "packageName": "@aws/swb-ui",
-      "projectFolder": "solution-spark-on-aws/solutions/swb-ui",
-      "reviewCategory": "production",
-      "shouldPublish": false
-    },
-    {
       "packageName": "@aws/workbench-core-repo-toolbox",
       "projectFolder": "solution-spark-on-aws/workbench-core/repo-scripts/repo-toolbox",
       "reviewCategory": "production",
@@ -143,12 +131,6 @@
       "projectFolder": "solution-spark-on-aws/workbench-core/infrastructure",
       "reviewCategory": "production",
       "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/swb-ui-infrastructure",
-      "projectFolder": "solution-spark-on-aws/solutions/swb-ui/infrastructure",
-      "reviewCategory": "production",
-      "shouldPublish": false
     }
   ]
 }
