@@ -1,0 +1,5 @@
+# Stage Name
+stage: demo
+awsRegion: us-west-2
+awsRegionShortName: sea
+apiUrlOutput: ""
