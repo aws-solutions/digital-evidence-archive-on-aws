@@ -2,7 +2,7 @@
   "name": "@aws/dea-backend",
   "version": "0.0.1",
   "description": "Example infrastructure to deploy express app",
-  "homepage": "https://github.com/awslabs/solution-spark-on-aws",
+  "homepage": "https://code.amazon.com/packages/Digital-evidence-archive/trees/dea-ui",
   "repository": {
     "type": "git",
     "url": "https://github.com/awslabs/solution-spark-on-aws.git"

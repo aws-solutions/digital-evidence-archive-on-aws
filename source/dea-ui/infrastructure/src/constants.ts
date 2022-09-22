@@ -17,8 +17,6 @@ function getConstants(): {
   S3_ARTIFACT_BUCKET_NAME: string;
   S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME: string;
   ACCESS_IDENTITY_ARTIFACT_NAME: string;
-  RESPONSE_HEADERS_ARTIFACT_NAME: string;
-  RESPONSE_HEADERS_NAME: string;
 } {
   const config ={awsRegionShortName: 'sea',
   apiUrlOutput: '',
@@ -31,8 +29,6 @@ function getConstants(): {
   const S3_ARTIFACT_BUCKET_NAME = `${namePrefix}-bucket`;
   const S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME = `${namePrefix}-deployment-bucket`;
   const ACCESS_IDENTITY_ARTIFACT_NAME = `${namePrefix}-origin-access-identity`;
-  const RESPONSE_HEADERS_ARTIFACT_NAME = `${namePrefix}-response-header-policy`;
-  const RESPONSE_HEADERS_NAME = `${namePrefix}-SWBResponseHeadersPolicy`;
   const S3_ACCESS_LOGS_BUCKET_PREFIX = 'service-workbench-access-log';
 
   // CloudFormation Output Keys
@@ -51,8 +47,6 @@ function getConstants(): {
     S3_ARTIFACT_BUCKET_NAME,
     S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME,
     ACCESS_IDENTITY_ARTIFACT_NAME,
-    RESPONSE_HEADERS_ARTIFACT_NAME,
-    RESPONSE_HEADERS_NAME
   };
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -79,7 +73,7 @@ function getAPIOutputs(): { awsRegionShortName: string; apiUrlOutput: string; aw
     };
   } catch {
     console.error(
-      `No API Stack deployed found for ${process.env.STAGE}.Please deploy application swb-reference and try again.`
+      `No API Stack deployed found for ${process.env.STAGE}.`
     );
     throw new Error(`No API Stack deployed found for ${process.env.STAGE}.`);
   }
