@@ -464,7 +464,7 @@
     },
     {
       "name": "next-i18next",
-      "allowedCategories": [ "prototypes" ]
+      "allowedCategories": [ "production", "prototypes" ]
     },
     {
       "name": "next-transpile-modules",

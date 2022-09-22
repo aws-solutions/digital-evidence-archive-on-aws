@@ -40,6 +40,24 @@
       "packageName": "@aws/workbench-core-environments",
       "projectFolder": "solution-spark-on-aws/workbench-core/environments",
       "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@aws/dea-ui",
+      "projectFolder": "dea-ui",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@aws/dea-ui-infrastructure",
+      "projectFolder": "dea-ui/infrastructure",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@aws/swb-app",
+      "projectFolder": "solution-spark-on-aws/solutions/swb-app",
+      "reviewCategory": "production",
       "shouldPublish": true
     },
     {
