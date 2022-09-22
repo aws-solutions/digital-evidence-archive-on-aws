@@ -13,11 +13,6 @@
     "reviewCategories": ["production", "tools", "prototypes"],
     "ignoredNpmScopes": ["@types"]
   },
-  /*
-  "gitPolicy": {
-    "versionBumpCommitMessage": "Bump versions [skip ci]",
-    "changeLogUpdateCommitMessage": "Update changelogs [skip ci]"
-  },*/
   "repository": {
     "url": "ssh://git.amazon.com/pkg/Digital-evidence-archive",
     "defaultBranch": "mainline"
@@ -53,12 +48,6 @@
       "projectFolder": "dea-ui/infrastructure",
       "reviewCategory": "production",
       "shouldPublish": false
-    },
-    {
-      "packageName": "@aws/swb-app",
-      "projectFolder": "solution-spark-on-aws/solutions/swb-app",
-      "reviewCategory": "production",
-      "shouldPublish": true
     },
     {
       "packageName": "@aws/workbench-core-environments-ui",

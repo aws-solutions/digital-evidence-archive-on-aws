@@ -5,12 +5,6 @@
 
 import * as path from 'path';
 import { CfnOutput, Duration, Fn, Stack, StackProps } from 'aws-cdk-lib';
-import {
-  HeadersFrameOption,
-  HeadersReferrerPolicy,
-  OriginAccessIdentity,
-  ResponseHeadersPolicy,
-} from 'aws-cdk-lib/aws-cloudfront';
 import { AnyPrincipal, Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
@@ -27,8 +21,6 @@ export class DEAUIStack extends Stack {
     S3_ARTIFACT_BUCKET_NAME: string;
     S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME: string;
     ACCESS_IDENTITY_ARTIFACT_NAME: string;
-    RESPONSE_HEADERS_ARTIFACT_NAME: string;
-    RESPONSE_HEADERS_NAME: string;
   };
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -41,8 +33,6 @@ export class DEAUIStack extends Stack {
       S3_ARTIFACT_BUCKET_NAME,
       S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME,
       ACCESS_IDENTITY_ARTIFACT_NAME,
-      RESPONSE_HEADERS_ARTIFACT_NAME,
-      RESPONSE_HEADERS_NAME
     } = getConstants();
     super(scope, STACK_NAME, {
       env: {
@@ -59,8 +49,6 @@ export class DEAUIStack extends Stack {
       S3_ARTIFACT_BUCKET_NAME,
       S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME,
       ACCESS_IDENTITY_ARTIFACT_NAME,
-      RESPONSE_HEADERS_ARTIFACT_NAME,
-      RESPONSE_HEADERS_NAME
     };
     const bucket = this._createS3Bucket(S3_ARTIFACT_BUCKET_NAME, S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY);
     // const distribution = this._createDistribution(bucket);
@@ -111,7 +99,7 @@ export class DEAUIStack extends Stack {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       serverAccessLogsBucket: accessLogsBucket,
       serverAccessLogsPrefix: S3_ACCESS_LOGS_BUCKET_PREFIX,
-      encryption: BucketEncryption.S3_MANAGED // CloudFront requires S3 managed key
+      encryption: BucketEncryption.S3_MANAGED
     });
 
     this._addS3TLSSigV4BucketPolicy(s3Bucket);
@@ -129,43 +117,5 @@ export class DEAUIStack extends Stack {
       destinationBucket: bucket,
       sources: [Source.asset(path.resolve(__dirname, '../../out'))],
     });
-  }
-
-  private _createOriginAccessIdentity(bucket: Bucket): OriginAccessIdentity {
-    const originAccessIdentity = new OriginAccessIdentity(
-      this,
-      this.distributionEnvVars.ACCESS_IDENTITY_ARTIFACT_NAME
-    );
-    bucket.grantRead(originAccessIdentity);
-    return originAccessIdentity;
-  }
-
-
-  private _createSecurityPolicy(apiBaseUrl: string): ResponseHeadersPolicy {
-    return new ResponseHeadersPolicy(this, this.distributionEnvVars.RESPONSE_HEADERS_ARTIFACT_NAME, {
-      responseHeadersPolicyName: this.distributionEnvVars.RESPONSE_HEADERS_NAME,
-      comment: 'Security policy',
-      securityHeadersBehavior: {
-        contentSecurityPolicy: {
-          contentSecurityPolicy: this._getContentSecurityPolicy(apiBaseUrl),
-          override: false
-        },
-        contentTypeOptions: { override: true },
-        frameOptions: { frameOption: HeadersFrameOption.SAMEORIGIN, override: false },
-        referrerPolicy: {
-          referrerPolicy: HeadersReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN,
-          override: false
-        },
-        strictTransportSecurity: {
-          accessControlMaxAge: Duration.seconds(31536000),
-          includeSubdomains: false,
-          override: false
-        },
-        xssProtection: { protection: true, modeBlock: true, override: false }
-      }
-    });
-  }
-  private _getContentSecurityPolicy(apiBaseUrl: string): string {
-    return `default-src 'none'; connect-src ${apiBaseUrl}; img-src 'self' data:; script-src 'self'; style-src 'unsafe-inline' 'strict-dynamic' 'self'; font-src 'self' data:`;
   }
 }

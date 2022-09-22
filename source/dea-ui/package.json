@@ -2,7 +2,7 @@
   "name": "@aws/dea-ui",
   "version": "0.0.1",
   "description": "NextJS frontend UI for Digital Evidence Archive",
-  "homepage": "https://github.com/awslabs/solution-spark-on-aws",
+  "homepage": "https://code.amazon.com/packages/Digital-evidence-archive/trees/dea-ui",
   "repository": {
     "type": "git",
     "url": "https://github.com/awslabs/solution-spark-on-aws.git"
