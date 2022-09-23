@@ -26,6 +26,12 @@
   "variants": [],
   "projects": [
     {
+      "packageName": "@aws/dea-app",
+      "projectFolder": "dea-app",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
       "packageName": "@aws/dea-backend",
       "projectFolder": "dea-backend",
       "reviewCategory": "production",
