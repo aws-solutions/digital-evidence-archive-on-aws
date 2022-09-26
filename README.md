@@ -4,6 +4,12 @@ Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest 
 
 ## Project Setup
 
+Checkout the Repository
+
+```
+git clone ssh://git.amazon.com/pkg/Digital-evidence-archive $WORKSPACE_NAME
+```
+
 - Be sure to ingest MAF Workbench core submodule
 - Use the following command to checkout solution spark
 
