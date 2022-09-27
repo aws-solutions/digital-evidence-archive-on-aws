@@ -103,6 +103,7 @@ importers:
       '@types/aws-lambda': ^8.10.104
       '@types/express': ^4.17.13
       '@types/heft-jest': 1.0.2
+      '@types/js-yaml': ^4.0.5
       '@types/lodash': ^4.14.181
       '@types/node': ^14
       '@vendia/serverless-express': ^4.5.4
@@ -120,6 +121,7 @@ importers:
       express: ^4.17.3
       istanbul-badges-readme: 1.8.1
       jest: ^27.5.1
+      js-yaml: ^4.1.0
       license-check-and-add: ^4.0.5
       license-checker: ^25.0.1
       lodash: ^4.17.21
@@ -134,6 +136,7 @@ importers:
       aws-cdk-lib: 2.29.1_constructs@10.1.25
       aws-lambda: 1.0.7
       constructs: 10.1.25
+      js-yaml: 4.1.0
       lodash: 4.17.21
       source-map-support: 0.5.21
     devDependencies:
@@ -148,6 +151,7 @@ importers:
       '@rushstack/heft-node-rig': 1.10.5_@rushstack+heft@0.47.5
       '@types/express': 4.17.13
       '@types/heft-jest': 1.0.2
+      '@types/js-yaml': 4.0.5
       '@types/lodash': 4.14.182
       '@types/node': 14.18.20
       '@vendia/serverless-express': 4.8.0
