@@ -29,7 +29,7 @@ function getConstants(): {
   const S3_ARTIFACT_BUCKET_NAME = `${namePrefix}-bucket`;
   const S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME = `${namePrefix}-deployment-bucket`;
   const ACCESS_IDENTITY_ARTIFACT_NAME = `${namePrefix}-origin-access-identity`;
-  const S3_ACCESS_LOGS_BUCKET_PREFIX = 'service-workbench-access-log';
+  const S3_ACCESS_LOGS_BUCKET_PREFIX = 'dea-access-log';
 
   // CloudFormation Output Keys
   const S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY = 'S3BucketArtifactsArnOutput';
