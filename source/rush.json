@@ -13,6 +13,10 @@
     "reviewCategories": ["production", "tools", "prototypes"],
     "ignoredNpmScopes": ["@types"]
   },
+  "gitPolicy": {
+    "versionBumpCommitMessage": "Bump versions [skip ci]",
+    "changeLogUpdateCommitMessage": "Update changelogs [skip ci]"
+  },
   "repository": {
     "url": "ssh://git.amazon.com/pkg/Digital-evidence-archive",
     "defaultBranch": "mainline"

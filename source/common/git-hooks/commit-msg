@@ -24,5 +24,6 @@
 #   echo "Bad commit message, see example conventional commits: https://www.conventionalcommits.org/en/v1.0.0/"
 #   exit 1
 # fi
-# INPUT_FILE=$1
-# node source/common/scripts/install-run-rush.js commitlint --edit "$INPUT_FILE"
+INPUT_FILE=$1
+cd source
+node common/scripts/install-run-rush.js commitlint --edit "$INPUT_FILE"
