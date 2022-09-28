@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
 import { join } from 'path';
 import * as path from 'path';
+import { WorkbenchCognito, WorkbenchCognitoProps } from '@aws/workbench-core-infrastructure';
 import { Stack, CfnOutput, StackProps, Duration } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
@@ -15,13 +16,17 @@ import * as nodejsLambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
+import { getConstants } from './constants';
 
 export class DeaBackendStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
+    const { COGNITO_DOMAIN, USER_POOL_CLIENT_NAME, USER_POOL_NAME, WEBSITE_URLS } = getConstants();
+
     super(scope, id, props);
 
     const apiLambda: NodejsFunction = this._createAPILambda();
     this._createRestApi(apiLambda);
+    this._createCognitoResources(COGNITO_DOMAIN, WEBSITE_URLS, USER_POOL_NAME, USER_POOL_CLIENT_NAME);
   }
 
   // Create Lambda
@@ -82,5 +87,35 @@ export class DeaBackendStack extends Stack {
     API.root.addProxy({
       defaultIntegration: new LambdaIntegration(alias)
     });
+  }
+  private _createCognitoResources(
+    domainPrefix: string,
+    websiteUrls: string[],
+    userPoolName: string,
+    userPoolClientName: string
+  ): WorkbenchCognito {
+    const props: WorkbenchCognitoProps = {
+      domainPrefix: domainPrefix,
+      websiteUrls: websiteUrls,
+      userPoolName: userPoolName,
+      userPoolClientName: userPoolClientName,
+      oidcIdentityProviders: []
+    };
+
+    const workbenchCognito = new WorkbenchCognito(this, 'DigitalEvidenceArchiveCognito', props);
+
+    new CfnOutput(this, 'cognitoUserPoolId', {
+      value: workbenchCognito.userPoolId
+    });
+
+    new CfnOutput(this, 'cognitoUserPoolClientId', {
+      value: workbenchCognito.userPoolClientId
+    });
+
+    new CfnOutput(this, 'cognitoDomainName', {
+      value: workbenchCognito.cognitoDomain
+    });
+
+    return workbenchCognito;
   }
 }

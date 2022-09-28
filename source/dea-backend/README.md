@@ -20,8 +20,18 @@
 
 Infrastructure for sample express app
 
+### Setting Up Configuration
+
+The backend of this app get certain values from the configuration files. For each stage of your application (e.g. dev, alpha, gamma, prod), create a file named <STAGE>.yaml in the config folder underneath the src folder within the dea-backend directory. NOTE: each stage needs its separate yaml folder. Follow these steps:
+
+1. Copy and paste the contents of example.yaml into the new file
+2. Fill in the lines as specified.
+3. Save the file, and commit to your local branch if you have one
+
+### Deployment
+
 To deploy, make sure to have built Rush in the source directory. Refer to Source directory readme.
 
-- `rushx cdk synth`
-- `rushx cdk bootstrap aws://{aws id}/{region}`
-- `rushx cdk deploy`
+- `STAGE=<dev, prod, beta>
+- `STAGE=$STAGE rushx cdk bootstrap aws://{aws id}/{region}`
+- `STAGE=$STAGE rushx cdk deploy`
