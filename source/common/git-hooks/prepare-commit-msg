@@ -1,2 +1,3 @@
 #!/bin/bash
-# node source/common/scripts/install-run-rush.js commitizen || echo $?
+cd source
+node common/scripts/install-run-rush.js commitizen || echo $?
