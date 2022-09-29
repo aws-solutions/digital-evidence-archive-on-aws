@@ -11,7 +11,6 @@ importers:
       '@aws/workbench-core-authentication': workspace:*
       '@aws/workbench-core-authorization': workspace:*
       '@aws/workbench-core-datasets': workspace:*
-      '@aws/workbench-core-environments': workspace:*
       '@aws/workbench-core-logging': workspace:*
       '@hapi/boom': ^10.0.0
       '@rushstack/eslint-config': ^3.0.0
@@ -50,7 +49,6 @@ importers:
       '@aws/workbench-core-authentication': link:../solution-spark-on-aws/workbench-core/authentication
       '@aws/workbench-core-authorization': link:../solution-spark-on-aws/workbench-core/authorization
       '@aws/workbench-core-datasets': link:../solution-spark-on-aws/workbench-core/datasets
-      '@aws/workbench-core-environments': link:../solution-spark-on-aws/workbench-core/environments
       '@aws/workbench-core-logging': link:../solution-spark-on-aws/workbench-core/logging
       '@hapi/boom': 10.0.0
       cookie-parser: 1.4.6
@@ -94,7 +92,19 @@ importers:
       '@aws-cdk/aws-apigatewayv2-alpha': ^2.22.0-alpha.0
       '@aws-cdk/aws-apigatewayv2-authorizers-alpha': ^2.22.0-alpha.0
       '@aws-cdk/aws-apigatewayv2-integrations-alpha': ^2.22.0-alpha.0
+      '@aws-sdk/client-cloudformation': ^3.118.1
+      '@aws-sdk/client-dynamodb': ^3.118.1
+      '@aws-sdk/client-s3': ^3.118.1
+      '@aws-sdk/client-s3-control': ^3.118.1
+      '@aws-sdk/client-service-catalog': ^3.118.1
+      '@aws-sdk/client-ssm': ^3.118.1
+      '@aws-sdk/client-sts': ^3.118.1
+      '@aws-sdk/types': ^3.110.0
+      '@aws/dea-app': workspace:*
       '@aws/eslint-config-workbench-core-eslint-custom': workspace:*
+      '@aws/workbench-core-audit': workspace:*
+      '@aws/workbench-core-base': workspace:*
+      '@aws/workbench-core-datasets': workspace:*
       '@aws/workbench-core-logging': workspace:*
       '@rushstack/eslint-config': ^3.0.0
       '@rushstack/heft': ^0.47.5
@@ -131,6 +141,18 @@ importers:
       source-map-support: ^0.5.16
       typescript: ^4.5.2
     dependencies:
+      '@aws-sdk/client-cloudformation': 3.130.0
+      '@aws-sdk/client-dynamodb': 3.130.0
+      '@aws-sdk/client-s3': 3.130.0
+      '@aws-sdk/client-s3-control': 3.130.0
+      '@aws-sdk/client-service-catalog': 3.130.0
+      '@aws-sdk/client-ssm': 3.130.0
+      '@aws-sdk/client-sts': 3.130.0
+      '@aws-sdk/types': 3.127.0
+      '@aws/dea-app': link:../dea-app
+      '@aws/workbench-core-audit': link:../solution-spark-on-aws/workbench-core/audit
+      '@aws/workbench-core-base': link:../solution-spark-on-aws/workbench-core/base
+      '@aws/workbench-core-datasets': link:../solution-spark-on-aws/workbench-core/datasets
       '@aws/workbench-core-logging': link:../solution-spark-on-aws/workbench-core/logging
       '@types/aws-lambda': 8.10.104
       aws-cdk-lib: 2.29.1_constructs@10.1.25

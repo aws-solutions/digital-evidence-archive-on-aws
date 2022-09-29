@@ -91,6 +91,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@aws/dea-app",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws/eslint-config-workbench-core-eslint-custom",
       "allowedCategories": [ "production", "prototypes" ]
     },
