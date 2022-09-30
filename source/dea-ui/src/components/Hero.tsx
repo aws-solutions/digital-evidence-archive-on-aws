@@ -5,9 +5,7 @@
 
 import Box from '@awsui/components-react/box';
 import Button from '@awsui/components-react/button';
-import Container from '@awsui/components-react/container';
 import Grid from '@awsui/components-react/grid';
-import Image from 'next/image';
 import { useSettings } from '../context/SettingsContext';
 import styles from '../styles/Hero.module.scss';
 
@@ -44,17 +42,6 @@ function Hero(): JSX.Element {
             <Button className={styles.primaryButton} variant="primary" href="#/">
               Go to dashboard
             </Button>
-          </div>
-          <div className="custom-home__header-cta">
-            <Container>
-              <Image
-                src="/MabelPic.jpg"
-                layout="responsive"
-                width="220px"
-                height="300px"
-                alt={'A cute dog'}
-              />
-            </Container>
           </div>
         </Grid>
       </Box>
