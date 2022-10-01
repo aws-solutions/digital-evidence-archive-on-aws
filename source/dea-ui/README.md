@@ -1,31 +1,31 @@
-# MA Foundation Starter App - POC
+# Digital Evidence Archive UI
 
 ⚠️ $\textcolor{red}{\text{Experimental}}$ ⚠️ : Not for use in any critical, production, or otherwise important deployments
 
 This is a prototype app and you should expect to modify the source code to reflect your project needs.
 
-## Code Coverage
+## Creating a stage file
 
-| Statements | Branches | Functions | Lines |
-| --------------------------- | ----------------------- | ------------------------- | ----------------- |
-| ![Statements](https://img.shields.io/badge/statements-Unknown%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-Unknown%25-brightgreen.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-Unknown%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-Unknown%25-brightgreen.svg?style=flat) |
+First, you will need to create a stage file. An example stage file (demo.yaml) can be found under dea-ui/src/config. Create a stage file for your deployment with the stage name of your choice. Supply the stage name and region short name of your choice along with the aws region where you will deploy the UI (this will need to the same region where the DEA backend is deployed).
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Deploying the UI
 
-## Getting Started
-
-Create a copy of the current folder and rename the project name in the [package.json](./package.json#L2)
+One you have created your stage file run
 
 ```sh
-cd solutions
-cp example-ui-app my-awesome-app
+STAGE=<stagename> rushx deploy-ui
 ```
 
-After that, go and register your project in the [rush.json](../../rush.json) and run:
+## Deploying code changes
+
+To deploy code changes without running the entire deployment script navigate to the infrastructure directory and run the deploy command directly:
 
 ```sh
-rush update
+cd infrastructure
+STAGE=<stagename> rushx cdk deploy
 ```
+
+## Running locally
 
 First, run the development server:
 
@@ -34,12 +34,6 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
 ## Learn More
 
@@ -50,18 +44,6 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## i18n Support
-
-You can add multiple languages to the app by adding locales inside the **public/locales/\<lang>** folder.
-
-In order to select a newly created language append the lang to the url:
-
-```sh
-wget http://localhost:3000/en
-wget http://localhost:3000/es
-wget http://localhost:3000/<lang>
-```
-
 ## Design system
 
-For the design system we are using @awsui project. More information can be found [here](https://github.com/aws/awsui-documentation)
+For the design system we are using Cloudscape. More information can be found [here](https://cloudscape.design/).
