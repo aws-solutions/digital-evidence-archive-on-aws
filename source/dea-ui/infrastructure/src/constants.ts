@@ -16,7 +16,6 @@ function getConstants(): {
   S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY: string;
   S3_ARTIFACT_BUCKET_NAME: string;
   S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME: string;
-  ACCESS_IDENTITY_ARTIFACT_NAME: string;
 } {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const config: any = yaml.load(
@@ -32,7 +31,6 @@ function getConstants(): {
   const STACK_NAME = namePrefix;
   const S3_ARTIFACT_BUCKET_NAME = `${namePrefix}-bucket`;
   const S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME = `${namePrefix}-deployment-bucket`;
-  const ACCESS_IDENTITY_ARTIFACT_NAME = `${namePrefix}-origin-access-identity`;
   const S3_ACCESS_LOGS_BUCKET_PREFIX = 'dea-access-log';
 
   // CloudFormation Output Keys
@@ -48,8 +46,7 @@ function getConstants(): {
     S3_ACCESS_LOGS_BUCKET_NAME_OUTPUT_KEY,
     S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY,
     S3_ARTIFACT_BUCKET_NAME,
-    S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME,
-    ACCESS_IDENTITY_ARTIFACT_NAME
+    S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME
   };
 }
 
