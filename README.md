@@ -17,6 +17,12 @@ git clone ssh://git.amazon.com/pkg/Digital-evidence-archive $WORKSPACE_NAME
 git submodule update --init --recursive --remote
 ```
 
+### One Time Package Installs
+- Enable pnpm commands (needed for local CDK bundling)  
+`npm install -g pnpm` 
+- Install Rush, the monorepo management tool  
+`npm install -g @microsoft/rush` 
+
 ## Further setup
 
 Please see the Developer Runbook for further instrunctions
