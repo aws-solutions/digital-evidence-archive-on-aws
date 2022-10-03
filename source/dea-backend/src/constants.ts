@@ -106,12 +106,12 @@ function getConstants(): {
 function getUiClientUrl(): string {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const uiClientOutput: any = JSON.parse(
+    const uiClientOutput = JSON.parse(
       // __dirname is a variable that reference the current directory. We use it so we can dynamically navigate to the
       // correct file
       // eslint-disable-next-line security/detect-non-literal-fs-filename
       fs.readFileSync(
-        join(__dirname, `../../../dea-ui/infrastructure/src/config/${process.env.STAGE}.json`),
+        join(__dirname, `../../dea-ui/infrastructure/src/config/${process.env.STAGE}.json`),
         'utf8'
       ) // nosemgrep
     );
