@@ -16,7 +16,7 @@ describe('DeaBackendStack', () => {
 
     // Assert it creates the function with the correct properties...
     template.hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Name: 'Backend API Name'
+      Description: 'Backend API'
     });
 
     template.hasResourceProperties('AWS::Lambda::Function', {

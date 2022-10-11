@@ -466,6 +466,7 @@ importers:
       '@types/react-dom': ^18.0.6
       depcheck: ^1.4.3
       eslint: ^8.7.0
+      eslint-config-next: 12.1.5
       eslint-plugin-import: ^2.26.0
       istanbul-badges-readme: 1.8.1
       license-check-and-add: ^4.0.5
@@ -500,6 +501,7 @@ importers:
       '@types/react-dom': 18.0.6
       depcheck: 1.4.3
       eslint: 8.16.0
+      eslint-config-next: 12.1.5_613ce9cf4c3b1789789bd001816c16e7
       eslint-plugin-import: 2.26.0_eslint@8.16.0
       istanbul-badges-readme: 1.8.1
       license-check-and-add: 4.0.5
@@ -866,6 +868,7 @@ importers:
       '@types/react-dom': ^18.0.6
       depcheck: ^1.4.3
       eslint: ^8.7.0
+      eslint-config-next: 12.1.5
       eslint-plugin-import: ^2.26.0
       istanbul-badges-readme: 1.8.1
       license-check-and-add: ^4.0.5
@@ -900,6 +903,7 @@ importers:
       '@types/react-dom': 18.0.6
       depcheck: 1.4.3
       eslint: 8.16.0
+      eslint-config-next: 12.1.5_613ce9cf4c3b1789789bd001816c16e7
       eslint-plugin-import: 2.26.0_eslint@8.16.0
       istanbul-badges-readme: 1.8.1
       license-check-and-add: 4.0.5
@@ -1029,6 +1033,7 @@ importers:
       '@types/react-dom': ^18.0.6
       depcheck: ^1.4.3
       eslint: ^8.7.0
+      eslint-config-next: 12.1.5
       eslint-plugin-import: ^2.26.0
       istanbul-badges-readme: 1.8.1
       license-check-and-add: ^4.0.5
@@ -1066,6 +1071,7 @@ importers:
       '@types/react-dom': 18.0.6
       depcheck: 1.4.3
       eslint: 8.16.0
+      eslint-config-next: 12.1.5_613ce9cf4c3b1789789bd001816c16e7
       eslint-plugin-import: 2.26.0_eslint@8.16.0
       istanbul-badges-readme: 1.8.1
       license-check-and-add: 4.0.5
@@ -1401,6 +1407,7 @@ importers:
       date-fns: ^2.28.0
       depcheck: ^1.4.3
       eslint: ^8.7.0
+      eslint-config-next: 12.1.5
       eslint-plugin-import: ^2.26.0
       istanbul-badges-readme: 1.8.1
       jwt-decode: ^3.1.2
@@ -1441,6 +1448,7 @@ importers:
       '@types/uuid': 8.3.4
       depcheck: 1.4.3
       eslint: 8.16.0
+      eslint-config-next: 12.1.5_613ce9cf4c3b1789789bd001816c16e7
       eslint-plugin-import: 2.26.0_eslint@8.16.0
       istanbul-badges-readme: 1.8.1
       license-check-and-add: 4.0.5
