@@ -1,4 +1,4 @@
-import { getConstants } from './constants';
+import { getConstants } from '../constants';
 
 describe('constants', () => {
   describe('valid config', () => {

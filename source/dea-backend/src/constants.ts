@@ -119,7 +119,7 @@ function getUiClientUrl(): string {
         'utf8'
       ) // nosemgrep
     );
-    const uiClientStackName = Object.entries(uiClientOutput).map(([key, value]) => key)[0]; //output has a format { stackname: {...props} }
+    const uiClientStackName = Object.entries(uiClientOutput).map(([key]) => key)[0]; //output has a format { stackname: {...props} }
     // eslint-disable-next-line security/detect-object-injection
     return uiClientOutput[uiClientStackName].WebsiteURL;
   } catch {

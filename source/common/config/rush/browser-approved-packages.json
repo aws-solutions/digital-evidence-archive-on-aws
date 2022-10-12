@@ -535,6 +535,10 @@
       "allowedCategories": ["production", "prototypes"]
     },
     {
+      "name": "ts-mockito",
+      "allowedCategories": ["production", "prototypes"]
+    },
+    {
       "name": "ts-node",
       "allowedCategories": ["production"]
     },

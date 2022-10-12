@@ -39,7 +39,7 @@ export class DeaBackendStack extends Stack {
     this._createCognitoResources(COGNITO_DOMAIN, WEBSITE_URLS, USER_POOL_NAME, USER_POOL_CLIENT_NAME);
   }
 
-  private _createVpc = (): Vpc => {
+  private _createVpc(): Vpc {
     const vpc = new Vpc(this, 'dea-vpc', {
       natGateways: 0,
       subnetConfiguration: [
@@ -67,10 +67,10 @@ export class DeaBackendStack extends Stack {
     });
 
     return vpc;
-  };
+  }
 
   // Create Lambda
-  private _createAPILambda = (vpc: Vpc): NodejsFunction => {
+  private _createAPILambda(vpc: Vpc): NodejsFunction {
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
     );
@@ -94,10 +94,10 @@ export class DeaBackendStack extends Stack {
     });
 
     return lambdaService;
-  };
+  }
 
   // API Gateway
-  private _createRestApi = (apiLambda: NodejsFunction): void => {
+  private _createRestApi(apiLambda: NodejsFunction) {
     const logGroup = new LogGroup(this, 'APIGatewayAccessLogs');
     const API: RestApi = new RestApi(this, `API-Gateway API`, {
       description: 'Backend API',
@@ -140,13 +140,14 @@ export class DeaBackendStack extends Stack {
     API.root.addProxy({
       defaultIntegration: new LambdaIntegration(alias)
     });
-  };
-  private _createCognitoResources = (
+  }
+
+  private _createCognitoResources(
     domainPrefix: string,
     websiteUrls: string[],
     userPoolName: string,
     userPoolClientName: string
-  ): WorkbenchCognito => {
+  ): WorkbenchCognito {
     const props: WorkbenchCognitoProps = {
       domainPrefix: domainPrefix,
       websiteUrls: websiteUrls,
@@ -170,5 +171,5 @@ export class DeaBackendStack extends Stack {
     });
 
     return workbenchCognito;
-  };
+  }
 }

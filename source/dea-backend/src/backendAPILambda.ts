@@ -4,6 +4,6 @@
  */
 
 import serverlessExpress from '@vendia/serverless-express';
-import backendAPIApp from './backendAPI';
+import { getBackendApiApp } from './backendAPI';
 
-exports.handler = serverlessExpress({ app: backendAPIApp });
+exports.handler = serverlessExpress({ app: getBackendApiApp() });

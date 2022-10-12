@@ -2,7 +2,7 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { DeaBackendStack } from './dea-backend-stack';
+import { DeaBackendStack } from '../dea-backend-stack';
 
 describe('DeaBackendStack', () => {
   beforeAll(() => {
