@@ -23,11 +23,10 @@
     "export": "next build && next export",
     "lint": "next lint && rushx pkg-json-lint",
     "lint:fix": "next lint --fix",
-    "make-badges": "istanbul-badges-readme --coverageDir=./temp/coverage",
     "pkg-json-lint": "npmPkgJsonLint -c ../../.npmpackagejsonlintrc.json .",
     "serve": "node .next/server/webpack-runtime.js",
     "sort-package-json": "sort-package-json package.json",
-    "test": "jest --coverage --passWithNoTests 2>&1 && rushx make-badges",
+    "test": "jest --coverage --passWithNoTests 2>&1",
     "test:only": "jest --ci --coverage --passWithNoTests 2>&1"
   },
   "dependencies": {
