@@ -18,7 +18,7 @@
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
     "build": "heft build --clean",
-    "build:test": "heft test -u --clean --verbose --test-path-pattern test && rushx pkg-json-lint && rushx make-badges",
+    "build:test": "heft test --clean --verbose --test-path-pattern test && rushx pkg-json-lint && rushx make-badges",
     "cdk": "cdk",
     "cdk:bootstrap": "cdk bootstrap",
     "cdk:deploy": "rushx compile && cdk deploy --all --require-approval never --outputs-file cdk-outputs.json",
@@ -33,8 +33,8 @@
     "pkg-json-lint": "npmPkgJsonLint -c ../../../ .",
     "sort-package-json": "sort-package-json package.json",
     "test": "rushx test:only && rushx make-badges",
-    "test:integration": "heft test -u --clean --no-build",
-    "test:only": "heft test -u --clean --no-build --verbose --test-path-pattern test"
+    "test:integration": "heft test --clean --no-build",
+    "test:only": "heft test --clean --no-build --verbose --test-path-pattern test"
   },
   "dependencies": {
     "@aws-sdk/client-cloudformation": "^3.118.1",

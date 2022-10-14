@@ -110,20 +110,15 @@ function getConstants(): {
 function getUiClientUrl(): string {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const uiClientOutput = JSON.parse(
+    const uiClientOutput: any = yaml.load(
       // __dirname is a variable that reference the current directory. We use it so we can dynamically navigate to the
       // correct file
       // eslint-disable-next-line security/detect-non-literal-fs-filename
-      fs.readFileSync(
-        join(__dirname, `../../dea-ui/infrastructure/src/config/${process.env.STAGE}.json`),
-        'utf8'
-      ) // nosemgrep
+      fs.readFileSync(join(__dirname, `../../dea-ui/src/config/${process.env.STAGE}.yaml`), 'utf8') // nosemgrep
     );
-    const uiClientStackName = Object.entries(uiClientOutput).map(([key]) => key)[0]; //output has a format { stackname: {...props} }
-    // eslint-disable-next-line security/detect-object-injection
-    return uiClientOutput[uiClientStackName].WebsiteURL;
-  } catch {
-    console.log(`No UI Client deployed found for ${process.env.STAGE}.`);
+    return uiClientOutput.stacks[0].WebsiteURL;
+  } catch (error) {
+    console.log(`No UI Client deployed found for ${process.env.STAGE}. ${error}`);
     return '';
   }
 }

@@ -595,7 +595,7 @@ Object {
         },
         "FunctionVersion": Object {
           "Fn::GetAtt": Array [
-            "deaapphandlerCurrentVersion3921518A49230493833975c2c35f9e1ab3211b1b",
+            "deaapphandlerCurrentVersion3921518Ae99c961269b8940cb734380f527cab43",
             "Version",
           ],
         },
@@ -615,7 +615,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "21ef19672ccb15ce64b278ff86ab82d9a6d82edeb2ee0f7c37a5ad41b69e5976.zip",
+          "S3Key": "370af1b78eaec28295a5b33bea2d19bc6d4fe8a6825c2b235dda909b6006b8de.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -653,7 +653,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "deaapphandlerCurrentVersion3921518A49230493833975c2c35f9e1ab3211b1b": Object {
+    "deaapphandlerCurrentVersion3921518Ae99c961269b8940cb734380f527cab43": Object {
       "Properties": Object {
         "FunctionName": Object {
           "Ref": "deaapphandler5A2E0A8F",
