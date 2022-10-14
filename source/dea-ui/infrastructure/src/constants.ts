@@ -2,6 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+
 import fs from 'fs';
 import { join } from 'path';
 import yaml from 'js-yaml';
@@ -46,7 +47,7 @@ function getConstants(): {
     S3_ACCESS_LOGS_BUCKET_NAME_OUTPUT_KEY,
     S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY,
     S3_ARTIFACT_BUCKET_NAME,
-    S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME
+    S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME,
   };
 }
 

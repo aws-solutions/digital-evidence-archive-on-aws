@@ -595,7 +595,7 @@ Object {
         },
         "FunctionVersion": Object {
           "Fn::GetAtt": Array [
-            "deaapphandlerCurrentVersion3921518A0eeefa6495b828fe1e3d1278101517eb",
+            "deaapphandlerCurrentVersion3921518A4a19118b27174f57a9966a15385f4d48",
             "Version",
           ],
         },
@@ -615,7 +615,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "9fbac171f60c4a401a6fd006897e7471823eae0f1634c65cb23698104c5157a3.zip",
+          "S3Key": "2a88db22e3c87b450f06cb034ebb11173d8a71a6497a03732ab038dc5031775a.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -653,7 +653,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "deaapphandlerCurrentVersion3921518A0eeefa6495b828fe1e3d1278101517eb": Object {
+    "deaapphandlerCurrentVersion3921518A4a19118b27174f57a9966a15385f4d48": Object {
       "Properties": Object {
         "FunctionName": Object {
           "Ref": "deaapphandler5A2E0A8F",
@@ -700,7 +700,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
               ],
             ],
           },

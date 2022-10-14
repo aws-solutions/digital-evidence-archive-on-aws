@@ -2,10 +2,17 @@
 require('@rushstack/eslint-config/patch/modern-module-resolution');
 
 module.exports = {
-  extends: ['eslint:recommended', '@aws/eslint-config-workbench-core-eslint-custom'],
+  extends: [
+    'eslint:recommended',
+    '@aws/eslint-config-workbench-core-eslint-custom',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+  ],
   env: {
     jest: true,
-    node: true
+    node: true,
   },
-  parserOptions: { tsconfigRootDir: __dirname }
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint'],
+  parserOptions: { tsconfigRootDir: __dirname },
 };
