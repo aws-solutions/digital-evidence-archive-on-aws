@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { IconProps } from '@awsui/components-react/icon';
+import { IconProps } from '@cloudscape-design/components/icon';
 
 export interface User {
   id: string;
