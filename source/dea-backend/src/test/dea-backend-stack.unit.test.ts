@@ -2,9 +2,17 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { DeaBackendStack } from './dea-backend-stack';
+import { DeaBackendStack } from '../dea-backend-stack';
 
 describe('DeaBackendStack', () => {
+  beforeAll(() => {
+    process.env.STAGE = 'test';
+  });
+
+  afterAll(() => {
+    delete process.env.STAGE;
+  });
+
   it('synthesizes the way we expect', () => {
     const app = new cdk.App();
 
@@ -16,7 +24,7 @@ describe('DeaBackendStack', () => {
 
     // Assert it creates the function with the correct properties...
     template.hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Name: 'Backend API Name'
+      Description: 'Backend API'
     });
 
     template.hasResourceProperties('AWS::Lambda::Function', {

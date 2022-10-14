@@ -1,4 +1,4 @@
-import HelloWorldService from './helloWorldService';
+import { HelloWorldService } from '../../services/helloWorldService';
 
 describe('helloWorld service', () => {
   let helloWorldService: HelloWorldService;

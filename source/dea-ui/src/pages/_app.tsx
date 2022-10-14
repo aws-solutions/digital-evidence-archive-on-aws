@@ -3,13 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import '../styles/globals.scss';
-import '@awsui/global-styles/index.css';
 import type { AppProps } from 'next/app';
 import BaseLayout from '../components/BaseLayout';
 import { AuthenticationProvider } from '../context/AuthenticationContext';
 import { NotificationsProvider } from '../context/NotificationContext';
 import { SettingsProvider } from '../context/SettingsContext';
+import '@cloudscape-design/global-styles/index.css';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function App({ Component, pageProps }: AppProps): JSX.Element {

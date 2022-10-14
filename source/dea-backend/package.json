@@ -18,7 +18,7 @@
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
     "build": "heft build --clean",
-    "build:test": "STAGE=test heft test -u --clean --verbose --test-path-pattern test && rushx pkg-json-lint && rushx make-badges",
+    "build:test": "heft test --clean --verbose --test-path-pattern test && rushx pkg-json-lint && rushx make-badges",
     "cdk": "cdk",
     "cdk:bootstrap": "cdk bootstrap",
     "cdk:deploy": "rushx compile && cdk deploy --all --require-approval never --outputs-file cdk-outputs.json",
@@ -29,11 +29,12 @@
     "license-checker": "license-checker --onlyAllow 'MIT; Apache-2.0; ISC; BSD'",
     "lint:fix": "eslint . --fix",
     "make-badges": "istanbul-badges-readme --coverageDir=./temp/coverage --exitCode=1",
+    "nag": "cfn_nag_scan --deny-list-path cfn-deny --fail-on-warnings --input-path ./cdk.out/DeaBackendStack.template.json",
     "pkg-json-lint": "npmPkgJsonLint -c ../../../ .",
     "sort-package-json": "sort-package-json package.json",
-    "test": "STAGE=test rushx test:only && rushx make-badges",
-    "test:integration": "STAGE=test heft test -u --clean --no-build",
-    "test:only": "STAGE=test heft test -u --clean --no-build --verbose --test-path-pattern test"
+    "test": "rushx test:only && rushx make-badges",
+    "test:integration": "heft test --clean --no-build",
+    "test:only": "heft test --clean --no-build --verbose --test-path-pattern test"
   },
   "dependencies": {
     "@aws-sdk/client-cloudformation": "^3.118.1",
@@ -92,6 +93,7 @@
     "npm-package-json-lint-config-default": "^5.0.0",
     "sort-package-json": "^1.57.0",
     "supertest": "^6.2.4",
+    "ts-mockito": "~2.6.1",
     "typescript": "^4.5.2"
   }
 }

@@ -1,16 +1,24 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable no-new */
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
-import { join } from 'path';
 import * as path from 'path';
 import { WorkbenchCognito, WorkbenchCognitoProps } from '@aws/workbench-core-infrastructure';
-import { Stack, CfnOutput, StackProps, Duration } from 'aws-cdk-lib';
+import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi
 } from 'aws-cdk-lib/aws-apigateway';
+import {
+  FlowLog,
+  FlowLogDestination,
+  FlowLogResourceType,
+  SecurityGroup,
+  SubnetType,
+  Vpc
+} from 'aws-cdk-lib/aws-ec2';
+import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Alias, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as nodejsLambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -24,20 +32,62 @@ export class DeaBackendStack extends Stack {
 
     super(scope, id, props);
 
-    const apiLambda: NodejsFunction = this._createAPILambda();
+    //take a optional VPC from config, if not provided create one
+    const vpc = this._createVpc();
+    const apiLambda = this._createAPILambda(vpc);
     this._createRestApi(apiLambda);
     this._createCognitoResources(COGNITO_DOMAIN, WEBSITE_URLS, USER_POOL_NAME, USER_POOL_CLIENT_NAME);
   }
 
+  private _createVpc(): Vpc {
+    const vpc = new Vpc(this, 'dea-vpc', {
+      natGateways: 0,
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'Ingress',
+          subnetType: SubnetType.PRIVATE_ISOLATED
+        }
+      ]
+    });
+
+    new SecurityGroup(this, 'vpc-sg', {
+      vpc
+    });
+
+    const logGroup = new LogGroup(this, 'dea-vpc-log-group');
+
+    const role = new Role(this, 'flow-log-role', {
+      assumedBy: new ServicePrincipal('vpc-flow-logs.amazonaws.com')
+    });
+
+    new FlowLog(this, 'FlowLog', {
+      resourceType: FlowLogResourceType.fromVpc(vpc),
+      destination: FlowLogDestination.toCloudWatchLogs(logGroup, role)
+    });
+
+    return vpc;
+  }
+
   // Create Lambda
-  private _createAPILambda(): NodejsFunction {
+  private _createAPILambda(vpc: Vpc): NodejsFunction {
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+    const role = new Role(this, 'dea-base-lambda-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [basicExecutionPolicy]
+    });
+
     const lambdaService = new nodejsLambda.NodejsFunction(this, 'dea-app-handler', {
       memorySize: 512,
+      vpc,
+      role: role,
       timeout: Duration.minutes(3),
       runtime: Runtime.NODEJS_16_X,
       handler: 'handler',
       entry: path.join(__dirname, '/../src/backendAPILambda.ts'),
-      depsLockFilePath: join(__dirname, '/../../common/config/rush/pnpm-lock.yaml'),
+      depsLockFilePath: path.join(__dirname, '/../../common/config/rush/pnpm-lock.yaml'),
       bundling: {
         externalModules: ['aws-sdk']
       }
@@ -47,10 +97,9 @@ export class DeaBackendStack extends Stack {
   }
 
   // API Gateway
-  private _createRestApi(apiLambda: NodejsFunction): void {
+  private _createRestApi(apiLambda: NodejsFunction) {
     const logGroup = new LogGroup(this, 'APIGatewayAccessLogs');
     const API: RestApi = new RestApi(this, `API-Gateway API`, {
-      restApiName: 'Backend API Name',
       description: 'Backend API',
       deployOptions: {
         stageName: 'dev',
@@ -74,6 +123,10 @@ export class DeaBackendStack extends Stack {
       // TODO: Add CORS Preflight
     });
 
+    API.addUsagePlan('Backend Usage Plan', {
+      name: 'backend-usage-plan'
+    });
+
     new CfnOutput(this, 'apiUrlOutput', {
       value: API.url
     });
@@ -88,6 +141,7 @@ export class DeaBackendStack extends Stack {
       defaultIntegration: new LambdaIntegration(alias)
     });
   }
+
   private _createCognitoResources(
     domainPrefix: string,
     websiteUrls: string[],

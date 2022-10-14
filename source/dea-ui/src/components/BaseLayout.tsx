@@ -3,24 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { BreadcrumbGroupProps } from '@awsui/components-react';
-import AppLayout, { AppLayoutProps } from '@awsui/components-react/app-layout';
-import BreadcrumbGroup from '@awsui/components-react/breadcrumb-group';
-import Flashbar from '@awsui/components-react/flashbar';
+import AppLayout, { AppLayoutProps } from '@cloudscape-design/components/app-layout';
+import BreadcrumbGroup from '@cloudscape-design/components/breadcrumb-group';
+import Flashbar from '@cloudscape-design/components/flashbar';
 import { useState } from 'react';
 import { useNotifications } from '../context/NotificationContext';
 import styles from '../styles/BaseLayout.module.scss';
-
-const breadcrumbs: BreadcrumbGroupProps.Item[] = [
-  {
-    text: 'Service name',
-    href: '#'
-  },
-  {
-    text: 'Pages',
-    href: '#'
-  }
-];
 
 export default function Layout({ children }: { children: React.ReactNode }): JSX.Element {
   const [navigationOpen, setNavigationOpen] = useState(false);
@@ -46,7 +34,20 @@ export default function Layout({ children }: { children: React.ReactNode }): JSX
       navigationOpen={navigationOpen}
       notifications={<Flashbar items={Object.values(notifications)} />}
       breadcrumbs={
-        <BreadcrumbGroup items={breadcrumbs} expandAriaLabel="Show path" ariaLabel="Breadcrumbs" />
+        <BreadcrumbGroup
+          items={[
+            {
+              text: 'Service name',
+              href: '#'
+            },
+            {
+              text: 'Pages',
+              href: '#'
+            }
+          ]}
+          expandAriaLabel="Show path"
+          ariaLabel="Breadcrumbs"
+        />
       }
       contentType="table"
       content={children}

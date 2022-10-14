@@ -1,10 +1,10 @@
 import request from 'supertest';
-import backendAPIApp from './backendAPI';
+import { getBackendApiApp } from '../backendAPI';
 
 describe('hello world API', () => {
   describe('GET /hi', () => {
     it('should respond with a greeting', async () => {
-      const response = await request(backendAPIApp).get('/hi');
+      const response = await request(getBackendApiApp()).get('/hi');
       expect(response.status).toEqual(200);
       expect(response.text).toEqual('Hello DEA!');
     });
@@ -12,7 +12,7 @@ describe('hello world API', () => {
 
   describe('GET /bye', () => {
     it('should say bye', async () => {
-      const response = await request(backendAPIApp).get('/bye');
+      const response = await request(getBackendApiApp()).get('/bye');
       expect(response.status).toEqual(200);
       expect(response.text).toEqual('Bye DEA!');
     });

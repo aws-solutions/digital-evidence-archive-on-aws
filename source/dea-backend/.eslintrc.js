@@ -2,6 +2,10 @@
 require('@rushstack/eslint-config/patch/modern-module-resolution');
 
 module.exports = {
-  extends: ['@aws/eslint-config-workbench-core-eslint-custom'],
+  extends: ['eslint:recommended', '@aws/eslint-config-workbench-core-eslint-custom'],
+  env: {
+    jest: true,
+    node: true
+  },
   parserOptions: { tsconfigRootDir: __dirname }
 };
