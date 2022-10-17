@@ -4,17 +4,53 @@ Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest 
 
 ## Project Setup
 
-Checkout the Repository
+1. Sign in to GitHub
+
+2. Fork the repository https://github.com/aws-solutions/digital-investigations-on-aws. Underneath the page header, on the upper right, the fork button is second from the right. Choose your account as the owner and uncheck the copy only main branch.
+
+3. Clone the forked repo, inputting your username, then your ACCESS token from step 1 as the password
 
 ```
-git clone ssh://git.amazon.com/pkg/Digital-evidence-archive $WORKSPACE_NAME
+WORKSPACE_NAME=<e.g. DEADev>
+GIT_USERNAME=<e.g BOBFAKEUSER>
+git clone git@github.com:$GIT_USERNAME/digital-investigations-on-aws.git $WORKSPACE_NAME
+cd ./$WORKSPACE_NAME
 ```
 
-- Be sure to ingest MAF Workbench core submodule
-- Use the following command to checkout solution spark
+4. Track your branch
+
+```
+git checkout --track origin/develop
+```
+
+5. Be sure to ingest MAF Workbench core submodule
+Use the following command to checkout solution spark
 
 ```
 git submodule update --init --recursive --remote
+```
+
+6. Run Rush Install
+
+```
+cd ./source
+rush cupdate
+```
+
+7. Setup Git Defender
+
+```
+git defender --setup
+```
+
+## Creating a PR from a Commit(s)
+
+```
+git pull upstream develop --rebase
+```
+
+```
+git push origin somebranchname
 ```
 
 ### One Time Package Installs
