@@ -74,7 +74,9 @@ export class DEAUIStack extends Stack {
 
     bucket.grantReadWrite(executeRole);
 
-    const api = new RestApi(this, 'dea-ui-gateway');
+    const api = new RestApi(this, 'dea-ui-gateway', {
+      description: 'distribution api'
+    });
 
     const rootS3Integration = this._getS3Integration('index.html', bucket, executeRole);
     // GET to the root

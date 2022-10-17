@@ -231,6 +231,10 @@
       "allowedCategories": ["production"]
     },
     {
+      "name": "@cloudscape-design/jest-preset",
+      "allowedCategories": ["production"]
+    },
+    {
       "name": "@hapi/boom",
       "allowedCategories": ["production"]
     },
@@ -411,6 +415,10 @@
       "allowedCategories": ["production"]
     },
     {
+      "name": "i18next",
+      "allowedCategories": ["production"]
+    },
+    {
       "name": "istanbul-badges-readme",
       "allowedCategories": ["production", "prototypes"]
     },
@@ -499,6 +507,10 @@
       "allowedCategories": ["production", "prototypes"]
     },
     {
+      "name": "react-i18next",
+      "allowedCategories": ["production"]
+    },
+    {
       "name": "react-scripts",
       "allowedCategories": ["production"]
     },
@@ -532,6 +544,10 @@
     },
     {
       "name": "ts-jest",
+      "allowedCategories": ["production", "prototypes"]
+    },
+    {
+      "name": "ts-mockito",
       "allowedCategories": ["production", "prototypes"]
     },
     {

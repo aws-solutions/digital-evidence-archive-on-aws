@@ -3,8 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import Box from '@awsui/components-react/box';
-import Link from '@awsui/components-react/link';
+import Box from '@cloudscape-design/components/box';
+import Link from '@cloudscape-design/components/link';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Hero from '../components/Hero';
@@ -15,11 +15,9 @@ export interface HomeProps {
   locale: string;
 }
 
-
 const Home: NextPage = () => {
   const { settings } = useSettings();
   const { displayNotification } = useNotifications();
-
 
   displayNotification('temp', {
     type: 'info',
@@ -48,8 +46,6 @@ const Home: NextPage = () => {
       </Head>
 
       <Hero />
-
-      
     </Box>
   );
 };
