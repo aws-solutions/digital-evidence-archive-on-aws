@@ -11,6 +11,19 @@ coverage
 README.md
 cdk.out
 .github
+.github/workflows/pipeline.yml
+
+# Line specific ignores
+
 CODE_OF_CONDUCT.md:4
 CONTRIBUTING.md:50
-.github/workflows/pipeline.yml
+
+# Bogus email ignores
+
+source/dea-backend/config/test.json:5
+source/dea-backend/src/config/test.yaml:4
+source/dea-ui/src/models/User.ts:19
+
+# Ignore anything in submodule (This is mostly for local)
+
+source/solution-spark-on-aws
