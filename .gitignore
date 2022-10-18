@@ -73,6 +73,12 @@ source/common/autoinstallers/*/.npmrc
 dist
 lib
 
+#next static export
+source/dea-ui/out
+
+#viperlight ignore
+.viperlightrc
+
 #cdk
 cdk.out
 .vscode
