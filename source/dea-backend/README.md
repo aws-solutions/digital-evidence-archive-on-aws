@@ -27,10 +27,13 @@ The backend of this app get certain values from the configuration files. For eac
 1. Copy and paste the contents of example.yaml into the new file
 2. Fill in the lines as specified.
 3. Save the file, and commit to your local branch if you have one
+4. Create a config file in the dea-ui folder, following the instructions in that folder's README under the section "Creating a stage file"
 
 ### Deployment
 
-To deploy, make sure to have built Rush in the source directory. Refer to Source directory readme.
+1. Follow the steps in the previous section, "Setting Up Configuration"
+2. Build rush in the source directory. Refer to Source directory readme.
+3. Run the following commands
 
 - `STAGE=<dev, prod, beta>
 - `STAGE=$STAGE rushx cdk bootstrap aws://{aws id}/{region}`
