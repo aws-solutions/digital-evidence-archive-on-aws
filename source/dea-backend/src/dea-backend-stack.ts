@@ -71,12 +71,12 @@ export class DeaBackendStack extends Stack {
 
   // Create Lambda
   private _createAPILambda(vpc: Vpc): NodejsFunction {
-    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
-      'service-role/AWSLambdaBasicExecutionRole'
+    const vpcExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaVPCAccessExecutionRole'
     );
     const role = new Role(this, 'dea-base-lambda-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [basicExecutionPolicy]
+      managedPolicies: [vpcExecutionPolicy]
     });
 
     const lambdaService = new nodejsLambda.NodejsFunction(this, 'dea-app-handler', {
