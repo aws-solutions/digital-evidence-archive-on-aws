@@ -8,5 +8,5 @@ allowedOrigins: ['http://localhost:3000']
 cognitoDomain: 'test-dea-domain' # Must be globally unique
 websiteUrl: 'http://localhost:3000'
 userPoolId: 'us-east-2_111111'
-clientId: '313123123123'
-clientSecret: '123123123123123123'
+clientId: '3qweqweqwe13123123123'
+clientSecret: '12312312wqewqeqw3123123123'
