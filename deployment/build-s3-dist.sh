@@ -265,11 +265,14 @@ echo "--------------------------------------------------------------------------
 # Install the global aws-cdk package
 # Note: do not install using global (-g) option. This makes build-s3-dist.sh difficult
 # for customers and developers to use, as it globally changes their environment.
-do_cmd cd $source_dir
-do_cmd npm install
-do_cmd npm install aws-cdk@$cdk_version
+
+# TODO: uncomment
 do_cmd npm install -g @microsoft/rush
+do_cmd npm install -g pnpm
+do_cmd cd $source_dir
 do_cmd git submodule update --init --recursive --remote
+do_cmd rush cupdate
+do_cmd rush build
 
 # Add local install to PATH
 export PATH=$(npm bin):$PATH
@@ -284,8 +287,8 @@ fi
                            # cdk synth doesn't always detect issues in the typescript
                            # and may succeed using old build files. This ensures we
                            # have fresh javascript from a successful build
-do_cmd rush cupdate
-do_cmd rush build
+
+
 do_cmd cd dea-backend
 
 echo "------------------------------------------------------------------------------"
