@@ -4,8 +4,8 @@
   "compilerOptions": {
     "types": ["heft-jest", "node"],
     "lib": ["dom"],
-    "rootDir": "src"
+    "rootDir": ""
   },
-  "include": ["src/*", "src/test/*"],
+  "include": ["src/*", "tests/*"],
   "exclude": ["./node_modules", "./lib", "./cdk.out", "./bin"]
 }

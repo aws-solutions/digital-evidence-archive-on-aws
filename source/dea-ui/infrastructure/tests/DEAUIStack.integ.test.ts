@@ -1,8 +1,8 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { BucketAccessControl } from 'aws-cdk-lib/aws-s3';
 import { DEAUIStack } from '../src/DEAUIStack';
-import { BlockPublicAccess, BucketAccessControl } from 'aws-cdk-lib/aws-s3';
 
 describe('DEAUIStack', () => {
   beforeAll(() => {
@@ -24,7 +24,7 @@ describe('DEAUIStack', () => {
 
     // Assert it creates the api with the correct properties...
     template.hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Description: 'distribution api'
+      Description: 'distribution api',
     });
 
     template.hasResourceProperties('AWS::S3::Bucket', {
@@ -33,8 +33,8 @@ describe('DEAUIStack', () => {
         BlockPublicAcls: true,
         BlockPublicPolicy: true,
         IgnorePublicAcls: true,
-        RestrictPublicBuckets: true
-      }
+        RestrictPublicBuckets: true,
+      },
     });
 
     expect(template).toMatchSnapshot();

@@ -243,6 +243,7 @@ importers:
       istanbul-badges-readme: 1.8.1
       jest: ^27.5.1
       jwt-decode: ^3.1.2
+      license-check-and-add: ^4.0.5
       next: ^12.1.5
       next-global-css: ^1.2.0
       next-i18next: ^11.0.0
@@ -312,6 +313,7 @@ importers:
       eslint-plugin-testing-library: 5.0.1_eslint@8.16.0+typescript@4.7.4
       istanbul-badges-readme: 1.8.1
       jest: 27.5.1
+      license-check-and-add: 4.0.5
       nodemon: 2.0.20
       npm-package-json-lint: 6.3.0
       npm-package-json-lint-config-default: 5.0.0_npm-package-json-lint@6.3.0
@@ -324,6 +326,8 @@ importers:
 
   ../../dea-ui/infrastructure:
     specifiers:
+      '@aws/eslint-config-workbench-core-eslint-custom': workspace:*
+      '@rushstack/eslint-config': ^3.0.0
       '@rushstack/heft': ^0.47.5
       '@rushstack/heft-jest-plugin': ^0.3.28
       '@rushstack/heft-node-rig': ^1.10.5
@@ -334,6 +338,8 @@ importers:
       aws-cdk: ^2.12.0
       aws-cdk-lib: ^2.29.1
       constructs: ^10.0.0
+      eslint: ^8.7.0
+      eslint-plugin-import: ^2.26.0
       jest: ^27.5.1
       js-yaml: ^4.1.0
       license-check-and-add: ^4.0.5
@@ -346,6 +352,8 @@ importers:
     dependencies:
       js-yaml: 4.1.0
     devDependencies:
+      '@aws/eslint-config-workbench-core-eslint-custom': link:../../solution-spark-on-aws/workbench-core/eslint-custom
+      '@rushstack/eslint-config': 3.0.0_eslint@8.16.0+typescript@4.7.4
       '@rushstack/heft': 0.47.5
       '@rushstack/heft-jest-plugin': 0.3.28_af1caecb14d1431fb8970f0a10ea0e9d
       '@rushstack/heft-node-rig': 1.10.5_af1caecb14d1431fb8970f0a10ea0e9d
@@ -356,6 +364,8 @@ importers:
       aws-cdk: 2.26.0
       aws-cdk-lib: 2.29.1_constructs@10.1.25
       constructs: 10.1.25
+      eslint: 8.16.0
+      eslint-plugin-import: 2.26.0_eslint@8.16.0
       jest: 27.5.1_ts-node@10.9.1
       license-check-and-add: 4.0.5
       license-checker: 25.0.1

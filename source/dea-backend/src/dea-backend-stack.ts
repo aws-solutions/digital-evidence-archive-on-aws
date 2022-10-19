@@ -1,6 +1,9 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 /* eslint-disable no-new */
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 import * as path from 'path';
 import { WorkbenchCognito, WorkbenchCognitoProps } from '@aws/workbench-core-infrastructure';
 import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
@@ -8,7 +11,7 @@ import {
   AccessLogFormat,
   LambdaIntegration,
   LogGroupLogDestination,
-  RestApi
+  RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
 import {
   FlowLog,
@@ -16,7 +19,7 @@ import {
   FlowLogResourceType,
   SecurityGroup,
   SubnetType,
-  Vpc
+  Vpc,
 } from 'aws-cdk-lib/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Alias, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -27,7 +30,7 @@ import { Construct } from 'constructs';
 import { getConstants } from './constants';
 
 export class DeaBackendStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  public constructor(scope: Construct, id: string, props?: StackProps) {
     const { COGNITO_DOMAIN, USER_POOL_CLIENT_NAME, USER_POOL_NAME, WEBSITE_URLS } = getConstants();
 
     super(scope, id, props);
@@ -46,24 +49,24 @@ export class DeaBackendStack extends Stack {
         {
           cidrMask: 24,
           name: 'Ingress',
-          subnetType: SubnetType.PRIVATE_ISOLATED
-        }
-      ]
+          subnetType: SubnetType.PRIVATE_ISOLATED,
+        },
+      ],
     });
 
     new SecurityGroup(this, 'vpc-sg', {
-      vpc
+      vpc,
     });
 
     const logGroup = new LogGroup(this, 'dea-vpc-log-group');
 
     const role = new Role(this, 'flow-log-role', {
-      assumedBy: new ServicePrincipal('vpc-flow-logs.amazonaws.com')
+      assumedBy: new ServicePrincipal('vpc-flow-logs.amazonaws.com'),
     });
 
     new FlowLog(this, 'FlowLog', {
       resourceType: FlowLogResourceType.fromVpc(vpc),
-      destination: FlowLogDestination.toCloudWatchLogs(logGroup, role)
+      destination: FlowLogDestination.toCloudWatchLogs(logGroup, role),
     });
 
     return vpc;
@@ -89,15 +92,17 @@ export class DeaBackendStack extends Stack {
       entry: path.join(__dirname, '/../src/backendAPILambda.ts'),
       depsLockFilePath: path.join(__dirname, '/../../common/config/rush/pnpm-lock.yaml'),
       bundling: {
-        externalModules: ['aws-sdk']
-      }
+        externalModules: ['aws-sdk'],
+        minify: true,
+        sourceMap: false,
+      },
     });
 
     return lambdaService;
   }
 
   // API Gateway
-  private _createRestApi(apiLambda: NodejsFunction) {
+  private _createRestApi(apiLambda: NodejsFunction): void {
     const logGroup = new LogGroup(this, 'APIGatewayAccessLogs');
     const API: RestApi = new RestApi(this, `API-Gateway API`, {
       description: 'Backend API',
@@ -116,29 +121,29 @@ export class DeaBackendStack extends Stack {
             resourceId: '$context.resourceId',
             httpMethod: '$context.httpMethod',
             sourceIp: '$context.identity.sourceIp',
-            userAgent: '$context.identity.userAgent'
+            userAgent: '$context.identity.userAgent',
           })
-        )
-      }
+        ),
+      },
       // TODO: Add CORS Preflight
     });
 
     API.addUsagePlan('Backend Usage Plan', {
-      name: 'backend-usage-plan'
+      name: 'backend-usage-plan',
     });
 
     new CfnOutput(this, 'apiUrlOutput', {
-      value: API.url
+      value: API.url,
     });
 
     // Lambda Alias
     const alias = new Alias(this, 'LiveAlias', {
       aliasName: 'live',
       version: apiLambda.currentVersion,
-      provisionedConcurrentExecutions: 1
+      provisionedConcurrentExecutions: 1,
     });
     API.root.addProxy({
-      defaultIntegration: new LambdaIntegration(alias)
+      defaultIntegration: new LambdaIntegration(alias),
     });
   }
 
@@ -153,21 +158,21 @@ export class DeaBackendStack extends Stack {
       websiteUrls: websiteUrls,
       userPoolName: userPoolName,
       userPoolClientName: userPoolClientName,
-      oidcIdentityProviders: []
+      oidcIdentityProviders: [],
     };
 
     const workbenchCognito = new WorkbenchCognito(this, 'DigitalEvidenceArchiveCognito', props);
 
     new CfnOutput(this, 'cognitoUserPoolId', {
-      value: workbenchCognito.userPoolId
+      value: workbenchCognito.userPoolId,
     });
 
     new CfnOutput(this, 'cognitoUserPoolClientId', {
-      value: workbenchCognito.userPoolClientId
+      value: workbenchCognito.userPoolClientId,
     });
 
     new CfnOutput(this, 'cognitoDomainName', {
-      value: workbenchCognito.cognitoDomain
+      value: workbenchCognito.cognitoDomain,
     });
 
     return workbenchCognito;
