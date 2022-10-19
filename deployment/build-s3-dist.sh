@@ -33,7 +33,7 @@ normal=$(tput sgr0)
 # SETTINGS
 #------------------------------------------------------------------------------
 # Important: CDK global version number
-cdk_version=2.26.0
+cdk_version=2.46.0
 # Note: should match package.json
 template_format="json"
 run_helper="true"
@@ -94,7 +94,7 @@ do_replace()
 create_template_json() 
 {
     # Run 'cdk synth' to generate raw solution outputs
-    do_cmd rushx cdk context --clear && rushx cdk synth -q --output=$staging_dist_dir
+    do_cmd rushx cdk context --clear && STAGE=$STAGE rushx cdk synth -q --output=$staging_dist_dir
 
     # Remove unnecessary output files
     do_cmd cd $staging_dist_dir
@@ -269,10 +269,13 @@ echo "--------------------------------------------------------------------------
 # TODO: uncomment
 do_cmd npm install -g @microsoft/rush
 do_cmd npm install -g pnpm
+do_cmd npm install -g aws-cdk@2.46.0
 do_cmd cd $source_dir
 do_cmd git submodule update --init --recursive --remote
 do_cmd rush cupdate
 do_cmd rush build
+STAGE=DEMO
+echo Stage set to $STAGE
 
 # Add local install to PATH
 export PATH=$(npm bin):$PATH
@@ -422,7 +425,8 @@ for d in `find . -mindepth 1 -maxdepth 1 -type d`; do
     fi
 done
 # cleanup temporary generated files that are not needed for later stages of the build pipeline
-cleanup_temporary_generted_files
+# TODO: enable cleanup
+# cleanup_temporary_generted_files
 
 # Return to original directory from when we started the build
 cd $template_dir
