@@ -1,15 +1,28 @@
 #!/bin/bash
 #
-# This assumes all of the OS-level configuration has been completed and git repo has already been cloned
+# This script packages your project into an open-source solution distributable 
+# that can be published to sites like GitHub.
 #
-# This script should be run from the repo's deployment directory
-# cd deployment
-# ./build-open-source-dist.sh solution-name
+# Important notes and prereq's:
+#   1. The initialize-repo.sh script must have been run in order for this script to
+#      function properly.
+#   2. This script should be run from the repo's /deployment folder.
+# 
+# This script will perform the following tasks:
+#   1. Remove any old dist files from previous runs.
+#   2. Package the GitHub contribution and pull request templates (typically
+#      found in the /.github folder).
+#   3. Package the /source folder along with the necessary root-level
+#      open-source artifacts (i.e. CHANGELOG, etc.).
+#   4. Remove any unecessary artifacts from the /open-source folder (i.e. 
+#      node_modules, package-lock.json, etc.).
+#   5. Zip up the /open-source folder and create the distributable.
+#   6. Remove any temporary files used for staging.
 #
-# Paramenters:
+# Parameters:
 #  - solution-name: name of the solution for consistency
 
-# Check to see if input has been provided:
+# Check to see if the required parameters have been provided:
 if [ -z "$1" ]; then
     echo "Please provide the trademark approved solution name for the open source package."
     echo "For example: ./build-open-source-dist.sh trademarked-solution-name"
@@ -19,92 +32,93 @@ fi
 # Get reference for all important folders
 source_template_dir="$PWD"
 dist_dir="$source_template_dir/open-source"
-dist_template_dir="$dist_dir/deployment"
 source_dir="$source_template_dir/../source"
 github_dir="$source_template_dir/../.github"
+support_stack_dir="$source_template_dir/../deployment-prerequisties"
 
 echo "------------------------------------------------------------------------------"
-echo "[Init] Clean old open-source folder"
+echo "[Init] Remove any old dist files from previous runs"
 echo "------------------------------------------------------------------------------"
+
 echo "rm -rf $dist_dir"
 rm -rf $dist_dir
 echo "mkdir -p $dist_dir"
 mkdir -p $dist_dir
-echo "mkdir -p $dist_template_dir"
-mkdir -p $dist_template_dir
-
-echo "------------------------------------------------------------------------------"
-echo "[Packing] Templates"
-echo "------------------------------------------------------------------------------"
-echo "cp $source_template_dir/*.template $dist_template_dir/"
-cp $source_template_dir/*.template $dist_template_dir/
-echo "copy yaml templates and rename"
-cp $source_template_dir/*.yaml $dist_template_dir/
-cd $dist_template_dir
-# Rename all *.yaml to *.template
-for f in *.yaml; do
-    mv -- "$f" "${f%.yaml}.template"
-done
-
-echo "------------------------------------------------------------------------------"
-echo "[Packing] Build Script"
-echo "------------------------------------------------------------------------------"
-echo "cp $source_template_dir/build-s3-dist.sh $dist_template_dir"
-cp $source_template_dir/build-s3-dist.sh $dist_template_dir
-echo "cp $source_template_dir/run-unit-tests.sh $dist_template_dir"
-cp $source_template_dir/run-unit-tests.sh $dist_template_dir
 
 echo "------------------------------------------------------------------------------"
 echo "[Packing] GitHub templates"
 echo "------------------------------------------------------------------------------"
+
 echo "cp -r $github_dir $dist_dir"
 cp -r $github_dir $dist_dir
 
 echo "------------------------------------------------------------------------------"
-echo "[Packing] Source Folder"
+echo "[Packing] Source folder"
 echo "------------------------------------------------------------------------------"
+
 echo "cp -r $source_dir $dist_dir"
 cp -r $source_dir $dist_dir
 
 echo "------------------------------------------------------------------------------"
+echo "[Packing] cross account support folder"
+echo "------------------------------------------------------------------------------"
+
+echo "cp -r $support_stack_dir $dist_dir"
+cp -r $support_stack_dir $dist_dir
+
+
+echo "------------------------------------------------------------------------------"
 echo "[Packing] Files from the root level of the project"
 echo "------------------------------------------------------------------------------"
+
 echo "cp $source_template_dir/../LICENSE.txt $dist_dir"
 cp $source_template_dir/../LICENSE.txt $dist_dir
+
 echo "cp $source_template_dir/../NOTICE.txt $dist_dir"
 cp $source_template_dir/../NOTICE.txt $dist_dir
+
 echo "cp $source_template_dir/../README.md $dist_dir"
 cp $source_template_dir/../README.md $dist_dir
+
 echo "cp $source_template_dir/../CODE_OF_CONDUCT.md $dist_dir"
 cp $source_template_dir/../CODE_OF_CONDUCT.md $dist_dir
+
 echo "cp $source_template_dir/../CONTRIBUTING.md $dist_dir"
 cp $source_template_dir/../CONTRIBUTING.md $dist_dir
+
 echo "cp $source_template_dir/../CHANGELOG.md $dist_dir"
 cp $source_template_dir/../CHANGELOG.md $dist_dir
+
 echo "cp $source_template_dir/../.gitignore $dist_dir"
 cp $source_template_dir/../.gitignore $dist_dir
 
 echo "------------------------------------------------------------------------------"
-echo "[Packing] Clean dist, node_modules and bower_components folders"
+echo "[Packing] Clean up the open-source distributable"
 echo "------------------------------------------------------------------------------"
-echo "find $dist_dir -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $dist_dir -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find $dist_dir -iname "tests" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $dist_dir -iname "tests" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find $dist_dir -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $dist_dir -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find $dist_dir -iname "bower_components" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $dist_dir -iname "bower_components" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find ../ -type f -name 'package-lock.json' -delete"
-find $dist_dir -type f -name 'package-lock.json' -delete
+echo $dist_dir
+# General cleanup of node_modules and package-lock.json files
+echo "find $dist_dir -iname "node_modules" -type d -exec rm -rf "{}" \; 2> /dev/null"
+find $dist_dir -iname "node_modules" -type d -exec rm -rf "{}" \; 2> /dev/null
+echo "find $dist_dir -iname ".venv" -type d -exec rm -rf "{}" \; 2> /dev/null"
+find $dist_dir -iname ".venv" -type d -exec rm -rf "{}" \; 2> /dev/null
+echo "find $dist_dir -iname "pytest_cache" -type d -exec rm -rf "{}" \; 2> /dev/null"
+find $dist_dir -iname "pytest_cache" -type d -exec rm -rf "{}" \; 2> /dev/null
+echo "find $dist_dir -iname ".mypy_cache" -type d -exec rm -rf "{}" \; 2> /dev/null"
+find $dist_dir -iname ".mypy_cache" -type d -exec rm -rf "{}" \; 2> /dev/null
+echo "find $dist_dir -iname ".viperlightignore" -type d -exec rm -rf "{}" \; 2> /dev/null"
+find $dist_dir -iname ".viperlightignore" -type d -exec rm -rf "{}" \; 2> /dev/null
+echo "find $dist_dir -iname "cdk.out" -type d -exec rm -rf "{}" \; 2> /dev/null"
+find $dist_dir -iname "cdk.out" -type d -exec rm -rf "{}" \; 2> /dev/null
+echo "find $dist_dir -iname "dist" -type d -exec rm -rf "{}" \; 2> /dev/null"
+find $dist_dir -iname "dist" -type d -exec rm -rf "{}" \; 2> /dev/null
 
 echo "------------------------------------------------------------------------------"
 echo "[Packing] Create GitHub (open-source) zip file"
 echo "------------------------------------------------------------------------------"
+
 # Create the zip file
 echo "cd $dist_dir"
 cd $dist_dir
-
 echo "zip -q -r9 ../$1.zip ."
 zip -q -r9 ../$1.zip .
 
