@@ -94,7 +94,7 @@ do_replace()
 create_template_json() 
 {
     # Run 'cdk synth' to generate raw solution outputs
-    do_cmd cdk context --clear && cdk synth -q --output=$staging_dist_dir
+    do_cmd rushx cdk context --clear && rushx cdk synth -q --output=$staging_dist_dir
 
     # Remove unnecessary output files
     do_cmd cd $staging_dist_dir
@@ -268,6 +268,8 @@ echo "--------------------------------------------------------------------------
 do_cmd cd $source_dir
 do_cmd npm install
 do_cmd npm install aws-cdk@$cdk_version
+do_cmd npm install -g @microsoft/rush
+do_cmd git submodule update --init --recursive --remote
 
 # Add local install to PATH
 export PATH=$(npm bin):$PATH
@@ -278,11 +280,13 @@ if [[ $current_cdkver != $cdk_version ]]; then
     echo Required CDK version is ${cdk_version}, found ${current_cdkver}
     exit 255
 fi
-do_cmd npm run build       # build javascript from typescript to validate the code
+#do_cmd npm run build       # build javascript from typescript to validate the code
                            # cdk synth doesn't always detect issues in the typescript
                            # and may succeed using old build files. This ensures we
                            # have fresh javascript from a successful build
-
+do_cmd rush cupdate
+do_cmd rush build
+do_cmd cd dea-backend
 
 echo "------------------------------------------------------------------------------"
 echo "${bold}[Create] Templates${normal}"
