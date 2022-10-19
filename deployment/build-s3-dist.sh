@@ -274,7 +274,7 @@ do_cmd cd $source_dir
 do_cmd git submodule update --init --recursive --remote
 do_cmd rush cupdate
 do_cmd rush build
-STAGE=DEMO
+STAGE=demo
 echo Stage set to $STAGE
 
 # Add local install to PATH
