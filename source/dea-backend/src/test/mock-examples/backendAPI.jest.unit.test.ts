@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 jest.mock('../../services/helloWorldService', () => ({
   HelloWorldService: jest.fn().mockImplementation(() => ({
     sayHello: async () => {
@@ -5,8 +10,8 @@ jest.mock('../../services/helloWorldService', () => ({
     },
     sayBye: async () => {
       return 'zaijian';
-    }
-  }))
+    },
+  })),
 }));
 
 import request from 'supertest';

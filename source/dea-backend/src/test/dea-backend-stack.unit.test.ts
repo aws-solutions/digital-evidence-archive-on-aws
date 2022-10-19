@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
@@ -24,12 +29,12 @@ describe('DeaBackendStack', () => {
 
     // Assert it creates the function with the correct properties...
     template.hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Description: 'Backend API'
+      Description: 'Backend API',
     });
 
     template.hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'index.handler',
-      Runtime: Runtime.NODEJS_16_X.name
+      Runtime: Runtime.NODEJS_16_X.name,
     });
 
     expect(template).toMatchSnapshot();

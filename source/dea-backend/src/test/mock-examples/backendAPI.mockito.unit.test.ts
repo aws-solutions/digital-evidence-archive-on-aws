@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import request from 'supertest';
 import { mock, when, instance } from 'ts-mockito';
 import { getBackendApiApp } from '../../backendAPI';
@@ -16,7 +21,7 @@ describe('backend api with mocks example', () => {
     it('should respond with ciao!', async () => {
       const agent = request(
         getBackendApiApp({
-          helloWorldService: instance(helloWorldService)
+          helloWorldService: instance(helloWorldService),
         })
       );
 

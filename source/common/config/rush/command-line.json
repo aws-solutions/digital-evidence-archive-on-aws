@@ -171,21 +171,25 @@
       "commandKind": "bulk",
       "summary": "Used to perform tests on the packages and update code coverage report in README file",
       "safeForSimultaneousRushProcesses": true,
-      "enableParallelism": true
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": false
     },
     {
       "name": "build:test",
       "commandKind": "bulk",
       "summary": "Runs rush build and rush test using a single command",
       "safeForSimultaneousRushProcesses": true,
-      "enableParallelism": true
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true,
+      "incremental": true
     },
     {
       "name": "test:only",
       "commandKind": "bulk",
       "summary": "Used to perform tests on the packages",
       "safeForSimultaneousRushProcesses": true,
-      "enableParallelism": true
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": false
     },
     {
       "name": "sort-package-json",
@@ -199,7 +203,8 @@
       "commandKind": "bulk",
       "summary": "Used to update README file with code coverage report for the packages",
       "safeForSimultaneousRushProcesses": true,
-      "enableParallelism": true
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": false
     },
     {
       "name": "pkg-json-lint",
@@ -213,7 +218,8 @@
       "commandKind": "bulk",
       "summary": "lint fix",
       "safeForSimultaneousRushProcesses": true,
-      "enableParallelism": true
+      "enableParallelism": true,
+      "incremental": true
     },
     {
       "name": "depcheck",
@@ -234,7 +240,8 @@
       "commandKind": "bulk",
       "summary": "Add license header",
       "safeForSimultaneousRushProcesses": true,
-      "enableParallelism": true
+      "enableParallelism": true,
+      "incremental": true
     },
     {
       "name": "check-license-header",

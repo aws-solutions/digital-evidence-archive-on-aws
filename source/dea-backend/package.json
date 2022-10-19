@@ -17,8 +17,9 @@
   },
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
-    "build": "heft build --clean",
-    "build:test": "heft test --clean --verbose --test-path-pattern test && rushx pkg-json-lint && rushx make-badges",
+    "build": "heft build",
+    "build:clean": "heft build --clean",
+    "build:test": "heft test --verbose --test-path-pattern test && rushx make-badges",
     "cdk": "cdk",
     "cdk:bootstrap": "cdk bootstrap",
     "cdk:deploy": "rushx compile && cdk deploy --all --require-approval never --outputs-file cdk-outputs.json",
@@ -27,14 +28,15 @@
     "compile": "node scripts/buildLambda.js",
     "depcheck": "depcheck",
     "license-checker": "license-checker --onlyAllow 'MIT; Apache-2.0; ISC; BSD'",
-    "lint:fix": "eslint . --fix",
+    "lint:fix": "eslint . --fix --max-warnings=0",
     "make-badges": "istanbul-badges-readme --coverageDir=./temp/coverage --exitCode=1",
     "nag": "cfn_nag_scan --deny-list-path cfn-deny --fail-on-warnings --input-path ./cdk.out/DeaBackendStack.template.json",
-    "pkg-json-lint": "npmPkgJsonLint -c ../../../ .",
+    "pkg-json-lint": "npmPkgJsonLint -c ../../.npmpackagejsonlintrc.json .",
     "sort-package-json": "sort-package-json package.json",
     "test": "rushx test:only && rushx make-badges",
-    "test:integration": "heft test --clean --no-build",
-    "test:only": "heft test --clean --no-build --verbose --test-path-pattern test"
+    "test:integration": "heft test --no-build",
+    "test:only": "heft test --no-build --verbose --test-path-pattern test",
+    "test:only:u": "heft test -u --no-build --verbose --test-path-pattern test"
   },
   "dependencies": {
     "@aws-sdk/client-cloudformation": "^3.118.1",
