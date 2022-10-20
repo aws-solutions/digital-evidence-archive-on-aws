@@ -5,8 +5,8 @@ awsRegionShortName: sea
 apiUrlOutput: ''
 rootUserEmail: bogus@bogus.com
 allowedOrigins: ['http://localhost:3000']
-cognitoDomain: 'test-dea-domain' # Must be globally unique
+cognitoDomain: 'demo-dea-domain' # Must be globally unique
 websiteUrl: 'http://localhost:3000'
-userPoolId: 'us-east-2_111111'
-clientId: '3qweqweqwe13123123123'
-clientSecret: '12312312wqewqeqw3123123123'
+userPoolId: 'us-demo-2-poolid'
+clientId: 'democlientid'
+clientSecret: 'democlientsecret'
