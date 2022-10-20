@@ -226,6 +226,7 @@ importers:
       '@types/express': ^4.17.13
       '@types/heft-jest': 1.0.2
       '@types/jest': ^27.4.1
+      '@types/lodash.kebabcase': ~4.1.7
       '@types/node': ^14
       '@types/react': 17.0.38
       '@types/uuid': ^8.3.4
@@ -244,6 +245,7 @@ importers:
       jest: ^27.5.1
       jwt-decode: ^3.1.2
       license-check-and-add: ^4.0.5
+      lodash.kebabcase: ~4.1.1
       next: ^12.1.5
       next-global-css: ^1.2.0
       next-i18next: ^11.0.0
@@ -301,6 +303,7 @@ importers:
       '@types/express': 4.17.13
       '@types/heft-jest': 1.0.2
       '@types/jest': 27.5.2
+      '@types/lodash.kebabcase': 4.1.7
       '@types/node': 14.18.20
       '@types/react': 17.0.38
       '@types/uuid': 8.3.4
@@ -314,6 +317,7 @@ importers:
       istanbul-badges-readme: 1.8.1
       jest: 27.5.1
       license-check-and-add: 4.0.5
+      lodash.kebabcase: 4.1.1
       nodemon: 2.0.20
       npm-package-json-lint: 6.3.0
       npm-package-json-lint-config-default: 5.0.0_npm-package-json-lint@6.3.0
@@ -6767,6 +6771,12 @@ packages:
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
+  /@types/lodash.kebabcase/4.1.7:
+    resolution: {integrity: sha512-qzrcpK5uiADZ9OyZaegalM0b9Y3WetoBQ04RAtP3xZFGC5ul1UxmbjZ3j6suCh0BDkvgQmoMh8t5e9cVrdJYMw==}
+    dependencies:
+      '@types/lodash': 4.14.182
+    dev: true
+
   /@types/lodash/4.14.182:
     resolution: {integrity: sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==}
     dev: true
@@ -11285,6 +11295,10 @@ packages:
 
   /lodash.isequal/4.5.0:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
+
+  /lodash.kebabcase/4.1.1:
+    resolution: {integrity: sha512-N8XRTIMMqqDgSy4VLKPnJ/+hpGZN+PHQiJnSenYqPaVV/NCqEogTnAdZLQiGKhxX+JCs8waWq2t1XHWKOmlY8g==}
+    dev: true
 
   /lodash.memoize/4.1.2:
     resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==}
