@@ -33,7 +33,7 @@ normal=$(tput sgr0)
 # SETTINGS
 #------------------------------------------------------------------------------
 # Important: CDK global version number
-cdk_version=2.26.0
+cdk_version=2.46.0
 # Note: should match package.json
 template_format="json"
 run_helper="true"
@@ -94,7 +94,7 @@ do_replace()
 create_template_json() 
 {
     # Run 'cdk synth' to generate raw solution outputs
-    do_cmd cdk context --clear && cdk synth -q --output=$staging_dist_dir
+    do_cmd rushx cdk context --clear && STAGE=$STAGE rushx cdk synth -q --output=$staging_dist_dir
 
     # Remove unnecessary output files
     do_cmd cd $staging_dist_dir
@@ -265,9 +265,17 @@ echo "--------------------------------------------------------------------------
 # Install the global aws-cdk package
 # Note: do not install using global (-g) option. This makes build-s3-dist.sh difficult
 # for customers and developers to use, as it globally changes their environment.
+
+# TODO: uncomment
+do_cmd npm install -g @microsoft/rush
+do_cmd npm install -g pnpm
+do_cmd npm install -g aws-cdk@2.46.0
 do_cmd cd $source_dir
-do_cmd npm install
-do_cmd npm install aws-cdk@$cdk_version
+do_cmd git submodule update --init --recursive --remote
+do_cmd rush cupdate
+do_cmd rush build
+STAGE=demo
+echo Stage set to $STAGE
 
 # Add local install to PATH
 export PATH=$(npm bin):$PATH
@@ -278,11 +286,13 @@ if [[ $current_cdkver != $cdk_version ]]; then
     echo Required CDK version is ${cdk_version}, found ${current_cdkver}
     exit 255
 fi
-do_cmd npm run build       # build javascript from typescript to validate the code
+#do_cmd npm run build       # build javascript from typescript to validate the code
                            # cdk synth doesn't always detect issues in the typescript
                            # and may succeed using old build files. This ensures we
                            # have fresh javascript from a successful build
 
+
+do_cmd cd dea-backend
 
 echo "------------------------------------------------------------------------------"
 echo "${bold}[Create] Templates${normal}"
@@ -415,7 +425,8 @@ for d in `find . -mindepth 1 -maxdepth 1 -type d`; do
     fi
 done
 # cleanup temporary generated files that are not needed for later stages of the build pipeline
-cleanup_temporary_generted_files
+# TODO: enable cleanup
+# cleanup_temporary_generted_files
 
 # Return to original directory from when we started the build
 cd $template_dir

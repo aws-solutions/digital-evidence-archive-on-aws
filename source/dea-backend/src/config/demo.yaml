@@ -2,4 +2,11 @@
 stage: demo
 awsRegion: us-west-2
 awsRegionShortName: sea
-apiUrlOutput: ""
+apiUrlOutput: ''
+rootUserEmail: bogus@bogus.com
+allowedOrigins: ['http://localhost:3000']
+cognitoDomain: 'demo-dea-domain' # Must be globally unique
+websiteUrl: 'http://localhost:3000'
+userPoolId: 'us-demo-2-poolid'
+clientId: 'democlientid'
+clientSecret: 'democlientsecret'
