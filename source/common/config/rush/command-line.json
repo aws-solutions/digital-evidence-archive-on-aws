@@ -172,7 +172,7 @@
       "summary": "Used to perform tests on the packages and update code coverage report in README file",
       "safeForSimultaneousRushProcesses": true,
       "enableParallelism": true,
-      "allowWarningsInSuccessfulBuild": false
+      "allowWarningsInSuccessfulBuild": true
     },
     {
       "name": "build:test",
@@ -189,7 +189,7 @@
       "summary": "Used to perform tests on the packages",
       "safeForSimultaneousRushProcesses": true,
       "enableParallelism": true,
-      "allowWarningsInSuccessfulBuild": false
+      "allowWarningsInSuccessfulBuild": true
     },
     {
       "name": "sort-package-json",
@@ -212,6 +212,14 @@
       "summary": "Run lint on package.json files",
       "safeForSimultaneousRushProcesses": true,
       "enableParallelism": true
+    },
+    {
+      "name": "lint",
+      "commandKind": "bulk",
+      "summary": "lint",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "incremental": true
     },
     {
       "name": "lint:fix",
@@ -319,6 +327,13 @@
       "summary": "Run rush update with bypass-policy and perform custom git-hook install",
       "safeForSimultaneousRushProcesses": true,
       "shellCommand": "node common/scripts/install-run-rush.js update --bypass-policy --max-install-attempts 1 && node common/scripts/install-hooks"
+    },
+    {
+      "name": "viperlight-scan",
+      "commandKind": "global",
+      "summary": "Used to perform a viperlight scan on the packages",
+      "safeForSimultaneousRushProcesses": true,
+      "shellCommand": "bash ./common/scripts/viperlight-scan.sh"
     }
   ],
 
