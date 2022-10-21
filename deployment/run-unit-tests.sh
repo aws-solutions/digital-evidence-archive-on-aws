@@ -11,40 +11,6 @@
 template_dir="$PWD"
 source_dir="$template_dir/../source"
 
-do_cmd() 
-{
-    echo "------ EXEC $*"
-    $*
-    rc=$?
-    if [ $rc -gt 0 ]
-    then
-            echo "Aborted - rc=$rc"
-            exit $rc
-    fi
-}
-
-echo "------------------------------------------------------------------------------"
-echo "[Init] Clean old dist and node_modules folders"
-echo "------------------------------------------------------------------------------"
-echo "find $source_dir/services -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $source_dir/services -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find $source_dir/services -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $source_dir/services -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find ../ -type f -name 'package-lock.json' -delete"
-find $source_dir/services -type f -name 'package-lock.json' -delete
-echo "find $source_dir/resources -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $source_dir/resources -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find $source_dir/resources -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $source_dir/resources -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find ../ -type f -name 'package-lock.json' -delete"
-find $source_dir/resources -type f -name 'package-lock.json' -delete
-echo "find $source_dir/simulator -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $source_dir/simulator -iname "node_modules" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find $source_dir/simulator -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null"
-find $source_dir/simulator -iname "dist" -type d -exec rm -r "{}" \; 2> /dev/null
-echo "find ../ -type f -name 'package-lock.json' -delete"
-find $source_dir/simulator -type f -name 'package-lock.json' -delete
-
 echo "------------------------------------------------------------------------------"
 echo "Install packages"
 echo "------------------------------------------------------------------------------"
@@ -56,7 +22,7 @@ echo "--------------------------------------------------------------------------
 echo "Install Run Unit Tests"
 echo "------------------------------------------------------------------------------"
 cd $source_dir
-dm_cmd rush purge
-do_cmd rush update
-do_cmd rush build:test
+rush purge
+rush update
+rush build:test
 echo "Test Complete"
