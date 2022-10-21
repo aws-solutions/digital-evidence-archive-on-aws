@@ -489,7 +489,7 @@ Object {
           "https://bogus.bogus",
         ],
         "PreventUserExistenceErrors": "ENABLED",
-        "RefreshTokenValidity": 43200,
+        "RefreshTokenValidity": 10080,
         "SupportedIdentityProviders": Array [
           "COGNITO",
         ],
@@ -532,7 +532,10 @@ Object {
         ],
         "EmailVerificationMessage": "The verification code to your new account is {####}",
         "EmailVerificationSubject": "Verify your new account",
-        "MfaConfiguration": "OFF",
+        "EnabledMfas": Array [
+          "SOFTWARE_TOKEN_MFA",
+        ],
+        "MfaConfiguration": "OPTIONAL",
         "Schema": Array [
           Object {
             "Mutable": true,
@@ -595,14 +598,11 @@ Object {
         },
         "FunctionVersion": Object {
           "Fn::GetAtt": Array [
-            "deaapphandlerCurrentVersion3921518A58686b123ed276e8cfccf760e28c87f8",
+            "deaapphandlerCurrentVersion3921518Ae1400bfb51ff5e691730daf9c07861e8",
             "Version",
           ],
         },
         "Name": "live",
-        "ProvisionedConcurrencyConfig": Object {
-          "ProvisionedConcurrentExecutions": 1,
-        },
       },
       "Type": "AWS::Lambda::Alias",
     },
@@ -615,7 +615,7 @@ Object {
           "S3Bucket": Object {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "694876c648f45bef14bfcb17ddfd2b24eaa17c7c8ba45bb87bbb59be314820db.zip",
+          "S3Key": "fafb3e7bb3c07c182b498b75740b80fc994ba9dd6f995db3c1195feaa90b02b1.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -653,7 +653,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "deaapphandlerCurrentVersion3921518A58686b123ed276e8cfccf760e28c87f8": Object {
+    "deaapphandlerCurrentVersion3921518Ae1400bfb51ff5e691730daf9c07861e8": Object {
       "Properties": Object {
         "FunctionName": Object {
           "Ref": "deaapphandler5A2E0A8F",

@@ -3,19 +3,34 @@ name: Pull Request Workflow
 on: 
   pull_request:
     types: [opened, edited, reopened, synchronize]
+    branches: [main, develop]
 
 jobs:
-  pull-request-job:
-    name: Status Checks
+  verify:
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./source
+    name: Scan, Build and Test
     runs-on: ubuntu-latest
     steps:
-      - name: Viperlight
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Viperlight Scan
+        run: node common/scripts/install-run-rush.js viperlight-scan
+      - name: Install
+        uses: ./.github/actions/baseAction
+      - name: Secrets Scan
         run: |
-          wget -q https://viperlight-scanner.s3.amazonaws.com/latest/.viperlightrc
-          wget -q https://viperlight-scanner.s3.amazonaws.com/latest/viperlight.zip
-          unzip -q viperlight.zip -d ../viperlight
-          rm -r ./viperlight.zip
-          echo "Content scanning utility installation complete `date`"
-          echo "Starting content scanning `date` in `pwd`"
-          ../viperlight/bin/viperlight scan -m files-contents -m files-aws -m files-binary -m files-entropy -m files-secrets
-          echo "Completed content scanning `date`"
+          node common/scripts/install-run-rush.js git-secrets-scan
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
+      - name: Rush Lint
+        run: |
+          node common/scripts/install-run-rush.js lint -o @aws/dea-app -o @aws/dea-ui -o @aws/dea-ui-infrastructure -o @aws/dea-backend
+      - name: Rush Test
+        run: |
+          node common/scripts/install-run-rush.js test:only

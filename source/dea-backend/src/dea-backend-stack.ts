@@ -140,7 +140,6 @@ export class DeaBackendStack extends Stack {
     const alias = new Alias(this, 'LiveAlias', {
       aliasName: 'live',
       version: apiLambda.currentVersion,
-      provisionedConcurrentExecutions: 1,
     });
     API.root.addProxy({
       defaultIntegration: new LambdaIntegration(alias),
