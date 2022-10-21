@@ -291,8 +291,7 @@ fi
                            # and may succeed using old build files. This ensures we
                            # have fresh javascript from a successful build
 
-do_cmd cd $source_dir
-do_cmd cd dea-backend
+do_cmd cd $source_dir/dea-backend
 
 echo "------------------------------------------------------------------------------"
 echo "${bold}[Create] Templates${normal}"

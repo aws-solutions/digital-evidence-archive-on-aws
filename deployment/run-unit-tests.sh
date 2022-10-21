@@ -22,8 +22,7 @@ echo "--------------------------------------------------------------------------
 echo "Install Run Unit Tests"
 echo "------------------------------------------------------------------------------"
 cd $source_dir
-echo source_dir
 rush purge
 rush update
-rush build
+rush build:test
 echo "Test Complete"
