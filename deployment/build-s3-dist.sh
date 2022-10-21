@@ -267,13 +267,13 @@ echo "--------------------------------------------------------------------------
 # for customers and developers to use, as it globally changes their environment.
 
 # TODO: uncomment
-do_cmd npm install -g @microsoft/rush
-do_cmd npm install -g pnpm
-do_cmd npm install -g aws-cdk@2.46.0
-do_cmd cd $source_dir
-do_cmd git submodule update --init --recursive --remote
-do_cmd rush cupdate
-do_cmd rush build
+# do_cmd npm install -g @microsoft/rush
+# do_cmd npm install -g pnpm
+# do_cmd npm install -g aws-cdk@2.46.0
+# do_cmd cd $source_dir
+# do_cmd git submodule update --init --recursive --remote
+# do_cmd rush cupdate
+# do_cmd rush build
 STAGE=demo
 echo Stage set to $STAGE
 

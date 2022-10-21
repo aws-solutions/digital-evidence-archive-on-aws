@@ -11,6 +11,18 @@
 template_dir="$PWD"
 source_dir="$template_dir/../source"
 
+do_cmd() 
+{
+    echo "------ EXEC $*"
+    $*
+    rc=$?
+    if [ $rc -gt 0 ]
+    then
+            echo "Aborted - rc=$rc"
+            exit $rc
+    fi
+}
+
 echo "------------------------------------------------------------------------------"
 echo "[Init] Clean old dist and node_modules folders"
 echo "------------------------------------------------------------------------------"
@@ -34,8 +46,16 @@ echo "find ../ -type f -name 'package-lock.json' -delete"
 find $source_dir/simulator -type f -name 'package-lock.json' -delete
 
 echo "------------------------------------------------------------------------------"
-echo "[Test] Services - Example Function"
+echo "Install packages"
 echo "------------------------------------------------------------------------------"
-cd $source_dir/example-function-js
-npm install
-npm test
+do_cmd npm install -g @microsoft/rush
+do_cmd npm install -g pnpm
+do_cmd npm install -g aws-cdk@2.46.0
+do_cmd git submodule update --init --recursive --remote
+echo "------------------------------------------------------------------------------"
+echo "Install Run Unit Tests"
+echo "------------------------------------------------------------------------------"
+cd $source_dir
+do_cmd rush cupdate
+do_cmd rush build:test
+echo "Test Complete"
