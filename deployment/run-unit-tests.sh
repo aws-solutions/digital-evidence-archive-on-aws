@@ -56,6 +56,7 @@ echo "--------------------------------------------------------------------------
 echo "Install Run Unit Tests"
 echo "------------------------------------------------------------------------------"
 cd $source_dir
-do_cmd rush cupdate
+dm_cmd rush purge
+do_cmd rush update
 do_cmd rush build:test
 echo "Test Complete"
