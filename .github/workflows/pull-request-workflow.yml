@@ -1,15 +1,8 @@
 name: Pull Request Workflow
 
-on:
+on: 
   pull_request:
-    branches:
-      - 'develop'
-      - 'main'
-    types: 
-      - opened
-      - edited
-      - reopened
-      - synchronize
+    branches: [main, develop]
 
 jobs:
   verify:
