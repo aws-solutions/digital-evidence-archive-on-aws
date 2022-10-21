@@ -1,9 +1,15 @@
 name: Pull Request Workflow
 
-on: 
+on:
   pull_request:
-    types: [opened, edited, reopened, synchronize]
-    branches: [main, develop]
+    branches:
+      - 'develop'
+      - 'main'
+    types: 
+      - opened
+      - edited
+      - reopened
+      - synchronize
 
 jobs:
   verify:
