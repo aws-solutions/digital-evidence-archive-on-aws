@@ -14,10 +14,10 @@ source_dir="$template_dir/../source"
 echo "------------------------------------------------------------------------------"
 echo "Install packages"
 echo "------------------------------------------------------------------------------"
-do_cmd npm install -g @microsoft/rush
-do_cmd npm install -g pnpm
-do_cmd npm install -g aws-cdk@2.46.0
-do_cmd git submodule update --init --recursive --remote
+npm install -g @microsoft/rush
+npm install -g pnpm
+npm install -g aws-cdk@2.46.0
+git submodule update --init --recursive --remote
 echo "------------------------------------------------------------------------------"
 echo "Install Run Unit Tests"
 echo "------------------------------------------------------------------------------"
