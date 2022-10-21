@@ -291,7 +291,7 @@ fi
                            # and may succeed using old build files. This ensures we
                            # have fresh javascript from a successful build
 
-
+do_cmd cd $source_dir
 do_cmd cd dea-backend
 
 echo "------------------------------------------------------------------------------"
