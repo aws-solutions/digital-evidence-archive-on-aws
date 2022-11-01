@@ -31,9 +31,14 @@ import { getConstants } from './constants';
 
 export class DeaBackendStack extends Stack {
   public constructor(scope: Construct, id: string, props?: StackProps) {
-    const { COGNITO_DOMAIN, USER_POOL_CLIENT_NAME, USER_POOL_NAME, WEBSITE_URLS } = getConstants();
+    const { COGNITO_DOMAIN, STACK_NAME, AWS_REGION, USER_POOL_CLIENT_NAME, USER_POOL_NAME, WEBSITE_URLS } =
+      getConstants();
 
-    super(scope, id, props);
+    super(scope, STACK_NAME, {
+      env: {
+        region: AWS_REGION,
+      },
+    });
 
     //take a optional VPC from config, if not provided create one
     const vpc = this._createVpc();
@@ -79,7 +84,7 @@ export class DeaBackendStack extends Stack {
     );
     const role = new Role(this, 'dea-base-lambda-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [vpcExecutionPolicy]
+      managedPolicies: [vpcExecutionPolicy],
     });
 
     const lambdaService = new nodejsLambda.NodejsFunction(this, 'dea-app-handler', {

@@ -132,8 +132,8 @@
       "shouldPublish": true
     },
     {
-      "packageName": "@aws/workbench-core-example-express",
-      "projectFolder": "solution-spark-on-aws/workbench-core/example/express",
+      "packageName": "@aws/workbench-core-example-app",
+      "projectFolder": "solution-spark-on-aws/workbench-core/example/app",
       "reviewCategory": "prototypes",
       "shouldPublish": false
     },
