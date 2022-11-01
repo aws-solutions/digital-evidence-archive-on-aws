@@ -44,7 +44,7 @@ function getConstants(): {
       fs.readFileSync(join(__dirname, `../src/config/${process.env.STAGE}.yaml`), 'utf8') // nosemgrep
     );
 
-    const STACK_NAME = `dea-${config.stage}-${config.awsRegionShortName}`;
+    const STACK_NAME = `DeaBackendStack`;
     const SC_PORTFOLIO_NAME = `dea-${config.stage}-${config.awsRegionShortName}`; // Service Catalog Portfolio Name
     const AWS_REGION = config.awsRegion;
     const AWS_REGION_SHORT_NAME = config.awsRegionShortName;
@@ -100,7 +100,7 @@ function getConstants(): {
       USER_POOL_ID,
       CLIENT_ID,
       CLIENT_SECRET,
-      MAIN_ACCT_ENCRYPTION_KEY_ARN_OUTPUT_KEY
+      MAIN_ACCT_ENCRYPTION_KEY_ARN_OUTPUT_KEY,
     };
   } catch (err) {
     throw new Error(`Failed to load configuration: ${err}`);

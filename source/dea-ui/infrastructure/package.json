@@ -26,6 +26,7 @@
     "license-checker": "license-checker --onlyAllow 'MIT; Apache-2.0; ISC; BSD'",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix --max-warnings=0",
+    "nag": "cfn_nag_scan --deny-list-path cfn-deny --fail-on-warnings --input-path ./cdk.out/DeaUiStack.template.json",
     "sort-package-json": "sort-package-json package.json",
     "test": "rushx test:only",
     "test:only": "heft test --no-build",

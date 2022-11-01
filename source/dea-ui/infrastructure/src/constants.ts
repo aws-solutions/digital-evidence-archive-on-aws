@@ -26,7 +26,7 @@ function getConstants(): {
     fs.readFileSync(join(__dirname, `../../src/config/${process.env.STAGE}.yaml`), 'utf8') // nosemgrep
   );
   const STAGE = process.env.STAGE || '';
-  const namePrefix = `dea-ui-${config.stage}-${config.awsRegionShortName}`;
+  const namePrefix = `DeaUiStack`;
   const API_BASE_URL = config.apiUrlOutput?.replace('/dev/', '') || '';
   const AWS_REGION = config.awsRegion;
   const STACK_NAME = namePrefix;

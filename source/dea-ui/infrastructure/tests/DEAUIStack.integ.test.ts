@@ -2,9 +2,9 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { BucketAccessControl } from 'aws-cdk-lib/aws-s3';
-import { DEAUIStack } from '../src/DEAUIStack';
+import { DeaUiStack } from '../src/dea-ui-stack';
 
-describe('DEAUIStack', () => {
+describe('DeaUiStack', () => {
   beforeAll(() => {
     process.env.STAGE = 'test';
   });
@@ -16,8 +16,8 @@ describe('DEAUIStack', () => {
   it('synthesizes the way we expect', () => {
     const app = new cdk.App();
 
-    // Create the DeaBackendStack.
-    const deaUiStack = new DEAUIStack(app, 'DeaBackendStack');
+    // Create the DeaUiStack.
+    const deaUiStack = new DeaUiStack(app, 'DeaUiStack');
 
     // Prepare the stack for assertions.
     const template = Template.fromStack(deaUiStack);

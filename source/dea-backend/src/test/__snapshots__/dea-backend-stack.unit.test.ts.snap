@@ -12,11 +12,7 @@ Object {
             Object {
               "Ref": "APIGatewayAPI321F7D19",
             },
-            ".execute-api.",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            ".",
+            ".execute-api.us-test-1.",
             Object {
               "Ref": "AWS::URLSuffix",
             },
@@ -38,11 +34,7 @@ Object {
             Object {
               "Ref": "APIGatewayAPI321F7D19",
             },
-            ".execute-api.",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            ".",
+            ".execute-api.us-test-1.",
             Object {
               "Ref": "AWS::URLSuffix",
             },
@@ -64,11 +56,7 @@ Object {
             Object {
               "Ref": "DigitalEvidenceArchiveCognitoWorkbenchUserPoolDomain2E16F07A",
             },
-            ".auth.",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            ".amazoncognito.com",
+            ".auth.us-test-1.amazoncognito.com",
           ],
         ],
       },
@@ -169,7 +157,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "APIGatewayAPIDeploymentCABB9A2B797d1b0a72554b47c3be4a6f9d08acb6": Object {
+    "APIGatewayAPIDeploymentCABB9A2B935a4eed7e4325b36d56d6cbefea1648": Object {
       "DependsOn": Array [
         "APIGatewayAPIproxyANYDB3CFBD0",
         "APIGatewayAPIproxy6CE33476",
@@ -198,7 +186,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "APIGatewayAPIDeploymentCABB9A2B797d1b0a72554b47c3be4a6f9d08acb6",
+          "Ref": "APIGatewayAPIDeploymentCABB9A2B935a4eed7e4325b36d56d6cbefea1648",
         },
         "RestApiId": Object {
           "Ref": "APIGatewayAPI321F7D19",
@@ -237,11 +225,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-test-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -275,11 +259,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-test-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -309,11 +289,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-test-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Ref": "LiveAlias9B8FFEA9",
                 },
@@ -346,7 +322,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-test-1",
           },
           "S3Key": "864aa5eb2d6ca4e0d4d65c940bc9e4d5a29db1e4f3f3a098ddb56f76b2129ac4.zip",
         },
@@ -403,11 +379,7 @@ Object {
           "Fn::Join": Array [
             "",
             Array [
-              "{\\"region\\":\\"",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              "\\",\\"service\\":\\"CognitoIdentityServiceProvider\\",\\"action\\":\\"describeUserPoolClient\\",\\"parameters\\":{\\"UserPoolId\\":\\"",
+              "{\\"region\\":\\"us-test-1\\",\\"service\\":\\"CognitoIdentityServiceProvider\\",\\"action\\":\\"describeUserPoolClient\\",\\"parameters\\":{\\"UserPoolId\\":\\"",
               Object {
                 "Ref": "DigitalEvidenceArchiveCognitoWorkbenchUserPoolEC3F0768",
               },
@@ -598,7 +570,7 @@ Object {
         },
         "FunctionVersion": Object {
           "Fn::GetAtt": Array [
-            "deaapphandlerCurrentVersion3921518Ae1400bfb51ff5e691730daf9c07861e8",
+            "deaapphandlerCurrentVersion3921518A63fee98014f8275f50a82cdcfc513bec",
             "Version",
           ],
         },
@@ -613,9 +585,9 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-test-1",
           },
-          "S3Key": "fafb3e7bb3c07c182b498b75740b80fc994ba9dd6f995db3c1195feaa90b02b1.zip",
+          "S3Key": "b796d1e2fd16030b199d482d9e30bb9b54085f80b1bb1768504cc3a6bc43326b.zip",
         },
         "Environment": Object {
           "Variables": Object {
@@ -653,7 +625,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "deaapphandlerCurrentVersion3921518Ae1400bfb51ff5e691730daf9c07861e8": Object {
+    "deaapphandlerCurrentVersion3921518A63fee98014f8275f50a82cdcfc513bec": Object {
       "Properties": Object {
         "FunctionName": Object {
           "Ref": "deaapphandler5A2E0A8F",
