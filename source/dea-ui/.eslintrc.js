@@ -6,6 +6,14 @@ module.exports = {
   parserOptions: { tsconfigRootDir: __dirname },
   plugins: ['testing-library', '@typescript-eslint'],
   parser: '@typescript-eslint/parser',
+  rules: {
+    '@typescript-eslint/consistent-type-assertions': [
+      'warn',
+      {
+        assertionStyle: 'never',
+      },
+    ],
+  },
   overrides: [
     // Only uses Testing Library lint rules in test files
     {

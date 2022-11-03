@@ -12,6 +12,14 @@ module.exports = {
     jest: true,
     node: true,
   },
+  rules: {
+    '@typescript-eslint/consistent-type-assertions': [
+      'warn',
+      {
+        assertionStyle: 'never',
+      },
+    ],
+  },
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
   parserOptions: { tsconfigRootDir: __dirname },
