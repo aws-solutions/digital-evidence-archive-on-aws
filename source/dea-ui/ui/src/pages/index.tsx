@@ -34,7 +34,7 @@ const Home: NextPage = () => {
         </Link>
         .
       </span>
-    )
+    ),
   });
 
   return (

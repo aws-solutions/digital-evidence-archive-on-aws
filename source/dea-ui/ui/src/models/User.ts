@@ -18,5 +18,5 @@ export const unknownUser: User = {
   name: 'Sample User',
   email: 'sample.user@amazon.com',
   avatar: { name: 'user-profile' },
-  claims: []
+  claims: [],
 };

@@ -6,7 +6,7 @@
 export enum Language {
   en = 'en',
   es = 'es',
-  pt = 'pt'
+  pt = 'pt',
 }
 
 export interface AppSettings {
@@ -25,5 +25,5 @@ export const defaultAppSettings: AppSettings = {
   name: 'Digital Evidence Archive on AWS',
   slogan: 'Better ingredients better evidence',
   description:
-    'The Digital Evidence Archive is the perfect place to store all your evidence and pizza toppings.'
+    'The Digital Evidence Archive is the perfect place to store all your evidence and pizza toppings.',
 };

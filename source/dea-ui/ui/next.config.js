@@ -4,7 +4,7 @@ const withTM = require('next-transpile-modules')(['@cloudscape-design/components
 const nextConfig = {
   reactStrictMode: true,
   images: { unoptimized: true },
-  basePath: '/prod'
+  basePath: '/prod',
 };
 
 module.exports = withTM(nextConfig);

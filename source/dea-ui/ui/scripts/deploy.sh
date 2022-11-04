@@ -3,6 +3,6 @@ apiURL='' ##Get value from swb-reference/src/config/{STAGE}.json and replace all
 
     (rushx build && NEXT_PUBLIC_API_BASE_URL=$apiURL rushx export) && 
     (
-        cd infrastructure 
+        cd ../infrastructure 
         rushx cdk bootstrap && rushx cdk-deploy
     )

@@ -49,7 +49,7 @@
     },
     {
       "packageName": "@aws/dea-ui",
-      "projectFolder": "dea-ui",
+      "projectFolder": "dea-ui/ui",
       "reviewCategory": "production",
       "shouldPublish": false
     },
