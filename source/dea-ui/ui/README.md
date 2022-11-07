@@ -6,7 +6,7 @@ This is a prototype app and you should expect to modify the source code to refle
 
 ## Creating a stage file
 
-First, you will need to create a stage file. An example stage file (demo.yaml) can be found under dea-ui/src/config. Create a stage file for your deployment with the stage name of your choice. Supply the stage name and region short name of your choice along with the aws region where you will deploy the UI (this will need to the same region where the DEA backend is deployed).
+First, you will need to create a stage file. An example stage file (demo.yaml) can be found under dea-ui/ui/src/config. Create a stage file for your deployment with the stage name of your choice. Supply the stage name and region short name of your choice along with the aws region where you will deploy the UI (this will need to the same region where the DEA backend is deployed).
 
 ## Deploying the UI
 

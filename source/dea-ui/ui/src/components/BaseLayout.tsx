@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }): JSX
     notifications: 'Notifications',
     tools: 'Help panel',
     toolsClose: 'Close help panel',
-    toolsToggle: 'Open help panel'
+    toolsToggle: 'Open help panel',
   };
   return (
     <AppLayout
@@ -38,12 +38,12 @@ export default function Layout({ children }: { children: React.ReactNode }): JSX
           items={[
             {
               text: 'Service name',
-              href: '#'
+              href: '#',
             },
             {
               text: 'Pages',
-              href: '#'
-            }
+              href: '#',
+            },
           ]}
           expandAriaLabel="Show path"
           ariaLabel="Breadcrumbs"

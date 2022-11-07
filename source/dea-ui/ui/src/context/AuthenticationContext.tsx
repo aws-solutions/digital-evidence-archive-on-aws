@@ -15,7 +15,7 @@ export interface AuthenticationProps {
 const AuthenticationContext: Context<AuthenticationProps> = createContext<AuthenticationProps>({
   user: unknownUser,
   signIn: (user: User) => {},
-  signOut: () => {}
+  signOut: () => {},
 });
 
 export function AuthenticationProvider({ children }: { children: React.ReactNode }): JSX.Element {

@@ -13,7 +13,7 @@ export interface SettingsProps {
 
 const SettingsContext: Context<SettingsProps> = createContext<SettingsProps>({
   settings: defaultAppSettings,
-  reload: () => {}
+  reload: () => {},
 });
 
 export function SettingsProvider({ children }: { children: React.ReactNode }): JSX.Element {
