@@ -16,10 +16,12 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
-    "build": "next build && bash ./scripts/deploy.sh",
+    "build": "bash ./scripts/deploy.sh",
+    "build-only": "next build",
     "build:test": "rushx build && rushx test",
     "check-license-header": "license-check-and-add check -f license-add-config.json",
     "depcheck": "depcheck",
+    "deploy-ui": "bash ./scripts/deploy.sh",
     "dev": "next dev",
     "export": "next build && next export",
     "lint": "next lint && rushx pkg-json-lint",
