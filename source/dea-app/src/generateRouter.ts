@@ -6,11 +6,10 @@
 import cors from 'cors';
 import express = require('express');
 import { Router, Express, Request, Response } from 'express';
-import { ApiRoute, ApiRouteConfig } from './apiRouteConfig';
-import { setUpDSRoutes } from './datasetRoutes';
+import { IApiRoute, IApiRouteConfig } from './apiRouteConfig';
 import { boomErrorHandler, unknownErrorHandler } from './errorHandlers';
 
-export function generateRouter(apiRouteConfig: ApiRouteConfig): Express {
+export function generateRouter(apiRouteConfig: IApiRouteConfig): Express {
   const app: Express = express();
   const router: Router = express.Router();
 
@@ -19,7 +18,7 @@ export function generateRouter(apiRouteConfig: ApiRouteConfig): Express {
   app.use(express.json());
 
   // Dynamic routes
-  apiRouteConfig.routes.forEach((apiRoute: ApiRoute) => {
+  apiRouteConfig.routes.forEach((apiRoute: IApiRoute) => {
     // Config setting is provided by developer, and not external user request
     // nosemgrep
     router[apiRoute.httpMethod](apiRoute.path, async (req: Request, res: Response) => {
@@ -29,8 +28,6 @@ export function generateRouter(apiRouteConfig: ApiRouteConfig): Express {
       res.send(response);
     });
   });
-
-  setUpDSRoutes(router, apiRouteConfig.dataSetService, apiRouteConfig.dataSetsStoragePlugin);
 
   // Error handling. Order of the error handlers is important
   router.use(boomErrorHandler);

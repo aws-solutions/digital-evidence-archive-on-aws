@@ -6,10 +6,10 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export interface Data {
+export interface IData {
   name: string;
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse<Data>): void {
+export default function handler(req: NextApiRequest, res: NextApiResponse<IData>): void {
   res.status(200).json({ name: 'John Doe' });
 }

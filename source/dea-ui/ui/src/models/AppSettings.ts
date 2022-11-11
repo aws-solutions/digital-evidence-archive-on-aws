@@ -9,7 +9,7 @@ export enum Language {
   pt = 'pt',
 }
 
-export interface AppSettings {
+export interface IAppSettings {
   language: Language;
   logo: string;
   favicon: string;
@@ -18,7 +18,7 @@ export interface AppSettings {
   description?: string;
 }
 
-export const defaultAppSettings: AppSettings = {
+export const defaultAppSettings: IAppSettings = {
   language: Language.en,
   logo: 'logo.svg',
   favicon: 'favicon.svg',

@@ -33,10 +33,6 @@
     "test:only": "heft test --no-build"
   },
   "dependencies": {
-    "@aws/workbench-core-authentication": "workspace:*",
-    "@aws/workbench-core-authorization": "workspace:*",
-    "@aws/workbench-core-datasets": "workspace:*",
-    "@aws/workbench-core-logging": "workspace:*",
     "@hapi/boom": "^10.0.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -46,9 +42,8 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@aws/eslint-config-workbench-core-eslint-custom": "workspace:*",
     "@rushstack/eslint-config": "^3.0.0",
-    "@rushstack/heft": "^0.47.5",
+    "@rushstack/heft": "^0.48.8",
     "@rushstack/heft-jest-plugin": "^0.3.28",
     "@rushstack/heft-node-rig": "^1.10.5",
     "@types/cookie-parser": "^1.4.3",
@@ -63,6 +58,7 @@
     "depcheck": "^1.4.3",
     "eslint": "^8.7.0",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-security": "^1.4.0",
     "istanbul-badges-readme": "1.8.1",
     "jest": "^27.5.1",
     "license-check-and-add": "^4.0.5",

@@ -3,19 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import {
-  DataSetService,
-  DataSetsStoragePlugin,
-} from "@aws/workbench-core-datasets";
-
-export interface ApiRouteConfig {
-  routes: ApiRoute[];
-  dataSetService: DataSetService;
-  dataSetsStoragePlugin: DataSetsStoragePlugin;
+export interface IApiRouteConfig {
+  routes: IApiRoute[];
   allowedOrigins: string[];
 }
 
-export interface ApiRoute {
+export interface IApiRoute {
   path: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   service: any;
@@ -23,4 +16,4 @@ export interface ApiRoute {
   httpMethod: HTTPMethod;
 }
 
-export type HTTPMethod = "post" | "put" | "delete" | "get";
+export type HTTPMethod = 'post' | 'put' | 'delete' | 'get';
