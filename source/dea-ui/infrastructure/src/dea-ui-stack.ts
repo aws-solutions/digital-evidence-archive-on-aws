@@ -4,7 +4,7 @@
  */
 
 import * as path from 'path';
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { StackProps } from 'aws-cdk-lib';
 import {
   AwsIntegration,
   ContentHandling,
