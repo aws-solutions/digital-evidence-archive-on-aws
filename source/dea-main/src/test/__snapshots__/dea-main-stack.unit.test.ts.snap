@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DeaBackendStack synthesizes the way we expect 1`] = `
+exports[`DeaMainStack synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
     "DeaBackendStackAPIGatewayAPIEndpoint6327A605": Object {

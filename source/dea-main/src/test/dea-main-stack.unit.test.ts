@@ -10,7 +10,7 @@ import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { BucketAccessControl } from 'aws-cdk-lib/aws-s3';
 import { DeaMainStack } from '../dea-main-stack';
 
-describe('DeaBackendStack', () => {
+describe('DeaMainStack', () => {
   beforeAll(() => {
     process.env.STAGE = 'test';
   });
@@ -22,7 +22,7 @@ describe('DeaBackendStack', () => {
   it('synthesizes the way we expect', () => {
     const app = new cdk.App();
 
-    // Create the DeaBackendStack.
+    // Create the DeaMainStack
     const deaMainStack = new DeaMainStack(app, 'DeaMainStack', {});
 
     // TODO
