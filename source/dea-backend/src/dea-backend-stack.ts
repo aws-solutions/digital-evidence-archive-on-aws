@@ -6,7 +6,7 @@
 /* eslint-disable no-new */
 import * as path from 'path';
 import { WorkbenchCognito, WorkbenchCognitoProps } from '@aws/workbench-core-infrastructure';
-import { CfnOutput, Duration, Stack, StackProps } from 'aws-cdk-lib';
+import { CfnOutput, Duration, StackProps } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   LambdaIntegration,
@@ -29,16 +29,12 @@ import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 import { getConstants } from './constants';
 
-export class DeaBackendStack extends Stack {
+export class DeaBackendConstruct extends Construct {
   public constructor(scope: Construct, id: string, props?: StackProps) {
-    const { COGNITO_DOMAIN, STACK_NAME, AWS_REGION, USER_POOL_CLIENT_NAME, USER_POOL_NAME, WEBSITE_URLS } =
+    const { COGNITO_DOMAIN, STACK_NAME, USER_POOL_CLIENT_NAME, USER_POOL_NAME, WEBSITE_URLS } =
       getConstants();
 
-    super(scope, STACK_NAME, {
-      env: {
-        region: AWS_REGION,
-      },
-    });
+    super(scope, STACK_NAME);
 
     //take a optional VPC from config, if not provided create one
     const vpc = this._createVpc();

@@ -206,7 +206,7 @@ importers:
   ../../dea-main:
     specifiers:
       '@aws-sdk/types': ^3.110.0
-      '@aws/dea-app': workspace:*
+      '@aws/dea-backend': workspace:*
       '@aws/eslint-config-workbench-core-eslint-custom': workspace:*
       '@rushstack/eslint-config': ^3.0.0
       '@rushstack/heft': ^0.47.5
@@ -247,7 +247,7 @@ importers:
       typescript: ^4.5.2
     dependencies:
       '@aws-sdk/types': 3.127.0
-      '@aws/dea-app': link:../dea-app
+      '@aws/dea-backend': link:../dea-backend
       '@types/aws-lambda': 8.10.104
       aws-cdk-lib: 2.29.1_constructs@10.1.25
       aws-lambda: 1.0.7

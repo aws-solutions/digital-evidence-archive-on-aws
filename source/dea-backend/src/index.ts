@@ -5,8 +5,6 @@
 
 /* eslint-disable no-new */
 import 'source-map-support/register';
-import * as cdk from 'aws-cdk-lib';
-import { DeaBackendStack } from './dea-backend-stack';
+import { DeaBackendConstruct } from './dea-backend-stack';
 
-const app: cdk.App = new cdk.App();
-new DeaBackendStack(app, 'DeaBackendStack', {});
+export { DeaBackendConstruct };
