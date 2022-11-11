@@ -1,4 +1,4 @@
-# `dea-backend`
+# `dea-main`
 
 ⚠️ $\textcolor{red}{\text{Experimental}}$ ⚠️ : Not for use in any critical, production, or otherwise important deployments
 
@@ -18,7 +18,7 @@
 
 ## Description
 
-Infrastructure for sample express app
+Parent Infrastructure stack for DEA
 
 ### Setting Up Configuration
 
@@ -32,8 +32,8 @@ The backend of this app get certain values from the configuration files. For eac
 ### Deployment
 
 1. Follow the steps in the previous section, "Setting Up Configuration"
-2. Build rush in the source directory. Refer to Source directory readme.
-3. Run the following commands
+2. Navigate back to source directory to Update and Build rush if you have not already. Refer to Source directory readme.
+3. Run the following commands in this directory to deploy DEA
 
 - `STAGE=<dev, prod, beta>
 - `STAGE=$STAGE rushx cdk bootstrap aws://{aws id}/{region}`

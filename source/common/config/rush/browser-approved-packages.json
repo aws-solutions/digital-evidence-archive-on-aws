@@ -103,6 +103,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@aws/dea-ui",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws/dea-ui-infrastructure",
       "allowedCategories": [ "production" ]
     },

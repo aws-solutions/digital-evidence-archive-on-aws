@@ -16,7 +16,7 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
-    "build": "next build",
+    "build": "next build && next export",
     "build:test": "rushx build && rushx test",
     "check-license-header": "license-check-and-add check -f license-add-config.json",
     "depcheck": "depcheck",
