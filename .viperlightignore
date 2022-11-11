@@ -20,6 +20,7 @@ CONTRIBUTING.md:50
 
 # Bogus email ignores
 
+source/dea-main/config/test.json:5
 source/dea-backend/config/test.json:5
 source/dea-backend/src/config/test.yaml:4
 source/dea-ui/ui/src/models/User.ts:19
