@@ -12,9 +12,7 @@
     "name": "Amazon Web Services",
     "url": "http://aws.amazon.com"
   },
-  "bin": {
-    "cdk-infrastructure": "bin/cdk-infrastructure.js"
-  },
+  "main": "lib/src/index.js",
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
     "build": "heft build",

@@ -19,7 +19,7 @@ import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 import { getConstants } from './constants';
 
-export class DeaUiStack extends Stack {
+export class DeaUiConstruct extends Construct {
   public distributionEnvVars: {
     STAGE: string;
     STACK_NAME: string;
@@ -40,11 +40,7 @@ export class DeaUiStack extends Stack {
       S3_ARTIFACT_BUCKET_NAME,
       S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME,
     } = getConstants();
-    super(scope, STACK_NAME, {
-      env: {
-        region: AWS_REGION,
-      },
-    });
+    super(scope, STACK_NAME);
 
     this.distributionEnvVars = {
       STAGE,
@@ -65,7 +61,7 @@ export class DeaUiStack extends Stack {
     // eslint-disable-next-line no-new
     new BucketDeployment(this, this.distributionEnvVars.S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME, {
       destinationBucket: bucket,
-      sources: [Source.asset(path.resolve(__dirname, '../../ui/out'))],
+      sources: [Source.asset(path.resolve(__dirname, '../../../ui/out'))],
     });
 
     const executeRole = new Role(this, 'role', {
