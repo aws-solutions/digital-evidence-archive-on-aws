@@ -1,0 +1,11 @@
+{
+  "stage": "test",
+  "awsRegionShortName": "Testville",
+  "awsRegion": "us-test-1",
+  "rootUserEmail": "test@bogus.oof",
+  "allowedOrigins": ["test"],
+  "cognitoDomain": "cogtest",
+  "userPoolId": "kiddiepool",
+  "clientId": "clientidtest",
+  "clientSecret": "shh"
+}
