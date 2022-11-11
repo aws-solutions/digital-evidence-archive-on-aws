@@ -5,14 +5,24 @@
 
 /* eslint-disable no-new */
 import * as path from 'path';
-import { WorkbenchCognito, WorkbenchCognitoProps } from '@aws/workbench-core-infrastructure';
-import { CfnOutput, Duration, StackProps } from 'aws-cdk-lib';
+import { CfnOutput, Duration, SecretValue, StackProps } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
+import {
+  AccountRecovery,
+  Mfa,
+  OAuthScope,
+  UserPool,
+  UserPoolClient,
+  UserPoolClientOptions,
+  UserPoolDomain,
+  UserPoolIdentityProviderOidc,
+  UserPoolProps,
+} from 'aws-cdk-lib/aws-cognito';
 import {
   FlowLog,
   FlowLogDestination,
@@ -28,11 +38,11 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 import { getConstants } from './constants';
+import { DEACognitoProps } from './types/DEACognitoProps';
 
 export class DeaBackendConstruct extends Construct {
   public constructor(scope: Construct, id: string, props?: StackProps) {
-    const { COGNITO_DOMAIN, STACK_NAME, USER_POOL_CLIENT_NAME, USER_POOL_NAME, WEBSITE_URLS } =
-      getConstants();
+    const { COGNITO_DOMAIN, STACK_NAME, USER_POOL_CLIENT_NAME, WEBSITE_URLS } = getConstants();
 
     super(scope, STACK_NAME);
 
@@ -40,7 +50,7 @@ export class DeaBackendConstruct extends Construct {
     const vpc = this._createVpc();
     const apiLambda = this._createAPILambda(vpc);
     this._createRestApi(apiLambda);
-    this._createCognitoResources(COGNITO_DOMAIN, WEBSITE_URLS, USER_POOL_NAME, USER_POOL_CLIENT_NAME);
+    this._createCognitoResources(COGNITO_DOMAIN, WEBSITE_URLS, USER_POOL_CLIENT_NAME);
   }
 
   private _createVpc(): Vpc {
@@ -150,31 +160,85 @@ export class DeaBackendConstruct extends Construct {
   private _createCognitoResources(
     domainPrefix: string,
     websiteUrls: string[],
-    userPoolName: string,
     userPoolClientName: string
-  ): WorkbenchCognito {
-    const props: WorkbenchCognitoProps = {
-      domainPrefix: domainPrefix,
-      websiteUrls: websiteUrls,
-      userPoolName: userPoolName,
-      userPoolClientName: userPoolClientName,
-      oidcIdentityProviders: [],
+  ): DEACognitoProps {
+    const userPoolDefaults: UserPoolProps = {
+      accountRecovery: AccountRecovery.NONE,
+      enableSmsRole: false,
+      mfa: Mfa.REQUIRED,
+      selfSignUpEnabled: false, // only admin can create users
+      signInAliases: {
+        // only sign in with email
+        username: false,
+        email: false,
+      },
+      signInCaseSensitive: false,
+      standardAttributes: {
+        givenName: {
+          required: true,
+        },
+        familyName: {
+          required: true,
+        },
+        email: {
+          required: true,
+        },
+      },
+      mfaSecondFactor: {
+        sms: false,
+        otp: true,
+      },
     };
 
-    const workbenchCognito = new WorkbenchCognito(this, 'DigitalEvidenceArchiveCognito', props);
+    const userPool = new UserPool(this, 'DEAUserPool', userPoolDefaults);
 
-    new CfnOutput(this, 'cognitoUserPoolId', {
-      value: workbenchCognito.userPoolId,
+    const userPoolDomain = new UserPoolDomain(this, 'DEAUserPoolDomain', {
+      userPool: userPool,
+      cognitoDomain: { domainPrefix },
     });
 
-    new CfnOutput(this, 'cognitoUserPoolClientId', {
-      value: workbenchCognito.userPoolClientId,
+    const provider = new UserPoolIdentityProviderOidc(this, `DEAUserPoolIdentityProviderOidc`, {
+      clientId: 'bogus',
+      clientSecret: 'bogus',
+      issuerUrl: 'bogus',
+      userPool: userPool,
+      scopes: ['openid', 'profile', 'email'],
+    });
+    userPool.registerIdentityProvider(provider);
+
+    const userPoolClientProps: UserPoolClientOptions = {
+      generateSecret: true,
+      oAuth: {
+        flows: {
+          authorizationCodeGrant: true,
+        },
+        scopes: [OAuthScope.OPENID],
+      },
+      authFlows: {
+        adminUserPassword: true,
+        userSrp: true,
+        custom: true,
+      },
+      preventUserExistenceErrors: true,
+      enableTokenRevocation: true,
+      idTokenValidity: Duration.minutes(15),
+      accessTokenValidity: Duration.minutes(15),
+      refreshTokenValidity: Duration.days(7),
+    };
+
+    const userPoolClient = new UserPoolClient(this, 'DEAUserPoolClient', {
+      ...userPoolClientProps,
+      userPool,
+      userPoolClientName,
     });
 
-    new CfnOutput(this, 'cognitoDomainName', {
-      value: workbenchCognito.cognitoDomain,
-    });
+    userPool.identityProviders.forEach((provider) => userPoolClient.node.addDependency(provider));
 
-    return workbenchCognito;
+    return {
+      cognitoDomain: userPoolDomain.baseUrl(),
+      userPoolId: userPool.userPoolId,
+      userPoolClientId: userPoolClient.userPoolClientId,
+      userPoolClientSecret: SecretValue.unsafePlainText('bogus'),
+    };
   }
 }

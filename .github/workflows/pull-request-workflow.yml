@@ -36,7 +36,7 @@ jobs:
           node common/scripts/install-run-rush.js build
       - name: Rush Lint
         run: |
-          node common/scripts/install-run-rush.js lint -o @aws/dea-app -o @aws/dea-ui -o @aws/dea-ui-infrastructure -o @aws/dea-backend
+          node common/scripts/install-run-rush.js lint
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:only

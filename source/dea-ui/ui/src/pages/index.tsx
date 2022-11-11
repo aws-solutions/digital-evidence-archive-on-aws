@@ -11,7 +11,7 @@ import Hero from '../components/Hero';
 import { useNotifications } from '../context/NotificationContext';
 import { useSettings } from '../context/SettingsContext';
 
-export interface HomeProps {
+export interface IHomeProps {
   locale: string;
 }
 
