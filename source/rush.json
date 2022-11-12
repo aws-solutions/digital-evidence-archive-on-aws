@@ -36,6 +36,12 @@
       "shouldPublish": false
     },
     {
+      "packageName": "@aws/dea-main",
+      "projectFolder": "dea-main",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
       "packageName": "@aws/dea-backend",
       "projectFolder": "dea-backend",
       "reviewCategory": "production",

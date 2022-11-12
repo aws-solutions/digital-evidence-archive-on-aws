@@ -1,5 +1,5 @@
 {
-  "name": "@aws/dea-backend",
+  "name": "@aws/dea-main",
   "version": "0.0.1",
   "description": "Example infrastructure to deploy express app",
   "homepage": "https://code.amazon.com/packages/Digital-evidence-archive/trees/mainline",
@@ -12,7 +12,9 @@
     "name": "Amazon Web Services",
     "url": "http://aws.amazon.com"
   },
-  "main": "lib/index.js",
+  "bin": {
+    "infrastructure": "lib/index.js"
+  },
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
     "build": "heft build",
@@ -38,20 +40,10 @@
     "test:only:u": "heft test -u --no-build --verbose --test-path-pattern test"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudformation": "^3.118.1",
-    "@aws-sdk/client-dynamodb": "^3.118.1",
-    "@aws-sdk/client-s3": "^3.118.1",
-    "@aws-sdk/client-s3-control": "^3.118.1",
-    "@aws-sdk/client-service-catalog": "^3.118.1",
-    "@aws-sdk/client-ssm": "^3.118.1",
-    "@aws-sdk/client-sts": "^3.118.1",
     "@aws-sdk/types": "^3.110.0",
-    "@aws/dea-app": "workspace:*",
-    "@aws/workbench-core-audit": "workspace:*",
-    "@aws/workbench-core-base": "workspace:*",
-    "@aws/workbench-core-datasets": "workspace:*",
-    "@aws/workbench-core-infrastructure": "workspace:*",
-    "@aws/workbench-core-logging": "workspace:*",
+    "@aws/dea-backend": "workspace:*",
+    "@aws/dea-ui": "workspace:*",
+    "@aws/dea-ui-infrastructure": "workspace:*",
     "@types/aws-lambda": "^8.10.104",
     "aws-cdk-lib": "^2.29.1",
     "aws-lambda": "^1.0.7",
@@ -61,10 +53,6 @@
     "source-map-support": "^0.5.16"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^2.0.0",
-    "@aws-cdk/aws-apigatewayv2-alpha": "^2.22.0-alpha.0",
-    "@aws-cdk/aws-apigatewayv2-authorizers-alpha": "^2.22.0-alpha.0",
-    "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.22.0-alpha.0",
     "@aws/eslint-config-workbench-core-eslint-custom": "workspace:*",
     "@rushstack/eslint-config": "^3.0.0",
     "@rushstack/heft": "^0.47.5",

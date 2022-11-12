@@ -1,0 +1,1509 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DeaMainStack synthesizes the way we expect 1`] = `
+Object {
+  "Outputs": Object {
+    "DeaBackendStackAPIGatewayAPIEndpoint6327A605": Object {
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
+            },
+            ".execute-api.",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ".",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "DeaBackendStackAPIGatewayAPIDeploymentStagedevC055C086",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+    "DeaBackendStackapiUrlOutput90D8814D": Object {
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
+            },
+            ".execute-api.",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ".",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "DeaBackendStackAPIGatewayAPIDeploymentStagedevC055C086",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+    "DeaBackendStackcognitoDomainName73B3482A": Object {
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPoolDomainC151E0A0",
+            },
+            ".auth.",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ".amazoncognito.com",
+          ],
+        ],
+      },
+    },
+    "DeaBackendStackcognitoUserPoolClientId9AB6FDEF": Object {
+      "Value": Object {
+        "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPoolClientA0E60884",
+      },
+    },
+    "DeaBackendStackcognitoUserPoolId1CB24FE4": Object {
+      "Value": Object {
+        "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPool786F77EC",
+      },
+    },
+    "DeaUiStackdeauigatewayEndpointFE9A0DB0": Object {
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "DeaUiStackdeauigateway147D98B7",
+            },
+            ".execute-api.",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ".",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "DeaUiStackdeauigatewayDeploymentStageprodA3168B7D",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+  },
+  "Parameters": Object {
+    "BootstrapVersion": Object {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": Object {
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": Object {
+      "DependsOn": Array [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+        "Timeout": 120,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": Object {
+      "DependsOn": Array [
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Handler": "index.handler",
+        "Layers": Array [
+          Object {
+            "Ref": "DeaUiStackDeaUiStackdeploymentbucketAwsCliLayerE6B55D5A",
+          },
+        ],
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.7",
+        "Timeout": 900,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::",
+                      Object {
+                        "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+                      },
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::",
+                      Object {
+                        "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackDeaUiStackbucket2409F549",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaUiStackDeaUiStackbucket2409F549",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+        "Roles": Array [
+          Object {
+            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeaBackendStackAPIGatewayAPI9C81C9B1": Object {
+      "Properties": Object {
+        "Description": "Backend API",
+        "Name": "API-Gateway API",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "DeaBackendStackAPIGatewayAPIANY85D2CE20": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "ANY",
+        "Integration": Object {
+          "Type": "MOCK",
+        },
+        "ResourceId": Object {
+          "Fn::GetAtt": Array [
+            "DeaBackendStackAPIGatewayAPI9C81C9B1",
+            "RootResourceId",
+          ],
+        },
+        "RestApiId": Object {
+          "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaBackendStackAPIGatewayAPIAccount35B6120A": Object {
+      "DependsOn": Array [
+        "DeaBackendStackAPIGatewayAPI9C81C9B1",
+      ],
+      "Properties": Object {
+        "CloudWatchRoleArn": Object {
+          "Fn::GetAtt": Array [
+            "DeaBackendStackAPIGatewayAPICloudWatchRole8669485D",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+    },
+    "DeaBackendStackAPIGatewayAPIBackendUsagePlanBEFA1FC3": Object {
+      "Properties": Object {
+        "UsagePlanName": "backend-usage-plan",
+      },
+      "Type": "AWS::ApiGateway::UsagePlan",
+    },
+    "DeaBackendStackAPIGatewayAPICloudWatchRole8669485D": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaBackendStackAPIGatewayAPIDeployment70A4DC51d7eaa0527cdec589c853366123fe427b": Object {
+      "DependsOn": Array [
+        "DeaBackendStackAPIGatewayAPIproxyANY42138D59",
+        "DeaBackendStackAPIGatewayAPIproxy637DBD20",
+        "DeaBackendStackAPIGatewayAPIANY85D2CE20",
+      ],
+      "Properties": Object {
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": Object {
+          "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "DeaBackendStackAPIGatewayAPIDeploymentStagedevC055C086": Object {
+      "DependsOn": Array [
+        "DeaBackendStackAPIGatewayAPIAccount35B6120A",
+      ],
+      "Properties": Object {
+        "AccessLogSetting": Object {
+          "DestinationArn": Object {
+            "Fn::GetAtt": Array [
+              "DeaBackendStackAPIGatewayAccessLogsA65761F7",
+              "Arn",
+            ],
+          },
+          "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
+        },
+        "DeploymentId": Object {
+          "Ref": "DeaBackendStackAPIGatewayAPIDeployment70A4DC51d7eaa0527cdec589c853366123fe427b",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
+        },
+        "StageName": "dev",
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "DeaBackendStackAPIGatewayAPIproxy637DBD20": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "DeaBackendStackAPIGatewayAPI9C81C9B1",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "{proxy+}",
+        "RestApiId": Object {
+          "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaBackendStackAPIGatewayAPIproxyANY42138D59": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "ANY",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Ref": "DeaBackendStackLiveAlias8D27EC80",
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaBackendStackAPIGatewayAPIproxy637DBD20",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaBackendStackAPIGatewayAPIproxyANYApiPermissionDeaMainStackDeaBackendStackAPIGatewayAPICF8DF2E2ANYproxyE36270C0": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Ref": "DeaBackendStackLiveAlias8D27EC80",
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
+              },
+              "/",
+              Object {
+                "Ref": "DeaBackendStackAPIGatewayAPIDeploymentStagedevC055C086",
+              },
+              "/*/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaBackendStackAPIGatewayAPIproxyANYApiPermissionTestDeaMainStackDeaBackendStackAPIGatewayAPICF8DF2E2ANYproxyCCFBF07F": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Ref": "DeaBackendStackLiveAlias8D27EC80",
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
+              },
+              "/test-invoke-stage/*/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaBackendStackAPIGatewayAccessLogsA65761F7": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "RetentionInDays": 731,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "DeaBackendStackDigitalEvidenceArchiveCognitoDescribeCognitoUserPoolClient8CE8A98C": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "DeaBackendStackDigitalEvidenceArchiveCognitoDescribeCognitoUserPoolClientCustomResourcePolicyD3C42B1D",
+      ],
+      "Properties": Object {
+        "Create": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"region\\":\\"",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "\\",\\"service\\":\\"CognitoIdentityServiceProvider\\",\\"action\\":\\"describeUserPoolClient\\",\\"parameters\\":{\\"UserPoolId\\":\\"",
+              Object {
+                "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPool786F77EC",
+              },
+              "\\",\\"ClientId\\":\\"",
+              Object {
+                "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPoolClientA0E60884",
+              },
+              "\\"},\\"physicalResourceId\\":{\\"id\\":\\"",
+              Object {
+                "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPoolClientA0E60884",
+              },
+              "\\"}}",
+            ],
+          ],
+        },
+        "InstallLatestAwsSdk": true,
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::DescribeCognitoUserPoolClient",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaBackendStackDigitalEvidenceArchiveCognitoDescribeCognitoUserPoolClientCustomResourcePolicyD3C42B1D": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "cognito-idp:DescribeUserPoolClient",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPool786F77EC",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaBackendStackDigitalEvidenceArchiveCognitoDescribeCognitoUserPoolClientCustomResourcePolicyD3C42B1D",
+        "Roles": Array [
+          Object {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPool786F77EC": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AccountRecoverySetting": Object {
+          "RecoveryMechanisms": Array [
+            Object {
+              "Name": "verified_email",
+              "Priority": 1,
+            },
+          ],
+        },
+        "AdminCreateUserConfig": Object {
+          "AllowAdminCreateUserOnly": true,
+        },
+        "AutoVerifiedAttributes": Array [
+          "email",
+        ],
+        "EmailVerificationMessage": "The verification code to your new account is {####}",
+        "EmailVerificationSubject": "Verify your new account",
+        "EnabledMfas": Array [
+          "SOFTWARE_TOKEN_MFA",
+        ],
+        "MfaConfiguration": "OPTIONAL",
+        "Schema": Array [
+          Object {
+            "Mutable": true,
+            "Name": "given_name",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "family_name",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "email",
+            "Required": true,
+          },
+        ],
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "UserPoolName": "dea-userpool-test-Testville",
+        "UsernameAttributes": Array [
+          "email",
+        ],
+        "UsernameConfiguration": Object {
+          "CaseSensitive": false,
+        },
+        "VerificationMessageTemplate": Object {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "The verification code to your new account is {####}",
+          "EmailSubject": "Verify your new account",
+          "SmsMessage": "The verification code to your new account is {####}",
+        },
+      },
+      "Type": "AWS::Cognito::UserPool",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPoolClientA0E60884": Object {
+      "Properties": Object {
+        "AccessTokenValidity": 15,
+        "AllowedOAuthFlows": Array [
+          "code",
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": Array [
+          "openid",
+        ],
+        "CallbackURLs": Array [
+          "test",
+          "https://bogus.bogus",
+        ],
+        "ClientName": "dea-client-test-Testville",
+        "EnableTokenRevocation": true,
+        "ExplicitAuthFlows": Array [
+          "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+          "ALLOW_CUSTOM_AUTH",
+          "ALLOW_USER_SRP_AUTH",
+          "ALLOW_REFRESH_TOKEN_AUTH",
+        ],
+        "GenerateSecret": true,
+        "IdTokenValidity": 15,
+        "LogoutURLs": Array [
+          "test",
+          "https://bogus.bogus",
+        ],
+        "PreventUserExistenceErrors": "ENABLED",
+        "RefreshTokenValidity": 10080,
+        "SupportedIdentityProviders": Array [
+          "COGNITO",
+        ],
+        "TokenValidityUnits": Object {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+          "RefreshToken": "minutes",
+        },
+        "UserPoolId": Object {
+          "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPool786F77EC",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolClient",
+    },
+    "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPoolDomainC151E0A0": Object {
+      "Properties": Object {
+        "Domain": "cogtest",
+        "UserPoolId": Object {
+          "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPool786F77EC",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolDomain",
+    },
+    "DeaBackendStackFlowLogB1F9C02F": Object {
+      "Properties": Object {
+        "DeliverLogsPermissionArn": Object {
+          "Fn::GetAtt": Array [
+            "DeaBackendStackflowlogrole27B11B52",
+            "Arn",
+          ],
+        },
+        "LogDestinationType": "cloud-watch-logs",
+        "LogGroupName": Object {
+          "Ref": "DeaBackendStackdeavpcloggroup901AE5A5",
+        },
+        "ResourceId": Object {
+          "Ref": "DeaBackendStackdeavpc12685D7A",
+        },
+        "ResourceType": "VPC",
+        "TrafficType": "ALL",
+      },
+      "Type": "AWS::EC2::FlowLog",
+    },
+    "DeaBackendStackLiveAlias8D27EC80": Object {
+      "Properties": Object {
+        "FunctionName": Object {
+          "Ref": "DeaBackendStackdeaapphandler0C401F36",
+        },
+        "FunctionVersion": Object {
+          "Fn::GetAtt": Array [
+            "DeaBackendStackdeaapphandlerCurrentVersion08C5872A19507b9c9a1fa2d6acd0bc8ebcafda97",
+            "Version",
+          ],
+        },
+        "Name": "live",
+      },
+      "Type": "AWS::Lambda::Alias",
+    },
+    "DeaBackendStackdeaapphandler0C401F36": Object {
+      "DependsOn": Array [
+        "DeaBackendStackdeabaselambdarole5B9EAC0D",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaBackendStackdeabaselambdarole5B9EAC0D",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs16.x",
+        "Timeout": 180,
+        "VpcConfig": Object {
+          "SecurityGroupIds": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "DeaBackendStackdeaapphandlerSecurityGroup8B9F989E",
+                "GroupId",
+              ],
+            },
+          ],
+          "SubnetIds": Array [
+            Object {
+              "Ref": "DeaBackendStackdeavpcIngressSubnet1SubnetABD836F5",
+            },
+            Object {
+              "Ref": "DeaBackendStackdeavpcIngressSubnet2SubnetDD3E1464",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaBackendStackdeaapphandlerCurrentVersion08C5872A19507b9c9a1fa2d6acd0bc8ebcafda97": Object {
+      "Properties": Object {
+        "FunctionName": Object {
+          "Ref": "DeaBackendStackdeaapphandler0C401F36",
+        },
+      },
+      "Type": "AWS::Lambda::Version",
+    },
+    "DeaBackendStackdeaapphandlerSecurityGroup8B9F989E": Object {
+      "Properties": Object {
+        "GroupDescription": "Automatic security group for Lambda Function DeaMainStackDeaBackendStackdeaapphandler0CFA0DA6",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "DeaBackendStackdeavpc12685D7A",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "DeaBackendStackdeabaselambdarole5B9EAC0D": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaBackendStackdeavpc12685D7A": Object {
+      "Properties": Object {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "DeaMainStack/DeaBackendStack/dea-vpc",
+          },
+        ],
+      },
+      "Type": "AWS::EC2::VPC",
+    },
+    "DeaBackendStackdeavpcIngressSubnet1RouteTable6C07EAA5": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "DeaMainStack/DeaBackendStack/dea-vpc/IngressSubnet1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "DeaBackendStackdeavpc12685D7A",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "DeaBackendStackdeavpcIngressSubnet1RouteTableAssociation58064637": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "DeaBackendStackdeavpcIngressSubnet1RouteTable6C07EAA5",
+        },
+        "SubnetId": Object {
+          "Ref": "DeaBackendStackdeavpcIngressSubnet1SubnetABD836F5",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "DeaBackendStackdeavpcIngressSubnet1SubnetABD836F5": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            0,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Ingress",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Isolated",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "DeaMainStack/DeaBackendStack/dea-vpc/IngressSubnet1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "DeaBackendStackdeavpc12685D7A",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "DeaBackendStackdeavpcIngressSubnet2RouteTable3BE41AAE": Object {
+      "Properties": Object {
+        "Tags": Array [
+          Object {
+            "Key": "Name",
+            "Value": "DeaMainStack/DeaBackendStack/dea-vpc/IngressSubnet2",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "DeaBackendStackdeavpc12685D7A",
+        },
+      },
+      "Type": "AWS::EC2::RouteTable",
+    },
+    "DeaBackendStackdeavpcIngressSubnet2RouteTableAssociation473345C0": Object {
+      "Properties": Object {
+        "RouteTableId": Object {
+          "Ref": "DeaBackendStackdeavpcIngressSubnet2RouteTable3BE41AAE",
+        },
+        "SubnetId": Object {
+          "Ref": "DeaBackendStackdeavpcIngressSubnet2SubnetDD3E1464",
+        },
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    },
+    "DeaBackendStackdeavpcIngressSubnet2SubnetDD3E1464": Object {
+      "Properties": Object {
+        "AvailabilityZone": Object {
+          "Fn::Select": Array [
+            1,
+            Object {
+              "Fn::GetAZs": "",
+            },
+          ],
+        },
+        "CidrBlock": "10.0.1.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Ingress",
+          },
+          Object {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Isolated",
+          },
+          Object {
+            "Key": "Name",
+            "Value": "DeaMainStack/DeaBackendStack/dea-vpc/IngressSubnet2",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "DeaBackendStackdeavpc12685D7A",
+        },
+      },
+      "Type": "AWS::EC2::Subnet",
+    },
+    "DeaBackendStackdeavpcloggroup901AE5A5": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "RetentionInDays": 731,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "DeaBackendStackflowlogrole27B11B52": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "vpc-flow-logs.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaBackendStackflowlogroleDefaultPolicy356D45B4": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaBackendStackdeavpcloggroup901AE5A5",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaBackendStackflowlogrole27B11B52",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaBackendStackflowlogroleDefaultPolicy356D45B4",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaBackendStackflowlogrole27B11B52",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeaBackendStackvpcsg0A453A26": Object {
+      "Properties": Object {
+        "GroupDescription": "DeaMainStack/DeaBackendStack/vpc-sg",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "DeaBackendStackdeavpc12685D7A",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "DeaUiStackDeaUiStackbucket2409F549": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AccessControl": "Private",
+        "PublicAccessBlockConfiguration": Object {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:cr-owned:debec8f9",
+            "Value": "true",
+          },
+        ],
+        "WebsiteConfiguration": Object {
+          "IndexDocument": "index.html",
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "DeaUiStackDeaUiStackdeploymentbucketAwsCliLayerE6B55D5A": Object {
+      "Properties": Object {
+        "Content": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Description": "/opt/awscli/aws",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+    },
+    "DeaUiStackDeaUiStackdeploymentbucketCustomResource5769B150": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "DestinationBucketName": Object {
+          "Ref": "DeaUiStackDeaUiStackbucket2409F549",
+        },
+        "Prune": true,
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+            "Arn",
+          ],
+        },
+        "SourceBucketNames": Array [
+          Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+        ],
+        "SourceObjectKeys": Array [
+          "[HASH REMOVED].zip",
+        ],
+      },
+      "Type": "Custom::CDKBucketDeployment",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaUiStackdeauigateway147D98B7": Object {
+      "Properties": Object {
+        "Description": "distribution api",
+        "Name": "dea-ui-gateway",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "DeaUiStackdeauigatewayAccount1A92DBB5": Object {
+      "DependsOn": Array [
+        "DeaUiStackdeauigateway147D98B7",
+      ],
+      "Properties": Object {
+        "CloudWatchRoleArn": Object {
+          "Fn::GetAtt": Array [
+            "DeaUiStackdeauigatewayCloudWatchRole2C2FC061",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+    },
+    "DeaUiStackdeauigatewayCloudWatchRole2C2FC061": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaUiStackdeauigatewayDeployment34004937c730247bbdaa583ac7090ba2f990d9e0": Object {
+      "DependsOn": Array [
+        "DeaUiStackdeauigatewayproxyGET48BC7F5C",
+        "DeaUiStackdeauigatewayproxyA4F311E1",
+        "DeaUiStackdeauigatewayGET36636906",
+      ],
+      "Properties": Object {
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": Object {
+          "Ref": "DeaUiStackdeauigateway147D98B7",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "DeaUiStackdeauigatewayDeploymentStageprodA3168B7D": Object {
+      "DependsOn": Array [
+        "DeaUiStackdeauigatewayAccount1A92DBB5",
+      ],
+      "Properties": Object {
+        "DeploymentId": Object {
+          "Ref": "DeaUiStackdeauigatewayDeployment34004937c730247bbdaa583ac7090ba2f990d9e0",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaUiStackdeauigateway147D98B7",
+        },
+        "StageName": "prod",
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "DeaUiStackdeauigatewayGET36636906": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackDeaUiStackbucket2409F549",
+                },
+                "/index.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Type": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Fn::GetAtt": Array [
+            "DeaUiStackdeauigateway147D98B7",
+            "RootResourceId",
+          ],
+        },
+        "RestApiId": Object {
+          "Ref": "DeaUiStackdeauigateway147D98B7",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaUiStackdeauigatewayproxyA4F311E1": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "DeaUiStackdeauigateway147D98B7",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "{proxy+}",
+        "RestApiId": Object {
+          "Ref": "DeaUiStackdeauigateway147D98B7",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaUiStackdeauigatewayproxyGET48BC7F5C": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackDeaUiStackbucket2409F549",
+                },
+                "/{proxy}",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Type": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "DeaUiStackdeauigatewayproxyA4F311E1",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaUiStackdeauigateway147D98B7",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaUiStackrole3432A944": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaUiStackroleDefaultPolicyBE7B3383": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackDeaUiStackbucket2409F549",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaUiStackDeaUiStackbucket2409F549",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaUiStackroleDefaultPolicyBE7B3383",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaUiStackrole3432A944",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+  },
+  "Rules": Object {
+    "CheckBootstrapVersion": Object {
+      "Assertions": Array [
+        Object {
+          "Assert": Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Contains": Array [
+                  Array [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  Object {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

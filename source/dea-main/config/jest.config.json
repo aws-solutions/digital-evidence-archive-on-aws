@@ -1,11 +1,7 @@
 {
   "extends": "@rushstack/heft-node-rig/profiles/default/config/jest.config.json",
   "collectCoverage": true,
-  "coveragePathIgnorePatterns": [
-    "<rootDir>/src/index.ts",
-    "<rootDir>/src/backendAPILambda.ts",
-    "<rootDir>/src/dea-backend-stack.ts"
-  ],
+  "coveragePathIgnorePatterns": ["<rootDir>/src/index.ts"],
   "coverageThreshold": {
     "global": {
       "branches": 75,
