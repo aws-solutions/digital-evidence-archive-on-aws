@@ -31,7 +31,7 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix --max-warnings=0",
     "make-badges": "istanbul-badges-readme --coverageDir=./temp/coverage --exitCode=1",
-    "nag": "cfn_nag_scan --deny-list-path cfn-deny --fail-on-warnings --input-path ./cdk.out/dea-ui.template.json",
+    "nag": "cfn_nag_scan --deny-list-path cfn-deny --fail-on-warnings --input-path ./cdk.out/DeaMainStack.template.json",
     "pkg-json-lint": "npmPkgJsonLint -c ../../.npmpackagejsonlintrc.json .",
     "sort-package-json": "sort-package-json package.json",
     "test": "rushx test:only && rushx make-badges",
