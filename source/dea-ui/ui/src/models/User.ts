@@ -5,7 +5,7 @@
 
 import { IconProps } from '@cloudscape-design/components/icon';
 
-export interface User {
+export interface IUser {
   id: string;
   name: string;
   email: string;
@@ -13,7 +13,7 @@ export interface User {
   claims: string[];
 }
 
-export const unknownUser: User = {
+export const unknownUser: IUser = {
   id: 'sample-id',
   name: 'Sample User',
   email: 'sample.user@amazon.com',

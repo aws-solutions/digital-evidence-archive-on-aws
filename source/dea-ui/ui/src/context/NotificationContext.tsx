@@ -6,22 +6,24 @@
 import { FlashbarProps } from '@cloudscape-design/components/flashbar';
 import { createContext, useContext, Context, useState } from 'react';
 
-export interface Notifications {
+export interface INotifications {
   [key: string]: FlashbarProps.MessageDefinition;
 }
 
-export interface NotificationProps {
-  notifications: Notifications;
+export interface INotificationProps {
+  notifications: INotifications;
   displayNotification: (id: string, notification: FlashbarProps.MessageDefinition) => void;
 }
 
-const NotificationsContext: Context<NotificationProps> = createContext({
-  notifications: {} as Notifications,
-  displayNotification: (id: string, notification: FlashbarProps.MessageDefinition) => {},
+const NotificationsContext: Context<INotificationProps> = createContext({
+  notifications: {},
+  displayNotification: (id: string, notification: FlashbarProps.MessageDefinition) => {
+    console.log(`${id}, ${notification}`);
+  },
 });
 
 export function NotificationsProvider({ children }: { children: React.ReactNode }): JSX.Element {
-  const [notifications, setNotifications] = useState<Notifications>({});
+  const [notifications, setNotifications] = useState<INotifications>({});
   const displayNotification = (id: string, notification: FlashbarProps.MessageDefinition): void => {
     if (id in notifications) {
       return;
@@ -38,6 +40,6 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
   );
 }
 
-export function useNotifications(): NotificationProps {
+export function useNotifications(): INotificationProps {
   return useContext(NotificationsContext);
 }

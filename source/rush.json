@@ -48,12 +48,6 @@
       "shouldPublish": false
     },
     {
-      "packageName": "@aws/workbench-core-environments",
-      "projectFolder": "solution-spark-on-aws/workbench-core/environments",
-      "reviewCategory": "production",
-      "shouldPublish": false
-    },
-    {
       "packageName": "@aws/dea-ui",
       "projectFolder": "dea-ui/ui",
       "reviewCategory": "production",
@@ -64,102 +58,6 @@
       "projectFolder": "dea-ui/infrastructure",
       "reviewCategory": "production",
       "shouldPublish": false
-    },
-    {
-      "packageName": "@aws/workbench-core-environments-ui",
-      "projectFolder": "solution-spark-on-aws/workbench-core/environments-ui",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/workbench-core-accounts-ui",
-      "projectFolder": "solution-spark-on-aws/workbench-core/accounts-ui",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/workbench-core-swb-common-ui",
-      "projectFolder": "solution-spark-on-aws/workbench-core/swb-common-ui",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/workbench-core-logging",
-      "projectFolder": "solution-spark-on-aws/workbench-core/logging",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/workbench-core-base",
-      "projectFolder": "solution-spark-on-aws/workbench-core/base",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/eslint-config-workbench-core-eslint-custom",
-      "projectFolder": "solution-spark-on-aws/workbench-core/eslint-custom",
-      "reviewCategory": "production",
-      "shouldPublish": false
-    },
-    {
-      "packageName": "@aws/workbench-core-authorization",
-      "projectFolder": "solution-spark-on-aws/workbench-core/authorization",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/workbench-core-authentication",
-      "projectFolder": "solution-spark-on-aws/workbench-core/authentication",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/workbench-core-audit",
-      "projectFolder": "solution-spark-on-aws/workbench-core/audit",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/example-ui-app",
-      "projectFolder": "solution-spark-on-aws/solutions/example-ui-app",
-      "reviewCategory": "prototypes",
-      "shouldPublish": false
-    },
-    {
-      "packageName": "@aws/workbench-core-datasets",
-      "projectFolder": "solution-spark-on-aws/workbench-core/datasets",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/workbench-core-datasets-ui",
-      "projectFolder": "solution-spark-on-aws/workbench-core/datasets-ui",
-      "reviewCategory": "production",
-      "shouldPublish": true
-    },
-    {
-      "packageName": "@aws/workbench-core-example-app",
-      "projectFolder": "solution-spark-on-aws/workbench-core/example/app",
-      "reviewCategory": "prototypes",
-      "shouldPublish": false
-    },
-    {
-      "packageName": "@aws/workbench-core-example-infrastructure",
-      "projectFolder": "solution-spark-on-aws/workbench-core/example/infrastructure",
-      "reviewCategory": "prototypes",
-      "shouldPublish": false
-    },
-    {
-      "packageName": "@aws/workbench-core-repo-toolbox",
-      "projectFolder": "solution-spark-on-aws/workbench-core/repo-scripts/repo-toolbox",
-      "reviewCategory": "production",
-      "shouldPublish": false
-    },
-    {
-      "packageName": "@aws/workbench-core-infrastructure",
-      "projectFolder": "solution-spark-on-aws/workbench-core/infrastructure",
-      "reviewCategory": "production",
-      "shouldPublish": true
     }
   ]
 }

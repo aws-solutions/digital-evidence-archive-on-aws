@@ -55,34 +55,6 @@ Object {
         ],
       },
     },
-    "DeaBackendStackcognitoDomainName73B3482A": Object {
-      "Value": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "https://",
-            Object {
-              "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPoolDomainC151E0A0",
-            },
-            ".auth.",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            ".amazoncognito.com",
-          ],
-        ],
-      },
-    },
-    "DeaBackendStackcognitoUserPoolClientId9AB6FDEF": Object {
-      "Value": Object {
-        "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPoolClientA0E60884",
-      },
-    },
-    "DeaBackendStackcognitoUserPoolId1CB24FE4": Object {
-      "Value": Object {
-        "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPool786F77EC",
-      },
-    },
     "DeaUiStackdeauigatewayEndpointFE9A0DB0": Object {
       "Value": Object {
         "Fn::Join": Array [
@@ -118,60 +90,6 @@ Object {
     },
   },
   "Resources": Object {
-    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": Object {
-      "DependsOn": Array [
-        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "[HASH REMOVED].zip",
-        },
-        "Handler": "index.handler",
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs14.x",
-        "Timeout": 120,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": Object {
       "DependsOn": Array [
         "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
@@ -196,7 +114,7 @@ Object {
             "Arn",
           ],
         },
-        "Runtime": "python3.7",
+        "Runtime": "python3.9",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -353,6 +271,7 @@ Object {
       "Type": "AWS::ApiGateway::Method",
     },
     "DeaBackendStackAPIGatewayAPIAccount35B6120A": Object {
+      "DeletionPolicy": "Retain",
       "DependsOn": Array [
         "DeaBackendStackAPIGatewayAPI9C81C9B1",
       ],
@@ -365,6 +284,7 @@ Object {
         },
       },
       "Type": "AWS::ApiGateway::Account",
+      "UpdateReplacePolicy": "Retain",
     },
     "DeaBackendStackAPIGatewayAPIBackendUsagePlanBEFA1FC3": Object {
       "Properties": Object {
@@ -373,6 +293,7 @@ Object {
       "Type": "AWS::ApiGateway::UsagePlan",
     },
     "DeaBackendStackAPIGatewayAPICloudWatchRole8669485D": Object {
+      "DeletionPolicy": "Retain",
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -402,6 +323,7 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Role",
+      "UpdateReplacePolicy": "Retain",
     },
     "DeaBackendStackAPIGatewayAPIDeployment70A4DC51d7eaa0527cdec589c853366123fe427b": Object {
       "DependsOn": Array [
@@ -410,7 +332,7 @@ Object {
         "DeaBackendStackAPIGatewayAPIANY85D2CE20",
       ],
       "Properties": Object {
-        "Description": "Automatically created by the RestApi construct",
+        "Description": "Backend API",
         "RestApiId": Object {
           "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
         },
@@ -573,80 +495,67 @@ Object {
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
-    "DeaBackendStackDigitalEvidenceArchiveCognitoDescribeCognitoUserPoolClient8CE8A98C": Object {
-      "DeletionPolicy": "Delete",
+    "DeaBackendStackDEAUserPoolClientE9F64654": Object {
       "DependsOn": Array [
-        "DeaBackendStackDigitalEvidenceArchiveCognitoDescribeCognitoUserPoolClientCustomResourcePolicyD3C42B1D",
+        "DeaBackendStackDEAUserPoolIdentityProviderOidcD32CD785",
       ],
       "Properties": Object {
-        "Create": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "{\\"region\\":\\"",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              "\\",\\"service\\":\\"CognitoIdentityServiceProvider\\",\\"action\\":\\"describeUserPoolClient\\",\\"parameters\\":{\\"UserPoolId\\":\\"",
-              Object {
-                "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPool786F77EC",
-              },
-              "\\",\\"ClientId\\":\\"",
-              Object {
-                "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPoolClientA0E60884",
-              },
-              "\\"},\\"physicalResourceId\\":{\\"id\\":\\"",
-              Object {
-                "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPoolClientA0E60884",
-              },
-              "\\"}}",
-            ],
-          ],
-        },
-        "InstallLatestAwsSdk": true,
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::DescribeCognitoUserPoolClient",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DeaBackendStackDigitalEvidenceArchiveCognitoDescribeCognitoUserPoolClientCustomResourcePolicyD3C42B1D": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "cognito-idp:DescribeUserPoolClient",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPool786F77EC",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaBackendStackDigitalEvidenceArchiveCognitoDescribeCognitoUserPoolClientCustomResourcePolicyD3C42B1D",
-        "Roles": Array [
-          Object {
-            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-          },
+        "AccessTokenValidity": 15,
+        "AllowedOAuthFlows": Array [
+          "code",
         ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": Array [
+          "openid",
+        ],
+        "CallbackURLs": Array [
+          "https://example.com",
+        ],
+        "ClientName": "dea-client-test-Testville",
+        "EnableTokenRevocation": true,
+        "ExplicitAuthFlows": Array [
+          "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+          "ALLOW_CUSTOM_AUTH",
+          "ALLOW_USER_SRP_AUTH",
+          "ALLOW_REFRESH_TOKEN_AUTH",
+        ],
+        "GenerateSecret": true,
+        "IdTokenValidity": 15,
+        "PreventUserExistenceErrors": "ENABLED",
+        "RefreshTokenValidity": 10080,
+        "SupportedIdentityProviders": Array [
+          Object {
+            "Ref": "DeaBackendStackDEAUserPoolIdentityProviderOidcD32CD785",
+          },
+          "COGNITO",
+        ],
+        "TokenValidityUnits": Object {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+          "RefreshToken": "minutes",
+        },
+        "UserPoolId": Object {
+          "Ref": "DeaBackendStackDEAUserPoolF5DE2A39",
+        },
       },
-      "Type": "AWS::IAM::Policy",
+      "Type": "AWS::Cognito::UserPoolClient",
     },
-    "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPool786F77EC": Object {
+    "DeaBackendStackDEAUserPoolDomain67AB7360": Object {
+      "Properties": Object {
+        "Domain": "cogtest",
+        "UserPoolId": Object {
+          "Ref": "DeaBackendStackDEAUserPoolF5DE2A39",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolDomain",
+    },
+    "DeaBackendStackDEAUserPoolF5DE2A39": Object {
       "DeletionPolicy": "Retain",
       "Properties": Object {
         "AccountRecoverySetting": Object {
           "RecoveryMechanisms": Array [
             Object {
-              "Name": "verified_email",
+              "Name": "admin_only",
               "Priority": 1,
             },
           ],
@@ -654,15 +563,12 @@ Object {
         "AdminCreateUserConfig": Object {
           "AllowAdminCreateUserOnly": true,
         },
-        "AutoVerifiedAttributes": Array [
-          "email",
-        ],
         "EmailVerificationMessage": "The verification code to your new account is {####}",
         "EmailVerificationSubject": "Verify your new account",
         "EnabledMfas": Array [
           "SOFTWARE_TOKEN_MFA",
         ],
-        "MfaConfiguration": "OPTIONAL",
+        "MfaConfiguration": "ON",
         "Schema": Array [
           Object {
             "Mutable": true,
@@ -681,10 +587,7 @@ Object {
           },
         ],
         "SmsVerificationMessage": "The verification code to your new account is {####}",
-        "UserPoolName": "dea-userpool-test-Testville",
-        "UsernameAttributes": Array [
-          "email",
-        ],
+        "UsernameAttributes": Array [],
         "UsernameConfiguration": Object {
           "CaseSensitive": false,
         },
@@ -698,58 +601,22 @@ Object {
       "Type": "AWS::Cognito::UserPool",
       "UpdateReplacePolicy": "Retain",
     },
-    "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPoolClientA0E60884": Object {
+    "DeaBackendStackDEAUserPoolIdentityProviderOidcD32CD785": Object {
       "Properties": Object {
-        "AccessTokenValidity": 15,
-        "AllowedOAuthFlows": Array [
-          "code",
-        ],
-        "AllowedOAuthFlowsUserPoolClient": true,
-        "AllowedOAuthScopes": Array [
-          "openid",
-        ],
-        "CallbackURLs": Array [
-          "test",
-          "https://bogus.bogus",
-        ],
-        "ClientName": "dea-client-test-Testville",
-        "EnableTokenRevocation": true,
-        "ExplicitAuthFlows": Array [
-          "ALLOW_ADMIN_USER_PASSWORD_AUTH",
-          "ALLOW_CUSTOM_AUTH",
-          "ALLOW_USER_SRP_AUTH",
-          "ALLOW_REFRESH_TOKEN_AUTH",
-        ],
-        "GenerateSecret": true,
-        "IdTokenValidity": 15,
-        "LogoutURLs": Array [
-          "test",
-          "https://bogus.bogus",
-        ],
-        "PreventUserExistenceErrors": "ENABLED",
-        "RefreshTokenValidity": 10080,
-        "SupportedIdentityProviders": Array [
-          "COGNITO",
-        ],
-        "TokenValidityUnits": Object {
-          "AccessToken": "minutes",
-          "IdToken": "minutes",
-          "RefreshToken": "minutes",
+        "ProviderDetails": Object {
+          "attributes_request_method": "GET",
+          "authorize_scopes": "openid profile email",
+          "client_id": "bogus",
+          "client_secret": "bogus",
+          "oidc_issuer": "bogus",
         },
+        "ProviderName": "DeaMainStackDeaBiderOidc7054A7A9",
+        "ProviderType": "OIDC",
         "UserPoolId": Object {
-          "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPool786F77EC",
+          "Ref": "DeaBackendStackDEAUserPoolF5DE2A39",
         },
       },
-      "Type": "AWS::Cognito::UserPoolClient",
-    },
-    "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPoolDomainC151E0A0": Object {
-      "Properties": Object {
-        "Domain": "cogtest",
-        "UserPoolId": Object {
-          "Ref": "DeaBackendStackDigitalEvidenceArchiveCognitoWorkbenchUserPool786F77EC",
-        },
-      },
-      "Type": "AWS::Cognito::UserPoolDomain",
+      "Type": "AWS::Cognito::UserPoolIdentityProvider",
     },
     "DeaBackendStackFlowLogB1F9C02F": Object {
       "Properties": Object {
@@ -778,7 +645,7 @@ Object {
         },
         "FunctionVersion": Object {
           "Fn::GetAtt": Array [
-            "DeaBackendStackdeaapphandlerCurrentVersion08C5872A19507b9c9a1fa2d6acd0bc8ebcafda97",
+            "DeaBackendStackdeaapphandlerCurrentVersion08C5872Ac82047489dd11cebd0a82d3023d5b271",
             "Version",
           ],
         },
@@ -789,6 +656,8 @@ Object {
     "DeaBackendStackdeaapphandler0C401F36": Object {
       "DependsOn": Array [
         "DeaBackendStackdeabaselambdarole5B9EAC0D",
+        "DeaBackendStackdeavpcIngressSubnet1RouteTableAssociation58064637",
+        "DeaBackendStackdeavpcIngressSubnet2RouteTableAssociation473345C0",
       ],
       "Properties": Object {
         "Code": Object {
@@ -833,7 +702,11 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaBackendStackdeaapphandlerCurrentVersion08C5872A19507b9c9a1fa2d6acd0bc8ebcafda97": Object {
+    "DeaBackendStackdeaapphandlerCurrentVersion08C5872Ac82047489dd11cebd0a82d3023d5b271": Object {
+      "DependsOn": Array [
+        "DeaBackendStackdeavpcIngressSubnet1RouteTableAssociation58064637",
+        "DeaBackendStackdeavpcIngressSubnet2RouteTableAssociation473345C0",
+      ],
       "Properties": Object {
         "FunctionName": Object {
           "Ref": "DeaBackendStackdeaapphandler0C401F36",
@@ -842,6 +715,10 @@ Object {
       "Type": "AWS::Lambda::Version",
     },
     "DeaBackendStackdeaapphandlerSecurityGroup8B9F989E": Object {
+      "DependsOn": Array [
+        "DeaBackendStackdeavpcIngressSubnet1RouteTableAssociation58064637",
+        "DeaBackendStackdeavpcIngressSubnet2RouteTableAssociation473345C0",
+      ],
       "Properties": Object {
         "GroupDescription": "Automatic security group for Lambda Function DeaMainStackDeaBackendStackdeaapphandler0CFA0DA6",
         "SecurityGroupEgress": Array [
@@ -1166,6 +1043,7 @@ Object {
       "Type": "AWS::ApiGateway::RestApi",
     },
     "DeaUiStackdeauigatewayAccount1A92DBB5": Object {
+      "DeletionPolicy": "Retain",
       "DependsOn": Array [
         "DeaUiStackdeauigateway147D98B7",
       ],
@@ -1178,8 +1056,10 @@ Object {
         },
       },
       "Type": "AWS::ApiGateway::Account",
+      "UpdateReplacePolicy": "Retain",
     },
     "DeaUiStackdeauigatewayCloudWatchRole2C2FC061": Object {
+      "DeletionPolicy": "Retain",
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -1209,6 +1089,7 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Role",
+      "UpdateReplacePolicy": "Retain",
     },
     "DeaUiStackdeauigatewayDeployment34004937c730247bbdaa583ac7090ba2f990d9e0": Object {
       "DependsOn": Array [
@@ -1217,7 +1098,7 @@ Object {
         "DeaUiStackdeauigatewayGET36636906",
       ],
       "Properties": Object {
-        "Description": "Automatically created by the RestApi construct",
+        "Description": "distribution api",
         "RestApiId": Object {
           "Ref": "DeaUiStackdeauigateway147D98B7",
         },

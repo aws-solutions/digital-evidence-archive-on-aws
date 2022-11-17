@@ -4,23 +4,23 @@
  */
 
 import { createContext, useContext, Context, useState } from 'react';
-import { User, unknownUser } from '../models/User';
+import { IUser, unknownUser } from '../models/User';
 
-export interface AuthenticationProps {
-  user: User;
-  signIn: (user: User) => void;
+export interface IAuthenticationProps {
+  user: IUser;
+  signIn: (user: IUser) => void;
   signOut: () => void;
 }
 
-const AuthenticationContext: Context<AuthenticationProps> = createContext<AuthenticationProps>({
+const AuthenticationContext: Context<IAuthenticationProps> = createContext<IAuthenticationProps>({
   user: unknownUser,
-  signIn: (user: User) => {},
+  signIn: (/*user: IUser*/) => {},
   signOut: () => {},
 });
 
 export function AuthenticationProvider({ children }: { children: React.ReactNode }): JSX.Element {
-  const [user, setUser] = useState<User>(unknownUser);
-  const signIn = (user: User): void => setUser(user);
+  const [user, setUser] = useState<IUser>(unknownUser);
+  const signIn = (user: IUser): void => setUser(user);
   const signOut = (): void => setUser(unknownUser);
 
   return (
@@ -30,6 +30,6 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
   );
 }
 
-export function useAuthentication(): AuthenticationProps {
+export function useAuthentication(): IAuthenticationProps {
   return useContext(AuthenticationContext);
 }

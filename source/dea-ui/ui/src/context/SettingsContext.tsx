@@ -4,25 +4,25 @@
  */
 
 import { Context, createContext, useContext, useState } from 'react';
-import { AppSettings, defaultAppSettings } from '../models/AppSettings';
+import { IAppSettings, defaultAppSettings } from '../models/AppSettings';
 
-export interface SettingsProps {
-  settings: AppSettings;
+export interface ISettingsProps {
+  settings: IAppSettings;
   reload: () => void;
 }
 
-const SettingsContext: Context<SettingsProps> = createContext<SettingsProps>({
+const SettingsContext: Context<ISettingsProps> = createContext<ISettingsProps>({
   settings: defaultAppSettings,
   reload: () => {},
 });
 
 export function SettingsProvider({ children }: { children: React.ReactNode }): JSX.Element {
-  const [settings] = useState<AppSettings>(defaultAppSettings);
+  const [settings] = useState<IAppSettings>(defaultAppSettings);
   return (
     <SettingsContext.Provider value={{ settings, reload: () => {} }}>{children}</SettingsContext.Provider>
   );
 }
 
-export function useSettings(): SettingsProps {
+export function useSettings(): ISettingsProps {
   return useContext(SettingsContext);
 }
