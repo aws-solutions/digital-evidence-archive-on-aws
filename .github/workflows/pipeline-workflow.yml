@@ -3,9 +3,9 @@ name: Pipeline Workflow
 env:
   REGION: us-east-1
 
-on: 
+on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, pipelinedevelop]
 
 jobs:
   pipeline-job:
