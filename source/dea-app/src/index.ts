@@ -4,6 +4,6 @@
  */
 
 import { IApiRouteConfig, IApiRoute, HTTPMethod } from './apiRouteConfig';
-import { generateRouter } from './generateRouter';
+import { getBackendApiApp } from './backendAPI';
 
-export { generateRouter, IApiRouteConfig, IApiRoute, HTTPMethod };
+export { getBackendApiApp, IApiRouteConfig, IApiRoute, HTTPMethod };

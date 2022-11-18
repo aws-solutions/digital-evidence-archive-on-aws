@@ -622,7 +622,7 @@ Object {
         },
         "FunctionVersion": Object {
           "Fn::GetAtt": Array [
-            "DeaBackendStackdeaapphandlerCurrentVersion08C5872Ac82047489dd11cebd0a82d3023d5b271",
+            "DeaBackendStackdeaapphandlerCurrentVersion08C5872Aee0c174c01b521d0ca5adb20dff794bd",
             "Version",
           ],
         },
@@ -679,7 +679,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaBackendStackdeaapphandlerCurrentVersion08C5872Ac82047489dd11cebd0a82d3023d5b271": Object {
+    "DeaBackendStackdeaapphandlerCurrentVersion08C5872Aee0c174c01b521d0ca5adb20dff794bd": Object {
       "DependsOn": Array [
         "DeaBackendStackdeavpcIngressSubnet1RouteTableAssociation58064637",
         "DeaBackendStackdeavpcIngressSubnet2RouteTableAssociation473345C0",

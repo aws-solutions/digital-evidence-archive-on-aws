@@ -2,10 +2,9 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-
-import { generateRouter, IApiRouteConfig } from '@aws/dea-app';
-
 import { Express } from 'express';
+import { IApiRouteConfig } from './apiRouteConfig';
+import { generateRouter } from './generateRouter';
 import { HelloWorldService } from './services/helloWorldService';
 
 export interface IBackendApiDependencyProvider {
