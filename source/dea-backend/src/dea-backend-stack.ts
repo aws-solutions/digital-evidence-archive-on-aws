@@ -21,6 +21,7 @@ import {
   UserPoolClientOptions,
   UserPoolDomain,
   UserPoolIdentityProviderOidc,
+  UserPoolIdentityProviderOidcProps,
   UserPoolProps,
 } from 'aws-cdk-lib/aws-cognito';
 import {
@@ -50,7 +51,7 @@ export class DeaBackendConstruct extends Construct {
     const vpc = this._createVpc();
     const apiLambda = this._createAPILambda(vpc);
     this._createRestApi(apiLambda);
-    this._createCognitoResources(COGNITO_DOMAIN, WEBSITE_URLS, USER_POOL_CLIENT_NAME);
+    this._createCognitoResources(COGNITO_DOMAIN, WEBSITE_URLS, USER_POOL_CLIENT_NAME, []);
   }
 
   private _createVpc(): Vpc {
@@ -160,7 +161,8 @@ export class DeaBackendConstruct extends Construct {
   private _createCognitoResources(
     domainPrefix: string,
     websiteUrls: string[],
-    userPoolClientName: string
+    userPoolClientName: string,
+    userPoolIdpProps: UserPoolIdentityProviderOidcProps[]
   ): DEACognitoProps {
     const userPoolDefaults: UserPoolProps = {
       accountRecovery: AccountRecovery.NONE,
@@ -197,14 +199,14 @@ export class DeaBackendConstruct extends Construct {
       cognitoDomain: { domainPrefix },
     });
 
-    const provider = new UserPoolIdentityProviderOidc(this, `DEAUserPoolIdentityProviderOidc`, {
-      clientId: 'bogus',
-      clientSecret: 'bogus',
-      issuerUrl: 'bogus',
-      userPool: userPool,
-      scopes: ['openid', 'profile', 'email'],
+    userPoolIdpProps?.forEach((props, index) => {
+      const provider = new UserPoolIdentityProviderOidc(this, `DEAUserPoolIdentityProviderOidc${index}`, {
+        ...props,
+        userPool: userPool,
+        scopes: ['openid', 'profile', 'email'],
+      });
+      userPool.registerIdentityProvider(provider);
     });
-    userPool.registerIdentityProvider(provider);
 
     const userPoolClientProps: UserPoolClientOptions = {
       generateSecret: true,
