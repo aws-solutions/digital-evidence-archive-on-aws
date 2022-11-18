@@ -496,9 +496,6 @@ Object {
       "UpdateReplacePolicy": "Retain",
     },
     "DeaBackendStackDEAUserPoolClientE9F64654": Object {
-      "DependsOn": Array [
-        "DeaBackendStackDEAUserPoolIdentityProviderOidcD32CD785",
-      ],
       "Properties": Object {
         "AccessTokenValidity": 15,
         "AllowedOAuthFlows": Array [
@@ -524,9 +521,6 @@ Object {
         "PreventUserExistenceErrors": "ENABLED",
         "RefreshTokenValidity": 10080,
         "SupportedIdentityProviders": Array [
-          Object {
-            "Ref": "DeaBackendStackDEAUserPoolIdentityProviderOidcD32CD785",
-          },
           "COGNITO",
         ],
         "TokenValidityUnits": Object {
@@ -600,23 +594,6 @@ Object {
       },
       "Type": "AWS::Cognito::UserPool",
       "UpdateReplacePolicy": "Retain",
-    },
-    "DeaBackendStackDEAUserPoolIdentityProviderOidcD32CD785": Object {
-      "Properties": Object {
-        "ProviderDetails": Object {
-          "attributes_request_method": "GET",
-          "authorize_scopes": "openid profile email",
-          "client_id": "bogus",
-          "client_secret": "bogus",
-          "oidc_issuer": "bogus",
-        },
-        "ProviderName": "DeaMainStackDeaBiderOidc7054A7A9",
-        "ProviderType": "OIDC",
-        "UserPoolId": Object {
-          "Ref": "DeaBackendStackDEAUserPoolF5DE2A39",
-        },
-      },
-      "Type": "AWS::Cognito::UserPoolIdentityProvider",
     },
     "DeaBackendStackFlowLogB1F9C02F": Object {
       "Properties": Object {
