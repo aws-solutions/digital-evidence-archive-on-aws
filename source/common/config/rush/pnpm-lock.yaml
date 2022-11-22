@@ -115,7 +115,6 @@ importers:
       aws-cdk-lib: ^2.29.1
       aws-lambda: ^1.0.7
       axios: ^0.27.1
-      cdk-nag: ^2.12.25
       constructs: ^10.0.0
       depcheck: ^1.4.3
       esbuild: ^0.14.21
@@ -171,7 +170,6 @@ importers:
       '@vendia/serverless-express': 4.10.1
       aws-cdk: 2.50.0
       axios: 0.27.2
-      cdk-nag: 2.20.5_b149362b0bc881556934344508485d91
       depcheck: 1.4.3
       esbuild: 0.14.54
       eslint: 8.27.0
@@ -10489,7 +10487,7 @@ packages:
       '@types/jest': 27.5.2
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
-      jest: 27.5.1
+      jest: 27.5.1_ts-node@10.9.1
       jest-util: 27.5.1
       json5: 2.2.1
       lodash.memoize: 4.1.2

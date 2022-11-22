@@ -7,3 +7,7 @@ cognitoDomain: cogtest
 userPoolId: 'kiddiepool'
 clientId: 'clientidtest'
 clientSecret: 'shh'
+apiUrlOutput: 'https://bogus.bogus'
+stacks:
+  - name: teststack
+    WebsiteURL: 'https://bogus.bogus'

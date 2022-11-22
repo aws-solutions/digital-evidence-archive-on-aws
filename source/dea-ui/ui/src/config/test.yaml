@@ -1,6 +1,0 @@
-awsRegionShortName: 'Testville'
-awsRegion: 'us-test-1'
-apiUrlOutput: 'https://bogus.bogus'
-stacks:
-  - name: teststack
-    WebsiteURL: 'https://bogus.bogus'
