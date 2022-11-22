@@ -3,8 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { Express } from 'express';
-import { IApiRouteConfig } from './apiRouteConfig';
-import { generateRouter } from './generateRouter';
+import { IApiRouteConfig } from './api-route-config';
+import { generateRouter } from './generate-router';
 import { HelloWorldService } from './services/helloWorldService';
 
 export interface IBackendApiDependencyProvider {

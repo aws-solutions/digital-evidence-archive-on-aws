@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { IApiRouteConfig, IApiRoute, HTTPMethod } from './apiRouteConfig';
-import { getBackendApiApp } from './backendAPI';
+import { IApiRouteConfig, IApiRoute, HTTPMethod } from './api-route-config';
+import { getBackendApiApp } from './backend-api';
 
 export { getBackendApiApp, IApiRouteConfig, IApiRoute, HTTPMethod };

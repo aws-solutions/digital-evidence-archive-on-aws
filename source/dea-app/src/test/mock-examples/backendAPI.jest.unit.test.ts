@@ -15,7 +15,7 @@ jest.mock('../../services/helloWorldService', () => ({
 }));
 
 import request from 'supertest';
-import { getBackendApiApp } from '../../backendAPI';
+import { getBackendApiApp } from '../../backend-api';
 
 //this is covered already and provided as an example of jest import mocking
 describe('backend api with jest mocks example', () => {

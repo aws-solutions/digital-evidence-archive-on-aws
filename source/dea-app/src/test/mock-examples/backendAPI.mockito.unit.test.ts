@@ -5,7 +5,7 @@
 
 import request from 'supertest';
 import { mock, when, instance } from 'ts-mockito';
-import { getBackendApiApp } from '../../backendAPI';
+import { getBackendApiApp } from '../../backend-api';
 import { HelloWorldService } from '../../services/helloWorldService';
 
 //this is covered already and provided as an example of ts-mockito mocking
