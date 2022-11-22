@@ -11,3 +11,9 @@
 #userPoolId: ''
 #clientId: ''
 #clientSecret: ''
+
+# api url output and stack website url
+# apiUrlOutput: ''
+# stacks:
+#  - name: ''
+#    WebsiteURL: ''

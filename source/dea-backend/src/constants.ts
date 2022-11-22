@@ -53,8 +53,8 @@ function getConstants(): {
     const S3_ARTIFACT_BUCKET_BOOTSTRAP_PREFIX = 'environment-files/'; // Location of env bootstrap scripts in the artifacts bucket
     const ROOT_USER_EMAIL = config.rootUserEmail;
     const allowedOrigins: string[] = config.allowedOrigins || [];
-    const uiClientURL = getUiClientUrl();
-    if (uiClientURL) allowedOrigins.push(uiClientURL);
+    allowedOrigins.push(config.stacks[0].WebsiteURL);
+    console.log('adding allowedorigins ', config.stacks[0].WebsiteURL);
     const USER_POOL_CLIENT_NAME = `dea-client-${config.stage}-${config.awsRegionShortName}`;
     const USER_POOL_NAME = `dea-userpool-${config.stage}-${config.awsRegionShortName}`;
     const COGNITO_DOMAIN = config.cognitoDomain;
@@ -93,7 +93,7 @@ function getConstants(): {
       USER_POOL_NAME,
       ALLOWED_ORIGINS: JSON.stringify(allowedOrigins),
       AWS_REGION_SHORT_NAME: AWS_REGION_SHORT_NAME,
-      UI_CLIENT_URL: uiClientURL,
+      UI_CLIENT_URL: config.stacks[0].WebsiteURL,
       STATUS_HANDLER_ARN_OUTPUT_KEY,
       COGNITO_DOMAIN,
       WEBSITE_URLS,
@@ -104,22 +104,6 @@ function getConstants(): {
     };
   } catch (err) {
     throw new Error(`Failed to load configuration: ${err}`);
-  }
-}
-
-function getUiClientUrl(): string {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const uiClientOutput: any = yaml.load(
-      // __dirname is a variable that reference the current directory. We use it so we can dynamically navigate to the
-      // correct file
-      // eslint-disable-next-line security/detect-non-literal-fs-filename
-      fs.readFileSync(join(__dirname, `../../dea-ui/ui/src/config/${process.env.STAGE}.yaml`), 'utf8') // nosemgrep
-    );
-    return uiClientOutput.stacks[0].WebsiteURL;
-  } catch (error) {
-    console.log(`No UI Client deployed found for ${process.env.STAGE}. ${error}`);
-    return '';
   }
 }
 
