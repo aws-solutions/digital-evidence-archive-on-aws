@@ -75,9 +75,12 @@ export class DeaBackendConstruct extends Construct {
     const vpcExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaVPCAccessExecutionRole'
     );
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
     const role = new Role(this, 'dea-base-lambda-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [vpcExecutionPolicy],
+      managedPolicies: [vpcExecutionPolicy, basicExecutionPolicy],
     });
 
     const lambdaService = new nodejsLambda.NodejsFunction(this, 'dea-app-handler', {
@@ -87,7 +90,7 @@ export class DeaBackendConstruct extends Construct {
       timeout: Duration.minutes(3),
       runtime: Runtime.NODEJS_16_X,
       handler: 'handler',
-      entry: path.join(__dirname, '/../src/backendAPILambda.ts'),
+      entry: path.join(__dirname, '/../src/backend-api-lambda.ts'),
       depsLockFilePath: path.join(__dirname, '/../../common/config/rush/pnpm-lock.yaml'),
       bundling: {
         externalModules: ['aws-sdk'],

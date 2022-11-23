@@ -6,8 +6,8 @@
 import cors from 'cors';
 import express = require('express');
 import { Router, Express, Request, Response } from 'express';
-import { IApiRoute, IApiRouteConfig } from './apiRouteConfig';
-import { boomErrorHandler, unknownErrorHandler } from './errorHandlers';
+import { IApiRoute, IApiRouteConfig } from './api-route-config';
+import { boomErrorHandler, unknownErrorHandler } from './error-handlers';
 
 export function generateRouter(apiRouteConfig: IApiRouteConfig): Express {
   const app: Express = express();

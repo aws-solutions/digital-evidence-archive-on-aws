@@ -638,6 +638,18 @@ Object {
               ],
             ],
           },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
         ],
       },
       "Type": "AWS::IAM::Role",

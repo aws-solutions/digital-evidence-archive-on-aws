@@ -4,7 +4,7 @@
  */
 
 import request from 'supertest';
-import { getBackendApiApp } from '../backendAPI';
+import { getBackendApiApp } from '../backend-api';
 
 describe('hello world API', () => {
   describe('GET /hi', () => {
