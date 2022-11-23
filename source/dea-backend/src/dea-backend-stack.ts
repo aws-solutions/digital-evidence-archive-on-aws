@@ -100,7 +100,7 @@ export class DeaBackendConstruct extends Construct {
     });
 
     //CFN NAG Suppression
-    const lambdaMetaDataNode = lambdaService.node.defaultChild as CfnFunction;
+    const lambdaMetaDataNode: CfnFunction = lambdaService.node.defaultChild as CfnFunction;
     lambdaMetaDataNode.addMetadata('cfn_nag', {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       rules_to_suppress: [
