@@ -4,6 +4,7 @@
  */
 
 /* eslint-disable no-new */
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import * as path from 'path';
 import { CfnOutput, Duration, StackProps } from 'aws-cdk-lib';
 import {
