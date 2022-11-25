@@ -2,9 +2,9 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-
+/* eslint-disable no-new */
 import * as path from 'path';
-import { StackProps } from 'aws-cdk-lib';
+import { Aws, CfnOutput, RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import {
   AwsIntegration,
   ContentHandling,
@@ -13,8 +13,14 @@ import {
   PassthroughBehavior,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
-import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { BlockPublicAccess, Bucket, BucketAccessControl } from 'aws-cdk-lib/aws-s3';
+import { AnyPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import {
+  BlockPublicAccess,
+  Bucket,
+  BucketAccessControl,
+  BucketEncryption,
+  CfnBucket,
+} from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 import { getConstants } from './constants';
@@ -29,6 +35,10 @@ export class DeaUiConstruct extends Construct {
     S3_ARTIFACT_BUCKET_NAME: string;
     S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME: string;
   };
+
+  private _accessLogsBucket: Bucket;
+  private _s3AccessLogsPrefix: string;
+
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(scope: Construct, id: string, props?: StackProps) {
     const {
@@ -52,11 +62,20 @@ export class DeaUiConstruct extends Construct {
       S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME,
     };
 
+    // Create Bucket for hosting UI assets and it's access log bucket
+    this._s3AccessLogsPrefix = 'dea-ui-access-log';
+    this._accessLogsBucket = this._createAccessLogsBucket('DeaUIS3BucketAccessLogsOutput');
+
     const bucket = new Bucket(this, S3_ARTIFACT_BUCKET_NAME, {
-      accessControl: BucketAccessControl.PRIVATE,
+      accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       websiteIndexDocument: 'index.html',
+      encryption: BucketEncryption.S3_MANAGED,
+      serverAccessLogsBucket: this._accessLogsBucket,
+      serverAccessLogsPrefix: this._s3AccessLogsPrefix,
     });
+
+    this._addS3TLSSigV4BucketPolicy(bucket);
 
     // eslint-disable-next-line no-new
     new BucketDeployment(this, this.distributionEnvVars.S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME, {
@@ -130,5 +149,80 @@ export class DeaUiConstruct extends Construct {
         },
       ],
     };
+  }
+
+  private _addS3TLSSigV4BucketPolicy(s3Bucket: Bucket): void {
+    s3Bucket.addToResourcePolicy(
+      new PolicyStatement({
+        sid: 'Deny requests that do not use TLS/HTTPS',
+        effect: Effect.DENY,
+        principals: [new AnyPrincipal()],
+        actions: ['s3:*'],
+        resources: [s3Bucket.bucketArn, s3Bucket.arnForObjects('*')],
+        conditions: {
+          Bool: {
+            'aws:SecureTransport': 'false',
+          },
+        },
+      })
+    );
+    s3Bucket.addToResourcePolicy(
+      new PolicyStatement({
+        sid: 'Deny requests that do not use SigV4',
+        effect: Effect.DENY,
+        principals: [new AnyPrincipal()],
+        actions: ['s3:*'],
+        resources: [s3Bucket.arnForObjects('*')],
+        conditions: {
+          StringNotEquals: {
+            's3:signatureversion': 'AWS4-HMAC-SHA256',
+          },
+        },
+      })
+    );
+  }
+
+  private _createAccessLogsBucket(bucketNameOutput: string): Bucket {
+    const uiS3AccessLogsBucket = new Bucket(this, 'uiS3AccessLogsBucket', {
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      encryption: BucketEncryption.S3_MANAGED,
+      enforceSSL: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    uiS3AccessLogsBucket.addToResourcePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        principals: [new ServicePrincipal('logging.s3.amazonaws.com')],
+        actions: ['s3:PutObject'],
+        resources: [`${uiS3AccessLogsBucket.bucketArn}/${this._s3AccessLogsPrefix}*`],
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': Aws.ACCOUNT_ID,
+          },
+        },
+      })
+    );
+
+    //CFN NAG Suppression
+    const uiS3AccessLogsBucketNode = uiS3AccessLogsBucket.node.defaultChild;
+    if (uiS3AccessLogsBucketNode instanceof CfnBucket)
+      uiS3AccessLogsBucketNode.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W35',
+            reason:
+              "This is an access log bucket, we don't need to configure access logging for access log buckets",
+          },
+        ],
+      });
+
+    new CfnOutput(this, bucketNameOutput, {
+      value: uiS3AccessLogsBucket.bucketName,
+      exportName: bucketNameOutput,
+    });
+    return uiS3AccessLogsBucket;
   }
 }
