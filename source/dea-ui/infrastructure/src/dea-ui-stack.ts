@@ -7,6 +7,7 @@ import * as path from 'path';
 import { Aws, CfnOutput, RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import {
   AwsIntegration,
+  CfnDeployment,
   ContentHandling,
   MethodOptions,
   Model,
@@ -89,10 +90,10 @@ export class DeaUiConstruct extends Construct {
 
     bucket.grantReadWrite(executeRole);
 
-    const api = new RestApi(this, 'dea-ui-gateway', {
-      description: 'distribution api',
-    });
+    // Create rest API for UI
+    const api = this._createUIRestApi('UiDeploymentRestApi');
 
+    // Integrate API with S3 bucket
     const rootS3Integration = this._getS3Integration('index.html', bucket, executeRole);
     // GET to the root
     api.root.addMethod('GET', rootS3Integration, this._getMethodOptions());
@@ -127,6 +128,32 @@ export class DeaUiConstruct extends Construct {
         contentHandling: ContentHandling.CONVERT_TO_TEXT,
       },
     });
+  }
+
+  private _createUIRestApi(apiOutputName: string): RestApi {
+    const api = new RestApi(this, 'dea-ui-gateway', {
+      description: 'distribution api',
+    });
+    // "DeaMainStack/DeaUiStack/dea-ui-gateway/Deployment/Resource"
+    const apiNode = api.node.findChild('Deployment').node.defaultChild;
+    if (apiNode instanceof CfnDeployment) {
+      apiNode.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W68',
+            reason: "'No need to enforce Usage Plan. This is only for serving UI' ",
+          },
+        ],
+      });
+    }
+
+    new CfnOutput(this, apiOutputName, {
+      value: api.restApiName,
+      exportName: apiOutputName,
+    });
+
+    return api;
   }
 
   private _getMethodOptions(): MethodOptions {
