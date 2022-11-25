@@ -536,6 +536,16 @@ Object {
         "DeaBackendStackdeavpcIngressSubnet1RouteTableAssociation58064637",
         "DeaBackendStackdeavpcIngressSubnet2RouteTableAssociation473345C0",
       ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {

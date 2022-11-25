@@ -21,7 +21,7 @@ import {
   Vpc,
 } from 'aws-cdk-lib/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Alias, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Alias, CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as nodejsLambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
@@ -99,6 +99,20 @@ export class DeaBackendConstruct extends Construct {
       },
     });
 
+    //CFN NAG Suppression
+    const lambdaMetaDataNode = lambdaService.node.defaultChild;
+    if (lambdaMetaDataNode instanceof CfnFunction) {
+      lambdaMetaDataNode.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W58',
+            reason:
+              'AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs',
+          },
+        ],
+      });
+    }
     return lambdaService;
   }
 
