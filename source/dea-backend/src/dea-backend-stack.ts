@@ -4,7 +4,6 @@
  */
 
 /* eslint-disable no-new */
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import * as path from 'path';
 import { CfnOutput, Duration, StackProps } from 'aws-cdk-lib';
 import {
@@ -101,18 +100,19 @@ export class DeaBackendConstruct extends Construct {
     });
 
     //CFN NAG Suppression
-    const lambdaMetaDataNode: CfnFunction = lambdaService.node.defaultChild as CfnFunction;
-    lambdaMetaDataNode.addMetadata('cfn_nag', {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      rules_to_suppress: [
-        {
-          id: 'W58',
-          reason:
-            'AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs',
-        },
-      ],
-    });
-
+    const lambdaMetaDataNode = lambdaService.node.defaultChild;
+    if (lambdaMetaDataNode instanceof CfnFunction) {
+      lambdaMetaDataNode.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W58',
+            reason:
+              'AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs',
+          },
+        ],
+      });
+    }
     return lambdaService;
   }
 
