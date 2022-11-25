@@ -88,7 +88,7 @@ Object {
             },
             "/",
             Object {
-              "Ref": "DeaUiStackdeauigatewayDeploymentStageprodA3168B7D",
+              "Ref": "DeaUiStackdeauigatewayDeploymentStagedevAEE02F77",
             },
             "/",
           ],
@@ -946,6 +946,14 @@ Object {
       },
       "Type": "AWS::EC2::SecurityGroup",
     },
+    "DeaUiStackAPIGatewayAccessLogsC67405C3": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "RetentionInDays": 731,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
     "DeaUiStackDeaUiStackbucket2409F549": Object {
       "DeletionPolicy": "Retain",
       "Properties": Object {
@@ -1176,18 +1184,27 @@ Object {
       },
       "Type": "AWS::ApiGateway::Deployment",
     },
-    "DeaUiStackdeauigatewayDeploymentStageprodA3168B7D": Object {
+    "DeaUiStackdeauigatewayDeploymentStagedevAEE02F77": Object {
       "DependsOn": Array [
         "DeaUiStackdeauigatewayAccount1A92DBB5",
       ],
       "Properties": Object {
+        "AccessLogSetting": Object {
+          "DestinationArn": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackAPIGatewayAccessLogsC67405C3",
+              "Arn",
+            ],
+          },
+          "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
+        },
         "DeploymentId": Object {
           "Ref": "DeaUiStackdeauigatewayDeployment34004937c730247bbdaa583ac7090ba2f990d9e0",
         },
         "RestApiId": Object {
           "Ref": "DeaUiStackdeauigateway147D98B7",
         },
-        "StageName": "prod",
+        "StageName": "dev",
       },
       "Type": "AWS::ApiGateway::Stage",
     },

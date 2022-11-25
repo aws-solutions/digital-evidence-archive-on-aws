@@ -6,15 +6,18 @@
 import * as path from 'path';
 import { Aws, CfnOutput, RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import {
+  AccessLogFormat,
   AwsIntegration,
   CfnDeployment,
   ContentHandling,
+  LogGroupLogDestination,
   MethodOptions,
   Model,
   PassthroughBehavior,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
 import { AnyPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import {
   BlockPublicAccess,
   Bucket,
@@ -131,8 +134,29 @@ export class DeaUiConstruct extends Construct {
   }
 
   private _createUIRestApi(apiOutputName: string): RestApi {
+    const logGroup = new LogGroup(this, 'APIGatewayAccessLogs');
     const api = new RestApi(this, 'dea-ui-gateway', {
       description: 'distribution api',
+      deployOptions: {
+        stageName: 'dev',
+        accessLogDestination: new LogGroupLogDestination(logGroup),
+        accessLogFormat: AccessLogFormat.custom(
+          JSON.stringify({
+            stage: '$context.stage',
+            requestId: '$context.requestId',
+            integrationRequestId: '$context.integration.requestId',
+            status: '$context.status',
+            apiId: '$context.apiId',
+            resourcePath: '$context.resourcePath',
+            path: '$context.path',
+            resourceId: '$context.resourceId',
+            httpMethod: '$context.httpMethod',
+            sourceIp: '$context.identity.sourceIp',
+            userAgent: '$context.identity.userAgent',
+          })
+        ),
+      },
+      // TODO: Add CORS Preflight
     });
     // "DeaMainStack/DeaUiStack/dea-ui-gateway/Deployment/Resource"
     const apiNode = api.node.findChild('Deployment').node.defaultChild;
