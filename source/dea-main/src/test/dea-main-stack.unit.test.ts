@@ -7,7 +7,6 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { BucketAccessControl } from 'aws-cdk-lib/aws-s3';
 import { DeaMainStack } from '../dea-main-stack';
 
 describe('DeaMainStack', () => {
@@ -45,7 +44,7 @@ describe('DeaMainStack', () => {
     });
 
     template.hasResourceProperties('AWS::S3::Bucket', {
-      AccessControl: BucketAccessControl.PRIVATE,
+      AccessControl: 'LogDeliveryWrite',
       PublicAccessBlockConfiguration: {
         BlockPublicAcls: true,
         BlockPublicPolicy: true,
@@ -55,8 +54,8 @@ describe('DeaMainStack', () => {
     });
 
     expect.addSnapshotSerializer({
-      test: val => typeof val === 'string' && val.includes('zip'),
-      print: val => {
+      test: (val) => typeof val === 'string' && val.includes('zip'),
+      print: (val) => {
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const newVal = (val as string).replace(/([A-Fa-f0-9]{64})/, '[HASH REMOVED]');
         return `"${newVal}"`;
