@@ -275,8 +275,4 @@ export class DeaUiConstruct extends Construct {
     });
     return uiS3AccessLogsBucket;
   }
-
-  private _uiStackConstructNagSuppress(): void {
-    //"DeaMainStack/DeaUiStack/DeaUiStack-deployment-bucket/CustomResource/Default"
-  }
 }

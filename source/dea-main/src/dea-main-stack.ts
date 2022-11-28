@@ -31,8 +31,6 @@ export class DeaMainStack extends cdk.Stack {
     // Suppress W58 for custom resource
     const cdkLambda = this.node.findChild('Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C').node
       .defaultChild;
-    console.log('test');
-    console.log(cdkLambda);
     if (cdkLambda instanceof CfnFunction) {
       console.log('adding nag');
       cdkLambda.addMetadata('cfn_nag', {
