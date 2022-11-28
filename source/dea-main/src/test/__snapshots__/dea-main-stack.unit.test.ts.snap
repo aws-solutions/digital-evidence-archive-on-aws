@@ -116,6 +116,10 @@ Object {
               "id": "W58",
               "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
             },
+            Object {
+              "id": "W89",
+              "reason": "VPCs are not used for this use case. Custom resource for serving UI",
+            },
           ],
         },
       },
@@ -276,6 +280,16 @@ Object {
       "Type": "AWS::ApiGateway::RestApi",
     },
     "DeaBackendStackAPIGatewayAPIANY85D2CE20": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "ANY",
@@ -312,6 +326,21 @@ Object {
     },
     "DeaBackendStackAPIGatewayAPIBackendUsagePlanBEFA1FC3": Object {
       "Properties": Object {
+        "ApiStages": Array [
+          Object {
+            "ApiId": Object {
+              "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
+            },
+            "Stage": Object {
+              "Ref": "DeaBackendStackAPIGatewayAPIDeploymentStagedevC055C086",
+            },
+            "Throttle": Object {},
+          },
+        ],
+        "Throttle": Object {
+          "BurstLimit": 50,
+          "RateLimit": 25,
+        },
         "UsagePlanName": "backend-usage-plan",
       },
       "Type": "AWS::ApiGateway::UsagePlan",
@@ -403,6 +432,16 @@ Object {
       "Type": "AWS::ApiGateway::Resource",
     },
     "DeaBackendStackAPIGatewayAPIproxyANY42138D59": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "ANY",
@@ -1161,6 +1200,16 @@ Object {
       "Type": "AWS::ApiGateway::Stage",
     },
     "DeaUiStackdeauigatewayGET36636906": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
@@ -1254,6 +1303,16 @@ Object {
       "Type": "AWS::ApiGateway::Resource",
     },
     "DeaUiStackdeauigatewayproxyGET48BC7F5C": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
