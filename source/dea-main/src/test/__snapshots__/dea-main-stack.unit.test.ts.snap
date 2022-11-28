@@ -1179,6 +1179,16 @@ Object {
       "DependsOn": Array [
         "DeaUiStackdeauigatewayAccount1A92DBB5",
       ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W64",
+              "reason": "'No need to enforce Usage Plan. This is only for serving UI' ",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AccessLogSetting": Object {
           "DestinationArn": Object {
