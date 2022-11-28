@@ -143,8 +143,17 @@ export class DeaBackendConstruct extends Construct {
       // TODO: Add CORS Preflight
     });
 
-    API.addUsagePlan('Backend Usage Plan', {
+    const plan = API.addUsagePlan('Backend Usage Plan', {
       name: 'backend-usage-plan',
+      throttle: {
+        rateLimit: 25,
+        burstLimit: 50,
+      },
+    });
+
+    plan.addApiStage({
+      api: API,
+      stage: API.deploymentStage,
     });
 
     new CfnOutput(this, 'apiUrlOutput', {

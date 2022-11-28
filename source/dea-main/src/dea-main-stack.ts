@@ -7,6 +7,7 @@
 import { DeaBackendConstruct } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
+import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
@@ -22,9 +23,15 @@ export class DeaMainStack extends cdk.Stack {
     new DeaUiConstruct(this, 'DeaUiConstruct', {});
 
     // Stack node resource handling
+    // ======================================
     // Suppress CFN issues with dea-main stack as the primary node here since we cannot access
     // resource node directly in the ui or backend construct
     this._uiStackConstructNagSuppress();
+
+    // TODO: Stack Handling
+    // These are resources that will be configured in a future story. Please remove these suppressions or modify them to the specific resources as needed
+    // when we tackle the particular story. Details in function below
+    this._apiGwAuthNagSuppresions();
   }
 
   private _uiStackConstructNagSuppress(): void {
@@ -40,8 +47,68 @@ export class DeaMainStack extends cdk.Stack {
             reason:
               'AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs',
           },
+          {
+            id: 'W89',
+            reason: 'VPCs are not used for this use case. Custom resource for serving UI',
+          },
         ],
       });
     }
+  }
+
+  private _apiGwAuthNagSuppresions(): void {
+    // Nag suppress on all authorizationType related warnings until our Auth implementation is complete
+    const apiGwMethodArray = [];
+    // Backend API GW
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaBackendStack')
+        .node.findChild('API-Gateway API')
+        .node.findChild('Default')
+        .node.findChild('{proxy+}')
+        .node.findChild('ANY').node.defaultChild
+    );
+
+    // Backend API Usage Plan
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaBackendStack')
+        .node.findChild('API-Gateway API')
+        .node.findChild('Default')
+        .node.findChild('ANY').node.defaultChild
+    );
+
+    // UI API GW
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaUiStack')
+        .node.findChild('dea-ui-gateway')
+        .node.findChild('Default')
+        .node.findChild('GET').node.defaultChild
+    );
+
+    // UI API GW Proxy
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaUiStack')
+        .node.findChild('dea-ui-gateway')
+        .node.findChild('Default')
+        .node.findChild('{proxy+}')
+        .node.findChild('GET').node.defaultChild
+    );
+
+    apiGwMethodArray.forEach((apiGwMethod) => {
+      if (apiGwMethod instanceof CfnMethod) {
+        apiGwMethod.addMetadata('cfn_nag', {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          rules_to_suppress: [
+            {
+              id: 'W59',
+              reason: 'Auth not implemented yet, will revisit',
+            },
+          ],
+        });
+      }
+    });
   }
 }

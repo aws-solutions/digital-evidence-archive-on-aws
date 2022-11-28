@@ -9,6 +9,7 @@ import {
   AccessLogFormat,
   AwsIntegration,
   CfnDeployment,
+  CfnStage,
   ContentHandling,
   LogGroupLogDestination,
   MethodOptions,
@@ -159,18 +160,8 @@ export class DeaUiConstruct extends Construct {
       // TODO: Add CORS Preflight
     });
 
-    const apiNode = api.node.findChild('Deployment').node.defaultChild;
-    if (apiNode instanceof CfnDeployment) {
-      apiNode.addMetadata('cfn_nag', {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        rules_to_suppress: [
-          {
-            id: 'W68',
-            reason: "'No need to enforce Usage Plan. This is only for serving UI' ",
-          },
-        ],
-      });
-    }
+    // Handle CFN Nag Suppressions
+    this._apiGwUiWarnSuppress(api);
 
     new CfnOutput(this, apiOutputName, {
       value: api.restApiName,
@@ -274,5 +265,34 @@ export class DeaUiConstruct extends Construct {
       exportName: bucketNameOutput,
     });
     return uiS3AccessLogsBucket;
+  }
+
+  private _apiGwUiWarnSuppress(api: RestApi): void {
+    // Don't need usage plan for UI API GW
+    const stageNode = api.node.findChild('DeploymentStage.dev').node.defaultChild;
+    const apiNode = api.node.findChild('Deployment').node.defaultChild;
+    if (apiNode instanceof CfnDeployment) {
+      apiNode.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W68',
+            reason: "'No need to enforce Usage Plan. This is only for serving UI' ",
+          },
+        ],
+      });
+    }
+
+    if (stageNode instanceof CfnStage) {
+      stageNode.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W64',
+            reason: "'No need to enforce Usage Plan. This is only for serving UI' ",
+          },
+        ],
+      });
+    }
   }
 }
