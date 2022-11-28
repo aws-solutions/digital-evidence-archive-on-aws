@@ -32,7 +32,6 @@ export class DeaMainStack extends cdk.Stack {
     const cdkLambda = this.node.findChild('Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C').node
       .defaultChild;
     if (cdkLambda instanceof CfnFunction) {
-      console.log('adding nag');
       cdkLambda.addMetadata('cfn_nag', {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         rules_to_suppress: [
@@ -43,8 +42,6 @@ export class DeaMainStack extends cdk.Stack {
           },
         ],
       });
-    } else {
-      console.log('adding nag');
     }
   }
 }
