@@ -239,7 +239,6 @@ export class DeaUiConstruct extends Construct {
       encryption: BucketEncryption.S3_MANAGED,
       enforceSSL: true,
       removalPolicy: RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
     });
 
     uiS3AccessLogsBucket.addToResourcePolicy(
@@ -275,5 +274,9 @@ export class DeaUiConstruct extends Construct {
       exportName: bucketNameOutput,
     });
     return uiS3AccessLogsBucket;
+  }
+
+  private _uiStackConstructNagSuppress(): void {
+    //"DeaMainStack/DeaUiStack/DeaUiStack-deployment-bucket/CustomResource/Default"
   }
 }
