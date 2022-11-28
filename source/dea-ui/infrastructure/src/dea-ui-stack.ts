@@ -6,14 +6,18 @@
 import * as path from 'path';
 import { Aws, CfnOutput, RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import {
+  AccessLogFormat,
   AwsIntegration,
+  CfnDeployment,
   ContentHandling,
+  LogGroupLogDestination,
   MethodOptions,
   Model,
   PassthroughBehavior,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
 import { AnyPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import {
   BlockPublicAccess,
   Bucket,
@@ -89,10 +93,10 @@ export class DeaUiConstruct extends Construct {
 
     bucket.grantReadWrite(executeRole);
 
-    const api = new RestApi(this, 'dea-ui-gateway', {
-      description: 'distribution api',
-    });
+    // Create rest API for UI
+    const api = this._createUIRestApi('UiDeploymentRestApi');
 
+    // Integrate API with S3 bucket
     const rootS3Integration = this._getS3Integration('index.html', bucket, executeRole);
     // GET to the root
     api.root.addMethod('GET', rootS3Integration, this._getMethodOptions());
@@ -127,6 +131,53 @@ export class DeaUiConstruct extends Construct {
         contentHandling: ContentHandling.CONVERT_TO_TEXT,
       },
     });
+  }
+
+  private _createUIRestApi(apiOutputName: string): RestApi {
+    const logGroup = new LogGroup(this, 'APIGatewayAccessLogs');
+    const api = new RestApi(this, 'dea-ui-gateway', {
+      description: 'distribution api',
+      deployOptions: {
+        stageName: 'dev',
+        accessLogDestination: new LogGroupLogDestination(logGroup),
+        accessLogFormat: AccessLogFormat.custom(
+          JSON.stringify({
+            stage: '$context.stage',
+            requestId: '$context.requestId',
+            integrationRequestId: '$context.integration.requestId',
+            status: '$context.status',
+            apiId: '$context.apiId',
+            resourcePath: '$context.resourcePath',
+            path: '$context.path',
+            resourceId: '$context.resourceId',
+            httpMethod: '$context.httpMethod',
+            sourceIp: '$context.identity.sourceIp',
+            userAgent: '$context.identity.userAgent',
+          })
+        ),
+      },
+      // TODO: Add CORS Preflight
+    });
+
+    const apiNode = api.node.findChild('Deployment').node.defaultChild;
+    if (apiNode instanceof CfnDeployment) {
+      apiNode.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W68',
+            reason: "'No need to enforce Usage Plan. This is only for serving UI' ",
+          },
+        ],
+      });
+    }
+
+    new CfnOutput(this, apiOutputName, {
+      value: api.restApiName,
+      exportName: apiOutputName,
+    });
+
+    return api;
   }
 
   private _getMethodOptions(): MethodOptions {
@@ -188,7 +239,6 @@ export class DeaUiConstruct extends Construct {
       encryption: BucketEncryption.S3_MANAGED,
       enforceSSL: true,
       removalPolicy: RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
     });
 
     uiS3AccessLogsBucket.addToResourcePolicy(
