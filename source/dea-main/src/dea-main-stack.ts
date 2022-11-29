@@ -57,6 +57,11 @@ export class DeaMainStack extends cdk.Stack {
             id: 'W89',
             reason: 'VPCs are not used for this use case. Custom resource for serving UI',
           },
+          {
+            id: 'W92',
+            reason:
+              'AWSCustomResource Lambda Function used for provisioning UI assets, reserved concurrency is not required',
+          },
         ],
       });
     }
