@@ -23,21 +23,14 @@ cd ./$WORKSPACE_NAME
 git checkout --track origin/develop
 ```
 
-5. Be sure to ingest MAF Workbench core submodule
-Use the following command to checkout solution spark
-
-```
-git submodule update --init --recursive --remote
-```
-
-6. Run Rush Install
+5. Run Rush Install
 
 ```
 cd ./source
 rush cupdate
 ```
 
-7. Setup Git Defender
+6. Setup Git Defender
 
 ```
 git defender --setup
@@ -46,7 +39,7 @@ git defender --setup
 ## Creating a PR from a Commit(s)
 
 ```
-git pull upstream develop --rebase
+git pull origin develop --rebase
 ```
 
 ```
