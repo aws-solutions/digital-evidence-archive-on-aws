@@ -9,7 +9,7 @@ import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
 import { CfnOutput } from 'aws-cdk-lib';
 import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
-import { AccountPrincipal, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { AccountPrincipal, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
@@ -132,6 +132,12 @@ export class DeaMainStack extends cdk.Stack {
           resources: ['*'],
           sid: 'main-key-share-statement',
         }),
+        new PolicyStatement({
+          actions: ['kms:*'],
+          principals: [new ServicePrincipal(`logs.${this.region}.amazonaws.com`)],
+          resources: ['*'],
+          sid: 'main-key-share-statement',
+        }),
       ],
     });
 
@@ -140,6 +146,7 @@ export class DeaMainStack extends cdk.Stack {
       policy: mainKeyPolicy,
     });
 
+    console.log(this.region);
     new CfnOutput(this, 'main account kms key', {
       value: key.keyArn,
     });
