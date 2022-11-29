@@ -95,6 +95,14 @@ Object {
         ],
       },
     },
+    "mainaccountkmskey": Object {
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "mainAccountKey6FC3B4CA",
+          "Arn",
+        ],
+      },
+    },
   },
   "Parameters": Object {
     "BootstrapVersion": Object {
@@ -553,6 +561,12 @@ Object {
     "DeaBackendStackAPIGatewayAccessLogsA65761F7": Object {
       "DeletionPolicy": "Retain",
       "Properties": Object {
+        "KmsKeyId": Object {
+          "Fn::GetAtt": Array [
+            "mainAccountKey6FC3B4CA",
+            "Arn",
+          ],
+        },
         "RetentionInDays": 731,
       },
       "Type": "AWS::Logs::LogGroup",
@@ -859,6 +873,12 @@ Object {
     "DeaBackendStackdeavpcloggroup901AE5A5": Object {
       "DeletionPolicy": "Retain",
       "Properties": Object {
+        "KmsKeyId": Object {
+          "Fn::GetAtt": Array [
+            "mainAccountKey6FC3B4CA",
+            "Arn",
+          ],
+        },
         "RetentionInDays": 731,
       },
       "Type": "AWS::Logs::LogGroup",
@@ -940,6 +960,12 @@ Object {
     "DeaUiStackAPIGatewayAccessLogsC67405C3": Object {
       "DeletionPolicy": "Retain",
       "Properties": Object {
+        "KmsKeyId": Object {
+          "Fn::GetAtt": Array [
+            "mainAccountKey6FC3B4CA",
+            "Arn",
+          ],
+        },
         "RetentionInDays": 731,
       },
       "Type": "AWS::Logs::LogGroup",
@@ -1574,6 +1600,43 @@ Object {
         },
       },
       "Type": "AWS::S3::BucketPolicy",
+    },
+    "mainAccountKey6FC3B4CA": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "EnableKeyRotation": true,
+        "KeyPolicy": Object {
+          "Statement": Array [
+            Object {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+              "Sid": "main-key-share-statement",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
     },
   },
   "Rules": Object {

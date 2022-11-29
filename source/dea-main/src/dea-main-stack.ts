@@ -7,7 +7,10 @@
 import { DeaBackendConstruct } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
+import { CfnOutput } from 'aws-cdk-lib';
 import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
+import { AccountPrincipal, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
@@ -16,11 +19,14 @@ export class DeaMainStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    // Create KMS key to pass into backend and UI
+    const kmsKey: Key = this._createEncryptionKey();
+
     // DEA Backend Construct
-    new DeaBackendConstruct(this, 'DeaBackendConstruct', {});
+    new DeaBackendConstruct(this, 'DeaBackendConstruct', { kmsKey: kmsKey });
 
     // DEA UI Construct
-    new DeaUiConstruct(this, 'DeaUiConstruct', {});
+    new DeaUiConstruct(this, 'DeaUiConstruct', { kmsKey: kmsKey });
 
     // Stack node resource handling
     // ======================================
@@ -110,5 +116,28 @@ export class DeaMainStack extends cdk.Stack {
         });
       }
     });
+  }
+
+  private _createEncryptionKey(): Key {
+    const mainKeyPolicy = new PolicyDocument({
+      statements: [
+        new PolicyStatement({
+          actions: ['kms:*'],
+          principals: [new AccountPrincipal(this.account)],
+          resources: ['*'],
+          sid: 'main-key-share-statement',
+        }),
+      ],
+    });
+
+    const key = new Key(this, 'mainAccountKey', {
+      enableKeyRotation: true,
+      policy: mainKeyPolicy,
+    });
+
+    new CfnOutput(this, 'main account kms key', {
+      value: key.keyArn,
+    });
+    return key;
   }
 }
