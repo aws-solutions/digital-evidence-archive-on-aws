@@ -21,6 +21,7 @@ import {
   Vpc,
 } from 'aws-cdk-lib/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Key } from 'aws-cdk-lib/aws-kms';
 import { Alias, CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as nodejsLambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -28,19 +29,23 @@ import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 import { getConstants } from './constants';
 
+interface IBackendStackProps extends StackProps {
+  kmsKey: Key;
+}
+
 export class DeaBackendConstruct extends Construct {
-  public constructor(scope: Construct, id: string, props?: StackProps) {
+  public constructor(scope: Construct, id: string, props: IBackendStackProps) {
     const { STACK_NAME } = getConstants();
 
     super(scope, STACK_NAME);
 
     //take a optional VPC from config, if not provided create one
-    const vpc = this._createVpc();
+    const vpc = this._createVpc(props.kmsKey);
     const apiLambda = this._createAPILambda(vpc);
-    this._createRestApi(apiLambda);
+    this._createRestApi(apiLambda, props.kmsKey);
   }
 
-  private _createVpc(): Vpc {
+  private _createVpc(key: Key): Vpc {
     const vpc = new Vpc(this, 'dea-vpc', {
       natGateways: 0,
       subnetConfiguration: [
@@ -56,7 +61,9 @@ export class DeaBackendConstruct extends Construct {
       vpc,
     });
 
-    const logGroup = new LogGroup(this, 'dea-vpc-log-group');
+    const logGroup = new LogGroup(this, 'dea-vpc-log-group', {
+      encryptionKey: key,
+    });
 
     const role = new Role(this, 'flow-log-role', {
       assumedBy: new ServicePrincipal('vpc-flow-logs.amazonaws.com'),
@@ -117,8 +124,10 @@ export class DeaBackendConstruct extends Construct {
   }
 
   // API Gateway
-  private _createRestApi(apiLambda: NodejsFunction): void {
-    const logGroup = new LogGroup(this, 'APIGatewayAccessLogs');
+  private _createRestApi(apiLambda: NodejsFunction, key: Key): void {
+    const logGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
+      encryptionKey: key,
+    });
     const API: RestApi = new RestApi(this, `API-Gateway API`, {
       description: 'Backend API',
       deployOptions: {

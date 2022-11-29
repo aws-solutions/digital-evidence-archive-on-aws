@@ -18,6 +18,7 @@ import {
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
 import { AnyPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Key } from 'aws-cdk-lib/aws-kms';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import {
   BlockPublicAccess,
@@ -29,6 +30,10 @@ import {
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 import { getConstants } from './constants';
+
+interface IUiStackProps extends StackProps {
+  kmsKey: Key;
+}
 
 export class DeaUiConstruct extends Construct {
   public distributionEnvVars: {
@@ -45,7 +50,7 @@ export class DeaUiConstruct extends Construct {
   private _s3AccessLogsPrefix: string;
 
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props: IUiStackProps) {
     const {
       STAGE,
       STACK_NAME,
@@ -95,7 +100,7 @@ export class DeaUiConstruct extends Construct {
     bucket.grantReadWrite(executeRole);
 
     // Create rest API for UI
-    const api = this._createUIRestApi('UiDeploymentRestApi');
+    const api = this._createUIRestApi('UiDeploymentRestApi', props.kmsKey);
 
     // Integrate API with S3 bucket
     const rootS3Integration = this._getS3Integration('index.html', bucket, executeRole);
@@ -134,8 +139,10 @@ export class DeaUiConstruct extends Construct {
     });
   }
 
-  private _createUIRestApi(apiOutputName: string): RestApi {
-    const logGroup = new LogGroup(this, 'APIGatewayAccessLogs');
+  private _createUIRestApi(apiOutputName: string, key: Key): RestApi {
+    const logGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
+      encryptionKey: key,
+    });
     const api = new RestApi(this, 'dea-ui-gateway', {
       description: 'distribution api',
       deployOptions: {
