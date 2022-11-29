@@ -20,12 +20,6 @@
 
 To install for the first time, run the following commands:
 
-Install git submodules
-
-```
-git submodule update --init --recursive --remote
-```
-
 Update & build rush
 
 ```
