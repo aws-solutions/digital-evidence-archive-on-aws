@@ -39,6 +39,8 @@ jobs:
           node common/scripts/install-run-rush.js lint
       - name: CFN Nag
         run: |
+          brew install ruby brew-gem
+          brew gem install cfn-nag
           cd dea-main
           STAGE=test npm run cdk synth
           cfn_nag_scan --fail-on-warnings --input-path ./cdk.out/DeaMainStack.template.json
