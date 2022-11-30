@@ -54,7 +54,6 @@ function getConstants(): {
     const ROOT_USER_EMAIL = config.rootUserEmail;
     const allowedOrigins: string[] = config.allowedOrigins || [];
     allowedOrigins.push(config.stacks[0].WebsiteURL);
-    console.log('adding allowedorigins ', config.stacks[0].WebsiteURL);
     const USER_POOL_CLIENT_NAME = `dea-client-${config.stage}-${config.awsRegionShortName}`;
     const USER_POOL_NAME = `dea-userpool-${config.stage}-${config.awsRegionShortName}`;
     const COGNITO_DOMAIN = config.cognitoDomain;

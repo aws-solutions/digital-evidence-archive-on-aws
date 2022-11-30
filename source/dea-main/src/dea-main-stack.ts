@@ -146,7 +146,6 @@ export class DeaMainStack extends cdk.Stack {
       policy: mainKeyPolicy,
     });
 
-    console.log(this.region);
     new CfnOutput(this, 'main account kms key', {
       value: key.keyArn,
     });
