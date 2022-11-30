@@ -46,6 +46,7 @@ jobs:
         uses: stelligent/cfn_nag@master
         with:
           input_path: source/dea-main/cdk.out
+          extra_args: --fail-on-warnings -o json
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:only
