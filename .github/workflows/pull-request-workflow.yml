@@ -39,8 +39,6 @@ jobs:
           node common/scripts/install-run-rush.js lint
       - name: cdk synth
         run: |
-          brew install ruby brew-gem
-          brew gem install cfn-nag
           cd dea-main
           STAGE=test npm run cdk synth
           cd ..
