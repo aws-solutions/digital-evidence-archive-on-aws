@@ -128,6 +128,10 @@ Object {
               "id": "W89",
               "reason": "VPCs are not used for this use case. Custom resource for serving UI",
             },
+            Object {
+              "id": "W92",
+              "reason": "AWSCustomResource Lambda Function used for provisioning UI assets, reserved concurrency is not required",
+            },
           ],
         },
       },
@@ -619,6 +623,10 @@ Object {
             Object {
               "id": "W58",
               "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
             },
           ],
         },
@@ -1624,6 +1632,26 @@ Object {
                         "Ref": "AWS::AccountId",
                       },
                       ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+              "Sid": "main-key-share-statement",
+            },
+            Object {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "logs.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com",
                     ],
                   ],
                 },
