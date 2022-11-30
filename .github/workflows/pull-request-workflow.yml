@@ -37,14 +37,17 @@ jobs:
       - name: Rush Lint
         run: |
           node common/scripts/install-run-rush.js lint
-      - name: CFN Nag
+      - name: cdk synth
         run: |
           brew install ruby brew-gem
           brew gem install cfn-nag
           cd dea-main
           STAGE=test npm run cdk synth
-          cfn_nag_scan --fail-on-warnings --input-path ./cdk.out/DeaMainStack.template.json
           cd ..
+      - name: cfn nag
+        uses: stelligent/cfn_nag@master
+        with:
+          input_path: dea-main/cdk.out
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:only
