@@ -40,8 +40,7 @@ jobs:
       - name: CFN Nag
         run: |
           cd dea-main
-          STAGE=test
-          $STAGE=STAGE npm run cdk synth
+          STAGE=test npm run cdk synth
           npm run cfn_nag_scan --fail-on-warnings --input-path ./cdk.out/DeaMainStack.template.json
           cd ..
       - name: Rush Test
