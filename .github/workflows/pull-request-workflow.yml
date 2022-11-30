@@ -41,7 +41,7 @@ jobs:
         run: |
           cd dea-main
           STAGE=test npm run cdk synth
-          npm run cfn_nag_scan --fail-on-warnings --input-path ./cdk.out/DeaMainStack.template.json
+          cfn_nag_scan --fail-on-warnings --input-path ./cdk.out/DeaMainStack.template.json
           cd ..
       - name: Rush Test
         run: |
