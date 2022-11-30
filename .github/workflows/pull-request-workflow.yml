@@ -45,7 +45,7 @@ jobs:
       - name: cfn nag
         uses: stelligent/cfn_nag@master
         with:
-          input_path: dea-main
+          input_path: source/dea-main
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:only
