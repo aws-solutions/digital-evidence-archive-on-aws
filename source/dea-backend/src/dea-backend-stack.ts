@@ -13,6 +13,7 @@ import {
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
 import {
+  CfnSecurityGroup,
   FlowLog,
   FlowLogDestination,
   FlowLogResourceType,
@@ -57,8 +58,20 @@ export class DeaBackendConstruct extends Construct {
       ],
     });
 
-    new SecurityGroup(this, 'vpc-sg', {
-      vpc,
+    new CfnSecurityGroup(this, 'vpc-sg', {
+      groupDescription: 'dea-vpc security group',
+      securityGroupEgress: [
+        {
+          ipProtocol: 'tcp',
+
+          // the properties below are optional
+          cidrIp: '0.0.0.0/32',
+          fromPort: 1,
+          toPort: 1,
+          description: 'egress rule for dea vpc',
+        },
+      ],
+      vpcId: vpc.vpcId,
     });
 
     const logGroup = new LogGroup(this, 'dea-vpc-log-group', {
@@ -90,6 +103,17 @@ export class DeaBackendConstruct extends Construct {
       managedPolicies: [vpcExecutionPolicy, basicExecutionPolicy],
     });
 
+    const securityGroups = [];
+    const lambdaSecurityGroup = new SecurityGroup(this, 'testSecurityGroup', {
+      vpc,
+      description: 'security group for restapi lambda',
+    });
+
+    // nag suppresions related to egress rules
+    this._addEgressSuppressions(lambdaSecurityGroup);
+
+    securityGroups.push(lambdaSecurityGroup);
+
     const lambdaService = new nodejsLambda.NodejsFunction(this, 'dea-app-handler', {
       memorySize: 512,
       vpc,
@@ -97,6 +121,7 @@ export class DeaBackendConstruct extends Construct {
       timeout: Duration.minutes(3),
       runtime: Runtime.NODEJS_16_X,
       handler: 'handler',
+      securityGroups: securityGroups,
       entry: path.join(__dirname, '/../src/backend-api-lambda.ts'),
       depsLockFilePath: path.join(__dirname, '/../../common/config/rush/pnpm-lock.yaml'),
       bundling: {
@@ -181,5 +206,24 @@ export class DeaBackendConstruct extends Construct {
     API.root.addProxy({
       defaultIntegration: new LambdaIntegration(alias),
     });
+  }
+
+  private _addEgressSuppressions(sg: SecurityGroup): void {
+    const resource = sg.node.defaultChild;
+    if (resource instanceof CfnSecurityGroup) {
+      resource.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W40',
+            reason: 'Revisit later. Need to discuss ip protocol',
+          },
+          {
+            id: 'W5',
+            reason: 'Revisit later. Unable to set CIDR range on egress',
+          },
+        ],
+      });
+    }
   }
 }

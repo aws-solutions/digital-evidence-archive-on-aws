@@ -3,9 +3,9 @@ name: Pull Request Workflow
 on:
   pull_request:
     branches:
-      - 'develop'
-      - 'main'
-    types: 
+      - "develop"
+      - "main"
+    types:
       - opened
       - edited
       - reopened
@@ -37,6 +37,13 @@ jobs:
       - name: Rush Lint
         run: |
           node common/scripts/install-run-rush.js lint
+      - name: CFN Nag
+        run: |
+          cd dea-main
+          STAGE=test
+          $STAGE=STAGE npm run cdk synth
+          npm run cfn_nag_scan --fail-on-warnings --input-path ./cdk.out/DeaMainStack.template.json
+          cd ..
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:only
