@@ -142,10 +142,6 @@ export class DeaBackendConstruct extends Construct {
             reason:
               'AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs',
           },
-          {
-            id: 'W92',
-            reason: 'Reserved concurrency is currently not required. Revisit in the future',
-          },
         ],
       });
     }
