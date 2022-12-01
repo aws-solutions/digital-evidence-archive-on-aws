@@ -47,8 +47,11 @@ jobs:
         id: cfn_nag
         with:
           input_path: source/dea-main/cdk.out/DeaMainStack.template.json
-          extra_args: --fail-on-warnings
+          extra_args: -o json
           output_path: cfn_nag.out
+      - name: Grep cfn-nag for violations
+        run: |
+          ! grep -C 3 'WARN\|FAIL' cfn_nag.out
       - name: Fail if cfn_nag scan contains failures, warnings
         # sum cfn_nag failures, warnigns and return it as exit code
         run: |
