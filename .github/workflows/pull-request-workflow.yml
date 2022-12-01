@@ -47,7 +47,7 @@ jobs:
         id: nag
         with:
           input_path: source/dea-main/cdk.out/DeaMainStack.template.json
-          extra_args: --fail-on-warnings -o json
+          extra_args: --fail-on-warnings
       - name: Nag Check
         env:
           NAG_OUTPUT: ${{ steps.nag.outputs.stdout }}
