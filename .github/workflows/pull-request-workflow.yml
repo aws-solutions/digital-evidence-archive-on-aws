@@ -44,9 +44,15 @@ jobs:
           cd ..
       - name: cfn nag
         uses: stelligent/cfn_nag@master
+        id: nag
         with:
           input_path: source/dea-main/cdk.out/DeaMainStack.template.json
           extra_args: --fail-on-warnings -o json
+      - name: Nag Check
+        env:
+          NAG_OUTPUT: ${{ steps.nag.outputs.stdout }}
+        run: |
+          echo $NAG_OUTPUT
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:only
