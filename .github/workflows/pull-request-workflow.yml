@@ -45,7 +45,7 @@ jobs:
       - name: cfn nag
         uses: stelligent/cfn_nag@master
         with:
-          input_path: source/dea-main//cdk.out/DeaMainStack.template.json
+          input_path: source/dea-main/cdk.out/DeaMainStack.template.json
           extra_args: --fail-on-warnings -o json
       - name: Rush Test
         run: |
