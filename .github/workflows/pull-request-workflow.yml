@@ -48,6 +48,7 @@ jobs:
         with:
           input_path: source/dea-main/cdk.out/DeaMainStack.template.json
           extra_args: --fail-on-warnings
+          output_path: cfn_nag.out
       - name: Fail if cfn_nag scan contains failures, warnings
         # sum cfn_nag failures, warnigns and return it as exit code
         run: |
