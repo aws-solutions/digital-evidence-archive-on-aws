@@ -603,7 +603,7 @@ Object {
         },
         "FunctionVersion": Object {
           "Fn::GetAtt": Array [
-            "DeaBackendStackdeaapphandlerCurrentVersion08C5872Aee0c174c01b521d0ca5adb20dff794bd",
+            "DeaBackendStackdeaapphandlerCurrentVersion08C5872A83a5e780a4277bfc84ccfdf570e1ff2b",
             "Version",
           ],
         },
@@ -657,7 +657,7 @@ Object {
           "SecurityGroupIds": Array [
             Object {
               "Fn::GetAtt": Array [
-                "DeaBackendStackdeaapphandlerSecurityGroup8B9F989E",
+                "DeaBackendStacktestSecurityGroup29697845",
                 "GroupId",
               ],
             },
@@ -674,7 +674,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaBackendStackdeaapphandlerCurrentVersion08C5872Aee0c174c01b521d0ca5adb20dff794bd": Object {
+    "DeaBackendStackdeaapphandlerCurrentVersion08C5872A83a5e780a4277bfc84ccfdf570e1ff2b": Object {
       "DependsOn": Array [
         "DeaBackendStackdeavpcIngressSubnet1RouteTableAssociation58064637",
         "DeaBackendStackdeavpcIngressSubnet2RouteTableAssociation473345C0",
@@ -685,26 +685,6 @@ Object {
         },
       },
       "Type": "AWS::Lambda::Version",
-    },
-    "DeaBackendStackdeaapphandlerSecurityGroup8B9F989E": Object {
-      "DependsOn": Array [
-        "DeaBackendStackdeavpcIngressSubnet1RouteTableAssociation58064637",
-        "DeaBackendStackdeavpcIngressSubnet2RouteTableAssociation473345C0",
-      ],
-      "Properties": Object {
-        "GroupDescription": "Automatic security group for Lambda Function DeaMainStackDeaBackendStackdeaapphandler0CFA0DA6",
-        "SecurityGroupEgress": Array [
-          Object {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1",
-          },
-        ],
-        "VpcId": Object {
-          "Ref": "DeaBackendStackdeavpc12685D7A",
-        },
-      },
-      "Type": "AWS::EC2::SecurityGroup",
     },
     "DeaBackendStackdeabaselambdarole5B9EAC0D": Object {
       "Properties": Object {
@@ -949,14 +929,46 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DeaBackendStackvpcsg0A453A26": Object {
+    "DeaBackendStacktestSecurityGroup29697845": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W40",
+              "reason": "Revisit later. Need to discuss ip protocol",
+            },
+            Object {
+              "id": "W5",
+              "reason": "Revisit later. Unable to set CIDR range on egress",
+            },
+          ],
+        },
+      },
       "Properties": Object {
-        "GroupDescription": "DeaMainStack/DeaBackendStack/vpc-sg",
+        "GroupDescription": "security group for restapi lambda",
         "SecurityGroupEgress": Array [
           Object {
             "CidrIp": "0.0.0.0/0",
             "Description": "Allow all outbound traffic by default",
             "IpProtocol": "-1",
+          },
+        ],
+        "VpcId": Object {
+          "Ref": "DeaBackendStackdeavpc12685D7A",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "DeaBackendStackvpcsg8559D976": Object {
+      "Properties": Object {
+        "GroupDescription": "dea-vpc security group",
+        "SecurityGroupEgress": Array [
+          Object {
+            "CidrIp": "0.0.0.0/32",
+            "Description": "egress rule for dea vpc",
+            "FromPort": 1,
+            "IpProtocol": "tcp",
+            "ToPort": 1,
           },
         ],
         "VpcId": Object {

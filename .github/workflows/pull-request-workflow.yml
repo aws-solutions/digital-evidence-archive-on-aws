@@ -3,9 +3,9 @@ name: Pull Request Workflow
 on:
   pull_request:
     branches:
-      - 'develop'
-      - 'main'
-    types: 
+      - "develop"
+      - "main"
+    types:
       - opened
       - edited
       - reopened
@@ -37,6 +37,19 @@ jobs:
       - name: Rush Lint
         run: |
           node common/scripts/install-run-rush.js lint
+      - name: cdk synth
+        run: |
+          cd dea-main
+          STAGE=test npm run cdk synth
+          cd ..
+      - name: cfn_nag
+        uses: stelligent/cfn_nag@master
+        with:
+          input_path: source/dea-main/cdk.out/DeaMainStack.template.json
+          extra_args: --fail-on-warnings
+      - name: cfn_nag warning check
+        run: |
+          ! grep -C 3 'WARN\|FAIL' cfn_nag.out
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:only
