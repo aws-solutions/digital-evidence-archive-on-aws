@@ -51,7 +51,6 @@ jobs:
       - name: Grep cfn-nag for violations
         run: |
           echo ${{ join(steps.cfn_nag.outputs.*,'\n') }}
-          echo ${{steps.cfn_nag.outputs.stdout}
           ! grep -C 3 'WARN\|FAIL' ${{ steps.cfn_nag.outputs }}
       - name: Fail if cfn_nag scan contains failures, warnings
         # sum cfn_nag failures, warnigns and return it as exit code
