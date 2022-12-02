@@ -5,6 +5,7 @@
 
 /* eslint-disable no-new */
 import 'source-map-support/register';
-import { DeaBackendConstruct } from './dea-backend-stack';
+import { DeaBackendConstruct } from './constructs/dea-backend-stack';
+import { DeaRestApiConstruct } from './constructs/dea-rest-api';
 
-export { DeaBackendConstruct };
+export { DeaBackendConstruct, DeaRestApiConstruct };

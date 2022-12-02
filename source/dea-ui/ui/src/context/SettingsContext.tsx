@@ -13,13 +13,13 @@ export interface ISettingsProps {
 
 const SettingsContext: Context<ISettingsProps> = createContext<ISettingsProps>({
   settings: defaultAppSettings,
-  reload: () => {},
+  reload: () => { /*do nothing*/ },
 });
 
 export function SettingsProvider({ children }: { children: React.ReactNode }): JSX.Element {
   const [settings] = useState<IAppSettings>(defaultAppSettings);
   return (
-    <SettingsContext.Provider value={{ settings, reload: () => {} }}>{children}</SettingsContext.Provider>
+    <SettingsContext.Provider value={{ settings, reload: () => { /*do nothing*/ } }}>{children}</SettingsContext.Provider>
   );
 }
 

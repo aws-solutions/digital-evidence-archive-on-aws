@@ -3,21 +3,25 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { HelloWorldService } from '../../services/helloWorldService';
+import { sayBye } from '../../app/say-bye';
+import { sayHello } from '../../app/say-hello';
 
 describe('helloWorld service', () => {
-  let helloWorldService: HelloWorldService;
-  beforeAll(() => {
-    helloWorldService = new HelloWorldService();
-  });
-
   it('should say hello', async () => {
-    const response = await helloWorldService.sayHello();
-    expect(response).toEqual('Hello DEA!');
+    const response = await sayHello();
+    if (typeof response === 'string') {
+      fail();
+    } else {
+      expect(response.body).toEqual('Hello DEA!');
+    }
   });
 
   it('should say bye', async () => {
-    const response = await helloWorldService.sayBye();
-    expect(response).toEqual('Bye DEA!');
+    const response = await sayBye();
+    if (typeof response === 'string') {
+      fail();
+    } else {
+      expect(response.body).toEqual('Bye DEA!');
+    }
   });
 });

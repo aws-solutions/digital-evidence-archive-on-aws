@@ -3,7 +3,10 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { IApiRouteConfig, IApiRoute, HTTPMethod } from './api-route-config';
-import { getBackendApiApp } from './backend-api';
+import { createCases } from './app/create-cases';
+import { customAuthorizer } from './app/custom-lambda-authorizer';
+import { getCases } from './app/get-cases';
+import { sayBye } from './app/say-bye';
+import { sayHello } from './app/say-hello';
 
-export { getBackendApiApp, IApiRouteConfig, IApiRoute, HTTPMethod };
+export { sayBye, sayHello, createCases, getCases, customAuthorizer };

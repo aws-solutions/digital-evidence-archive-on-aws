@@ -14,7 +14,7 @@ import {
 // the cognito-group(s) from the Cognito AuthN response, and grabs the
 // corresponding policy(s) from IAM
 // For now: just allow or deny access to the desired function
-function getPolicy(principalId: string, allowAccess: string, resource: string): AuthResponse {
+const getPolicy = (principalId: string, allowAccess: string, resource: string): AuthResponse => {
   const policyDocument: PolicyDocument = {
     Version: '2012-10-17',
     Statement: [
@@ -32,7 +32,7 @@ function getPolicy(principalId: string, allowAccess: string, resource: string): 
   };
 
   return authResponse;
-}
+};
 
 // TODO: once Cognito is added, add token validation here, as well
 // as verifying with Cognito that the session is still valid
@@ -54,12 +54,12 @@ function validateToken(token: string, methodArn: string, callback: APIGatewayAut
 
 // TODO add session management checks
 
-export async function handler(
+export const customAuthorizer = async (
   event: APIGatewayTokenAuthorizerEvent,
   callback: APIGatewayAuthorizerCallback
-): Promise<void> {
+): Promise<void> => {
   const token = event.authorizationToken;
   const methodArn = event.methodArn;
 
   validateToken(token, methodArn, callback);
-}
+};

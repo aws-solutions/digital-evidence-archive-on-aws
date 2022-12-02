@@ -9,7 +9,7 @@ import {
   APIGatewayTokenAuthorizerEvent,
   PolicyDocument,
 } from 'aws-lambda';
-import { handler } from '../../lambda-handlers/custom-lambda-authorizer';
+import { customAuthorizer } from '../../app/custom-lambda-authorizer';
 
 type LambdaResult = APIGatewayAuthorizerResult | Error | string | undefined;
 
@@ -61,7 +61,7 @@ describe('Unit tests for custom lambda authorizer', () => {
       }
     };
 
-    await handler(event, callback);
+    await customAuthorizer(event, callback);
 
     expect(isAnAuthResult(lambdaResult)).toBe(true);
 
@@ -86,7 +86,7 @@ describe('Unit tests for custom lambda authorizer', () => {
       }
     };
 
-    await handler(event, callback);
+    await customAuthorizer(event, callback);
 
     expect(isAnAuthResult(lambdaResult)).toBe(true);
 
@@ -111,7 +111,7 @@ describe('Unit tests for custom lambda authorizer', () => {
       }
     };
 
-    await handler(event, callback);
+    await customAuthorizer(event, callback);
 
     expect(typeof lambdaResult).toBe('string');
 
@@ -135,7 +135,7 @@ describe('Unit tests for custom lambda authorizer', () => {
       }
     };
 
-    await handler(event, callback);
+    await customAuthorizer(event, callback);
 
     expect(typeof lambdaResult).toBe('string');
 

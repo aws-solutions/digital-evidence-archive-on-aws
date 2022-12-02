@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug dea-app Jest tests",
+      "program": "${workspaceFolder}/source/dea-app/node_modules/@rushstack/heft/lib/start.js",
+      "cwd": "${workspaceFolder}/source/dea-app/",
+      "args": ["--debug", "test", "--no-build", "--clean"],
+      "console": "integratedTerminal",
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug dea-backend Jest tests",
+      "program": "${workspaceFolder}/source/dea-backend/node_modules/@rushstack/heft/lib/start.js",
+      "cwd": "${workspaceFolder}/source/dea-backend/",
+      "args": ["--debug", "test", "--no-build", "--clean"],
+      "console": "integratedTerminal",
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug dea-main Jest tests",
+      "program": "${workspaceFolder}/source/dea-main/node_modules/@rushstack/heft/lib/start.js",
+      "cwd": "${workspaceFolder}/source/dea-main/",
+      "args": ["--debug", "test", "--no-build", "--clean"],
+      "console": "integratedTerminal",
+      "sourceMaps": true
+    }
+  ]
+}
