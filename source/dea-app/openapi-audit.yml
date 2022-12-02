@@ -1,0 +1,110 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: DEA Audit API
+paths:
+  /audit:
+    get:
+      summary: Returns audit logs
+      operationId: getAudit
+      tags:
+        - audit
+      parameters:
+        - name: userId
+          in: query
+          description: Which user ID to return audit log entries for
+          required: false
+          schema:
+            type: string
+        - name: caseId
+          in: query
+          description: Which case ID to return audit log entries for
+          required: false
+          schema:
+            type: string
+        - name: fileId
+          in: query
+          description: Which file ID to return audit log entires for
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of audit log entries filtered by any optional query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLogs'
+        default:
+          description: An unexpected error has occurred
+
+components:
+  schemas:
+    SessionContext:
+      type: object
+      properties:
+        creationDate:
+          type: integer
+        sourceIdentity:
+          type: string
+    UserIdentity:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+        principalId:
+          type: string
+        arn:
+          type: string
+        accountId:
+          type: string
+        userName:
+          type: string
+        sessionContext:
+          $ref: '#/components/schemas/SessionContext'
+        sessionIssuer:
+          type: string
+        root:
+          type: string
+    AuditLog:
+      type: object
+      required:
+        - requestId
+        - userIdentity
+        - eventTime
+        - eventSource
+        - eventType
+        - eventName
+        - sourceIpAddress
+      properties:
+        requestId:
+          type: string
+        userIdentity:
+          $ref: '#/components/schemas/UserIdentity'
+        eventTime:
+          type: string
+        eventSource:
+          type: string
+        eventType:
+          type: string
+        eventName:
+          type: string
+        sourceIpAddress:
+          type: string
+    AuditLogs:
+      type: array
+      items:
+        $ref: '#/components/schemas/AuditLog'
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
