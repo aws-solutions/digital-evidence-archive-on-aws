@@ -3,7 +3,7 @@ info:
   version: 1.0.0
   title: DEA Audit API
 paths:
-  /audit:
+  /audits:
     get:
       summary: Returns audit logs
       operationId: getAudit
