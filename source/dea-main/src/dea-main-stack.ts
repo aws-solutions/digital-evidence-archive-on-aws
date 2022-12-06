@@ -54,6 +54,11 @@ export class DeaMainStack extends cdk.Stack {
               'AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs',
           },
           {
+            id: 'W59',
+            reason:
+              'AWSCustomResource Lambda Function does not yet have an AuthorizationType. In development for Custom Lambda Authorizers now.',
+          },
+          {
             id: 'W89',
             reason: 'VPCs are not used for this use case. Custom resource for serving UI',
           },
@@ -87,6 +92,16 @@ export class DeaMainStack extends cdk.Stack {
         .node.findChild('API-Gateway API')
         .node.findChild('Default')
         .node.findChild('ANY').node.defaultChild
+    );
+
+    // Hello API GET Method
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaBackendStack')
+        .node.findChild('API-Gateway API')
+        .node.findChild('Default')
+        .node.findChild('hello')
+        .node.findChild('GET').node.defaultChild
     );
 
     // UI API GW

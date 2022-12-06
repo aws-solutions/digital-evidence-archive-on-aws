@@ -125,6 +125,10 @@ Object {
               "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
             },
             Object {
+              "id": "W59",
+              "reason": "AWSCustomResource Lambda Function does not yet have an AuthorizationType. In development for Custom Lambda Authorizers now.",
+            },
+            Object {
               "id": "W89",
               "reason": "VPCs are not used for this use case. Custom resource for serving UI",
             },
@@ -446,6 +450,16 @@ Object {
       "Type": "AWS::ApiGateway::Resource",
     },
     "DeaBackendStackAPIGatewayAPIhelloGET8F9E5231": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",

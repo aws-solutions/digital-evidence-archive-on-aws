@@ -35,10 +35,10 @@ interface IBackendStackProps extends StackProps {
 }
 
 enum MethodOptions {
-  Get = "GET",
-  Post = "POST",
-  Put = "PUT",
-  Delete = "DELETE"
+  Get = 'GET',
+  Post = 'POST',
+  Put = 'PUT',
+  Delete = 'DELETE',
 }
 
 export class DeaBackendConstruct extends Construct {
@@ -52,8 +52,12 @@ export class DeaBackendConstruct extends Construct {
     const lambdaSecurityGroup = this._createLambdasSecurityGroup(vpc);
     const apiLambda = this._createAPILambda(lambdaSecurityGroup, vpc);
     const API = this._createRestApi(apiLambda, props.kmsKey);
-    const helloLambda = this._createLambda("HelloWorld", "hello-world-handler", lambdaSecurityGroup, vpc);
-    this._createApiResource(API, "hello", new Map<MethodOptions, NodejsFunction>([[MethodOptions.Get, helloLambda]]));
+    const helloLambda = this._createLambda('HelloWorld', 'hello-world-handler', lambdaSecurityGroup, vpc);
+    this._createApiResource(
+      API,
+      'hello',
+      new Map<MethodOptions, NodejsFunction>([[MethodOptions.Get, helloLambda]])
+    );
   }
 
   private _createVpc(key: Key): Vpc {
@@ -100,7 +104,7 @@ export class DeaBackendConstruct extends Construct {
     return vpc;
   }
 
-  private _createLambdasSecurityGroup(vpc: Vpc) : SecurityGroup {
+  private _createLambdasSecurityGroup(vpc: Vpc): SecurityGroup {
     const lambdaSecurityGroup = new SecurityGroup(this, 'testSecurityGroup', {
       vpc,
       description: 'security group for restapi lambda',
@@ -110,7 +114,12 @@ export class DeaBackendConstruct extends Construct {
     return lambdaSecurityGroup;
   }
 
-  private _createLambda(lambdaName: string, lambdaFileName: string, lambdaSecurityGroup: SecurityGroup, vpc: Vpc): NodejsFunction {
+  private _createLambda(
+    lambdaName: string,
+    lambdaFileName: string,
+    lambdaSecurityGroup: SecurityGroup,
+    vpc: Vpc
+  ): NodejsFunction {
     const vpcExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaVPCAccessExecutionRole'
     );
@@ -163,11 +172,16 @@ export class DeaBackendConstruct extends Construct {
     return lambdaService;
   }
 
-  private _createApiResource(API: RestApi, resourceName: string, methodFunctions: Map<MethodOptions, NodejsFunction>): void {
+  private _createApiResource(
+    API: RestApi,
+    resourceName: string,
+    methodFunctions: Map<MethodOptions, NodejsFunction>
+  ): void {
     const resource = API.root.addResource(resourceName);
     // now add method with their lambda handlers for the given method types, e.g. GET, PUT, POST
-    Array.from(methodFunctions.entries())
-         .forEach(entry => resource.addMethod(entry[0], new LambdaIntegration(entry[1])));
+    Array.from(methodFunctions.entries()).forEach((entry) =>
+      resource.addMethod(entry[0], new LambdaIntegration(entry[1]))
+    );
   }
 
   // Create Lambda
