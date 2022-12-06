@@ -34,6 +34,13 @@ interface IBackendStackProps extends StackProps {
   kmsKey: Key;
 }
 
+enum MethodOptions {
+  Get = "GET",
+  Post = "POST",
+  Put = "PUT",
+  Delete = "DELETE"
+}
+
 export class DeaBackendConstruct extends Construct {
   public constructor(scope: Construct, id: string, props: IBackendStackProps) {
     const { STACK_NAME } = getConstants();
@@ -42,8 +49,11 @@ export class DeaBackendConstruct extends Construct {
 
     //take a optional VPC from config, if not provided create one
     const vpc = this._createVpc(props.kmsKey);
-    const apiLambda = this._createAPILambda(vpc);
-    this._createRestApi(apiLambda, props.kmsKey);
+    const lambdaSecurityGroup = this._createLambdasSecurityGroup(vpc);
+    const apiLambda = this._createAPILambda(lambdaSecurityGroup, vpc);
+    const API = this._createRestApi(apiLambda, props.kmsKey);
+    const helloLambda = this._createLambda("HelloWorld", "hello-world-handler", lambdaSecurityGroup, vpc);
+    this._createApiResource(API, "hello", new Map<MethodOptions, NodejsFunction>([[MethodOptions.Get, helloLambda]]));
   }
 
   private _createVpc(key: Key): Vpc {
@@ -90,8 +100,78 @@ export class DeaBackendConstruct extends Construct {
     return vpc;
   }
 
+  private _createLambdasSecurityGroup(vpc: Vpc) : SecurityGroup {
+    const lambdaSecurityGroup = new SecurityGroup(this, 'testSecurityGroup', {
+      vpc,
+      description: 'security group for restapi lambda',
+    });
+    // nag suppresions related to egress rules
+    this._addEgressSuppressions(lambdaSecurityGroup);
+    return lambdaSecurityGroup;
+  }
+
+  private _createLambda(lambdaName: string, lambdaFileName: string, lambdaSecurityGroup: SecurityGroup, vpc: Vpc): NodejsFunction {
+    const vpcExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaVPCAccessExecutionRole'
+    );
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+    const role = new Role(this, lambdaName + 'lambda-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [vpcExecutionPolicy, basicExecutionPolicy],
+    });
+
+    const securityGroups = [];
+    securityGroups.push(lambdaSecurityGroup);
+
+    const lambdaService = new nodejsLambda.NodejsFunction(this, lambdaName, {
+      memorySize: 512,
+      vpc,
+      role: role,
+      timeout: Duration.minutes(3),
+      runtime: Runtime.NODEJS_16_X,
+      handler: 'handler',
+      securityGroups: securityGroups,
+      entry: path.join(__dirname, '../../dea-app/src/lambda-handlers', lambdaFileName + '.ts'),
+      depsLockFilePath: path.join(__dirname, '/../../common/config/rush/pnpm-lock.yaml'),
+      bundling: {
+        externalModules: ['aws-sdk'],
+        minify: true,
+        sourceMap: false,
+      },
+    });
+
+    //CFN NAG Suppression
+    const lambdaMetaDataNode = lambdaService.node.defaultChild;
+    if (lambdaMetaDataNode instanceof CfnFunction) {
+      lambdaMetaDataNode.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W58',
+            reason:
+              'AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs',
+          },
+          {
+            id: 'W92',
+            reason: 'Reserved concurrency is currently not required. Revisit in the future',
+          },
+        ],
+      });
+    }
+    return lambdaService;
+  }
+
+  private _createApiResource(API: RestApi, resourceName: string, methodFunctions: Map<MethodOptions, NodejsFunction>): void {
+    const resource = API.root.addResource(resourceName);
+    // now add method with their lambda handlers for the given method types, e.g. GET, PUT, POST
+    Array.from(methodFunctions.entries())
+         .forEach(entry => resource.addMethod(entry[0], new LambdaIntegration(entry[1])));
+  }
+
   // Create Lambda
-  private _createAPILambda(vpc: Vpc): NodejsFunction {
+  private _createAPILambda(lambdaSecurityGroup: SecurityGroup, vpc: Vpc): NodejsFunction {
     const vpcExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaVPCAccessExecutionRole'
     );
@@ -104,14 +184,6 @@ export class DeaBackendConstruct extends Construct {
     });
 
     const securityGroups = [];
-    const lambdaSecurityGroup = new SecurityGroup(this, 'testSecurityGroup', {
-      vpc,
-      description: 'security group for restapi lambda',
-    });
-
-    // nag suppresions related to egress rules
-    this._addEgressSuppressions(lambdaSecurityGroup);
-
     securityGroups.push(lambdaSecurityGroup);
 
     const lambdaService = new nodejsLambda.NodejsFunction(this, 'dea-app-handler', {
@@ -153,7 +225,7 @@ export class DeaBackendConstruct extends Construct {
   }
 
   // API Gateway
-  private _createRestApi(apiLambda: NodejsFunction, key: Key): void {
+  private _createRestApi(apiLambda: NodejsFunction, key: Key): RestApi {
     const logGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
       encryptionKey: key,
     });
@@ -206,6 +278,8 @@ export class DeaBackendConstruct extends Construct {
     API.root.addProxy({
       defaultIntegration: new LambdaIntegration(alias),
     });
+
+    return API;
   }
 
   private _addEgressSuppressions(sg: SecurityGroup): void {

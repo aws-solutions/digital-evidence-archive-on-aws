@@ -34,6 +34,8 @@
   },
   "dependencies": {
     "@hapi/boom": "^10.0.0",
+    "@types/aws-lambda": "^8.10.104",
+    "aws-lambda": "^1.0.7",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.17.3",
