@@ -33,12 +33,14 @@
     "test:only": "heft test --no-build"
   },
   "dependencies": {
+    "aws-lambda": "^1.0.7",
     "@hapi/boom": "^10.0.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.17.3",
     "jsonschema": "^1.4.1",
     "lodash": "^4.17.21",
+    "@types/aws-lambda": "^8.10.104",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

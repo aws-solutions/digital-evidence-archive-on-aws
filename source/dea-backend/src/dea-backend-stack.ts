@@ -8,7 +8,6 @@ import * as path from 'path';
 import { CfnOutput, Duration, StackProps } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
-  AuthorizationType,
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
@@ -53,7 +52,7 @@ export class DeaBackendConstruct extends Construct {
     const lambdaSecurityGroup = this._createLambdasSecurityGroup(vpc);
     const apiLambda = this._createAPILambda(lambdaSecurityGroup, vpc);
     const API = this._createRestApi(apiLambda, props.kmsKey);
-    const helloLambda = this._createLambda("HelloWorld", "lambda-handlers/hello-world-handler", lambdaSecurityGroup, vpc);
+    const helloLambda = this._createLambda("HelloWorld", "hello-world-handler", lambdaSecurityGroup, vpc);
     this._createApiResource(API, "hello", new Map<MethodOptions, NodejsFunction>([[MethodOptions.Get, helloLambda]]));
   }
 
@@ -134,7 +133,7 @@ export class DeaBackendConstruct extends Construct {
       runtime: Runtime.NODEJS_16_X,
       handler: 'handler',
       securityGroups: securityGroups,
-      entry: path.join(__dirname, '/../src/', lambdaFileName + '.ts'),
+      entry: path.join(__dirname, '../../dea-app/src/lambda-handlers', lambdaFileName + '.ts'),
       depsLockFilePath: path.join(__dirname, '/../../common/config/rush/pnpm-lock.yaml'),
       bundling: {
         externalModules: ['aws-sdk'],
@@ -164,7 +163,7 @@ export class DeaBackendConstruct extends Construct {
     return lambdaService;
   }
 
-  private _createApiResource(API: RestApi, resourceName: string, methodFunctions: Map<MethodOptions, NodejsFunction>) {
+  private _createApiResource(API: RestApi, resourceName: string, methodFunctions: Map<MethodOptions, NodejsFunction>): void {
     const resource = API.root.addResource(resourceName);
     // now add method with their lambda handlers for the given method types, e.g. GET, PUT, POST
     Array.from(methodFunctions.entries())
