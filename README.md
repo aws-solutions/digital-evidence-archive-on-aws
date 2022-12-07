@@ -12,15 +12,14 @@ Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest 
 
 ```
 WORKSPACE_NAME=<e.g. DEADev>
-GIT_USERNAME=<e.g BOBFAKEUSER>
-git clone git@github.com:$GIT_USERNAME/digital-investigations-on-aws.git $WORKSPACE_NAME
+git clone git@github.com:aws-solutions/digital-investigations-on-aws.git $WORKSPACE_NAME
 cd ./$WORKSPACE_NAME
 ```
 
-4. Track your branch
+4. Create a Branch (Needed for PRs)
 
 ```
-git checkout --track origin/develop
+git checkout -b $BRANCH_NAME
 ```
 
 5. Run Rush Install
@@ -38,6 +37,20 @@ git defender --setup
 
 ## Creating a PR from a Commit(s)
 
+OPTIONAL: run commit hooks locally
+
+```
+RUN_HOOKS=true git commit
+```
+
+OPTIONAL: run CFNNag locally
+(NOTE: for now, CFNNag errors will not fail in the GitAction Checkers for the PR, so for now run locally)
+
+```
+STAGE=$STAGE rushx cdk synth
+rushx nag
+```
+
 ```
 git pull origin develop --rebase
 ```
@@ -45,6 +58,10 @@ git pull origin develop --rebase
 ```
 git push origin somebranchname
 ```
+
+Go to the branch in GitHub, and Press Submit Pull Request
+
+Assign a reviewer, and ensure Checks Pass
 
 ### One Time Package Installs
 - Enable pnpm commands (needed for local CDK bundling)  
