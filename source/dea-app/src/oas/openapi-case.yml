@@ -3,10 +3,10 @@ info:
   version: 1.0.0
   title: DEA Case API
 paths:
-  /admin/cases:
+  /all-cases:
     get:
-      summary: admin-only get all cases
-      description: returns list of cases
+      summary: Get all cases
+      description: admin-only returns list of cases
       responses:
         200:
           description: Success Response
@@ -20,6 +20,44 @@ paths:
                     items:
                       $ref: '#/components/schemas/Cases'
                   next_page_token:
+                    type: string
+  /cases/{caseId}/owner:
+    post:
+      summary: Set new owner of a case
+      description: Admin-only set new owner of a case
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                caseId:
+                  type: string
+                actions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CaseAction'
+                isOwner:
+                  type: boolean
+                  default: true
+      responses:
+        200:
+          description: Case successfully created
+          content:
+            application/json:
+              schema:
+                properties:
+                  userId:
+                    type: string
+                  caseId:
                     type: string
   /config:
     put:
@@ -151,43 +189,6 @@ paths:
       responses:
         204:
           description: No content, delete successful
-  /cases/{caseId}/owner:
-    post:
-      summary: Set new owner of a case
-      parameters:
-        - in: path
-          name: caseId
-          schema:
-            type: string
-          required: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userId:
-                  type: string
-                caseId:
-                  type: string
-                actions:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/CaseAction'
-                isOwner:
-                  type: boolean
-                  default: true
-      responses:
-        200:
-          description: Case successfully created
-          content:
-            application/json:
-              schema:
-                properties:
-                  userId:
-                    type: string
-                  caseId:
-                    type: string
   /my-cases:
     get:
       summary: get user's cases
