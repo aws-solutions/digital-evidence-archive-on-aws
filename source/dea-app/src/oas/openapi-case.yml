@@ -6,14 +6,21 @@ paths:
   /admin/cases:
     get:
       summary: admin-only get all cases
-      description: returns array of cases
+      description: returns list of cases
       responses:
         200:
           description: Success Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cases'
+                type: object
+                properties:
+                  photos:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cases'
+                  next_page_token:
+                    type: string
   /config:
     put:
       summary: Put storage config
@@ -92,7 +99,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Users'
+                type: object
+                properties:
+                  photos:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Users'
+                  next_page_token:
+                    type: string
   /cases/{caseId}/userMemberships/{userId}:
     put:
       summary: Update case user
@@ -139,7 +153,7 @@ paths:
           description: No content, delete successful
   /cases/{caseId}/owner:
     post:
-      summary: Add a user as a collaborator to a case
+      summary: Set new owner of a case
       parameters:
         - in: path
           name: caseId
@@ -184,7 +198,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cases'
+                type: object
+                properties:
+                  photos:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cases'
+                  next_page_token:
+                    type: string
   /cases/{caseId}:
     get:
       summary: Return case details by case Id
@@ -214,7 +235,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CaseRequest'
+              $ref: '#/components/schemas/CaseUpdateRequest'
       responses:
         200:
           description: Success
@@ -267,8 +288,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CaseUploadResponse'
     get:
-      summary: Return case details by case Id
-      description: Get metadata for a specific case. return not found if user doesn’t have access
+      summary: list files by directory
+      description: List files within a case in a parent directory or case root
       parameters:
         - in: path
           name: caseId
@@ -276,7 +297,7 @@ paths:
             type: string
           required: true
         - in: query
-          name: parentId
+          name: parentDir
           schema:
             type: string
           required: true
@@ -286,7 +307,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Case'
+                type: object
+                properties:
+                  photos:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CaseFiles'
+                  next_page_token:
+                    type: string
   /cases/{caseId}/files/{fileId}:
     get:
       summary: File details
@@ -342,22 +370,23 @@ paths:
                   fileContents_presignedUrl:
                     type: string
                     format: uri
-  /users/{caseId}:
+  /users:
     get:
-      summary: Get users by caseId
-      parameters:
-        - in: path
-          name: caseId
-          schema:
-            type: string
-          required: true
+      summary: Get all users
       responses:
         200:
           description: Success Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Users'
+                type: object
+                properties:
+                  photos:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Users'
+                  next_page_token:
+                    type: string
 components:
   schemas:
     Case:
@@ -381,7 +410,7 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Case'
-    CaseRequest:
+    CaseUpdateRequest:
       type: object
       properties:
         caseId:
