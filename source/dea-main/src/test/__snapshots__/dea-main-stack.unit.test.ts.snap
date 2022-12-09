@@ -125,10 +125,6 @@ Object {
               "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
             },
             Object {
-              "id": "W59",
-              "reason": "AWSCustomResource Lambda Function does not yet have an AuthorizationType. In development for Custom Lambda Authorizers now.",
-            },
-            Object {
               "id": "W89",
               "reason": "VPCs are not used for this use case. Custom resource for serving UI",
             },
@@ -394,7 +390,7 @@ Object {
       "Type": "AWS::IAM::Role",
       "UpdateReplacePolicy": "Retain",
     },
-    "DeaBackendStackAPIGatewayAPIDeployment70A4DC51b1515dbaf4e561841cad390f43f11d3a": Object {
+    "DeaBackendStackAPIGatewayAPIDeployment70A4DC51e728cb017327ac792e04bcaa7a1795aa": Object {
       "DependsOn": Array [
         "DeaBackendStackAPIGatewayAPIproxyANY42138D59",
         "DeaBackendStackAPIGatewayAPIproxy637DBD20",
@@ -425,7 +421,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaBackendStackAPIGatewayAPIDeployment70A4DC51b1515dbaf4e561841cad390f43f11d3a",
+          "Ref": "DeaBackendStackAPIGatewayAPIDeployment70A4DC51e728cb017327ac792e04bcaa7a1795aa",
         },
         "RestApiId": Object {
           "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
@@ -450,18 +446,11 @@ Object {
       "Type": "AWS::ApiGateway::Resource",
     },
     "DeaBackendStackAPIGatewayAPIhelloGET8F9E5231": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W59",
-              "reason": "Auth not implemented yet, will revisit",
-            },
-          ],
-        },
-      },
       "Properties": Object {
-        "AuthorizationType": "NONE",
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": Object {
+          "Ref": "DeaBackendStackCustomTokenAuthorizer07087916",
+        },
         "HttpMethod": "GET",
         "Integration": Object {
           "IntegrationHttpMethod": "POST",
@@ -724,6 +713,216 @@ Object {
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
+    },
+    "DeaBackendStackCustomTokenAuthorizer07087916": Object {
+      "Properties": Object {
+        "AuthorizerUri": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Fn::Select": Array [
+                  1,
+                  Object {
+                    "Fn::Split": Array [
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackCustomTokenAuthorizerLambda49B18F02",
+                          "Arn",
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              ":apigateway:",
+              Object {
+                "Fn::Select": Array [
+                  3,
+                  Object {
+                    "Fn::Split": Array [
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackCustomTokenAuthorizerLambda49B18F02",
+                          "Arn",
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              ":lambda:path/2015-03-31/functions/",
+              Object {
+                "Fn::GetAtt": Array [
+                  "DeaBackendStackCustomTokenAuthorizerLambda49B18F02",
+                  "Arn",
+                ],
+              },
+              "/invocations",
+            ],
+          ],
+        },
+        "IdentitySource": "method.request.header.Authorization",
+        "Name": "DeaMainStackDeaBackendStackCustomTokenAuthorizerCA94FF39",
+        "RestApiId": Object {
+          "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
+        },
+        "Type": "TOKEN",
+      },
+      "Type": "AWS::ApiGateway::Authorizer",
+    },
+    "DeaBackendStackCustomTokenAuthorizerLambda49B18F02": Object {
+      "DependsOn": Array [
+        "DeaBackendStackCustomTokenAuthorizerLambdalambdarole46C1B623",
+        "DeaBackendStackdeavpcIngressSubnet1RouteTableAssociation58064637",
+        "DeaBackendStackdeavpcIngressSubnet2RouteTableAssociation473345C0",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaBackendStackCustomTokenAuthorizerLambdalambdarole46C1B623",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs16.x",
+        "Timeout": 180,
+        "VpcConfig": Object {
+          "SecurityGroupIds": Array [
+            Object {
+              "Fn::GetAtt": Array [
+                "DeaBackendStacktestSecurityGroup29697845",
+                "GroupId",
+              ],
+            },
+          ],
+          "SubnetIds": Array [
+            Object {
+              "Ref": "DeaBackendStackdeavpcIngressSubnet1SubnetABD836F5",
+            },
+            Object {
+              "Ref": "DeaBackendStackdeavpcIngressSubnet2SubnetDD3E1464",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaBackendStackCustomTokenAuthorizerLambdaDeaMainStackDeaBackendStackCustomTokenAuthorizerCA94FF39PermissionsE9CD8833": Object {
+      "DependsOn": Array [
+        "DeaBackendStackdeavpcIngressSubnet1RouteTableAssociation58064637",
+        "DeaBackendStackdeavpcIngressSubnet2RouteTableAssociation473345C0",
+      ],
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaBackendStackCustomTokenAuthorizerLambda49B18F02",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaBackendStackAPIGatewayAPI9C81C9B1",
+              },
+              "/authorizers/",
+              Object {
+                "Ref": "DeaBackendStackCustomTokenAuthorizer07087916",
+              },
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaBackendStackCustomTokenAuthorizerLambdalambdarole46C1B623": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+              ],
+            ],
+          },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
     },
     "DeaBackendStackFlowLogB1F9C02F": Object {
       "Properties": Object {

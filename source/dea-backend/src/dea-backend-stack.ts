@@ -8,9 +8,11 @@ import * as path from 'path';
 import { CfnOutput, Duration, StackProps } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
+  AuthorizationType,
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
+  TokenAuthorizer,
 } from 'aws-cdk-lib/aws-apigateway';
 import {
   CfnSecurityGroup,
@@ -50,11 +52,13 @@ export class DeaBackendConstruct extends Construct {
     //take a optional VPC from config, if not provided create one
     const vpc = this._createVpc(props.kmsKey);
     const lambdaSecurityGroup = this._createLambdasSecurityGroup(vpc);
+    const authorizer = this._createLambdaAuthorizer(lambdaSecurityGroup, vpc);
     const apiLambda = this._createAPILambda(lambdaSecurityGroup, vpc);
     const API = this._createRestApi(apiLambda, props.kmsKey);
     const helloLambda = this._createLambda('HelloWorld', 'hello-world-handler', lambdaSecurityGroup, vpc);
     this._createApiResource(
       API,
+      authorizer,
       'hello',
       new Map<MethodOptions, NodejsFunction>([[MethodOptions.Get, helloLambda]])
     );
@@ -172,15 +176,32 @@ export class DeaBackendConstruct extends Construct {
     return lambdaService;
   }
 
+  private _createLambdaAuthorizer(lambdaSecurityGroup: SecurityGroup, vpc: Vpc): TokenAuthorizer {
+    const authLambda = this._createLambda(
+      'CustomTokenAuthorizerLambda',
+      'custom-lambda-authorizer',
+      lambdaSecurityGroup,
+      vpc
+    );
+
+    return new TokenAuthorizer(this, 'CustomTokenAuthorizer', {
+      handler: authLambda,
+    });
+  }
+
   private _createApiResource(
     API: RestApi,
+    authorizer: TokenAuthorizer,
     resourceName: string,
     methodFunctions: Map<MethodOptions, NodejsFunction>
   ): void {
     const resource = API.root.addResource(resourceName);
     // now add method with their lambda handlers for the given method types, e.g. GET, PUT, POST
     Array.from(methodFunctions.entries()).forEach((entry) =>
-      resource.addMethod(entry[0], new LambdaIntegration(entry[1]))
+      resource.addMethod(entry[0], new LambdaIntegration(entry[1]), {
+        authorizer: authorizer,
+        authorizationType: AuthorizationType.CUSTOM,
+      })
     );
   }
 
