@@ -7,6 +7,11 @@ paths:
     get:
       summary: Get all cases
       description: admin-only returns list of cases
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
       responses:
         200:
           description: Success Response
@@ -15,7 +20,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  photos:
+                  cases:
                     type: array
                     items:
                       $ref: '#/components/schemas/Cases'
@@ -131,6 +136,10 @@ paths:
           schema:
             type: string
           required: true
+        - in: query
+          name: limit
+          schema:
+            type: integer
       responses:
         200:
           description: Success Response
@@ -139,7 +148,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  photos:
+                  users:
                     type: array
                     items:
                       $ref: '#/components/schemas/Users'
@@ -193,6 +202,11 @@ paths:
     get:
       summary: get user's cases
       description: returns array of cases on which the user has membership
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
       responses:
         200:
           description: Success Response
@@ -201,7 +215,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  photos:
+                  cases:
                     type: array
                     items:
                       $ref: '#/components/schemas/Cases'
@@ -301,7 +315,10 @@ paths:
           name: parentDir
           schema:
             type: string
-          required: false
+        - in: query
+          name: limit
+          schema:
+            type: integer
       responses:
         200:
           description: Success
@@ -310,7 +327,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  photos:
+                  caseFiles:
                     type: array
                     items:
                       $ref: '#/components/schemas/CaseFiles'
@@ -374,6 +391,11 @@ paths:
   /users:
     get:
       summary: Get all users
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
       responses:
         200:
           description: Success Response
@@ -382,7 +404,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  photos:
+                  users:
                     type: array
                     items:
                       $ref: '#/components/schemas/Users'
