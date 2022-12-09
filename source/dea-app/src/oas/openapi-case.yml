@@ -14,6 +14,10 @@ paths:
           name: limit
           schema:
             type: integer
+        - in: query
+          name: next_page_token
+          schema:
+            type: string
       responses:
         200:
           description: Success Response
@@ -154,6 +158,10 @@ paths:
           name: limit
           schema:
             type: integer
+        - in: query
+          name: next_page_token
+          schema:
+            type: string
       responses:
         200:
           description: Success Response
@@ -227,6 +235,10 @@ paths:
           name: limit
           schema:
             type: integer
+        - in: query
+          name: next_page_token
+          schema:
+            type: string
       responses:
         200:
           description: Success Response
@@ -349,6 +361,10 @@ paths:
           name: limit
           schema:
             type: integer
+        - in: query
+          name: next_page_token
+          schema:
+            type: string
       responses:
         200:
           description: Success
@@ -432,6 +448,10 @@ paths:
           name: limit
           schema:
             type: integer
+        - in: query
+          name: next_page_token
+          schema:
+            type: string
       responses:
         200:
           description: Success Response
