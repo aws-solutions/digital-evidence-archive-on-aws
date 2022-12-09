@@ -8,7 +8,7 @@ paths:
       summary: Get all cases
       description: admin-only returns list of cases
       tags:
-        - admin
+        - elevated
       parameters:
         - in: query
           name: limit
@@ -33,7 +33,7 @@ paths:
       summary: Set new owner of a case
       description: Admin-only set new owner of a case
       tags:
-        - admin
+        - elevated
       parameters:
         - in: path
           name: caseId
@@ -72,7 +72,7 @@ paths:
     put:
       summary: Put storage config
       tags:
-        - storage
+        - config
       requestBody:
         content:
           application/json:
@@ -88,7 +88,7 @@ paths:
     get:
       summary: Get storage config
       tags:
-        - storage
+        - config
       responses:
         200:
           description: Success Response
