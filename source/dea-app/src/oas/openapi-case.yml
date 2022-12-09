@@ -76,7 +76,7 @@ paths:
     put:
       summary: Put storage config
       tags:
-        - config
+        - elevated
       requestBody:
         content:
           application/json:
@@ -92,7 +92,7 @@ paths:
     get:
       summary: Get storage config
       tags:
-        - config
+        - elevated
       responses:
         200:
           description: Success Response
