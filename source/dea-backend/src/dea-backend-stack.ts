@@ -14,6 +14,7 @@ import {
   RestApi,
   TokenAuthorizer,
 } from 'aws-cdk-lib/aws-apigateway';
+import { AccountRecovery, UserPool } from 'aws-cdk-lib/aws-cognito';
 import {
   CfnSecurityGroup,
   FlowLog,
@@ -45,7 +46,7 @@ enum MethodOptions {
 
 export class DeaBackendConstruct extends Construct {
   public constructor(scope: Construct, id: string, props: IBackendStackProps) {
-    const { STACK_NAME } = getConstants();
+    const { COGNITO_DOMAIN, STACK_NAME } = getConstants();
 
     super(scope, STACK_NAME);
 
@@ -62,6 +63,8 @@ export class DeaBackendConstruct extends Construct {
       'hello',
       new Map<MethodOptions, NodejsFunction>([[MethodOptions.Get, helloLambda]])
     );
+
+    this._createCognitoUserPool(COGNITO_DOMAIN);
   }
 
   private _createVpc(key: Key): Vpc {
@@ -315,6 +318,86 @@ export class DeaBackendConstruct extends Construct {
     });
 
     return API;
+  }
+
+  private _createCognitoUserPool(domain: string): void {
+    const pool = new UserPool(this, 'DEAUserPool', {
+      accountRecovery: AccountRecovery.EMAIL_ONLY,
+      // Below is Basic Password Policy, though it is missing the ability for
+      // banned passwords, password expiry, password history etc
+      passwordPolicy: {
+        minLength: 8,
+        requireLowercase: true,
+        requireUppercase: true,
+        requireDigits: true,
+        requireSymbols: true,
+        tempPasswordValidity: Duration.days(1),
+      },
+      /*we only want admins to create users, which then can be
+      used to force users to be federated with IdP only.
+      Also only want users invited to the app to use*/
+      selfSignUpEnabled: false,
+      standardAttributes: {
+        familyName: {
+          required: true,
+          mutable: false,
+        },
+        givenName: {
+          required: true,
+          mutable: false,
+        },
+      },
+      userInvitation: {
+        emailSubject: 'Digital Evidence Archive Signup Invitation',
+        emailBody: 'Hello {username}, you have been invited to use DEA! Your temporary password is {####}',
+        smsMessage: 'Hello {username}, your temporary password for our DEA is {####}',
+      },
+      userPoolName: 'DEAUserPool',
+    });
+
+    pool.addDomain('CognitoDomain', {
+      cognitoDomain: {
+        domainPrefix: domain,
+      },
+    });
+
+    // PLACEHOLDER: setup IdP construct here. cdk: SamlProvider, then connect to user
+    // pool with IUserPoolIdentityProvider. Impl Details will be provided in the Implementation Guide
+    // If you choose the SSO route instead, just create the SamlProvider struct and follow instructions
+    // for configuring IdP for SAML response and swapping out Cognito in the lambda authorizer
+
+    const client = pool.addClient('dea-app-client', {
+      accessTokenValidity: Duration.minutes(30),
+      // use Server-side authentication workflow
+      authFlows: {
+        adminUserPassword: true,
+      },
+      enableTokenRevocation: true,
+      generateSecret: true,
+      idTokenValidity: Duration.days(1),
+
+      oAuth: {
+        flows: {
+          authorizationCodeGrant: true,
+        },
+        callbackUrls: ['https://' + domain + '.com/welcome'],
+        logoutUrls: ['https://' + domain + '.com/signin'],
+      },
+
+      preventUserExistenceErrors: true,
+      refreshTokenValidity: Duration.days(1),
+      userPoolClientName: 'dea-app-client',
+    });
+
+    new CfnOutput(this, 'CognitoUserPoolId', {
+      value: pool.userPoolId,
+      exportName: 'UserPoolId',
+    });
+
+    new CfnOutput(this, 'CognitoUserPoolClientId', {
+      value: client.userPoolClientId,
+      exportName: 'UserPoolClientId',
+    });
   }
 
   private _addEgressSuppressions(sg: SecurityGroup): void {

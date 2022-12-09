@@ -29,6 +29,22 @@ Object {
         ],
       },
     },
+    "DeaBackendStackCognitoUserPoolClientId07A6E1A1": Object {
+      "Export": Object {
+        "Name": "UserPoolClientId",
+      },
+      "Value": Object {
+        "Ref": "DeaBackendStackDEAUserPooldeaappclient050D23A1",
+      },
+    },
+    "DeaBackendStackCognitoUserPoolId4E55CB91": Object {
+      "Export": Object {
+        "Name": "UserPoolId",
+      },
+      "Value": Object {
+        "Ref": "DeaBackendStackDEAUserPoolF5DE2A39",
+      },
+    },
     "DeaBackendStackapiUrlOutput90D8814D": Object {
       "Value": Object {
         "Fn::Join": Array [
@@ -923,6 +939,114 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "DeaBackendStackDEAUserPoolCognitoDomain16DD9650": Object {
+      "Properties": Object {
+        "Domain": "cogtest",
+        "UserPoolId": Object {
+          "Ref": "DeaBackendStackDEAUserPoolF5DE2A39",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolDomain",
+    },
+    "DeaBackendStackDEAUserPoolF5DE2A39": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AccountRecoverySetting": Object {
+          "RecoveryMechanisms": Array [
+            Object {
+              "Name": "verified_email",
+              "Priority": 1,
+            },
+          ],
+        },
+        "AdminCreateUserConfig": Object {
+          "AllowAdminCreateUserOnly": true,
+          "InviteMessageTemplate": Object {
+            "EmailMessage": "Hello {username}, you have been invited to use DEA! Your temporary password is {####}",
+            "EmailSubject": "Digital Evidence Archive Signup Invitation",
+            "SMSMessage": "Hello {username}, your temporary password for our DEA is {####}",
+          },
+        },
+        "EmailVerificationMessage": "The verification code to your new account is {####}",
+        "EmailVerificationSubject": "Verify your new account",
+        "Policies": Object {
+          "PasswordPolicy": Object {
+            "MinimumLength": 8,
+            "RequireLowercase": true,
+            "RequireNumbers": true,
+            "RequireSymbols": true,
+            "RequireUppercase": true,
+            "TemporaryPasswordValidityDays": 1,
+          },
+        },
+        "Schema": Array [
+          Object {
+            "Mutable": false,
+            "Name": "family_name",
+            "Required": true,
+          },
+          Object {
+            "Mutable": false,
+            "Name": "given_name",
+            "Required": true,
+          },
+        ],
+        "SmsVerificationMessage": "The verification code to your new account is {####}",
+        "UserPoolName": "DEAUserPool",
+        "VerificationMessageTemplate": Object {
+          "DefaultEmailOption": "CONFIRM_WITH_CODE",
+          "EmailMessage": "The verification code to your new account is {####}",
+          "EmailSubject": "Verify your new account",
+          "SmsMessage": "The verification code to your new account is {####}",
+        },
+      },
+      "Type": "AWS::Cognito::UserPool",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "DeaBackendStackDEAUserPooldeaappclient050D23A1": Object {
+      "Properties": Object {
+        "AccessTokenValidity": 30,
+        "AllowedOAuthFlows": Array [
+          "code",
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "AllowedOAuthScopes": Array [
+          "profile",
+          "phone",
+          "email",
+          "openid",
+          "aws.cognito.signin.user.admin",
+        ],
+        "CallbackURLs": Array [
+          "https://cogtest.com/welcome",
+        ],
+        "ClientName": "dea-app-client",
+        "EnableTokenRevocation": true,
+        "ExplicitAuthFlows": Array [
+          "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+          "ALLOW_REFRESH_TOKEN_AUTH",
+        ],
+        "GenerateSecret": true,
+        "IdTokenValidity": 1440,
+        "LogoutURLs": Array [
+          "https://cogtest.com/signin",
+        ],
+        "PreventUserExistenceErrors": "ENABLED",
+        "RefreshTokenValidity": 1440,
+        "SupportedIdentityProviders": Array [
+          "COGNITO",
+        ],
+        "TokenValidityUnits": Object {
+          "AccessToken": "minutes",
+          "IdToken": "minutes",
+          "RefreshToken": "minutes",
+        },
+        "UserPoolId": Object {
+          "Ref": "DeaBackendStackDEAUserPoolF5DE2A39",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolClient",
     },
     "DeaBackendStackFlowLogB1F9C02F": Object {
       "Properties": Object {
