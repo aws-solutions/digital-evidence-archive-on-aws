@@ -7,6 +7,8 @@ paths:
     get:
       summary: Get all cases
       description: admin-only returns list of cases
+      tags:
+        - admin
       parameters:
         - in: query
           name: limit
@@ -30,6 +32,8 @@ paths:
     post:
       summary: Set new owner of a case
       description: Admin-only set new owner of a case
+      tags:
+        - admin
       parameters:
         - in: path
           name: caseId
@@ -67,6 +71,8 @@ paths:
   /config:
     put:
       summary: Put storage config
+      tags:
+        - storage
       requestBody:
         content:
           application/json:
@@ -81,6 +87,8 @@ paths:
                 $ref: '#/components/schemas/StorageConfig'
     get:
       summary: Get storage config
+      tags:
+        - storage
       responses:
         200:
           description: Success Response
@@ -90,6 +98,8 @@ paths:
                 $ref: '#/components/schemas/StorageConfig'
   /cases:
     post:
+      tags:
+        - cases
       requestBody:
         content:
           application/json:
@@ -105,6 +115,8 @@ paths:
   /cases/{caseId}/userMemberships:
     post:
       summary: Add a user as a collaborator to a case
+      tags:
+        - cases
       parameters:
         - in: path
           name: caseId
@@ -130,6 +142,8 @@ paths:
     get:
       summary: Get all users by case
       description: get all users with membership on a case
+      tags:
+        - cases
       parameters:
         - in: path
           name: caseId
@@ -158,6 +172,8 @@ paths:
     put:
       summary: Update case user
       description: Update the details on an existing case membership
+      tags:
+        - cases
       parameters:
         - in: path
           name: caseId
@@ -184,6 +200,8 @@ paths:
     delete:
       summary: Remove case user
       description: Remove a collaborator from a case
+      tags:
+        - cases
       parameters:
         - in: path
           name: caseId
@@ -202,6 +220,8 @@ paths:
     get:
       summary: get user's cases
       description: returns array of cases on which the user has membership
+      tags:
+        - cases
       parameters:
         - in: query
           name: limit
@@ -225,6 +245,8 @@ paths:
     get:
       summary: Return case details by case Id
       description: Get metadata for a specific case. return not found if user doesn’t have access
+      tags:
+        - cases
       parameters:
         - in: path
           name: caseId
@@ -240,6 +262,8 @@ paths:
                 $ref: '#/components/schemas/Case'
     put:
       summary: Update case details
+      tags:
+        - cases
       parameters:
         - in: path
           name: caseId
@@ -261,6 +285,8 @@ paths:
   /cases/{caseId}/status:
     put:
       summary: Update case status
+      tags:
+        - cases
       parameters:
         - in: path
           name: caseId
@@ -284,6 +310,8 @@ paths:
   /cases/{caseId}/files:
     post:
       summary: Upload files to a case
+      tags:
+        - cases
       parameters:
         - in: path
           name: caseId
@@ -305,6 +333,8 @@ paths:
     get:
       summary: list files by directory
       description: List files within a case in a parent directory or case root
+      tags:
+        - cases
       parameters:
         - in: path
           name: caseId
@@ -337,6 +367,8 @@ paths:
     get:
       summary: File details
       description: Get details for a file within a case
+      tags:
+        - cases
       parameters:
         - in: path
           name: caseId
@@ -364,6 +396,8 @@ paths:
     get:
       summary: Download file
       description: Download the contents of a file via s3 signed url
+      tags:
+        - cases
       parameters:
         - in: path
           name: caseId
@@ -391,6 +425,8 @@ paths:
   /users:
     get:
       summary: Get all users
+      tags:
+        - cases
       parameters:
         - in: query
           name: limit
