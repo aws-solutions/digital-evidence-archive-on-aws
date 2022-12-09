@@ -301,7 +301,7 @@ paths:
           name: parentDir
           schema:
             type: string
-          required: true
+          required: false
       responses:
         200:
           description: Success
