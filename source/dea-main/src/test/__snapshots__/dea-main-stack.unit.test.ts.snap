@@ -88,7 +88,7 @@ Object {
             },
             "/",
             Object {
-              "Ref": "DeaUiStackdeauigatewayDeploymentStagedevAEE02F77",
+              "Ref": "DeaUiStackdeauigatewayDeploymentStageprodA3168B7D",
             },
             "/",
           ],
@@ -2123,7 +2123,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Deployment",
     },
-    "DeaUiStackdeauigatewayDeploymentStagedevAEE02F77": Object {
+    "DeaUiStackdeauigatewayDeploymentStageprodA3168B7D": Object {
       "DependsOn": Array [
         "DeaUiStackdeauigatewayAccount1A92DBB5",
       ],
@@ -2153,7 +2153,7 @@ Object {
         "RestApiId": Object {
           "Ref": "DeaUiStackdeauigateway147D98B7",
         },
-        "StageName": "dev",
+        "StageName": "prod",
       },
       "Type": "AWS::ApiGateway::Stage",
     },
