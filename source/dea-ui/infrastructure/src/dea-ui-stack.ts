@@ -148,7 +148,6 @@ export class DeaUiConstruct extends Construct {
     const api = new RestApi(this, 'dea-ui-gateway', {
       description: 'distribution api',
       deployOptions: {
-        stageName: 'dev',
         accessLogDestination: new LogGroupLogDestination(logGroup),
         accessLogFormat: AccessLogFormat.custom(
           JSON.stringify({
@@ -279,7 +278,7 @@ export class DeaUiConstruct extends Construct {
 
   private _apiGwUiWarnSuppress(api: RestApi): void {
     // Don't need usage plan for UI API GW
-    const stageNode = api.node.findChild('DeploymentStage.dev').node.defaultChild;
+    const stageNode = api.node.findChild('DeploymentStage.prod').node.defaultChild;
     const apiNode = api.node.findChild('Deployment').node.defaultChild;
     if (apiNode instanceof CfnDeployment) {
       apiNode.addMetadata('cfn_nag', {
