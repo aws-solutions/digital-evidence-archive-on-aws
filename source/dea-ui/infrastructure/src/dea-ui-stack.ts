@@ -83,6 +83,8 @@ export class DeaUiConstruct extends Construct {
       encryption: BucketEncryption.S3_MANAGED,
       serverAccessLogsBucket: this._accessLogsBucket,
       serverAccessLogsPrefix: this._s3AccessLogsPrefix,
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
     });
 
     this._addS3TLSSigV4BucketPolicy(bucket);
@@ -237,6 +239,7 @@ export class DeaUiConstruct extends Construct {
       encryption: BucketEncryption.S3_MANAGED,
       enforceSSL: true,
       removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
     });
 
     uiS3AccessLogsBucket.addToResourcePolicy(

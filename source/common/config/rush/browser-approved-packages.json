@@ -111,70 +111,6 @@
       "allowedCategories": ["production"]
     },
     {
-      "name": "@aws/eslint-config-workbench-core-eslint-custom",
-      "allowedCategories": ["production", "prototypes"]
-    },
-    {
-      "name": "@aws/swb-app",
-      "allowedCategories": ["production"]
-    },
-    {
-      "name": "@aws/workbench-core-accounts-ui",
-      "allowedCategories": ["production"]
-    },
-    {
-      "name": "@aws/workbench-core-audit",
-      "allowedCategories": ["production", "prototypes"]
-    },
-    {
-      "name": "@aws/workbench-core-authentication",
-      "allowedCategories": ["production", "prototypes"]
-    },
-    {
-      "name": "@aws/workbench-core-authorization",
-      "allowedCategories": ["production", "prototypes"]
-    },
-    {
-      "name": "@aws/workbench-core-base",
-      "allowedCategories": ["production", "prototypes"]
-    },
-    {
-      "name": "@aws/workbench-core-datasets",
-      "allowedCategories": ["production", "prototypes"]
-    },
-    {
-      "name": "@aws/workbench-core-datasets-ui",
-      "allowedCategories": ["production"]
-    },
-    {
-      "name": "@aws/workbench-core-environments",
-      "allowedCategories": ["production", "prototypes"]
-    },
-    {
-      "name": "@aws/workbench-core-environments-ui",
-      "allowedCategories": ["production"]
-    },
-    {
-      "name": "@aws/workbench-core-example-app",
-      "allowedCategories": ["prototypes"]
-    },
-    {
-      "name": "@aws/workbench-core-example-express",
-      "allowedCategories": ["prototypes"]
-    },
-    {
-      "name": "@aws/workbench-core-infrastructure",
-      "allowedCategories": ["production", "prototypes"]
-    },
-    {
-      "name": "@aws/workbench-core-logging",
-      "allowedCategories": ["production", "prototypes"]
-    },
-    {
-      "name": "@aws/workbench-core-swb-common-ui",
-      "allowedCategories": ["production"]
-    },
-    {
       "name": "@awsui/collection-hooks",
       "allowedCategories": ["production", "prototypes"]
     },
@@ -311,10 +247,6 @@
       "allowedCategories": ["production", "prototypes"]
     },
     {
-      "name": "@vendia/serverless-express",
-      "allowedCategories": ["production", "prototypes"]
-    },
-    {
       "name": "aws-cdk",
       "allowedCategories": ["production", "prototypes"]
     },
@@ -395,6 +327,10 @@
       "allowedCategories": ["production"]
     },
     {
+      "name": "dynamodb-onetable",
+      "allowedCategories": ["production"]
+    },
+    {
       "name": "esbuild",
       "allowedCategories": ["production", "prototypes"]
     },
@@ -417,14 +353,6 @@
     {
       "name": "eslint-plugin-testing-library",
       "allowedCategories": ["production", "prototypes"]
-    },
-    {
-      "name": "express",
-      "allowedCategories": ["production", "prototypes"]
-    },
-    {
-      "name": "express-rate-limit",
-      "allowedCategories": ["prototypes"]
     },
     {
       "name": "fast-check",
@@ -553,10 +481,6 @@
     {
       "name": "source-map-support",
       "allowedCategories": ["production", "prototypes"]
-    },
-    {
-      "name": "supertest",
-      "allowedCategories": ["production"]
     },
     {
       "name": "swr",

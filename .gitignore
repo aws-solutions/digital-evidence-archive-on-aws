@@ -81,7 +81,6 @@ source/dea-ui/ui/out
 
 #cdk
 cdk.out
-.vscode
 .heft
 .tools
 cdk.context.json

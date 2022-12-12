@@ -4,8 +4,6 @@ require('@rushstack/eslint-config/patch/modern-module-resolution');
 module.exports = {
   extends: [
     'eslint:recommended',
-    '@rushstack/eslint-config/profile/node',
-    '@rushstack/eslint-config/mixins/tsdoc',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
   ],

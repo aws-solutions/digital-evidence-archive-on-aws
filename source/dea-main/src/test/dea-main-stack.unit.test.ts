@@ -35,7 +35,7 @@ describe('DeaMainStack', () => {
 
     template.hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'index.handler',
-      Runtime: Runtime.NODEJS_16_X.name,
+      Runtime: Runtime.NODEJS_18_X.name,
     });
 
     // Assert it creates the api with the correct properties...

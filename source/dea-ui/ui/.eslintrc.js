@@ -4,9 +4,9 @@ require('@rushstack/eslint-config/patch/modern-module-resolution');
 module.exports = {
   extends: [
     'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
     'next/core-web-vitals',
-    '@rushstack/eslint-config/profile/node',
-    '@rushstack/eslint-config/mixins/tsdoc',
   ],
   parserOptions: { tsconfigRootDir: __dirname },
   plugins: ['testing-library', '@typescript-eslint', 'security', 'import'],

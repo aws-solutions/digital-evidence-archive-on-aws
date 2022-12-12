@@ -4,15 +4,22 @@
  */
 
 /* eslint-disable no-new */
-import { DeaBackendConstruct } from '@aws/dea-backend';
+import { DeaBackendConstruct, DeaRestApiConstruct } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
-import { CfnOutput } from 'aws-cdk-lib';
+import { CfnOutput, CfnResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
 import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
-import { AccountPrincipal, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import {
+  AccountPrincipal,
+  Effect,
+  PolicyDocument,
+  PolicyStatement,
+  ServicePrincipal,
+} from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
+import { addLambdaSuppressions } from './nag-suppressions';
 
 export class DeaMainStack extends cdk.Stack {
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -20,10 +27,26 @@ export class DeaMainStack extends cdk.Stack {
     super(scope, id, props);
 
     // Create KMS key to pass into backend and UI
-    const kmsKey: Key = this._createEncryptionKey();
+    const kmsKey = this._createEncryptionKey();
 
     // DEA Backend Construct
-    new DeaBackendConstruct(this, 'DeaBackendConstruct', { kmsKey: kmsKey });
+    const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendConstruct', { kmsKey: kmsKey });
+
+    const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
+      deaTableArn: backendConstruct.deaTable.tableArn,
+      vpc: backendConstruct.deaVpc,
+      s3BucketArn: '',
+      kmsKey,
+    });
+
+    kmsKey.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['kms:Decrypt', 'kms:Encrypt'],
+        principals: [new ServicePrincipal(`lambda.${this.region}.amazonaws.com`)],
+        resources: [deaApi.lambdaBaseRole.roleArn],
+        sid: 'main-key-share-statement',
+      })
+    );
 
     // DEA UI Construct
     new DeaUiConstruct(this, 'DeaUiConstruct', { kmsKey: kmsKey });
@@ -34,60 +57,70 @@ export class DeaMainStack extends cdk.Stack {
     // resource node directly in the ui or backend construct
     this._uiStackConstructNagSuppress();
 
-    // TODO: Stack Handling
     // These are resources that will be configured in a future story. Please remove these suppressions or modify them to the specific resources as needed
     // when we tackle the particular story. Details in function below
     this._apiGwAuthNagSuppresions();
   }
 
-  private _uiStackConstructNagSuppress(): void {
-    // Suppress W58 for custom resource
+  private async _uiStackConstructNagSuppress(): Promise<void> {
     const cdkLambda = this.node.findChild('Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C').node
       .defaultChild;
     if (cdkLambda instanceof CfnFunction) {
-      cdkLambda.addMetadata('cfn_nag', {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        rules_to_suppress: [
-          {
-            id: 'W58',
-            reason:
-              'AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs',
-          },
-          {
-            id: 'W89',
-            reason: 'VPCs are not used for this use case. Custom resource for serving UI',
-          },
-          {
-            id: 'W92',
-            reason:
-              'AWSCustomResource Lambda Function used for provisioning UI assets, reserved concurrency is not required',
-          },
-        ],
-      });
+      addLambdaSuppressions(cdkLambda);
     }
+
+    const autoDeleteLambda = this.node
+      .findChild('Custom::S3AutoDeleteObjectsCustomResourceProvider')
+      .node.findChild('Handler');
+    if (autoDeleteLambda instanceof CfnResource) {
+      addLambdaSuppressions(autoDeleteLambda);
+    }
+  }
+
+  private _createEncryptionKey(): Key {
+    const mainKeyPolicy = new PolicyDocument({
+      statements: [
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: ['kms:*'],
+          principals: [new AccountPrincipal(this.account)],
+          resources: ['*'],
+          sid: 'main-key-share-statement',
+        }),
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            'kms:Encrypt*',
+            'kms:Decrypt*',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+            'kms:Describe*',
+          ],
+          principals: [new ServicePrincipal(`logs.${this.region}.amazonaws.com`)],
+          // resources: [deaApi.accessLogGroup.logGroupArn],
+          resources: ['*'],
+          sid: 'main-key-share-statement',
+        }),
+      ],
+    });
+
+    const key = new Key(this, 'primaryCustomerKey', {
+      enableKeyRotation: true,
+      policy: mainKeyPolicy,
+      removalPolicy: RemovalPolicy.DESTROY,
+      pendingWindow: Duration.days(7),
+    });
+
+    new CfnOutput(this, 'main account kms key', {
+      value: key.keyArn,
+    });
+    return key;
   }
 
   private _apiGwAuthNagSuppresions(): void {
     // Nag suppress on all authorizationType related warnings until our Auth implementation is complete
     const apiGwMethodArray = [];
     // Backend API GW
-    apiGwMethodArray.push(
-      this.node
-        .findChild('DeaBackendStack')
-        .node.findChild('API-Gateway API')
-        .node.findChild('Default')
-        .node.findChild('{proxy+}')
-        .node.findChild('ANY').node.defaultChild
-    );
-
-    // Backend API Usage Plan
-    apiGwMethodArray.push(
-      this.node
-        .findChild('DeaBackendStack')
-        .node.findChild('API-Gateway API')
-        .node.findChild('Default')
-        .node.findChild('ANY').node.defaultChild
-    );
 
     // UI API GW
     apiGwMethodArray.push(
@@ -121,34 +154,5 @@ export class DeaMainStack extends cdk.Stack {
         });
       }
     });
-  }
-
-  private _createEncryptionKey(): Key {
-    const mainKeyPolicy = new PolicyDocument({
-      statements: [
-        new PolicyStatement({
-          actions: ['kms:*'],
-          principals: [new AccountPrincipal(this.account)],
-          resources: ['*'],
-          sid: 'main-key-share-statement',
-        }),
-        new PolicyStatement({
-          actions: ['kms:*'],
-          principals: [new ServicePrincipal(`logs.${this.region}.amazonaws.com`)],
-          resources: ['*'],
-          sid: 'main-key-share-statement',
-        }),
-      ],
-    });
-
-    const key = new Key(this, 'mainAccountKey', {
-      enableKeyRotation: true,
-      policy: mainKeyPolicy,
-    });
-
-    new CfnOutput(this, 'main account kms key', {
-      value: key.keyArn,
-    });
-    return key;
   }
 }
