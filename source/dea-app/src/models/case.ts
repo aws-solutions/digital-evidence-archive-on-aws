@@ -6,9 +6,9 @@
 import { CaseStatus } from './case-status';
 
 export interface DeaCase {
-  ulid?: string;
-  name: string;
-  status: CaseStatus;
-  description?: string;
-  objectCount?: number;
+  readonly ulid?: string;
+  readonly name: string;
+  readonly status: CaseStatus;
+  readonly description?: string;
+  readonly objectCount?: number;
 }
