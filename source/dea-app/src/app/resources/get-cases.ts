@@ -4,14 +4,15 @@
  */
 
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Context } from 'aws-lambda';
-import { listCases } from '../persistence/case';
+import { logger } from '../../logger';
+import { listCases } from '../../persistence/case';
 
 export const getCases = async (
   event: APIGatewayProxyEventV2,
   context: Context
 ): Promise<APIGatewayProxyResultV2> => {
-  console.log(`Event`, { Data: JSON.stringify(event, null, 2) });
-  console.log(`Context`, { Data: JSON.stringify(context, null, 2) });
+  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
+  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
   let limit: number | undefined;
   let next: string | undefined;
   if (event.queryStringParameters) {

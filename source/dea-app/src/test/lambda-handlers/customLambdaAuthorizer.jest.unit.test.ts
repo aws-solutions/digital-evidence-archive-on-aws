@@ -9,7 +9,7 @@ import {
   APIGatewayTokenAuthorizerEvent,
   PolicyDocument,
 } from 'aws-lambda';
-import { customAuthorizer } from '../../app/custom-lambda-authorizer';
+import { customAuthorizer } from '../../app/resources/custom-lambda-authorizer';
 
 type LambdaResult = APIGatewayAuthorizerResult | Error | string | undefined;
 

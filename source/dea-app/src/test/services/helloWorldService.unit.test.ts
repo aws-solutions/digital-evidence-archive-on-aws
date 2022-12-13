@@ -3,8 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { sayBye } from '../../app/say-bye';
-import { sayHello } from '../../app/say-hello';
+import { sayBye } from '../../app/resources/say-bye';
+import { sayHello } from '../../app/resources/say-hello';
 
 describe('helloWorld service', () => {
   it('should say hello', async () => {

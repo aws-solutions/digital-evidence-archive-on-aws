@@ -3,10 +3,10 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { createCases } from './app/create-cases';
-import { customAuthorizer } from './app/custom-lambda-authorizer';
-import { getCases } from './app/get-cases';
-import { sayBye } from './app/say-bye';
-import { sayHello } from './app/say-hello';
+import { createCases } from './app/resources/create-cases';
+import { customAuthorizer } from './app/resources/custom-lambda-authorizer';
+import { getCases } from './app/resources/get-cases';
+import { sayBye } from './app/resources/say-bye';
+import { sayHello } from './app/resources/say-hello';
 
 export { sayBye, sayHello, createCases, getCases, customAuthorizer };
