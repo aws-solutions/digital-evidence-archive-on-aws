@@ -137,10 +137,13 @@ export class DeaRestApiConstruct extends Construct {
       handler: 'handler',
       entry: path.join(__dirname, pathToSource),
       depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
+      environment: {
+        NODE_OPTIONS: '--enable-source-maps',
+      },
       bundling: {
         externalModules: ['aws-sdk'],
         minify: true,
-        sourceMap: false,
+        sourceMap: true,
       },
     });
 
