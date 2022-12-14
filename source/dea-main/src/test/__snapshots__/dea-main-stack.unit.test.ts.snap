@@ -467,6 +467,7 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps",
           },
         },
         "Handler": "index.handler",
@@ -555,6 +556,7 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps",
           },
         },
         "Handler": "index.handler",
@@ -603,6 +605,7 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps",
           },
         },
         "Handler": "index.handler",
@@ -651,6 +654,7 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps",
           },
         },
         "Handler": "index.handler",
@@ -699,6 +703,7 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps",
           },
         },
         "Handler": "index.handler",

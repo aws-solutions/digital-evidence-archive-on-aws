@@ -7,8 +7,10 @@ import {
   APIGatewayAuthorizerCallback,
   APIGatewayAuthorizerResult,
   APIGatewayTokenAuthorizerEvent,
+  Context,
   PolicyDocument,
 } from 'aws-lambda';
+import { mock } from 'ts-mockito';
 import { customAuthorizer } from '../../app/resources/custom-lambda-authorizer';
 
 type LambdaResult = APIGatewayAuthorizerResult | Error | string | undefined;
@@ -61,7 +63,9 @@ describe('Unit tests for custom lambda authorizer', () => {
       }
     };
 
-    await customAuthorizer(event, callback);
+    const context: Context = mock();
+
+    await customAuthorizer(event, context, callback);
 
     expect(isAnAuthResult(lambdaResult)).toBe(true);
 
@@ -73,6 +77,7 @@ describe('Unit tests for custom lambda authorizer', () => {
 
   it('verifies deny response', async () => {
     const event: APIGatewayTokenAuthorizerEvent = createEvent(DENY_TOKEN);
+    const context: Context = mock();
 
     let lambdaResult: LambdaResult;
     const callback: APIGatewayAuthorizerCallback = (
@@ -86,7 +91,7 @@ describe('Unit tests for custom lambda authorizer', () => {
       }
     };
 
-    await customAuthorizer(event, callback);
+    await customAuthorizer(event, context, callback);
 
     expect(isAnAuthResult(lambdaResult)).toBe(true);
 
@@ -98,6 +103,7 @@ describe('Unit tests for custom lambda authorizer', () => {
 
   it('verifies unauthorized response', async () => {
     const event: APIGatewayTokenAuthorizerEvent = createEvent(UNAUTHORIZED_TOKEN);
+    const context: Context = mock();
 
     let lambdaResult: LambdaResult;
     const callback: APIGatewayAuthorizerCallback = (
@@ -111,7 +117,7 @@ describe('Unit tests for custom lambda authorizer', () => {
       }
     };
 
-    await customAuthorizer(event, callback);
+    await customAuthorizer(event, context, callback);
 
     expect(typeof lambdaResult).toBe('string');
 
@@ -122,6 +128,7 @@ describe('Unit tests for custom lambda authorizer', () => {
 
   it('verifies invalid token response', async () => {
     const event: APIGatewayTokenAuthorizerEvent = createEvent(INVALID_TOKEN);
+    const context: Context = mock();
 
     let lambdaResult: LambdaResult;
     const callback: APIGatewayAuthorizerCallback = (
@@ -135,7 +142,7 @@ describe('Unit tests for custom lambda authorizer', () => {
       }
     };
 
-    await customAuthorizer(event, callback);
+    await customAuthorizer(event, context, callback);
 
     expect(typeof lambdaResult).toBe('string');
 

@@ -5,10 +5,11 @@
 
 import {
   APIGatewayAuthorizerCallback,
-  APIGatewayTokenAuthorizerEvent,
+  APIGatewayTokenAuthorizerHandler,
   AuthResponse,
   PolicyDocument,
 } from 'aws-lambda';
+import { logger } from '../../logger';
 
 // TODO: once Cognito it added, replace this function for one that takes
 // the cognito-group(s) from the Cognito AuthN response, and grabs the
@@ -54,10 +55,9 @@ function validateToken(token: string, methodArn: string, callback: APIGatewayAut
 
 // TODO add session management checks
 
-export const customAuthorizer = async (
-  event: APIGatewayTokenAuthorizerEvent,
-  callback: APIGatewayAuthorizerCallback
-): Promise<void> => {
+export const customAuthorizer: APIGatewayTokenAuthorizerHandler = (event, context, callback) => {
+  logger.debug(`Event (logger)`, { Data: JSON.stringify(event, null, 2) });
+
   const token = event.authorizationToken;
   const methodArn = event.methodArn;
 
