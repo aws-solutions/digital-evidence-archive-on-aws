@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import { LoggingService, LogLevel } from '@aws/workbench-core-logging';
 
 const logLevel = (): LogLevel => {
@@ -12,7 +17,7 @@ const logLevel = (): LogLevel => {
         case 'error':
             return level;
         default:
-            return 'info';
+            return 'debug';
     }
 }
 

@@ -11,9 +11,8 @@ import {
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
-  TokenAuthorizer,
+  TokenAuthorizer
 } from 'aws-cdk-lib/aws-apigateway';
-import { CfnSecurityGroup, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -24,7 +23,6 @@ import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway
 import { deaApiRouteConfig } from '../resources/dea-route-config';
 
 interface DeaRestApiProps {
-  vpc: Vpc;
   deaTableArn: string;
   s3BucketArn: string;
   kmsKey: Key;
@@ -38,10 +36,10 @@ export class DeaRestApiConstruct extends Construct {
 
     this.lambdaBaseRole = this._createLambdaBaseRole(props.kmsKey.keyArn, props.deaTableArn);
 
-    this._createApiGateway(props.vpc, props.deaTableArn, props.kmsKey, deaApiRouteConfig);
+    this._createApiGateway(props.deaTableArn, props.kmsKey, deaApiRouteConfig);
   }
 
-  private _createApiGateway(vpc: Vpc, tableArn: string, key: Key, routeConfig: ApiGatewayRouteConfig): void {
+  private _createApiGateway(tableArn: string, key: Key, routeConfig: ApiGatewayRouteConfig): void {
     const accessLogGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
       encryptionKey: key,
     });
@@ -174,35 +172,13 @@ export class DeaRestApiConstruct extends Construct {
     return lambda;
   }
 
-  private _addEgressSuppressions(sg: SecurityGroup): void {
-    const resource = sg.node.defaultChild;
-    if (resource instanceof CfnSecurityGroup) {
-      resource.addMetadata('cfn_nag', {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        rules_to_suppress: [
-          {
-            id: 'W40',
-            reason: 'Revisit later. Need to discuss ip protocol',
-          },
-          {
-            id: 'W5',
-            reason: 'Revisit later. Unable to set CIDR range on egress',
-          },
-        ],
-      });
-    }
-  }
-
   private _createLambdaBaseRole(kmsKeyArn: string, tableArn: string): Role {
-    const vpcExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
-      'service-role/AWSLambdaVPCAccessExecutionRole'
-    );
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
     );
     const role = new Role(this, 'dea-base-lambda-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [vpcExecutionPolicy, basicExecutionPolicy],
+      managedPolicies: [basicExecutionPolicy],
     });
 
     role.addToPolicy(
