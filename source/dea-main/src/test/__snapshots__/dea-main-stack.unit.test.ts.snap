@@ -376,6 +376,7 @@ Object {
     },
     "DeaApiGatewayCustomTokenAuthorizerF6D5E61E": Object {
       "Properties": Object {
+        "AuthorizerResultTtlInSeconds": 0,
         "AuthorizerUri": Object {
           "Fn::Join": Array [
             "",

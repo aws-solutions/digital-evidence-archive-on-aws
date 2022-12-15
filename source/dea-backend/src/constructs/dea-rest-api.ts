@@ -214,6 +214,7 @@ export class DeaRestApiConstruct extends Construct {
 
     return new TokenAuthorizer(this, 'CustomTokenAuthorizer', {
       handler: authLambda,
+      resultsCacheTtl: Duration.seconds(0),
     });
   }
 }
