@@ -4,5 +4,6 @@
  */
 
 import { createCases } from '@aws/dea-app';
+import { createDeaHandler } from './create-dea-handler';
 
-exports.handler = createCases;
+exports.handler = createDeaHandler(createCases);

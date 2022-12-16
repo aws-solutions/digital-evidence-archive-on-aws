@@ -4,5 +4,6 @@
  */
 
 import { sayBye } from '@aws/dea-app';
+import { createDeaHandler } from './create-dea-handler';
 
-exports.handler = sayBye;
+exports.handler = createDeaHandler(sayBye);
