@@ -3,14 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Context } from 'aws-lambda';
 import { logger } from '../../logger';
 import { listCases } from '../../persistence/case';
+import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
-export const getCases = async (
-  event: APIGatewayProxyEventV2,
-  context: Context
-): Promise<APIGatewayProxyResultV2> => {
+export const getCases: DEAGatewayProxyHandler = async (event, context) => {
   logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
   logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
   let limit: number | undefined;

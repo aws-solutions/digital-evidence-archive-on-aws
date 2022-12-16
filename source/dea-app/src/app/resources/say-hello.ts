@@ -3,10 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { APIGatewayProxyResultV2 } from 'aws-lambda';
+import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
-export const sayHello = async ()
-  : Promise<APIGatewayProxyResultV2> => {
+export const sayHello: DEAGatewayProxyHandler = async () => {
   return {
     statusCode: 200,
     body: 'Hello DEA!',

@@ -77,6 +77,7 @@
     "eslint-plugin-security": "^1.4.0",
     "istanbul-badges-readme": "1.8.1",
     "jest": "^27.5.1",
+    "joi": "~17.7.0",
     "license-check-and-add": "^4.0.5",
     "license-checker": "^25.0.1",
     "npm-package-json-lint": "^6.3.0",
