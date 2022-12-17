@@ -6,11 +6,8 @@
 import { Paged } from 'dynamodb-onetable';
 import { DeaCase } from '../models/case';
 import { caseFromEntity } from '../models/projections';
+import { isDefined } from './persistence-helpers';
 import { CaseModel, CaseModelRepositoryProvider } from './schema/entities';
-
-const isDefined = <T>(item: T | undefined): item is T => {
-  return !!item;
-};
 
 export const getCase = async (
   ulid: string,

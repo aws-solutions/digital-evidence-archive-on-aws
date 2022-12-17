@@ -4,8 +4,11 @@
  */
 
 import { DeaCase } from '../models/case';
-import { CaseType } from '../persistence/schema/entities';
+import { CaseType, CaseUserType, UserType } from '../persistence/schema/entities';
+import { CaseAction } from './case-action';
 import { CaseStatus } from './case-status';
+import { CaseUser } from './case-user';
+import { DeaUser } from './user';
 
 export const caseFromEntity = (caseEntity?: CaseType): DeaCase | undefined => {
   if (caseEntity) {
@@ -17,6 +20,32 @@ export const caseFromEntity = (caseEntity?: CaseType): DeaCase | undefined => {
       // status schema is defined with CaseStatus so we can safely cast here
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       status: caseEntity.status as CaseStatus,
+    };
+  }
+  return undefined;
+};
+
+export const userFromEntity = (userEntity?: UserType): DeaUser | undefined => {
+  if (userEntity) {
+    return {
+      ulid: userEntity.ulid,
+      firstName: userEntity.firstName,
+      lastName: userEntity.lastName,
+    };
+  }
+  return undefined;
+};
+
+export const caseUserFromEntity = (caseUserEntity?: CaseUserType): CaseUser | undefined => {
+  if (caseUserEntity) {
+    return {
+      caseUlid: caseUserEntity.caseUlid,
+      userUlid: caseUserEntity.userUlid,
+      userFirstName: caseUserEntity.userFirstName,
+      userLastName: caseUserEntity.userLastName,
+      caseName: caseUserEntity.caseName,
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      actions: caseUserEntity.actions?.map(action => action as CaseAction) ?? [],
     };
   }
   return undefined;

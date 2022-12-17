@@ -5,6 +5,7 @@
 
 import { NotFoundError, NOT_FOUND_ERROR_NAME } from './app/exceptions/not-found-exception';
 import { ValidationError, VALIDATION_ERROR_NAME } from './app/exceptions/validation-exception';
+import { createCaseMembership } from './app/resources/create-case-membership';
 import { createCases } from './app/resources/create-cases';
 import { customAuthorizer } from './app/resources/custom-lambda-authorizer';
 import { DEAGatewayProxyHandler } from './app/resources/dea-gateway-proxy-handler';
@@ -18,6 +19,7 @@ export {
   createCases,
   getCases,
   customAuthorizer,
+  createCaseMembership,
   DEAGatewayProxyHandler,
   NotFoundError,
   NOT_FOUND_ERROR_NAME,
