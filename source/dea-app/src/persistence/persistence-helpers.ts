@@ -3,8 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-export interface DeaUser {
-    readonly ulid?: string;
-    readonly firstName: string,
-    readonly lastName: string,
-}
+export const isDefined = <T>(item: T | undefined): item is T => {
+    return !!item;
+};

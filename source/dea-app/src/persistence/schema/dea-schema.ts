@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { CaseAction } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
 
 const ulidMatch = /^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$/;
@@ -39,9 +40,9 @@ export const DeaSchema = {
       // gsi2 enable list all cases for a user, sorted by case name
       GSI2PK: { type: String, value: 'USER#${userUlid}#' },
       GSI2SK: { type: String, value: 'CASE#${lowerCaseName}#' },
-      caseUlid: { type: String, validate: ulidMatch },
-      userUlid: { type: String, validate: ulidMatch },
-      actions: { type: Array },
+      caseUlid: { type: String, validate: ulidMatch, required: true },
+      userUlid: { type: String, validate: ulidMatch, required: true },
+      actions: { type: Array, items: { type: String, enum: Object.keys(CaseAction), required: true } },
       caseName: { type: String, required: true },
       userFirstName: { type: String, required: true },
       userLastName: { type: String, required: true },
@@ -50,7 +51,7 @@ export const DeaSchema = {
     },
     CaseFile: {
       PK: { type: String, value: 'CASE#${caseUlid}#${preceedingDirectoryUlid}#', required: true },
-      SK: { type: String, value: 'FILE#{name}#{ulid}', required: true },
+      SK: { type: String, value: 'FILE#${name}#${ulid}', required: true },
       GSI1PK: { type: String, value: 'CASE#${caseUlid}#${ulid}#' },
       GSI1SK: { type: String, value: 'FILE#${isFile}#' },
       ulid: { type: String, generate: 'ulid', validate: ulidMatch },
@@ -60,11 +61,11 @@ export const DeaSchema = {
       contentPath: { type: String },
     },
     User: {
-      PK: { type: String, value: 'USER#{ulid}', required: true },
+      PK: { type: String, value: 'USER#${ulid}#', required: true },
       SK: { type: String, value: 'USER#', required: true },
       GSI1PK: { type: String, value: 'USER#' },
-      GSI1SK: { type: String, value: 'USER#{lowerFirstName}#{lowerLastName}#{ulid}#' },
-      ulid: { type: String, generate: 'ulid', validate: ulidMatch },
+      GSI1SK: { type: String, value: 'USER#${lowerFirstName}#${lowerLastName}#${ulid}#' },
+      ulid: { type: String, generate: 'ulid', validate: ulidMatch, required: true },
       firstName: { type: String, required: true },
       lastName: { type: String, required: true },
       lowerFirstName: { type: String, required: true },
