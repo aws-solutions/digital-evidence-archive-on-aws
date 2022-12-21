@@ -3,426 +3,207 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Model, Paged } from 'dynamodb-onetable';
-import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { Paged, Table } from 'dynamodb-onetable';
+import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
+import { CaseStatus } from '../../models/case-status';
 import { CaseUser } from '../../models/case-user';
-import { createCaseUser, getCaseUser, listCaseUsersByCase, listCaseUsersByUser, updateCaseUser } from '../../persistence/case-user';
-import { CaseUserType } from '../../persistence/schema/entities';
+import { DeaUser } from '../../models/user';
+import { createCase } from '../../persistence/case';
+import { createCaseUser, deleteCaseUser, getCaseUser, listCaseUsersByCase, listCaseUsersByUser, updateCaseUser } from '../../persistence/case-user';
+import { CaseModelRepositoryProvider, CaseUserModelRepositoryProvider, UserModelRepositoryProvider } from '../../persistence/schema/entities';
+import { createUser } from '../../persistence/user';
+import { initLocalDb } from './local-db-table';
 
 describe('caseUser persistence', () => {
-    it('should get a caseUser by ids', async () => {
-        const caseUlid = '123abc';
-        const userUlid = 'abc123';
-        const caseName = 'Case ay be see';
-        const userFirstName = 'Morgan';
-        const userLastName = 'Freeman';
-        const userFirstNameLower = 'morgan';
-        const userLastNameLower = 'freeman';
-        const actions = [CaseAction.VIEW_CASE_DETAILS];
 
-        const mockModel: Model<CaseUserType> = mock();
-        const getResponse: CaseUserType = {
-            PK: `USER#${userUlid}#`,
-            SK: `CASE#${caseUlid}#`,
-            caseUlid,
+    let testTable: Table;
+    let caseUserModelProvider: CaseUserModelRepositoryProvider;
+    let userModelProvider: UserModelRepositoryProvider;
+    let caseModelProvider: CaseModelRepositoryProvider;
+    let testUser: DeaUser;
+    let testCase: DeaCase;
+    let userUlid: string;
+    let caseUlid: string;
+    let listUser1: DeaUser;
+    let listUser1Ulid: string;
+    let listUser2: DeaUser;
+    let listUser2Ulid: string;
+    let listCase1: DeaCase;
+    let listCase1Ulid: string;
+    let listCase2: DeaCase;
+    let listCase2Ulid: string;
+    let listCaseUser1_1: CaseUser;
+    let listCaseUser1_2: CaseUser;
+    let listCaseUser2_1: CaseUser;
+
+    beforeAll(async () => {
+        testTable = await initLocalDb("caseUserTestsTable");
+        caseUserModelProvider = { CaseUserModel: testTable.getModel('CaseUser') };
+        userModelProvider = { UserModel: testTable.getModel('User')};
+        caseModelProvider = { CaseModel: testTable.getModel('Case')};
+        testUser = await createUser({ firstName: 'Case', lastName: 'Man' }, userModelProvider) ?? fail();
+        userUlid = testUser.ulid ?? fail();
+        testCase = await createCase({ name: 'TheCase', status: CaseStatus.ACTIVE }, caseModelProvider) ?? fail();
+        caseUlid = testCase.ulid ?? fail();
+
+        //list endpoints
+        await createListData();
+    });
+
+    afterAll(async () => {
+        await testTable.deleteTable('DeleteTableForever');
+    });
+
+    it('should create, get and update caseUser by ids', async () => {
+
+        const caseUser: CaseUser = {
             userUlid,
-            caseName,
-            userFirstName,
-            userLastName,
-            userFirstNameLower,
-            userLastNameLower,
-            actions,
-        };
-
-        when(
-            mockModel.get(
-                deepEqual({
-                    PK: `USER#${userUlid}#`,
-                    SK: `CASE#${caseUlid}#`,
-                })
-            )
-        ).thenResolve(getResponse);
-
-        const expectedCaseUser: CaseUser = {
-            userUlid,
+            userFirstName: testUser.firstName,
+            userLastName: testUser.lastName,
             caseUlid,
-            caseName,
-            userFirstName,
-            userLastName,
-            actions,
+            caseName: testCase.name,
+            actions: [CaseAction.UPLOAD],
         };
+        const createdCaseUser = await createCaseUser(caseUser, caseUserModelProvider);
 
-        const caseUser = await getCaseUser({ caseUlid, userUlid }, { CaseUserModel: instance(mockModel) });
+        expect(createdCaseUser).toEqual(caseUser);
 
-        verify(
-            mockModel.get(
-                deepEqual({
-                    PK: `USER#${userUlid}#`,
-                    SK: `CASE#${caseUlid}#`,
-                })
-            )
-        ).once();
+        const readCaseUser = await getCaseUser({ caseUlid, userUlid }, caseUserModelProvider);
 
-        expect(caseUser).toEqual(expectedCaseUser);
+        expect(readCaseUser).toEqual(createdCaseUser);
+
+        const caseUserForUpdate: CaseUser = {
+            ...caseUser,
+            actions: [CaseAction.DOWNLOAD],
+        }
+
+        const updatedCaseUser = await updateCaseUser(caseUserForUpdate, caseUserModelProvider);
+
+        expect(updatedCaseUser).toEqual(caseUserForUpdate);
+
+        await deleteAndVerifyCaseUser({caseUlid, userUlid}, caseUserModelProvider);
     });
 
     it('should return undefined if a case is not found', async () => {
-        const caseUlid = '123abc';
-        const userUlid = 'abc123';
-        const mockModel: Model<CaseUserType> = mock();
 
-        when(
-            mockModel.get(
-                deepEqual({
-                    PK: `USER#${userUlid}#`,
-                    SK: `CASE#${caseUlid}#`,
-                })
-            )
-        ).thenResolve(undefined);
-
-        const caseUser = await getCaseUser({ caseUlid, userUlid }, { CaseUserModel: instance(mockModel) });
-
-        verify(
-            mockModel.get(
-                deepEqual({
-                    PK: `USER#${userUlid}#`,
-                    SK: `CASE#${caseUlid}#`,
-                })
-            )
-        ).once();
+        const caseUser = await getCaseUser({ caseUlid: 'bogus', userUlid: 'bogus' }, caseUserModelProvider);
 
         expect(caseUser).toBeUndefined();
     });
 
     it('should list the first page of CaseUser by case', async () => {
-        const mockModel: Model<CaseUserType> = mock();
-
-        const caseUlid = '123abc';
-        const userUlid = 'abc123';
-        const caseName = 'Case ay be see';
-        const userFirstName = 'Morgan';
-        const userLastName = 'Freeman';
-        const userFirstNameLower = 'morgan';
-        const userLastNameLower = 'freeman';
-        const actions = [CaseAction.VIEW_CASE_DETAILS];
-
-        const userUlid2 = 'abc456';
-        const userFirstName2 = 'Terry';
-        const userLastName2 = 'Pratchet';
-        const userFirstNameLower2 = 'terry';
-        const userLastNameLower2 = 'pratchet';
-        const actions2 = [CaseAction.VIEW_CASE_DETAILS, CaseAction.VIEW_FILES];
-
-        const findResponse: Paged<CaseUserType> = [
-            {
-                PK: `USER#${userUlid}#`,
-                SK: `CASE#${caseUlid}#`,
-                caseUlid,
-                userUlid,
-                caseName,
-                userFirstName,
-                userLastName,
-                userFirstNameLower,
-                userLastNameLower,
-                actions,
-            },
-            {
-                PK: `USER#${userUlid2}#`,
-                SK: `CASE#${caseUlid}#`,
-                caseUlid,
-                userUlid: userUlid2,
-                caseName,
-                userFirstName: userFirstName2,
-                userLastName: userLastName2,
-                userFirstNameLower: userFirstNameLower2,
-                userLastNameLower: userLastNameLower2,
-                actions: actions2,
-            },
-        ];
-        findResponse.count = 2;
-        findResponse.next = undefined;
-        findResponse.prev = undefined;
-
-        when(
-            mockModel.find(
-                deepEqual({
-                    GSI1PK: `CASE#${caseUlid}`,
-                    GSI1SK: {
-                        begins_with: 'USER#',
-                    },
-                }),
-                deepEqual({
-                    next: undefined,
-                    limit: 20,
-                    index: 'GSI1',
-                })
-            )
-        ).thenResolve(findResponse);
 
         const expectedCaseUsers: Paged<CaseUser> = [
             {
-                userUlid,
-                caseUlid,
-                caseName,
-                userFirstName,
-                userLastName,
-                actions,
+                userUlid: listUser1Ulid,
+                caseUlid: listCase1Ulid,
+                caseName: listCase1.name,
+                userFirstName: listUser1.firstName,
+                userLastName: listUser1.lastName,
+                actions: listCaseUser1_1.actions,
             },
             {
-                userUlid: userUlid2,
-                caseUlid,
-                caseName,
-                userFirstName: userFirstName2,
-                userLastName: userLastName2,
-                actions: actions2,
+                userUlid: listUser2Ulid,
+                caseUlid: listCase1Ulid,
+                caseName: listCase1.name,
+                userFirstName: listUser2.firstName,
+                userLastName: listUser2.lastName,
+                actions: listCaseUser2_1.actions,
             },
         ];
         expectedCaseUsers.count = 2;
         expectedCaseUsers.next = undefined;
         expectedCaseUsers.prev = undefined;
 
-        const actual = await listCaseUsersByCase(caseUlid, 20, undefined, { CaseUserModel: instance(mockModel) });
+        const actual = await listCaseUsersByCase(listCase1Ulid, 20, undefined, caseUserModelProvider);
 
-        verify(
-            mockModel.find(
-                deepEqual({
-                    GSI1PK: `CASE#${caseUlid}`,
-                    GSI1SK: {
-                        begins_with: 'USER#',
-                    },
-                }),
-                deepEqual({
-                    next: undefined,
-                    limit: 20,
-                    index: 'GSI1',
-                })
-            )
-        ).once();
-
-        expect(actual).toEqual(expectedCaseUsers);
+        expect(actual.values).toEqual(expectedCaseUsers.values);
     });
 
     it('should list the first page of CaseUser by user', async () => {
-        const mockModel: Model<CaseUserType> = mock();
-
-        const caseUlid = '123abc';
-        const userUlid = 'abc123';
-        const caseName = 'Case ay be see';
-        const userFirstName = 'Morgan';
-        const userLastName = 'Freeman';
-        const userFirstNameLower = 'morgan';
-        const userLastNameLower = 'freeman';
-        const actions = [CaseAction.VIEW_CASE_DETAILS];
-
-        const caseUlid2 = '456abc';
-        const caseName2 = '2001: A Case Odyssey'
-        const actions2 = [CaseAction.VIEW_CASE_DETAILS, CaseAction.VIEW_FILES];
-
-        const findResponse: Paged<CaseUserType> = [
-            {
-                PK: `USER#${userUlid}#`,
-                SK: `CASE#${caseUlid}#`,
-                caseUlid,
-                userUlid,
-                caseName,
-                userFirstName,
-                userLastName,
-                userFirstNameLower,
-                userLastNameLower,
-                actions,
-            },
-            {
-                PK: `USER#${userUlid}#`,
-                SK: `CASE#${caseUlid2}#`,
-                caseUlid: caseUlid2,
-                userUlid: userUlid,
-                caseName: caseName2,
-                userFirstName,
-                userLastName,
-                userFirstNameLower,
-                userLastNameLower,
-                actions: actions2,
-            },
-        ];
-        findResponse.count = 2;
-        findResponse.next = undefined;
-        findResponse.prev = undefined;
-
-        when(
-            mockModel.find(
-                deepEqual({
-                    GSI1PK: `USER#${userUlid}`,
-                    GSI1SK: {
-                        begins_with: 'CASE#',
-                    },
-                }),
-                deepEqual({
-                    next: undefined,
-                    limit: 20,
-                    index: 'GSI2',
-                })
-            )
-        ).thenResolve(findResponse);
-
+        
         const expectedCaseUsers: Paged<CaseUser> = [
             {
-                userUlid,
-                caseUlid,
-                caseName,
-                userFirstName,
-                userLastName,
-                actions,
+                userUlid: listUser1Ulid,
+                caseUlid: listCase1Ulid,
+                caseName: listCase1.name,
+                userFirstName: listUser1.firstName,
+                userLastName: listUser1.lastName,
+                actions: listCaseUser1_1.actions,
             },
             {
-                userUlid,
-                caseUlid: caseUlid2,
-                caseName: caseName2,
-                userFirstName,
-                userLastName,
-                actions: actions2,
+                userUlid: listUser1Ulid,
+                caseUlid: listCase2Ulid,
+                caseName: listCase2.name,
+                userFirstName: listUser1.firstName,
+                userLastName: listUser1.lastName,
+                actions: listCaseUser1_2.actions,
             },
         ];
         expectedCaseUsers.count = 2;
         expectedCaseUsers.next = undefined;
         expectedCaseUsers.prev = undefined;
 
-        const actual = await listCaseUsersByUser(userUlid, 20, undefined, { CaseUserModel: instance(mockModel) });
+        const actual = await listCaseUsersByUser(listUser1Ulid, 20, undefined, caseUserModelProvider);
 
-        verify(
-            mockModel.find(
-                deepEqual({
-                    GSI1PK: `USER#${userUlid}`,
-                    GSI1SK: {
-                        begins_with: 'CASE#',
-                    },
-                }),
-                deepEqual({
-                    next: undefined,
-                    limit: 20,
-                    index: 'GSI2',
-                })
-            )
-        ).once();
-
-        expect(actual).toEqual(expectedCaseUsers);
+        expect(actual.values).toEqual(expectedCaseUsers.values);
     });
 
-    it('should create a case', async () => {
-        const mockModel: Model<CaseUserType> = mock();
+    async function createListData(): Promise<void> {
+        listUser1 = await createUser({ firstName: 'Morgan', lastName: 'Freeman' }, userModelProvider) ?? fail();
+        listUser1Ulid = listUser1.ulid ?? fail();
+        listUser2 = await createUser({ firstName: 'Terry', lastName: 'Pratchet' }, userModelProvider) ?? fail();
+        listUser2Ulid = listUser2.ulid ?? fail();
+        listCase1 = await createCase({ name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE }, caseModelProvider) ?? fail();
+        listCase1Ulid = listCase1.ulid ?? fail();
+        listCase2 = await createCase({ name: 'Between a rock and a hard case', status: CaseStatus.ACTIVE }, caseModelProvider) ?? fail();
+        listCase2Ulid = listCase2.ulid ?? fail();
 
-        const caseUlid = '123abc';
-        const userUlid = 'abc123';
-        const caseName = 'Case ay be see';
-        const userFirstName = 'Morgan';
-        const userLastName = 'Freeman';
-        const userFirstNameLower = 'morgan';
-        const userLastNameLower = 'freeman';
-        const actions = [CaseAction.VIEW_CASE_DETAILS];
-
-        const responseEntity: CaseUserType = {
-            PK: `USER#${userUlid}#`,
-            SK: `CASE#${caseUlid}#`,
-            caseUlid,
-            userUlid,
-            caseName,
-            userFirstName,
-            userLastName,
-            userFirstNameLower,
-            userLastNameLower,
-            actions,
-        };
-
-        const caseUser: CaseUser = {
-            caseUlid,
-            userUlid,
-            caseName,
-            userFirstName,
-            userLastName,
-            actions,
-        }
-
-        when(
-            mockModel.create(
-                deepEqual({
-                    ...caseUser,
-                    userFirstNameLower,
-                    userLastNameLower,
-                }),
-            )
-        ).thenResolve(responseEntity);
-
-        const actual = await createCaseUser(caseUser, { CaseUserModel: instance(mockModel) });
-
-        verify(
-            mockModel.create(
-                deepEqual({
-                    ...caseUser,
-                    userFirstNameLower,
-                    userLastNameLower,
-                }),
-            )
-        ).once();
-
-        expect(actual).toEqual(caseUser);
-    });
-
-    it('should update a case-user', async () => {
-        const mockModel: Model<CaseUserType> = mock();
-
-        const caseUlid = '123abc';
-        const userUlid = 'abc123';
-        const caseName = 'Case ay be see';
-        const userFirstName = 'Morgan';
-        const userLastName = 'Freeman';
-        const userFirstNameLower = 'morgan';
-        const userLastNameLower = 'freeman';
-        const actions = [CaseAction.VIEW_CASE_DETAILS];
-
-        const responseEntity: CaseUserType = {
-            PK: `USER#${userUlid}#`,
-            SK: `CASE#${caseUlid}#`,
-            caseUlid,
-            userUlid,
-            caseName,
-            userFirstName,
-            userLastName,
-            userFirstNameLower,
-            userLastNameLower,
-            actions,
-        };
-
-        const caseUser: CaseUser = {
-            caseUlid,
-            userUlid,
-            caseName,
-            userFirstName,
-            userLastName,
-            actions,
-        }
-
-        when(
-            mockModel.update(
-                deepEqual({
-                    ...caseUser,
-                    userFirstNameLower,
-                    userLastNameLower,
-                }),
-            )
-        ).thenResolve(responseEntity);
-
-        const actual = await updateCaseUser(caseUser, { CaseUserModel: instance(mockModel) });
-
-        verify(
-            mockModel.update(
-                deepEqual({
-                    ...caseUser,
-                    userFirstNameLower,
-                    userLastNameLower,
-                }),
-            )
-        ).once();
-
-        expect(actual).toEqual(caseUser);
-    });
+        listCaseUser1_1 = await createCaseUser(
+            {
+                userUlid: listUser1Ulid,
+                userFirstName: listUser1.firstName,
+                userLastName: listUser1.lastName,
+                caseUlid: listCase1Ulid,
+                caseName: listCase1.name,
+                actions: [CaseAction.VIEW_CASE_DETAILS],
+            },
+            caseUserModelProvider
+        );
+        listCaseUser1_2 = await createCaseUser(
+            {
+                userUlid: listUser1Ulid,
+                userFirstName: listUser1.firstName,
+                userLastName: listUser1.lastName,
+                caseUlid: listCase2Ulid,
+                caseName: listCase2.name,
+                actions: [CaseAction.VIEW_CASE_DETAILS, CaseAction.VIEW_FILES],
+            },
+            caseUserModelProvider
+        );
+        listCaseUser2_1 = await createCaseUser(
+            {
+                userUlid: listUser2Ulid,
+                userFirstName: listUser2.firstName,
+                userLastName: listUser2.lastName,
+                caseUlid: listCase1Ulid,
+                caseName: listCase1.name,
+                actions: [CaseAction.VIEW_CASE_DETAILS, CaseAction.VIEW_FILES],
+            },
+            caseUserModelProvider
+        );
+    }
 });
+
+const deleteAndVerifyCaseUser = async (
+    ulids: {
+        readonly caseUlid: string,
+        readonly userUlid: string
+    },
+    modelProvider: CaseUserModelRepositoryProvider
+) => {
+    await deleteCaseUser(ulids, modelProvider);
+    const deletedCaseUser = await getCaseUser(ulids, modelProvider);
+    expect(deletedCaseUser).toBeUndefined();
+}

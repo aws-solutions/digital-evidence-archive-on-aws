@@ -12,8 +12,8 @@ import { CaseUserModel, CaseUserModelRepositoryProvider } from './schema/entitie
 
 export const getCaseUser = async ( 
     caseUserIds: {
-        caseUlid: string,
-        userUlid: string,
+        readonly caseUlid: string,
+        readonly userUlid: string,
     },
     repositoryProvider: CaseUserModelRepositoryProvider = {
         CaseUserModel: CaseUserModel,
@@ -35,7 +35,7 @@ export const listCaseUsersByCase = async (
 ): Promise<Paged<CaseUser>> => {
     const caseEntities = await repositoryProvider.CaseUserModel.find(
         {
-            GSI1PK: `CASE#${caseUlid}`,
+            GSI1PK: `CASE#${caseUlid}#`,
             GSI1SK: {
                 begins_with: 'USER#',
             },
@@ -50,8 +50,6 @@ export const listCaseUsersByCase = async (
     const caseUsers: Paged<CaseUser> = caseEntities.map((entity) => caseUserFromEntity(entity)).filter(isDefined);
     caseUsers.count = caseEntities.count;
     caseUsers.next = caseEntities.next;
-    //undefined because I have a concern about travelling backwards to negative page numbers (due to new records)
-    caseUsers.prev = undefined;
 
     return caseUsers;
 };
@@ -64,8 +62,8 @@ export const listCaseUsersByUser = async (
 ): Promise<Paged<CaseUser>> => {
     const caseEntities = await repositoryProvider.CaseUserModel.find(
         {
-            GSI1PK: `USER#${userUlid}`,
-            GSI1SK: {
+            GSI2PK: `USER#${userUlid}#`,
+            GSI2SK: {
                 begins_with: 'CASE#',
             },
         },
@@ -96,6 +94,7 @@ export const createCaseUser = async (
             ...caseUser,
             userFirstNameLower: caseUser.userFirstName.toLowerCase(),
             userLastNameLower: caseUser.userLastName.toLowerCase(),
+            lowerCaseName: caseUser.caseName.toLowerCase(),
         },
     );
 
@@ -118,8 +117,24 @@ export const updateCaseUser = async (
             ...caseUser,
             userFirstNameLower: caseUser.userFirstName.toLowerCase(),
             userLastNameLower: caseUser.userLastName.toLowerCase(),
+            lowerCaseName: caseUser.caseName.toLowerCase(),
         },
     );
 
     return caseUserFromEntity(newEntity);
+};
+
+export const deleteCaseUser = async ( 
+    caseUserIds: {
+        readonly caseUlid: string,
+        readonly userUlid: string,
+    },
+    repositoryProvider: CaseUserModelRepositoryProvider = {
+        CaseUserModel: CaseUserModel,
+    }
+): Promise<void> => {
+    await repositoryProvider.CaseUserModel.remove({
+        PK: `USER#${caseUserIds.userUlid}#`,
+        SK: `CASE#${caseUserIds.caseUlid}#`,
+    });
 };

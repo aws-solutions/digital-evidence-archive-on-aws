@@ -16,7 +16,7 @@ export const DeaSchema = {
   indexes: {
     primary: { hash: 'PK', sort: 'SK' },
     GSI1: { hash: 'GSI1PK', sort: 'GSI1SK', follow: false },
-    GSI2: { hash: 'GSI2PK', sort: 'GSI2PK', follow: false },
+    GSI2: { hash: 'GSI2PK', sort: 'GSI2SK', follow: false },
   },
   models: {
     Case: {
@@ -36,7 +36,7 @@ export const DeaSchema = {
       SK: { type: String, value: 'CASE#${caseUlid}#', required: true },
       // gsi1 enable list all users for a case, sorted by firstName, lastName
       GSI1PK: { type: String, value: 'CASE#${caseUlid}#' },
-      GSI1SK: { type: String, value: 'USER#${lowerFirstName}#${lowerLastName}#${userUlid}' },
+      GSI1SK: { type: String, value: 'USER#${userFirstNameLower}#${userLastNameLower}#${userUlid}#' },
       // gsi2 enable list all cases for a user, sorted by case name
       GSI2PK: { type: String, value: 'USER#${userUlid}#' },
       GSI2SK: { type: String, value: 'CASE#${lowerCaseName}#' },
@@ -44,6 +44,7 @@ export const DeaSchema = {
       userUlid: { type: String, validate: ulidMatch, required: true },
       actions: { type: Array, items: { type: String, enum: Object.keys(CaseAction), required: true } },
       caseName: { type: String, required: true },
+      lowerCaseName: { type: String, required: true },
       userFirstName: { type: String, required: true },
       userLastName: { type: String, required: true },
       userFirstNameLower: { type: String, required: true },

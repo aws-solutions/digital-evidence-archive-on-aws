@@ -3,150 +3,80 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Model, Paged } from 'dynamodb-onetable';
-import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { Paged, Table } from 'dynamodb-onetable';
 import { DeaUser } from '../../models/user';
-import { UserType } from '../../persistence/schema/entities';
-import { createUser, getUser, listUsers, updateUser } from '../../persistence/user';
+import { UserModelRepositoryProvider } from '../../persistence/schema/entities';
+import { createUser, deleteUser, getUser, listUsers, updateUser } from '../../persistence/user';
+import { initLocalDb } from './local-db-table';
 
 describe('user persistence', () => {
-    it('should get a user by id', async () => {
-        const ulid = 'abc123';
+    let testTable: Table;
+    let modelProvider: UserModelRepositoryProvider;
+    beforeAll(async () => {
+        testTable = await initLocalDb("userTestsTable");
+        modelProvider = { UserModel: testTable.getModel('User') };
+    });
+
+    afterAll(async () => {
+        await testTable.deleteTable('DeleteTableForever');
+    });
+
+    it('should create and get a user by id', async () => {
         const firstName = 'Steve';
         const lastName = 'Zissou';
-        const lowerFirstName = 'steve';
-        const lowerLastName = 'zissou';
-
-        const mockModel: Model<UserType> = mock();
-        const getResponse: UserType = {
-            PK: `USER#${ulid}#`,
-            SK: `USER#`,
-            ulid,
-            firstName,
-            lastName,
-            lowerFirstName,
-            lowerLastName,
-        };
-
-        when(
-            mockModel.get(
-                deepEqual({
-                    PK: `USER#${ulid}#`,
-                    SK: `USER#`,
-                })
-            )
-        ).thenResolve(getResponse);
 
         const expectedUser: DeaUser = {
-            ulid,
             firstName,
             lastName,
         };
 
-        const deaUser = await getUser(ulid, { UserModel: instance(mockModel) });
+        const createdUser = await createUser(expectedUser, modelProvider)
+        if (!createdUser || !createdUser.ulid) {
+            fail();
+        } else {
 
-        verify(
-            mockModel.get(
-                deepEqual({
-                    PK: `USER#${ulid}#`,
-                    SK: `USER#`,
-                })
-            )
-        ).once();
+            expect(createdUser).toEqual({ ...expectedUser, ulid: createdUser.ulid });
 
-        expect(deaUser).toEqual(expectedUser);
+            const deaUser = await getUser(createdUser.ulid, modelProvider);
+
+            expect(deaUser).toEqual({ ...expectedUser, ulid: createdUser.ulid });
+            
+            await deleteAndVerifyUser(createdUser.ulid, modelProvider);
+        }
     });
 
     it('should return undefined if a user is not found', async () => {
-        const ulid = 'abc123';
-        const mockModel: Model<UserType> = mock();
-
-        when(
-            mockModel.get(
-                deepEqual({
-                    PK: `USER#${ulid}#`,
-                    SK: `USER#`,
-                })
-            )
-        ).thenResolve(undefined);
-
-        const caseUser = await getUser(ulid, { UserModel: instance(mockModel) });
-
-        verify(
-            mockModel.get(
-                deepEqual({
-                    PK: `USER#${ulid}#`,
-                    SK: `USER#`,
-                })
-            )
-        ).once();
+        const caseUser = await getUser('bogus', modelProvider);
 
         expect(caseUser).toBeUndefined();
     });
 
     it('should list the first page of users', async () => {
-        const mockModel: Model<UserType> = mock();
 
-        const ulid = '123abc';
         const firstName = 'Ralph';
         const lastName = 'Machio';
-        const lowerFirstName = 'ralph';
-        const lowerLastName = 'machio';
 
-        const ulid2 = '456abc';
         const firstName2 = 'Randy';
         const lastName2 = 'Savage';
-        const lowerFirstName2 = 'randy';
-        const lowerLastName2 = 'savage';
 
-        const findResponse: Paged<UserType> = [
-            {
-                PK: `USER#${ulid}#`,
-                SK: `USER#`,
-                ulid,
-                firstName,
-                lastName,
-                lowerFirstName,
-                lowerLastName,
-            },
-            {
-                PK: `USER#${ulid2}#`,
-                SK: `USER#`,
-                ulid: ulid2,
-                firstName: firstName2,
-                lastName: lastName2,
-                lowerFirstName: lowerFirstName2,
-                lowerLastName: lowerLastName2,
-            },
-        ];
-        findResponse.count = 2;
-        findResponse.next = undefined;
-        findResponse.prev = undefined;
+        const user1 = await createUser({ firstName, lastName }, modelProvider);
+        const user2 = await createUser({
+            firstName: firstName2,
+            lastName: lastName2,
+        }, modelProvider);
 
-        when(
-            mockModel.find(
-                deepEqual({
-                    GSI1PK: 'USER#',
-                    GSI1SK: {
-                        begins_with: 'USER#',
-                    },
-                }),
-                deepEqual({
-                    next: undefined,
-                    limit: 20,
-                    index: 'GSI1',
-                })
-            )
-        ).thenResolve(findResponse);
+        if (!user1 || !user2 || !user1.ulid || !user2.ulid) {
+            fail();
+        }
 
         const expectedUsers: Paged<DeaUser> = [
             {
-                ulid,
+                ulid: user1.ulid,
                 firstName,
                 lastName,
             },
             {
-                ulid: ulid2,
+                ulid: user2.ulid,
                 firstName: firstName2,
                 lastName: lastName2,
             },
@@ -155,124 +85,48 @@ describe('user persistence', () => {
         expectedUsers.next = undefined;
         expectedUsers.prev = undefined;
 
-        const actual = await listUsers(20, undefined, { UserModel: instance(mockModel) });
+        const actual = await listUsers(20, undefined, modelProvider);
 
-        verify(
-            mockModel.find(
-                deepEqual({
-                    GSI1PK: 'USER#',
-                    GSI1SK: {
-                        begins_with: 'USER#',
-                    },
-                }),
-                deepEqual({
-                    next: undefined,
-                    limit: 20,
-                    index: 'GSI1',
-                })
-            )
-        ).once();
+        expect(actual.values).toEqual(expectedUsers.values);
 
-        expect(actual).toEqual(expectedUsers);
+        deleteAndVerifyUser(user1.ulid, modelProvider);
+        deleteAndVerifyUser(user2.ulid, modelProvider);
     });
 
-    it('should create a case', async () => {
-        const mockModel: Model<UserType> = mock();
+    it('should update a user', async () => {
 
-        const ulid = '456abc';
-        const firstName = 'Count';
-        const lastName = 'Chocula';
-        const lowerFirstName = 'count';
-        const lowerLastName = 'chocula';
-
-        const responseEntity: UserType = {
-            PK: `USER#${ulid}#`,
-            SK: `USER#`,
-            ulid,
-            firstName,
-            lastName,
-            lowerFirstName,
-            lowerLastName,
-        };
+        const firstName = 'R';
+        const lastName = 'V W';
+        const updatedFirstName = 'Rip';
+        const updatedLastName = 'Van Winkle';
 
         const deaUser: DeaUser = {
-            ulid,
             firstName,
             lastName,
         }
 
-        when(
-            mockModel.create(
-                deepEqual({
-                    ...deaUser,
-                    lowerFirstName,
-                    lowerLastName,
-                }),
-            )
-        ).thenResolve(responseEntity);
-
-        const actual = await createUser(deaUser, { UserModel: instance(mockModel) });
-
-        verify(
-            mockModel.create(
-                deepEqual({
-                    ...deaUser,
-                    lowerFirstName,
-                    lowerLastName,
-                }),
-            )
-        ).once();
-
-        expect(actual).toEqual(deaUser);
-    });
-
-    it('should create a case', async () => {
-        const mockModel: Model<UserType> = mock();
-
-        const ulid = '456abc';
-        const firstName = 'Count';
-        const lastName = 'Chocula';
-        const lowerFirstName = 'count';
-        const lowerLastName = 'chocula';
-
-        const responseEntity: UserType = {
-            PK: `USER#${ulid}#`,
-            SK: `USER#`,
-            ulid,
-            firstName,
-            lastName,
-            lowerFirstName,
-            lowerLastName,
-        };
-
-        const deaUser: DeaUser = {
-            ulid,
-            firstName,
-            lastName,
+        const createdUser = await createUser(deaUser, modelProvider);
+        if (!createdUser || !createdUser.ulid) {
+            //truthy expectation doesn't update createdUser type 
+            fail();
         }
+        expect(createdUser).toEqual({ ...deaUser, ulid: createdUser.ulid });
 
-        when(
-            mockModel.update(
-                deepEqual({
-                    ...deaUser,
-                    lowerFirstName,
-                    lowerLastName,
-                }),
-            )
-        ).thenResolve(responseEntity);
+        const updatedUser: DeaUser = {
+            ulid: createdUser.ulid,
+            firstName: updatedFirstName,
+            lastName: updatedLastName,
+        };
+        const actual = await updateUser(updatedUser, modelProvider);
 
-        const actual = await updateUser(deaUser, { UserModel: instance(mockModel) });
+        expect(actual).toEqual(updatedUser);
 
-        verify(
-            mockModel.update(
-                deepEqual({
-                    ...deaUser,
-                    lowerFirstName,
-                    lowerLastName,
-                }),
-            )
-        ).once();
-
-        expect(actual).toEqual(deaUser);
+        await deleteAndVerifyUser(createdUser.ulid, modelProvider);
     });
 });
+
+const deleteAndVerifyUser = async (ulid: string, modelProvider: UserModelRepositoryProvider) => {
+    await deleteUser(ulid, modelProvider);
+    const deletedUser1 = await getUser(ulid, modelProvider);
+    expect(deletedUser1).toBeUndefined();
+}

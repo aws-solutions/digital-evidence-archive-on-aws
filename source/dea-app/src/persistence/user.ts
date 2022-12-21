@@ -84,3 +84,15 @@ export const updateUser = async (
 
     return userFromEntity(newEntity);
 };
+
+export const deleteUser = async (
+    ulid: string,
+    repositoryProvider: UserModelRepositoryProvider = {
+        UserModel: UserModel,
+    }
+): Promise<void> => {
+    await repositoryProvider.UserModel.remove({
+        PK: `USER#${ulid}#`,
+        SK: `USER#`,
+    });
+}

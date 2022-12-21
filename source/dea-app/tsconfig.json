@@ -5,7 +5,11 @@
   "compilerOptions": {
     "strict": true,
     "types": ["heft-jest", "node"],
-    "lib": ["es2020", "dom"]
+    "lib": ["es2020", "dom"],
+    "baseUrl": "./",
+    "paths": {
+      "*": ["src/test/custom-types/*"]
+    }
   },
   "exclude": ["node_modules", "lib"]
 }
