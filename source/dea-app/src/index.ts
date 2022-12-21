@@ -12,6 +12,7 @@ import { DEAGatewayProxyHandler } from './app/resources/dea-gateway-proxy-handle
 import { getCases } from './app/resources/get-cases';
 import { sayBye } from './app/resources/say-bye';
 import { sayHello } from './app/resources/say-hello';
+import { updateCases } from './app/resources/update-cases';
 
 export {
   sayBye,
@@ -19,6 +20,7 @@ export {
   createCases,
   getCases,
   customAuthorizer,
+  updateCases,
   createCaseMembership,
   DEAGatewayProxyHandler,
   NotFoundError,

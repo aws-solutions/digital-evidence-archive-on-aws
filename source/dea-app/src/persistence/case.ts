@@ -4,6 +4,7 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
+import { logger } from '../logger';
 import { DeaCase } from '../models/case';
 import { caseFromEntity } from '../models/projections';
 import { isDefined } from './persistence-helpers';
@@ -57,7 +58,16 @@ export const createCase = async (
     CaseModel: CaseModel,
   }
 ): Promise<DeaCase | undefined> => {
-  return _upsertCase(deaCase, false, repositoryProvider);
+  const newEntity = await repositoryProvider.CaseModel.create({
+    ...deaCase,
+    lowerCaseName: deaCase.name.toLowerCase(),
+  });
+  const newCase = caseFromEntity(newEntity);
+  if (!newCase) {
+    logger.error('Case creation failed', { deaCase: JSON.stringify(deaCase) });
+    throw new Error('Case creation failed');
+  }
+  return newCase;
 };
 
 export const updateCase = async (
@@ -66,23 +76,9 @@ export const updateCase = async (
     CaseModel: CaseModel,
   }
 ): Promise<DeaCase | undefined> => {
-  return _upsertCase(deaCase, true, repositoryProvider);
-};
-
-const _upsertCase = async (
-  deaCase: DeaCase,
-  update?: boolean,
-  repositoryProvider: CaseModelRepositoryProvider = {
-    CaseModel: CaseModel,
-  }
-): Promise<DeaCase | undefined> => {
-  const newEntity = await repositoryProvider.CaseModel.upsert(
-    {
-      ...deaCase,
-      lowerCaseName: deaCase.name.toLowerCase(),
-    },
-    { exists: update }
-  );
-
-  return caseFromEntity(newEntity);
+  const newCase = await repositoryProvider.CaseModel.update({
+    ...deaCase,
+    lowerCaseName: deaCase.name.toLowerCase(),
+  });
+  return caseFromEntity(newCase);
 };

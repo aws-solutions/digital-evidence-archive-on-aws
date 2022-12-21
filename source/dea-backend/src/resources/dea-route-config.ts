@@ -11,12 +11,17 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/cases',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-cases-handler.ts',
-      pagination: true
+      pagination: true,
     },
     {
       path: '/cases',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/create-cases-handler.ts',
+    },
+    {
+      path: '/cases/{caseId}',
+      httpMethod: ApiGatewayMethod.PUT,
+      pathToSource: '../../src/handlers/update-cases-handler.ts',
     },
     {
       path: '/cases/{caseId}/userMemberships',
