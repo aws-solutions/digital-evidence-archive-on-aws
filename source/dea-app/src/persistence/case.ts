@@ -77,8 +77,8 @@ export const updateCase = async (
   }
 ): Promise<DeaCase | undefined> => {
   const newCase = await repositoryProvider.CaseModel.update({
-    ulid: deaCase.ulid,
-    description: deaCase.description,
+    ...deaCase,
+    lowerCaseName: deaCase.name.toLowerCase(),
   });
   return caseFromEntity(newCase);
 };

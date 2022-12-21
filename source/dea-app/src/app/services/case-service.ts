@@ -4,9 +4,8 @@ import { createCase, updateCase } from '../../persistence/case';
 
 export const createCases = async (deaCase: DeaCase): Promise<DeaCase | undefined> => {
   const currentCase: DeaCase = {
-    name: deaCase.name,
+    ...deaCase,
     status: CaseStatus.ACTIVE,
-    description: deaCase.description,
     objectCount: 0,
   };
 
@@ -15,13 +14,6 @@ export const createCases = async (deaCase: DeaCase): Promise<DeaCase | undefined
   return await createCase(currentCase);
 };
 
-export const updateCases = async (deaCase: DeaCase, caseId: string): Promise<DeaCase | undefined> => {
-  const currentCase: DeaCase = {
-    ulid: caseId,
-    name: deaCase.name,
-    status: deaCase.status,
-    description: deaCase.description,
-  };
-
-  return await updateCase(currentCase);
+export const updateCases = async (deaCase: DeaCase): Promise<DeaCase | undefined> => {
+  return await updateCase(deaCase);
 };

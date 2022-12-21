@@ -185,6 +185,7 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: [
           'dynamodb:GetItem',
+          'dynamodb:DeleteItem',
           'dynamodb:BatchGetItem',
           'dynamodb:BatchWriteItem',
           'dynamodb:PutItem',

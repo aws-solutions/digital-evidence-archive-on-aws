@@ -23,9 +23,14 @@ export const updateCases: DEAGatewayProxyHandler = async (event, context) => {
   }
 
   const deaCase: DeaCase = JSON.parse(event.body);
+
   Joi.assert(deaCase, updateCaseSchema);
 
-  const caseUpdateResult = await CaseService.updateCases(deaCase, caseId);
+  if (caseId !== deaCase.ulid) {
+    throw new ValidationError('Requested Case Ulid does not match resource');
+  }
+
+  const caseUpdateResult = await CaseService.updateCases(deaCase);
   return {
     statusCode: 200,
     body: JSON.stringify(caseUpdateResult),

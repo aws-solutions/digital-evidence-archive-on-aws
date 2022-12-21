@@ -19,5 +19,5 @@ export const updateCaseSchema = Joi.object({
   name: Joi.string().pattern(new RegExp('^[a-zA-Z0-9 ]{3,30}$')),
   status: Joi.array().items(Joi.string().valid(...Object.keys(CaseStatus))),
   description: Joi.string().pattern(new RegExp('^[a-zA-Z0-9 ]{1,200}$')),
-  objectCount: Joi.number(),
+  objectCount: null, // currently, do not allow objectcount in update case. Object count will be addressed in upload file
 });

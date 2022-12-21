@@ -1782,6 +1782,7 @@ Object {
             Object {
               "Action": Array [
                 "dynamodb:GetItem",
+                "dynamodb:DeleteItem",
                 "dynamodb:BatchGetItem",
                 "dynamodb:BatchWriteItem",
                 "dynamodb:PutItem",
