@@ -12,7 +12,7 @@
     "name": "Amazon Web Services",
     "url": "http://aws.amazon.com"
   },
-  "main": "lib/src/index.js",
+  "main": "lib/index.js",
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
     "build": "heft build",
@@ -26,7 +26,8 @@
     "lint:fix": "eslint . --fix --max-warnings=0",
     "sort-package-json": "sort-package-json package.json",
     "test": "rushx test:only",
-    "test:only": "heft test --no-build",
+    "test:only": "heft test --no-build --verbose --test-path-pattern test",
+    "test:only:u": "heft test -u --no-build --verbose --test-path-pattern test",
     "watch": "tsc -w"
   },
   "dependencies": {

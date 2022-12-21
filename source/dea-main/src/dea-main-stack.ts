@@ -34,7 +34,6 @@ export class DeaMainStack extends cdk.Stack {
 
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
       deaTableArn: backendConstruct.deaTable.tableArn,
-      s3BucketArn: '',
       kmsKey,
     });
 

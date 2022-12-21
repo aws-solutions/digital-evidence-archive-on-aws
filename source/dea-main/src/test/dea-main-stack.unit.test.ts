@@ -3,10 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import 'source-map-support/register';
+import { validateBackendConstruct } from '@aws/dea-backend';
+import { validateDeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import 'source-map-support/register';
 import { DeaMainStack } from '../dea-main-stack';
 
 describe('DeaMainStack', () => {
@@ -28,30 +29,10 @@ describe('DeaMainStack', () => {
     // Prepare the stack for assertions.
     const template = Template.fromStack(deaMainStack);
 
-    // Assert it creates the function with the correct properties...
-    template.hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Description: 'Backend API',
-    });
-
-    template.hasResourceProperties('AWS::Lambda::Function', {
-      Handler: 'index.handler',
-      Runtime: Runtime.NODEJS_18_X.name,
-    });
+    validateBackendConstruct(template);
 
     // Assert it creates the api with the correct properties...
-    template.hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Description: 'distribution api',
-    });
-
-    template.hasResourceProperties('AWS::S3::Bucket', {
-      AccessControl: 'LogDeliveryWrite',
-      PublicAccessBlockConfiguration: {
-        BlockPublicAcls: true,
-        BlockPublicPolicy: true,
-        IgnorePublicAcls: true,
-        RestrictPublicBuckets: true,
-      },
-    });
+    validateDeaUiConstruct(template);
 
     expect.addSnapshotSerializer({
       test: (val) => typeof val === 'string' && val.includes('zip'),

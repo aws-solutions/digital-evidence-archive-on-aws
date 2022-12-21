@@ -6,5 +6,6 @@
 /* eslint-disable no-new */
 import 'source-map-support/register';
 import { DeaUiConstruct } from './dea-ui-stack';
+import { validateDeaUiConstruct } from './test/infra/validate-dea-ui-construct';
 
-export { DeaUiConstruct };
+export { DeaUiConstruct, validateDeaUiConstruct };
