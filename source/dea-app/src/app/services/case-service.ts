@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import { DeaCase } from '../../models/case';
 import { CaseStatus } from '../../models/case-status';
 import { createCase, updateCase } from '../../persistence/case';

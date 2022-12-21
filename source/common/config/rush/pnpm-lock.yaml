@@ -33,6 +33,7 @@ importers:
       cookie-parser: ^1.4.6
       cors: ^2.8.5
       depcheck: ^1.4.3
+      dynamo-db-local: ~4.1.4
       dynamodb-onetable: ~2.5.1
       eslint: ^8.7.0
       eslint-plugin-import: ^2.26.0
@@ -51,6 +52,7 @@ importers:
       ts-mockito: ~2.6.1
       typescript: ^4.5.2
       uuid: ^8.3.2
+      wait-port: ~1.0.4
     dependencies:
       '@aws-sdk/client-dynamodb': 3.204.0
       '@aws-sdk/client-s3': 3.204.0
@@ -81,6 +83,7 @@ importers:
       concurrently: 7.5.0
       constructs: 10.0.5
       depcheck: 1.4.3
+      dynamo-db-local: 4.1.4
       dynamodb-onetable: 2.5.1
       eslint: 8.27.0
       eslint-plugin-import: 2.26.0_eslint@8.27.0
@@ -97,6 +100,7 @@ importers:
       ts-jest: 27.1.5_3e98952c91d0ad38e7beba6fb8181295
       ts-mockito: 2.6.1
       typescript: 4.8.4
+      wait-port: 1.0.4
 
   ../../dea-backend:
     specifiers:
@@ -5410,6 +5414,11 @@ packages:
     resolution: {integrity: sha512-Gar0ASD4BDyKC4hl4DwHqDrmvjoxWKZigVnAbn5H1owvm4CxCPdb0HQDehwNYMJpla5+M2tPmPARzhtYuwpHow==}
     dev: false
 
+  /commander/9.4.1:
+    resolution: {integrity: sha512-5EEkTNyHNGFPD2H+c/dXXfQZYa/scCKasxWcXJaWnNJ99pnQN9Vnmqow+p+PlFPE63Q6mThaZws1T+HxfpgtPw==}
+    engines: {node: ^12.20.0 || >=14}
+    dev: true
+
   /concat-map/0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
     dev: true
@@ -5801,6 +5810,11 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       webidl-conversions: 5.0.0
+    dev: true
+
+  /dynamo-db-local/4.1.4:
+    resolution: {integrity: sha512-5UU3VLJSiaFeM7VzRbhzenLFeKApkCFd6fh13sl3NBSVJ71QmmC1AjWZ0/Zfe5cFK+DTqv2RAxw15A7TnJCqAw==}
+    engines: {node: '>=12.20.1'}
     dev: true
 
   /dynamodb-onetable/2.5.1:
@@ -10639,6 +10653,18 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       xml-name-validator: 3.0.0
+    dev: true
+
+  /wait-port/1.0.4:
+    resolution: {integrity: sha512-w8Ftna3h6XSFWWc2JC5gZEgp64nz8bnaTp5cvzbJSZ53j+omktWTDdwXxEF0jM8YveviLgFWvNGrSvRHnkyHyw==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      chalk: 4.1.2
+      commander: 9.4.1
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /walker/1.0.8:
