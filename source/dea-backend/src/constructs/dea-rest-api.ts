@@ -11,7 +11,7 @@ import {
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
-  TokenAuthorizer
+  TokenAuthorizer,
 } from 'aws-cdk-lib/aws-apigateway';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -94,7 +94,7 @@ export class DeaRestApiConstruct extends Construct {
     const urlParts = route.path.split('/').filter((str) => str);
     let parent = api.root;
     urlParts.forEach((part, index) => {
-      let resource = api.root.getResource(part);
+      let resource = parent.getResource(part);
       if (!resource) {
         resource = parent.addResource(part);
       }

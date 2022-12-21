@@ -21,7 +21,7 @@ describe('case persistence', () => {
       name: 'The case of Charles Dexter Ward',
       lowerCaseName: 'the case of charles dexter ward',
       status: 'ACTIVE',
-      objectCount: 1,
+      objectCount: 0,
       description: 'a description',
     };
 
@@ -39,7 +39,7 @@ describe('case persistence', () => {
       name: 'The case of Charles Dexter Ward',
       status: CaseStatus.ACTIVE,
       description: 'a description',
-      objectCount: 1,
+      objectCount: 0,
     };
 
     const deaCase = await getCase('123abc', { CaseModel: instance(mockModel) });
@@ -93,7 +93,7 @@ describe('case persistence', () => {
         name: 'The case of Charles Dexter Ward',
         lowerCaseName: 'the case of charles dexter ward',
         status: 'ACTIVE',
-        objectCount: 1,
+        objectCount: 0,
         description: 'spooky',
       },
       {
@@ -103,7 +103,7 @@ describe('case persistence', () => {
         name: 'The Curious Case of Benjamin Button',
         lowerCaseName: 'the curious case of benjamin button',
         status: 'ACTIVE',
-        objectCount: 1,
+        objectCount: 0,
         description: 'geriatric baby',
       },
     ];
@@ -133,13 +133,13 @@ describe('case persistence', () => {
         name: 'The case of Charles Dexter Ward',
         status: CaseStatus.ACTIVE,
         description: 'spooky',
-        objectCount: 1,
+        objectCount: 0,
       },
       {
         ulid: 'xyz567',
         name: 'The Curious Case of Benjamin Button',
         status: CaseStatus.ACTIVE,
-        objectCount: 1,
+        objectCount: 0,
         description: 'geriatric baby',
       },
     ];
@@ -185,18 +185,15 @@ describe('case persistence', () => {
       name: 'a case',
       lowerCaseName: 'a case',
       status: 'ACTIVE',
-      objectCount: 1,
+      objectCount: 0,
       description: 'a case description',
     };
 
     when(
-      mockModel.upsert(
+      mockModel.create(
         deepEqual({
           ...deaCase,
           lowerCaseName: deaCase.name.toLowerCase(),
-        }),
-        deepEqual({
-          exists: false,
         })
       )
     ).thenResolve(responseEntity);
@@ -204,18 +201,15 @@ describe('case persistence', () => {
     const actual = await createCase(deaCase, { CaseModel: instance(mockModel) });
 
     verify(
-      mockModel.upsert(
+      mockModel.create(
         deepEqual({
           ...deaCase,
           lowerCaseName: deaCase.name.toLowerCase(),
-        }),
-        deepEqual({
-          exists: false,
         })
       )
     ).once();
 
-    expect(actual).toEqual({ ...deaCase, objectCount: 1 });
+    expect(actual).toEqual({ ...deaCase, objectCount: 0 });
   });
 
   it('should update a case', async () => {
@@ -235,18 +229,15 @@ describe('case persistence', () => {
       name: 'a case',
       lowerCaseName: 'a case',
       status: 'ACTIVE',
-      objectCount: 1,
+      objectCount: 0,
       description: 'a case description',
     };
 
     when(
-      mockModel.upsert(
+      mockModel.update(
         deepEqual({
           ...deaCase,
           lowerCaseName: deaCase.name.toLowerCase(),
-        }),
-        deepEqual({
-          exists: true,
         })
       )
     ).thenResolve(responseEntity);
@@ -254,17 +245,14 @@ describe('case persistence', () => {
     const actual = await updateCase(deaCase, { CaseModel: instance(mockModel) });
 
     verify(
-      mockModel.upsert(
+      mockModel.update(
         deepEqual({
           ...deaCase,
           lowerCaseName: deaCase.name.toLowerCase(),
-        }),
-        deepEqual({
-          exists: true,
         })
       )
     ).once();
 
-    expect(actual).toEqual({ ...deaCase, objectCount: 1 });
+    expect(actual).toEqual({ ...deaCase, objectCount: 0 });
   });
 });

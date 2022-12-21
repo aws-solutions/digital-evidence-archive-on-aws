@@ -29,7 +29,7 @@ export const DeaSchema = {
       lowerCaseName: { type: String, required: true },
       status: { type: String, required: true, enum: Object.keys(CaseStatus) },
       description: { type: String },
-      objectCount: { type: Number, required: true },
+      objectCount: { type: Number },
     },
     CaseUser: {
       PK: { type: String, value: 'USER#${userUlid}#', required: true },
