@@ -62,6 +62,7 @@ jobs:
         run: |
           cd dea-main
           STAGE=test npm run cdk deploy
+          echo "DEA_API_URL=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == 'deaApiUrl'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:only
@@ -69,4 +70,4 @@ jobs:
         if: always()
         run: |
           cd dea-main
-          STAGE=test npm run cdk destroy
+          STAGE=test npm run cdk destroy -- --force

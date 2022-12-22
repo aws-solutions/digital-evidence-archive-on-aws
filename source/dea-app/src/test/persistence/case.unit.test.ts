@@ -6,7 +6,7 @@
 import { Paged, Table } from 'dynamodb-onetable';
 import { DeaCase } from '../../models/case';
 import { CaseStatus } from '../../models/case-status';
-import { createCase, getCase, listCases, updateCase } from '../../persistence/case';
+import { createCase, deleteCase, getCase, listCases, updateCase } from '../../persistence/case';
 import { CaseModelRepositoryProvider } from '../../persistence/schema/entities';
 import { initLocalDb } from './local-db-table';
 
@@ -129,4 +129,30 @@ describe('case persistence', () => {
       )) ?? fail();
     listCase2Ulid = listCase2.ulid ?? fail();
   }
+
+  it('should create a case, get and delete it', async () => {
+    const currentTestCase: DeaCase = {
+      name: 'CaseMcCaseface',
+      status: CaseStatus.ACTIVE,
+      description: 'some days some nights',
+      objectCount: 0,
+    };
+
+    const createdCase = await createCase(currentTestCase, caseModelProvider);
+
+    const readCase = await getCase(createdCase?.ulid ?? fail(), caseModelProvider);
+
+    const caseCheck: DeaCase = {
+      ulid: createdCase?.ulid,
+      ...currentTestCase,
+    };
+    expect(readCase).toEqual(caseCheck);
+
+    // Delete
+    await deleteCase(createdCase?.ulid ?? fail(), caseModelProvider);
+
+    const nullCase = await getCase(createdCase?.ulid ?? fail(), caseModelProvider);
+
+    expect(nullCase).toBeFalsy();
+  });
 });

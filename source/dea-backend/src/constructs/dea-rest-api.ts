@@ -82,6 +82,7 @@ export class DeaRestApiConstruct extends Construct {
 
     new CfnOutput(this, 'deaApiUrlOutput', {
       value: api.url,
+      exportName: 'deaApiUrl',
     });
 
     const customAuthorizer = this._createLambdaAuthorizer(this.lambdaBaseRole);

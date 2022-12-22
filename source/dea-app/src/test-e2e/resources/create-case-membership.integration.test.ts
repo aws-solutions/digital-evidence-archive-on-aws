@@ -5,7 +5,8 @@
 
 // TODO: this will be completed with the addition of live environment tests
 describe('create-case-membership', () => {
-    it('should create a new CaseUser', () => {
+
+    it('should create a new CaseUser', async () => {
         /* do nothing */
     });
 
