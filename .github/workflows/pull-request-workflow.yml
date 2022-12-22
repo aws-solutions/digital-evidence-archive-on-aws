@@ -11,8 +11,12 @@ on:
       - reopened
       - synchronize
 
+permissions:
+      id-token: write   # This is required for requesting the JWT
+      contents: read    # This is required for actions/checkout
 jobs:
   verify:
+    environment: dea-test
     defaults:
       run:
         shell: bash
@@ -22,8 +26,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: recursive
       - name: Viperlight Scan
         run: node common/scripts/install-run-rush.js viperlight-scan
       - name: Install
@@ -50,6 +52,21 @@ jobs:
       - name: cfn_nag warning check
         run: |
           ! grep -C 3 'WARN\|FAIL' cfn_nag.out
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GITHUBACTIONSESSION
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: cdk deploy
+        run: |
+          cd dea-main
+          STAGE=test npm run cdk deploy
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:only
+      - name: cdk destroy
+        if: always()
+        run: |
+          cd dea-main
+          STAGE=test npm run cdk destroy

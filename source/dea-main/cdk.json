@@ -1,4 +1,5 @@
 {
+  "requireApproval": "never",
   "app": "lib/index.js",
   "watch": {
     "include": ["**"],
