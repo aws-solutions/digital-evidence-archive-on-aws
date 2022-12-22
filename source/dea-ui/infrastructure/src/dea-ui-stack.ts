@@ -92,7 +92,7 @@ export class DeaUiConstruct extends Construct {
     // eslint-disable-next-line no-new
     new BucketDeployment(this, this.distributionEnvVars.S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME, {
       destinationBucket: bucket,
-      sources: [Source.asset(path.resolve(__dirname, '../../../ui/out'))],
+      sources: [Source.asset(path.resolve(__dirname, '../../ui/out'))],
     });
 
     const executeRole = new Role(this, 'role', {

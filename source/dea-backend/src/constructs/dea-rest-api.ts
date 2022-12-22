@@ -24,7 +24,6 @@ import { deaApiRouteConfig } from '../resources/dea-route-config';
 
 interface DeaRestApiProps {
   deaTableArn: string;
-  s3BucketArn: string;
   kmsKey: Key;
 }
 
