@@ -63,11 +63,23 @@ Go to the branch in GitHub, and Press Submit Pull Request
 
 Assign a reviewer, and ensure Checks Pass
 
+### Testing
+
+To run unit testing after successfully building DEA
+
+```
+cd ./source
+rush test
+```
+
+Java Runtime Environment (JRE) is required for unit tests to run successfully. Please install before running unit tests
+
 ### One Time Package Installs
+
 - Enable pnpm commands (needed for local CDK bundling)  
-`npm install -g pnpm` 
+  `npm install -g pnpm`
 - Install Rush, the monorepo management tool  
-`npm install -g @microsoft/rush` 
+  `npm install -g @microsoft/rush`
 
 ## Further setup
 

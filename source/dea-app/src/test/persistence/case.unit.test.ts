@@ -3,256 +3,130 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Model, Paged } from 'dynamodb-onetable';
-import { deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { Paged, Table } from 'dynamodb-onetable';
 import { DeaCase } from '../../models/case';
 import { CaseStatus } from '../../models/case-status';
 import { createCase, getCase, listCases, updateCase } from '../../persistence/case';
-import { CaseType } from '../../persistence/schema/entities';
+import { CaseModelRepositoryProvider } from '../../persistence/schema/entities';
+import { initLocalDb } from './local-db-table';
 
 describe('case persistence', () => {
-  it('should get a case by id', async () => {
-    const ulid = '123abc';
-    const mockModel: Model<CaseType> = mock();
-    const getResponse: CaseType = {
-      PK: 'CASE#123abc#',
-      SK: 'CASE#',
-      ulid: '123abc',
-      name: 'The case of Charles Dexter Ward',
-      lowerCaseName: 'the case of charles dexter ward',
-      status: 'ACTIVE',
-      objectCount: 0,
-      description: 'a description',
-    };
+  let testTable: Table;
+  let caseModelProvider: CaseModelRepositoryProvider;
+  let testCase: DeaCase;
+  let caseUlid: string;
+  let listCase1: DeaCase;
+  let listCase1Ulid: string;
+  let listCase2: DeaCase;
+  let listCase2Ulid: string;
 
-    when(
-      mockModel.get(
-        deepEqual({
-          PK: `CASE#${ulid}#`,
-          SK: `CASE#`,
-        })
-      )
-    ).thenResolve(getResponse);
+  beforeAll(async () => {
+    testTable = await initLocalDb('caseTestsTable');
+    caseModelProvider = { CaseModel: testTable.getModel('Case') };
+    testCase =
+      (await createCase(
+        { name: 'TheCase', status: CaseStatus.ACTIVE, description: 'TheDescription' },
+        caseModelProvider
+      )) ?? fail();
+    caseUlid = testCase.ulid ?? fail();
 
-    const expectedCase: DeaCase = {
-      ulid: '123abc',
-      name: 'The case of Charles Dexter Ward',
-      status: CaseStatus.ACTIVE,
-      description: 'a description',
-      objectCount: 0,
-    };
+    //list endpoints
+    await createListData();
+  });
 
-    const deaCase = await getCase('123abc', { CaseModel: instance(mockModel) });
-
-    verify(
-      mockModel.get(
-        deepEqual({
-          PK: `CASE#${ulid}#`,
-          SK: `CASE#`,
-        })
-      )
-    ).once();
-
-    expect(deaCase).toEqual(expectedCase);
+  afterAll(async () => {
+    await testTable.deleteTable('DeleteTableForever');
   });
 
   it('should return undefined if a case is not found', async () => {
-    const ulid = '123abc';
-    const mockModel: Model<CaseType> = mock();
+    const currentCase = await getCase('bogus', caseModelProvider);
 
-    when(
-      mockModel.get(
-        deepEqual({
-          PK: `CASE#${ulid}#`,
-          SK: `CASE#`,
-        })
-      )
-    ).thenResolve(undefined);
+    expect(currentCase).toBeUndefined();
+  });
 
-    const deaCase = await getCase('123abc', { CaseModel: instance(mockModel) });
+  it('should get a case by id', async () => {
+    const currentCase = await getCase(caseUlid, caseModelProvider);
 
-    verify(
-      mockModel.get(
-        deepEqual({
-          PK: `CASE#${ulid}#`,
-          SK: `CASE#`,
-        })
-      )
-    ).once();
-
-    expect(deaCase).toBeUndefined();
+    expect(currentCase).toEqual(testCase);
   });
 
   it('should list the first page of cases', async () => {
-    const mockModel: Model<CaseType> = mock();
-    const findResponse: Paged<CaseType> = [
-      {
-        PK: 'CASE#123abc#',
-        SK: 'CASE#',
-        ulid: '123abc',
-        name: 'The case of Charles Dexter Ward',
-        lowerCaseName: 'the case of charles dexter ward',
-        status: 'ACTIVE',
-        objectCount: 0,
-        description: 'spooky',
-      },
-      {
-        PK: 'CASE#xyz567#',
-        SK: 'CASE#',
-        ulid: 'xyz567',
-        name: 'The Curious Case of Benjamin Button',
-        lowerCaseName: 'the curious case of benjamin button',
-        status: 'ACTIVE',
-        objectCount: 0,
-        description: 'geriatric baby',
-      },
-    ];
-    findResponse.count = 2;
-    findResponse.next = undefined;
-    findResponse.prev = undefined;
-
-    when(
-      mockModel.find(
-        deepEqual({
-          GSI1PK: 'CASE#',
-          GSI1SK: {
-            begins_with: 'CASE#',
-          },
-        }),
-        deepEqual({
-          next: undefined,
-          limit: 20,
-          index: 'GSI1',
-        })
-      )
-    ).thenResolve(findResponse);
-
     const expectedCases: Paged<DeaCase> = [
       {
-        ulid: '123abc',
-        name: 'The case of Charles Dexter Ward',
+        ulid: listCase1Ulid,
+        name: listCase1.name,
         status: CaseStatus.ACTIVE,
-        description: 'spooky',
         objectCount: 0,
       },
       {
-        ulid: 'xyz567',
-        name: 'The Curious Case of Benjamin Button',
+        ulid: listCase2Ulid,
+        name: listCase2.name,
         status: CaseStatus.ACTIVE,
         objectCount: 0,
-        description: 'geriatric baby',
+      },
+      {
+        ulid: testCase.ulid,
+        name: testCase.name,
+        status: CaseStatus.ACTIVE,
+        description: 'TheDescription',
+        objectCount: 0,
       },
     ];
-    expectedCases.count = 2;
+    expectedCases.count = 3;
     expectedCases.next = undefined;
     expectedCases.prev = undefined;
 
-    const actual = await listCases(20, undefined, { CaseModel: instance(mockModel) });
+    const actual = await listCases(20, undefined, caseModelProvider);
 
-    verify(
-      mockModel.find(
-        deepEqual({
-          GSI1PK: 'CASE#',
-          GSI1SK: {
-            begins_with: 'CASE#',
-          },
-        }),
-        deepEqual({
-          next: undefined,
-          limit: 20,
-          index: 'GSI1',
-        })
-      )
-    ).once();
-
-    expect(actual).toEqual(expectedCases);
+    expect(actual.values).toEqual(expectedCases.values);
   });
 
-  it('should create a case', async () => {
-    const mockModel: Model<CaseType> = mock();
-
-    const deaCase: DeaCase = {
-      ulid: '8888',
-      name: 'a case',
+  it('should create a case, get and update it', async () => {
+    const currentTestCase: DeaCase = {
+      name: 'Case Wars',
       status: CaseStatus.ACTIVE,
-      description: 'a case description',
-    };
-
-    const responseEntity: CaseType = {
-      PK: 'CASE#8888#',
-      SK: 'CASE#',
-      ulid: '8888',
-      name: 'a case',
-      lowerCaseName: 'a case',
-      status: 'ACTIVE',
+      description: 'In a PD far far away',
       objectCount: 0,
-      description: 'a case description',
     };
 
-    when(
-      mockModel.create(
-        deepEqual({
-          ...deaCase,
-          lowerCaseName: deaCase.name.toLowerCase(),
-        })
-      )
-    ).thenResolve(responseEntity);
+    const createdCase = await createCase(currentTestCase, caseModelProvider);
 
-    const actual = await createCase(deaCase, { CaseModel: instance(mockModel) });
+    const readCase = await getCase(createdCase?.ulid ?? 'bogus', caseModelProvider);
 
-    verify(
-      mockModel.create(
-        deepEqual({
-          ...deaCase,
-          lowerCaseName: deaCase.name.toLowerCase(),
-        })
-      )
-    ).once();
+    const caseCheck: DeaCase = {
+      ulid: createdCase?.ulid,
+      ...currentTestCase,
+    };
+    expect(readCase).toEqual(caseCheck);
 
-    expect(actual).toEqual({ ...deaCase, objectCount: 0 });
-  });
-
-  it('should update a case', async () => {
-    const mockModel: Model<CaseType> = mock();
-
-    const deaCase: DeaCase = {
-      ulid: '8888',
-      name: 'a case',
+    // Update case
+    const updateTestCase: DeaCase = {
+      ulid: createdCase?.ulid,
+      name: 'Case Wars7',
       status: CaseStatus.ACTIVE,
-      description: 'a case description',
+      description: 'The first 6 were better',
     };
 
-    const responseEntity: CaseType = {
-      PK: 'CASE#8888#',
-      SK: 'CASE#',
-      ulid: '8888',
-      name: 'a case',
-      lowerCaseName: 'a case',
-      status: 'ACTIVE',
-      objectCount: 0,
-      description: 'a case description',
+    const updatedCase = await updateCase(updateTestCase, caseModelProvider);
+
+    const updateCheck: DeaCase = {
+      ...updateTestCase,
+      objectCount: updatedCase?.objectCount,
     };
 
-    when(
-      mockModel.update(
-        deepEqual({
-          ...deaCase,
-          lowerCaseName: deaCase.name.toLowerCase(),
-        })
-      )
-    ).thenResolve(responseEntity);
-
-    const actual = await updateCase(deaCase, { CaseModel: instance(mockModel) });
-
-    verify(
-      mockModel.update(
-        deepEqual({
-          ...deaCase,
-          lowerCaseName: deaCase.name.toLowerCase(),
-        })
-      )
-    ).once();
-
-    expect(actual).toEqual({ ...deaCase, objectCount: 0 });
+    expect(updatedCase).toEqual(updateCheck);
   });
+
+  async function createListData(): Promise<void> {
+    listCase1 =
+      (await createCase({ name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE }, caseModelProvider)) ??
+      fail();
+    listCase1Ulid = listCase1.ulid ?? fail();
+    listCase2 =
+      (await createCase(
+        { name: 'Between a rock and a hard case', status: CaseStatus.ACTIVE },
+        caseModelProvider
+      )) ?? fail();
+    listCase2Ulid = listCase2.ulid ?? fail();
+  }
 });
