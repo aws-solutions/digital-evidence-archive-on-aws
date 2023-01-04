@@ -30,7 +30,10 @@
     "sort-package-json": "sort-package-json package.json",
     "start": "heft start",
     "test": "rushx test:only && rushx make-badges",
-    "test:only": "heft test --no-build"
+    "test:only": "heft test --no-build",
+    "e2e:only": "heft test --no-build --test-path-pattern '.*/*e2e.test.*'",
+    "unit:only": "heft test --no-build  --test-path-pattern '.*/*unit.test.*'",
+    "integration:only": "heft test --no-build  --test-path-pattern '.*/*integration.test.*'"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.118.1",
@@ -57,6 +60,7 @@
     "@types/jest": "^27.4.1",
     "@types/lodash": "^4.14.181",
     "@types/node": "^14",
+    "@types/node-fetch": "2",
     "@types/uuid": "^8.3.4",
     "aws-cdk": "~2.53.0",
     "aws-cdk-lib": "~2.53.0",
@@ -73,6 +77,7 @@
     "joi": "~17.7.0",
     "license-check-and-add": "^4.0.5",
     "license-checker": "^25.0.1",
+    "node-fetch": "2",
     "nodemon": "^2.0.19",
     "npm-package-json-lint": "^6.3.0",
     "npm-package-json-lint-config-default": "^5.0.0",

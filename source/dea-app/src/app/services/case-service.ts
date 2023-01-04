@@ -5,7 +5,7 @@
 
 import { DeaCase } from '../../models/case';
 import { CaseStatus } from '../../models/case-status';
-import { createCase, updateCase } from '../../persistence/case';
+import * as CasePersistence from '../../persistence/case';
 
 export const createCases = async (deaCase: DeaCase): Promise<DeaCase | undefined> => {
   const currentCase: DeaCase = {
@@ -16,9 +16,13 @@ export const createCases = async (deaCase: DeaCase): Promise<DeaCase | undefined
 
   // TODO: create initial User/Owner on CreateCase
 
-  return await createCase(currentCase);
+  return await CasePersistence.createCase(currentCase);
 };
 
 export const updateCases = async (deaCase: DeaCase): Promise<DeaCase | undefined> => {
-  return await updateCase(deaCase);
+  return await CasePersistence.updateCase(deaCase);
+};
+
+export const deleteCase = async (caseUlid: string): Promise<void> => {
+  return await CasePersistence.deleteCase(caseUlid);
 };

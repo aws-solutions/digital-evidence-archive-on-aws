@@ -30,7 +30,10 @@
     "serve": "node .next/server/webpack-runtime.js",
     "sort-package-json": "sort-package-json package.json",
     "test": "jest --coverage --passWithNoTests",
-    "test:only": "jest --ci --coverage --passWithNoTests"
+    "test:only": "jest --ci --coverage --passWithNoTests",
+    "e2e:only": "jest --ci --coverage --passWithNoTests '.*/*e2e.test.*'",
+    "unit:only": "jest --ci --coverage --passWithNoTests '.*/*unit.test.*'",
+    "integration:only": "jest --ci --coverage --passWithNoTests --testPathPattern '.*/*integration.test.*'"
   },
   "dependencies": {
     "@cloudscape-design/components": "^3.0.27",

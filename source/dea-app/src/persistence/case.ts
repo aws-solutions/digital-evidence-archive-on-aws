@@ -82,3 +82,15 @@ export const updateCase = async (
   });
   return caseFromEntity(newCase);
 };
+
+export const deleteCase = async (
+  caseUlid: string,
+  repositoryProvider: CaseModelRepositoryProvider = {
+    CaseModel: CaseModel,
+  }
+): Promise<void> => {
+  await repositoryProvider.CaseModel.remove({
+    PK: `CASE#${caseUlid}#`,
+    SK: `CASE#`,
+  });
+};

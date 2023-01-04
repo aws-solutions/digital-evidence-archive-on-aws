@@ -50,8 +50,8 @@ describe('DeaBackend constructs', () => {
     });
 
     //handlers + authorizer
-    template.resourceCountIs('AWS::Lambda::Function', 7);
-    template.resourceCountIs('AWS::ApiGateway::Method', 6);
+    template.resourceCountIs('AWS::Lambda::Function', 8);
+    template.resourceCountIs('AWS::ApiGateway::Method', 7);
 
     expect.addSnapshotSerializer({
       test: (val) => typeof val === 'string' && val.includes('zip'),

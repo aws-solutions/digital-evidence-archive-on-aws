@@ -36,7 +36,10 @@
     "test": "rushx test:only && rushx make-badges",
     "test:integration": "heft test --no-build",
     "test:only": "heft test --no-build --test-path-pattern test",
-    "test:only:u": "heft test -u --no-build --verbose --test-path-pattern test"
+    "test:only:u": "heft test -u --no-build --verbose --test-path-pattern test",
+    "e2e:only": "heft test --no-build --test-path-pattern '.*/*e2e.test.*'",
+    "unit:only": "heft test --no-build  --test-path-pattern '.*/*unit.test.*'",
+    "integration:only": "heft test --no-build  --test-path-pattern '.*/*integration.test.*'"
   },
   "dependencies": {
     "@aws-sdk/types": "^3.110.0",

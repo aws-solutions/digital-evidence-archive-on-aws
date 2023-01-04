@@ -192,6 +192,30 @@
       "allowWarningsInSuccessfulBuild": true
     },
     {
+      "name": "integration:only",
+      "commandKind": "bulk",
+      "summary": "Used to perform integration tests only on the packages",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
+    },
+    {
+      "name": "unit:only",
+      "commandKind": "bulk",
+      "summary": "Used to perform unit tests only on the packages",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
+    },
+    {
+      "name": "e2e:only",
+      "commandKind": "bulk",
+      "summary": "Used to perform e2e tests only on the packages",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
+    },
+    {
       "name": "sort-package-json",
       "commandKind": "bulk",
       "summary": "Sort package.json file",
