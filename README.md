@@ -65,20 +65,31 @@ Assign a reviewer, and ensure Checks Pass
 
 ### Testing
 
-To run unit testing after successfully building DEA
+Tests are split into 3 categories:
 
+- **Unit**: Tests that focus on an isolated component, often via mocking subsystems. Files with unit tests are named with the suffix `.unit.test.ts`
+- **Integration**: Tests that exercise the coherence of multiple components, generally no components are mocked in these tests, however these tests do not run against a live environment. Files with integration tests are named with the suffix `.integration.test.ts`
+- **E2E**: Tests that exercise the application through all layers starting with UI or API. These tests run against a live environment, and thus will require local AWS credentials with a deployed application (via cdk deploy). Further, the environment variable `DEA_API_URL` needs to be set to the DEA App API Gateway URL, including the stage and trailing slash, e.g. `https://abc123.execute-api.us-east-1.amazonaws.com/dev/`. Files with E2E tests are named with the suffix `.e2e.test.ts`
+
+There are several test task provided to run tests against the codebase:
+The default test tasks will run all test suites (Unit, Integration and E2E). Note `rush` will run against all packages, whereas `rushx` will run against the current directory's package.
 ```
-cd ./source
 rush test
+rush test:only
 ```
-
-Java Runtime Environment (JRE) is required for unit tests to run successfully. Please install before running unit tests
+Additionally there are 3 tasks that will run only the specified test suite:
+```
+rush unit:only
+rush integration:only
+rush e2e:only
+```
+> :warning: Java Runtime Environment (JRE) is required for unit tests to run successfully. Please install before running unit tests  
 
 ### One Time Package Installs
 
-- Enable pnpm commands (needed for local CDK bundling)  
+- Enable pnpm commands (needed for local CDK bundling)
   `npm install -g pnpm`
-- Install Rush, the monorepo management tool  
+- Install Rush, the monorepo management tool
   `npm install -g @microsoft/rush`
 
 ## Further setup

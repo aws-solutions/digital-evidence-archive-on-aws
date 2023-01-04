@@ -8,6 +8,9 @@ import { VALIDATION_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/validatio
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import Joi from 'joi';
 
+// If you have a new error case that you want to support, create a new Class that extends Error 
+// and add a handler here that responds with an appropriate status code.
+
 export type ExceptionHandler = (error: Error) => Promise<APIGatewayProxyStructuredResultV2>;
 
 const notFoundHandler: ExceptionHandler = async (error) => {
