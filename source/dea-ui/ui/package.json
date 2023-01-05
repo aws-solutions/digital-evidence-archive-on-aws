@@ -23,7 +23,9 @@
     "depcheck": "depcheck",
     "deploy-ui": "bash ./scripts/deploy.sh",
     "dev": "next dev",
+    "e2e:only": "jest --ci --coverage --passWithNoTests '.*/*e2e.test.*'",
     "export": "next build && next export",
+    "integration:only": "jest --ci --coverage --passWithNoTests --testPathPattern '.*/*integration.test.*'",
     "lint": "next lint && rushx pkg-json-lint",
     "lint:fix": "next lint --fix",
     "pkg-json-lint": "npmPkgJsonLint -c ../../../.npmpackagejsonlintrc.json .",
@@ -31,9 +33,7 @@
     "sort-package-json": "sort-package-json package.json",
     "test": "jest --coverage --passWithNoTests",
     "test:only": "jest --ci --coverage --passWithNoTests",
-    "e2e:only": "jest --ci --coverage --passWithNoTests '.*/*e2e.test.*'",
-    "unit:only": "jest --ci --coverage --passWithNoTests '.*/*unit.test.*'",
-    "integration:only": "jest --ci --coverage --passWithNoTests --testPathPattern '.*/*integration.test.*'"
+    "unit:only": "jest --ci --coverage --passWithNoTests '.*/*unit.test.*'"
   },
   "dependencies": {
     "@cloudscape-design/components": "^3.0.27",
