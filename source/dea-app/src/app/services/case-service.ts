@@ -19,6 +19,10 @@ export const createCases = async (deaCase: DeaCase): Promise<DeaCase | undefined
   return await CasePersistence.createCase(currentCase);
 };
 
+export const getCase = async (caseUlid: string): Promise<DeaCase | undefined> => {
+  return await CasePersistence.getCase(caseUlid);
+};
+
 export const updateCases = async (deaCase: DeaCase): Promise<DeaCase | undefined> => {
   return await CasePersistence.updateCase(deaCase);
 };

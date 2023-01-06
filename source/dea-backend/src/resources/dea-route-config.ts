@@ -20,6 +20,11 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       path: '/cases/{caseId}',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-case-detail-handler.ts',
+    },
+    {
+      path: '/cases/{caseId}',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/update-cases-handler.ts',
     },
