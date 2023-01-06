@@ -1,0 +1,19 @@
+# Stage Name
+stage: iad
+awsRegion: us-east-1
+awsRegionShortName: iad
+rootUserEmail: melvdani@amazon.com
+allowedOrigins: ['http://localhost:3000']
+websiteUrl: 'http://localhost:3000'
+stacks:
+  - name: iadstack
+    WebsiteURL: 'https://ui.iadstack'
+
+# For testing
+rootUserNameParamStorePath: '/dea/iad/rootUser/email'
+rootPasswordParamStorePath: '/dea/iad/rootUser/password'
+#apiUrlOutput: 'https://uen9wfqz8h.execute-api.us-east-2.amazonaws.com/dev/'
+# cognitoDomain: string;
+#clientId: '5kjqjrqoqdubuu2s5msjtcsl2t'
+#userPoolId: 'us-east-2_hi5sCPIYa'
+#identityPoolId: 'us-east-2:5bbe27dd-9328-4707-badd-bbe9337f2004'

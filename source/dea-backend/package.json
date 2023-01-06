@@ -39,6 +39,7 @@
     "unit:only": "heft test --no-build  --test-path-pattern '.*/*unit.test.*'"
   },
   "dependencies": {
+    "@aws-cdk/aws-cognito-identitypool-alpha": "^2.22.0-alpha.0",
     "@aws-sdk/client-cloudformation": "^3.118.1",
     "@aws-sdk/client-dynamodb": "^3.118.1",
     "@aws-sdk/client-s3": "^3.118.1",

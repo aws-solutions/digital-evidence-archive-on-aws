@@ -46,11 +46,11 @@ describe('DeaBackend constructs', () => {
 
     // backend-specific assertions
     template.hasResourceProperties('AWS::ApiGateway::Method', {
-      AuthorizationType: 'CUSTOM',
+      AuthorizationType: 'AWS_IAM',
     });
 
-    //handlers + authorizer
-    template.resourceCountIs('AWS::Lambda::Function', 9);
+    //handlers
+    template.resourceCountIs('AWS::Lambda::Function', 8);
     template.resourceCountIs('AWS::ApiGateway::Method', 14);
 
     expect.addSnapshotSerializer({

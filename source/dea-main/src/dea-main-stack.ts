@@ -4,7 +4,7 @@
  */
 
 /* eslint-disable no-new */
-import { DeaBackendConstruct, DeaRestApiConstruct } from '@aws/dea-backend';
+import { DeaAuthConstruct, DeaBackendConstruct, DeaRestApiConstruct } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
 import { CfnOutput, CfnResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
@@ -36,6 +36,8 @@ export class DeaMainStack extends cdk.Stack {
       deaTableArn: backendConstruct.deaTable.tableArn,
       kmsKey,
     });
+
+    new DeaAuthConstruct(this, 'DeaAuth', { apiEndpointArns: deaApi.apiEndpointArns });
 
     kmsKey.addToResourcePolicy(
       new PolicyStatement({

@@ -19,6 +19,10 @@
       "allowedCategories": [ "production", "prototypes" ]
     },
     {
+      "name": "@aws-cdk/aws-cognito-identitypool-alpha",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws-cdk/aws-dynamodb",
       "allowedCategories": [ "production" ]
     },
@@ -29,6 +33,10 @@
     {
       "name": "@aws-sdk/client-cloudformation",
       "allowedCategories": [ "production", "prototypes" ]
+    },
+    {
+      "name": "@aws-sdk/client-cognito-identity",
+      "allowedCategories": [ "production" ]
     },
     {
       "name": "@aws-sdk/client-cognito-identity-provider",
@@ -268,6 +276,10 @@
     },
     {
       "name": "aws-sdk-client-mock",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "aws4-axios",
       "allowedCategories": [ "production" ]
     },
     {

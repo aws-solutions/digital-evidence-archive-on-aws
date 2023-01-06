@@ -1,0 +1,19 @@
+# Stage Name
+stage: ohio
+awsRegion: us-east-2
+awsRegionShortName: ohio
+isTestingEnv: true
+allowedOrigins: ['http://localhost:3000']
+websiteUrl: 'http://localhost:3000'
+stacks:
+  - name: ohiostack
+    WebsiteURL: 'https://ui.ohiostack'
+
+# For testing
+rootUserNameParamStorePath: '/dea/ohio/rootUser/email'
+rootPasswordParamStorePath: '/dea/ohio/rootUser/password'
+apiUrlOutput: 'https://uen9wfqz8h.execute-api.us-east-2.amazonaws.com/ohio/'
+# cognitoDomain: string;
+clientId: '5kjqjrqoqdubuu2s5msjtcsl2t'
+userPoolId: 'us-east-2_hi5sCPIYa'
+identityPoolId: 'us-east-2:c7de8da1-3d81-42c9-90db-dd4067c787c0'

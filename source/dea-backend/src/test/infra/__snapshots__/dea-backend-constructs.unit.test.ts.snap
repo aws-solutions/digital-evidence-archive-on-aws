@@ -183,156 +183,6 @@ Object {
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
-    "DeaRestApiConstructCustomTokenAuthorizer1525075A": Object {
-      "Properties": Object {
-        "AuthorizerResultTtlInSeconds": 0,
-        "AuthorizerUri": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Fn::Select": Array [
-                  1,
-                  Object {
-                    "Fn::Split": Array [
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaRestApiConstructCustomTokenAuthorizerLambda13589335",
-                          "Arn",
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-              ":apigateway:",
-              Object {
-                "Fn::Select": Array [
-                  3,
-                  Object {
-                    "Fn::Split": Array [
-                      ":",
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaRestApiConstructCustomTokenAuthorizerLambda13589335",
-                          "Arn",
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-              ":lambda:path/2015-03-31/functions/",
-              Object {
-                "Fn::GetAtt": Array [
-                  "DeaRestApiConstructCustomTokenAuthorizerLambda13589335",
-                  "Arn",
-                ],
-              },
-              "/invocations",
-            ],
-          ],
-        },
-        "IdentitySource": "method.request.header.Authorization",
-        "Name": "teststackDeaRestApiConstructCustomTokenAuthorizer4C93C9B6",
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-        "Type": "TOKEN",
-      },
-      "Type": "AWS::ApiGateway::Authorizer",
-    },
-    "DeaRestApiConstructCustomTokenAuthorizerLambda13589335": Object {
-      "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-      ],
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W58",
-              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
-            },
-            Object {
-              "id": "W92",
-              "reason": "Reserved concurrency is currently not required. Revisit in the future",
-            },
-            Object {
-              "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "[HASH REMOVED].zip",
-        },
-        "Environment": Object {
-          "Variables": Object {
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "NODE_OPTIONS": "--enable-source-maps",
-          },
-        },
-        "Handler": "index.handler",
-        "MemorySize": 512,
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs18.x",
-        "Timeout": 30,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "DeaRestApiConstructCustomTokenAuthorizerLambdateststackDeaRestApiConstructCustomTokenAuthorizer4C93C9B6Permissions39D4CBE1": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructCustomTokenAuthorizerLambda13589335",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/authorizers/",
-              Object {
-                "Ref": "DeaRestApiConstructCustomTokenAuthorizer1525075A",
-              },
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructDELETEcaseIdE0E7560F": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
@@ -802,7 +652,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaRestApiConstructdeaapiDeploymentC27C6CB1de61a8be124c157f4e301dd01c80d764": Object {
+    "DeaRestApiConstructdeaapiDeploymentC27C6CB146b51ecb8cc930926123cfabd2b26627": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaapibyeGET3BEB4A0A",
         "DeaRestApiConstructdeaapibyeOPTIONS00A7A259",
@@ -847,7 +697,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB1de61a8be124c157f4e301dd01c80d764",
+          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB146b51ecb8cc930926123cfabd2b26627",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -917,10 +767,7 @@ Object {
     },
     "DeaRestApiConstructdeaapibyeGET3BEB4A0A": Object {
       "Properties": Object {
-        "AuthorizationType": "CUSTOM",
-        "AuthorizerId": Object {
-          "Ref": "DeaRestApiConstructCustomTokenAuthorizer1525075A",
-        },
+        "AuthorizationType": "AWS_IAM",
         "HttpMethod": "GET",
         "Integration": Object {
           "IntegrationHttpMethod": "POST",
@@ -1172,10 +1019,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasesGETDB7D2E68": Object {
       "Properties": Object {
-        "AuthorizationType": "CUSTOM",
-        "AuthorizerId": Object {
-          "Ref": "DeaRestApiConstructCustomTokenAuthorizer1525075A",
-        },
+        "AuthorizationType": "AWS_IAM",
         "HttpMethod": "GET",
         "Integration": Object {
           "IntegrationHttpMethod": "POST",
@@ -1264,10 +1108,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasesPOST0A7C65AB": Object {
       "Properties": Object {
-        "AuthorizationType": "CUSTOM",
-        "AuthorizerId": Object {
-          "Ref": "DeaRestApiConstructCustomTokenAuthorizer1525075A",
-        },
+        "AuthorizationType": "AWS_IAM",
         "HttpMethod": "POST",
         "Integration": Object {
           "IntegrationHttpMethod": "POST",
@@ -1475,10 +1316,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdDELETEE13D0EAA": Object {
       "Properties": Object {
-        "AuthorizationType": "CUSTOM",
-        "AuthorizerId": Object {
-          "Ref": "DeaRestApiConstructCustomTokenAuthorizer1525075A",
-        },
+        "AuthorizationType": "AWS_IAM",
         "HttpMethod": "DELETE",
         "Integration": Object {
           "IntegrationHttpMethod": "POST",
@@ -1518,10 +1356,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdGET31A0ADCB": Object {
       "Properties": Object {
-        "AuthorizationType": "CUSTOM",
-        "AuthorizerId": Object {
-          "Ref": "DeaRestApiConstructCustomTokenAuthorizer1525075A",
-        },
+        "AuthorizationType": "AWS_IAM",
         "HttpMethod": "GET",
         "Integration": Object {
           "IntegrationHttpMethod": "POST",
@@ -1758,10 +1593,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdPUTDAF01FBF": Object {
       "Properties": Object {
-        "AuthorizationType": "CUSTOM",
-        "AuthorizerId": Object {
-          "Ref": "DeaRestApiConstructCustomTokenAuthorizer1525075A",
-        },
+        "AuthorizationType": "AWS_IAM",
         "HttpMethod": "PUT",
         "Integration": Object {
           "IntegrationHttpMethod": "POST",
@@ -1854,10 +1686,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4": Object {
       "Properties": Object {
-        "AuthorizationType": "CUSTOM",
-        "AuthorizerId": Object {
-          "Ref": "DeaRestApiConstructCustomTokenAuthorizer1525075A",
-        },
+        "AuthorizationType": "AWS_IAM",
         "HttpMethod": "POST",
         "Integration": Object {
           "IntegrationHttpMethod": "POST",
@@ -2068,10 +1897,7 @@ Object {
     },
     "DeaRestApiConstructdeaapihiGETDB467AC2": Object {
       "Properties": Object {
-        "AuthorizationType": "CUSTOM",
-        "AuthorizerId": Object {
-          "Ref": "DeaRestApiConstructCustomTokenAuthorizer1525075A",
-        },
+        "AuthorizationType": "AWS_IAM",
         "HttpMethod": "GET",
         "Integration": Object {
           "IntegrationHttpMethod": "POST",
