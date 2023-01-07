@@ -3,56 +3,60 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import AppLayout, { AppLayoutProps } from '@cloudscape-design/components/app-layout';
 import BreadcrumbGroup from '@cloudscape-design/components/breadcrumb-group';
 import Flashbar from '@cloudscape-design/components/flashbar';
-import { useState } from 'react';
+import Head from 'next/head';
+import * as React from 'react';
+import { layoutLabels } from '../common/labels';
+import Navigation from '../components/Navigation';
 import { useNotifications } from '../context/NotificationContext';
-import styles from '../styles/BaseLayout.module.scss';
+import { useSettings } from '../context/SettingsContext';
 
-export default function Layout({ children }: { children: React.ReactNode }): JSX.Element {
-  const [navigationOpen, setNavigationOpen] = useState(false);
+export interface LayoutProps {
+  navigationHide?: boolean;
+  children: React.ReactNode;
+  breadcrumbs: BreadcrumbGroupProps.Item[];
+  activeHref?: string;
+}
+
+export default function BaseLayout({
+  navigationHide,
+  children,
+  breadcrumbs,
+  activeHref = '#/',
+}: LayoutProps): JSX.Element {
+  const [navigationOpen, setNavigationOpen] = React.useState(false);
   const { notifications } = useNotifications();
-
-  const appLayoutLabels: AppLayoutProps.Labels = {
-    navigation: 'Navigation drawer',
-    navigationClose: 'Close navigation drawer',
-    navigationToggle: 'Open navigation drawer',
-    notifications: 'Notifications',
-    tools: 'Help panel',
-    toolsClose: 'Close help panel',
-    toolsToggle: 'Open help panel',
-  };
+  const { settings } = useSettings();
+  const appLayoutLabels: AppLayoutProps.Labels = layoutLabels;
   return (
-    <AppLayout
-      id="app-layout"
-      className={styles.baseLayout}
-      headerSelector="#header"
-      stickyNotifications
-      toolsHide
-      ariaLabels={appLayoutLabels}
-      navigationOpen={navigationOpen}
-      notifications={<Flashbar items={Object.values(notifications)} />}
-      breadcrumbs={
-        <BreadcrumbGroup
-          items={[
-            {
-              text: 'Service name',
-              href: '#',
-            },
-            {
-              text: 'Pages',
-              href: '#',
-            },
-          ]}
-          expandAriaLabel="Show path"
-          ariaLabel="Breadcrumbs"
-        />
-      }
-      contentType="table"
-      content={children}
-      // eslint-disable-next-line security/detect-non-literal-fs-filename
-      onNavigationChange={({ detail }) => setNavigationOpen(detail.open)}
-    />
+    <>
+      <Head>
+        <title>{settings.name}</title>
+        <meta name="description" content={settings.description} />
+        <link rel="icon" href={settings.favicon} />
+      </Head>
+      <AppLayout
+        id="app-layout"
+        headerSelector="#header"
+        stickyNotifications
+        toolsHide
+        ariaLabels={appLayoutLabels}
+        navigationOpen={navigationOpen}
+        navigationHide={navigationHide}
+        navigation={<Navigation activeHref={activeHref} />}
+        notifications={<Flashbar items={Object.values(notifications)} />}
+        breadcrumbs={
+          <BreadcrumbGroup items={breadcrumbs} expandAriaLabel="Show path" ariaLabel="Breadcrumbs" />
+        }
+        content={children}
+        onNavigationChange={({ detail }) => {
+          // eslint-disable-next-line security/detect-non-literal-fs-filename
+          setNavigationOpen(detail.open);
+        }}
+      />
+    </>
   );
 }

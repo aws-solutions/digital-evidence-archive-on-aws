@@ -4,7 +4,7 @@
  */
 
 import type { AppProps } from 'next/app';
-import BaseLayout from '../components/BaseLayout';
+import Header from '../components/Header';
 import { AuthenticationProvider } from '../context/AuthenticationContext';
 import { NotificationsProvider } from '../context/NotificationContext';
 import { SettingsProvider } from '../context/SettingsContext';
@@ -16,9 +16,8 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
     <SettingsProvider>
       <NotificationsProvider>
         <AuthenticationProvider>
-          <BaseLayout>
-            <Component {...pageProps} />
-          </BaseLayout>
+          <Header />
+          <Component {...pageProps} />
           <footer id="footer"></footer>
         </AuthenticationProvider>
       </NotificationsProvider>

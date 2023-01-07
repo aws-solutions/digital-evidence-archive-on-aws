@@ -333,10 +333,12 @@ importers:
 
   ../../dea-ui/ui:
     specifiers:
+      '@aws/dea-app': workspace:*
       '@babel/core': ^7.17.9
       '@babel/preset-env': ^7.16.11
       '@babel/preset-react': ^7.16.7
       '@babel/preset-typescript': ^7.16.7
+      '@cloudscape-design/collection-hooks': ^1.0.3
       '@cloudscape-design/components': ^3.0.27
       '@cloudscape-design/design-tokens': ~3.0.4
       '@cloudscape-design/global-styles': ~1.0.1
@@ -394,6 +396,8 @@ importers:
       typescript: ^4.5.2
       uuid: ^8.3.2
     dependencies:
+      '@aws/dea-app': link:../../dea-app
+      '@cloudscape-design/collection-hooks': 1.0.10_react@17.0.2
       '@cloudscape-design/components': 3.0.108_b3482aaf5744fc7c2aeb7941b0e0a78f
       '@cloudscape-design/design-tokens': 3.0.6
       '@cloudscape-design/global-styles': 1.0.1

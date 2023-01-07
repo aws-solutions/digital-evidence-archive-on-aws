@@ -36,10 +36,12 @@
     "unit:only": "jest --ci --coverage --passWithNoTests '.*/*unit.test.*'"
   },
   "dependencies": {
+    "@cloudscape-design/collection-hooks": "^1.0.3",
     "@cloudscape-design/components": "^3.0.27",
     "@cloudscape-design/design-tokens": "~3.0.4",
     "@cloudscape-design/global-styles": "~1.0.1",
     "@cloudscape-design/jest-preset": "~2.0.2",
+    "@aws/dea-app": "workspace:*",
     "axios": "^0.27.1",
     "date-fns": "^2.28.0",
     "i18next": "~21.10.0",

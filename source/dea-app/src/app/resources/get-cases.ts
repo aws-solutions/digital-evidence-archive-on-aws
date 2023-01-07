@@ -31,8 +31,12 @@ export const getCases: DEAGatewayProxyHandler = async (event, context) => {
     body: JSON.stringify({
       cases: pageOfCases,
       total: pageOfCases.count,
+
       next: getNextToken(pageOfCases.next),
     }),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
   };
 };
 
