@@ -6,7 +6,7 @@
 import { CaseAction } from "../case-action";
 
 export interface CaseUserDTO {
-    readonly userUlid: string,
-    readonly caseUlid: string,
-    readonly actions: CaseAction[],
+    readonly userUlid: string;
+    readonly caseUlid: string;
+    readonly actions: CaseAction[];
 }

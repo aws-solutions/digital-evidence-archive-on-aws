@@ -67,7 +67,11 @@ describe('caseUser persistence', () => {
         };
         const createdCaseUser = await createCaseUser(caseUser, caseUserModelProvider);
 
-        expect(createdCaseUser).toEqual(caseUser);
+        expect(createdCaseUser).toEqual({
+            ...caseUser,
+            created: createdCaseUser.created,
+            updated: createdCaseUser.updated,
+        });
 
         const readCaseUser = await getCaseUser({ caseUlid, userUlid }, caseUserModelProvider);
 
@@ -80,7 +84,11 @@ describe('caseUser persistence', () => {
 
         const updatedCaseUser = await updateCaseUser(caseUserForUpdate, caseUserModelProvider);
 
-        expect(updatedCaseUser).toEqual(caseUserForUpdate);
+        expect(updatedCaseUser).toEqual({
+            ...caseUserForUpdate,
+            created: createdCaseUser.created,
+            updated: updatedCaseUser?.updated,
+        });
 
         await deleteAndVerifyCaseUser({caseUlid, userUlid}, caseUserModelProvider);
     });
@@ -102,6 +110,8 @@ describe('caseUser persistence', () => {
                 userFirstName: listUser1.firstName,
                 userLastName: listUser1.lastName,
                 actions: listCaseUser1_1.actions,
+                created: listCaseUser1_1.created,
+                updated: listCaseUser1_1.updated,
             },
             {
                 userUlid: listUser2Ulid,
@@ -110,6 +120,8 @@ describe('caseUser persistence', () => {
                 userFirstName: listUser2.firstName,
                 userLastName: listUser2.lastName,
                 actions: listCaseUser2_1.actions,
+                created: listCaseUser2_1.created,
+                updated: listCaseUser2_1.updated,
             },
         ];
         expectedCaseUsers.count = 2;
@@ -131,6 +143,8 @@ describe('caseUser persistence', () => {
                 userFirstName: listUser1.firstName,
                 userLastName: listUser1.lastName,
                 actions: listCaseUser1_1.actions,
+                created: listCaseUser1_1.created,
+                updated: listCaseUser1_1.updated,
             },
             {
                 userUlid: listUser1Ulid,
@@ -139,6 +153,8 @@ describe('caseUser persistence', () => {
                 userFirstName: listUser1.firstName,
                 userLastName: listUser1.lastName,
                 actions: listCaseUser1_2.actions,
+                created: listCaseUser1_2.created,
+                updated: listCaseUser1_2.updated,
             },
         ];
         expectedCaseUsers.count = 2;

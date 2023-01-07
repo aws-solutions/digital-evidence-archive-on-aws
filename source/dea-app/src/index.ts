@@ -9,8 +9,9 @@ import { createCaseMembership } from './app/resources/create-case-membership';
 import { createCases } from './app/resources/create-cases';
 import { DEAGatewayProxyHandler } from './app/resources/dea-gateway-proxy-handler';
 import { deleteCase } from './app/resources/delete-cases';
+import { getAllCases } from './app/resources/get-all-cases';
 import { getCase } from './app/resources/get-case-details';
-import { getCases } from './app/resources/get-cases';
+import { getMyCases } from './app/resources/get-my-cases';
 import { sayBye } from './app/resources/say-bye';
 import { sayHello } from './app/resources/say-hello';
 import { updateCases } from './app/resources/update-cases';
@@ -21,7 +22,8 @@ export {
   sayHello,
   createCases,
   deleteCase,
-  getCases,
+  getAllCases,
+  getMyCases,
   getCase,
   updateCases,
   createCaseMembership,

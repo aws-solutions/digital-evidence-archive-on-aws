@@ -5,15 +5,14 @@
 import { aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import CognitoHelper from '../helpers/cognito-helper';
-import Setup from '../helpers/setup';
+import { envSettings } from '../helpers/settings';
 
 describe('API authentication', () => {
-  const setup: Setup = new Setup();
-  const cognitoHelper: CognitoHelper = new CognitoHelper(setup);
+  const cognitoHelper: CognitoHelper = new CognitoHelper();
 
   const testUser = 'authE2ETestUser';
-  const deaApiUrl = setup.getSettings().get('apiUrlOutput');
-  const region = setup.getSettings().get('awsRegion');
+  const deaApiUrl = envSettings.apiUrlOutput;
+  const region = envSettings.awsRegion;
 
   beforeAll(async () => {
     // Create user in test group
@@ -43,7 +42,7 @@ describe('API authentication', () => {
 
     expect(response.status).toBeTruthy();
     expect(response.data).toBe('Hello DEA!');
-  });
+  }, 10000);
 
   it('should disallow calls without credentials', async () => {
     const client = axios.create();

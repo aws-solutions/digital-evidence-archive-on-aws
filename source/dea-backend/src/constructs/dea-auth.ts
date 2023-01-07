@@ -14,9 +14,10 @@ import {
   UserPool,
   UserPoolClient,
 } from 'aws-cdk-lib/aws-cognito';
-import { FederatedPrincipal, WebIdentityPrincipal, Policy, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
+import { FederatedPrincipal, Policy, PolicyStatement, Role, WebIdentityPrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { getConstants } from '../constants';
+import { logger } from '../logger';
 import { ApiGatewayMethod } from '../resources/api-gateway-route-config';
 
 interface DeaAuthProps {
@@ -175,7 +176,7 @@ export class DeaAuthConstruct extends Construct {
           roleArn: entry[1].roleArn,
         });
       } else {
-        console.log('No Group Name for Cognito Group: ' + entry);
+        logger.error('No Group Name for Cognito Group: ' + entry);
       }
     });
     new CfnIdentityPoolRoleAttachment(this, 'IdentityPoolCognitoRoleAttachment', {
@@ -376,6 +377,7 @@ export class DeaAuthConstruct extends Construct {
     const createCasesTestEndpoints = this._getEndpoints(apiEndpointArns, [
       '/cases' + ApiGatewayMethod.POST,
       '/cases/{caseId}' + ApiGatewayMethod.DELETE,
+      '/cases/all-cases' + ApiGatewayMethod.GET,
     ]);
     this._createCognitoGroup(
       'CreateCasesTestGroup',

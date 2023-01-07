@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import { Container, FormField, Header, Input } from '@cloudscape-design/components';
 import * as React from 'react';
 import { manageCaseAccessLabels } from '../../common/labels';

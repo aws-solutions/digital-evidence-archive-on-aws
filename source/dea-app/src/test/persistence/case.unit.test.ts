@@ -17,8 +17,12 @@ describe('case persistence', () => {
   let caseUlid: string;
   let listCase1: DeaCase;
   let listCase1Ulid: string;
+  let listCase1Created: Date;
+  let listCase1Updated: Date;
   let listCase2: DeaCase;
   let listCase2Ulid: string;
+  let listCase2Created: Date;
+  let listCase2Updated: Date;
 
   beforeAll(async () => {
     testTable = await initLocalDb('caseTestsTable');
@@ -30,6 +34,7 @@ describe('case persistence', () => {
       )) ?? fail();
     caseUlid = testCase.ulid ?? fail();
 
+
     //list endpoints
     await createListData();
   });
@@ -39,13 +44,13 @@ describe('case persistence', () => {
   });
 
   it('should return undefined if a case is not found', async () => {
-    const currentCase = await getCase('bogus', caseModelProvider);
+    const currentCase = await getCase('bogus', undefined, caseModelProvider);
 
     expect(currentCase).toBeUndefined();
   });
 
   it('should get a case by id', async () => {
-    const currentCase = await getCase(caseUlid, caseModelProvider);
+    const currentCase = await getCase(caseUlid, undefined, caseModelProvider);
 
     expect(currentCase).toEqual(testCase);
   });
@@ -57,12 +62,16 @@ describe('case persistence', () => {
         name: listCase1.name,
         status: CaseStatus.ACTIVE,
         objectCount: 0,
+        created: listCase1Created,
+        updated: listCase1Updated,
       },
       {
         ulid: listCase2Ulid,
         name: listCase2.name,
         status: CaseStatus.ACTIVE,
         objectCount: 0,
+        created: listCase2Created,
+        updated: listCase2Updated,
       },
       {
         ulid: testCase.ulid,
@@ -70,6 +79,8 @@ describe('case persistence', () => {
         status: CaseStatus.ACTIVE,
         description: 'TheDescription',
         objectCount: 0,
+        created: testCase.created,
+        updated: testCase.updated,
       },
     ];
     expectedCases.count = 3;
@@ -91,10 +102,12 @@ describe('case persistence', () => {
 
     const createdCase = await createCase(currentTestCase, caseModelProvider);
 
-    const readCase = await getCase(createdCase?.ulid ?? 'bogus', caseModelProvider);
+    const readCase = await getCase(createdCase?.ulid ?? 'bogus', undefined, caseModelProvider);
 
     const caseCheck: DeaCase = {
       ulid: createdCase?.ulid,
+      created: createdCase?.created,
+      updated: createdCase?.updated,
       ...currentTestCase,
     };
     expect(readCase).toEqual(caseCheck);
@@ -112,6 +125,8 @@ describe('case persistence', () => {
     const updateCheck: DeaCase = {
       ...updateTestCase,
       objectCount: updatedCase?.objectCount,
+      created: createdCase?.created,
+      updated: updatedCase?.updated,
     };
 
     expect(updatedCase).toEqual(updateCheck);
@@ -122,12 +137,16 @@ describe('case persistence', () => {
       (await createCase({ name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE }, caseModelProvider)) ??
       fail();
     listCase1Ulid = listCase1.ulid ?? fail();
+    listCase1Created = listCase1.created ?? fail();
+    listCase1Updated = listCase1.updated ?? fail();
     listCase2 =
       (await createCase(
         { name: 'Between a rock and a hard case', status: CaseStatus.ACTIVE },
         caseModelProvider
       )) ?? fail();
     listCase2Ulid = listCase2.ulid ?? fail();
+    listCase2Created = listCase2.created ?? fail();
+    listCase2Updated = listCase2.updated ?? fail();
   }
 
   it('should create a case, get and delete it', async () => {
@@ -140,10 +159,12 @@ describe('case persistence', () => {
 
     const createdCase = await createCase(currentTestCase, caseModelProvider);
 
-    const readCase = await getCase(createdCase?.ulid ?? fail(), caseModelProvider);
+    const readCase = await getCase(createdCase?.ulid ?? fail(), undefined, caseModelProvider);
 
     const caseCheck: DeaCase = {
       ulid: createdCase?.ulid,
+      created: createdCase?.created,
+      updated: createdCase?.updated,
       ...currentTestCase,
     };
     expect(readCase).toEqual(caseCheck);
@@ -151,7 +172,7 @@ describe('case persistence', () => {
     // Delete
     await deleteCase(createdCase?.ulid ?? fail(), caseModelProvider);
 
-    const nullCase = await getCase(createdCase?.ulid ?? fail(), caseModelProvider);
+    const nullCase = await getCase(createdCase?.ulid ?? fail(), undefined, caseModelProvider);
 
     expect(nullCase).toBeFalsy();
   });

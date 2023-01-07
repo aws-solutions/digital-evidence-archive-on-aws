@@ -8,9 +8,15 @@ import { ApiGatewayMethod, ApiGatewayRouteConfig } from './api-gateway-route-con
 export const deaApiRouteConfig: ApiGatewayRouteConfig = {
   routes: [
     {
-      path: '/cases',
+      path: '/cases/my-cases',
       httpMethod: ApiGatewayMethod.GET,
-      pathToSource: '../../src/handlers/get-cases-handler.ts',
+      pathToSource: '../../src/handlers/get-my-cases-handler.ts',
+      pagination: true,
+    },
+    {
+      path: '/cases/all-cases',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-all-cases-handler.ts',
       pagination: true,
     },
     {

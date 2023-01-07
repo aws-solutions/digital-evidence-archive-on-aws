@@ -3,9 +3,9 @@
 exports[`DeaMainStack synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
-    "DeaUiStackDeaUIS3BucketAccessLogsOutputDCD456F0": Object {
+    "DeaUiStackteststackDeaUIS3BucketAccessLogsOutput19759DEA": Object {
       "Export": Object {
-        "Name": "DeaUIS3BucketAccessLogsOutput",
+        "Name": "test-stack-DeaUIS3BucketAccessLogsOutput",
       },
       "Value": Object {
         "Ref": "DeaUiStackuiS3AccessLogsBucketF45A3215",

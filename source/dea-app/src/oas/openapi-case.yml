@@ -3,7 +3,7 @@ info:
   version: 1.0.0
   title: DEA Case API
 paths:
-  /all-cases:
+  /cases/all-cases:
     get:
       summary: Get all cases
       description: admin-only returns list of cases
@@ -15,7 +15,7 @@ paths:
           schema:
             type: integer
         - in: query
-          name: next_page_token
+          name: next
           schema:
             type: string
       responses:
@@ -30,7 +30,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Cases'
-                  next_page_token:
+                  next:
                     type: string
   /cases/{caseId}/owner:
     post:
@@ -159,7 +159,7 @@ paths:
           schema:
             type: integer
         - in: query
-          name: next_page_token
+          name: next
           schema:
             type: string
       responses:
@@ -174,7 +174,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Users'
-                  next_page_token:
+                  next:
                     type: string
   /cases/{caseId}/userMemberships/{userId}:
     put:
@@ -224,7 +224,7 @@ paths:
       responses:
         204:
           description: No content, delete successful
-  /my-cases:
+  /cases/my-cases:
     get:
       summary: get user's cases
       description: returns array of cases on which the user has membership
@@ -236,7 +236,7 @@ paths:
           schema:
             type: integer
         - in: query
-          name: next_page_token
+          name: next
           schema:
             type: string
       responses:
@@ -251,7 +251,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Cases'
-                  next_page_token:
+                  next:
                     type: string
   /cases/{caseId}:
     get:
@@ -362,7 +362,7 @@ paths:
           schema:
             type: integer
         - in: query
-          name: next_page_token
+          name: next
           schema:
             type: string
       responses:
@@ -377,7 +377,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/CaseFiles'
-                  next_page_token:
+                  next:
                     type: string
   /cases/{caseId}/files/{fileId}:
     get:
@@ -449,7 +449,7 @@ paths:
           schema:
             type: integer
         - in: query
-          name: next_page_token
+          name: next
           schema:
             type: string
       responses:
@@ -464,7 +464,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Users'
-                  next_page_token:
+                  next:
                     type: string
 components:
   schemas:

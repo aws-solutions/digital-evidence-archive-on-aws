@@ -4,19 +4,28 @@
  */
 
 import { logger } from '../../logger';
-import { listCases } from '../../persistence/case';
+import { ValidationError } from '../exceptions/validation-exception';
+import { listCasesForUser } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
-export const getCases: DEAGatewayProxyHandler = async (event, context) => {
+export const getMyCases: DEAGatewayProxyHandler = async (event, context) => {
   logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
   logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
   let limit: number | undefined;
   let next: string | undefined;
+  let userUlid: string | undefined;
   if (event.queryStringParameters) {
     if (event.queryStringParameters['limit']) {
       limit = parseInt(event.queryStringParameters['limit']);
     }
     next = event.queryStringParameters['next'];
+    // THIS IS TEMPORARY - THE USER CONTEXT WILL BE SET BY THE REQUESTING USER WHEN AUTH IS IN PLACE
+    userUlid = event.queryStringParameters['userUlid'];
+  }
+
+  // THIS IS TEMPORARY - THE USER CONTEXT WILL BE SET BY THE REQUESTING USER WHEN AUTH IS IN PLACE
+  if (!userUlid) {
+    throw new ValidationError("userUlid query parameter is currently required");
   }
 
   let nextToken: object | undefined = undefined;
@@ -24,7 +33,7 @@ export const getCases: DEAGatewayProxyHandler = async (event, context) => {
     nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
   }
 
-  const pageOfCases = await listCases(limit, nextToken);
+  const pageOfCases = await listCasesForUser(userUlid, limit, nextToken);
 
   return {
     statusCode: 200,
@@ -33,9 +42,6 @@ export const getCases: DEAGatewayProxyHandler = async (event, context) => {
       total: pageOfCases.count,
       next: getNextToken(pageOfCases.next),
     }),
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
   };
 };
 

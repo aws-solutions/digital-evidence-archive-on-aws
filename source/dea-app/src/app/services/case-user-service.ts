@@ -3,10 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { Paged } from "dynamodb-onetable";
 import { CaseUser } from "../../models/case-user";
 import { CaseUserDTO } from "../../models/dtos/case-user-dto";
 import { getCase } from "../../persistence/case";
-import { createCaseUser } from "../../persistence/case-user";
+import * as CaseUserPersistence from "../../persistence/case-user";
 import { getUser } from "../../persistence/user";
 import { NotFoundError } from "../exceptions/not-found-exception";
 
@@ -31,5 +32,13 @@ export const createCaseUserMembershipFromDTO = async (caseUserDto: CaseUserDTO):
 }
 
 export const createCaseUserMembership = async (caseUser: CaseUser): Promise<CaseUser> => {
-    return await createCaseUser(caseUser);
+    return await CaseUserPersistence.createCaseUser(caseUser);
+}
+
+export const getCaseUsersForUser = async (
+    userUlid: string,
+    limit = 30,
+    nextToken?: object,
+): Promise<Paged<CaseUser>> => {
+    return CaseUserPersistence.listCaseUsersByUser(userUlid, limit, nextToken);
 }

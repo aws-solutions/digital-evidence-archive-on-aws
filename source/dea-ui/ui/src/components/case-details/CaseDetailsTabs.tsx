@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import { Tabs } from '@cloudscape-design/components';
 import * as React from 'react';
 import { caseDetailLabels } from '../../common/labels';

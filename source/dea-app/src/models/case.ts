@@ -11,4 +11,6 @@ export interface DeaCase {
   readonly status: CaseStatus;
   readonly description?: string;
   readonly objectCount?: number;
+  readonly created?: Date;
+  readonly updated?: Date;
 }

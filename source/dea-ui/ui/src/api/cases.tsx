@@ -11,7 +11,7 @@ import { CreateCaseForm } from '../models/Cases';
 const STAGE = 'test';
 
 const useListAllCases = (): { cases: DeaCase[]; areCasesLoading: boolean } => {
-  const { data, isValidating } = useSWR(() => `/${STAGE}/cases`, httpApiGet);
+  const { data, isValidating } = useSWR(() => `/${STAGE}/cases/all-cases`, httpApiGet);
   const cases: DeaCase[] = data?.cases ?? [];
   return { cases, areCasesLoading: isValidating };
 };

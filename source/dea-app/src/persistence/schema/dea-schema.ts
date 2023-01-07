@@ -24,12 +24,15 @@ export const DeaSchema = {
       SK: { type: String, value: 'CASE#', required: true },
       GSI1PK: { type: String, value: 'CASE#' },
       GSI1SK: { type: String, value: 'CASE#${lowerCaseName}#${ulid}#' },
-      ulid: { type: String, unique: true, generate: 'ulid', validate: ulidMatch, required: true },
+      ulid: { type: String, generate: 'ulid', validate: ulidMatch, required: true },
       name: { type: String, required: true, unique: true },
       lowerCaseName: { type: String, required: true },
       status: { type: String, required: true, enum: Object.keys(CaseStatus) },
       description: { type: String },
       objectCount: { type: Number },
+      //managed by onetable - but included for entity generation
+      created: { type: Date },
+      updated: { type: Date },
     },
     CaseUser: {
       PK: { type: String, value: 'USER#${userUlid}#', required: true },
@@ -49,6 +52,9 @@ export const DeaSchema = {
       userLastName: { type: String, required: true },
       userFirstNameLower: { type: String, required: true },
       userLastNameLower: { type: String, required: true },
+      //managed by onetable - but included for entity generation
+      created: { type: Date },
+      updated: { type: Date },
     },
     CaseFile: {
       PK: { type: String, value: 'CASE#${caseUlid}#${preceedingDirectoryUlid}#', required: true },
@@ -60,6 +66,9 @@ export const DeaSchema = {
       preceedingDirectoryUlid: { type: String, validate: ulidMatch, required: true },
       isFile: { type: Boolean, required: false },
       contentPath: { type: String },
+      //managed by onetable - but included for entity generation
+      created: { type: Date },
+      updated: { type: Date },
     },
     User: {
       PK: { type: String, value: 'USER#${ulid}#', required: true },
@@ -71,12 +80,18 @@ export const DeaSchema = {
       lastName: { type: String, required: true },
       lowerFirstName: { type: String, required: true },
       lowerLastName: { type: String, required: true },
+      //managed by onetable - but included for entity generation
+      created: { type: Date },
+      updated: { type: Date },
     },
     StorageConfig: {
       PK: { type: String, value: 'CONFIG#', required: true },
       SK: { type: String, value: 'STORAGECONFIG#', required: true },
       activeStorage: { type: String, required: true, enum: STORAGE_TIERS },
       archiveStorage: { type: String, required: true, enum: STORAGE_TIERS },
+      //managed by onetable - but included for entity generation
+      created: { type: Date },
+      updated: { type: Date },
     },
   } as const,
   params: {
