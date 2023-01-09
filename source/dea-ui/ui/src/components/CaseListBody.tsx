@@ -22,9 +22,13 @@ function CaseListBody(): JSX.Element {
             variant="h1"
             description="This is a list of cases that have been shared with you."
             actions={
-              <Button variant="primary" onClick={createNewCaseHandler}>
-                Create new case
-              </Button>
+              <SpaceBetween direction="horizontal" size="xs">
+                <Button>Archive Case</Button>
+                <Button>Activate Case</Button>
+                <Button variant="primary" onClick={createNewCaseHandler}>
+                  Create new case
+                </Button>{' '}
+              </SpaceBetween>
             }
           >
             Cases

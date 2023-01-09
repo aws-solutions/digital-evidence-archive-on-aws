@@ -1,5 +1,13 @@
 import { useCollection } from '@cloudscape-design/collection-hooks';
-import { Table, Box, Button, TextFilter, Pagination, Link } from '@cloudscape-design/components';
+import {
+  Table,
+  Box,
+  Button,
+  TextFilter,
+  Pagination,
+  Link,
+  StatusIndicator,
+} from '@cloudscape-design/components';
 import * as React from 'react';
 import { useListAllCases } from '../api/cases';
 
@@ -30,14 +38,6 @@ function CaseTable(): JSX.Element {
           sortingField: 'caseLead',
         },
         {
-          id: 'status',
-          header: 'Status',
-          cell: (e) => e.status,
-          width: 110,
-          minWidth: 110,
-          sortingField: 'status',
-        },
-        {
           id: 'objectCount',
           header: 'No. of files',
           cell: (e) => e.objectCount,
@@ -52,6 +52,16 @@ function CaseTable(): JSX.Element {
           width: 110,
           minWidth: 110,
           sortingField: 'creationDate',
+        },
+        {
+          id: 'status',
+          header: 'Status',
+          cell: (e) => (
+            <StatusIndicator type={e.status === 'ACTIVE' ? 'success' : 'error'}>{e.status}</StatusIndicator>
+          ),
+          width: 110,
+          minWidth: 110,
+          sortingField: 'status',
         },
       ]}
       items={items}
