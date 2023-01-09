@@ -8,8 +8,8 @@ import useSWR from 'swr';
 import { httpApiGet } from '../helpers/apiHelper';
 
 const useCases = (): { cases: DeaCase[]; areCasesLoading: boolean } => {
-  const { data, isValidating } = useSWR('cases', httpApiGet);
-  const cases: DeaCase[] = data.cases || [];
+  const { data, isValidating } = useSWR(() => 'cases', httpApiGet);
+  const cases: DeaCase[] = data?.cases ?? [];
   return { cases, areCasesLoading: isValidating };
 };
 

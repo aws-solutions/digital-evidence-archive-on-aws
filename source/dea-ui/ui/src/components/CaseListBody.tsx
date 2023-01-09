@@ -4,9 +4,16 @@
  */
 
 import { ContentLayout, SpaceBetween, Header, Button, Container } from '@cloudscape-design/components';
+import { useRouter } from 'next/router';
 import CaseTable from './CaseTable';
 
 function CaseListBody(): JSX.Element {
+  const router = useRouter();
+
+  function createNewCaseHandler() {
+    router.push('/create-cases');
+  }
+
   return (
     <ContentLayout
       header={
@@ -14,7 +21,11 @@ function CaseListBody(): JSX.Element {
           <Header
             variant="h1"
             description="This is a list of cases that have been shared with you."
-            actions={<Button variant="primary">Create new case</Button>}
+            actions={
+              <Button variant="primary" onClick={createNewCaseHandler}>
+                Create new case
+              </Button>
+            }
           >
             Cases
           </Header>
