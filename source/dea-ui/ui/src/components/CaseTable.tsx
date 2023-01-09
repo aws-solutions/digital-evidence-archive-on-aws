@@ -1,10 +1,10 @@
 import { useCollection } from '@cloudscape-design/collection-hooks';
 import { Table, Box, Button, TextFilter, Pagination, Link } from '@cloudscape-design/components';
 import * as React from 'react';
-import { useCases } from '../api/cases';
+import { useListAllCases } from '../api/cases';
 
 function CaseTable(): JSX.Element {
-  const { cases, areCasesLoading } = useCases();
+  const { cases, areCasesLoading } = useListAllCases();
 
   // Property and date filter collections
   const { items } = useCollection(cases, {});

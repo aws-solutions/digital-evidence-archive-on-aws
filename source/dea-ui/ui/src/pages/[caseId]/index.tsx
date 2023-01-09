@@ -4,9 +4,7 @@
  */
 
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
-import { getBaseProps } from '@cloudscape-design/components/internal/base-component';
-
-import type { GetStaticPaths, NextPage } from 'next';
+import { useGetCaseById } from '../../api/cases';
 import BaseLayout from '../../components/BaseLayout';
 import CaseDetailsBody from '../../components/CaseDetailsBody';
 
@@ -15,6 +13,9 @@ export interface IHomeProps {
 }
 
 function CaseDetailsPage(props: { caseId: string }) {
+  const { caseDetail, areCasesLoading } = useGetCaseById(props.caseId || '');
+  console.log('details page');
+  console.log(caseDetail);
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: 'Digital Evidence Archive',
@@ -44,7 +45,7 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(context: { params: { caseId: string } }) {
   const caseId = context.params.caseId;
-  console.log('id is ' + caseId);
+
   return {
     props: { caseId: caseId }, // will be passed to the page component as props
     revalidate: 10, // In seconds
