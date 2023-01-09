@@ -36,7 +36,6 @@ export default function BaseLayout({
       <Head>
         <title>{settings.name}</title>
         <meta name="description" content={settings.description} />
-        <link rel="icon" href={settings.favicon} />
       </Head>
       <AppLayout
         id="app-layout"

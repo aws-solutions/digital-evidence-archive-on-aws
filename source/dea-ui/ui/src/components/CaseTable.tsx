@@ -1,5 +1,5 @@
 import { useCollection } from '@cloudscape-design/collection-hooks';
-import { Table, Box, Button, TextFilter, Pagination } from '@cloudscape-design/components';
+import { Table, Box, Button, TextFilter, Pagination, Link } from '@cloudscape-design/components';
 import * as React from 'react';
 import { useCases } from '../api/cases';
 
@@ -16,7 +16,7 @@ function CaseTable(): JSX.Element {
         {
           id: 'name',
           header: 'Case name',
-          cell: (e) => e.name,
+          cell: (e) => <Link href={`/prod/${e.ulid}`}>{e.name}</Link>,
           width: 170,
           minWidth: 165,
           sortingField: 'name',

@@ -15,7 +15,6 @@ const useCases = (): { cases: DeaCase[]; areCasesLoading: boolean } => {
 };
 
 const createCase = async (createCaseForm: CreateCaseForm): Promise<void> => {
-  console.log(createCaseForm);
   await httpApiPost(`cases`, { ...createCaseForm });
 };
 
