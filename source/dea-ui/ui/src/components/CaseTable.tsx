@@ -24,7 +24,7 @@ function CaseTable(): JSX.Element {
         {
           id: 'caseLead',
           header: 'Case Lead(s)',
-          cell: (e) => 'Sherlock Holmes',
+          cell: () => 'Sherlock Holmes',
           width: 110,
           minWidth: 110,
           sortingField: 'caseLead',
@@ -48,7 +48,7 @@ function CaseTable(): JSX.Element {
         {
           id: 'creationDate',
           header: 'Creation date',
-          cell: (e) => 'FOO, 00/00/00',
+          cell: () => 'FOO, 00/00/00',
           width: 110,
           minWidth: 110,
           sortingField: 'creationDate',

@@ -28,7 +28,7 @@ const fetchData = async (options: AxiosRequestConfig): Promise<any> => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpApiGet = async (urlPath: string, params: any, withCredentials = true): Promise<any> => {
+const httpApiGet = async (urlPath: string, params: any): Promise<any> => {
   const options = {
     method: 'GET',
     url: `${urlBase}${urlPath}`,
@@ -38,7 +38,7 @@ const httpApiGet = async (urlPath: string, params: any, withCredentials = true):
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpApiPost = async (urlPath: string, params: any, withCredentials = true): Promise<any> => {
+const httpApiPost = async (urlPath: string, params: any): Promise<any> => {
   const options = {
     method: 'POST',
     url: `${urlBase}${urlPath}`,
@@ -48,7 +48,7 @@ const httpApiPost = async (urlPath: string, params: any, withCredentials = true)
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpApiPut = async (urlPath: string, params: any, withCredentials = true): Promise<any> => {
+const httpApiPut = async (urlPath: string, params: any): Promise<any> => {
   const options = {
     method: 'PUT',
     url: `${urlBase}${urlPath}`,
@@ -58,7 +58,7 @@ const httpApiPut = async (urlPath: string, params: any, withCredentials = true):
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpApiDelete = async (urlPath: string, params: any, withCredentials = true): Promise<any> => {
+const httpApiDelete = async (urlPath: string, params: any): Promise<any> => {
   const options = {
     method: 'DELETE',
     url: `${urlBase}${urlPath}`,

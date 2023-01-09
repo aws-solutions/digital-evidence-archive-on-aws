@@ -5,7 +5,8 @@
 
 import { DeaCase } from '@aws/dea-app';
 import useSWR from 'swr';
-import { httpApiGet } from '../helpers/apiHelper';
+import { httpApiGet, httpApiPost } from '../helpers/apiHelper';
+import { CreateCaseForm } from '../models/Cases';
 
 const useCases = (): { cases: DeaCase[]; areCasesLoading: boolean } => {
   const { data, isValidating } = useSWR(() => 'cases', httpApiGet);
@@ -13,4 +14,9 @@ const useCases = (): { cases: DeaCase[]; areCasesLoading: boolean } => {
   return { cases, areCasesLoading: isValidating };
 };
 
-export { useCases };
+const createCase = async (createCaseForm: CreateCaseForm): Promise<void> => {
+  console.log(createCaseForm);
+  await httpApiPost(`cases`, { ...createCaseForm });
+};
+
+export { useCases, createCase };

@@ -27,5 +27,8 @@ export const createCases: DEAGatewayProxyHandler = async (event, context) => {
   return {
     statusCode: 200,
     body: JSON.stringify(updateBody),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
   };
 };

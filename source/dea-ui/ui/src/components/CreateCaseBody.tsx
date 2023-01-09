@@ -1,6 +1,6 @@
-import * as React from 'react';
 import { SpaceBetween, ContentLayout, Header } from '@cloudscape-design/components';
-import CreateCaseForm from './CreateCaseForm';
+import * as React from 'react';
+import CreateCasesForm from './CreateCasesForm';
 
 function CreateCasePage() {
   return (
@@ -11,7 +11,7 @@ function CreateCasePage() {
         </SpaceBetween>
       }
     >
-      <CreateCaseForm></CreateCaseForm>
+      <CreateCasesForm></CreateCasesForm>
     </ContentLayout>
   );
 }

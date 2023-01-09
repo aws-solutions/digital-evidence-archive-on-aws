@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { ContentLayout, SpaceBetween, Header, Button, Container } from '@cloudscape-design/components';
+import { ContentLayout, SpaceBetween, Header, Button } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import CaseTable from './CaseTable';
 
