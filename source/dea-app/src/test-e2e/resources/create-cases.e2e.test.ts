@@ -7,6 +7,7 @@ import Joi from 'joi';
 import fetch from 'node-fetch';
 import { DeaCase } from '../../models/case';
 import { caseSchema } from '../../models/validation/case';
+import { deleteCase } from './test-helpers';
 
 describe('create cases api', () => {
   let deaApiUrl: string | undefined;
@@ -92,14 +93,3 @@ describe('create cases api', () => {
     await deleteCase(deaApiUrl ?? fail(), jsonResp.ulid ?? fail());
   }, 10000);
 });
-
-async function deleteCase(baseUrl: string, caseUlid: string): Promise<void> {
-  const response = await fetch(`${baseUrl}cases/${caseUlid}`, {
-    method: 'DELETE',
-    headers: {
-      authorization: 'allow',
-    },
-  });
-
-  expect(response.ok).toBeTruthy();
-}
