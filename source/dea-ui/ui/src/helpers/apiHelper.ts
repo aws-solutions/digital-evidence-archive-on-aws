@@ -5,9 +5,7 @@
 
 import axios, { AxiosRequestConfig } from 'axios';
 
-// TODO: DONT USE PERSONAL STRING
-//const urlBase: string | undefined = process.env.NEXT_PUBLIC_API_BASE_URL;
-const urlBase = 'https://vlphivyhwe.execute-api.us-west-1.amazonaws.com/dev/';
+const urlBase: string | undefined = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // TODO: Use generics instead of using any for methods here
 
