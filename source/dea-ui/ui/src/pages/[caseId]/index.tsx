@@ -13,9 +13,6 @@ export interface IHomeProps {
 }
 
 function CaseDetailsPage(props: { caseId: string }) {
-  const { caseDetail, areCasesLoading } = useGetCaseById(props.caseId || '');
-  console.log('details page');
-  console.log(caseDetail);
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: 'Digital Evidence Archive',
@@ -30,12 +27,7 @@ function CaseDetailsPage(props: { caseId: string }) {
   return (
     <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
       <Box margin={{ bottom: 'l' }}>
-        <CaseDetailsBody
-          caseId={props.caseId}
-          caseName={caseDetail.name}
-          description={caseDetail.description}
-          status={caseDetail.status}
-        ></CaseDetailsBody>
+        <CaseDetailsBody caseId={props.caseId}></CaseDetailsBody>
       </Box>
     </BaseLayout>
   );

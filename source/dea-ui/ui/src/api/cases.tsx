@@ -16,7 +16,7 @@ const useListAllCases = (): { cases: DeaCase[]; areCasesLoading: boolean } => {
 
 const useGetCaseById = (id: string): { caseDetail: DeaCase; areCasesLoading: boolean } => {
   const { data, isValidating } = useSWR(() => (id ? `cases/${id}/` : null), httpApiGet);
-  const caseDetail: DeaCase = data?.data ?? [];
+  const caseDetail: DeaCase = data;
   return { caseDetail, areCasesLoading: isValidating };
 };
 
