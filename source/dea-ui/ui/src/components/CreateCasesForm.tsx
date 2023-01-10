@@ -14,12 +14,18 @@ import { createCase } from '../api/cases';
 import { CreateCaseForm } from '../models/Cases';
 
 function CreateCasesForm(): JSX.Element {
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const router = useRouter();
   const [formData, setFormData] = useState<CreateCaseForm>({ name: '' });
 
   async function onSubmitHandler() {
-    await createCase(formData);
-    router.push('/');
+    setIsSubmitLoading(true);
+    try {
+      await createCase(formData);
+    } finally {
+      setIsSubmitLoading(false);
+      router.push('/');
+    }
   }
 
   return (
@@ -30,7 +36,7 @@ function CreateCasesForm(): JSX.Element {
             <Button formAction="none" variant="link">
               Cancel
             </Button>
-            <Button variant="primary" onClick={onSubmitHandler}>
+            <Button variant="primary" onClick={onSubmitHandler} loading={isSubmitLoading}>
               Submit
             </Button>
           </SpaceBetween>

@@ -4,7 +4,6 @@
  */
 
 import { ContentLayout, SpaceBetween, Header, Container } from '@cloudscape-design/components';
-import { useState, useEffect } from 'react';
 import { useGetCaseById } from '../api/cases';
 
 function CaseDetailsBody(props: any): JSX.Element {
