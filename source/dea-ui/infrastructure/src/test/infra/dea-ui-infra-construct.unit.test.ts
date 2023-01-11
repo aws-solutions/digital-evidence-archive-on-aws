@@ -6,6 +6,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import 'source-map-support/register';
 import { validateDeaUiConstruct } from '../..';
@@ -30,7 +31,9 @@ describe('DeaMainStack', () => {
       pendingWindow: Duration.days(7),
     });
 
-    new DeaUiConstruct(stack, 'DeaUiConstruct', { kmsKey: key });
+    const restApi = new RestApi(stack, 'testApi', { description: 'Backend API' });
+
+    new DeaUiConstruct(stack, 'DeaUiConstruct', { kmsKey: key, restApi });
 
     // Prepare the stack for assertions.
     const template = Template.fromStack(stack);

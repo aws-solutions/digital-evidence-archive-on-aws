@@ -20,6 +20,7 @@ import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
+import { getConstants } from '../constants';
 import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway-route-config';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
 
@@ -30,24 +31,23 @@ interface DeaRestApiProps {
 
 export class DeaRestApiConstruct extends Construct {
   public lambdaBaseRole: Role;
+  public deaRestApi: RestApi;
 
   public constructor(scope: Construct, stackName: string, props: DeaRestApiProps) {
     super(scope, stackName);
 
     this.lambdaBaseRole = this._createLambdaBaseRole(props.kmsKey.keyArn, props.deaTableArn);
 
-    this._createApiGateway(props.deaTableArn, props.kmsKey, deaApiRouteConfig);
-  }
-
-  private _createApiGateway(tableArn: string, key: Key, routeConfig: ApiGatewayRouteConfig): void {
     const accessLogGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
-      encryptionKey: key,
+      encryptionKey: props.kmsKey,
     });
 
-    const api = new RestApi(this, `dea-api`, {
+    const { STAGE } = getConstants();
+
+    this.deaRestApi = new RestApi(this, `dea-api`, {
       description: 'Backend API',
       deployOptions: {
-        stageName: 'dev',
+        stageName: STAGE,
         accessLogDestination: new LogGroupLogDestination(accessLogGroup),
         accessLogFormat: AccessLogFormat.custom(
           JSON.stringify({
@@ -73,7 +73,12 @@ export class DeaRestApiConstruct extends Construct {
       },
     });
 
-    const plan = api.addUsagePlan('DEA Usage Plan', {
+    this._configureApiGateway( props.deaTableArn, props.kmsKey, deaApiRouteConfig);
+  }
+
+  private _configureApiGateway(tableArn: string, key: Key, routeConfig: ApiGatewayRouteConfig): void {
+    
+    const plan = this.deaRestApi.addUsagePlan('DEA Usage Plan', {
       name: 'dea-usage-plan',
       throttle: {
         rateLimit: 25,
@@ -82,18 +87,18 @@ export class DeaRestApiConstruct extends Construct {
     });
 
     plan.addApiStage({
-      api: api,
-      stage: api.deploymentStage,
+      api: this.deaRestApi,
+      stage: this.deaRestApi.deploymentStage,
     });
 
     new CfnOutput(this, 'deaApiUrlOutput', {
-      value: api.url,
+      value: this.deaRestApi.url,
       exportName: 'deaApiUrl',
     });
 
     const customAuthorizer = this._createLambdaAuthorizer(this.lambdaBaseRole);
 
-    routeConfig.routes.forEach((route) => this._addMethod(api, route, this.lambdaBaseRole, customAuthorizer));
+    routeConfig.routes.forEach((route) => this._addMethod(this.deaRestApi, route, this.lambdaBaseRole, customAuthorizer));
   }
 
   private _addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, authorizer: TokenAuthorizer): void {

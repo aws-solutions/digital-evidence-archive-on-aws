@@ -7,7 +7,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 
 export const validateDeaUiConstruct = (template: Template): void => {
   template.hasResourceProperties('AWS::ApiGateway::RestApi', {
-    Description: 'distribution api',
+    Description: 'Backend API',
   });
 
   template.hasResourceProperties('AWS::S3::Bucket', {

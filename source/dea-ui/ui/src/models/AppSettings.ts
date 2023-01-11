@@ -14,6 +14,7 @@ export interface IAppSettings {
   logo: string;
   favicon: string;
   name: string;
+  stage: string;
   slogan?: string;
   description?: string;
 }
@@ -26,4 +27,5 @@ export const defaultAppSettings: IAppSettings = {
   slogan: 'Better ingredients better evidence',
   description:
     'The Digital Evidence Archive is the perfect place to store all your evidence and pizza toppings.',
+  stage: 'test',
 };

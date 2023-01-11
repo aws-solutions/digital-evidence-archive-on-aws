@@ -5,8 +5,6 @@
 
 import axios, { AxiosRequestConfig } from 'axios';
 
-const urlBase: string | undefined = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 // TODO: Use generics instead of using any for methods here
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,7 +27,7 @@ const fetchData = async (options: AxiosRequestConfig): Promise<any> => {
 const httpApiGet = async (urlPath: string, params: any): Promise<any> => {
   const options = {
     method: 'GET',
-    url: `${urlBase}${urlPath}`,
+    url: `${urlPath}`,
     data: params,
   };
   return await fetchData(options);
@@ -39,7 +37,7 @@ const httpApiGet = async (urlPath: string, params: any): Promise<any> => {
 const httpApiPost = async (urlPath: string, params: any): Promise<any> => {
   const options = {
     method: 'POST',
-    url: `${urlBase}${urlPath}`,
+    url: `${urlPath}`,
     data: params,
   };
   return await fetchData(options);
@@ -49,7 +47,7 @@ const httpApiPost = async (urlPath: string, params: any): Promise<any> => {
 const httpApiPut = async (urlPath: string, params: any): Promise<any> => {
   const options = {
     method: 'PUT',
-    url: `${urlBase}${urlPath}`,
+    url: `${urlPath}`,
     data: params,
   };
   return await fetchData(options);
@@ -59,7 +57,7 @@ const httpApiPut = async (urlPath: string, params: any): Promise<any> => {
 const httpApiDelete = async (urlPath: string, params: any): Promise<any> => {
   const options = {
     method: 'DELETE',
-    url: `${urlBase}${urlPath}`,
+    url: `${urlPath}`,
     data: params,
   };
   return await fetchData(options);
