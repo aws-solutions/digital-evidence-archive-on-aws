@@ -15,6 +15,7 @@ import { getCases } from './app/resources/get-cases';
 import { sayBye } from './app/resources/say-bye';
 import { sayHello } from './app/resources/say-hello';
 import { updateCases } from './app/resources/update-cases';
+import { DeaCase } from './models/case';
 
 export {
   sayBye,
@@ -26,6 +27,7 @@ export {
   customAuthorizer,
   updateCases,
   createCaseMembership,
+  DeaCase,
   DEAGatewayProxyHandler,
   NotFoundError,
   NOT_FOUND_ERROR_NAME,

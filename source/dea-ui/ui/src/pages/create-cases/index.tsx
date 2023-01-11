@@ -5,8 +5,8 @@
 
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
-import BaseLayout from '../components/BaseLayout';
-import CaseListBody from '../components/CaseListBody';
+import BaseLayout from '../../components/BaseLayout';
+import CreateCaseBody from '../../components/CreateCaseBody';
 
 export interface IHomeProps {
   locale: string;
@@ -27,7 +27,7 @@ const Home: NextPage = () => {
   return (
     <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
       <Box margin={{ bottom: 'l' }}>
-        <CaseListBody />
+        <CreateCaseBody />
       </Box>
     </BaseLayout>
   );

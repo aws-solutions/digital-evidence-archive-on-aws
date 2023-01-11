@@ -45,13 +45,13 @@ describe('DeaBackend constructs', () => {
     validateBackendConstruct(template);
 
     // backend-specific assertions
-    template.allResourcesProperties('AWS::ApiGateway::Method', {
+    template.hasResourceProperties('AWS::ApiGateway::Method', {
       AuthorizationType: 'CUSTOM',
     });
 
     //handlers + authorizer
     template.resourceCountIs('AWS::Lambda::Function', 9);
-    template.resourceCountIs('AWS::ApiGateway::Method', 8);
+    template.resourceCountIs('AWS::ApiGateway::Method', 14);
 
     expect.addSnapshotSerializer({
       test: (val) => typeof val === 'string' && val.includes('zip'),

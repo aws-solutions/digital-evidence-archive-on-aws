@@ -802,21 +802,27 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaRestApiConstructdeaapiDeploymentC27C6CB1fc34190d227ddd6af8f0986468b2e352": Object {
+    "DeaRestApiConstructdeaapiDeploymentC27C6CB1de61a8be124c157f4e301dd01c80d764": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaapibyeGET3BEB4A0A",
+        "DeaRestApiConstructdeaapibyeOPTIONS00A7A259",
         "DeaRestApiConstructdeaapibye9DFF71B3",
         "DeaRestApiConstructdeaapicasescaseIdDELETEE13D0EAA",
         "DeaRestApiConstructdeaapicasescaseIdGET31A0ADCB",
+        "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954",
         "DeaRestApiConstructdeaapicasescaseIdPUTDAF01FBF",
         "DeaRestApiConstructdeaapicasescaseId5919A5AE",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
         "DeaRestApiConstructdeaapicasesGETDB7D2E68",
+        "DeaRestApiConstructdeaapicasesOPTIONS6C23822B",
         "DeaRestApiConstructdeaapicasesPOST0A7C65AB",
         "DeaRestApiConstructdeaapicasesC2FD1C2B",
         "DeaRestApiConstructdeaapihiGETDB467AC2",
+        "DeaRestApiConstructdeaapihiOPTIONSEFEA6225",
         "DeaRestApiConstructdeaapihi7D1B234E",
+        "DeaRestApiConstructdeaapiOPTIONSE2FADC9C",
       ],
       "Properties": Object {
         "Description": "Backend API",
@@ -841,7 +847,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB1fc34190d227ddd6af8f0986468b2e352",
+          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB1de61a8be124c157f4e301dd01c80d764",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -849,6 +855,50 @@ Object {
         "StageName": "dev",
       },
       "Type": "AWS::ApiGateway::Stage",
+    },
+    "DeaRestApiConstructdeaapiOPTIONSE2FADC9C": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructdeaapi6587DDA1",
+            "RootResourceId",
+          ],
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
     },
     "DeaRestApiConstructdeaapibye9DFF71B3": Object {
       "Properties": Object {
@@ -986,6 +1036,47 @@ Object {
       },
       "Type": "AWS::Lambda::Permission",
     },
+    "DeaRestApiConstructdeaapibyeOPTIONS00A7A259": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapibye9DFF71B3",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
     "DeaRestApiConstructdeaapicasesC2FD1C2B": Object {
       "Properties": Object {
         "ParentId": Object {
@@ -1121,6 +1212,47 @@ Object {
           "method.request.querystring.limit": false,
           "method.request.querystring.next": false,
         },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasesC2FD1C2B",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasesOPTIONS6C23822B": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
         "ResourceId": Object {
           "Ref": "DeaRestApiConstructdeaapicasesC2FD1C2B",
         },
@@ -1505,6 +1637,47 @@ Object {
       },
       "Type": "AWS::Lambda::Permission",
     },
+    "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseId5919A5AE",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
     "DeaRestApiConstructdeaapicasescaseIdPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseId37A77CC0": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -1637,6 +1810,47 @@ Object {
         },
       },
       "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
     },
     "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4": Object {
       "Properties": Object {
@@ -1886,6 +2100,47 @@ Object {
             ],
           },
         },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapihi7D1B234E",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapihiOPTIONSEFEA6225": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
         "ResourceId": Object {
           "Ref": "DeaRestApiConstructdeaapihi7D1B234E",
         },

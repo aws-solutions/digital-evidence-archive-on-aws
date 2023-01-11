@@ -11,6 +11,7 @@ import {
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
+  Cors,
   TokenAuthorizer,
 } from 'aws-cdk-lib/aws-apigateway';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
@@ -64,7 +65,12 @@ export class DeaRestApiConstruct extends Construct {
           })
         ),
       },
-      // TODO: Add CORS Preflight
+      defaultCorsPreflightOptions: {
+        allowHeaders: ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'CSRF-Token'],
+        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowCredentials: true,
+        allowOrigins: Cors.ALL_ORIGINS,
+      },
     });
 
     const plan = api.addUsagePlan('DEA Usage Plan', {

@@ -33,6 +33,9 @@ export const getCases: DEAGatewayProxyHandler = async (event, context) => {
       total: pageOfCases.count,
       next: getNextToken(pageOfCases.next),
     }),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
   };
 };
 
