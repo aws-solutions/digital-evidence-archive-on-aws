@@ -176,7 +176,6 @@ export class DeaAuthConstruct extends Construct {
         console.log('No Group Name for Cognito Group: ' + entry);
       }
     });
-    console.log(idPool);
     new CfnIdentityPoolRoleAttachment(this, 'IdentityPoolCognitoRoleAttachment', {
       identityPoolId: idPool.ref,
       roleMappings: {
