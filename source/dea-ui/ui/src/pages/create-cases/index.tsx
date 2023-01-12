@@ -6,7 +6,7 @@
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
 import BaseLayout from '../../components/BaseLayout';
-import CreateCaseBody from '../../components/CreateCaseBody';
+import CreateCaseBody from '../../components/create-case/CreateCaseBody';
 
 export interface IHomeProps {
   locale: string;
