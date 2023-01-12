@@ -2557,6 +2557,23 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
+    "DeaAuthAuthTestGroup72A5E3A7": Object {
+      "Properties": Object {
+        "Description": "Group used for auth e2e testing",
+        "GroupName": "AuthTestGroup",
+        "Precedence": 100,
+        "RoleArn": Object {
+          "Fn::GetAtt": Array [
+            "DeaAuthDeaAuthTESTAuthTestGroupRole082851D3",
+            "Arn",
+          ],
+        },
+        "UserPoolId": Object {
+          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolGroup",
+    },
     "DeaAuthCaseWorkerGroupE79505D6": Object {
       "Properties": Object {
         "Description": "Group containing users who need access to case APIs",
@@ -2565,6 +2582,23 @@ Object {
         "RoleArn": Object {
           "Fn::GetAtt": Array [
             "DeaAuthDeaAuthTESTCaseWorkerGroupRole7EF77E8C",
+            "Arn",
+          ],
+        },
+        "UserPoolId": Object {
+          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolGroup",
+    },
+    "DeaAuthCreateCasesTestGroup7CEF506E": Object {
+      "Properties": Object {
+        "Description": "Group used for create cases API e2e testing",
+        "GroupName": "CreateCasesTestGroup",
+        "Precedence": 100,
+        "RoleArn": Object {
+          "Fn::GetAtt": Array [
+            "DeaAuthDeaAuthTESTCreateCasesTestGroupRole8B995277",
             "Arn",
           ],
         },
@@ -2700,6 +2734,113 @@ Object {
         },
       },
       "Type": "AWS::Cognito::UserPoolClient",
+    },
+    "DeaAuthDeaAuthTESTAuthTestGroupRole082851D3": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": Object {
+                "ForAnyValue:StringLike": Object {
+                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                },
+                "StringEquals": Object {
+                  "cognito-identity.amazonaws.com:aud": Object {
+                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Federated": "cognito-identity.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Description": "Role used for auth e2e testing",
+        "RoleName": "DeaAuthTESTAuthTestGroupRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaAuthDeaAuthTESTAuthTestGroupRolePolicy1B7BE378": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "execute-api:Invoke",
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
+                      },
+                      "/GET/hi",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
+                      },
+                      "/GET/bye",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaAuthDeaAuthTESTAuthTestGroupRolePolicy1B7BE378",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaAuthDeaAuthTESTAuthTestGroupRole082851D3",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "DeaAuthDeaAuthTESTCaseWorkerGroupRole7EF77E8C": Object {
       "Properties": Object {
@@ -2920,6 +3061,265 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
+    "DeaAuthDeaAuthTESTCreateCasesTestGroupRole8B995277": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": Object {
+                "ForAnyValue:StringLike": Object {
+                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                },
+                "StringEquals": Object {
+                  "cognito-identity.amazonaws.com:aud": Object {
+                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Federated": "cognito-identity.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Description": "Role used for create cases API e2e testing",
+        "RoleName": "DeaAuthTESTCreateCasesTestGroupRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaAuthDeaAuthTESTCreateCasesTestGroupRolePolicy51BAD4B9": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "execute-api:Invoke",
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
+                      },
+                      "/POST/cases",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
+                      },
+                      "/DELETE/cases/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaAuthDeaAuthTESTCreateCasesTestGroupRolePolicy51BAD4B9",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaAuthDeaAuthTESTCreateCasesTestGroupRole8B995277",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeaAuthDeaAuthTESTGetCaseTestGroupRoleE3E8EDEE": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": Object {
+                "ForAnyValue:StringLike": Object {
+                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                },
+                "StringEquals": Object {
+                  "cognito-identity.amazonaws.com:aud": Object {
+                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Federated": "cognito-identity.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Description": "Role used for get cases API e2e testing",
+        "RoleName": "DeaAuthTESTGetCaseTestGroupRole",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaAuthDeaAuthTESTGetCaseTestGroupRolePolicyA96F1FB7": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "execute-api:Invoke",
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
+                      },
+                      "/POST/cases",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
+                      },
+                      "/GET/cases/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
+                      },
+                      "/DELETE/cases/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaAuthDeaAuthTESTGetCaseTestGroupRolePolicyA96F1FB7",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaAuthDeaAuthTESTGetCaseTestGroupRoleE3E8EDEE",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeaAuthGetCaseTestGroup01C4525C": Object {
+      "Properties": Object {
+        "Description": "Group used for get cases API e2e testing",
+        "GroupName": "GetCaseTestGroup",
+        "Precedence": 100,
+        "RoleArn": Object {
+          "Fn::GetAtt": Array [
+            "DeaAuthDeaAuthTESTGetCaseTestGroupRoleE3E8EDEE",
+            "Arn",
+          ],
+        },
+        "UserPoolId": Object {
+          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolGroup",
+    },
     "DeaAuthIdPoolAuthenticatedRole3AD16775": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -3009,6 +3409,39 @@ Object {
                     ],
                   },
                   "Value": "CaseWorkerGroup",
+                },
+                Object {
+                  "Claim": "cognito:groups",
+                  "MatchType": "Contains",
+                  "RoleARN": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaAuthDeaAuthTESTAuthTestGroupRole082851D3",
+                      "Arn",
+                    ],
+                  },
+                  "Value": "AuthTestGroup",
+                },
+                Object {
+                  "Claim": "cognito:groups",
+                  "MatchType": "Contains",
+                  "RoleARN": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaAuthDeaAuthTESTCreateCasesTestGroupRole8B995277",
+                      "Arn",
+                    ],
+                  },
+                  "Value": "CreateCasesTestGroup",
+                },
+                Object {
+                  "Claim": "cognito:groups",
+                  "MatchType": "Contains",
+                  "RoleARN": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaAuthDeaAuthTESTGetCaseTestGroupRoleE3E8EDEE",
+                      "Arn",
+                    ],
+                  },
+                  "Value": "GetCaseTestGroup",
                 },
               ],
             },

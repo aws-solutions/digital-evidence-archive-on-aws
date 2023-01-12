@@ -379,6 +379,21 @@ export class DeaAuthConstruct extends Construct {
       principal,
       userPoolId
     );
+
+    // Create Test Group for Get Cases E2E Test
+    const getCaseTestEndpoints = this._getEndpoints(apiEndpointArns, [
+        '/cases' + ApiGatewayMethod.POST,
+        '/cases/{caseId}' + ApiGatewayMethod.GET,
+        '/cases/{caseId}' + ApiGatewayMethod.DELETE,
+        ]);
+        this._createCognitoGroup(
+        'GetCaseTestGroup',
+        'used for get cases API e2e testing',
+        groupRoleMapping,
+        getCaseTestEndpoints,
+        principal,
+        userPoolId
+        );
   }
 
   private _getEndpoints(apiEndpointArns: Map<string, string>, paths: string[]): string[] {
