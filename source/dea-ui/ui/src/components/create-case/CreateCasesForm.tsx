@@ -15,8 +15,8 @@ import {
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useState } from 'react';
-import { createCase } from '../api/cases';
-import { CreateCaseForm } from '../models/Cases';
+import { createCase } from '../../api/cases';
+import { CreateCaseForm } from '../../models/Cases';
 
 function CreateCasesForm(): JSX.Element {
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);

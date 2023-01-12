@@ -8,6 +8,7 @@
 | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | ![Statements](https://img.shields.io/badge/statements-61.16%25-red.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-65.51%25-red.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-63.33%25-red.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-60.63%25-red.svg?style=flat) |
 
+
 ## Useful commands
 
 - `rushx compile` compile

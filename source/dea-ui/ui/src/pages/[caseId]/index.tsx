@@ -4,9 +4,8 @@
  */
 
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
-import { useGetCaseById } from '../../api/cases';
 import BaseLayout from '../../components/BaseLayout';
-import CaseDetailsBody from '../../components/CaseDetailsBody';
+import CaseDetailsBody from '../../components/case-details/CaseDetailsBody';
 
 export interface IHomeProps {
   locale: string;
