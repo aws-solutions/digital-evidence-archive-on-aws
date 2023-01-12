@@ -766,11 +766,11 @@ Object {
       },
       "Type": "AWS::ApiGateway::RestApi",
     },
-    "testApiDeployment3727A0B9c894a3e3d47c0aff6ba6386a02e06775": Object {
+    "testApiDeployment3727A0B911a3d6f3089853cb0ac40dd95a583e66": Object {
       "DependsOn": Array [
-        "testApiGET0A651CA4",
         "testApiuiproxyGET92230E90",
         "testApiuiproxyDDF9EC1E",
+        "testApiuiGET8FD5D6F5",
         "testApiui1F041DD2",
       ],
       "Properties": Object {
@@ -787,7 +787,7 @@ Object {
       ],
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "testApiDeployment3727A0B9c894a3e3d47c0aff6ba6386a02e06775",
+          "Ref": "testApiDeployment3727A0B911a3d6f3089853cb0ac40dd95a583e66",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",
@@ -796,7 +796,22 @@ Object {
       },
       "Type": "AWS::ApiGateway::Stage",
     },
-    "testApiGET0A651CA4": Object {
+    "testApiui1F041DD2": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "testApiD6ECAB50",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "ui",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuiGET8FD5D6F5": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
@@ -863,31 +878,13 @@ Object {
           "method.request.path.proxy": true,
         },
         "ResourceId": Object {
-          "Fn::GetAtt": Array [
-            "testApiD6ECAB50",
-            "RootResourceId",
-          ],
+          "Ref": "testApiui1F041DD2",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "testApiui1F041DD2": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Fn::GetAtt": Array [
-            "testApiD6ECAB50",
-            "RootResourceId",
-          ],
-        },
-        "PathPart": "ui",
-        "RestApiId": Object {
-          "Ref": "testApiD6ECAB50",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
     },
     "testApiuiproxyDDF9EC1E": Object {
       "Properties": Object {

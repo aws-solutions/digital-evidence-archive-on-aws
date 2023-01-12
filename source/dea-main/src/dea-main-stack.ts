@@ -14,7 +14,7 @@ import {
   Effect,
   PolicyDocument,
   PolicyStatement,
-  ServicePrincipal
+  ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
@@ -126,6 +126,7 @@ export class DeaMainStack extends cdk.Stack {
         .findChild('DeaApiGateway')
         .node.findChild('dea-api')
         .node.findChild('Default')
+        .node.findChild('ui')
         .node.findChild('GET').node.defaultChild
     );
 
