@@ -24,7 +24,7 @@ describe('API authentication', () => {
     await cognitoHelper.cleanup();
   });
 
-  it('Positive Tests: User CAN call APIs as defined by the IAM Role', async () => {
+  it('should allow successful calls to the api for authenticated users', async () => {
     const creds = await cognitoHelper.getCredentialsForUser(testUser);
     const client = axios.create();
 
@@ -45,14 +45,14 @@ describe('API authentication', () => {
     expect(response.data).toBe('Hello DEA!');
   });
 
-  it('Negative tests: Unauthenticated user (no creds) cannot access DEA', async () => {
+  it('should disallow calls without credentials', async () => {
     const client = axios.create();
     const url = `${deaApiUrl}hi`;
 
     expect(client.get(url)).rejects.toThrow('Request failed with status code 403');
   });
 
-  it('Negative tests: User cannot access APIs outside their IAM role', async () => {
+  it('should disallow API calls not explicitly allowed by their IAM role', async () => {
     const creds = await cognitoHelper.getCredentialsForUser(testUser);
     const client = axios.create();
 
@@ -70,16 +70,16 @@ describe('API authentication', () => {
     expect(client.get(url)).rejects.toThrow('Request failed with status code 403');
   });
 
-  it('Verify Audit logs shows successful and unsuccessful logins/api invocations', () => {
+  it('should log successful and unsuccessful logins/api invocations', () => {
     /* TODO */
   });
 
-  it('Verify concurrent active session fails', () => {
+  it('should disallow concurrent active session', () => {
     /* TODO */
     // check after first session has been invalidated, you cannot use the credentials again
   });
 
-  it('Verify session lock', () => {
+  it('should require reauthentication about 30 minutes of inactivity', () => {
     /* TODO */
   });
 });
