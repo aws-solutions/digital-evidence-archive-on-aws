@@ -7,7 +7,6 @@ import axios from 'axios';
 import CognitoHelper from '../helpers/cognito-helper';
 import Setup from '../helpers/setup';
 
-// TODO: this will be completed with the addition of live environment tests
 describe('authentication and API Authorization Tests', () => {
   const setup: Setup = new Setup();
   const cognitoHelper: CognitoHelper = new CognitoHelper(setup);
