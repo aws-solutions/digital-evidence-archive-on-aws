@@ -32,6 +32,7 @@ export default class CognitoHelper {
   private _idpUrl: string;
 
   private _usersCreated: string[] = [];
+  private _testPassword: string;
 
   public constructor(setup: Setup) {
     const settings = setup.getSettings();
@@ -44,6 +45,8 @@ export default class CognitoHelper {
 
     this._identityPoolClient = new CognitoIdentityClient({ region: this._region });
     this._userPoolProvider = new CognitoIdentityProviderClient({ region: this._region });
+
+    this._testPassword = generatePassword();
   }
 
   public async createUser(userName: string, groupName: string): Promise<void> {
@@ -54,7 +57,7 @@ export default class CognitoHelper {
           UserPoolId: this._userPoolId,
           MessageAction: MessageActionType.SUPPRESS,
           Username: userName,
-          TemporaryPassword: '*TempPass1234*',
+          TemporaryPassword: generatePassword(),
         })
       );
       if (user.User?.Username) {
@@ -62,7 +65,7 @@ export default class CognitoHelper {
 
         // 2. Change Password
         const command = new AdminSetUserPasswordCommand({
-          Password: '&TestPassword!1234',
+          Password: this._testPassword,
           Permanent: true,
           Username: userName,
           UserPoolId: this._userPoolId,
@@ -113,7 +116,7 @@ export default class CognitoHelper {
         AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
         AuthParameters: {
           USERNAME: userName,
-          PASSWORD: '&TestPassword!1234',
+          PASSWORD: this._testPassword,
         },
         ClientId: this._userPoolClientId,
       })
@@ -150,7 +153,7 @@ export default class CognitoHelper {
         sessionToken: creds.SessionToken,
       };
     } else {
-      throw new Error('Failed to get credentials from the identity pool: ' + creds);
+      throw new Error('Failed to get credentials from the identity pool:');
     }
   }
 
@@ -177,4 +180,32 @@ export default class CognitoHelper {
       this._userPoolProvider.destroy();
     }
   }
+}
+
+function generatePassword(): string {
+  const lowerCaseKeySet = 'abcdefghijklmnopqrstuvwxyz';
+  const upperCaseKeySet = lowerCaseKeySet.toUpperCase();
+  const numberKeySet = '123456789';
+  const specialKeySet = '!@#_';
+
+  // Need min length of 8, with one upper, one lower case letter, one number,
+  // and a special symbol
+  const unshuffledPassword: string[] = [];
+  // Add 2 from each keyset to make 8 characters
+  for (const keyset of [lowerCaseKeySet, upperCaseKeySet, numberKeySet, specialKeySet]) {
+    unshuffledPassword.push(getRandomCharacter(keyset));
+    unshuffledPassword.push(getRandomCharacter(keyset));
+  }
+
+  // now randomize the ordering and return as a string
+  return unshuffledPassword
+    .map((character) => ({ character, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ character }) => character)
+    .join('');
+}
+
+function getRandomCharacter(keySet: string): string {
+  const keySetSize = keySet.length;
+  return keySet.charAt(Math.floor(Math.random() * keySetSize));
 }
