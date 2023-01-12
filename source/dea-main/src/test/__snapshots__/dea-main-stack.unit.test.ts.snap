@@ -837,7 +837,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E77629251dc6d78c9b3d6f743e1a8632095170": Object {
+    "DeaApiGatewaydeaapiDeployment99E776299083e8ac3b4b8e191f331677ac5c012f": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapibyeGETD2EE08E8",
         "DeaApiGatewaydeaapibyeOPTIONSC9B258C6",
@@ -888,7 +888,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E77629251dc6d78c9b3d6f743e1a8632095170",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E776299083e8ac3b4b8e191f331677ac5c012f",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
@@ -896,94 +896,6 @@ Object {
         "StageName": "test",
       },
       "Type": "AWS::ApiGateway::Stage",
-    },
-    "DeaApiGatewaydeaapiGET2DEE2416": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W59",
-              "reason": "Auth not implemented yet, will revisit",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "AuthorizationType": "AWS_IAM",
-        "HttpMethod": "GET",
-        "Integration": Object {
-          "ContentHandling": "CONVERT_TO_TEXT",
-          "Credentials": Object {
-            "Fn::GetAtt": Array [
-              "DeaUiStackrole3432A944",
-              "Arn",
-            ],
-          },
-          "IntegrationHttpMethod": "GET",
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Content-Type": "integration.response.header.Content-Type",
-              },
-              "StatusCode": "200",
-            },
-          ],
-          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
-          "RequestParameters": Object {
-            "integration.request.header.Accept": "method.request.header.Accept",
-            "integration.request.header.Content-Type": "method.request.header.Content-Type",
-            "integration.request.path.proxy": "method.request.path.proxy",
-          },
-          "Type": "AWS",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":s3:path/",
-                Object {
-                  "Ref": "DeaUiStackDeaUiStackbucket2409F549",
-                },
-                "/index.html",
-              ],
-            ],
-          },
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseModels": Object {
-              "application/json": "Empty",
-            },
-            "ResponseParameters": Object {
-              "method.response.header.Content-Length": true,
-              "method.response.header.Content-Type": true,
-            },
-            "StatusCode": "200",
-          },
-        ],
-        "RequestParameters": Object {
-          "method.request.header.Accept": true,
-          "method.request.header.Content-Type": true,
-          "method.request.path.proxy": true,
-        },
-        "ResourceId": Object {
-          "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaapi822A9228",
-            "RootResourceId",
-          ],
-        },
-        "RestApiId": Object {
-          "Ref": "DeaApiGatewaydeaapi822A9228",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
     },
     "DeaApiGatewaydeaapiOPTIONS098252F2": Object {
       "Properties": Object {
@@ -2282,7 +2194,7 @@ Object {
         },
       },
       "Properties": Object {
-        "AuthorizationType": "NONE",
+        "AuthorizationType": "AWS_IAM",
         "HttpMethod": "GET",
         "Integration": Object {
           "ContentHandling": "CONVERT_TO_TEXT",
