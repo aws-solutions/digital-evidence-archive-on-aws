@@ -7,7 +7,7 @@ import axios from 'axios';
 import CognitoHelper from '../helpers/cognito-helper';
 import Setup from '../helpers/setup';
 
-describe('authentication and API Authorization Tests', () => {
+describe('API authentication', () => {
   const setup: Setup = new Setup();
   const cognitoHelper: CognitoHelper = new CognitoHelper(setup);
 
