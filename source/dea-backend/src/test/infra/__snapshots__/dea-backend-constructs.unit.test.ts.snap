@@ -25,7 +25,7 @@ Object {
             },
             "/",
             Object {
-              "Ref": "DeaRestApiConstructdeaapiDeploymentStagedevC806CC04",
+              "Ref": "DeaRestApiConstructdeaapiDeploymentStagetest1A3F50BF",
             },
             "/",
           ],
@@ -51,7 +51,7 @@ Object {
             },
             "/",
             Object {
-              "Ref": "DeaRestApiConstructdeaapiDeploymentStagedevC806CC04",
+              "Ref": "DeaRestApiConstructdeaapiDeploymentStagetest1A3F50BF",
             },
             "/",
           ],
@@ -789,7 +789,7 @@ Object {
               "Ref": "DeaRestApiConstructdeaapi6587DDA1",
             },
             "Stage": Object {
-              "Ref": "DeaRestApiConstructdeaapiDeploymentStagedevC806CC04",
+              "Ref": "DeaRestApiConstructdeaapiDeploymentStagetest1A3F50BF",
             },
             "Throttle": Object {},
           },
@@ -832,7 +832,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Deployment",
     },
-    "DeaRestApiConstructdeaapiDeploymentStagedevC806CC04": Object {
+    "DeaRestApiConstructdeaapiDeploymentStagetest1A3F50BF": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaapiAccount1E82C2B3",
       ],
@@ -852,7 +852,7 @@ Object {
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
-        "StageName": "dev",
+        "StageName": "test",
       },
       "Type": "AWS::ApiGateway::Stage",
     },
@@ -1027,7 +1027,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStagedevC806CC04",
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStagetest1A3F50BF",
               },
               "/GET/bye",
             ],
@@ -1161,7 +1161,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStagedevC806CC04",
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStagetest1A3F50BF",
               },
               "/GET/cases",
             ],
@@ -1374,7 +1374,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStagedevC806CC04",
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStagetest1A3F50BF",
               },
               "/POST/cases",
             ],
@@ -1464,7 +1464,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStagedevC806CC04",
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStagetest1A3F50BF",
               },
               "/DELETE/cases/*",
             ],
@@ -1628,7 +1628,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStagedevC806CC04",
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStagetest1A3F50BF",
               },
               "/GET/cases/*",
             ],
@@ -1747,7 +1747,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStagedevC806CC04",
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStagetest1A3F50BF",
               },
               "/PUT/cases/*",
             ],
@@ -1964,7 +1964,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStagedevC806CC04",
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStagetest1A3F50BF",
               },
               "/POST/cases/*/userMemberships",
             ],
@@ -2057,7 +2057,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStagedevC806CC04",
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStagetest1A3F50BF",
               },
               "/GET/hi",
             ],

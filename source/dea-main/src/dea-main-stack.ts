@@ -14,7 +14,7 @@ import {
   Effect,
   PolicyDocument,
   PolicyStatement,
-  ServicePrincipal,
+  ServicePrincipal
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
@@ -47,7 +47,7 @@ export class DeaMainStack extends cdk.Stack {
     );
 
     // DEA UI Construct
-    new DeaUiConstruct(this, 'DeaUiConstruct', { kmsKey: kmsKey });
+    new DeaUiConstruct(this, 'DeaUiConstruct', { kmsKey: kmsKey, restApi: deaApi.deaRestApi });
 
     // Stack node resource handling
     // ======================================
@@ -123,8 +123,8 @@ export class DeaMainStack extends cdk.Stack {
     // UI API GW
     apiGwMethodArray.push(
       this.node
-        .findChild('DeaUiStack')
-        .node.findChild('dea-ui-gateway')
+        .findChild('DeaApiGateway')
+        .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('GET').node.defaultChild
     );
@@ -132,9 +132,10 @@ export class DeaMainStack extends cdk.Stack {
     // UI API GW Proxy
     apiGwMethodArray.push(
       this.node
-        .findChild('DeaUiStack')
-        .node.findChild('dea-ui-gateway')
+        .findChild('DeaApiGateway')
+        .node.findChild('dea-api')
         .node.findChild('Default')
+        .node.findChild('ui')
         .node.findChild('{proxy+}')
         .node.findChild('GET').node.defaultChild
     );

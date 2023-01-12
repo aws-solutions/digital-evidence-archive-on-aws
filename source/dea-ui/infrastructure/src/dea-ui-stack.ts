@@ -6,26 +6,22 @@
 import * as path from 'path';
 import { Aws, CfnOutput, RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import {
-  AccessLogFormat,
   AwsIntegration,
   CfnDeployment,
   CfnStage,
-  ContentHandling,
-  LogGroupLogDestination,
-  MethodOptions,
+  ContentHandling, MethodOptions,
   Model,
   PassthroughBehavior,
-  RestApi,
+  RestApi
 } from 'aws-cdk-lib/aws-apigateway';
 import { AnyPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import {
   BlockPublicAccess,
   Bucket,
   BucketAccessControl,
   BucketEncryption,
-  CfnBucket,
+  CfnBucket
 } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
@@ -33,6 +29,7 @@ import { getConstants } from './constants';
 
 interface IUiStackProps extends StackProps {
   kmsKey: Key;
+  restApi: RestApi;
 }
 
 export class DeaUiConstruct extends Construct {
@@ -101,16 +98,14 @@ export class DeaUiConstruct extends Construct {
 
     bucket.grantReadWrite(executeRole);
 
-    // Create rest API for UI
-    const api = this._createUIRestApi('UiDeploymentRestApi', props.kmsKey);
-
     // Integrate API with S3 bucket
     const rootS3Integration = this._getS3Integration('index.html', bucket, executeRole);
     // GET to the root
-    api.root.addMethod('GET', rootS3Integration, this._getMethodOptions());
+    props.restApi.root.addMethod('GET', rootS3Integration, this._getMethodOptions());
 
     // GET to /{proxy+}
-    const proxy = api.root.addProxy({ anyMethod: false });
+    const uiResource = props.restApi.root.addResource('ui');
+    const proxy = uiResource.addProxy({ anyMethod: false });
     const proxyS3Integration = this._getS3Integration('{proxy}', bucket, executeRole);
     proxy.addMethod('GET', proxyS3Integration, this._getMethodOptions());
   }
@@ -139,44 +134,6 @@ export class DeaUiConstruct extends Construct {
         contentHandling: ContentHandling.CONVERT_TO_TEXT,
       },
     });
-  }
-
-  private _createUIRestApi(apiOutputName: string, key: Key): RestApi {
-    const logGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
-      encryptionKey: key,
-    });
-    const api = new RestApi(this, 'dea-ui-gateway', {
-      description: 'distribution api',
-      deployOptions: {
-        accessLogDestination: new LogGroupLogDestination(logGroup),
-        accessLogFormat: AccessLogFormat.custom(
-          JSON.stringify({
-            stage: '$context.stage',
-            requestId: '$context.requestId',
-            integrationRequestId: '$context.integration.requestId',
-            status: '$context.status',
-            apiId: '$context.apiId',
-            resourcePath: '$context.resourcePath',
-            path: '$context.path',
-            resourceId: '$context.resourceId',
-            httpMethod: '$context.httpMethod',
-            sourceIp: '$context.identity.sourceIp',
-            userAgent: '$context.identity.userAgent',
-          })
-        ),
-      },
-      // TODO: Add CORS Preflight
-    });
-
-    // Handle CFN Nag Suppressions
-    this._apiGwUiWarnSuppress(api);
-
-    new CfnOutput(this, apiOutputName, {
-      value: api.restApiName,
-      exportName: apiOutputName,
-    });
-
-    return api;
   }
 
   private _getMethodOptions(): MethodOptions {
@@ -276,9 +233,9 @@ export class DeaUiConstruct extends Construct {
     return uiS3AccessLogsBucket;
   }
 
-  private _apiGwUiWarnSuppress(api: RestApi): void {
+  private _apiGwUiWarnSuppress(api: RestApi, stage: string): void {
     // Don't need usage plan for UI API GW
-    const stageNode = api.node.findChild('DeploymentStage.prod').node.defaultChild;
+    const stageNode = api.node.findChild(`DeploymentStage.${stage}`).node.defaultChild;
     const apiNode = api.node.findChild('Deployment').node.defaultChild;
     if (apiNode instanceof CfnDeployment) {
       apiNode.addMetadata('cfn_nag', {

@@ -25,7 +25,7 @@ Object {
             },
             "/",
             Object {
-              "Ref": "DeaApiGatewaydeaapiDeploymentStagedev51567221",
+              "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
             },
             "/",
           ],
@@ -51,7 +51,7 @@ Object {
             },
             "/",
             Object {
-              "Ref": "DeaApiGatewaydeaapiDeploymentStagedev51567221",
+              "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
             },
             "/",
           ],
@@ -64,38 +64,6 @@ Object {
       },
       "Value": Object {
         "Ref": "DeaUiStackuiS3AccessLogsBucketF45A3215",
-      },
-    },
-    "DeaUiStackUiDeploymentRestApiA53BF2B2": Object {
-      "Export": Object {
-        "Name": "UiDeploymentRestApi",
-      },
-      "Value": "dea-ui-gateway",
-    },
-    "DeaUiStackdeauigatewayEndpointFE9A0DB0": Object {
-      "Value": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "https://",
-            Object {
-              "Ref": "DeaUiStackdeauigateway147D98B7",
-            },
-            ".execute-api.",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            ".",
-            Object {
-              "Ref": "AWS::URLSuffix",
-            },
-            "/",
-            Object {
-              "Ref": "DeaUiStackdeauigatewayDeploymentStageprodA3168B7D",
-            },
-            "/",
-          ],
-        ],
       },
     },
     "mainaccountkmskey": Object {
@@ -983,7 +951,7 @@ Object {
               "Ref": "DeaApiGatewaydeaapi822A9228",
             },
             "Stage": Object {
-              "Ref": "DeaApiGatewaydeaapiDeploymentStagedev51567221",
+              "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
             },
             "Throttle": Object {},
           },
@@ -996,7 +964,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E7762999e050f1f4695102e7132e4e894a856d": Object {
+    "DeaApiGatewaydeaapiDeployment99E77629ec364bbee461691f255f076515d35c65": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapibyeGETD2EE08E8",
         "DeaApiGatewaydeaapibyeOPTIONSC9B258C6",
@@ -1013,10 +981,16 @@ Object {
         "DeaApiGatewaydeaapicasesOPTIONS4FE777E3",
         "DeaApiGatewaydeaapicasesPOST966FABAB",
         "DeaApiGatewaydeaapicasesC01D624D",
+        "DeaApiGatewaydeaapiGET2DEE2416",
         "DeaApiGatewaydeaapihiGETC25F92C7",
         "DeaApiGatewaydeaapihiOPTIONSDCE6F2EB",
         "DeaApiGatewaydeaapihi94AFA016",
         "DeaApiGatewaydeaapiOPTIONS098252F2",
+        "DeaApiGatewaydeaapiuiproxyGETD7F3590B",
+        "DeaApiGatewaydeaapiuiproxyOPTIONS7D1A7859",
+        "DeaApiGatewaydeaapiuiproxy57F1250D",
+        "DeaApiGatewaydeaapiuiOPTIONSF590A754",
+        "DeaApiGatewaydeaapiui838E08AB",
       ],
       "Properties": Object {
         "Description": "Backend API",
@@ -1026,7 +1000,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Deployment",
     },
-    "DeaApiGatewaydeaapiDeploymentStagedev51567221": Object {
+    "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiAccountBA9E69BF",
       ],
@@ -1041,14 +1015,102 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E7762999e050f1f4695102e7132e4e894a856d",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E77629ec364bbee461691f255f076515d35c65",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
         },
-        "StageName": "dev",
+        "StageName": "test",
       },
       "Type": "AWS::ApiGateway::Stage",
+    },
+    "DeaApiGatewaydeaapiGET2DEE2416": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackDeaUiStackbucket2409F549",
+                },
+                "/index.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Type": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewaydeaapi822A9228",
+            "RootResourceId",
+          ],
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
     },
     "DeaApiGatewaydeaapiOPTIONS098252F2": Object {
       "Properties": Object {
@@ -1141,7 +1203,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaApiGatewaydeaapiDeploymentStagedev51567221",
+                "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
               },
               "/GET/bye",
             ],
@@ -1369,7 +1431,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaApiGatewaydeaapiDeploymentStagedev51567221",
+                "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
               },
               "/GET/cases",
             ],
@@ -1531,7 +1593,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaApiGatewaydeaapiDeploymentStagedev51567221",
+                "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
               },
               "/POST/cases",
             ],
@@ -1664,7 +1726,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaApiGatewaydeaapiDeploymentStagedev51567221",
+                "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
               },
               "/DELETE/cases/*",
             ],
@@ -1785,7 +1847,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaApiGatewaydeaapiDeploymentStagedev51567221",
+                "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
               },
               "/GET/cases/*",
             ],
@@ -1947,7 +2009,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaApiGatewaydeaapiDeploymentStagedev51567221",
+                "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
               },
               "/PUT/cases/*",
             ],
@@ -2121,7 +2183,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaApiGatewaydeaapiDeploymentStagedev51567221",
+                "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
               },
               "/POST/cases/*/userMemberships",
             ],
@@ -2214,7 +2276,7 @@ Object {
               },
               "/",
               Object {
-                "Ref": "DeaApiGatewaydeaapiDeploymentStagedev51567221",
+                "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
               },
               "/GET/hi",
             ],
@@ -2337,6 +2399,200 @@ Object {
         ],
         "ResourceId": Object {
           "Ref": "DeaApiGatewaydeaapihi94AFA016",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapiui838E08AB": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewaydeaapi822A9228",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "ui",
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaApiGatewaydeaapiuiOPTIONSF590A754": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapiui838E08AB",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapiuiproxy57F1250D": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaApiGatewaydeaapiui838E08AB",
+        },
+        "PathPart": "{proxy+}",
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaApiGatewaydeaapiuiproxyGETD7F3590B": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackDeaUiStackbucket2409F549",
+                },
+                "/{proxy}",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Type": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapiuiproxy57F1250D",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapiuiproxyOPTIONS7D1A7859": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapiuiproxy57F1250D",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
@@ -2554,20 +2810,6 @@ Object {
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
     },
-    "DeaUiStackAPIGatewayAccessLogsC67405C3": Object {
-      "DeletionPolicy": "Retain",
-      "Properties": Object {
-        "KmsKeyId": Object {
-          "Fn::GetAtt": Array [
-            "primaryCustomerKey87EC2263",
-            "Arn",
-          ],
-        },
-        "RetentionInDays": 731,
-      },
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-    },
     "DeaUiStackDeaUiStackbucket2409F549": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
@@ -2778,308 +3020,6 @@ Object {
       },
       "Type": "Custom::CDKBucketDeployment",
       "UpdateReplacePolicy": "Delete",
-    },
-    "DeaUiStackdeauigateway147D98B7": Object {
-      "Properties": Object {
-        "Description": "distribution api",
-        "Name": "dea-ui-gateway",
-      },
-      "Type": "AWS::ApiGateway::RestApi",
-    },
-    "DeaUiStackdeauigatewayAccount1A92DBB5": Object {
-      "DeletionPolicy": "Retain",
-      "DependsOn": Array [
-        "DeaUiStackdeauigateway147D98B7",
-      ],
-      "Properties": Object {
-        "CloudWatchRoleArn": Object {
-          "Fn::GetAtt": Array [
-            "DeaUiStackdeauigatewayCloudWatchRole2C2FC061",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "AWS::ApiGateway::Account",
-      "UpdateReplacePolicy": "Retain",
-    },
-    "DeaUiStackdeauigatewayCloudWatchRole2C2FC061": Object {
-      "DeletionPolicy": "Retain",
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "apigateway.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-      "UpdateReplacePolicy": "Retain",
-    },
-    "DeaUiStackdeauigatewayDeployment34004937c730247bbdaa583ac7090ba2f990d9e0": Object {
-      "DependsOn": Array [
-        "DeaUiStackdeauigatewayproxyGET48BC7F5C",
-        "DeaUiStackdeauigatewayproxyA4F311E1",
-        "DeaUiStackdeauigatewayGET36636906",
-      ],
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W68",
-              "reason": "'No need to enforce Usage Plan. This is only for serving UI' ",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "Description": "distribution api",
-        "RestApiId": Object {
-          "Ref": "DeaUiStackdeauigateway147D98B7",
-        },
-      },
-      "Type": "AWS::ApiGateway::Deployment",
-    },
-    "DeaUiStackdeauigatewayDeploymentStageprodA3168B7D": Object {
-      "DependsOn": Array [
-        "DeaUiStackdeauigatewayAccount1A92DBB5",
-      ],
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W64",
-              "reason": "'No need to enforce Usage Plan. This is only for serving UI' ",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "AccessLogSetting": Object {
-          "DestinationArn": Object {
-            "Fn::GetAtt": Array [
-              "DeaUiStackAPIGatewayAccessLogsC67405C3",
-              "Arn",
-            ],
-          },
-          "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
-        },
-        "DeploymentId": Object {
-          "Ref": "DeaUiStackdeauigatewayDeployment34004937c730247bbdaa583ac7090ba2f990d9e0",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaUiStackdeauigateway147D98B7",
-        },
-        "StageName": "prod",
-      },
-      "Type": "AWS::ApiGateway::Stage",
-    },
-    "DeaUiStackdeauigatewayGET36636906": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W59",
-              "reason": "Auth not implemented yet, will revisit",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "GET",
-        "Integration": Object {
-          "ContentHandling": "CONVERT_TO_TEXT",
-          "Credentials": Object {
-            "Fn::GetAtt": Array [
-              "DeaUiStackrole3432A944",
-              "Arn",
-            ],
-          },
-          "IntegrationHttpMethod": "GET",
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Content-Type": "integration.response.header.Content-Type",
-              },
-              "StatusCode": "200",
-            },
-          ],
-          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
-          "RequestParameters": Object {
-            "integration.request.header.Accept": "method.request.header.Accept",
-            "integration.request.header.Content-Type": "method.request.header.Content-Type",
-            "integration.request.path.proxy": "method.request.path.proxy",
-          },
-          "Type": "AWS",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":s3:path/",
-                Object {
-                  "Ref": "DeaUiStackDeaUiStackbucket2409F549",
-                },
-                "/index.html",
-              ],
-            ],
-          },
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseModels": Object {
-              "application/json": "Empty",
-            },
-            "ResponseParameters": Object {
-              "method.response.header.Content-Length": true,
-              "method.response.header.Content-Type": true,
-            },
-            "StatusCode": "200",
-          },
-        ],
-        "RequestParameters": Object {
-          "method.request.header.Accept": true,
-          "method.request.header.Content-Type": true,
-          "method.request.path.proxy": true,
-        },
-        "ResourceId": Object {
-          "Fn::GetAtt": Array [
-            "DeaUiStackdeauigateway147D98B7",
-            "RootResourceId",
-          ],
-        },
-        "RestApiId": Object {
-          "Ref": "DeaUiStackdeauigateway147D98B7",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaUiStackdeauigatewayproxyA4F311E1": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Fn::GetAtt": Array [
-            "DeaUiStackdeauigateway147D98B7",
-            "RootResourceId",
-          ],
-        },
-        "PathPart": "{proxy+}",
-        "RestApiId": Object {
-          "Ref": "DeaUiStackdeauigateway147D98B7",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaUiStackdeauigatewayproxyGET48BC7F5C": Object {
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W59",
-              "reason": "Auth not implemented yet, will revisit",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "GET",
-        "Integration": Object {
-          "ContentHandling": "CONVERT_TO_TEXT",
-          "Credentials": Object {
-            "Fn::GetAtt": Array [
-              "DeaUiStackrole3432A944",
-              "Arn",
-            ],
-          },
-          "IntegrationHttpMethod": "GET",
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Content-Type": "integration.response.header.Content-Type",
-              },
-              "StatusCode": "200",
-            },
-          ],
-          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
-          "RequestParameters": Object {
-            "integration.request.header.Accept": "method.request.header.Accept",
-            "integration.request.header.Content-Type": "method.request.header.Content-Type",
-            "integration.request.path.proxy": "method.request.path.proxy",
-          },
-          "Type": "AWS",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":s3:path/",
-                Object {
-                  "Ref": "DeaUiStackDeaUiStackbucket2409F549",
-                },
-                "/{proxy}",
-              ],
-            ],
-          },
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseModels": Object {
-              "application/json": "Empty",
-            },
-            "ResponseParameters": Object {
-              "method.response.header.Content-Length": true,
-              "method.response.header.Content-Type": true,
-            },
-            "StatusCode": "200",
-          },
-        ],
-        "RequestParameters": Object {
-          "method.request.header.Accept": true,
-          "method.request.header.Content-Type": true,
-          "method.request.path.proxy": true,
-        },
-        "ResourceId": Object {
-          "Ref": "DeaUiStackdeauigatewayproxyA4F311E1",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaUiStackdeauigateway147D98B7",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
     },
     "DeaUiStackrole3432A944": Object {
       "Properties": Object {
