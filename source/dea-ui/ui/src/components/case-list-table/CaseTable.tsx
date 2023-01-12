@@ -14,7 +14,7 @@ import {
   StatusIndicator,
 } from '@cloudscape-design/components';
 import * as React from 'react';
-import { useListAllCases } from '../api/cases';
+import { useListAllCases } from '../../api/cases';
 
 function CaseTable(): JSX.Element {
   const { cases, areCasesLoading } = useListAllCases();
@@ -40,24 +40,24 @@ function CaseTable(): JSX.Element {
           id: 'caseLead',
           header: 'Case Lead(s)',
           cell: () => 'Sherlock Holmes',
-          width: 110,
-          minWidth: 110,
+          width: 170,
+          minWidth: 165,
           sortingField: 'caseLead',
         },
         {
           id: 'objectCount',
           header: 'No. of files',
           cell: (e) => e.objectCount,
-          width: 110,
-          minWidth: 110,
+          width: 170,
+          minWidth: 165,
           sortingField: 'objectCount',
         },
         {
           id: 'creationDate',
           header: 'Creation date',
           cell: () => 'FOO, 00/00/00',
-          width: 110,
-          minWidth: 110,
+          width: 170,
+          minWidth: 165,
           sortingField: 'creationDate',
         },
         {
@@ -66,8 +66,8 @@ function CaseTable(): JSX.Element {
           cell: (e) => (
             <StatusIndicator type={e.status === 'ACTIVE' ? 'success' : 'error'}>{e.status}</StatusIndicator>
           ),
-          width: 110,
-          minWidth: 110,
+          width: 170,
+          minWidth: 165,
           sortingField: 'status',
         },
       ]}

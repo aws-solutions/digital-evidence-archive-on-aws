@@ -4,7 +4,8 @@
  */
 
 import { ContentLayout, SpaceBetween, Header, Container } from '@cloudscape-design/components';
-import { useGetCaseById } from '../api/cases';
+import { useGetCaseById } from '../../api/cases';
+import CaseDetailsTabs from './CaseDetailsTabs';
 
 function CaseDetailsBody(props: any): JSX.Element {
   const { caseDetail, areCasesLoading } = useGetCaseById(props.caseId);
@@ -29,6 +30,7 @@ function CaseDetailsBody(props: any): JSX.Element {
           <h4>Status</h4>
           <p>{caseDetail.status}</p>
         </Container>
+        <CaseDetailsTabs></CaseDetailsTabs>
       </ContentLayout>
     );
   }
