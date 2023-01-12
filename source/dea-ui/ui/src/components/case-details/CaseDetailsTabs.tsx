@@ -1,7 +1,7 @@
-import * as React from 'react';
 import { Tabs } from '@cloudscape-design/components';
-import CaseFilesTable from './CaseFilesTable';
+import * as React from 'react';
 import AuditLogTable from './AuditLogTable';
+import CaseFilesTable from './CaseFilesTable';
 import ManageAccessForm from './ManageAccessForm';
 
 function CaseDetailsTabs(): JSX.Element {

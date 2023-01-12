@@ -9,8 +9,6 @@ import {
   Button,
   TextFilter,
   Pagination,
-  Link,
-  StatusIndicator,
   Header,
   SpaceBetween,
 } from '@cloudscape-design/components';
@@ -85,7 +83,7 @@ function CaseFilesTable(): JSX.Element {
       filter={<TextFilter filteringPlaceholder="Search by file name" filteringText="" />}
       header={
         <Header
-          variant="h1"
+          variant="h2"
           description="All folders/files associated with this case."
           actions={
             <SpaceBetween direction="horizontal" size="xs">

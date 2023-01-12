@@ -102,7 +102,7 @@ function AuditLogTable(): JSX.Element {
       filter={<TextFilter filteringPlaceholder="Search by timestamp" filteringText="" />}
       header={
         <Header
-          variant="h1"
+          variant="h2"
           description="This tabel records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file"
           actions={
             <SpaceBetween direction="horizontal" size="xs">

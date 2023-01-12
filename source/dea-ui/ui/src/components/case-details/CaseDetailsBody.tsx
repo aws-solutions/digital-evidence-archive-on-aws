@@ -3,11 +3,18 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { ContentLayout, SpaceBetween, Header, Container } from '@cloudscape-design/components';
+import {
+  ContentLayout,
+  SpaceBetween,
+  Header,
+  Container,
+  ColumnLayout,
+  StatusIndicator,
+} from '@cloudscape-design/components';
 import { useGetCaseById } from '../../api/cases';
 import CaseDetailsTabs from './CaseDetailsTabs';
 
-function CaseDetailsBody(props: any): JSX.Element {
+function CaseDetailsBody(props: { caseId: string }): JSX.Element {
   const { caseDetail, areCasesLoading } = useGetCaseById(props.caseId);
   if (areCasesLoading) {
     return <h1>Loading...</h1>;
@@ -21,14 +28,28 @@ function CaseDetailsBody(props: any): JSX.Element {
         }
       >
         <Container header={<Header variant="h2">Case Details</Header>}>
-          <h4>Description</h4>
-          <p>{caseDetail.description}</p>
-          <h4>Creation Date</h4>
-          <p>MON 0/00/0000</p>
-          <h4>Case Lead(s)</h4>
-          <p>Sherlock Holmes</p>
-          <h4>Status</h4>
-          <p>{caseDetail.status}</p>
+          <ColumnLayout columns={3} variant="text-grid">
+            <div>
+              {' '}
+              <h4>Creation Date</h4>
+              <p>MON 0/00/0000</p>
+              <h4>Case Lead(s)</h4>
+              <p>Sherlock Holmes</p>
+            </div>
+            <div>
+              <h4>Description</h4>
+              <p>{caseDetail.description}</p>
+            </div>
+            <div>
+              {' '}
+              <h4>Status</h4>
+              <p>
+                <StatusIndicator type={caseDetail.status === 'ACTIVE' ? 'success' : 'error'}>
+                  {caseDetail.status}
+                </StatusIndicator>
+              </p>
+            </div>
+          </ColumnLayout>
         </Container>
         <CaseDetailsTabs></CaseDetailsTabs>
       </ContentLayout>
