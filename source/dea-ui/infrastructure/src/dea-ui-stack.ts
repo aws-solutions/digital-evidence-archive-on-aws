@@ -9,10 +9,11 @@ import {
   AwsIntegration,
   CfnDeployment,
   CfnStage,
-  ContentHandling, MethodOptions,
+  ContentHandling,
+  MethodOptions,
   Model,
   PassthroughBehavior,
-  RestApi
+  RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
 import { AnyPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -21,7 +22,7 @@ import {
   Bucket,
   BucketAccessControl,
   BucketEncryption,
-  CfnBucket
+  CfnBucket,
 } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
@@ -99,12 +100,13 @@ export class DeaUiConstruct extends Construct {
     bucket.grantReadWrite(executeRole);
 
     // Integrate API with S3 bucket
+    const uiResource = props.restApi.root.addResource('ui');
     const rootS3Integration = this._getS3Integration('index.html', bucket, executeRole);
+
     // GET to the root
-    props.restApi.root.addMethod('GET', rootS3Integration, this._getMethodOptions());
+    uiResource.addMethod('GET', rootS3Integration, this._getMethodOptions());
 
     // GET to /{proxy+}
-    const uiResource = props.restApi.root.addResource('ui');
     const proxy = uiResource.addProxy({ anyMethod: false });
     const proxyS3Integration = this._getS3Integration('{proxy}', bucket, executeRole);
     proxy.addMethod('GET', proxyS3Integration, this._getMethodOptions());

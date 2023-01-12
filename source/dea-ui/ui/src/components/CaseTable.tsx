@@ -19,6 +19,8 @@ import { useListAllCases } from '../api/cases';
 function CaseTable(): JSX.Element {
   const { cases, areCasesLoading } = useListAllCases();
 
+  const STAGE = 'test';
+
   // Property and date filter collections
   const { items } = useCollection(cases, {});
 
@@ -29,7 +31,7 @@ function CaseTable(): JSX.Element {
         {
           id: 'name',
           header: 'Case name',
-          cell: (e) => <Link href={`/prod/${e.ulid}`}>{e.name}</Link>,
+          cell: (e) => <Link href={`/${STAGE}/ui/${e.ulid}`}>{e.name}</Link>,
           width: 170,
           minWidth: 165,
           sortingField: 'name',

@@ -20,7 +20,7 @@ export default function Header(): JSX.Element {
       className="header"
       i18nStrings={headerLabels}
       identity={{
-        href: `/${settings.stage}`,
+        href: `/${settings.stage}/ui`,
         title: settings.name,
       }}
       utilities={[
