@@ -5,7 +5,7 @@
 
 import { assert } from 'console';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
-import { CfnOutput, Duration } from 'aws-cdk-lib';
+import { CfnOutput, Duration, RemovalPolicy } from 'aws-cdk-lib';
 import {
   AccountRecovery,
   CfnIdentityPool,
@@ -288,6 +288,7 @@ export class DeaAuthConstruct extends Construct {
         smsMessage: 'Hello {username}, your temporary password for our DEA is {####}',
       },
       userPoolName: 'DEAUserPool',
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     if (domain) {
