@@ -76,7 +76,7 @@ Object {
     },
     "DeaAuthUserPoolClientId0B9AE544": Object {
       "Export": Object {
-        "Name": "userPoolClient",
+        "Name": "userPoolClientId",
       },
       "Value": Object {
         "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
@@ -2636,7 +2636,7 @@ Object {
       "Type": "AWS::Cognito::IdentityPool",
     },
     "DeaAuthDEAUserPool22DB2BAB": Object {
-      "DeletionPolicy": "Retain",
+      "DeletionPolicy": "Delete",
       "Properties": Object {
         "AccountRecoverySetting": Object {
           "RecoveryMechanisms": Array [
@@ -2688,7 +2688,7 @@ Object {
         },
       },
       "Type": "AWS::Cognito::UserPool",
-      "UpdateReplacePolicy": "Retain",
+      "UpdateReplacePolicy": "Delete",
     },
     "DeaAuthDEAUserPooldeaappclient3742F9D7": Object {
       "Properties": Object {
