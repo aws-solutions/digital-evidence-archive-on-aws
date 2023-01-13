@@ -36,6 +36,8 @@ export class DeaAuthConstruct extends Construct {
     this._stackName = stackName;
     this._stage = STAGE;
 
+    const region = process.env.AWS_REGION ?? AWS_REGION;
+
     // Auth Stack. Used to determine which APIs a user can access by assigning them
     // an IAM Role based on their Group/Role. E.g. User federates with the auth stack, given credentials based
     // on the role mapping in the Identity Pool, then user can call APIs as neccessary.
@@ -44,7 +46,7 @@ export class DeaAuthConstruct extends Construct {
     // For production deployments, follow the ImplementationGuide on how to setup
     // and connect your existing CJIS-compatible IdP for SSO. IAM Role assigned
     // according to the UserRole defined in the SAML assertion document
-    this._createAuthStack(props.apiEndpointArns, COGNITO_DOMAIN, AWS_REGION, IS_TESTING_ENV);
+    this._createAuthStack(props.apiEndpointArns, COGNITO_DOMAIN, region, IS_TESTING_ENV);
   }
 
   private _createIamRole(
