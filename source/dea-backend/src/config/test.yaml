@@ -4,7 +4,6 @@ awsRegion: us-test-1
 isTestingEnv: true
 rootUserEmail: test@bogus.oof
 allowedOrigins: ['test']
-cognitoDomain: cogtest
 userPoolId: 'kiddiepool'
 clientId: 'clientidtest'
 clientSecret: 'shh'
