@@ -9,21 +9,12 @@ import yaml from 'js-yaml';
 import _ from 'lodash';
 
 interface Setting {
-    rootUserNameParamStorePath: string;
-    rootPasswordParamStorePath: string;
-  
-    // Main CFN template outputs
-    awsRegion: string;
-    apiUrlOutput: string;
-    APIGatewayAPIEndpoint: string;
-    uiClientURL: string;
-
-    awsRegionShortName: string;
-
-    cognitoDomain: string;
-    clientId: string;
-    userPoolId: string;
-    identityPoolId: string;
+  // Main CFN template outputs
+  awsRegion: string;
+  apiUrlOutput: string;
+  clientId: string;
+  userPoolId: string;
+  identityPoolId: string;
 }
 
 export type SettingKey = keyof Setting;
@@ -35,16 +26,27 @@ export type SettingKey = keyof Setting;
 export default class Settings {
   private _content: Setting;
 
-  public constructor(stageName: string) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const config: any = yaml.load(
+  public constructor(stageName?: string) {
+    if (stageName) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const config: any = yaml.load(
         // __dirname is a variable that reference the current directory. We use it so we can dynamically navigate to the
         // correct file
         // eslint-disable-next-line security/detect-non-literal-fs-filename
         fs.readFileSync(join(__dirname, `../../../../dea-backend/src/config/${stageName}.yaml`), 'utf8') // nosemgrep
-    );
+      );
 
-    this._content = _.cloneDeep(config);
+      this._content = _.cloneDeep(config);
+    } else {
+      // Read from env variables
+      this._content = {
+        awsRegion: process.env.AWS_REGION ?? 'us-east-1',
+        apiUrlOutput: process.env.DEA_API_URL ?? fail(),
+        identityPoolId: process.env.IDENTITY_POOL_ID ?? fail(),
+        userPoolId: process.env.USER_POOL_ID ?? fail(),
+        clientId: process.env.USER_POOL_CLIENT_ID ?? fail(),
+      };
+    }
   }
 
   public get entries(): Setting {

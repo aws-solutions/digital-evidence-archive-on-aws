@@ -222,10 +222,12 @@ export class DeaAuthConstruct extends Construct {
 
     new CfnOutput(this, 'Identity Pool', {
       value: idPool.ref,
+      exportName: 'identityPoolId',
     });
 
     new CfnOutput(this, 'UserPoolId', {
       value: pool.userPoolId,
+      exportName: 'userPoolId',
     });
 
     new CfnOutput(this, 'Pool Provider Url', {
@@ -234,6 +236,7 @@ export class DeaAuthConstruct extends Construct {
 
     new CfnOutput(this, 'UserPoolClientId', {
       value: poolClient.userPoolClientId,
+      exportName: 'userPoolClient',
     });
   }
 
@@ -382,18 +385,18 @@ export class DeaAuthConstruct extends Construct {
 
     // Create Test Group for Get Cases E2E Test
     const getCaseTestEndpoints = this._getEndpoints(apiEndpointArns, [
-        '/cases' + ApiGatewayMethod.POST,
-        '/cases/{caseId}' + ApiGatewayMethod.GET,
-        '/cases/{caseId}' + ApiGatewayMethod.DELETE,
-        ]);
-        this._createCognitoGroup(
-        'GetCaseTestGroup',
-        'used for get cases API e2e testing',
-        groupRoleMapping,
-        getCaseTestEndpoints,
-        principal,
-        userPoolId
-        );
+      '/cases' + ApiGatewayMethod.POST,
+      '/cases/{caseId}' + ApiGatewayMethod.GET,
+      '/cases/{caseId}' + ApiGatewayMethod.DELETE,
+    ]);
+    this._createCognitoGroup(
+      'GetCaseTestGroup',
+      'used for get cases API e2e testing',
+      groupRoleMapping,
+      getCaseTestEndpoints,
+      principal,
+      userPoolId
+    );
   }
 
   private _getEndpoints(apiEndpointArns: Map<string, string>, paths: string[]): string[] {

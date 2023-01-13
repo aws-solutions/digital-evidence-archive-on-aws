@@ -59,6 +59,9 @@ Object {
       },
     },
     "DeaAuthIdentityPool7519C87D": Object {
+      "Export": Object {
+        "Name": "identityPoolId",
+      },
       "Value": Object {
         "Ref": "DeaAuthDEAIdentityPool0B891C1B",
       },
@@ -72,11 +75,17 @@ Object {
       },
     },
     "DeaAuthUserPoolClientId0B9AE544": Object {
+      "Export": Object {
+        "Name": "userPoolClient",
+      },
       "Value": Object {
         "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
       },
     },
     "DeaAuthUserPoolId0E4885B2": Object {
+      "Export": Object {
+        "Name": "userPoolId",
+      },
       "Value": Object {
         "Ref": "DeaAuthDEAUserPool22DB2BAB",
       },
@@ -2681,15 +2690,6 @@ Object {
       "Type": "AWS::Cognito::UserPool",
       "UpdateReplacePolicy": "Retain",
     },
-    "DeaAuthDEAUserPoolCognitoDomainAB9C904A": Object {
-      "Properties": Object {
-        "Domain": "cogtest",
-        "UserPoolId": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
-        },
-      },
-      "Type": "AWS::Cognito::UserPoolDomain",
-    },
     "DeaAuthDEAUserPooldeaappclient3742F9D7": Object {
       "Properties": Object {
         "AccessTokenValidity": 720,
@@ -3383,7 +3383,7 @@ Object {
               "Fn::Join": Array [
                 "",
                 Array [
-                  "cognito-idp.us-test-1.amazonaws.com/",
+                  "cognito-idp.us-east-1.amazonaws.com/",
                   Object {
                     "Ref": "DeaAuthDEAUserPool22DB2BAB",
                   },
