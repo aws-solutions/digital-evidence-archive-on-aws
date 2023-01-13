@@ -10,7 +10,7 @@ export default class Setup {
     private _settings: Settings;
 
     public constructor() {
-        this._stage = 'ohio'; //process.env['stage'];
+        this._stage = process.env['stage'] ?? 'test';
         this._settings = new Settings(this._stage);
     }
 
