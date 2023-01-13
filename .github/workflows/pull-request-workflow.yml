@@ -63,9 +63,12 @@ jobs:
           cd dea-main
           STAGE=test npm run cdk deploy
           echo "DEA_API_URL=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == 'deaApiUrl'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "IDENTITY_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == 'identityPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "USER_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == 'userPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == 'userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
       - name: Rush Test
         run: |
-          node common/scripts/install-run-rush.js test:only
+          node common/scripts/install-run-rush.js test:only --verbose
       - name: cdk destroy
         if: always()
         run: |

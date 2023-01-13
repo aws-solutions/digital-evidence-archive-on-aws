@@ -12,7 +12,6 @@ import {
   LogGroupLogDestination,
   RestApi,
   Cors,
-  TokenAuthorizer,
 } from 'aws-cdk-lib/aws-apigateway';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -32,9 +31,12 @@ interface DeaRestApiProps {
 export class DeaRestApiConstruct extends Construct {
   public lambdaBaseRole: Role;
   public deaRestApi: RestApi;
+  public apiEndpointArns: Map<string, string>;
 
   public constructor(scope: Construct, stackName: string, props: DeaRestApiProps) {
     super(scope, stackName);
+
+    this.apiEndpointArns = new Map<string, string>();
 
     this.lambdaBaseRole = this._createLambdaBaseRole(props.kmsKey.keyArn, props.deaTableArn);
 
@@ -71,13 +73,15 @@ export class DeaRestApiConstruct extends Construct {
         allowCredentials: true,
         allowOrigins: Cors.ALL_ORIGINS,
       },
+      defaultMethodOptions: {
+        authorizationType: AuthorizationType.IAM,
+      },
     });
 
-    this._configureApiGateway( props.deaTableArn, props.kmsKey, deaApiRouteConfig);
+    this._configureApiGateway(props.deaTableArn, props.kmsKey, deaApiRouteConfig);
   }
 
   private _configureApiGateway(tableArn: string, key: Key, routeConfig: ApiGatewayRouteConfig): void {
-    
     const plan = this.deaRestApi.addUsagePlan('DEA Usage Plan', {
       name: 'dea-usage-plan',
       throttle: {
@@ -96,12 +100,10 @@ export class DeaRestApiConstruct extends Construct {
       exportName: 'deaApiUrl',
     });
 
-    const customAuthorizer = this._createLambdaAuthorizer(this.lambdaBaseRole);
-
-    routeConfig.routes.forEach((route) => this._addMethod(this.deaRestApi, route, this.lambdaBaseRole, customAuthorizer));
+    routeConfig.routes.forEach((route) => this._addMethod(this.deaRestApi, route, this.lambdaBaseRole));
   }
 
-  private _addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, authorizer: TokenAuthorizer): void {
+  private _addMethod(api: RestApi, route: ApiGatewayRoute, role: Role): void {
     const urlParts = route.path.split('/').filter((str) => str);
     let parent = api.root;
     urlParts.forEach((part, index) => {
@@ -127,11 +129,12 @@ export class DeaRestApiConstruct extends Construct {
           proxy: true,
           requestParameters: route.pagination ? paginationParams : undefined,
         });
-        resource.addMethod(route.httpMethod, methodIntegration, {
+        const method = resource.addMethod(route.httpMethod, methodIntegration, {
           requestParameters: route.pagination ? paginationMethodParams : undefined,
-          authorizer,
-          authorizationType: AuthorizationType.CUSTOM,
+          authorizationType: AuthorizationType.IAM,
         });
+
+        this.apiEndpointArns.set(route.path + route.httpMethod, method.methodArn);
       }
       parent = resource;
     });
@@ -215,18 +218,5 @@ export class DeaRestApiConstruct extends Construct {
     );
 
     return role;
-  }
-
-  private _createLambdaAuthorizer(role: Role): TokenAuthorizer {
-    const authLambda = this._createLambda(
-      'CustomTokenAuthorizerLambda',
-      role,
-      '../../src/handlers/custom-authz-handler.ts'
-    );
-
-    return new TokenAuthorizer(this, 'CustomTokenAuthorizer', {
-      handler: authLambda,
-      resultsCacheTtl: Duration.seconds(0),
-    });
   }
 }

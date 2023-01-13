@@ -1,9 +1,9 @@
 stage: test
 awsRegionShortName: Testville
-awsRegion: us-test-1
+awsRegion: us-east-1
+isTestingEnv: true
 rootUserEmail: test@bogus.oof
 allowedOrigins: ['test']
-cognitoDomain: cogtest
 userPoolId: 'kiddiepool'
 clientId: 'clientidtest'
 clientSecret: 'shh'

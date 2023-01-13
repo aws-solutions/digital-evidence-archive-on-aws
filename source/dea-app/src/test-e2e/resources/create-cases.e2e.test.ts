@@ -3,93 +3,124 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { fail } from 'assert';
+import { aws4Interceptor } from 'aws4-axios';
+import axios from 'axios';
 import Joi from 'joi';
-import fetch from 'node-fetch';
 import { DeaCase } from '../../models/case';
 import { caseSchema } from '../../models/validation/case';
+import CognitoHelper from '../helpers/cognito-helper';
+import Setup from '../helpers/setup';
 import { deleteCase } from './test-helpers';
 
 describe('create cases api', () => {
-  let deaApiUrl: string | undefined;
-  beforeAll(() => {
-    deaApiUrl = process.env.DEA_API_URL;
+  const setup: Setup = new Setup();
+  const cognitoHelper: CognitoHelper = new CognitoHelper(setup);
+
+  const testUser = 'createCaseTestUser';
+  const deaApiUrl = setup.getSettings().get('apiUrlOutput');
+  const region = setup.getSettings().get('awsRegion');
+
+  const caseIdsToDelete: string[] = [];
+
+  beforeAll(async () => {
+    // Create user in test group
+    await cognitoHelper.createUser(testUser, 'CreateCasesTestGroup');
+  });
+
+  afterAll(async () => {
+    const creds = await cognitoHelper.getCredentialsForUser(testUser);
+    for (const caseId of caseIdsToDelete) {
+      await deleteCase(deaApiUrl ?? fail(), caseId, creds, region);
+    }
+    await cognitoHelper.cleanup();
   });
 
   it('should create a new case', async () => {
+    const creds = await cognitoHelper.getCredentialsForUser(testUser);
+    const client = axios.create();
+
+    const interceptor = aws4Interceptor(
+      {
+        service: 'execute-api',
+        region: region,
+      },
+      creds
+    );
+
+    client.interceptors.request.use(interceptor);
+
     const caseName = 'CASE B';
     const url = `${deaApiUrl}cases`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        authorization: 'allow',
-      },
-      body: JSON.stringify({
-        name: caseName,
-        status: 'ACTIVE',
-        description: 'this is a description',
-      }),
+
+    const response = await client.post(url, {
+      name: caseName,
+      status: 'ACTIVE',
+      description: 'this is a description',
     });
 
-    expect(response.ok).toBeTruthy();
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const jsonResp = (await response.json()) as DeaCase;
+    expect(response.status).toBeTruthy();
+
+    //eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const jsonResp = (await response.data) as DeaCase;
     Joi.assert(jsonResp, caseSchema);
 
     expect(jsonResp.name).toEqual(caseName);
-    await deleteCase(deaApiUrl ?? fail(), jsonResp.ulid ?? fail());
+    caseIdsToDelete.push(jsonResp.ulid ?? fail());
   }, 10000);
 
+  // TODO: refactor this test
   it('should give an error when payload is missing', async () => {
-    const response = await fetch(`${deaApiUrl}cases`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json;charset=UTF-8',
-        authorization: 'allow',
-      },
-      body: undefined,
-    });
+    const creds = await cognitoHelper.getCredentialsForUser(testUser);
+    const client = axios.create();
 
-    expect(response.ok).toBeFalsy();
-    expect(response.status).toEqual(400);
-    expect(await response.text()).toEqual('Create cases payload missing.');
+    const interceptor = aws4Interceptor(
+      {
+        service: 'execute-api',
+        region: region,
+      },
+      creds
+    );
+
+    client.interceptors.request.use(interceptor);
+
+    expect(client.post(`${deaApiUrl}cases`)).rejects.toThrow('Request failed with status code 400');
   });
 
   it('should give an error when the name is in use', async () => {
-    const caseName = 'CASE C';
-    const response = await fetch(`${deaApiUrl}cases`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json;charset=UTF-8',
-        authorization: 'allow',
+    const creds = await cognitoHelper.getCredentialsForUser(testUser);
+    const client = axios.create();
+
+    const interceptor = aws4Interceptor(
+      {
+        service: 'execute-api',
+        region: region,
       },
-      body: JSON.stringify({
-        name: caseName,
-        status: 'ACTIVE',
-        description: 'any description',
-      }),
+      creds
+    );
+
+    client.interceptors.request.use(interceptor);
+
+    const caseName = 'CASE C';
+    const response = await client.post(`${deaApiUrl}cases`, {
+      name: caseName,
+      status: 'ACTIVE',
+      description: 'any description',
     });
 
-    expect(response.ok).toBeTruthy();
+    expect(response.status).toBeTruthy();
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const jsonResp = (await response.json()) as DeaCase;
+    const jsonResp = (await response.data) as DeaCase;
     Joi.assert(jsonResp, caseSchema);
 
-    const response2 = await fetch(`${deaApiUrl}cases`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json;charset=UTF-8',
-        authorization: 'allow',
-      },
-      body: JSON.stringify({
+    caseIdsToDelete.push(jsonResp.ulid ?? fail());
+
+    expect(
+      client.post(`${deaApiUrl}cases`, {
         name: caseName,
         status: 'ACTIVE',
         description: 'any description',
-      }),
-    });
-
-    expect(response2.ok).toBeFalsy();
-    expect(response2.status).toEqual(500);
-
-    await deleteCase(deaApiUrl ?? fail(), jsonResp.ulid ?? fail());
+      })
+    ).rejects.toThrow('Request failed with status code 500');
   }, 10000);
 });

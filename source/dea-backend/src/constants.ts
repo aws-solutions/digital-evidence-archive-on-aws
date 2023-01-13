@@ -33,7 +33,9 @@ function getConstants(): {
   USER_POOL_ID: string;
   CLIENT_ID: string;
   CLIENT_SECRET: string;
+  ID_POOL_ID: string;
   MAIN_ACCT_ENCRYPTION_KEY_ARN_OUTPUT_KEY: string;
+  IS_TESTING_ENV: boolean;
 } {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,6 +63,8 @@ function getConstants(): {
     const USER_POOL_ID = config.userPoolId;
     const CLIENT_ID = config.clientId;
     const CLIENT_SECRET = config.clientSecret;
+    const ID_POOL_ID = config.identityPoolId;
+    const IS_TESTING_ENV = config.isTestingEnv ?? false;
 
     const AMI_IDS: string[] = [];
 
@@ -99,7 +103,9 @@ function getConstants(): {
       USER_POOL_ID,
       CLIENT_ID,
       CLIENT_SECRET,
+      ID_POOL_ID,
       MAIN_ACCT_ENCRYPTION_KEY_ARN_OUTPUT_KEY,
+      IS_TESTING_ENV,
     };
   } catch (err) {
     throw new Error(`Failed to load configuration: ${err}`);
