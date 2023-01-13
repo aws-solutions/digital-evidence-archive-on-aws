@@ -1,5 +1,6 @@
 import { Tabs } from '@cloudscape-design/components';
 import * as React from 'react';
+import { caseDetailLabels } from '../../common/labels';
 import AuditLogTable from './AuditLogTable';
 import CaseFilesTable from './CaseFilesTable';
 import ManageAccessForm from './ManageAccessForm';
@@ -9,17 +10,17 @@ function CaseDetailsTabs(): JSX.Element {
     <Tabs
       tabs={[
         {
-          label: 'Case Files',
+          label: caseDetailLabels.caseFilesLabel,
           id: 'caseFiles',
           content: <CaseFilesTable></CaseFilesTable>,
         },
         {
-          label: 'Audit Log',
+          label: caseDetailLabels.auditLogLabel,
           id: 'auditLog',
           content: <AuditLogTable></AuditLogTable>,
         },
         {
-          label: 'Manage case access',
+          label: caseDetailLabels.manageAccessLabel,
           id: 'caseAccess',
           content: <ManageAccessForm></ManageAccessForm>,
         },

@@ -13,6 +13,7 @@ import {
   SpaceBetween,
 } from '@cloudscape-design/components';
 import * as React from 'react';
+import { commonTableLabels, filesListLabels, commonLabels } from '../../common/labels';
 
 function CaseFilesTable(): JSX.Element {
   // Property and date filter collections
@@ -36,7 +37,7 @@ function CaseFilesTable(): JSX.Element {
       columnDefinitions={[
         {
           id: 'name',
-          header: 'Name',
+          header: commonTableLabels.nameHeader,
           cell: (e) => e.fileName,
           width: 170,
           minWidth: 165,
@@ -44,7 +45,7 @@ function CaseFilesTable(): JSX.Element {
         },
         {
           id: 'fileType',
-          header: 'File type',
+          header: commonTableLabels.fileTypeHeader,
           cell: (e) => e.fileType,
           width: 170,
           minWidth: 165,
@@ -52,7 +53,7 @@ function CaseFilesTable(): JSX.Element {
         },
         {
           id: 'uploadDate',
-          header: 'Date uploaded',
+          header: commonTableLabels.dateUploadedHeader,
           cell: () => 'FOO, 00/00/00',
           width: 170,
           minWidth: 165,
@@ -60,7 +61,7 @@ function CaseFilesTable(): JSX.Element {
         },
         {
           id: 'uploader',
-          header: 'Uploaded by',
+          header: commonTableLabels.uploadedByHeader,
           cell: () => 'Sherlock Holmes',
           width: 170,
           minWidth: 165,
@@ -68,31 +69,31 @@ function CaseFilesTable(): JSX.Element {
         },
       ]}
       items={items}
-      loadingText="loading files"
+      loadingText={filesListLabels.loading}
       resizableColumns
       selectionType="single"
       empty={
         <Box textAlign="center" color="inherit">
-          <b>No files</b>
+          <b>{filesListLabels.noFilesLabel}</b>
           <Box padding={{ bottom: 's' }} variant="p" color="inherit">
-            No files to display.
+            {filesListLabels.noDisplayLabel}
           </Box>
-          <Button>Upload a file</Button>
+          <Button>{filesListLabels.uploadFileLabel}</Button>
         </Box>
       }
-      filter={<TextFilter filteringPlaceholder="Search by file name" filteringText="" />}
+      filter={<TextFilter filteringPlaceholder={filesListLabels.searchLabel} filteringText="" />}
       header={
         <Header
           variant="h2"
-          description="All folders/files associated with this case."
+          description={filesListLabels.filterDescription}
           actions={
             <SpaceBetween direction="horizontal" size="xs">
-              <Button>Upload</Button>
-              <Button variant="primary">Download</Button>
+              <Button>{commonLabels.uploadButton}</Button>
+              <Button variant="primary">{commonLabels.downloadButton}</Button>
             </SpaceBetween>
           }
         >
-          Case Files
+          {filesListLabels.caseFilesLabel}
         </Header>
       }
       pagination={

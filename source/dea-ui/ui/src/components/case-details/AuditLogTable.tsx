@@ -13,6 +13,7 @@ import {
   SpaceBetween,
 } from '@cloudscape-design/components';
 import * as React from 'react';
+import { auditLogLabels, commonTableLabels } from '../../common/labels';
 
 function AuditLogTable(): JSX.Element {
   // Property and date filter collections
@@ -48,7 +49,7 @@ function AuditLogTable(): JSX.Element {
       columnDefinitions={[
         {
           id: 'timestamp',
-          header: 'Timestamp',
+          header: commonTableLabels.timestampHeader,
           cell: (e) => e.timestamp,
           width: 170,
           minWidth: 165,
@@ -56,7 +57,7 @@ function AuditLogTable(): JSX.Element {
         },
         {
           id: 'userName',
-          header: 'Name',
+          header: commonTableLabels.nameHeader,
           cell: (e) => e.userName,
           width: 170,
           minWidth: 165,
@@ -64,7 +65,7 @@ function AuditLogTable(): JSX.Element {
         },
         {
           id: 'fileName',
-          header: 'File name',
+          header: commonTableLabels.fileNameHeader,
           cell: (e) => e.fileName,
           width: 170,
           minWidth: 165,
@@ -72,7 +73,7 @@ function AuditLogTable(): JSX.Element {
         },
         {
           id: 'action',
-          header: 'Action',
+          header: commonTableLabels.actionHeader,
           cell: (e) => e.action,
           width: 170,
           minWidth: 165,
@@ -80,7 +81,7 @@ function AuditLogTable(): JSX.Element {
         },
         {
           id: 'reason',
-          header: 'Reason',
+          header: commonTableLabels.reasonHeader,
           cell: (e) => e.reason,
           width: 170,
           minWidth: 165,
@@ -88,14 +89,14 @@ function AuditLogTable(): JSX.Element {
         },
       ]}
       items={items}
-      loadingText="loading audit log"
+      loadingText={auditLogLabels.loadingLabel}
       resizableColumns
       selectionType="single"
       empty={
         <Box textAlign="center" color="inherit">
-          <b>No audit</b>
+          <b>{auditLogLabels.emptyAuditLabel}</b>
           <Box padding={{ bottom: 's' }} variant="p" color="inherit">
-            No audit to display.
+            {auditLogLabels.noDisplayAuditLabel}
           </Box>
         </Box>
       }
@@ -103,14 +104,14 @@ function AuditLogTable(): JSX.Element {
       header={
         <Header
           variant="h2"
-          description="This tabel records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file"
+          description={auditLogLabels.descriptionLabel}
           actions={
             <SpaceBetween direction="horizontal" size="xs">
-              <Button variant="primary">Download CSV</Button>
+              <Button variant="primary">{auditLogLabels.downloadCSVLabel}</Button>
             </SpaceBetween>
           }
         >
-          Case audit log
+          {auditLogLabels.caseAuditLogLabel}
         </Header>
       }
       pagination={

@@ -16,6 +16,7 @@ import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useState } from 'react';
 import { createCase } from '../../api/cases';
+import { commonLabels, createCaseLabels } from '../../common/labels';
 import { CreateCaseForm } from '../../models/Cases';
 
 function CreateCasesForm(): JSX.Element {
@@ -39,18 +40,18 @@ function CreateCasesForm(): JSX.Element {
         actions={
           <SpaceBetween direction="horizontal" size="xs">
             <Button formAction="none" variant="link">
-              Cancel
+              {commonLabels.cancelButton}
             </Button>
             <Button variant="primary" onClick={onSubmitHandler} loading={isSubmitLoading}>
-              Submit
+              {commonLabels.submitButton}
             </Button>
           </SpaceBetween>
         }
-        header={<Header variant="h1">Create new case</Header>}
+        header={<Header variant="h1">{createCaseLabels.createNewCaseLabel}</Header>}
       >
-        <Container header={<Header variant="h2">Enter Case Details</Header>}>
+        <Container header={<Header variant="h2">{createCaseLabels.enterCaseDetailsLabel}</Header>}>
           <SpaceBetween direction="vertical" size="l">
-            <FormField label="Case name">
+            <FormField label={createCaseLabels.caseNameLabel}>
               <Input
                 value={formData?.name || ''}
                 onChange={({ detail: { value } }) => {
@@ -58,7 +59,7 @@ function CreateCasesForm(): JSX.Element {
                 }}
               />
             </FormField>
-            <FormField label="Description - optional">
+            <FormField label={createCaseLabels.caseDescription}>
               <Input
                 value={formData?.description || ''}
                 onChange={({ detail: { value } }) => {
