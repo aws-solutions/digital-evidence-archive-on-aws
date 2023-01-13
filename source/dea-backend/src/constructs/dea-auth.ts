@@ -236,7 +236,7 @@ export class DeaAuthConstruct extends Construct {
 
     new CfnOutput(this, 'UserPoolClientId', {
       value: poolClient.userPoolClientId,
-      exportName: 'userPoolClient',
+      exportName: 'userPoolClientId',
     });
   }
 
