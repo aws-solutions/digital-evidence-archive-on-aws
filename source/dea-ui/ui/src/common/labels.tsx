@@ -37,6 +37,30 @@ export const i18nStrings: PropertyFilterProps.I18nStrings = {
   enteredTextLabel: (text: string) => `Use: "${text}"`,
 };
 
+export const commonLabels = {
+  cancelButton: 'Cancel',
+  submitButton: 'Submit',
+  uploadButton: 'Upload',
+  downloadButton: 'Download',
+  loadingLabel: 'Loading...',
+};
+
+export const commonTableLabels = {
+  timestampHeader: 'Timestamp',
+  nameHeader: 'Name',
+  fileNameHeader: 'File name',
+  actionHeader: 'Action',
+  reasonHeader: 'Reason',
+  caseNameHeader: 'Case name',
+  caseLeadHeader: 'Case Lead(s)',
+  objectCounterHeader: 'No. of files',
+  creationDateHeader: 'Creation date',
+  statusHeader: 'Status',
+  fileTypeHeader: 'File type',
+  dateUploadedHeader: 'Date uploaded',
+  uploadedByHeader: 'Uploaded by',
+};
+
 export const layoutLabels: AppLayoutProps.Labels = {
   navigation: 'Navigation drawer',
   navigationClose: 'Close navigation drawer',
@@ -63,13 +87,53 @@ export const headerLabels = {
   signout: 'Sign out',
 };
 
-export const NavigationLabels = {
-  Administration: 'Administration',
-  CreateDashboard: 'Create new dashboard',
-  Dashboards: 'Dashboards',
-  InviteUsers: 'Invite users',
-  ManageDashboards: 'Manage dashboards',
-  ManageUsers: 'Manage users',
-  Users: 'Users',
-  ViewPublishedDashboards: 'View published dashboards',
+export const caseListLabels = {
+  loading: 'loading cases',
+  noCasesLabel: 'No cases',
+  noDisplayLabel: 'No cases to display.',
+  createNewCaseLabel: 'Create new case',
+  searchCasesLabel: 'Search by case name',
+  archiveButton: 'Archive Case',
+  activateButton: 'Activate Case',
+  casesLabel: 'Cases',
+};
+
+export const filesListLabels = {
+  caseFilesLabel: 'Case Files',
+  loading: 'Loading files',
+  noFilesLabel: 'No files',
+  noDisplayLabel: 'No files to dsiplay.',
+  uploadFileLabel: 'Upload a file',
+  searchLabel: 'Search by file name',
+  filterDescription: 'All folders/files associated with this case.',
+};
+
+export const caseDetailLabels = {
+  caseFilesLabel: 'Case Files',
+  auditLogLabel: 'Audit Log',
+  manageAccessLabel: 'Manage case access',
+};
+
+export const auditLogLabels = {
+  downloadCSVLabel: 'Download CSV',
+  caseAuditLogLabel: 'Case audit log',
+  descriptionLabel:
+    'This tabel records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file',
+  emptyAuditLabel: 'No audit',
+  noDisplayAuditLabel: 'No audit to display.',
+  loadingLabel: 'loading audit log',
+};
+
+export const manageCaseAccessLabels = {
+  manageCaseAccessLabel: 'Manage Case Access',
+  manageAccessDescription:
+    'Members added or remvoed will be notified by email. Their access to case details will be based on permissions set',
+  manageAccessSearchLabel: 'Search for people to invite',
+};
+
+export const createCaseLabels = {
+  createNewCaseLabel: 'Create New Case',
+  enterCaseDetailsLabel: 'Enter Case Details',
+  caseNameLabel: 'Case name',
+  caseDescription: 'Description - optional',
 };

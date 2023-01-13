@@ -5,6 +5,7 @@
 
 import { ContentLayout, SpaceBetween, Header, Button } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
+import { caseListLabels } from '../../common/labels';
 import CaseTable from './CaseTable';
 
 function CaseListBody(): JSX.Element {
@@ -23,15 +24,15 @@ function CaseListBody(): JSX.Element {
             description="This is a list of cases that have been shared with you."
             actions={
               <SpaceBetween direction="horizontal" size="xs">
-                <Button>Archive Case</Button>
-                <Button>Activate Case</Button>
+                <Button>{caseListLabels.archiveButton}</Button>
+                <Button>{caseListLabels.activateButton}</Button>
                 <Button variant="primary" onClick={createNewCaseHandler}>
-                  Create new case
+                  {caseListLabels.createNewCaseLabel}
                 </Button>{' '}
               </SpaceBetween>
             }
           >
-            Cases
+            {caseListLabels.casesLabel}
           </Header>
         </SpaceBetween>
       }

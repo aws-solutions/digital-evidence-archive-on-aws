@@ -15,6 +15,7 @@ import {
 } from '@cloudscape-design/components';
 import * as React from 'react';
 import { useListAllCases } from '../../api/cases';
+import { commonTableLabels, caseListLabels } from '../../common/labels';
 
 function CaseTable(): JSX.Element {
   const { cases, areCasesLoading } = useListAllCases();
@@ -30,7 +31,7 @@ function CaseTable(): JSX.Element {
       columnDefinitions={[
         {
           id: 'name',
-          header: 'Case name',
+          header: commonTableLabels.caseNameHeader,
           cell: (e) => <Link href={`/${STAGE}/ui/${e.ulid}`}>{e.name}</Link>,
           width: 170,
           minWidth: 165,
@@ -38,7 +39,7 @@ function CaseTable(): JSX.Element {
         },
         {
           id: 'caseLead',
-          header: 'Case Lead(s)',
+          header: commonTableLabels.caseLeadHeader,
           cell: () => 'Sherlock Holmes',
           width: 170,
           minWidth: 165,
@@ -46,7 +47,7 @@ function CaseTable(): JSX.Element {
         },
         {
           id: 'objectCount',
-          header: 'No. of files',
+          header: commonTableLabels.objectCounterHeader,
           cell: (e) => e.objectCount,
           width: 170,
           minWidth: 165,
@@ -54,7 +55,7 @@ function CaseTable(): JSX.Element {
         },
         {
           id: 'creationDate',
-          header: 'Creation date',
+          header: commonTableLabels.creationDateHeader,
           cell: () => 'FOO, 00/00/00',
           width: 170,
           minWidth: 165,
@@ -62,7 +63,7 @@ function CaseTable(): JSX.Element {
         },
         {
           id: 'status',
-          header: 'Status',
+          header: commonTableLabels.statusHeader,
           cell: (e) => (
             <StatusIndicator type={e.status === 'ACTIVE' ? 'success' : 'error'}>{e.status}</StatusIndicator>
           ),
@@ -72,19 +73,19 @@ function CaseTable(): JSX.Element {
         },
       ]}
       items={items}
-      loadingText="Loading cases"
+      loadingText={caseListLabels.loading}
       resizableColumns
       selectionType="single"
       empty={
         <Box textAlign="center" color="inherit">
-          <b>No cases</b>
+          <b>{caseListLabels.noCasesLabel}</b>
           <Box padding={{ bottom: 's' }} variant="p" color="inherit">
-            No cases to display.
+            {caseListLabels.noDisplayLabel}
           </Box>
-          <Button>Create new case</Button>
+          <Button>{caseListLabels.createNewCaseLabel}</Button>
         </Box>
       }
-      filter={<TextFilter filteringPlaceholder="Search by case name" filteringText="" />}
+      filter={<TextFilter filteringPlaceholder={caseListLabels.searchCasesLabel} filteringText="" />}
       pagination={
         <Pagination
           currentPageIndex={1}
