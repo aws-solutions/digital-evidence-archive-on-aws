@@ -41,10 +41,10 @@ export default class Settings {
       // Read from env variables
       this._content = {
         awsRegion: process.env.AWS_REGION ?? 'us-east-1',
-        apiUrlOutput: process.env.DEA_API_URL ?? fail(),
-        identityPoolId: process.env.IDENTITY_POOL_ID ?? fail(),
-        userPoolId: process.env.USER_POOL_ID ?? fail(),
-        clientId: process.env.USER_POOL_CLIENT_ID ?? fail(),
+        apiUrlOutput: process.env['DEA_API_URL'] as string,
+        identityPoolId: process.env['IDENTITY_POOL_ID'] as string,
+        userPoolId: process.env['USER_POOL_ID'] as string,
+        clientId: process.env['USER_POOL_CLIENT_ID'] as string,
       };
     }
   }
