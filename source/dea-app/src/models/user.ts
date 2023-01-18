@@ -5,6 +5,8 @@
 
 export interface DeaUser {
     readonly ulid?: string;
-    readonly firstName: string,
-    readonly lastName: string,
+    readonly firstName: string;
+    readonly lastName: string;
+    readonly created?: Date;
+    readonly updated?: Date;
 }

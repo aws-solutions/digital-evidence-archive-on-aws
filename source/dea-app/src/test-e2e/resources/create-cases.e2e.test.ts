@@ -6,20 +6,17 @@
 import { fail } from 'assert';
 import { aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
-import Joi from 'joi';
-import { DeaCase } from '../../models/case';
-import { caseSchema } from '../../models/validation/case';
+import { CaseStatus } from '../../models/case-status';
 import CognitoHelper from '../helpers/cognito-helper';
-import Setup from '../helpers/setup';
-import { deleteCase } from './test-helpers';
+import { envSettings } from '../helpers/settings';
+import { createCaseSuccess, deleteCase, validateStatus } from './test-helpers';
 
 describe('create cases api', () => {
-  const setup: Setup = new Setup();
-  const cognitoHelper: CognitoHelper = new CognitoHelper(setup);
+  const cognitoHelper = new CognitoHelper();
 
   const testUser = 'createCaseTestUser';
-  const deaApiUrl = setup.getSettings().get('apiUrlOutput');
-  const region = setup.getSettings().get('awsRegion');
+  const deaApiUrl = envSettings.apiUrlOutput;
+  const region = envSettings.awsRegion;
 
   const caseIdsToDelete: string[] = [];
 
@@ -31,45 +28,29 @@ describe('create cases api', () => {
   afterAll(async () => {
     const creds = await cognitoHelper.getCredentialsForUser(testUser);
     for (const caseId of caseIdsToDelete) {
-      await deleteCase(deaApiUrl ?? fail(), caseId, creds, region);
+      await deleteCase(deaApiUrl, caseId, creds);
     }
     await cognitoHelper.cleanup();
-  });
+  }, 10000);
 
   it('should create a new case', async () => {
     const creds = await cognitoHelper.getCredentialsForUser(testUser);
-    const client = axios.create();
 
-    const interceptor = aws4Interceptor(
+    const caseName = 'CASE B';
+
+    const createdCase = await createCaseSuccess(
+      deaApiUrl,
       {
-        service: 'execute-api',
-        region: region,
+        name: caseName,
+        status: CaseStatus.ACTIVE,
+        description: 'this is a description',
       },
       creds
     );
 
-    client.interceptors.request.use(interceptor);
-
-    const caseName = 'CASE B';
-    const url = `${deaApiUrl}cases`;
-
-    const response = await client.post(url, {
-      name: caseName,
-      status: 'ACTIVE',
-      description: 'this is a description',
-    });
-
-    expect(response.status).toBeTruthy();
-
-    //eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const jsonResp = (await response.data) as DeaCase;
-    Joi.assert(jsonResp, caseSchema);
-
-    expect(jsonResp.name).toEqual(caseName);
-    caseIdsToDelete.push(jsonResp.ulid ?? fail());
+    caseIdsToDelete.push(createdCase.ulid ?? fail());
   }, 10000);
 
-  // TODO: refactor this test
   it('should give an error when payload is missing', async () => {
     const creds = await cognitoHelper.getCredentialsForUser(testUser);
     const client = axios.create();
@@ -84,7 +65,11 @@ describe('create cases api', () => {
 
     client.interceptors.request.use(interceptor);
 
-    expect(client.post(`${deaApiUrl}cases`)).rejects.toThrow('Request failed with status code 400');
+    const response = await client.post(`${deaApiUrl}cases`, undefined, {
+      validateStatus,
+    });
+
+    expect(response.status).toEqual(400);
   });
 
   it('should give an error when the name is in use', async () => {
@@ -102,25 +87,30 @@ describe('create cases api', () => {
     client.interceptors.request.use(interceptor);
 
     const caseName = 'CASE C';
-    const response = await client.post(`${deaApiUrl}cases`, {
-      name: caseName,
-      status: 'ACTIVE',
-      description: 'any description',
-    });
+    const createdCase = await createCaseSuccess(
+      deaApiUrl,
+      {
+        name: caseName,
+        status: CaseStatus.ACTIVE,
+        description: 'any description',
+      },
+      creds
+    );
 
-    expect(response.status).toBeTruthy();
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const jsonResp = (await response.data) as DeaCase;
-    Joi.assert(jsonResp, caseSchema);
+    caseIdsToDelete.push(createdCase.ulid ?? fail());
 
-    caseIdsToDelete.push(jsonResp.ulid ?? fail());
-
-    expect(
-      client.post(`${deaApiUrl}cases`, {
+    const response = await client.post(
+      `${deaApiUrl}cases`,
+      {
         name: caseName,
         status: 'ACTIVE',
         description: 'any description',
-      })
-    ).rejects.toThrow('Request failed with status code 500');
+      },
+      {
+        validateStatus,
+      }
+    );
+
+    expect(response.status).toEqual(500);
   }, 10000);
 });

@@ -8,7 +8,6 @@ import { CfnResource, RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Construct } from 'constructs';
-import { getConstants } from '../constants';
 
 interface IBackendStackProps extends StackProps {
   kmsKey: Key;
@@ -18,9 +17,7 @@ export class DeaBackendConstruct extends Construct {
   public deaTable: Table;
 
   public constructor(scope: Construct, id: string, props: IBackendStackProps) {
-    const { STACK_NAME } = getConstants();
-
-    super(scope, STACK_NAME);
+    super(scope, id);
 
     //Dynamo
     this.deaTable = this._createDeaTable(props.kmsKey);

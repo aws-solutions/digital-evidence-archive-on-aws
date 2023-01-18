@@ -20,7 +20,7 @@ import {
   MessageActionType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Credentials } from 'aws4-axios';
-import Setup from './setup';
+import { envSettings } from './settings';
 
 export default class CognitoHelper {
   private _identityPoolClient: CognitoIdentityClient;
@@ -34,12 +34,11 @@ export default class CognitoHelper {
   private _usersCreated: string[] = [];
   private _testPassword: string;
 
-  public constructor(setup: Setup) {
-    const settings = setup.getSettings();
-    this._region = settings.get('awsRegion');
-    this._userPoolId = settings.get('userPoolId');
-    this._userPoolClientId = settings.get('clientId');
-    this._identityPoolId = settings.get('identityPoolId');
+  public constructor() {
+    this._region = envSettings.awsRegion
+    this._userPoolId = envSettings.userPoolId;
+    this._userPoolClientId = envSettings.clientId;
+    this._identityPoolId = envSettings.identityPoolId;
 
     this._idpUrl = `cognito-idp.${this._region}.amazonaws.com/${this._userPoolId}`;
 

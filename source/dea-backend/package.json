@@ -61,6 +61,7 @@
     "@aws-cdk/aws-apigatewayv2-alpha": "^2.22.0-alpha.0",
     "@aws-cdk/aws-apigatewayv2-authorizers-alpha": "^2.22.0-alpha.0",
     "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.22.0-alpha.0",
+    "@aws/workbench-core-logging": "~0.1.1",
     "@rushstack/eslint-config": "^3.0.0",
     "@rushstack/heft": "^0.48.8",
     "@rushstack/heft-jest-plugin": "^0.3.28",

@@ -35,11 +35,11 @@ describe('user persistence', () => {
             fail();
         } else {
 
-            expect(createdUser).toEqual({ ...expectedUser, ulid: createdUser.ulid });
+            expect(createdUser).toEqual({ ...expectedUser, ulid: createdUser.ulid, created: createdUser.created, updated: createdUser.updated });
 
             const deaUser = await getUser(createdUser.ulid, modelProvider);
 
-            expect(deaUser).toEqual({ ...expectedUser, ulid: createdUser.ulid });
+            expect(deaUser).toEqual({ ...expectedUser, ulid: createdUser.ulid, created: createdUser.created, updated: createdUser.updated });
             
             await deleteAndVerifyUser(createdUser.ulid, modelProvider);
         }
@@ -74,11 +74,15 @@ describe('user persistence', () => {
                 ulid: user1.ulid,
                 firstName,
                 lastName,
+                created: user1.created,
+                updated: user1.updated,
             },
             {
                 ulid: user2.ulid,
                 firstName: firstName2,
                 lastName: lastName2,
+                created: user2.created,
+                updated: user2.updated,
             },
         ];
         expectedUsers.count = 2;
@@ -110,7 +114,12 @@ describe('user persistence', () => {
             //truthy expectation doesn't update createdUser type 
             fail();
         }
-        expect(createdUser).toEqual({ ...deaUser, ulid: createdUser.ulid });
+        expect(createdUser).toEqual({
+            ...deaUser,
+            ulid: createdUser.ulid,
+            created: createdUser.created,
+            updated: createdUser.updated,
+        });
 
         const updatedUser: DeaUser = {
             ulid: createdUser.ulid,
@@ -119,7 +128,11 @@ describe('user persistence', () => {
         };
         const actual = await updateUser(updatedUser, modelProvider);
 
-        expect(actual).toEqual(updatedUser);
+        expect(actual).toEqual({
+            ...updatedUser,
+            created: createdUser.created,
+            updated: actual?.updated,
+        });
 
         await deleteAndVerifyUser(createdUser.ulid, modelProvider);
     });

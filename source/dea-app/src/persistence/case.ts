@@ -12,6 +12,7 @@ import { CaseModel, CaseModelRepositoryProvider } from './schema/entities';
 
 export const getCase = async (
   ulid: string,
+  batch: object | undefined = undefined,
   repositoryProvider: CaseModelRepositoryProvider = {
     CaseModel: CaseModel,
   }
@@ -19,7 +20,7 @@ export const getCase = async (
   const caseEntity = await repositoryProvider.CaseModel.get({
     PK: `CASE#${ulid}#`,
     SK: `CASE#`,
-  });
+  }, {batch});
 
   return caseFromEntity(caseEntity);
 };
@@ -46,8 +47,6 @@ export const listCases = async (
   const cases: Paged<DeaCase> = caseEntities.map((entity) => caseFromEntity(entity)).filter(isDefined);
   cases.count = caseEntities.count;
   cases.next = caseEntities.next;
-  //undefined because I have a concern about travelling backwards to negative page numbers (due to new records)
-  cases.prev = undefined;
 
   return cases;
 };
@@ -79,6 +78,12 @@ export const updateCase = async (
   const newCase = await repositoryProvider.CaseModel.update({
     ...deaCase,
     lowerCaseName: deaCase.name.toLowerCase(),
+  }, {
+    // Normally, update() will return the updated item automatically, 
+    //   however, it the item has unique attributes,
+    //   a transaction is used which does not return the updated item.
+    //   In this case, use {return: 'get'} to retrieve and return the updated item.
+    return: 'get'
   });
   return caseFromEntity(newCase);
 };

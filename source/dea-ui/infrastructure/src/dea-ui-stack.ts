@@ -72,7 +72,7 @@ export class DeaUiConstruct extends Construct {
 
     // Create Bucket for hosting UI assets and it's access log bucket
     this._s3AccessLogsPrefix = 'dea-ui-access-log';
-    this._accessLogsBucket = this._createAccessLogsBucket('DeaUIS3BucketAccessLogsOutput');
+    this._accessLogsBucket = this._createAccessLogsBucket(`${scope.node.id}-DeaUIS3BucketAccessLogsOutput`);
 
     const bucket = new Bucket(this, S3_ARTIFACT_BUCKET_NAME, {
       accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,

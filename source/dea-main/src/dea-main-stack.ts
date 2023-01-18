@@ -30,7 +30,7 @@ export class DeaMainStack extends cdk.Stack {
     const kmsKey = this._createEncryptionKey();
 
     // DEA Backend Construct
-    const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendConstruct', { kmsKey: kmsKey });
+    const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', { kmsKey: kmsKey });
 
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
       deaTableArn: backendConstruct.deaTable.tableArn,

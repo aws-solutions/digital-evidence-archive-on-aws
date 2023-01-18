@@ -77,8 +77,6 @@ export const listCaseUsersByUser = async (
     const caseUsers: Paged<CaseUser> = caseEntities.map((entity) => caseUserFromEntity(entity)).filter(isDefined);
     caseUsers.count = caseEntities.count;
     caseUsers.next = caseEntities.next;
-    //undefined because I have a concern about travelling backwards to negative page numbers (due to new records)
-    caseUsers.prev = undefined;
 
     return caseUsers;
 };
