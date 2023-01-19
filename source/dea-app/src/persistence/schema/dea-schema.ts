@@ -8,8 +8,6 @@ import { CaseStatus } from '../../models/case-status';
 
 const ulidMatch = /^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$/;
 
-const STORAGE_TIERS = ['S3STANDARD', 'GLACIER_INSTANT', 'GLACIER_FLEX', 'GLACIER_DEEP'];
-
 export const DeaSchema = {
   format: 'onetable:1.1.0',
   version: '0.1.0',
@@ -80,15 +78,6 @@ export const DeaSchema = {
       lastName: { type: String, required: true },
       lowerFirstName: { type: String, required: true },
       lowerLastName: { type: String, required: true },
-      //managed by onetable - but included for entity generation
-      created: { type: Date },
-      updated: { type: Date },
-    },
-    StorageConfig: {
-      PK: { type: String, value: 'CONFIG#', required: true },
-      SK: { type: String, value: 'STORAGECONFIG#', required: true },
-      activeStorage: { type: String, required: true, enum: STORAGE_TIERS },
-      archiveStorage: { type: String, required: true, enum: STORAGE_TIERS },
       //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },

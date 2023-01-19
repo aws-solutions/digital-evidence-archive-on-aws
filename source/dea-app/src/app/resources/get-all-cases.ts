@@ -5,9 +5,14 @@
 
 import { logger } from '../../logger';
 import { listCases } from '../../persistence/case';
+import { defaultProvider } from '../../persistence/schema/entities';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
-export const getAllCases: DEAGatewayProxyHandler = async (event, context) => {
+export const getAllCases: DEAGatewayProxyHandler = async (
+  event,
+  context,
+  repositoryProvider = defaultProvider,
+) => {
   logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
   logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
   let limit: number | undefined;
@@ -24,7 +29,7 @@ export const getAllCases: DEAGatewayProxyHandler = async (event, context) => {
     nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
   }
 
-  const pageOfCases = await listCases(limit, nextToken);
+  const pageOfCases = await listCases(limit, nextToken, repositoryProvider);
 
   return {
     statusCode: 200,

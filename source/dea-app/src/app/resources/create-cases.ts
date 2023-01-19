@@ -7,11 +7,16 @@ import Joi from 'joi';
 import { logger } from '../../logger';
 import { DeaCase } from '../../models/case';
 import { caseSchema } from '../../models/validation/case';
+import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
-export const createCases: DEAGatewayProxyHandler = async (event, context) => {
+export const createCases: DEAGatewayProxyHandler = async (
+  event,
+  context,
+  repositoryProvider = defaultProvider
+) => {
   logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
   logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
 
@@ -22,7 +27,7 @@ export const createCases: DEAGatewayProxyHandler = async (event, context) => {
   const deaCase: DeaCase = JSON.parse(event.body);
   Joi.assert(deaCase, caseSchema);
 
-  const updateBody = await CaseService.createCases(deaCase);
+  const updateBody = await CaseService.createCases(deaCase, repositoryProvider);
 
   return {
     statusCode: 200,

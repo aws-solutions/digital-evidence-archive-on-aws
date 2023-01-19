@@ -6,11 +6,16 @@
 import { Paged } from 'dynamodb-onetable';
 import { DeaCase } from '../../models/case';
 import { CaseStatus } from '../../models/case-status';
+import { caseFromEntity } from '../../models/projections';
 import * as CasePersistence from '../../persistence/case';
 import * as CaseUserPersistence from '../../persistence/case-user';
-import { deaTable } from '../../persistence/schema/dea-table';
+import { isDefined } from '../../persistence/persistence-helpers';
+import { CaseType, defaultProvider } from '../../persistence/schema/entities';
 
-export const createCases = async (deaCase: DeaCase): Promise<DeaCase | undefined> => {
+export const createCases = async (
+  deaCase: DeaCase,
+  repositoryProvider = defaultProvider
+): Promise<DeaCase> => {
   const currentCase: DeaCase = {
     ...deaCase,
     status: CaseStatus.ACTIVE,
@@ -19,47 +24,66 @@ export const createCases = async (deaCase: DeaCase): Promise<DeaCase | undefined
 
   // TODO: create initial User/Owner on CreateCase
 
-  return await CasePersistence.createCase(currentCase);
+  return await CasePersistence.createCase(currentCase, repositoryProvider);
 };
 
 export const listAllCases = async (
   limit = 30,
   nextToken?: object,
+  repositoryProvider = defaultProvider
 ): Promise<Paged<DeaCase>> => {
-  return CasePersistence.listCases(limit, nextToken);
-}
+  return CasePersistence.listCases(limit, nextToken, repositoryProvider);
+};
 
 export const listCasesForUser = async (
   userUlid: string,
   limit = 30,
   nextToken?: object,
+  repositoryProvider = defaultProvider
 ): Promise<Paged<DeaCase>> => {
   // Get all memberships for the user
-  const caseMemberships = await CaseUserPersistence.listCaseUsersByUser(userUlid, limit, nextToken);
+  const caseMemberships = await CaseUserPersistence.listCaseUsersByUser(
+    userUlid,
+    limit,
+    nextToken,
+    repositoryProvider
+  );
 
   // Build a batch object of get requests for the case in each membership
   const batch = {};
   for (const caseMembership of caseMemberships) {
-    CasePersistence.getCase(caseMembership.caseUlid, {batch});
+    CasePersistence.getCase(caseMembership.caseUlid, batch, repositoryProvider);
   }
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const cases = (await deaTable.batchGet(batch)) as DeaCase[];
+  const caseEntities = (await repositoryProvider.table.batchGet(batch, {
+    parse: true,
+    hidden: false,
+    consistent: true,
+  })) as CaseType[];
 
-  return {
-    ...cases,
-    count: caseMemberships.count,
-    next: caseMemberships.next,
-  }
-}
+  const cases: Paged<DeaCase> = caseEntities
+    .map((caseEntity) => caseFromEntity(caseEntity))
+    .filter(isDefined);
+  cases.count = caseMemberships.count;
+  cases.next = caseMemberships.next;
 
-export const getCase = async (caseUlid: string): Promise<DeaCase | undefined> => {
-  return await CasePersistence.getCase(caseUlid);
+  return cases;
 };
 
-export const updateCases = async (deaCase: DeaCase): Promise<DeaCase | undefined> => {
-  return await CasePersistence.updateCase(deaCase);
+export const getCase = async (
+  caseUlid: string,
+  repositoryProvider = defaultProvider
+): Promise<DeaCase | undefined> => {
+  return await CasePersistence.getCase(caseUlid, undefined, repositoryProvider);
 };
 
-export const deleteCase = async (caseUlid: string): Promise<void> => {
-  return await CasePersistence.deleteCase(caseUlid);
+export const updateCases = async (
+  deaCase: DeaCase,
+  repositoryProvider = defaultProvider
+): Promise<DeaCase> => {
+  return await CasePersistence.updateCase(deaCase, repositoryProvider);
+};
+
+export const deleteCase = async (caseUlid: string, repositoryProvider = defaultProvider): Promise<void> => {
+  return await CasePersistence.deleteCase(caseUlid, repositoryProvider);
 };

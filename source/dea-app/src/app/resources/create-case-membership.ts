@@ -8,6 +8,7 @@ import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { caseUserSchema } from '../../models/validation/case-user';
+import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import { createCaseUserMembershipFromDTO } from '../services/case-user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -15,6 +16,7 @@ import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 export const createCaseMembership: DEAGatewayProxyHandler = async (
   event,
   context,
+  repositoryProvider = defaultProvider
 ) => {
   logger.debug(`Event`, {Data: JSON.stringify(event, null, 2)});
   logger.debug(`Context`, {Data: JSON.stringify(context, null, 2)});
@@ -32,7 +34,7 @@ export const createCaseMembership: DEAGatewayProxyHandler = async (
     throw new ValidationError('Requested Case Ulid does not match resource');
   }
 
-  const caseUserResult = await createCaseUserMembershipFromDTO(caseUser);
+  const caseUserResult = await createCaseUserMembershipFromDTO(caseUser, repositoryProvider);
   return {
     statusCode: 200,
     body: JSON.stringify(caseUserResult)
