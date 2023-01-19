@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Entity, Model } from 'dynamodb-onetable';
+import { Entity, Model, Table } from 'dynamodb-onetable';
 import { DeaSchema } from './dea-schema';
 import { deaTable } from './dea-table';
 
@@ -18,9 +18,6 @@ export const CaseFileModel: Model<CaseFileType> = deaTable.getModel('CaseFile');
 
 export type UserType = Entity<typeof DeaSchema.models.User>;
 export const UserModel: Model<UserType> = deaTable.getModel('User');
-
-export type StorageConfigType = Entity<typeof DeaSchema.models.StorageConfig>;
-export const StorageConfigModel: Model<StorageConfigType> = deaTable.getModel('StorageConfig');
 
 export interface CaseModelRepositoryProvider {
   CaseModel: Model<CaseType>;
@@ -38,6 +35,19 @@ export interface UserModelRepositoryProvider {
   UserModel: Model<UserType>;
 }
 
-export interface StorageConfigModelRepositoryProvider {
-  StorageConfigModel: Model<StorageConfigType>;
+export interface ModelRepositoryProvider
+  extends
+  CaseModelRepositoryProvider,
+  CaseUserModelRepositoryProvider,
+  CaseFileModelRepositoryProvider,
+  UserModelRepositoryProvider {
+    table: Table,
+  }
+
+export const defaultProvider: ModelRepositoryProvider = {
+  table: deaTable,
+  CaseModel: CaseModel,
+  CaseUserModel: CaseUserModel,
+  CaseFileModel: CaseFileModel,
+  UserModel: UserModel,
 }

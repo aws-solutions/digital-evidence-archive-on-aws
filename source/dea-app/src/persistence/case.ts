@@ -56,7 +56,7 @@ export const createCase = async (
   repositoryProvider: CaseModelRepositoryProvider = {
     CaseModel: CaseModel,
   }
-): Promise<DeaCase | undefined> => {
+): Promise<DeaCase> => {
   const newEntity = await repositoryProvider.CaseModel.create({
     ...deaCase,
     lowerCaseName: deaCase.name.toLowerCase(),
@@ -74,7 +74,7 @@ export const updateCase = async (
   repositoryProvider: CaseModelRepositoryProvider = {
     CaseModel: CaseModel,
   }
-): Promise<DeaCase | undefined> => {
+): Promise<DeaCase> => {
   const newCase = await repositoryProvider.CaseModel.update({
     ...deaCase,
     lowerCaseName: deaCase.name.toLowerCase(),
@@ -85,7 +85,11 @@ export const updateCase = async (
     //   In this case, use {return: 'get'} to retrieve and return the updated item.
     return: 'get'
   });
-  return caseFromEntity(newCase);
+  const updated = caseFromEntity(newCase);
+  if (!updated) {
+    throw new Error('Update failed.')
+  }
+  return updated;
 };
 
 export const deleteCase = async (

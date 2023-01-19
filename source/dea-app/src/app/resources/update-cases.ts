@@ -8,11 +8,16 @@ import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { DeaCase } from '../../models/case';
 import { updateCaseSchema } from '../../models/validation/case';
+import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
-export const updateCases: DEAGatewayProxyHandler = async (event, context) => {
+export const updateCases: DEAGatewayProxyHandler = async (
+  event,
+  context,
+  repositoryProvider = defaultProvider,
+) => {
   logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
   logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
 
@@ -30,7 +35,7 @@ export const updateCases: DEAGatewayProxyHandler = async (event, context) => {
     throw new ValidationError('Requested Case Ulid does not match resource');
   }
 
-  const caseUpdateResult = await CaseService.updateCases(deaCase);
+  const caseUpdateResult = await CaseService.updateCases(deaCase, repositoryProvider);
   return {
     statusCode: 200,
     body: JSON.stringify(caseUpdateResult),
