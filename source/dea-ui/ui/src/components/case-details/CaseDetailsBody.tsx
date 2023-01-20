@@ -15,11 +15,12 @@ import { useGetCaseById } from '../../api/cases';
 import { commonLabels } from '../../common/labels';
 import CaseDetailsTabs from './CaseDetailsTabs';
 
-function CaseDetailsBody(props: { caseId: string }): JSX.Element {
+function CaseDetailsBody(props: any): JSX.Element {
   const { caseDetail, areCasesLoading } = useGetCaseById(props.caseId);
   if (areCasesLoading) {
     return <h1>{commonLabels.loadingLabel}</h1>;
   } else {
+    if (!caseDetail) return <></>;
     return (
       <ContentLayout
         header={

@@ -4,6 +4,7 @@
  */
 
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
+import { useRouter } from 'next/router';
 import BaseLayout from '../../components/BaseLayout';
 import CaseDetailsBody from '../../components/case-details/CaseDetailsBody';
 
@@ -11,7 +12,9 @@ export interface IHomeProps {
   locale: string;
 }
 
-function CaseDetailsPage(props: { caseId: string }) {
+function CaseDetailsPage() {
+  const router = useRouter();
+  const { caseId } = router.query;
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: 'Digital Evidence Archive',
@@ -26,26 +29,10 @@ function CaseDetailsPage(props: { caseId: string }) {
   return (
     <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
       <Box margin={{ bottom: 'l' }}>
-        <CaseDetailsBody caseId={props.caseId}></CaseDetailsBody>
+        <CaseDetailsBody caseId={caseId}></CaseDetailsBody>
       </Box>
     </BaseLayout>
   );
-}
-
-export async function getStaticPaths() {
-  return {
-    paths: [], //indicates that no page needs be created at build time
-    fallback: 'blocking', //indicates the type of fallback
-  };
-}
-
-export async function getStaticProps(context: { params: { caseId: string } }) {
-  const caseId = context.params.caseId;
-
-  return {
-    props: { caseId: caseId }, // will be passed to the page component as props
-    revalidate: 10, // In seconds
-  };
 }
 
 export default CaseDetailsPage;
