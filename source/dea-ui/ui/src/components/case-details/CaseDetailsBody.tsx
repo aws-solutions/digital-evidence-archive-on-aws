@@ -20,11 +20,12 @@ function CaseDetailsBody(props: any): JSX.Element {
   if (areCasesLoading) {
     return <h1>{commonLabels.loadingLabel}</h1>;
   } else {
+    if (!caseDetail) return <></>;
     return (
       <ContentLayout
         header={
           <SpaceBetween size="m">
-            <Header variant="h1">{caseDetail?.name}</Header>
+            <Header variant="h1">{caseDetail.name}</Header>
           </SpaceBetween>
         }
       >
@@ -39,14 +40,14 @@ function CaseDetailsBody(props: any): JSX.Element {
             </div>
             <div>
               <h4>Description</h4>
-              <p>{caseDetail?.description}</p>
+              <p>{caseDetail.description}</p>
             </div>
             <div>
               {' '}
               <h4>Status</h4>
               <p>
-                <StatusIndicator type={caseDetail?.status === 'ACTIVE' ? 'success' : 'error'}>
-                  {caseDetail?.status}
+                <StatusIndicator type={caseDetail.status === 'ACTIVE' ? 'success' : 'error'}>
+                  {caseDetail.status}
                 </StatusIndicator>
               </p>
             </div>
