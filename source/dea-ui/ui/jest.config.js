@@ -19,7 +19,7 @@ const customJestConfig = {
       statements: 90,
     },
   },
-  coverageReporters: ['json-summary', 'json'],
+  coverageReporters: ['json-summary', 'json', 'text'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
