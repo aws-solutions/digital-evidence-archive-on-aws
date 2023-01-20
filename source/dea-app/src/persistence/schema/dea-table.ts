@@ -8,7 +8,7 @@ import { Table } from 'dynamodb-onetable';
 import { Dynamo } from 'dynamodb-onetable/Dynamo';
 import { DeaSchema } from './dea-schema';
 
-const region = process.env.AWS_REGION ?? 'us-east-1'
+const region = process.env.AWS_REGION ?? 'us-east-1';
 const client = new Dynamo({ client: new DynamoDBClient({ region }) });
 
 export const deaTable = new Table({

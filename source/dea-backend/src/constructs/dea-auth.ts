@@ -59,7 +59,6 @@ export class DeaAuthConstruct extends Construct {
     const role = new Role(this, roleName, {
       assumedBy: principal,
       description: description,
-      roleName: roleName,
     });
     role.attachInlinePolicy(
       new Policy(this, roleName + 'Policy', {

@@ -11,8 +11,10 @@
   },
   "coverageReporters": [
     "json-summary",
-    "json"
+    "json",
+    "text"
   ],
+  "coveragePathIgnorePatterns": ["<rootDir>/src/test-e2e/"],
   "globalSetup": "<rootDir>/src/test/local-dynamo/setup.ts",
   "globalTeardown": "<rootDir>/src/test/local-dynamo/teardown.ts"
 }
