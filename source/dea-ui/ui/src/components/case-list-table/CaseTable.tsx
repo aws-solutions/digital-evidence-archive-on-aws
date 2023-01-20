@@ -13,11 +13,13 @@ import {
   Link,
   StatusIndicator,
 } from '@cloudscape-design/components';
+import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useListAllCases } from '../../api/cases';
 import { commonTableLabels, caseListLabels } from '../../common/labels';
 
 function CaseTable(): JSX.Element {
+  const router = useRouter();
   const { cases, areCasesLoading } = useListAllCases();
 
   const STAGE = 'test';
@@ -32,7 +34,17 @@ function CaseTable(): JSX.Element {
         {
           id: 'name',
           header: commonTableLabels.caseNameHeader,
-          cell: (e) => <Link href={`/${STAGE}/ui/${e.ulid}`}>{e.name}</Link>,
+          cell: (e) => (
+            <Link
+              href={`/${e.ulid}`}
+              onFollow={(e) => {
+                e.preventDefault();
+                router.push(`${e.detail.href}`);
+              }}
+            >
+              {e.name}
+            </Link>
+          ),
           width: 170,
           minWidth: 165,
           sortingField: 'name',
