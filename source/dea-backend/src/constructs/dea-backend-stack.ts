@@ -4,10 +4,12 @@
  */
 
 /* eslint-disable no-new */
-import { CfnResource, RemovalPolicy, StackProps } from 'aws-cdk-lib';
+import { CfnResource, RemovalPolicy, StackProps, Duration } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Key } from 'aws-cdk-lib/aws-kms';
+import { BlockPublicAccess, Bucket, BucketEncryption, LifecycleRule } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
+import { getConstants } from '../constants';
 
 interface IBackendStackProps extends StackProps {
   kmsKey: Key;
@@ -15,12 +17,16 @@ interface IBackendStackProps extends StackProps {
 
 export class DeaBackendConstruct extends Construct {
   public deaTable: Table;
+  public datasetsBucket: Bucket;
 
   public constructor(scope: Construct, id: string, props: IBackendStackProps) {
     super(scope, id);
 
     //Dynamo
     this.deaTable = this._createDeaTable(props.kmsKey);
+    this.datasetsBucket = this._createDatasetsBucket(props.kmsKey);
+    //console.log("s3 bucket created");
+    //console.log(this.datasetsBucket);
   }
 
   private _createDeaTable(key: Key): Table {
@@ -64,5 +70,40 @@ export class DeaBackendConstruct extends Construct {
     }
 
     return deaTable;
+  }
+
+  private _createDatasetsBucket(key: Key): Bucket {
+    const { DATASETS_BUCKET_NAME } = getConstants();
+    // console.log(`yolo-${DATASETS_BUCKET_NAME}`)
+
+    const datasetsBucket = new Bucket(this, DATASETS_BUCKET_NAME, {
+      autoDeleteObjects: false,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      bucketKeyEnabled: true,
+      bucketName: DATASETS_BUCKET_NAME,
+      encryption: BucketEncryption.KMS,
+      encryptionKey: key,
+      enforceSSL: true,
+      eventBridgeEnabled: true, // eventBridge will be needed in MLP for deleting evidence in case
+      lifecycleRules: this._getLifeCycleRules(),
+      publicReadAccess: false,
+      removalPolicy: RemovalPolicy.RETAIN,
+      versioned: true,
+
+      //TODO: following sections are required for security/compliance
+      // serverAccessLogsBucket:
+      // cors:
+    });
+    return datasetsBucket;
+  }
+
+  private _getLifeCycleRules(): LifecycleRule[] {
+    const deleteIncompleteUploadsRule: LifecycleRule = {
+      abortIncompleteMultipartUploadAfter: Duration.days(1),
+      enabled: true,
+      id: 'DeaDatasetsDeleteIncompleteUploadsLifecyclePolicy'
+    }
+
+    return [deleteIncompleteUploadsRule];
   }
 }
