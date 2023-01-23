@@ -46,7 +46,6 @@ function getConstants(): {
       // eslint-disable-next-line security/detect-non-literal-fs-filename
       fs.readFileSync(join(__dirname, `../src/config/${process.env.STAGE}.yaml`), 'utf8') // nosemgrep
     );
-    //console.log(config)
     const STACK_NAME = `DeaBackendStack`;
     const SC_PORTFOLIO_NAME = `dea-${config.stage}-${config.awsRegionShortName}`; // Service Catalog Portfolio Name
     const DATASETS_BUCKET_NAME = `dea-datasets-${config.stage}-${config.awsRegionShortName}`; // Service Catalog Portfolio Name

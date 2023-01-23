@@ -33,4 +33,28 @@ export const validateBackendConstruct = (template: Template): void => {
       }),
     ]),
   });
+
+  template.hasResourceProperties('AWS::S3::Bucket', {
+    BucketName: "dea-datasets-test-testville",
+    VersioningConfiguration: Match.objectLike({
+      Status: "Enabled"
+    }),
+    PublicAccessBlockConfiguration: Match.objectLike({
+      BlockPublicAcls: true,
+      BlockPublicPolicy: true,
+      IgnorePublicAcls: true,
+      RestrictPublicBuckets: true
+    }),
+    LifecycleConfiguration: Match.objectLike({
+      Rules: Match.arrayWith([
+        Match.objectLike({
+          AbortIncompleteMultipartUpload: {
+            DaysAfterInitiation: 1
+          },
+          Id: "DeaDatasetsDeleteIncompleteUploadsLifecyclePolicy",
+          Status: "Enabled"
+        })
+      ])
+    })
+  });
 };

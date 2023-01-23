@@ -25,8 +25,6 @@ export class DeaBackendConstruct extends Construct {
     //Dynamo
     this.deaTable = this._createDeaTable(props.kmsKey);
     this.datasetsBucket = this._createDatasetsBucket(props.kmsKey);
-    //console.log("s3 bucket created");
-    //console.log(this.datasetsBucket);
   }
 
   private _createDeaTable(key: Key): Table {
@@ -74,7 +72,6 @@ export class DeaBackendConstruct extends Construct {
 
   private _createDatasetsBucket(key: Key): Bucket {
     const { DATASETS_BUCKET_NAME } = getConstants();
-    // console.log(`yolo-${DATASETS_BUCKET_NAME}`)
 
     const datasetsBucket = new Bucket(this, DATASETS_BUCKET_NAME, {
       autoDeleteObjects: false,
