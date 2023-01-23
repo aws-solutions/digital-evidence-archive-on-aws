@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { SpaceBetween, ContentLayout, Header } from '@cloudscape-design/components';
+import { SpaceBetween, ContentLayout, Header, Button } from '@cloudscape-design/components';
 import * as React from 'react';
 import { createCaseLabels } from '../../common/labels';
 import CreateCasesForm from './CreateCasesForm';
@@ -13,7 +13,9 @@ function CreateCasePage() {
     <ContentLayout
       header={
         <SpaceBetween size="m">
-          <Header variant="h1">{createCaseLabels.createNewCaseLabel}</Header>
+          <Header variant="h1" description={createCaseLabels.createNewCaseDescription}>
+            {createCaseLabels.createNewCaseLabel}
+          </Header>
         </SpaceBetween>
       }
     >
