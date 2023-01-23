@@ -3,10 +3,10 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
+import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
 import BaseLayout from '../components/BaseLayout';
-import CaseListBody from '../components/case-list-table/CaseListBody';
+import CaseTable from '../components/case-list-table/CaseTable';
 
 export interface IHomeProps {
   locale: string;
@@ -26,9 +26,7 @@ const Home: NextPage = () => {
 
   return (
     <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
-      <Box margin={{ bottom: 'l' }}>
-        <CaseListBody />
-      </Box>
+      <CaseTable></CaseTable>
     </BaseLayout>
   );
 };

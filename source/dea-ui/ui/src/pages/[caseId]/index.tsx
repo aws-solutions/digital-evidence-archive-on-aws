@@ -28,9 +28,7 @@ function CaseDetailsPage() {
 
   return (
     <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
-      <Box margin={{ bottom: 'l' }}>
-        <CaseDetailsBody caseId={caseId}></CaseDetailsBody>
-      </Box>
+      <CaseDetailsBody caseId={caseId}></CaseDetailsBody>
     </BaseLayout>
   );
 }

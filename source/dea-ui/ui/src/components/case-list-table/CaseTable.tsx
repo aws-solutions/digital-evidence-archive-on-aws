@@ -12,11 +12,13 @@ import {
   Pagination,
   Link,
   StatusIndicator,
+  SpaceBetween,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useListAllCases } from '../../api/cases';
 import { commonTableLabels, caseListLabels } from '../../common/labels';
+import { TableHeader } from '../common-components/TableHeader';
 
 function CaseTable(): JSX.Element {
   const router = useRouter();
@@ -27,9 +29,31 @@ function CaseTable(): JSX.Element {
   // Property and date filter collections
   const { items } = useCollection(cases, {});
 
+  function createNewCaseHandler() {
+    router.push('/create-cases');
+  }
+
   return (
     <Table
       loading={areCasesLoading}
+      variant="full-page"
+      header={
+        <TableHeader
+          variant="awsui-h1-sticky"
+          title={caseListLabels.casesLabel}
+          description={caseListLabels.casesPageDescription}
+          actionButtons={
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button>{caseListLabels.archiveButton}</Button>
+              <Button>{caseListLabels.activateButton}</Button>
+              <Button variant="primary" onClick={createNewCaseHandler}>
+                {caseListLabels.createNewCaseLabel}
+              </Button>{' '}
+            </SpaceBetween>
+          }
+          totalItems={cases}
+        />
+      }
       columnDefinitions={[
         {
           id: 'name',
@@ -86,7 +110,7 @@ function CaseTable(): JSX.Element {
       ]}
       items={items}
       loadingText={caseListLabels.loading}
-      resizableColumns
+      resizableColumns={true}
       selectionType="single"
       empty={
         <Box textAlign="center" color="inherit">
