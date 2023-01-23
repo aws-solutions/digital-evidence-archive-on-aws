@@ -1,5 +1,5 @@
 stage: test
-awsRegionShortName: Testville
+awsRegionShortName: testville
 awsRegion: us-east-1
 isTestingEnv: true
 rootUserEmail: test@bogus.oof

@@ -22,7 +22,7 @@ describe('constants', () => {
 
       //spot check
       expect(theConstants.CLIENT_SECRET).toEqual('shh');
-      expect(theConstants.AWS_REGION_SHORT_NAME).toEqual('Testville');
+      expect(theConstants.AWS_REGION_SHORT_NAME).toEqual('testville');
       expect(theConstants.ALLOWED_ORIGINS).toEqual(JSON.stringify(['test', 'https://bogus.bogus']));
     });
   });
