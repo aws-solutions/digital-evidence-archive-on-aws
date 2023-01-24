@@ -81,7 +81,6 @@ export class DeaBackendConstruct extends Construct {
       encryption: BucketEncryption.KMS,
       encryptionKey: key,
       enforceSSL: true,
-      eventBridgeEnabled: true, // eventBridge will be needed in MLP for deleting evidence in case
       lifecycleRules: this._getLifeCycleRules(),
       publicReadAccess: false,
       removalPolicy: RemovalPolicy.RETAIN,
