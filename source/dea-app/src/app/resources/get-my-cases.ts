@@ -7,48 +7,46 @@ import { logger } from '../../logger';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import { listCasesForUser } from '../services/case-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEALambda, LambdaContext, LambdaEvent, LambdaResult } from './dea-lambda';
 
-export const getMyCases: DEAGatewayProxyHandler = async (
-  event,
-  context,
-  repositoryProvider = defaultProvider,
-) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
-  let limit: number | undefined;
-  let next: string | undefined;
-  let userUlid: string | undefined;
-  if (event.queryStringParameters) {
-    if (event.queryStringParameters['limit']) {
-      limit = parseInt(event.queryStringParameters['limit']);
+export class GetMyCasesLambda extends DEALambda {
+  async execute(event: LambdaEvent, context: LambdaContext, repositoryProvider = defaultProvider) :  Promise<LambdaResult> {
+    logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
+    logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
+    let limit: number | undefined;
+    let next: string | undefined;
+    let userUlid: string | undefined;
+    if (event.queryStringParameters) {
+      if (event.queryStringParameters['limit']) {
+        limit = parseInt(event.queryStringParameters['limit']);
+      }
+      next = event.queryStringParameters['next'];
+      // THIS IS TEMPORARY - THE USER CONTEXT WILL BE SET BY THE REQUESTING USER WHEN AUTH IS IN PLACE
+      userUlid = event.queryStringParameters['userUlid'];
     }
-    next = event.queryStringParameters['next'];
+  
     // THIS IS TEMPORARY - THE USER CONTEXT WILL BE SET BY THE REQUESTING USER WHEN AUTH IS IN PLACE
-    userUlid = event.queryStringParameters['userUlid'];
+    if (!userUlid) {
+      throw new ValidationError("userUlid query parameter is currently required");
+    }
+  
+    let nextToken: object | undefined = undefined;
+    if (next) {
+      nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
+    }
+  
+    const pageOfCases = await listCasesForUser(userUlid, limit, nextToken, repositoryProvider);
+  
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        cases: pageOfCases,
+        total: pageOfCases.count,
+        next: getNextToken(pageOfCases.next),
+      }),
+    };
   }
-
-  // THIS IS TEMPORARY - THE USER CONTEXT WILL BE SET BY THE REQUESTING USER WHEN AUTH IS IN PLACE
-  if (!userUlid) {
-    throw new ValidationError("userUlid query parameter is currently required");
-  }
-
-  let nextToken: object | undefined = undefined;
-  if (next) {
-    nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
-  }
-
-  const pageOfCases = await listCasesForUser(userUlid, limit, nextToken, repositoryProvider);
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      cases: pageOfCases,
-      total: pageOfCases.count,
-      next: getNextToken(pageOfCases.next),
-    }),
-  };
-};
+}
 
 const getNextToken = (nextToken: object | undefined): string | undefined => {
   if (nextToken) {

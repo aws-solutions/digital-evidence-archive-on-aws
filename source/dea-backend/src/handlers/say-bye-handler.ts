@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { sayBye } from '@aws/dea-app';
+import { ByeWorldLambda } from '@aws/dea-app';
 import { createDeaHandler } from './create-dea-handler';
 
-exports.handler = createDeaHandler(sayBye);
+exports.handler = createDeaHandler(new ByeWorldLambda());

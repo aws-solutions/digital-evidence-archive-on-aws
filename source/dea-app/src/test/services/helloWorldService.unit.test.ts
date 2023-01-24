@@ -5,14 +5,14 @@
 
 import { APIGatewayProxyEventV2, Context } from 'aws-lambda';
 import { mock } from 'ts-mockito';
-import { sayBye } from '../../app/resources/say-bye';
-import { sayHello } from '../../app/resources/say-hello';
+import { ByeWorldLambda } from '../../app/resources/say-bye';
+import { HelloWorldLambda } from '../../app/resources/say-hello';
 
 describe('helloWorld service', () => {
   it('should say hello', async () => {
     const event: APIGatewayProxyEventV2 = mock();
     const context: Context = mock();
-    const response = await sayHello(event, context);
+    const response = await new HelloWorldLambda().execute(event, context);
     if (typeof response === 'string') {
       fail();
     } else {
@@ -23,7 +23,7 @@ describe('helloWorld service', () => {
   it('should say bye', async () => {
     const event: APIGatewayProxyEventV2 = mock();
     const context: Context = mock();
-    const response = await sayBye(event, context);
+    const response = await new ByeWorldLambda().execute(event, context);
     if (typeof response === 'string') {
       fail();
     } else {

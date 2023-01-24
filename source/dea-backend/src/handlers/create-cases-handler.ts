@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { createCases } from '@aws/dea-app';
+import { CreateCasesLambda } from '@aws/dea-app';
 import { createDeaHandler } from './create-dea-handler';
 
-exports.handler = createDeaHandler(createCases);
+exports.handler = createDeaHandler(new CreateCasesLambda());

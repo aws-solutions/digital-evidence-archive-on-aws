@@ -7,21 +7,19 @@ import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { defaultProvider } from '../../persistence/schema/entities';
 import * as CaseService from '../services/case-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEALambda, LambdaContext, LambdaEvent, LambdaResult } from './dea-lambda';
 
-export const deleteCase: DEAGatewayProxyHandler = async (
-  event,
-  context,
-  repositoryProvider = defaultProvider,
-) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
-
-  const caseId = getRequiredPathParam(event, 'caseId');
-
-  await CaseService.deleteCase(caseId, repositoryProvider);
-
-  return {
-    statusCode: 204,
-  };
-};
+export class DeleteCasesLambda extends DEALambda {
+  async execute(event: LambdaEvent, context: LambdaContext, repositoryProvider = defaultProvider) :  Promise<LambdaResult> {
+    logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
+    logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
+  
+    const caseId = getRequiredPathParam(event, 'caseId');
+  
+    await CaseService.deleteCase(caseId, repositoryProvider);
+  
+    return {
+      statusCode: 204,
+    };
+  }
+}

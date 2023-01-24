@@ -5,13 +5,13 @@
 
 import { NOT_FOUND_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/not-found-exception';
 import { VALIDATION_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/validation-exception';
-import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import { LambdaResult } from '@aws/dea-app/lib/app/resources/dea-lambda';
 import Joi from 'joi';
 
 // If you have a new error case that you want to support, create a new Class that extends Error 
 // and add a handler here that responds with an appropriate status code.
 
-export type ExceptionHandler = (error: Error) => Promise<APIGatewayProxyStructuredResultV2>;
+export type ExceptionHandler = (error: Error) => Promise<LambdaResult>;
 
 const notFoundHandler: ExceptionHandler = async (error) => {
   return {

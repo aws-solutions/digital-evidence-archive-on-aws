@@ -3,11 +3,17 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { logger } from '../../logger';
+import { DEALambda, LambdaContext, LambdaEvent, LambdaResult } from './dea-lambda';
 
-export const sayHello: DEAGatewayProxyHandler = async () => {
-  return {
-    statusCode: 200,
-    body: 'Hello DEA!',
-  };
-};
+export class HelloWorldLambda extends DEALambda {
+  async execute(event: LambdaEvent, context: LambdaContext) :  Promise<LambdaResult> {
+    logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
+    logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
+  
+    return {
+      statusCode: 200,
+      body: 'Hello DEA!',
+    };
+  }
+}
