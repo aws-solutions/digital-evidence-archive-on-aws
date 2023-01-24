@@ -90,12 +90,12 @@ Object {
         "Ref": "DeaAuthDEAUserPool22DB2BAB",
       },
     },
-    "DeaUiStackDeaMainStackDeaUIS3BucketAccessLogsOutput818C95B1": Object {
+    "DeaBackendStackDeaMainStackDeaS3AccessLogsDEDCF0A9": Object {
       "Export": Object {
-        "Name": "DeaMainStack-DeaUIS3BucketAccessLogsOutput",
+        "Name": "DeaMainStack-DeaS3AccessLogs",
       },
       "Value": Object {
-        "Ref": "DeaUiStackuiS3AccessLogsBucketF45A3215",
+        "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
       },
     },
     "mainaccountkmskey": Object {
@@ -322,7 +322,7 @@ Object {
             Array [
               "Lambda function for auto-deleting objects in ",
               Object {
-                "Ref": "DeaUiStackuiS3AccessLogsBucketF45A3215",
+                "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
               },
               " S3 bucket.",
             ],
@@ -3846,6 +3846,193 @@ Object {
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
     },
+    "DeaBackendStackS3AccessLogsBucket46FDD3E0": Object {
+      "DeletionPolicy": "Delete",
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W35",
+              "reason": "This is an access log bucket, we don't need to configure access logging for access log buckets",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "AccessControl": "LogDeliveryWrite",
+        "BucketEncryption": Object {
+          "ServerSideEncryptionConfiguration": Array [
+            Object {
+              "ServerSideEncryptionByDefault": Object {
+                "SSEAlgorithm": "AES256",
+              },
+            },
+          ],
+        },
+        "PublicAccessBlockConfiguration": Object {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true",
+          },
+        ],
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaBackendStackS3AccessLogsBucketAutoDeleteObjectsCustomResource54474E78": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "DeaBackendStackS3AccessLogsBucketPolicyCF6769D3",
+      ],
+      "Properties": Object {
+        "BucketName": Object {
+          "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3AutoDeleteObjects",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaBackendStackS3AccessLogsBucketPolicyCF6769D3": Object {
+      "Properties": Object {
+        "Bucket": Object {
+          "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+        },
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:*",
+              "Condition": Object {
+                "Bool": Object {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn",
+                  ],
+                },
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": "s3:PutObject",
+              "Condition": Object {
+                "StringEquals": Object {
+                  "aws:SourceAccount": Object {
+                    "Ref": "AWS::AccountId",
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "logging.s3.amazonaws.com",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                          "Arn",
+                        ],
+                      },
+                      "/dea-ui-access-log*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                          "Arn",
+                        ],
+                      },
+                      "/dea-datasets-access-log*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
     "DeaBackendStackdeadatasetstesttestville29D381D6": Object {
       "DeletionPolicy": "Retain",
       "Properties": Object {
@@ -3876,6 +4063,12 @@ Object {
               "Status": "Enabled",
             },
           ],
+        },
+        "LoggingConfiguration": Object {
+          "DestinationBucketName": Object {
+            "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+          },
+          "LogFilePrefix": "dea-datasets-access-log",
         },
         "PublicAccessBlockConfiguration": Object {
           "BlockPublicAcls": true,
@@ -3952,7 +4145,7 @@ Object {
         },
         "LoggingConfiguration": Object {
           "DestinationBucketName": Object {
-            "Ref": "DeaUiStackuiS3AccessLogsBucketF45A3215",
+            "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
           },
           "LogFilePrefix": "dea-ui-access-log",
         },
@@ -4217,177 +4410,6 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "DeaUiStackuiS3AccessLogsBucketAutoDeleteObjectsCustomResource26BB732F": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "DeaUiStackuiS3AccessLogsBucketPolicyBA876991",
-      ],
-      "Properties": Object {
-        "BucketName": Object {
-          "Ref": "DeaUiStackuiS3AccessLogsBucketF45A3215",
-        },
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::S3AutoDeleteObjects",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DeaUiStackuiS3AccessLogsBucketF45A3215": Object {
-      "DeletionPolicy": "Delete",
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W35",
-              "reason": "This is an access log bucket, we don't need to configure access logging for access log buckets",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "AccessControl": "LogDeliveryWrite",
-        "BucketEncryption": Object {
-          "ServerSideEncryptionConfiguration": Array [
-            Object {
-              "ServerSideEncryptionByDefault": Object {
-                "SSEAlgorithm": "AES256",
-              },
-            },
-          ],
-        },
-        "PublicAccessBlockConfiguration": Object {
-          "BlockPublicAcls": true,
-          "BlockPublicPolicy": true,
-          "IgnorePublicAcls": true,
-          "RestrictPublicBuckets": true,
-        },
-        "Tags": Array [
-          Object {
-            "Key": "aws-cdk:auto-delete-objects",
-            "Value": "true",
-          },
-        ],
-      },
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DeaUiStackuiS3AccessLogsBucketPolicyBA876991": Object {
-      "Properties": Object {
-        "Bucket": Object {
-          "Ref": "DeaUiStackuiS3AccessLogsBucketF45A3215",
-        },
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "s3:*",
-              "Condition": Object {
-                "Bool": Object {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": Object {
-                "AWS": "*",
-              },
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaUiStackuiS3AccessLogsBucketF45A3215",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaUiStackuiS3AccessLogsBucketF45A3215",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            Object {
-              "Action": Array [
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-              ],
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::GetAtt": Array [
-                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                    "Arn",
-                  ],
-                },
-              },
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaUiStackuiS3AccessLogsBucketF45A3215",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaUiStackuiS3AccessLogsBucketF45A3215",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            Object {
-              "Action": "s3:PutObject",
-              "Condition": Object {
-                "StringEquals": Object {
-                  "aws:SourceAccount": Object {
-                    "Ref": "AWS::AccountId",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "logging.s3.amazonaws.com",
-              },
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
-                        "DeaUiStackuiS3AccessLogsBucketF45A3215",
-                        "Arn",
-                      ],
-                    },
-                    "/dea-ui-access-log*",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::S3::BucketPolicy",
     },
     "primaryCustomerKey87EC2263": Object {
       "DeletionPolicy": "Delete",

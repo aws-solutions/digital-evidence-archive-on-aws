@@ -16,6 +16,8 @@ function getConstants(): {
   SSM_DOC_OUTPUT_KEY_SUFFIX: string;
   S3_ACCESS_LOGS_BUCKET_NAME_OUTPUT_KEY: string;
   S3_ACCESS_BUCKET_PREFIX: string;
+  S3_UI_ACCESS_LOG_PREFIX: string;
+  S3_DATASETS_ACCESS_LOG_PREFIX: string;
   S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY: string;
   S3_DATASETS_BUCKET_ARN_OUTPUT_KEY: string;
   S3_ARTIFACT_BUCKET_SC_PREFIX: string;
@@ -48,10 +50,12 @@ function getConstants(): {
     );
     const STACK_NAME = `DeaBackendStack`;
     const SC_PORTFOLIO_NAME = `dea-${config.stage}-${config.awsRegionShortName}`; // Service Catalog Portfolio Name
-    const DATASETS_BUCKET_NAME = `dea-datasets-${config.stage}-${config.awsRegionShortName}`; // Service Catalog Portfolio Name
+    const DATASETS_BUCKET_NAME = `dea-datasets-${config.stage}-${config.awsRegionShortName}`;
     const AWS_REGION = config.awsRegion;
     const AWS_REGION_SHORT_NAME = config.awsRegionShortName;
     const S3_ACCESS_BUCKET_PREFIX = 'dea-access-log';
+    const S3_UI_ACCESS_LOG_PREFIX = 'dea-ui-access-log';
+    const S3_DATASETS_ACCESS_LOG_PREFIX = 'dea-datasets-access-log';
     const S3_ARTIFACT_BUCKET_SC_PREFIX = 'dea-catalog-cfn-templates/';
     const S3_ARTIFACT_BUCKET_BOOTSTRAP_PREFIX = 'environment-files/'; // Location of env bootstrap scripts in the artifacts bucket
     const ROOT_USER_EMAIL = config.rootUserEmail;
@@ -90,6 +94,8 @@ function getConstants(): {
       SSM_DOC_OUTPUT_KEY_SUFFIX,
       S3_ACCESS_LOGS_BUCKET_NAME_OUTPUT_KEY,
       S3_ACCESS_BUCKET_PREFIX,
+      S3_UI_ACCESS_LOG_PREFIX,
+      S3_DATASETS_ACCESS_LOG_PREFIX,
       S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY,
       S3_DATASETS_BUCKET_ARN_OUTPUT_KEY,
       S3_ARTIFACT_BUCKET_SC_PREFIX,

@@ -34,16 +34,19 @@ export const validateBackendConstruct = (template: Template): void => {
     ]),
   });
 
+  template.allResourcesProperties('AWS::S3::Bucket', {
+    PublicAccessBlockConfiguration: {
+      BlockPublicAcls: true,
+      BlockPublicPolicy: true,
+      IgnorePublicAcls: true,
+      RestrictPublicBuckets: true,
+    },
+  });
+
   template.hasResourceProperties('AWS::S3::Bucket', {
     BucketName: "dea-datasets-test-testville",
     VersioningConfiguration: Match.objectLike({
       Status: "Enabled"
-    }),
-    PublicAccessBlockConfiguration: Match.objectLike({
-      BlockPublicAcls: true,
-      BlockPublicPolicy: true,
-      IgnorePublicAcls: true,
-      RestrictPublicBuckets: true
     }),
     LifecycleConfiguration: Match.objectLike({
       Rules: Match.arrayWith([

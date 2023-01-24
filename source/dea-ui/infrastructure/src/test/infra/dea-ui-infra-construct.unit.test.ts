@@ -8,6 +8,7 @@ import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { Key } from 'aws-cdk-lib/aws-kms';
+import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
 import 'source-map-support/register';
 import { validateDeaUiConstruct } from '../..';
 import { DeaUiConstruct } from '../../dea-ui-stack';
@@ -31,9 +32,13 @@ describe('DeaMainStack', () => {
       pendingWindow: Duration.days(7),
     });
 
+    const accessLogsBucket = new Bucket(stack, 'testS3AccessLogBucket', {
+        blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      });
+
     const restApi = new RestApi(stack, 'testApi', { description: 'Backend API' });
 
-    new DeaUiConstruct(stack, 'DeaUiConstruct', { kmsKey: key, restApi });
+    new DeaUiConstruct(stack, 'DeaUiConstruct', { kmsKey: key, accessLogsBucket: accessLogsBucket, restApi });
 
     // Prepare the stack for assertions.
     const template = Template.fromStack(stack);
