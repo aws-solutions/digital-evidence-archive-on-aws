@@ -4,6 +4,7 @@
  */
 
 import { APIGatewayProxyEventV2 } from "aws-lambda";
+import { ValidationError } from "./app/exceptions/validation-exception";
 import { logger } from "./logger";
 
 export const getRequiredPathParam = (event: APIGatewayProxyEventV2, paramName: string): string => {
@@ -16,5 +17,5 @@ export const getRequiredPathParam = (event: APIGatewayProxyEventV2, paramName: s
     }
 
     logger.error('Required path param missing', {rawPath: event.rawPath, pathParams: JSON.stringify(event.pathParameters)});
-    throw new Error(`Required path param '${paramName}' is missing.`);
+    throw new ValidationError(`Required path param '${paramName}' is missing.`);
 }

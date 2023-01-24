@@ -14,7 +14,7 @@ import { getTestRepositoryProvider } from "./get-test-repository";
 
 let repositoryProvider: ModelRepositoryProvider;
 
-describe('getMyCases', () => {
+describe('create cases resource', () => {
 
     beforeAll(async () => {
         repositoryProvider = await getTestRepositoryProvider('createCasesTest');

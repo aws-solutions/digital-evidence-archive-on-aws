@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import { Autosuggest, Container, Header, SpaceBetween, TextContent } from '@cloudscape-design/components';
 import * as React from 'react';
 import { commonLabels, createCaseLabels } from '../../common/labels';
