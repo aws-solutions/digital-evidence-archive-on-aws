@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
+import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import BaseLayout from '../../components/BaseLayout';
 import CaseDetailsBody from '../../components/case-details/CaseDetailsBody';

@@ -11,6 +11,9 @@ import {
   Container,
   Input,
   FormField,
+  Textarea,
+  RadioGroup,
+  TextContent,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
@@ -18,8 +21,10 @@ import { useState } from 'react';
 import { createCase } from '../../api/cases';
 import { commonLabels, createCaseLabels } from '../../common/labels';
 import { CreateCaseForm } from '../../models/Cases';
+import CreateCaseShareCaseForm from './CreateCaseShareCaseForm';
 
 function CreateCasesForm(): JSX.Element {
+  const [caseStatusValue, setCaseStatusValue] = React.useState('active');
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const router = useRouter();
   const [formData, setFormData] = useState<CreateCaseForm>({ name: '' });
@@ -34,43 +39,78 @@ function CreateCasesForm(): JSX.Element {
     }
   }
 
+  function onCancelHandler() {
+    router.push('/');
+  }
+
   return (
-    <form onSubmit={(e) => e.preventDefault()}>
-      <Form
-        actions={
-          <SpaceBetween direction="horizontal" size="xs">
-            <Button formAction="none" variant="link">
-              {commonLabels.cancelButton}
-            </Button>
-            <Button variant="primary" onClick={onSubmitHandler} loading={isSubmitLoading}>
-              {commonLabels.submitButton}
-            </Button>
-          </SpaceBetween>
-        }
-        header={<Header variant="h1">{createCaseLabels.createNewCaseLabel}</Header>}
-      >
-        <Container header={<Header variant="h2">{createCaseLabels.enterCaseDetailsLabel}</Header>}>
-          <SpaceBetween direction="vertical" size="l">
-            <FormField label={createCaseLabels.caseNameLabel}>
-              <Input
-                value={formData?.name || ''}
-                onChange={({ detail: { value } }) => {
-                  setFormData({ ...formData, name: value });
-                }}
+    <SpaceBetween size="s">
+      <form onSubmit={(e) => e.preventDefault()}>
+        <Form>
+          <Container header={<Header variant="h2">{createCaseLabels.enterCaseDetailsLabel}</Header>}>
+            <SpaceBetween direction="vertical" size="l">
+              <FormField
+                label={createCaseLabels.caseNameLabel}
+                description={createCaseLabels.caseNameDescription}
+              >
+                <Input
+                  value={formData?.name || ''}
+                  onChange={({ detail: { value } }) => {
+                    setFormData({ ...formData, name: value });
+                  }}
+                />
+                <TextContent>
+                  <p>
+                    <small>{createCaseLabels.caseNameSubtext}</small>
+                  </p>
+                </TextContent>
+              </FormField>
+              <FormField
+                label={createCaseLabels.caseDescription}
+                description={createCaseLabels.caseDescriptionSubtext}
+              >
+                <Textarea
+                  value={formData?.description || ''}
+                  onChange={({ detail: { value } }) => {
+                    setFormData({ ...formData, description: value });
+                  }}
+                />
+              </FormField>
+              <TextContent>
+                <p>
+                  <strong>{createCaseLabels.caseStatusLabel}</strong>
+                </p>
+              </TextContent>
+              <RadioGroup
+                onChange={({ detail }) => setCaseStatusValue(detail.value)}
+                value={caseStatusValue}
+                items={[
+                  {
+                    value: 'active',
+                    label: `${createCaseLabels.activeLabel}`,
+                    description: `${createCaseLabels.activeCaseDescription}`,
+                  },
+                  {
+                    value: 'archive',
+                    label: `${createCaseLabels.archivedLabel}`,
+                    description: `${createCaseLabels.archivedCaseDescription}`,
+                  },
+                ]}
               />
-            </FormField>
-            <FormField label={createCaseLabels.caseDescription}>
-              <Input
-                value={formData?.description || ''}
-                onChange={({ detail: { value } }) => {
-                  setFormData({ ...formData, description: value });
-                }}
-              />
-            </FormField>
-          </SpaceBetween>
-        </Container>
-      </Form>
-    </form>
+            </SpaceBetween>
+          </Container>
+        </Form>
+      </form>
+      <CreateCaseShareCaseForm></CreateCaseShareCaseForm>
+      <SpaceBetween direction="horizontal" size="xs">
+        <Button formAction="none" variant="link" onClick={onCancelHandler}>
+          {commonLabels.cancelButton}
+        </Button>
+        <Button variant="primary" iconAlign="right" onClick={onSubmitHandler}>
+          {commonLabels.createButton}
+        </Button>
+      </SpaceBetween>
+    </SpaceBetween>
   );
 }
 

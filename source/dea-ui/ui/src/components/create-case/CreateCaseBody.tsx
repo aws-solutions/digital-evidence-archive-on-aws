@@ -13,7 +13,9 @@ function CreateCasePage() {
     <ContentLayout
       header={
         <SpaceBetween size="m">
-          <Header variant="h1">{createCaseLabels.createNewCaseLabel}</Header>
+          <Header variant="h1" description={createCaseLabels.createNewCaseDescription}>
+            {createCaseLabels.createNewCaseLabel}
+          </Header>
         </SpaceBetween>
       }
     >
