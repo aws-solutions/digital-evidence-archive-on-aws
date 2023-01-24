@@ -4,7 +4,6 @@
  */
 
 import { fail } from "assert";
-import { Table } from "dynamodb-onetable";
 import { getMyCases } from "../../../app/resources/get-my-cases";
 import { DeaCase } from "../../../models/case";
 import { CaseAction } from "../../../models/case-action";
@@ -14,10 +13,9 @@ import { createCaseUser } from "../../../persistence/case-user";
 import { ModelRepositoryProvider } from "../../../persistence/schema/entities";
 import { createUser } from "../../../persistence/user";
 import { dummyContext, dummyEvent } from "../../integration-objects";
-import { initLocalDb } from "../../persistence/local-db-table";
+import { getTestRepositoryProvider } from "./get-test-repository";
 
 let repositoryProvider: ModelRepositoryProvider;
-let testTable: Table;
 
 type ResponseCasePage = {
     cases: DeaCase[],
@@ -25,16 +23,13 @@ type ResponseCasePage = {
 };
 
 describe('getMyCases', () => {
-    
+
     beforeAll(async () => {
-        testTable = await initLocalDb('getMyCasesTest');
-        repositoryProvider = {
-            table: testTable,
-            CaseModel: testTable.getModel('Case'),
-            CaseUserModel: testTable.getModel('CaseUser'),
-            CaseFileModel: testTable.getModel('CaseFile'),
-            UserModel: testTable.getModel('User'),
-        };
+        repositoryProvider = await getTestRepositoryProvider('getMyCasesTest');
+    });
+
+    afterAll(async () => {
+        await repositoryProvider.table.deleteTable('DeleteTableForever');
     });
 
     it('should only return cases to which a user has membership', async () => {
@@ -109,15 +104,14 @@ describe('getMyCases', () => {
         if (!response.body) {
             fail();
         }
-        
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const cases = JSON.parse(response.body).cases as DeaCase[]
+
+        const cases: DeaCase[] = JSON.parse(response.body).cases
         expect(cases.find(deacase => deacase.name === case1.name)).toBeDefined();
         expect(cases.find(deacase => deacase.name === case2.name)).toBeDefined();
         expect(cases.find(deacase => deacase.name === case3.name)).toBeUndefined();
-      });
+    });
 
-      it('should can fetch cases across pages', async () => {
+    it('should can fetch cases across pages', async () => {
 
         // GIVEN a user with membership to case 1 and 2
         //create cases
@@ -189,19 +183,19 @@ describe('getMyCases', () => {
         if (!response.body) {
             fail();
         }
-        
+
         const casesPage: ResponseCasePage = JSON.parse(response.body);
         expect(casesPage.cases.length).toEqual(1);
         expect(casesPage.next).toBeTruthy();
 
-          const event2 = Object.assign({}, {
-              ...dummyEvent,
-              queryStringParameters: {
+        const event2 = Object.assign({}, {
+            ...dummyEvent,
+            queryStringParameters: {
                 userUlid: user.ulid,
                 limit: '20',
                 next: casesPage.next,
-              }
-          });
+            }
+        });
         const response2 = await getMyCases(event2, dummyContext, repositoryProvider);
         if (!response2.body) {
             fail();
@@ -214,9 +208,5 @@ describe('getMyCases', () => {
         expect(allCases.find(deacase => deacase.name === case1.name)).toBeDefined();
         expect(allCases.find(deacase => deacase.name === case2.name)).toBeDefined();
         expect(allCases.find(deacase => deacase.name === case3.name)).toBeUndefined();
-      });
-    
-      afterAll(async () => {
-        await testTable.deleteTable('DeleteTableForever');
-      });
+    });
 });
