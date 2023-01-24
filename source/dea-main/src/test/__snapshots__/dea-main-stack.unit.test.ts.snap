@@ -98,6 +98,14 @@ Object {
         "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
       },
     },
+    "DeaBackendStackDeaMainStackDeaS3Datasets466CF84F": Object {
+      "Export": Object {
+        "Name": "DeaMainStack-DeaS3Datasets",
+      },
+      "Value": Object {
+        "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
+      },
+    },
     "mainaccountkmskey": Object {
       "Value": Object {
         "Fn::GetAtt": Array [
@@ -322,7 +330,7 @@ Object {
             Array [
               "Lambda function for auto-deleting objects in ",
               Object {
-                "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                "Ref": "DeaUiStackDeaUiStackbucket2409F549",
               },
               " S3 bucket.",
             ],
@@ -3847,7 +3855,7 @@ Object {
       "UpdateReplacePolicy": "Delete",
     },
     "DeaBackendStackS3AccessLogsBucket46FDD3E0": Object {
-      "DeletionPolicy": "Delete",
+      "DeletionPolicy": "Retain",
       "Metadata": Object {
         "cfn_nag": Object {
           "rules_to_suppress": Array [
@@ -3863,8 +3871,15 @@ Object {
         "BucketEncryption": Object {
           "ServerSideEncryptionConfiguration": Array [
             Object {
+              "BucketKeyEnabled": true,
               "ServerSideEncryptionByDefault": Object {
-                "SSEAlgorithm": "AES256",
+                "KMSMasterKeyID": Object {
+                  "Fn::GetAtt": Array [
+                    "primaryCustomerKey87EC2263",
+                    "Arn",
+                  ],
+                },
+                "SSEAlgorithm": "aws:kms",
               },
             },
           ],
@@ -3875,34 +3890,9 @@ Object {
           "IgnorePublicAcls": true,
           "RestrictPublicBuckets": true,
         },
-        "Tags": Array [
-          Object {
-            "Key": "aws-cdk:auto-delete-objects",
-            "Value": "true",
-          },
-        ],
       },
       "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DeaBackendStackS3AccessLogsBucketAutoDeleteObjectsCustomResource54474E78": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "DeaBackendStackS3AccessLogsBucketPolicyCF6769D3",
-      ],
-      "Properties": Object {
-        "BucketName": Object {
-          "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
-        },
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::S3AutoDeleteObjects",
-      "UpdateReplacePolicy": "Delete",
+      "UpdateReplacePolicy": "Retain",
     },
     "DeaBackendStackS3AccessLogsBucketPolicyCF6769D3": Object {
       "Properties": Object {
@@ -3921,44 +3911,6 @@ Object {
               "Effect": "Deny",
               "Principal": Object {
                 "AWS": "*",
-              },
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaBackendStackS3AccessLogsBucket46FDD3E0",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaBackendStackS3AccessLogsBucket46FDD3E0",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            Object {
-              "Action": Array [
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-              ],
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::GetAtt": Array [
-                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                    "Arn",
-                  ],
-                },
               },
               "Resource": Array [
                 Object {
@@ -4033,7 +3985,7 @@ Object {
       },
       "Type": "AWS::S3::BucketPolicy",
     },
-    "DeaBackendStackdeadatasetstesttestville29D381D6": Object {
+    "DeaBackendStackS3DatasetsBucket408FF954": Object {
       "DeletionPolicy": "Retain",
       "Properties": Object {
         "BucketEncryption": Object {
@@ -4052,7 +4004,6 @@ Object {
             },
           ],
         },
-        "BucketName": "dea-datasets-test-testville",
         "LifecycleConfiguration": Object {
           "Rules": Array [
             Object {
@@ -4070,6 +4021,9 @@ Object {
           },
           "LogFilePrefix": "dea-datasets-access-log",
         },
+        "ObjectLockConfiguration": Object {
+          "ObjectLockEnabled": "Enabled",
+        },
         "PublicAccessBlockConfiguration": Object {
           "BlockPublicAcls": true,
           "BlockPublicPolicy": true,
@@ -4083,10 +4037,10 @@ Object {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
-    "DeaBackendStackdeadatasetstesttestvillePolicyA6C4456B": Object {
+    "DeaBackendStackS3DatasetsBucketPolicy328F21B8": Object {
       "Properties": Object {
         "Bucket": Object {
-          "Ref": "DeaBackendStackdeadatasetstesttestville29D381D6",
+          "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
         },
         "PolicyDocument": Object {
           "Statement": Array [
@@ -4104,7 +4058,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaBackendStackdeadatasetstesttestville29D381D6",
+                    "DeaBackendStackS3DatasetsBucket408FF954",
                     "Arn",
                   ],
                 },
@@ -4114,7 +4068,7 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "DeaBackendStackdeadatasetstesttestville29D381D6",
+                          "DeaBackendStackS3DatasetsBucket408FF954",
                           "Arn",
                         ],
                       },

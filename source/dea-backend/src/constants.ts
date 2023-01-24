@@ -11,7 +11,6 @@ function getConstants(): {
   STAGE: string;
   STACK_NAME: string;
   SC_PORTFOLIO_NAME: string;
-  DATASETS_BUCKET_NAME: string;
   AWS_REGION: string;
   SSM_DOC_OUTPUT_KEY_SUFFIX: string;
   S3_ACCESS_LOGS_BUCKET_NAME_OUTPUT_KEY: string;
@@ -50,7 +49,6 @@ function getConstants(): {
     );
     const STACK_NAME = `DeaBackendStack`;
     const SC_PORTFOLIO_NAME = `dea-${config.stage}-${config.awsRegionShortName}`; // Service Catalog Portfolio Name
-    const DATASETS_BUCKET_NAME = `dea-datasets-${config.stage}-${config.awsRegionShortName}`;
     const AWS_REGION = config.awsRegion;
     const AWS_REGION_SHORT_NAME = config.awsRegionShortName;
     const S3_ACCESS_BUCKET_PREFIX = 'dea-access-log';
@@ -89,7 +87,6 @@ function getConstants(): {
       STAGE: config.stage,
       STACK_NAME,
       SC_PORTFOLIO_NAME,
-      DATASETS_BUCKET_NAME,
       AWS_REGION,
       SSM_DOC_OUTPUT_KEY_SUFFIX,
       S3_ACCESS_LOGS_BUCKET_NAME_OUTPUT_KEY,

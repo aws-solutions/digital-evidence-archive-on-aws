@@ -25,8 +25,8 @@ export class DeaBackendConstruct extends Construct {
     super(scope, id);
 
     this.deaTable = this._createDeaTable(props.kmsKey);
-    this.accessLogsBucket = this._createAccessLogsBucket(`${scope.node.id}-DeaS3AccessLogs`);
-    this.datasetsBucket = this._createDatasetsBucket(props.kmsKey, this.accessLogsBucket);
+    this.accessLogsBucket = this._createAccessLogsBucket(props.kmsKey, `${scope.node.id}-DeaS3AccessLogs`);
+    this.datasetsBucket = this._createDatasetsBucket(props.kmsKey, this.accessLogsBucket, `${scope.node.id}-DeaS3Datasets`);
   }
 
   private _createDeaTable(key: Key): Table {
@@ -72,16 +72,19 @@ export class DeaBackendConstruct extends Construct {
     return deaTable;
   }
 
-  private _createAccessLogsBucket(bucketNameOutput: string): Bucket {
-    const { S3_UI_ACCESS_LOG_PREFIX } = getConstants();
-    const { S3_DATASETS_ACCESS_LOG_PREFIX } = getConstants();
+  private _createAccessLogsBucket(key: Key, bucketNameOutput: string): Bucket {
+    const { S3_UI_ACCESS_LOG_PREFIX, S3_DATASETS_ACCESS_LOG_PREFIX } = getConstants();
 
     const s3AccessLogsBucket = new Bucket(this, 'S3AccessLogsBucket', {
+      autoDeleteObjects: false,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-      encryption: BucketEncryption.S3_MANAGED,
+      bucketKeyEnabled: true,
+      encryption: BucketEncryption.KMS,
+      encryptionKey: key,
       enforceSSL: true,
-      removalPolicy: RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
+      publicReadAccess: false,
+      removalPolicy: RemovalPolicy.RETAIN,
+      versioned: false, // https://github.com/awslabs/aws-solutions-constructs/issues/44
     });
 
     s3AccessLogsBucket.addToResourcePolicy(
@@ -122,14 +125,13 @@ export class DeaBackendConstruct extends Construct {
     return s3AccessLogsBucket;
   }
 
-  private _createDatasetsBucket(key: Key, accessLogBucket: Bucket): Bucket {
-    const { DATASETS_BUCKET_NAME, S3_DATASETS_ACCESS_LOG_PREFIX } = getConstants();
+  private _createDatasetsBucket(key: Key, accessLogBucket: Bucket, bucketNameOutput: string): Bucket {
+    const { S3_DATASETS_ACCESS_LOG_PREFIX } = getConstants();
 
-    const datasetsBucket = new Bucket(this, DATASETS_BUCKET_NAME, {
+    const datasetsBucket = new Bucket(this, 'S3DatasetsBucket', {
       autoDeleteObjects: false,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       bucketKeyEnabled: true,
-      bucketName: DATASETS_BUCKET_NAME,
       encryption: BucketEncryption.KMS,
       encryptionKey: key,
       enforceSSL: true,
@@ -140,8 +142,18 @@ export class DeaBackendConstruct extends Construct {
       serverAccessLogsBucket: accessLogBucket,
       serverAccessLogsPrefix: S3_DATASETS_ACCESS_LOG_PREFIX,
 
-      // cors: TODO: required for security/compliance
+      // cors: TODO: we need to add cors and bucket policy for security/compliance
     });
+
+    const datasetsBucketNode = datasetsBucket.node.defaultChild;
+    if (datasetsBucketNode instanceof CfnBucket)
+      datasetsBucketNode.addPropertyOverride('ObjectLockConfiguration.ObjectLockEnabled', 'Enabled');
+
+    new CfnOutput(this, bucketNameOutput, {
+      value: datasetsBucket.bucketName,
+      exportName: bucketNameOutput,
+    });
+
     return datasetsBucket;
   }
 

@@ -34,6 +34,7 @@ export const validateBackendConstruct = (template: Template): void => {
     ]),
   });
 
+  // make sure all s3 buckets are created with public access disabled
   template.allResourcesProperties('AWS::S3::Bucket', {
     PublicAccessBlockConfiguration: {
       BlockPublicAcls: true,
@@ -43,10 +44,13 @@ export const validateBackendConstruct = (template: Template): void => {
     },
   });
 
+  // validate datasets
   template.hasResourceProperties('AWS::S3::Bucket', {
-    BucketName: "dea-datasets-test-testville",
     VersioningConfiguration: Match.objectLike({
       Status: "Enabled"
+    }),
+    ObjectLockConfiguration: Match.objectLike({
+      ObjectLockEnabled: "Enabled"
     }),
     LifecycleConfiguration: Match.objectLike({
       Rules: Match.arrayWith([
