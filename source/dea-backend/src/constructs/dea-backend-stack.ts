@@ -105,9 +105,9 @@ export class DeaBackendConstruct extends Construct {
     );
 
     //CFN NAG Suppression
-    const uiS3AccessLogsBucketNode = s3AccessLogsBucket.node.defaultChild;
-    if (uiS3AccessLogsBucketNode instanceof CfnBucket)
-      uiS3AccessLogsBucketNode.addMetadata('cfn_nag', {
+    const s3AccessLogsBucketNode = s3AccessLogsBucket.node.defaultChild;
+    if (s3AccessLogsBucketNode instanceof CfnBucket)
+      s3AccessLogsBucketNode.addMetadata('cfn_nag', {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         rules_to_suppress: [
           {
