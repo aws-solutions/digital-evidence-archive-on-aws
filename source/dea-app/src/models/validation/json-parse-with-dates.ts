@@ -4,12 +4,10 @@
  */
 
 export const jsonParseWithDates = <T>(payload: string): T => {
-    return JSON.parse(
-        payload,
-        (key, value) => {
-            if (['updated', 'created'].includes(key)) {
-                return new Date(value)
-            }
-            return value;
-        });
-}
+  return JSON.parse(payload, (key, value) => {
+    if (['updated', 'created'].includes(key)) {
+      return new Date(value);
+    }
+    return value;
+  });
+};
