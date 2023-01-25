@@ -3,14 +3,6 @@
 exports[`DeaMainStack synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
-    "DeaUiStackteststackDeaUIS3BucketAccessLogsOutput19759DEA": Object {
-      "Export": Object {
-        "Name": "test-stack-DeaUIS3BucketAccessLogsOutput",
-      },
-      "Value": Object {
-        "Ref": "DeaUiStackuiS3AccessLogsBucketF45A3215",
-      },
-    },
     "testApiEndpointC9D07ADA": Object {
       "Value": Object {
         "Fn::Join": Array [
@@ -217,7 +209,7 @@ Object {
             Array [
               "Lambda function for auto-deleting objects in ",
               Object {
-                "Ref": "DeaUiStackuiS3AccessLogsBucketF45A3215",
+                "Ref": "DeaUiStackDeaUiStackbucket2409F549",
               },
               " S3 bucket.",
             ],
@@ -273,7 +265,7 @@ Object {
         },
         "LoggingConfiguration": Object {
           "DestinationBucketName": Object {
-            "Ref": "DeaUiStackuiS3AccessLogsBucketF45A3215",
+            "Ref": "testS3AccessLogBucketF0DCA384",
           },
           "LogFilePrefix": "dea-ui-access-log",
         },
@@ -538,177 +530,6 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "DeaUiStackuiS3AccessLogsBucketAutoDeleteObjectsCustomResource26BB732F": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "DeaUiStackuiS3AccessLogsBucketPolicyBA876991",
-      ],
-      "Properties": Object {
-        "BucketName": Object {
-          "Ref": "DeaUiStackuiS3AccessLogsBucketF45A3215",
-        },
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::S3AutoDeleteObjects",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DeaUiStackuiS3AccessLogsBucketF45A3215": Object {
-      "DeletionPolicy": "Delete",
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W35",
-              "reason": "This is an access log bucket, we don't need to configure access logging for access log buckets",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "AccessControl": "LogDeliveryWrite",
-        "BucketEncryption": Object {
-          "ServerSideEncryptionConfiguration": Array [
-            Object {
-              "ServerSideEncryptionByDefault": Object {
-                "SSEAlgorithm": "AES256",
-              },
-            },
-          ],
-        },
-        "PublicAccessBlockConfiguration": Object {
-          "BlockPublicAcls": true,
-          "BlockPublicPolicy": true,
-          "IgnorePublicAcls": true,
-          "RestrictPublicBuckets": true,
-        },
-        "Tags": Array [
-          Object {
-            "Key": "aws-cdk:auto-delete-objects",
-            "Value": "true",
-          },
-        ],
-      },
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DeaUiStackuiS3AccessLogsBucketPolicyBA876991": Object {
-      "Properties": Object {
-        "Bucket": Object {
-          "Ref": "DeaUiStackuiS3AccessLogsBucketF45A3215",
-        },
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "s3:*",
-              "Condition": Object {
-                "Bool": Object {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": Object {
-                "AWS": "*",
-              },
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaUiStackuiS3AccessLogsBucketF45A3215",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaUiStackuiS3AccessLogsBucketF45A3215",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            Object {
-              "Action": Array [
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-              ],
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::GetAtt": Array [
-                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                    "Arn",
-                  ],
-                },
-              },
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaUiStackuiS3AccessLogsBucketF45A3215",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaUiStackuiS3AccessLogsBucketF45A3215",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            Object {
-              "Action": "s3:PutObject",
-              "Condition": Object {
-                "StringEquals": Object {
-                  "aws:SourceAccount": Object {
-                    "Ref": "AWS::AccountId",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "logging.s3.amazonaws.com",
-              },
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
-                        "DeaUiStackuiS3AccessLogsBucketF45A3215",
-                        "Arn",
-                      ],
-                    },
-                    "/dea-ui-access-log*",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::S3::BucketPolicy",
     },
     "testApiAccountA6723CBB": Object {
       "DeletionPolicy": "Retain",
@@ -1009,6 +830,20 @@ Object {
       },
       "Type": "AWS::KMS::Key",
       "UpdateReplacePolicy": "Delete",
+    },
+    "testS3AccessLogBucketF0DCA384": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AccessControl": "LogDeliveryWrite",
+        "PublicAccessBlockConfiguration": Object {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
     },
   },
   "Rules": Object {

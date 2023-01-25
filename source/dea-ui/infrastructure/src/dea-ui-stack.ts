@@ -4,7 +4,7 @@
  */
 /* eslint-disable no-new */
 import * as path from 'path';
-import { Aws, CfnOutput, RemovalPolicy, StackProps } from 'aws-cdk-lib';
+import { RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import {
   AwsIntegration,
   CfnDeployment,
@@ -22,7 +22,6 @@ import {
   Bucket,
   BucketAccessControl,
   BucketEncryption,
-  CfnBucket,
 } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
@@ -31,6 +30,7 @@ import { getConstants } from './constants';
 interface IUiStackProps extends StackProps {
   kmsKey: Key;
   restApi: RestApi;
+  accessLogsBucket: Bucket;
 }
 
 export class DeaUiConstruct extends Construct {
@@ -44,9 +44,6 @@ export class DeaUiConstruct extends Construct {
     S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME: string;
   };
 
-  private _accessLogsBucket: Bucket;
-  private _s3AccessLogsPrefix: string;
-
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(scope: Construct, id: string, props: IUiStackProps) {
     const {
@@ -57,6 +54,7 @@ export class DeaUiConstruct extends Construct {
       S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY,
       S3_ARTIFACT_BUCKET_NAME,
       S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME,
+      S3_UI_ACCESS_LOG_PREFIX,
     } = getConstants();
     super(scope, STACK_NAME);
 
@@ -70,17 +68,13 @@ export class DeaUiConstruct extends Construct {
       S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME,
     };
 
-    // Create Bucket for hosting UI assets and it's access log bucket
-    this._s3AccessLogsPrefix = 'dea-ui-access-log';
-    this._accessLogsBucket = this._createAccessLogsBucket(`${scope.node.id}-DeaUIS3BucketAccessLogsOutput`);
-
     const bucket = new Bucket(this, S3_ARTIFACT_BUCKET_NAME, {
       accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       websiteIndexDocument: 'index.html',
       encryption: BucketEncryption.S3_MANAGED,
-      serverAccessLogsBucket: this._accessLogsBucket,
-      serverAccessLogsPrefix: this._s3AccessLogsPrefix,
+      serverAccessLogsBucket: props.accessLogsBucket,
+      serverAccessLogsPrefix: S3_UI_ACCESS_LOG_PREFIX,
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
@@ -189,50 +183,6 @@ export class DeaUiConstruct extends Construct {
         },
       })
     );
-  }
-
-  private _createAccessLogsBucket(bucketNameOutput: string): Bucket {
-    const uiS3AccessLogsBucket = new Bucket(this, 'uiS3AccessLogsBucket', {
-      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-      encryption: BucketEncryption.S3_MANAGED,
-      enforceSSL: true,
-      removalPolicy: RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
-
-    uiS3AccessLogsBucket.addToResourcePolicy(
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        principals: [new ServicePrincipal('logging.s3.amazonaws.com')],
-        actions: ['s3:PutObject'],
-        resources: [`${uiS3AccessLogsBucket.bucketArn}/${this._s3AccessLogsPrefix}*`],
-        conditions: {
-          StringEquals: {
-            'aws:SourceAccount': Aws.ACCOUNT_ID,
-          },
-        },
-      })
-    );
-
-    //CFN NAG Suppression
-    const uiS3AccessLogsBucketNode = uiS3AccessLogsBucket.node.defaultChild;
-    if (uiS3AccessLogsBucketNode instanceof CfnBucket)
-      uiS3AccessLogsBucketNode.addMetadata('cfn_nag', {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        rules_to_suppress: [
-          {
-            id: 'W35',
-            reason:
-              "This is an access log bucket, we don't need to configure access logging for access log buckets",
-          },
-        ],
-      });
-
-    new CfnOutput(this, bucketNameOutput, {
-      value: uiS3AccessLogsBucket.bucketName,
-      exportName: bucketNameOutput,
-    });
-    return uiS3AccessLogsBucket;
   }
 
   private _apiGwUiWarnSuppress(api: RestApi, stage: string): void {

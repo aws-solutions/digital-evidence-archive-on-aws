@@ -3,6 +3,22 @@
 exports[`DeaBackend constructs synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
+    "DeaBackendConstructteststackDeaS3AccessLogs50BF6416": Object {
+      "Export": Object {
+        "Name": "test-stack-DeaS3AccessLogs",
+      },
+      "Value": Object {
+        "Ref": "DeaBackendConstructS3AccessLogsBucket2074272F",
+      },
+    },
+    "DeaBackendConstructteststackDeaS3Datasets88052100": Object {
+      "Export": Object {
+        "Name": "test-stack-DeaS3Datasets",
+      },
+      "Value": Object {
+        "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+      },
+    },
     "DeaRestApiConstructdeaApiUrlOutput2CFCF9D0": Object {
       "Export": Object {
         "Name": "deaApiUrl",
@@ -168,6 +184,234 @@ Object {
       },
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
+    },
+    "DeaBackendConstructS3AccessLogsBucket2074272F": Object {
+      "DeletionPolicy": "Retain",
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W35",
+              "reason": "This is an access log bucket, we don't need to configure access logging for access log buckets",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "AccessControl": "LogDeliveryWrite",
+        "BucketEncryption": Object {
+          "ServerSideEncryptionConfiguration": Array [
+            Object {
+              "BucketKeyEnabled": true,
+              "ServerSideEncryptionByDefault": Object {
+                "KMSMasterKeyID": Object {
+                  "Fn::GetAtt": Array [
+                    "testKey1CDDDD5E",
+                    "Arn",
+                  ],
+                },
+                "SSEAlgorithm": "aws:kms",
+              },
+            },
+          ],
+        },
+        "PublicAccessBlockConfiguration": Object {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "DeaBackendConstructS3AccessLogsBucketPolicy55BD9984": Object {
+      "Properties": Object {
+        "Bucket": Object {
+          "Ref": "DeaBackendConstructS3AccessLogsBucket2074272F",
+        },
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:*",
+              "Condition": Object {
+                "Bool": Object {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendConstructS3AccessLogsBucket2074272F",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructS3AccessLogsBucket2074272F",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": "s3:PutObject",
+              "Condition": Object {
+                "StringEquals": Object {
+                  "aws:SourceAccount": Object {
+                    "Ref": "AWS::AccountId",
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "logging.s3.amazonaws.com",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructS3AccessLogsBucket2074272F",
+                          "Arn",
+                        ],
+                      },
+                      "/dea-ui-access-log*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructS3AccessLogsBucket2074272F",
+                          "Arn",
+                        ],
+                      },
+                      "/dea-datasets-access-log*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
+    "DeaBackendConstructS3DatasetsBucketDDF4C58A": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "BucketEncryption": Object {
+          "ServerSideEncryptionConfiguration": Array [
+            Object {
+              "BucketKeyEnabled": true,
+              "ServerSideEncryptionByDefault": Object {
+                "KMSMasterKeyID": Object {
+                  "Fn::GetAtt": Array [
+                    "testKey1CDDDD5E",
+                    "Arn",
+                  ],
+                },
+                "SSEAlgorithm": "aws:kms",
+              },
+            },
+          ],
+        },
+        "LifecycleConfiguration": Object {
+          "Rules": Array [
+            Object {
+              "AbortIncompleteMultipartUpload": Object {
+                "DaysAfterInitiation": 1,
+              },
+              "Id": "DeaDatasetsDeleteIncompleteUploadsLifecyclePolicy",
+              "Status": "Enabled",
+            },
+          ],
+        },
+        "LoggingConfiguration": Object {
+          "DestinationBucketName": Object {
+            "Ref": "DeaBackendConstructS3AccessLogsBucket2074272F",
+          },
+          "LogFilePrefix": "dea-datasets-access-log",
+        },
+        "ObjectLockEnabled": true,
+        "PublicAccessBlockConfiguration": Object {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+        "VersioningConfiguration": Object {
+          "Status": "Enabled",
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "DeaBackendConstructS3DatasetsBucketPolicyA1DF7E5A": Object {
+      "Properties": Object {
+        "Bucket": Object {
+          "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+        },
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:*",
+              "Condition": Object {
+                "Bool": Object {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
     },
     "DeaRestApiConstructAPIGatewayAccessLogs56D13F5D": Object {
       "DeletionPolicy": "Retain",

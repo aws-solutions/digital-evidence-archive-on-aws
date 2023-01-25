@@ -1,6 +1,6 @@
 {
   "stage": "test",
-  "awsRegionShortName": "Testville",
+  "awsRegionShortName": "testville",
   "awsRegion": "us-test-1",
   "rootUserEmail": "test@bogus.oof",
   "allowedOrigins": ["test"],

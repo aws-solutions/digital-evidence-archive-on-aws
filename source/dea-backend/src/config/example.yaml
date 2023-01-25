@@ -8,6 +8,7 @@
 
 # Used for end to end testing; grab them from Cognito console after cdk-deploy completes.
 #userPoolId: ''
+#clientId can be found in Cognito console -> App integration tab -> scroll to bottom -> App client list section
 #clientId: ''
 #identityPoolId: ''
 #apiUrlOutput: ''

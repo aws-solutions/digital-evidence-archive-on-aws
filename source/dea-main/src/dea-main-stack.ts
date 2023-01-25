@@ -7,6 +7,7 @@
 import { DeaAuthConstruct, DeaBackendConstruct, DeaRestApiConstruct } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
+
 import { CfnOutput, CfnResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
 import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
 import {
@@ -49,7 +50,7 @@ export class DeaMainStack extends cdk.Stack {
     );
 
     // DEA UI Construct
-    new DeaUiConstruct(this, 'DeaUiConstruct', { kmsKey: kmsKey, restApi: deaApi.deaRestApi });
+    new DeaUiConstruct(this, 'DeaUiConstruct', { kmsKey: kmsKey, restApi: deaApi.deaRestApi, accessLogsBucket: backendConstruct.accessLogsBucket });
 
     // Stack node resource handling
     // ======================================

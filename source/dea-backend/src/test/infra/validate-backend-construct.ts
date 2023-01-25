@@ -33,4 +33,33 @@ export const validateBackendConstruct = (template: Template): void => {
       }),
     ]),
   });
+
+  // make sure all s3 buckets are created with public access disabled
+  template.allResourcesProperties('AWS::S3::Bucket', {
+    PublicAccessBlockConfiguration: {
+      BlockPublicAcls: true,
+      BlockPublicPolicy: true,
+      IgnorePublicAcls: true,
+      RestrictPublicBuckets: true,
+    },
+  });
+
+  // validate datasets S3 bucket properties
+  template.hasResourceProperties('AWS::S3::Bucket', {
+    VersioningConfiguration: Match.objectLike({
+      Status: "Enabled"
+    }),
+    ObjectLockEnabled: true,
+    LifecycleConfiguration: Match.objectLike({
+      Rules: Match.arrayWith([
+        Match.objectLike({
+          AbortIncompleteMultipartUpload: {
+            DaysAfterInitiation: 1
+          },
+          Id: "DeaDatasetsDeleteIncompleteUploadsLifecyclePolicy",
+          Status: "Enabled"
+        })
+      ])
+    })
+  });
 };

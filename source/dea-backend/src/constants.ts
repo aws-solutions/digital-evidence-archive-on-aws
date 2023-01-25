@@ -15,6 +15,8 @@ function getConstants(): {
   SSM_DOC_OUTPUT_KEY_SUFFIX: string;
   S3_ACCESS_LOGS_BUCKET_NAME_OUTPUT_KEY: string;
   S3_ACCESS_BUCKET_PREFIX: string;
+  S3_UI_ACCESS_LOG_PREFIX: string;
+  S3_DATASETS_ACCESS_LOG_PREFIX: string;
   S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY: string;
   S3_DATASETS_BUCKET_ARN_OUTPUT_KEY: string;
   S3_ARTIFACT_BUCKET_SC_PREFIX: string;
@@ -45,17 +47,21 @@ function getConstants(): {
       // eslint-disable-next-line security/detect-non-literal-fs-filename
       fs.readFileSync(join(__dirname, `../src/config/${process.env.STAGE}.yaml`), 'utf8') // nosemgrep
     );
-
     const STACK_NAME = `DeaBackendStack`;
     const SC_PORTFOLIO_NAME = `dea-${config.stage}-${config.awsRegionShortName}`; // Service Catalog Portfolio Name
     const AWS_REGION = config.awsRegion;
     const AWS_REGION_SHORT_NAME = config.awsRegionShortName;
     const S3_ACCESS_BUCKET_PREFIX = 'dea-access-log';
+    const S3_UI_ACCESS_LOG_PREFIX = 'dea-ui-access-log';
+    const S3_DATASETS_ACCESS_LOG_PREFIX = 'dea-datasets-access-log';
     const S3_ARTIFACT_BUCKET_SC_PREFIX = 'dea-catalog-cfn-templates/';
     const S3_ARTIFACT_BUCKET_BOOTSTRAP_PREFIX = 'environment-files/'; // Location of env bootstrap scripts in the artifacts bucket
     const ROOT_USER_EMAIL = config.rootUserEmail;
     const allowedOrigins: string[] = config.allowedOrigins || [];
-    allowedOrigins.push(config.stacks[0].WebsiteURL);
+    if ('stacks' in config) {
+      allowedOrigins.push(config.stacks[0].WebsiteURL);
+    }
+
     const USER_POOL_CLIENT_NAME = `dea-client-${config.stage}-${config.awsRegionShortName}`;
     const USER_POOL_NAME = `dea-userpool-${config.stage}-${config.awsRegionShortName}`;
     const COGNITO_DOMAIN = config.cognitoDomain;
@@ -85,6 +91,8 @@ function getConstants(): {
       SSM_DOC_OUTPUT_KEY_SUFFIX,
       S3_ACCESS_LOGS_BUCKET_NAME_OUTPUT_KEY,
       S3_ACCESS_BUCKET_PREFIX,
+      S3_UI_ACCESS_LOG_PREFIX,
+      S3_DATASETS_ACCESS_LOG_PREFIX,
       S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY,
       S3_DATASETS_BUCKET_ARN_OUTPUT_KEY,
       S3_ARTIFACT_BUCKET_SC_PREFIX,
@@ -96,7 +104,7 @@ function getConstants(): {
       USER_POOL_NAME,
       ALLOWED_ORIGINS: JSON.stringify(allowedOrigins),
       AWS_REGION_SHORT_NAME: AWS_REGION_SHORT_NAME,
-      UI_CLIENT_URL: config.stacks[0].WebsiteURL,
+      UI_CLIENT_URL: 'stacks' in config ? config.stacks[0].WebsiteURL : '',
       STATUS_HANDLER_ARN_OUTPUT_KEY,
       COGNITO_DOMAIN,
       WEBSITE_URLS,
