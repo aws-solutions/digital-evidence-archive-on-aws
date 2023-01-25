@@ -6,7 +6,7 @@
 import Joi from 'joi';
 import { logger } from '../../logger';
 import { DeaCase } from '../../models/case';
-import { caseSchema } from '../../models/validation/case';
+import { createCaseSchema } from '../../models/validation/case';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
@@ -25,7 +25,7 @@ export const createCases: DEAGatewayProxyHandler = async (
   }
 
   const deaCase: DeaCase = JSON.parse(event.body);
-  Joi.assert(deaCase, caseSchema);
+  Joi.assert(deaCase, createCaseSchema);
 
   const updateBody = await CaseService.createCases(deaCase, repositoryProvider);
 

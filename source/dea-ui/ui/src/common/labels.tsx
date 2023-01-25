@@ -40,9 +40,13 @@ export const i18nStrings: PropertyFilterProps.I18nStrings = {
 export const commonLabels = {
   cancelButton: 'Cancel',
   submitButton: 'Submit',
+  createButton: 'Create',
   uploadButton: 'Upload',
+  addButton: 'Add',
+  removeButton: 'Remove',
   downloadButton: 'Download',
   loadingLabel: 'Loading...',
+  noMatchesLabel: 'No matches found',
 };
 
 export const commonTableLabels = {
@@ -134,7 +138,26 @@ export const manageCaseAccessLabels = {
 
 export const createCaseLabels = {
   createNewCaseLabel: 'Create New Case',
+  createNewCaseDescription: 'All fields are required unless specified.',
   enterCaseDetailsLabel: 'Enter Case Details',
   caseNameLabel: 'Case name',
+  caseNameSubtext: 'Alphanumeric characters only. No special charcaters.',
   caseDescription: 'Description - optional',
+  caseNameDescription: ' Create a Unique name that you can easily reference.',
+  caseDescriptionSubtext:
+    'Enter a brief description of the case to easily identify it. Max character limit ###',
+  activeLabel: 'Active',
+  archivedLabel: 'Archived',
+  caseStatusLabel: 'Case Status',
+  activeCaseDescription:
+    'Cases are Active by default. When a case is Active you can upload/download files and share a case.',
+  archivedCaseDescription:
+    'Everyone invited to the case still has access to it, but are not able to download or upload files to the case',
+
+  // Share case container
+  shareCaseLabel: 'Share case',
+  searchPeopleLabel: 'Search for people',
+  searchPeopleDescription:
+    'Members added or removed will be notified by email. Their access to the case details will be based on permissions set.',
+  searchPlaceholder: 'Search by name or email',
 };

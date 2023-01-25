@@ -5,31 +5,30 @@
 
 import Joi from 'joi';
 import { CaseStatus } from '../case-status';
+import { allButDisallowed, joiUlid } from './joi-common';
 
-const allButDisallowed = new RegExp('^[^\\<>/]+$');
+const safeName = Joi.string().pattern(allButDisallowed).required().min(3).max(30);
+const caseStatus = Joi.string().valid(...Object.keys(CaseStatus));
+const safeDescription = Joi.string().pattern(allButDisallowed).max(200).min(3).optional();
 
-export const caseSchema = Joi.object({
-  ulid: Joi.string().pattern(new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$')),
-  name: Joi.string().pattern(allButDisallowed).required().min(3).max(30),
-  status: Joi.string().valid(...Object.keys(CaseStatus)),
-  description: Joi.string().pattern(allButDisallowed).max(200).min(3).required(),
-  objectCount: Joi.number(),
+export const createCaseSchema = Joi.object({
+  name: safeName,
+  status: caseStatus,
+  description: safeDescription,
 });
 
 export const caseResponseSchema = Joi.object({
-  ulid: Joi.string().pattern(new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$')),
-  name: Joi.string().pattern(allButDisallowed).required().min(3).max(30),
-  status: Joi.string().valid(...Object.keys(CaseStatus)),
-  description: Joi.string().pattern(allButDisallowed).max(200).min(3).required(),
+  ulid: joiUlid,
+  name: safeName,
+  status: caseStatus,
+  description: safeDescription,
   objectCount: Joi.number(),
   created: Joi.date(),
   updated: Joi.date(),
 });
 
 export const updateCaseSchema = Joi.object({
-  ulid: Joi.string().pattern(new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$')),
-  name: Joi.string().pattern(allButDisallowed).required().min(3).max(30),
-  status: Joi.string().valid(...Object.keys(CaseStatus)),
-  description: Joi.string().pattern(allButDisallowed).max(200).min(3).required(),
-  objectCount: null, // currently, do not allow objectcount in update case. Object count will be addressed in upload file
+  ulid: joiUlid,
+  name: safeName,
+  description: safeDescription,
 });
