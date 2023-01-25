@@ -49,9 +49,7 @@ export const validateBackendConstruct = (template: Template): void => {
     VersioningConfiguration: Match.objectLike({
       Status: "Enabled"
     }),
-    ObjectLockConfiguration: Match.objectLike({
-      ObjectLockEnabled: "Enabled"
-    }),
+    ObjectLockEnabled: true,
     LifecycleConfiguration: Match.objectLike({
       Rules: Match.arrayWith([
         Match.objectLike({

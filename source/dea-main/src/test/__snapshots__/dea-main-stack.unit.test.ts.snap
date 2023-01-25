@@ -4021,9 +4021,7 @@ Object {
           },
           "LogFilePrefix": "dea-datasets-access-log",
         },
-        "ObjectLockConfiguration": Object {
-          "ObjectLockEnabled": "Enabled",
-        },
+        "ObjectLockEnabled": true,
         "PublicAccessBlockConfiguration": Object {
           "BlockPublicAcls": true,
           "BlockPublicPolicy": true,
