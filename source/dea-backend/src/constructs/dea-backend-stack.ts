@@ -146,9 +146,9 @@ export class DeaBackendConstruct extends Construct {
     });
 
     const datasetsBucketNode = datasetsBucket.node.defaultChild;
-    if (datasetsBucketNode instanceof CfnBucket)
-      datasetsBucketNode.addPropertyOverride('ObjectLockConfiguration.ObjectLockEnabled', 'Enabled');
-
+    if (datasetsBucketNode instanceof CfnBucket) {
+      datasetsBucketNode.addPropertyOverride('ObjectLockEnabled', true);
+    }
     new CfnOutput(this, bucketNameOutput, {
       value: datasetsBucket.bucketName,
       exportName: bucketNameOutput,
