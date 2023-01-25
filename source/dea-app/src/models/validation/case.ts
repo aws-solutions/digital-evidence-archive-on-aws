@@ -30,7 +30,5 @@ export const caseResponseSchema = Joi.object({
 export const updateCaseSchema = Joi.object({
   ulid: joiUlid,
   name: safeName,
-  status: caseStatus,
   description: safeDescription,
-  objectCount: null, // currently, do not allow objectcount in update case. Object count will be addressed in upload file
 });
