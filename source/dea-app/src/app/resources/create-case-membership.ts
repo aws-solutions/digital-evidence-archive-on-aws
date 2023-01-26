@@ -16,15 +16,17 @@ import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 export const createCaseMembership: DEAGatewayProxyHandler = async (
   event,
   context,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  logger.debug(`Event`, {Data: JSON.stringify(event, null, 2)});
-  logger.debug(`Context`, {Data: JSON.stringify(context, null, 2)});
+  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
+  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
 
   const caseId = getRequiredPathParam(event, 'caseId');
 
   if (!event.body) {
-    throw new ValidationError("CaseUser payload missing.");
+    throw new ValidationError('CaseUser payload missing.');
   }
 
   const caseUser: CaseUserDTO = JSON.parse(event.body);
@@ -37,6 +39,6 @@ export const createCaseMembership: DEAGatewayProxyHandler = async (
   const caseUserResult = await createCaseUserMembershipFromDTO(caseUser, repositoryProvider);
   return {
     statusCode: 200,
-    body: JSON.stringify(caseUserResult)
+    body: JSON.stringify(caseUserResult),
   };
 };

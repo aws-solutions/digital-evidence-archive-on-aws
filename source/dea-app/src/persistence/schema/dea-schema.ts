@@ -5,6 +5,7 @@
 
 import { CaseAction } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
+import { allButDisallowed } from '../../models/validation/joi-common';
 
 const ulidMatch = /^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$/;
 
@@ -23,10 +24,10 @@ export const DeaSchema = {
       GSI1PK: { type: String, value: 'CASE#' },
       GSI1SK: { type: String, value: 'CASE#${lowerCaseName}#${ulid}#' },
       ulid: { type: String, generate: 'ulid', validate: ulidMatch, required: true },
-      name: { type: String, required: true, unique: true },
-      lowerCaseName: { type: String, required: true },
+      name: { type: String, required: true, unique: true, validate: allButDisallowed },
+      lowerCaseName: { type: String, required: true, validate: allButDisallowed },
       status: { type: String, required: true, enum: Object.keys(CaseStatus) },
-      description: { type: String },
+      description: { type: String, validate: allButDisallowed },
       objectCount: { type: Number },
       //managed by onetable - but included for entity generation
       created: { type: Date },
@@ -44,12 +45,12 @@ export const DeaSchema = {
       caseUlid: { type: String, validate: ulidMatch, required: true },
       userUlid: { type: String, validate: ulidMatch, required: true },
       actions: { type: Array, items: { type: String, enum: Object.keys(CaseAction), required: true } },
-      caseName: { type: String, required: true },
-      lowerCaseName: { type: String, required: true },
-      userFirstName: { type: String, required: true },
-      userLastName: { type: String, required: true },
-      userFirstNameLower: { type: String, required: true },
-      userLastNameLower: { type: String, required: true },
+      caseName: { type: String, required: true, validate: allButDisallowed },
+      lowerCaseName: { type: String, required: true, validate: allButDisallowed },
+      userFirstName: { type: String, required: true, validate: allButDisallowed },
+      userLastName: { type: String, required: true, validate: allButDisallowed },
+      userFirstNameLower: { type: String, required: true, validate: allButDisallowed },
+      userLastNameLower: { type: String, required: true, validate: allButDisallowed },
       //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },
@@ -60,7 +61,7 @@ export const DeaSchema = {
       GSI1PK: { type: String, value: 'CASE#${caseUlid}#${ulid}#' },
       GSI1SK: { type: String, value: 'FILE#${isFile}#' },
       ulid: { type: String, generate: 'ulid', validate: ulidMatch },
-      name: { type: String, required: true },
+      name: { type: String, required: true, validate: allButDisallowed },
       preceedingDirectoryUlid: { type: String, validate: ulidMatch, required: true },
       isFile: { type: Boolean, required: false },
       contentPath: { type: String },
@@ -74,10 +75,10 @@ export const DeaSchema = {
       GSI1PK: { type: String, value: 'USER#' },
       GSI1SK: { type: String, value: 'USER#${lowerFirstName}#${lowerLastName}#${ulid}#' },
       ulid: { type: String, generate: 'ulid', validate: ulidMatch, required: true },
-      firstName: { type: String, required: true },
-      lastName: { type: String, required: true },
-      lowerFirstName: { type: String, required: true },
-      lowerLastName: { type: String, required: true },
+      firstName: { type: String, required: true, validate: allButDisallowed },
+      lastName: { type: String, required: true, validate: allButDisallowed },
+      lowerFirstName: { type: String, required: true, validate: allButDisallowed },
+      lowerLastName: { type: String, required: true, validate: allButDisallowed },
       //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },

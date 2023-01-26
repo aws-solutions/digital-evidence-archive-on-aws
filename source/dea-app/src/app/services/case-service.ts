@@ -14,6 +14,8 @@ import { CaseType, defaultProvider } from '../../persistence/schema/entities';
 
 export const createCases = async (
   deaCase: DeaCase,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ): Promise<DeaCase> => {
   const currentCase: DeaCase = {
@@ -30,6 +32,8 @@ export const createCases = async (
 export const listAllCases = async (
   limit = 30,
   nextToken?: object,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ): Promise<Paged<DeaCase>> => {
   return CasePersistence.listCases(limit, nextToken, repositoryProvider);
@@ -39,6 +43,8 @@ export const listCasesForUser = async (
   userUlid: string,
   limit = 30,
   nextToken?: object,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ): Promise<Paged<DeaCase>> => {
   // Get all memberships for the user
@@ -72,6 +78,8 @@ export const listCasesForUser = async (
 
 export const getCase = async (
   caseUlid: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ): Promise<DeaCase | undefined> => {
   return await CasePersistence.getCase(caseUlid, undefined, repositoryProvider);
@@ -79,11 +87,18 @@ export const getCase = async (
 
 export const updateCases = async (
   deaCase: DeaCase,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ): Promise<DeaCase> => {
   return await CasePersistence.updateCase(deaCase, repositoryProvider);
 };
 
-export const deleteCase = async (caseUlid: string, repositoryProvider = defaultProvider): Promise<void> => {
+export const deleteCase = async (
+  caseUlid: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider = defaultProvider
+): Promise<void> => {
   return await CasePersistence.deleteCase(caseUlid, repositoryProvider);
 };

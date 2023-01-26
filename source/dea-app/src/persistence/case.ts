@@ -4,7 +4,6 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
-import { logger } from '../logger';
 import { DeaCase } from '../models/case';
 import { caseFromEntity } from '../models/projections';
 import { isDefined } from './persistence-helpers';
@@ -13,14 +12,23 @@ import { CaseModel, CaseModelRepositoryProvider } from './schema/entities';
 export const getCase = async (
   ulid: string,
   batch: object | undefined = undefined,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider: CaseModelRepositoryProvider = {
     CaseModel: CaseModel,
   }
 ): Promise<DeaCase | undefined> => {
-  const caseEntity = await repositoryProvider.CaseModel.get({
-    PK: `CASE#${ulid}#`,
-    SK: `CASE#`,
-  }, {batch});
+  const caseEntity = await repositoryProvider.CaseModel.get(
+    {
+      PK: `CASE#${ulid}#`,
+      SK: `CASE#`,
+    },
+    { batch }
+  );
+
+  if (!caseEntity) {
+    return caseEntity;
+  }
 
   return caseFromEntity(caseEntity);
 };
@@ -28,6 +36,8 @@ export const getCase = async (
 export const listCases = async (
   limit = 30,
   nextToken?: object,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider: CaseModelRepositoryProvider = { CaseModel: CaseModel }
 ): Promise<Paged<DeaCase>> => {
   const caseEntities = await repositoryProvider.CaseModel.find(
@@ -53,6 +63,8 @@ export const listCases = async (
 
 export const createCase = async (
   deaCase: DeaCase,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider: CaseModelRepositoryProvider = {
     CaseModel: CaseModel,
   }
@@ -61,39 +73,37 @@ export const createCase = async (
     ...deaCase,
     lowerCaseName: deaCase.name.toLowerCase(),
   });
-  const newCase = caseFromEntity(newEntity);
-  if (!newCase) {
-    logger.error('Case creation failed', { deaCase: JSON.stringify(deaCase) });
-    throw new Error('Case creation failed');
-  }
-  return newCase;
+  return caseFromEntity(newEntity);
 };
 
 export const updateCase = async (
   deaCase: DeaCase,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider: CaseModelRepositoryProvider = {
     CaseModel: CaseModel,
   }
 ): Promise<DeaCase> => {
-  const newCase = await repositoryProvider.CaseModel.update({
-    ...deaCase,
-    lowerCaseName: deaCase.name.toLowerCase(),
-  }, {
-    // Normally, update() will return the updated item automatically, 
-    //   however, it the item has unique attributes,
-    //   a transaction is used which does not return the updated item.
-    //   In this case, use {return: 'get'} to retrieve and return the updated item.
-    return: 'get'
-  });
-  const updated = caseFromEntity(newCase);
-  if (!updated) {
-    throw new Error('Update failed.')
-  }
-  return updated;
+  const newCase = await repositoryProvider.CaseModel.update(
+    {
+      ...deaCase,
+      lowerCaseName: deaCase.name.toLowerCase(),
+    },
+    {
+      // Normally, update() will return the updated item automatically,
+      //   however, it the item has unique attributes,
+      //   a transaction is used which does not return the updated item.
+      //   In this case, use {return: 'get'} to retrieve and return the updated item.
+      return: 'get',
+    }
+  );
+  return caseFromEntity(newCase);
 };
 
 export const deleteCase = async (
   caseUlid: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider: CaseModelRepositoryProvider = {
     CaseModel: CaseModel,
   }

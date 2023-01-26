@@ -4,12 +4,7 @@
  */
 
 import Joi from 'joi';
-import { CaseStatus } from '../case-status';
-import { allButDisallowed, joiUlid } from './joi-common';
-
-const safeName = Joi.string().pattern(allButDisallowed).required().min(3).max(30);
-const caseStatus = Joi.string().valid(...Object.keys(CaseStatus));
-const safeDescription = Joi.string().pattern(allButDisallowed).max(200).min(3).optional();
+import { caseStatus, joiUlid, safeDescription, safeName } from './joi-common';
 
 export const createCaseSchema = Joi.object({
   name: safeName,
