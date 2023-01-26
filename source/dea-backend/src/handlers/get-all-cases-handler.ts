@@ -6,4 +6,4 @@
 import { getAllCases } from '@aws/dea-app';
 import { createDeaHandler } from './create-dea-handler';
 
-exports.handler = createDeaHandler(getAllCases);
+export const handler = createDeaHandler(getAllCases);

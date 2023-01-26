@@ -6,4 +6,4 @@
 import { sayBye } from '@aws/dea-app';
 import { createDeaHandler } from './create-dea-handler';
 
-exports.handler = createDeaHandler(sayBye);
+export const handler = createDeaHandler(sayBye);

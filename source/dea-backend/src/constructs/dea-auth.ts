@@ -12,12 +12,12 @@ import {
   CfnIdentityPoolRoleAttachment,
   CfnUserPoolGroup,
   UserPool,
-  UserPoolClient,
+  UserPoolClient
 } from 'aws-cdk-lib/aws-cognito';
 import { FederatedPrincipal, Policy, PolicyStatement, Role, WebIdentityPrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
+import { uniqueId } from 'lodash';
 import { getConstants } from '../constants';
-import { logger } from '../logger';
 import { ApiGatewayMethod } from '../resources/api-gateway-route-config';
 
 interface DeaAuthProps {
@@ -167,16 +167,12 @@ export class DeaAuthConstruct extends Construct {
     );
     const rules: CfnIdentityPoolRoleAttachment.MappingRuleProperty[] = new Array(groups.size);
     Array.from(groups.entries()).forEach((entry) => {
-      if (entry[0].groupName) {
-        rules.push({
-          claim: 'cognito:groups',
-          value: entry[0].groupName,
-          matchType: RoleMappingMatchType.CONTAINS,
-          roleArn: entry[1].roleArn,
-        });
-      } else {
-        logger.error('No Group Name for Cognito Group: ' + entry);
-      }
+      rules.push({
+        claim: 'cognito:groups',
+        value: entry[0].groupName ?? uniqueId('DEAGroup_'),
+        matchType: RoleMappingMatchType.CONTAINS,
+        roleArn: entry[1].roleArn,
+      });
     });
     new CfnIdentityPoolRoleAttachment(this, 'IdentityPoolCognitoRoleAttachment', {
       identityPoolId: idPool.ref,

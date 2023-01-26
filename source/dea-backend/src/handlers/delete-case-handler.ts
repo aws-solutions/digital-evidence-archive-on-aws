@@ -6,4 +6,4 @@
 import { deleteCase } from '@aws/dea-app';
 import { createDeaHandler } from './create-dea-handler';
 
-exports.handler = createDeaHandler(deleteCase);
+export const handler = createDeaHandler(deleteCase);
