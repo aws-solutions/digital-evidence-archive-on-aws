@@ -36,7 +36,7 @@ export const filteringProperties: readonly PropertyFilterProperty[] = [
   },
   {
     key: 'created',
-    operators: ['=', '!=', ':', '!:'],
+    operators: ['<', '<=', '>', '>=', ':'],
     propertyLabel: 'Creation Date',
     groupValuesLabel: 'Creation Date Values',
   },
