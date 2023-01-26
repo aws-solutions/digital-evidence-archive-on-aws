@@ -9,13 +9,10 @@ import {
   Table,
   Box,
   Button,
-  TextFilter,
   Pagination,
   Link,
-  StatusIndicator,
   SpaceBetween,
   PropertyFilter,
-  TableProps,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
@@ -33,19 +30,19 @@ export const filteringProperties: readonly PropertyFilterProperty[] = [
   },
   {
     key: 'caseLead',
-    operators: ['=', '!='],
+    operators: ['=', '!=', ':', '!:'],
     propertyLabel: 'Case Lead',
     groupValuesLabel: 'Case Lead Values',
   },
   {
-    key: 'status',
-    operators: ['=', '!='],
-    propertyLabel: 'Case Status',
-    groupValuesLabel: 'Case Status Values',
+    key: 'created',
+    operators: ['=', '!=', ':', '!:'],
+    propertyLabel: 'Creation Date',
+    groupValuesLabel: 'Creation Date Values',
   },
 ];
 
-export const searchableColumns: string[] = ['name', 'caseLead', 'status'];
+export const searchableColumns: string[] = ['name', 'caseLead', 'creationDate'];
 
 function CaseTable(): JSX.Element {
   const router = useRouter();
@@ -82,7 +79,6 @@ function CaseTable(): JSX.Element {
       sorting: {},
       selection: {},
     });
-  console.log(cases);
   function createNewCaseHandler() {
     router.push('/create-cases');
   }
@@ -149,16 +145,6 @@ function CaseTable(): JSX.Element {
           minWidth: 165,
           sortingField: 'creationDate',
         },
-        {
-          id: 'status',
-          header: commonTableLabels.statusHeader,
-          cell: (e) => (
-            <StatusIndicator type={e.status === 'ACTIVE' ? 'success' : 'error'}>{e.status}</StatusIndicator>
-          ),
-          width: 170,
-          minWidth: 165,
-          sortingField: 'status',
-        },
       ]}
       items={items}
       loadingText={caseListLabels.loading}
@@ -210,8 +196,7 @@ function CaseTable(): JSX.Element {
             filteringOptions={[
               { propertyKey: 'caseLead', value: '' },
               { propertyKey: 'name', value: '' },
-              { propertyKey: 'status', value: 'ACTIVE' },
-              { propertyKey: 'status', value: 'INACTIVE' },
+              { propertyKey: 'creationDate', value: '' },
             ]}
             expandToViewport={true}
           />
