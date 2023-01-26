@@ -34,7 +34,6 @@ describe('case persistence', () => {
       )) ?? fail();
     caseUlid = testCase.ulid ?? fail();
 
-
     //list endpoints
     await createListData();
   });
@@ -87,9 +86,22 @@ describe('case persistence', () => {
     expectedCases.next = undefined;
     expectedCases.prev = undefined;
 
-    const actual = await listCases(20, undefined, caseModelProvider);
+    const actual = await listCases(undefined, undefined, caseModelProvider);
 
     expect(actual.values).toEqual(expectedCases.values);
+  });
+
+  it('should throw an exception when invalid characters are used', async () => {
+    const currentTestCase: DeaCase = {
+      name: '<case></case>',
+      status: CaseStatus.ACTIVE,
+      description: 'In a PD far far away',
+      objectCount: 0,
+    };
+
+    await expect(createCase(currentTestCase, caseModelProvider)).rejects.toThrow(
+      'Validation Error in "Case" for "name, lowerCaseName"'
+    );
   });
 
   it('should create a case, get and update it', async () => {

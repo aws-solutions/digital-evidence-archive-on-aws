@@ -5,11 +5,25 @@
 
 import Joi from 'joi';
 import { CaseAction } from '../case-action';
+import { joiUlid, safeName } from './joi-common';
 
 export const caseUserSchema = Joi.object({
-  userUlid: Joi.string().pattern(new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$')).required(),
-  caseUlid: Joi.string().pattern(new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$')).required(),
+  userUlid: joiUlid,
+  caseUlid: joiUlid,
   actions: Joi.array()
     .items(Joi.string().valid(...Object.keys(CaseAction)))
     .required(),
+});
+
+export const caseUserResponseSchema = Joi.object({
+  userFirstName: safeName,
+  userLastName: safeName,
+  caseName: safeName,
+  userUlid: joiUlid,
+  caseUlid: joiUlid,
+  actions: Joi.array()
+    .items(Joi.string().valid(...Object.keys(CaseAction)))
+    .required(),
+  created: Joi.date(),
+  updated: Joi.date(),
 });

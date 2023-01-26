@@ -12,7 +12,9 @@ import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 export const getMyCases: DEAGatewayProxyHandler = async (
   event,
   context,
-  repositoryProvider = defaultProvider,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider = defaultProvider
 ) => {
   logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
   logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
@@ -30,7 +32,7 @@ export const getMyCases: DEAGatewayProxyHandler = async (
 
   // THIS IS TEMPORARY - THE USER CONTEXT WILL BE SET BY THE REQUESTING USER WHEN AUTH IS IN PLACE
   if (!userUlid) {
-    throw new ValidationError("userUlid query parameter is currently required");
+    throw new ValidationError('userUlid query parameter is currently required');
   }
 
   let nextToken: object | undefined = undefined;
