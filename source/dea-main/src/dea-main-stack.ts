@@ -35,11 +35,11 @@ export class DeaMainStack extends cdk.Stack {
 
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
       deaTableArn: backendConstruct.deaTable.tableArn,
-      kmsKey,
+      kmsKey
     });
 
     new DeaAuthConstruct(this, 'DeaAuth', { apiEndpointArns: deaApi.apiEndpointArns });
-
+ 
     kmsKey.addToResourcePolicy(
       new PolicyStatement({
         actions: ['kms:Decrypt', 'kms:Encrypt'],

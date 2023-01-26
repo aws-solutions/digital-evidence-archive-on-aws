@@ -27,6 +27,7 @@ export const caseFromEntity = (caseEntity: CaseType): DeaCase => {
 export const userFromEntity = (userEntity: UserType): DeaUser => {
   return {
     ulid: userEntity.ulid,
+    tokenId: userEntity.tokenId,
     firstName: userEntity.firstName,
     lastName: userEntity.lastName,
     created: userEntity.created,

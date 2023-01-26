@@ -8,6 +8,7 @@ import { ValidationError, VALIDATION_ERROR_NAME } from './app/exceptions/validat
 import { createCaseMembership } from './app/resources/create-case-membership';
 import { createCases } from './app/resources/create-cases';
 import { DEAGatewayProxyHandler } from './app/resources/dea-gateway-proxy-handler';
+import { runPreExecutionChecks } from './app/resources/dea-lambda-utils'
 import { deleteCase } from './app/resources/delete-cases';
 import { getAllCases } from './app/resources/get-all-cases';
 import { getCase } from './app/resources/get-case-details';
@@ -25,6 +26,7 @@ export {
   getAllCases,
   getMyCases,
   getCase,
+  runPreExecutionChecks,
   updateCases,
   createCaseMembership,
   DeaCase,

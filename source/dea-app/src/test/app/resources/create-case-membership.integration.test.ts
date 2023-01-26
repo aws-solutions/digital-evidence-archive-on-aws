@@ -35,6 +35,7 @@ describe('create case membership resource', () => {
 
     it('should create a user-case membership', async () => {
         const deaUser: DeaUser = {
+            tokenId: 'arthur@morgan.com',
             firstName: 'Arthur',
             lastName: 'Morgan',
         };
@@ -131,6 +132,7 @@ describe('create case membership resource', () => {
 
     it('should error if the case does not exist', async () => {
         const deaUser: DeaUser = {
+            tokenId: 'michah@bell.com',
             firstName: 'Micah',
             lastName: 'Bell',
         };

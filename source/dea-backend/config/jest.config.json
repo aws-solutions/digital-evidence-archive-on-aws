@@ -11,5 +11,8 @@
       "statements": 75
     }
   },
-  "coverageReporters": ["json-summary", "json", "text"]
+  "coverageReporters": ["json-summary", "json", "text"],
+  "moduleNameMapper": {
+    "#node-web-compat": "./node-web-compat-node.js"
+  }
 }

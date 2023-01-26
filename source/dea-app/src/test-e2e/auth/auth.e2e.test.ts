@@ -4,8 +4,11 @@
  */
 import { aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
+import { getTokenPayload } from '../../cognito-token-helpers';
+import { getUserByTokenId } from '../../persistence/user';
 import CognitoHelper from '../helpers/cognito-helper';
 import { envSettings } from '../helpers/settings';
+import { callDeaAPI } from '../resources/test-helpers';
 
 describe('API authentication', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
@@ -16,7 +19,7 @@ describe('API authentication', () => {
 
   beforeAll(async () => {
     // Create user in test group
-    await cognitoHelper.createUser(testUser, 'AuthTestGroup');
+    await cognitoHelper.createUser(testUser, 'AuthTestGroup', "Auth", "Tester");
   });
 
   afterAll(async () => {
@@ -24,23 +27,10 @@ describe('API authentication', () => {
   });
 
   it('should allow successful calls to the api for authenticated users', async () => {
-    const creds = await cognitoHelper.getCredentialsForUser(testUser);
-    const client = axios.create();
-
-    const interceptor = aws4Interceptor(
-      {
-        service: 'execute-api',
-        region: region,
-      },
-      creds
-    );
-
-    client.interceptors.request.use(interceptor);
-
     const url = `${deaApiUrl}hi`;
-    const response = await client.get(url);
+    const response = await callDeaAPI(testUser, url, cognitoHelper, "GET");
 
-    expect(response.status).toBeTruthy();
+    expect(response.status).toBe(200);
     expect(response.data).toBe('Hello DEA!');
   }, 10000);
 
@@ -51,10 +41,10 @@ describe('API authentication', () => {
     expect(client.get(url)).rejects.toThrow('Request failed with status code 403');
   });
 
-  it('should disallow API calls not explicitly allowed by their IAM role', async () => {
-    const creds = await cognitoHelper.getCredentialsForUser(testUser);
+  it('should disallow calls without id token in the header', async () => {
+    const [ creds ] = await cognitoHelper.getCredentialsForUser(testUser);
+  
     const client = axios.create();
-
     const interceptor = aws4Interceptor(
       {
         service: 'execute-api',
@@ -62,11 +52,50 @@ describe('API authentication', () => {
       },
       creds
     );
-
     client.interceptors.request.use(interceptor);
 
+    const url = `${deaApiUrl}hi`;
+
+    expect(client.get(url)).rejects.toThrow('Request failed with status code 400');
+    // const response = await client.get(url);
+
+    // expect(response.status).toEqual(400);
+  });
+
+  it('should disallow API calls not explicitly allowed by their IAM role', async () => {
     const url = `${deaApiUrl}cases`;
-    expect(client.get(url)).rejects.toThrow('Request failed with status code 403');
+    //expect(callDeaAPI(testUser, url, cognitoHelper, "GET")).rejects.toThrow('Request failed with status code 403');
+
+    const response = await callDeaAPI(testUser, url, cognitoHelper, "GET");
+    expect(response.status).toEqual(403);
+  });
+
+  it('should add first time federated user to DDB', async () => {
+    // 1. create user
+    const firstTimeFederatedUser = "CheckFirstTimeFederatedUserTestUser";
+    const firstName = "CheckFirstTimeFederatedUser";
+    const lastName = "TestUser";
+    await cognitoHelper.createUser(firstTimeFederatedUser, 'AuthTestGroup', firstName, lastName);
+
+    // 2. check user not in ddb
+    const idToken = await cognitoHelper.getIdTokenForUser(firstTimeFederatedUser);
+    const tokenId = await (await getTokenPayload(idToken, region)).sub;
+
+    expect(await getUserByTokenId(tokenId)).toBeUndefined();
+
+    // 3. call hi
+    const url = `${deaApiUrl}hi`;
+    const response = await callDeaAPI(firstTimeFederatedUser, url, cognitoHelper, "GET");
+
+    expect(response.status).toBeTruthy();
+  
+    // 4. check user is now in ddb
+    const user = await getUserByTokenId(tokenId);
+
+    expect(user).toBeDefined();
+    expect(user?.tokenId).toStrictEqual(tokenId);
+    expect(user?.firstName).toStrictEqual(firstName);
+    expect(user?.lastName).toStrictEqual(lastName);
   });
 
   it('should log successful and unsuccessful logins/api invocations', () => {

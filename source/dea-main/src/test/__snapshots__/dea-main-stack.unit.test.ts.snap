@@ -2845,6 +2845,14 @@ Object {
                 ],
               },
             },
+            Object {
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
           ],
           "Version": "2012-10-17",
         },
@@ -3751,6 +3759,32 @@ Object {
         },
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+    },
+    "DeaAuthuserpoolclientidssmparam605B45CC": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the user pool client id for use in token verification on the backend",
+        "Name": "/dea/us-east-1/userpool-client-id-param",
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": Object {
+          "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaAuthuserpoolidssmparamE2094B6A": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the user pool id for use in token verification on the backend",
+        "Name": "/dea/us-east-1/userpool-id-param",
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": Object {
+          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
     },
     "DeaBackendStackDeaTableE9FE4A05": Object {
       "DeletionPolicy": "Delete",

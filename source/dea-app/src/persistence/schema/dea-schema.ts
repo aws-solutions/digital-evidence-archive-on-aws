@@ -74,7 +74,11 @@ export const DeaSchema = {
       SK: { type: String, value: 'USER#', required: true },
       GSI1PK: { type: String, value: 'USER#' },
       GSI1SK: { type: String, value: 'USER#${lowerFirstName}#${lowerLastName}#${ulid}#' },
+      // gsi2 determine if user is federated for the first time using the sub from the cognito token
+      GSI2PK: { type: String, value: 'USER#${tokenId}#' },
+      GSI2SK: { type: String, value: 'USER#' },
       ulid: { type: String, generate: 'ulid', validate: ulidMatch, required: true },
+      tokenId: { type: String, required: true },
       firstName: { type: String, required: true, validate: allButDisallowed },
       lastName: { type: String, required: true, validate: allButDisallowed },
       lowerFirstName: { type: String, required: true, validate: allButDisallowed },

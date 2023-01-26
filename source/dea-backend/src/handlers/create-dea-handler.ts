@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { DEAGatewayProxyHandler } from '@aws/dea-app';
+import { DEAGatewayProxyHandler, runPreExecutionChecks } from '@aws/dea-app';
 import { logger } from '../logger';
 import { exceptionHandlers } from './exception-handlers';
 
@@ -13,6 +13,11 @@ import { exceptionHandlers } from './exception-handlers';
 export const createDeaHandler = (handler: DEAGatewayProxyHandler): DEAGatewayProxyHandler => {
   const wrappedHandler: DEAGatewayProxyHandler = async (event, context) => {
     try {
+      // Before we run the handler, run the pre-execution checks
+      // which include adding first time federated users to the db
+      // so they can be invited to cases later, and session management
+      // checks, like session lock and no concurrent active sessions
+      await runPreExecutionChecks(event, context);
       return await handler(event, context);
     } catch (error) {
       logger.error('Error', { Body: JSON.stringify(error) });

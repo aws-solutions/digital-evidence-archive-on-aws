@@ -217,6 +217,13 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
+        resources: [ `*`],
+      })
+    );
+
     return role;
   }
 }

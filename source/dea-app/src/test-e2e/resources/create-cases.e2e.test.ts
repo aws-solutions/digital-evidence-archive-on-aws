@@ -4,37 +4,34 @@
  */
 
 import { fail } from 'assert';
-import { aws4Interceptor } from 'aws4-axios';
-import axios from 'axios';
 import { CaseStatus } from '../../models/case-status';
 import CognitoHelper from '../helpers/cognito-helper';
 import { envSettings } from '../helpers/settings';
-import { createCaseSuccess, deleteCase, validateStatus } from './test-helpers';
+import { callDeaAPI, callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
 
 describe('create cases api', () => {
   const cognitoHelper = new CognitoHelper();
 
   const testUser = 'createCaseTestUser';
   const deaApiUrl = envSettings.apiUrlOutput;
-  const region = envSettings.awsRegion;
 
   const caseIdsToDelete: string[] = [];
 
   beforeAll(async () => {
     // Create user in test group
-    await cognitoHelper.createUser(testUser, 'CreateCasesTestGroup');
+    await cognitoHelper.createUser(testUser, 'CreateCasesTestGroup', "CreateCases", "TestUser");
   });
 
   afterAll(async () => {
-    const creds = await cognitoHelper.getCredentialsForUser(testUser);
+    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
     for (const caseId of caseIdsToDelete) {
-      await deleteCase(deaApiUrl, caseId, creds);
+      await deleteCase(deaApiUrl, caseId, idToken, creds);
     }
     await cognitoHelper.cleanup();
   }, 10000);
 
   it('should create a new case', async () => {
-    const creds = await cognitoHelper.getCredentialsForUser(testUser);
+    const [creds, idToken]  = await cognitoHelper.getCredentialsForUser(testUser);
 
     const caseName = 'CASE B';
 
@@ -45,6 +42,7 @@ describe('create cases api', () => {
         status: CaseStatus.ACTIVE,
         description: 'this is a description',
       },
+      idToken,
       creds
     );
 
@@ -52,39 +50,13 @@ describe('create cases api', () => {
   }, 10000);
 
   it('should give an error when payload is missing', async () => {
-    const creds = await cognitoHelper.getCredentialsForUser(testUser);
-    const client = axios.create();
-
-    const interceptor = aws4Interceptor(
-      {
-        service: 'execute-api',
-        region: region,
-      },
-      creds
-    );
-
-    client.interceptors.request.use(interceptor);
-
-    const response = await client.post(`${deaApiUrl}cases`, undefined, {
-      validateStatus,
-    });
+    const response = await callDeaAPI(testUser, `${deaApiUrl}cases`, cognitoHelper, "POST", undefined);
 
     expect(response.status).toEqual(400);
   });
 
   it('should give an error when the name is in use', async () => {
-    const creds = await cognitoHelper.getCredentialsForUser(testUser);
-    const client = axios.create();
-
-    const interceptor = aws4Interceptor(
-      {
-        service: 'execute-api',
-        region: region,
-      },
-      creds
-    );
-
-    client.interceptors.request.use(interceptor);
+    const [creds, idToken]  = await cognitoHelper.getCredentialsForUser(testUser);
 
     const caseName = 'CASE C';
     const createdCase = await createCaseSuccess(
@@ -94,22 +66,18 @@ describe('create cases api', () => {
         status: CaseStatus.ACTIVE,
         description: 'any description',
       },
+      idToken,
       creds
     );
 
     caseIdsToDelete.push(createdCase.ulid ?? fail());
 
-    const response = await client.post(
-      `${deaApiUrl}cases`,
+    const response = await callDeaAPIWithCreds(`${deaApiUrl}cases`, "POST", idToken, creds,
       {
         name: caseName,
         status: 'ACTIVE',
         description: 'any description',
-      },
-      {
-        validateStatus,
-      }
-    );
+      });
 
     expect(response.status).toEqual(500);
   }, 10000);
