@@ -1,10 +1,8 @@
-import { Box, SpaceBetween, Button } from '@cloudscape-design/components';
-import { CancelableEventHandler, ClickDetail } from '@cloudscape-design/components/internal/events';
+import { Box } from '@cloudscape-design/components';
 
 /**
  * Displays the empty state of any table
  * @param itemType - type of item that the table displays
- * @param link - link to the page that users will be directed to after they click the "Create" button
  * @example
  * ```
  * <Table empty={ TableEmptyDisplay("workspace") } />
