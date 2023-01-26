@@ -3,7 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { useCollection } from '@cloudscape-design/collection-hooks';
+import { DeaCase } from '@aws/dea-app';
+import { PropertyFilterProperty, useCollection } from '@cloudscape-design/collection-hooks';
 import {
   Table,
   Box,
@@ -13,12 +14,38 @@ import {
   Link,
   StatusIndicator,
   SpaceBetween,
+  PropertyFilter,
+  TableProps,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useListAllCases } from '../../api/cases';
 import { commonTableLabels, caseListLabels } from '../../common/labels';
+import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/common-components';
 import { TableHeader } from '../common-components/TableHeader';
+
+export const filteringProperties: readonly PropertyFilterProperty[] = [
+  {
+    key: 'name',
+    operators: ['=', '!=', ':', '!:'],
+    propertyLabel: 'Case Name',
+    groupValuesLabel: 'Case Name Values',
+  },
+  {
+    key: 'caseLead',
+    operators: ['=', '!='],
+    propertyLabel: 'Case Lead',
+    groupValuesLabel: 'Case Lead Values',
+  },
+  {
+    key: 'status',
+    operators: ['=', '!='],
+    propertyLabel: 'Case Status',
+    groupValuesLabel: 'Case Status Values',
+  },
+];
+
+export const searchableColumns: string[] = ['name', 'caseLead', 'status'];
 
 function CaseTable(): JSX.Element {
   const router = useRouter();
@@ -27,8 +54,35 @@ function CaseTable(): JSX.Element {
   const STAGE = 'test';
 
   // Property and date filter collections
-  const { items } = useCollection(cases, {});
+  const { items, actions, filteredItemsCount, collectionProps, paginationProps, propertyFilterProps } =
+    useCollection(cases, {
+      filtering: {
+        empty: TableEmptyDisplay(caseListLabels.noCasesLabel),
+        noMatch: TableNoMatchDisplay(caseListLabels.noCasesLabel),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        filteringFunction: (item: any, filteringText): any => {
+          const filteringTextLowerCase = filteringText.toLowerCase();
 
+          return (
+            searchableColumns
+              // eslint-disable-next-line security/detect-object-injection
+              .map((key) => item[key])
+              .some(
+                (value) =>
+                  typeof value === 'string' && value.toLowerCase().indexOf(filteringTextLowerCase) > -1
+              )
+          );
+        },
+      },
+      propertyFiltering: {
+        filteringProperties: filteringProperties,
+        empty: TableEmptyDisplay(caseListLabels.noCasesLabel),
+        noMatch: TableNoMatchDisplay(caseListLabels.noCasesLabel),
+      },
+      sorting: {},
+      selection: {},
+    });
+  console.log(cases);
   function createNewCaseHandler() {
     router.push('/create-cases');
   }
@@ -44,8 +98,6 @@ function CaseTable(): JSX.Element {
           description={caseListLabels.casesPageDescription}
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
-              <Button>{caseListLabels.archiveButton}</Button>
-              <Button>{caseListLabels.activateButton}</Button>
               <Button variant="primary" onClick={createNewCaseHandler}>
                 {caseListLabels.createNewCaseLabel}
               </Button>{' '}
@@ -92,7 +144,7 @@ function CaseTable(): JSX.Element {
         {
           id: 'creationDate',
           header: commonTableLabels.creationDateHeader,
-          cell: () => 'FOO, 00/00/00',
+          cell: (e) => e.created,
           width: 170,
           minWidth: 165,
           sortingField: 'creationDate',
@@ -111,7 +163,6 @@ function CaseTable(): JSX.Element {
       items={items}
       loadingText={caseListLabels.loading}
       resizableColumns={true}
-      selectionType="single"
       empty={
         <Box textAlign="center" color="inherit">
           <b>{caseListLabels.noCasesLabel}</b>
@@ -121,7 +172,51 @@ function CaseTable(): JSX.Element {
           <Button>{caseListLabels.createNewCaseLabel}</Button>
         </Box>
       }
-      filter={<TextFilter filteringPlaceholder={caseListLabels.searchCasesLabel} filteringText="" />}
+      filter={
+        <SpaceBetween direction="vertical" size="xs">
+          <PropertyFilter
+            {...propertyFilterProps}
+            countText={getFilterCounterText(filteredItemsCount)}
+            i18nStrings={{
+              filteringAriaLabel: 'your choice',
+              dismissAriaLabel: 'Dismiss',
+              filteringPlaceholder: 'Search',
+              groupValuesText: 'Values',
+              groupPropertiesText: 'Properties',
+              operatorsText: 'Operators',
+              operationAndText: 'and',
+              operationOrText: 'or',
+              operatorLessText: 'Less than',
+              operatorLessOrEqualText: 'Less than or equal',
+              operatorGreaterText: 'Greater than',
+              operatorGreaterOrEqualText: 'Greater than or equal',
+              operatorContainsText: 'Contains',
+              operatorDoesNotContainText: 'Does not contain',
+              operatorEqualsText: 'Equals',
+              operatorDoesNotEqualText: 'Does not equal',
+              editTokenHeader: 'Edit filter',
+              propertyText: 'Property',
+              operatorText: 'Operator',
+              valueText: 'Value',
+              cancelActionText: 'Cancel',
+              applyActionText: 'Apply',
+              allPropertiesLabel: 'All properties',
+              tokenLimitShowMore: 'Show more',
+              tokenLimitShowFewer: 'Show fewer',
+              clearFiltersText: 'Clear filters',
+              removeTokenButtonAriaLabel: () => 'Remove token',
+              enteredTextLabel: (text) => `Use: "${text}"`,
+            }}
+            filteringOptions={[
+              { propertyKey: 'caseLead', value: '' },
+              { propertyKey: 'name', value: '' },
+              { propertyKey: 'status', value: 'ACTIVE' },
+              { propertyKey: 'status', value: 'INACTIVE' },
+            ]}
+            expandToViewport={true}
+          />
+        </SpaceBetween>
+      }
       pagination={
         <Pagination
           currentPageIndex={1}
@@ -137,4 +232,6 @@ function CaseTable(): JSX.Element {
   );
 }
 
+const getFilterCounterText = (count: number | undefined): string =>
+  `${count} ${count === 1 ? 'match' : 'matches'}`;
 export default CaseTable;

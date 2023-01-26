@@ -97,8 +97,6 @@ export const caseListLabels = {
   noDisplayLabel: 'No cases to display.',
   createNewCaseLabel: 'Create new case',
   searchCasesLabel: 'Search by case name',
-  archiveButton: 'Archive Case',
-  activateButton: 'Activate Case',
   casesLabel: 'Cases',
   casesPageDescription: 'This is a list of cases that have been shared with you.',
 };
