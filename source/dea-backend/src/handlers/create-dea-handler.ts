@@ -16,10 +16,12 @@ export const createDeaHandler = (handler: DEAGatewayProxyHandler): DEAGatewayPro
       return await handler(event, context);
     } catch (error) {
       logger.error('Error', { Body: JSON.stringify(error) });
-      if ('name' in error) {
-        const errorHandler = exceptionHandlers.get(error.name);
-        if (errorHandler) {
-          return errorHandler(error);
+      if (typeof error === 'object') {
+        if ('name' in error) {
+          const errorHandler = exceptionHandlers.get(error.name);
+          if (errorHandler) {
+            return errorHandler(error);
+          }
         }
       }
 

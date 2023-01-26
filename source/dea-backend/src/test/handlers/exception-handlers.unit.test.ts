@@ -90,4 +90,18 @@ describe('exception handlers', () => {
       body: `"name" length must be at least 10 characters long`,
     });
   });
+
+  it('should catch any thrown expression', async () => {
+    const sut = createDeaHandler(async () => {
+      throw 'ItInTheOcean';
+    });
+
+    const event: APIGatewayProxyEventV2 = mock();
+    const context: Context = mock();
+    const actual = await sut(event, context);
+    expect(actual).toEqual({
+      statusCode: 500,
+      body: 'Server Error',
+    });
+  });
 });

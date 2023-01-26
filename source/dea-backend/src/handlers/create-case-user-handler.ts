@@ -6,4 +6,4 @@
 import { createCaseMembership } from "@aws/dea-app";
 import { createDeaHandler } from "./create-dea-handler";
 
-exports.handler = createDeaHandler(createCaseMembership);
+export const handler = createDeaHandler(createCaseMembership);

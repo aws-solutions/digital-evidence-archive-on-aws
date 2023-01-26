@@ -10,7 +10,8 @@
     }
   },
   "coverageReporters": ["json-summary", "json", "text"],
-  "coveragePathIgnorePatterns": ["<rootDir>/src/test-e2e/", "<rootDir>/src/index.ts"],
+  "collectCoverageFrom": ["src/**"],
+  "coveragePathIgnorePatterns": ["<rootDir>/src/test-e2e/", "<rootDir>/src/test/", "<rootDir>/src/index.ts"],
   "globalSetup": "<rootDir>/src/test/local-dynamo/setup.ts",
   "globalTeardown": "<rootDir>/src/test/local-dynamo/teardown.ts"
 }

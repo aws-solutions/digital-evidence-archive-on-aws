@@ -5,7 +5,7 @@
 
 import { LoggingService, LogLevel } from '@aws/workbench-core-logging';
 
-const logLevel = (): LogLevel => {
+export const logLevel = (): LogLevel => {
     const level = process.env.LOG_LEVEL;
     switch (level) {
         case 'silly':
