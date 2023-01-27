@@ -18,7 +18,7 @@ import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useListAllCases } from '../../api/cases';
 import { commonTableLabels, caseListLabels } from '../../common/labels';
-import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/Common-Components';
+import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
 import { filteringOptions, filteringProperties, searchableColumns } from './caseListDefinitions';
