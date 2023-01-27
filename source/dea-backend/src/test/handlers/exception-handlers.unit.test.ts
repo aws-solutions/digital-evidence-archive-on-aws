@@ -3,7 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { runPreExecutionChecks } from '@aws/dea-app';
 import { NotFoundError } from '@aws/dea-app/lib/app/exceptions/not-found-exception';
 import { ValidationError } from '@aws/dea-app/lib/app/exceptions/validation-exception';
 import { APIGatewayProxyEventV2, Context } from 'aws-lambda';
@@ -11,23 +10,18 @@ import Joi from 'joi';
 import { mock } from 'ts-mockito';
 import { createDeaHandler } from '../../handlers/create-dea-handler';
 
-// jest.mock('@aws/dea-app', () => ({
-//   runPreExecutionChecks: () => { return; }
-// }));
-
-jest.mock('@aws/dea-app');
-jest.spyOn('@aws/dea-app', runPreExecutionChecks).mockImplementation((event, context) => {return;});
-
 describe('exception handlers', () => {
-  const FAKE_ID_TOKEN = "FAKE_ID_TOKEN"
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const preExecutionChecks = async (event: APIGatewayProxyEventV2, context: Context) => {
+    return;
+  };
 
   it('should handle DEAValidation errors', async () => {
     const sut = createDeaHandler(async () => {
       throw new ValidationError('custom validation failed');
-    });
+    }, preExecutionChecks);
 
     const event: APIGatewayProxyEventV2 = mock();
-    event.headers["idToken"] = FAKE_ID_TOKEN;
     const context: Context = mock();
 
     const actual = await sut(event, context);
@@ -41,10 +35,9 @@ describe('exception handlers', () => {
   it('should handle NotFound errors', async () => {
     const sut = createDeaHandler(async () => {
       throw new NotFoundError('something was not found');
-    });
+    }, preExecutionChecks);
 
     const event: APIGatewayProxyEventV2 = mock();
-    event.headers["idToken"] = FAKE_ID_TOKEN;
     const context: Context = mock();
     const actual = await sut(event, context);
     expect(actual).toEqual({
@@ -58,7 +51,7 @@ describe('exception handlers', () => {
       const err = new ValidationError('no joi here');
       err.name = 'ValidationError';
       throw err;
-    });
+    }, preExecutionChecks);
 
     const event: APIGatewayProxyEventV2 = mock();
     const context: Context = mock();
@@ -72,7 +65,7 @@ describe('exception handlers', () => {
   it('should handle non custom Errors', async () => {
     const sut = createDeaHandler(async () => {
       throw new Error('some unexpected error');
-    });
+    }, preExecutionChecks);
 
     const event: APIGatewayProxyEventV2 = mock();
     const context: Context = mock();
@@ -91,7 +84,7 @@ describe('exception handlers', () => {
     const sut = createDeaHandler(async () => {
       Joi.assert({ name: 'bogus' }, schemaObj);
       return { statusCode: 200, body: '' };
-    });
+    }, preExecutionChecks);
 
     const event: APIGatewayProxyEventV2 = mock();
     const context: Context = mock();
@@ -106,7 +99,7 @@ describe('exception handlers', () => {
   it('should catch any thrown expression', async () => {
     const sut = createDeaHandler(async () => {
       throw 'ItInTheOcean';
-    });
+    }, preExecutionChecks);
 
     const event: APIGatewayProxyEventV2 = mock();
     const context: Context = mock();

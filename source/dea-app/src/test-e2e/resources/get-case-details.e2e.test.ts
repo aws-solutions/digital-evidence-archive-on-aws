@@ -19,8 +19,10 @@ describe('get case api', () => {
   const deaApiUrl = envSettings.apiUrlOutput;
 
   beforeAll(async () => {
+    jest.setTimeout(15000);
+
     // Create user in test group
-    await cognitoHelper.createUser(testUser, 'GetCaseTestGroup', "GetCase", "TestUser");
+    await cognitoHelper.createUser(testUser, 'GetCaseTestGroup', 'GetCase', 'TestUser');
   });
 
   afterAll(async () => {
@@ -44,7 +46,12 @@ describe('get case api', () => {
     );
 
     // Now call Get and Check response is what we created
-    const getResponse = await callDeaAPIWithCreds(`${deaApiUrl}cases/${createdCase.ulid}`, "GET", idToken, creds);
+    const getResponse = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${createdCase.ulid}`,
+      'GET',
+      idToken,
+      creds
+    );
 
     expect(getResponse.status).toEqual(200);
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -61,7 +68,7 @@ describe('get case api', () => {
 
     const url = `${deaApiUrl}cases`;
     const caseId = '123bogus';
-    const response = await callDeaAPIWithCreds(`${url}/${caseId}`, "GET", idToken, creds);
+    const response = await callDeaAPIWithCreds(`${url}/${caseId}`, 'GET', idToken, creds);
 
     expect(response.status).toEqual(404);
   });

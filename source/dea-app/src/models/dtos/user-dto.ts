@@ -4,8 +4,8 @@
  */
 
 export interface DeaUserDTO {
-    readonly ulid: string;
-    readonly tokenId: string;
-    readonly firstName: string;
-    readonly lastName: string;
+  readonly ulid?: string;
+  readonly tokenId?: string;
+  readonly firstName?: string;
+  readonly lastName?: string;
 }
