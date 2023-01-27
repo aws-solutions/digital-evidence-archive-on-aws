@@ -18,4 +18,5 @@ if [ "$RUN_HOOKS" == true ]; then
         echo "\033[0;31mA Failure was encountered, please check the output above\033[0m"
         exit 1
     fi
+    node common/scripts/install-run-rush.js common-coverage-make-badge
 fi

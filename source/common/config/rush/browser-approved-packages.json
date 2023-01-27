@@ -507,6 +507,10 @@
       "allowedCategories": [ "production", "prototypes" ]
     },
     {
+      "name": "start-server-and-test",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "swr",
       "allowedCategories": [ "production" ]
     },

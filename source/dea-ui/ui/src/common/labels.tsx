@@ -46,6 +46,7 @@ export const commonLabels = {
   removeButton: 'Remove',
   downloadButton: 'Download',
   loadingLabel: 'Loading...',
+  notFoundLabel: 'Not Found',
   noMatchesLabel: 'No matches found',
 };
 

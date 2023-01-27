@@ -26,7 +26,11 @@ export class DeaBackendConstruct extends Construct {
 
     this.deaTable = this._createDeaTable(props.kmsKey);
     this.accessLogsBucket = this._createAccessLogsBucket(props.kmsKey, `${scope.node.id}-DeaS3AccessLogs`);
-    this.datasetsBucket = this._createDatasetsBucket(props.kmsKey, this.accessLogsBucket, `${scope.node.id}-DeaS3Datasets`);
+    this.datasetsBucket = this._createDatasetsBucket(
+      props.kmsKey,
+      this.accessLogsBucket,
+      `${scope.node.id}-DeaS3Datasets`
+    );
   }
 
   private _createDeaTable(key: Key): Table {
@@ -64,7 +68,7 @@ export class DeaBackendConstruct extends Construct {
           {
             id: 'W28',
             reason: 'Table requires an explicit name to be referenced by Onetable',
-          }
+          },
         ],
       });
     }
@@ -88,35 +92,36 @@ export class DeaBackendConstruct extends Construct {
     });
 
     s3AccessLogsBucket.addToResourcePolicy(
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          principals: [new ServicePrincipal('logging.s3.amazonaws.com')],
-          actions: ['s3:PutObject'],
-          resources: [
-              `${s3AccessLogsBucket.bucketArn}/${S3_UI_ACCESS_LOG_PREFIX}*`,
-              `${s3AccessLogsBucket.bucketArn}/${S3_DATASETS_ACCESS_LOG_PREFIX}*`,
-          ],
-          conditions: {
-            StringEquals: {
-              'aws:SourceAccount': Aws.ACCOUNT_ID,
-            },
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        principals: [new ServicePrincipal('logging.s3.amazonaws.com')],
+        actions: ['s3:PutObject'],
+        resources: [
+          `${s3AccessLogsBucket.bucketArn}/${S3_UI_ACCESS_LOG_PREFIX}*`,
+          `${s3AccessLogsBucket.bucketArn}/${S3_DATASETS_ACCESS_LOG_PREFIX}*`,
+        ],
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': Aws.ACCOUNT_ID,
           },
-        })
+        },
+      })
     );
 
     //CFN NAG Suppression
     const s3AccessLogsBucketNode = s3AccessLogsBucket.node.defaultChild;
-    if (s3AccessLogsBucketNode instanceof CfnBucket)
+    if (s3AccessLogsBucketNode instanceof CfnBucket) {
       s3AccessLogsBucketNode.addMetadata('cfn_nag', {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         rules_to_suppress: [
           {
             id: 'W35',
             reason:
-                "This is an access log bucket, we don't need to configure access logging for access log buckets",
+              "This is an access log bucket, we don't need to configure access logging for access log buckets",
           },
         ],
       });
+    }
 
     new CfnOutput(this, bucketNameOutput, {
       value: s3AccessLogsBucket.bucketName,
@@ -161,8 +166,8 @@ export class DeaBackendConstruct extends Construct {
     const deleteIncompleteUploadsRule: LifecycleRule = {
       abortIncompleteMultipartUploadAfter: Duration.days(1),
       enabled: true,
-      id: 'DeaDatasetsDeleteIncompleteUploadsLifecyclePolicy'
-    }
+      id: 'DeaDatasetsDeleteIncompleteUploadsLifecyclePolicy',
+    };
 
     return [deleteIncompleteUploadsRule];
   }

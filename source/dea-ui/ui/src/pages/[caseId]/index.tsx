@@ -5,6 +5,7 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
+import { commonLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
 import CaseDetailsBody from '../../components/case-details/CaseDetailsBody';
 
@@ -15,6 +16,9 @@ export interface IHomeProps {
 function CaseDetailsPage() {
   const router = useRouter();
   const { caseId } = router.query;
+  if (!caseId || typeof caseId !== 'string') {
+    return <h1>{commonLabels.notFoundLabel}</h1>;
+  }
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: 'Digital Evidence Archive',

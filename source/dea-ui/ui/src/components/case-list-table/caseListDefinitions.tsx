@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import { PropertyFilterProperty } from '@cloudscape-design/collection-hooks';
 import { PropertyFilterProps } from '@cloudscape-design/components';
 
