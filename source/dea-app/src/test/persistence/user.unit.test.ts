@@ -24,7 +24,7 @@ describe('user persistence', () => {
   it('should create and get a user by id', async () => {
     const firstName = 'Steve';
     const lastName = 'Zissou';
-    const tokenId = 'steve@zissou.com';
+    const tokenId = 'stevezissou';
 
     const expectedUser: DeaUser = {
       tokenId,
@@ -65,12 +65,12 @@ describe('user persistence', () => {
   it('should list the first page of users', async () => {
     const firstName = 'Ralph';
     const lastName = 'Machio';
-    const tokenId = 'ralpha@machio.com';
+    const tokenId = 'ralphamachio';
 
 
     const firstName2 = 'Randy';
     const lastName2 = 'Savage';
-    const tokenId2 = 'randy@savage.com';
+    const tokenId2 = 'randysavage';
 
 
     const user1 = await createUser({ tokenId, firstName, lastName }, modelProvider);
@@ -122,7 +122,7 @@ describe('user persistence', () => {
   it('should update a user', async () => {
     const firstName = 'R';
     const lastName = 'V W';
-    const tokenId = 'r@vw.com';
+    const tokenId = 'rvw';
     const updatedFirstName = 'Rip';
     const updatedLastName = 'Van Winkle';
 

@@ -52,7 +52,7 @@ describe('caseUser persistence', () => {
     caseUserModelProvider = { CaseUserModel: testTable.getModel('CaseUser') };
     userModelProvider = { UserModel: testTable.getModel('User') };
     caseModelProvider = { CaseModel: testTable.getModel('Case') };
-    testUser = (await createUser({ tokenId: 'case@man.com', firstName: 'Case', lastName: 'Man' }, userModelProvider)) ?? fail();
+    testUser = (await createUser({ tokenId: 'caseman', firstName: 'Case', lastName: 'Man' }, userModelProvider)) ?? fail();
     userUlid = testUser.ulid ?? fail();
     testCase =
       (await createCase({ name: 'TheCase', status: CaseStatus.ACTIVE }, caseModelProvider)) ?? fail();
@@ -178,9 +178,9 @@ describe('caseUser persistence', () => {
   });
 
   async function createListData(): Promise<void> {
-    listUser1 = (await createUser({ tokenId: 'morgan@freeman.com', firstName: 'Morgan', lastName: 'Freeman' }, userModelProvider)) ?? fail();
+    listUser1 = (await createUser({ tokenId: 'morganfreeman', firstName: 'Morgan', lastName: 'Freeman' }, userModelProvider)) ?? fail();
     listUser1Ulid = listUser1.ulid ?? fail();
-    listUser2 = (await createUser({ tokenId: 'terry@pratchet.com', firstName: 'Terry', lastName: 'Pratchet' }, userModelProvider)) ?? fail();
+    listUser2 = (await createUser({ tokenId: 'terrypratchet', firstName: 'Terry', lastName: 'Pratchet' }, userModelProvider)) ?? fail();
     listUser2Ulid = listUser2.ulid ?? fail();
     listCase1 =
       (await createCase({ name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE }, caseModelProvider)) ??
