@@ -26,6 +26,8 @@ import { deaApiRouteConfig } from '../resources/dea-route-config';
 interface DeaRestApiProps {
   deaTableArn: string;
   kmsKey: Key;
+  region: string;
+  accountId: string;
 }
 
 export class DeaRestApiConstruct extends Construct {
@@ -38,7 +40,12 @@ export class DeaRestApiConstruct extends Construct {
 
     this.apiEndpointArns = new Map<string, string>();
 
-    this.lambdaBaseRole = this._createLambdaBaseRole(props.kmsKey.keyArn, props.deaTableArn);
+    this.lambdaBaseRole = this._createLambdaBaseRole(
+      props.kmsKey.keyArn,
+      props.deaTableArn,
+      props.region,
+      props.accountId
+    );
 
     const accessLogGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
       encryptionKey: props.kmsKey,
@@ -186,7 +193,12 @@ export class DeaRestApiConstruct extends Construct {
     return lambda;
   }
 
-  private _createLambdaBaseRole(kmsKeyArn: string, tableArn: string): Role {
+  private _createLambdaBaseRole(
+    kmsKeyArn: string,
+    tableArn: string,
+    region: string,
+    accountId: string
+  ): Role {
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
     );
@@ -214,6 +226,13 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['kms:Encrypt', 'kms:Decrypt'],
         resources: [kmsKeyArn],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
+        resources: [`arn:aws:ssm:${region}:${accountId}:parameter/dea/${region}/*`],
       })
     );
 

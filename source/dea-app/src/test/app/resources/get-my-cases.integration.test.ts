@@ -65,6 +65,7 @@ describe('getMyCases', () => {
     const user =
       (await createUser(
         {
+          tokenId: 'jacksonwang',
           firstName: 'Jackson',
           lastName: 'Wang',
         },
@@ -156,6 +157,7 @@ describe('getMyCases', () => {
     const user =
       (await createUser(
         {
+          tokenId: 'frankzappa',
           firstName: 'Frank',
           lastName: 'Zappa',
         },

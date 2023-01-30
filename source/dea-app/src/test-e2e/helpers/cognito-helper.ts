@@ -14,22 +14,26 @@ import {
   AdminDeleteUserCommand,
   AdminGetUserCommand,
   AdminSetUserPasswordCommand,
+  AuthenticationResultType,
   AuthFlowType,
   CognitoIdentityProviderClient,
   InitiateAuthCommand,
   MessageActionType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Credentials } from 'aws4-axios';
+import { getTokenPayload  } from '../../cognito-token-helpers';
+import { defaultProvider } from '../../persistence/schema/entities';
+import { deleteUser, getUserByTokenId } from '../../persistence/user';
 import { envSettings } from './settings';
 
 export default class CognitoHelper {
   private _identityPoolClient: CognitoIdentityClient;
   private _userPoolProvider: CognitoIdentityProviderClient;
   private _region: string;
-  private _userPoolClientId: string;
-  private _userPoolId: string;
+  readonly _userPoolClientId: string;
+  readonly _userPoolId: string;
   private _identityPoolId: string;
-  private _idpUrl: string;
+  readonly _idpUrl: string;
 
   private _usersCreated: string[] = [];
   private _testPassword: string;
@@ -48,7 +52,7 @@ export default class CognitoHelper {
     this._testPassword = generatePassword();
   }
 
-  public async createUser(userName: string, groupName: string): Promise<void> {
+  public async createUser(userName: string, groupName: string, firstName: string, lastName: string): Promise<void> {
     // 1. Create User
     try {
       const user = await this._userPoolProvider.send(
@@ -57,6 +61,16 @@ export default class CognitoHelper {
           MessageAction: MessageActionType.SUPPRESS,
           Username: userName,
           TemporaryPassword: generatePassword(),
+          UserAttributes: [ 
+            { 
+               Name: "given_name",
+               Value: firstName,
+            },
+            { 
+              Name: "family_name",
+              Value: lastName,
+           }
+         ],
         })
       );
       if (user.User?.Username) {
@@ -108,8 +122,7 @@ export default class CognitoHelper {
     }
   }
 
-  public async getCredentialsForUser(userName: string): Promise<Credentials> {
-    // 1. Authenticate with User Pool, get Token
+  private async getUserPoolAuthForUser(userName: string): Promise<AuthenticationResultType> {
     const result = await this._userPoolProvider.send(
       new InitiateAuthCommand({
         AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
@@ -121,12 +134,33 @@ export default class CognitoHelper {
       })
     );
 
+    if (!result.AuthenticationResult) {
+      throw new Error("Unable to authenticate with the user pool.");
+    }
+
+    return result.AuthenticationResult;
+  }
+
+  public async getIdTokenForUser(userName: string): Promise<string> {
+    const result = await this.getUserPoolAuthForUser(userName);
+
+    if (!result.IdToken) {
+      throw new Error("Unable to get id token from user pool.");
+    }
+
+    return result.IdToken;
+  }
+
+  public async getCredentialsForUser(userName: string): Promise<[Credentials, string]> {
+    // 1. Authenticate with User Pool, get Token
+    const idToken = await this.getIdTokenForUser(userName);
+
     // 2. Get Identity from Identity Pool
     const identityId = await this._identityPoolClient.send(
       new GetIdCommand({
         IdentityPoolId: this._identityPoolId,
         Logins: {
-          [this._idpUrl]: result.AuthenticationResult?.IdToken ?? 'INVALIDTOKEN',
+          [this._idpUrl]: idToken,
         },
       })
     );
@@ -136,7 +170,7 @@ export default class CognitoHelper {
       new GetCredentialsForIdentityCommand({
         IdentityId: identityId.IdentityId,
         Logins: {
-          [this._idpUrl]: result.AuthenticationResult?.IdToken ?? 'INVALIDTOKEN',
+          [this._idpUrl]: idToken,
         },
       })
     );
@@ -146,20 +180,32 @@ export default class CognitoHelper {
     }
     const creds = response.Credentials;
     if (creds.AccessKeyId && creds.SecretKey && creds.SessionToken) {
-      return {
+      return [{
         accessKeyId: creds.AccessKeyId,
         secretAccessKey: creds.SecretKey,
         sessionToken: creds.SessionToken,
-      };
+      }, idToken];
     } else {
       throw new Error('Failed to get credentials from the identity pool:');
     }
   }
 
-  public async cleanup(): Promise<void> {
+  public async cleanup(repositoryProvider = defaultProvider): Promise<void> {
     // Clean the users made
     await Promise.all(
       this._usersCreated.map(async (username) => {
+
+        // try to remove the user from the db
+        // NOTE: it won't be there unless you called
+        // lambda using creds from the the user
+        const idToken = await this.getIdTokenForUser(username);
+        const tokenId = await (await getTokenPayload(idToken, this._region)).sub;
+        const dbUser = await getUserByTokenId(tokenId, repositoryProvider);
+        if (dbUser) {
+          await deleteUser(dbUser.ulid ?? fail(), repositoryProvider);
+        }
+
+        // Now delete the user from the user pool
         await this._userPoolProvider.send(
           new AdminDeleteUserCommand({
             Username: username,

@@ -36,6 +36,8 @@ describe('DeaBackend constructs', () => {
     new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       kmsKey: key,
+      region: stack.region,
+      accountId: stack.account,
     });
 
     // Prepare the stack for assertions.

@@ -13,5 +13,8 @@
   "collectCoverageFrom": ["src/**"],
   "coveragePathIgnorePatterns": ["<rootDir>/src/test-e2e/", "<rootDir>/src/test/", "<rootDir>/src/index.ts"],
   "globalSetup": "<rootDir>/src/test/local-dynamo/setup.ts",
-  "globalTeardown": "<rootDir>/src/test/local-dynamo/teardown.ts"
+  "globalTeardown": "<rootDir>/src/test/local-dynamo/teardown.ts",
+  "moduleNameMapper": {
+    "#node-web-compat": "./node-web-compat-node.js"
+  }
 }

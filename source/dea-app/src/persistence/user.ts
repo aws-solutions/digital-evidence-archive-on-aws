@@ -29,6 +29,25 @@ export const getUser = async (
   return userFromEntity(userEntity);
 };
 
+export const getUserByTokenId = async (
+  tokenId: string,
+  repositoryProvider: UserModelRepositoryProvider = {
+    UserModel: UserModel,
+  }
+): Promise<DeaUser | undefined> => {
+  const userEntity = await repositoryProvider.UserModel.get(
+    {
+      GSI2PK: `USER#${tokenId}#`,
+      GSI2SK: `USER#`,
+    },
+    {
+      index: 'GSI2',
+    }
+  );
+
+  return userEntity;
+};
+
 export const listUsers = async (
   limit = 30,
   nextToken?: object,

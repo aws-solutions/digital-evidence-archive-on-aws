@@ -11,10 +11,15 @@ import { mock } from 'ts-mockito';
 import { createDeaHandler } from '../../handlers/create-dea-handler';
 
 describe('exception handlers', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const preExecutionChecks = async (event: APIGatewayProxyEventV2, context: Context) => {
+    return;
+  };
+
   it('should handle DEAValidation errors', async () => {
     const sut = createDeaHandler(async () => {
       throw new ValidationError('custom validation failed');
-    });
+    }, preExecutionChecks);
 
     const event: APIGatewayProxyEventV2 = mock();
     const context: Context = mock();
@@ -30,7 +35,7 @@ describe('exception handlers', () => {
   it('should handle NotFound errors', async () => {
     const sut = createDeaHandler(async () => {
       throw new NotFoundError('something was not found');
-    });
+    }, preExecutionChecks);
 
     const event: APIGatewayProxyEventV2 = mock();
     const context: Context = mock();
@@ -46,7 +51,7 @@ describe('exception handlers', () => {
       const err = new ValidationError('no joi here');
       err.name = 'ValidationError';
       throw err;
-    });
+    }, preExecutionChecks);
 
     const event: APIGatewayProxyEventV2 = mock();
     const context: Context = mock();
@@ -60,7 +65,7 @@ describe('exception handlers', () => {
   it('should handle non custom Errors', async () => {
     const sut = createDeaHandler(async () => {
       throw new Error('some unexpected error');
-    });
+    }, preExecutionChecks);
 
     const event: APIGatewayProxyEventV2 = mock();
     const context: Context = mock();
@@ -79,7 +84,7 @@ describe('exception handlers', () => {
     const sut = createDeaHandler(async () => {
       Joi.assert({ name: 'bogus' }, schemaObj);
       return { statusCode: 200, body: '' };
-    });
+    }, preExecutionChecks);
 
     const event: APIGatewayProxyEventV2 = mock();
     const context: Context = mock();
@@ -94,7 +99,7 @@ describe('exception handlers', () => {
   it('should catch any thrown expression', async () => {
     const sut = createDeaHandler(async () => {
       throw 'ItInTheOcean';
-    });
+    }, preExecutionChecks);
 
     const event: APIGatewayProxyEventV2 = mock();
     const context: Context = mock();

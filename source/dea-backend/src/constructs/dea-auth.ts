@@ -15,6 +15,7 @@ import {
   UserPoolClient
 } from 'aws-cdk-lib/aws-cognito';
 import { FederatedPrincipal, Policy, PolicyStatement, Role, WebIdentityPrincipal } from 'aws-cdk-lib/aws-iam';
+import { ParameterTier, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { uniqueId } from 'lodash';
 import { getConstants } from '../constants';
@@ -236,6 +237,9 @@ export class DeaAuthConstruct extends Construct {
       value: poolClient.userPoolClientId,
       exportName: 'userPoolClientId',
     });
+
+    // Add the user pool id and client id to SSM for use in the backend for verifying and decoding tokens
+    this._addCognitoInformationToSSM(pool.userPoolId, poolClient.userPoolClientId, region);
   }
 
   // TODO add function for creating the IAM SAML IdP, which
@@ -405,5 +409,25 @@ export class DeaAuthConstruct extends Construct {
       .filter((endpoint): endpoint is string => endpoint !== null);
     assert(endpoints.length == paths.length);
     return endpoints;
+  }
+
+  // Store the user pool id and client id in the parameter store so that we can verify
+  // and decode tokens on the backend
+  private _addCognitoInformationToSSM(userPoolId: string, userPoolClientId: string, region: string) {
+    new StringParameter(this, 'user-pool-id-ssm-param', {
+      parameterName: `/dea/${region}/userpool-id-param`,
+      stringValue: userPoolId,
+      description: 'stores the user pool id for use in token verification on the backend',
+      tier: ParameterTier.STANDARD,
+      allowedPattern: '.*',
+    });
+
+    new StringParameter(this, 'user-pool-client-id-ssm-param', {
+      parameterName: `/dea/${region}/userpool-client-id-param`,
+      stringValue: userPoolClientId,
+      description: 'stores the user pool client id for use in token verification on the backend',
+      tier: ParameterTier.STANDARD,
+      allowedPattern: '.*',
+    });
   }
 }

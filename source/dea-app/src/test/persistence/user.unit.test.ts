@@ -24,8 +24,10 @@ describe('user persistence', () => {
   it('should create and get a user by id', async () => {
     const firstName = 'Steve';
     const lastName = 'Zissou';
+    const tokenId = 'stevezissou';
 
     const expectedUser: DeaUser = {
+      tokenId,
       firstName,
       lastName,
     };
@@ -63,13 +65,18 @@ describe('user persistence', () => {
   it('should list the first page of users', async () => {
     const firstName = 'Ralph';
     const lastName = 'Machio';
+    const tokenId = 'ralphamachio';
+
 
     const firstName2 = 'Randy';
     const lastName2 = 'Savage';
+    const tokenId2 = 'randysavage';
 
-    const user1 = await createUser({ firstName, lastName }, modelProvider);
+
+    const user1 = await createUser({ tokenId, firstName, lastName }, modelProvider);
     const user2 = await createUser(
       {
+        tokenId: tokenId2,
         firstName: firstName2,
         lastName: lastName2,
       },
@@ -83,6 +90,7 @@ describe('user persistence', () => {
     const expectedUsers: Paged<DeaUser> = [
       {
         ulid: user1.ulid,
+        tokenId,
         firstName,
         lastName,
         created: user1.created,
@@ -90,6 +98,7 @@ describe('user persistence', () => {
       },
       {
         ulid: user2.ulid,
+        tokenId: tokenId2,
         firstName: firstName2,
         lastName: lastName2,
         created: user2.created,
@@ -113,10 +122,12 @@ describe('user persistence', () => {
   it('should update a user', async () => {
     const firstName = 'R';
     const lastName = 'V W';
+    const tokenId = 'rvw';
     const updatedFirstName = 'Rip';
     const updatedLastName = 'Van Winkle';
 
     const deaUser: DeaUser = {
+    tokenId,
       firstName,
       lastName,
     };
@@ -135,6 +146,7 @@ describe('user persistence', () => {
 
     const updatedUser: DeaUser = {
       ulid: createdUser.ulid,
+      tokenId,
       firstName: updatedFirstName,
       lastName: updatedLastName,
     };

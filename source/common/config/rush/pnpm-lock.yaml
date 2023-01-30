@@ -11,6 +11,7 @@ importers:
       '@aws-sdk/client-cognito-identity-provider': 3.118.1
       '@aws-sdk/client-dynamodb': ^3.118.1
       '@aws-sdk/client-s3': ^3.118.1
+      '@aws-sdk/client-ssm': ^3.118.1
       '@aws-sdk/client-sts': ^3.118.1
       '@aws-sdk/types': ^3.110.0
       '@aws/workbench-core-logging': ~0.1.1
@@ -31,6 +32,7 @@ importers:
       '@types/uuid': ^8.3.4
       aws-cdk: ~2.53.0
       aws-cdk-lib: ~2.53.0
+      aws-jwt-verify: ~3.3.0
       aws-lambda: ^1.0.7
       aws4-axios: ~2.4.9
       axios: ^0.27.1
@@ -66,10 +68,12 @@ importers:
       '@aws-sdk/client-cognito-identity-provider': 3.118.1
       '@aws-sdk/client-dynamodb': 3.204.0
       '@aws-sdk/client-s3': 3.204.0
+      '@aws-sdk/client-ssm': 3.205.0
       '@aws-sdk/client-sts': 3.204.0
       '@aws-sdk/types': 3.201.0
       '@hapi/boom': 10.0.0
       '@types/aws-lambda': 8.10.108
+      aws-jwt-verify: 3.3.0
       aws-lambda: 1.0.7
       cookie-parser: 1.4.6
       cors: 2.8.5
@@ -2057,12 +2061,14 @@ packages:
 
   /@aws-sdk/util-base64-browser/3.188.0:
     resolution: {integrity: sha512-qlH+5NZBLiyKziL335BEPedYxX6j+p7KFRWXvDQox9S+s+gLCayednpK+fteOhBenCcR9fUZOVuAPScy1I8qCg==}
+    deprecated: The package @aws-sdk/util-base64-browser has been renamed to @aws-sdk/util-base64. Please install the renamed package.
     dependencies:
       tslib: 2.4.1
 
   /@aws-sdk/util-base64-node/3.201.0:
     resolution: {integrity: sha512-ydZqNpB3l5kiicInpPDExPb5xHI7uyVIa1vMupnuIrJ412iNb0F2+K8LlFynzw6fSJShVKnqFcWOYRA96z1iIw==}
     engines: {node: '>=14.0.0'}
+    deprecated: The package @aws-sdk/util-base64-node has been renamed to @aws-sdk/util-base64. Please install the renamed package.
     dependencies:
       '@aws-sdk/util-buffer-from': 3.201.0
       tslib: 2.4.1
@@ -5622,6 +5628,11 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
+
+  /aws-jwt-verify/3.3.0:
+    resolution: {integrity: sha512-gb25clHLamaRXwJnKsW5d/0rEjCUErLsLekryzJYManQV0GfVuv9g8Q+BYeb2owycXvUOi/aqo5czkj3EPtJSg==}
+    engines: {node: '>=14.0.0'}
+    dev: false
 
   /aws-lambda/1.0.7:
     resolution: {integrity: sha512-9GNFMRrEMG5y3Jvv+V4azWvc+qNWdWLTjDdhf/zgMlz8haaaLWv0xeAIWxz9PuWUBawsVxy0zZotjCdR3Xq+2w==}
