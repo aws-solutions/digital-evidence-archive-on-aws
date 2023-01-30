@@ -2608,7 +2608,26 @@ Object {
                 "ssm:GetParameter",
               ],
               "Effect": "Allow",
-              "Resource": "*",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:ssm:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/dea/",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    "/*",
+                  ],
+                ],
+              },
             },
           ],
           "Version": "2012-10-17",

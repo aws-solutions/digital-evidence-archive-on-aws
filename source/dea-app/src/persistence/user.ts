@@ -3,7 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { assert } from 'console';
 import { Paged } from 'dynamodb-onetable';
 import { userFromEntity } from '../models/projections';
 import { DeaUser } from '../models/user';
@@ -31,24 +30,22 @@ export const getUser = async (
 };
 
 export const getUserByTokenId = async (
-    tokenId: string,
-    repositoryProvider: UserModelRepositoryProvider = {
-        UserModel: UserModel,
-    }
+  tokenId: string,
+  repositoryProvider: UserModelRepositoryProvider = {
+    UserModel: UserModel,
+  }
 ): Promise<DeaUser | undefined> => {
-    const userEntities = await repositoryProvider.UserModel.find({
-        GSI2PK: `USER#${tokenId}#`,
-        GSI2SK: `USER#`,
+  const userEntity = await repositoryProvider.UserModel.get(
+    {
+      GSI2PK: `USER#${tokenId}#`,
+      GSI2SK: `USER#`,
     },
     {
-        index: 'GSI2',
-    });
+      index: 'GSI2',
+    }
+  );
 
-    const users: DeaUser[] = userEntities.map((entity) => userFromEntity(entity)).filter(isDefined);
-
-    assert(users.length == 0 || users.length == 1);
-
-    return users.length == 1 ? users[0] : undefined;
+  return userEntity;
 };
 
 export const listUsers = async (

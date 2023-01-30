@@ -33,13 +33,17 @@ export class DeaMainStack extends cdk.Stack {
     // DEA Backend Construct
     const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', { kmsKey: kmsKey });
 
+    const region = this.region;
+    const accountId = this.account;
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
       deaTableArn: backendConstruct.deaTable.tableArn,
-      kmsKey
+      kmsKey,
+      region,
+      accountId,
     });
 
     new DeaAuthConstruct(this, 'DeaAuth', { apiEndpointArns: deaApi.apiEndpointArns });
- 
+
     kmsKey.addToResourcePolicy(
       new PolicyStatement({
         actions: ['kms:Decrypt', 'kms:Encrypt'],
@@ -50,7 +54,11 @@ export class DeaMainStack extends cdk.Stack {
     );
 
     // DEA UI Construct
-    new DeaUiConstruct(this, 'DeaUiConstruct', { kmsKey: kmsKey, restApi: deaApi.deaRestApi, accessLogsBucket: backendConstruct.accessLogsBucket });
+    new DeaUiConstruct(this, 'DeaUiConstruct', {
+      kmsKey: kmsKey,
+      restApi: deaApi.deaRestApi,
+      accessLogsBucket: backendConstruct.accessLogsBucket,
+    });
 
     // Stack node resource handling
     // ======================================

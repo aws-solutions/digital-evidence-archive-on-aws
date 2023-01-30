@@ -6,7 +6,6 @@
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { getDeaUserFromToken, getTokenPayload } from '../../cognito-token-helpers';
 import { defaultProvider } from '../../persistence/schema/entities';
-import { getUserByTokenId } from '../../persistence/user';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as UserService from '../services/user-service';
 import { LambdaContext, LambdaEvent, LambdaRepositoryProvider } from './dea-gateway-proxy-handler';
@@ -52,9 +51,9 @@ const isFirstTimeFederatedUser = async (
   tokenId: string,
   repositoryProvider: LambdaRepositoryProvider
 ): Promise<boolean> => {
-  const user = await getUserByTokenId(tokenId, repositoryProvider);
+  const user = await UserService.getUserUsingTokenId(tokenId, repositoryProvider);
 
-  return !user ? true : false;
+  return !user;
 };
 
 const addUserToDatabase = async (
