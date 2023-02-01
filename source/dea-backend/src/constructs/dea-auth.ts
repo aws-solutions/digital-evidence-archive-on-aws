@@ -5,7 +5,7 @@
 
 import { assert } from 'console';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
-import { CfnOutput, Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { Duration, RemovalPolicy } from 'aws-cdk-lib';
 import {
   AccountRecovery,
   CfnIdentityPool,
@@ -20,6 +20,7 @@ import { Construct } from 'constructs';
 import { uniqueId } from 'lodash';
 import { getConstants } from '../constants';
 import { ApiGatewayMethod } from '../resources/api-gateway-route-config';
+import { createCfnOutput } from './construct-support';
 
 interface DeaAuthProps {
   // We need to create IAM Roles with what APIs the Role can call
@@ -219,21 +220,21 @@ export class DeaAuthConstruct extends Construct {
       },
     });
 
-    new CfnOutput(this, 'Identity Pool', {
+    createCfnOutput(this, 'Identity Pool', {
       value: idPool.ref,
       exportName: 'identityPoolId',
     });
 
-    new CfnOutput(this, 'UserPoolId', {
+    createCfnOutput(this, 'UserPoolId', {
       value: pool.userPoolId,
       exportName: 'userPoolId',
     });
 
-    new CfnOutput(this, 'Pool Provider Url', {
+    createCfnOutput(this, 'Pool Provider Url', {
       value: pool.userPoolProviderUrl,
     });
 
-    new CfnOutput(this, 'UserPoolClientId', {
+    createCfnOutput(this, 'UserPoolClientId', {
       value: poolClient.userPoolClientId,
       exportName: 'userPoolClientId',
     });

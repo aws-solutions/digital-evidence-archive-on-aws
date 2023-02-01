@@ -11,5 +11,5 @@
       "statements": 75
     }
   },
-  "coverageReporters": ["json-summary", "json", "text"]
+  "coverageReporters": ["json-summary", "json", "lcov", "text"]
 }
