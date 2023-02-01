@@ -25,7 +25,7 @@ import CreateCaseShareCaseForm from './CreateCaseShareCaseForm';
 
 function CreateCasesForm(): JSX.Element {
   const [caseStatusValue, setCaseStatusValue] = React.useState('active');
-  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const [, setIsSubmitLoading] = useState(false);
   const router = useRouter();
   const [formData, setFormData] = useState<CreateCaseForm>({ name: '' });
 
@@ -44,12 +44,13 @@ function CreateCasesForm(): JSX.Element {
   }
 
   return (
-    <SpaceBetween size="s">
-      <form onSubmit={(e) => e.preventDefault()}>
+    <SpaceBetween data-testid="create-case-form-space" size="s">
+      <form onSubmit={(e) => e.preventDefault()} data-testid="create-case-form">
         <Form>
           <Container header={<Header variant="h2">{createCaseLabels.enterCaseDetailsLabel}</Header>}>
             <SpaceBetween direction="vertical" size="l">
               <FormField
+                data-testid="input-name"
                 label={createCaseLabels.caseNameLabel}
                 description={createCaseLabels.caseNameDescription}
               >
@@ -66,6 +67,7 @@ function CreateCasesForm(): JSX.Element {
                 </TextContent>
               </FormField>
               <FormField
+                data-testid="input-description"
                 label={createCaseLabels.caseDescription}
                 description={createCaseLabels.caseDescriptionSubtext}
               >
@@ -103,10 +105,15 @@ function CreateCasesForm(): JSX.Element {
       </form>
       <CreateCaseShareCaseForm></CreateCaseShareCaseForm>
       <SpaceBetween direction="horizontal" size="xs">
-        <Button formAction="none" variant="link" onClick={onCancelHandler}>
+        <Button formAction="none" variant="link" data-testid="create-case-cancel" onClick={onCancelHandler}>
           {commonLabels.cancelButton}
         </Button>
-        <Button variant="primary" iconAlign="right" onClick={onSubmitHandler}>
+        <Button
+          variant="primary"
+          iconAlign="right"
+          data-testid="create-case-submit"
+          onClick={onSubmitHandler}
+        >
           {commonLabels.createButton}
         </Button>
       </SpaceBetween>

@@ -6,14 +6,11 @@
 import * as path from 'path';
 import { RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import {
-  AwsIntegration,
-  CfnDeployment,
-  CfnStage,
-  ContentHandling,
+  AwsIntegration, ContentHandling,
   MethodOptions,
   Model,
   PassthroughBehavior,
-  RestApi,
+  RestApi
 } from 'aws-cdk-lib/aws-apigateway';
 import { AnyPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -21,7 +18,7 @@ import {
   BlockPublicAccess,
   Bucket,
   BucketAccessControl,
-  BucketEncryption,
+  BucketEncryption
 } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
@@ -183,34 +180,5 @@ export class DeaUiConstruct extends Construct {
         },
       })
     );
-  }
-
-  private _apiGwUiWarnSuppress(api: RestApi, stage: string): void {
-    // Don't need usage plan for UI API GW
-    const stageNode = api.node.findChild(`DeploymentStage.${stage}`).node.defaultChild;
-    const apiNode = api.node.findChild('Deployment').node.defaultChild;
-    if (apiNode instanceof CfnDeployment) {
-      apiNode.addMetadata('cfn_nag', {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        rules_to_suppress: [
-          {
-            id: 'W68',
-            reason: "'No need to enforce Usage Plan. This is only for serving UI' ",
-          },
-        ],
-      });
-    }
-
-    if (stageNode instanceof CfnStage) {
-      stageNode.addMetadata('cfn_nag', {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        rules_to_suppress: [
-          {
-            id: 'W64',
-            reason: "'No need to enforce Usage Plan. This is only for serving UI' ",
-          },
-        ],
-      });
-    }
   }
 }

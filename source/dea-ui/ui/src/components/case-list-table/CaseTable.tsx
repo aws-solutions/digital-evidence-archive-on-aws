@@ -3,21 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { DeaCase } from '@aws/dea-app';
-import { PropertyFilterProperty, useCollection } from '@cloudscape-design/collection-hooks';
-import {
-  Table,
-  Box,
-  Button,
-  Pagination,
-  Link,
-  SpaceBetween,
-  PropertyFilter,
-} from '@cloudscape-design/components';
+import { useCollection } from '@cloudscape-design/collection-hooks';
+import { Button, Link, Pagination, PropertyFilter, SpaceBetween, Table } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
-import * as React from 'react';
 import { useListAllCases } from '../../api/cases';
-import { commonTableLabels, caseListLabels } from '../../common/labels';
+import { caseListLabels, commonTableLabels } from '../../common/labels';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
@@ -26,8 +16,6 @@ import { filteringOptions, filteringProperties, searchableColumns } from './case
 function CaseTable(): JSX.Element {
   const router = useRouter();
   const { cases, areCasesLoading } = useListAllCases();
-
-  const STAGE = 'test';
 
   // Property and date filter collections
   const { items, filteredItemsCount, propertyFilterProps } = useCollection(cases, {
@@ -62,6 +50,8 @@ function CaseTable(): JSX.Element {
 
   return (
     <Table
+      data-testid="case-table"
+      trackBy="ulid"
       loading={areCasesLoading}
       variant="full-page"
       items={items}
@@ -70,12 +60,13 @@ function CaseTable(): JSX.Element {
       empty={TableEmptyDisplay(caseListLabels.noCasesLabel)}
       header={
         <TableHeader
+          data-testid="case-table-header"
           variant="awsui-h1-sticky"
           title={caseListLabels.casesLabel}
           description={caseListLabels.casesPageDescription}
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
-              <Button variant="primary" onClick={createNewCaseHandler}>
+              <Button data-testid="create-case-button" variant="primary" onClick={createNewCaseHandler}>
                 {caseListLabels.createNewCaseLabel}
               </Button>{' '}
             </SpaceBetween>

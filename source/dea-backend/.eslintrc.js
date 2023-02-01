@@ -38,6 +38,7 @@ module.exports = {
       },
     ],
     'import/newline-after-import': ['error'],
+    curly: ['error'],
   },
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'security', 'import'],

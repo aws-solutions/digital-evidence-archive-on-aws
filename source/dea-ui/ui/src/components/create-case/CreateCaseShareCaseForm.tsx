@@ -11,7 +11,7 @@ function CreateCaseShareCaseForm(): JSX.Element {
   const [value, setValue] = React.useState('');
 
   return (
-    <Container header={<Header variant="h2">{createCaseLabels.shareCaseLabel}</Header>}>
+    <Container data-testid="share-form-container" header={<Header variant="h2">{createCaseLabels.shareCaseLabel}</Header>}>
       <SpaceBetween direction="vertical" size="l"></SpaceBetween>
       <TextContent>
         <p>
@@ -21,6 +21,7 @@ function CreateCaseShareCaseForm(): JSX.Element {
         </p>
       </TextContent>
       <Autosuggest
+        data-testid="share-form-auto-suggest"
         onChange={({ detail }) => setValue(detail.value)}
         value={value}
         options={[]}
