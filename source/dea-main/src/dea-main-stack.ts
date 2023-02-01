@@ -4,18 +4,18 @@
  */
 
 /* eslint-disable no-new */
-import { DeaAuthConstruct, DeaBackendConstruct, DeaRestApiConstruct } from '@aws/dea-backend';
+import { createCfnOutput, DeaAuthConstruct, DeaBackendConstruct, DeaRestApiConstruct } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
 
-import { CfnOutput, CfnResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { CfnResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
 import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountPrincipal,
   Effect,
   PolicyDocument,
   PolicyStatement,
-  ServicePrincipal,
+  ServicePrincipal
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
@@ -120,7 +120,7 @@ export class DeaMainStack extends cdk.Stack {
       pendingWindow: Duration.days(7),
     });
 
-    new CfnOutput(this, 'main account kms key', {
+    createCfnOutput(this, 'main account kms key', {
       value: key.keyArn,
     });
     return key;

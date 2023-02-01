@@ -4,7 +4,7 @@
  */
 
 import path from 'path';
-import { CfnOutput, Duration } from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   AuthorizationType,
@@ -22,6 +22,7 @@ import { Construct } from 'constructs';
 import { getConstants } from '../constants';
 import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway-route-config';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
+import { createCfnOutput } from './construct-support';
 
 interface DeaRestApiProps {
   deaTableArn: string;
@@ -102,7 +103,7 @@ export class DeaRestApiConstruct extends Construct {
       stage: this.deaRestApi.deploymentStage,
     });
 
-    new CfnOutput(this, 'deaApiUrlOutput', {
+    createCfnOutput(this, 'deaApiUrlOutput', {
       value: this.deaRestApi.url,
       exportName: 'deaApiUrl',
     });
