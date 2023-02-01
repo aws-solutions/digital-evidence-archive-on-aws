@@ -4,13 +4,14 @@
  */
 
 /* eslint-disable no-new */
-import { Aws, CfnOutput, CfnResource, RemovalPolicy, StackProps, Duration } from 'aws-cdk-lib';
+import { Aws, CfnResource, RemovalPolicy, StackProps, Duration } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { BlockPublicAccess, Bucket, BucketEncryption, CfnBucket, LifecycleRule } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { getConstants } from '../constants';
+import { createCfnOutput } from './construct-support';
 
 interface IBackendStackProps extends StackProps {
   kmsKey: Key;
@@ -123,7 +124,7 @@ export class DeaBackendConstruct extends Construct {
       });
     }
 
-    new CfnOutput(this, bucketNameOutput, {
+    createCfnOutput(this, bucketNameOutput, {
       value: s3AccessLogsBucket.bucketName,
       exportName: bucketNameOutput,
     });
@@ -154,7 +155,7 @@ export class DeaBackendConstruct extends Construct {
     if (datasetsBucketNode instanceof CfnBucket) {
       datasetsBucketNode.addPropertyOverride('ObjectLockEnabled', true);
     }
-    new CfnOutput(this, bucketNameOutput, {
+    createCfnOutput(this, bucketNameOutput, {
       value: datasetsBucket.bucketName,
       exportName: bucketNameOutput,
     });
