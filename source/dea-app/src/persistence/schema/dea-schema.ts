@@ -63,8 +63,14 @@ export const DeaSchema = {
       ulid: { type: String, generate: 'ulid', validate: ulidMatch },
       name: { type: String, required: true, validate: allButDisallowed },
       preceedingDirectoryUlid: { type: String, validate: ulidMatch, required: true },
+      caseUlid: { type: String, validate: ulidMatch, required: true },
       isFile: { type: Boolean, required: false },
-      contentPath: { type: String },
+      contentPath: { type: String, required: false },
+      uploadId: { type: String, required: false },
+      sha256Hash: { type: String, required: false },
+      fileType: { type: String, required: false },
+      filePath: { type: String, required: false }, // whole s3 prefix within case dataset. ex: /meal/lunch/
+      sizeMb: { type: Number, required: true },
       //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },
