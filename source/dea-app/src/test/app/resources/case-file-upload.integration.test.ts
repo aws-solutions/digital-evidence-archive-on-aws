@@ -40,11 +40,62 @@ describe('Test case file upload', () => {
         completeCaseFileUploadAndValidate(caseFile.ulid);
     });
 
+    it('should throw a validation exception when no payload is provided', async () => {
+        await expect(initiateCaseFileUpload(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow('Initiate case file upload payload missing.');
+        await expect(completeCaseFileUpload(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow('Complete case file upload payload missing.');
+    });
+
+    it('initiate upload should enforce a strict payload', async () => {
+        // validate caseUlid
+        await expect(initiateCaseFileUploadAndValidate('ABCD')).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate('')).rejects.toThrow();
+
+        // validate fileName
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc>ff')).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc<ff')).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc:ff')).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc|ff')).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc?ff')).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc*ff')).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, '')).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, '/food/ramen.jpg')).rejects.toThrow();
+
+        // allowed fileNames
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen.jpg'));
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen-jpg'));
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen_jpg'));
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen jpg'));
+
+        // validate filePath
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, 'foo')).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '')).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, 'foo\\')).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, 'foo&&')).rejects.toThrow();
+
+        // allowed filePaths
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/'));
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/foo/'));
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/foo/bar/'));
+
+        // validate fileSizeMb
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 0)).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, -1)).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 5_000_001)).rejects.toThrow();
+
+        // allowed fileSizeMb
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 4_999_999));
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 1));
+
+        // validate preceedingDirectoryUlid
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, FILE_SIZE_MB, 'ABC')).rejects.toThrow();
+        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, FILE_SIZE_MB, '')).rejects.toThrow();
+    });
+
 });
 
 async function initiateCaseFileUploadAndValidate (
-    fileName: string = FILE_NAME,
     caseUlid: string = CASE_ULID,
+    fileName: string = FILE_NAME,
     filePath: string = FILE_PATH,
     fileType: string = FILE_TYPE,
     fileSizeMb: number = FILE_SIZE_MB,
@@ -72,18 +123,18 @@ async function initiateCaseFileUploadAndValidate (
     const newCaseFile: DeaCaseFile = JSON.parse(response.body);
 
     // Joi.assert(newCase, caseResponseSchema);
-    expect(newCaseFile.fileName).toEqual(FILE_NAME);
-    expect(newCaseFile.caseUlid).toEqual(CASE_ULID);
-    expect(newCaseFile.filePath).toEqual(FILE_PATH);
-    expect(newCaseFile.preceedingDirectoryUlid).toEqual(PRECEEDING_DIRECTORY_ULID);
+    expect(newCaseFile.fileName).toEqual(fileName);
+    expect(newCaseFile.caseUlid).toEqual(caseUlid);
+    expect(newCaseFile.filePath).toEqual(filePath);
+    expect(newCaseFile.preceedingDirectoryUlid).toEqual(preceedingDirectoryUlid);
 
     return newCaseFile;
 }
 
 async function completeCaseFileUploadAndValidate(
     ulid: string = FILE_ULID,
-    fileName: string = FILE_NAME,
     caseUlid: string = CASE_ULID,
+    fileName: string = FILE_NAME,
     filePath: string = FILE_PATH,
     uploadId: string = UPLOAD_ID,
     sha256Hash: string = SHA256_HASH,
@@ -112,8 +163,8 @@ async function completeCaseFileUploadAndValidate(
     const newCaseFile: DeaCaseFile = JSON.parse(response.body);
 
     // Joi.assert(newCase, caseResponseSchema);
-    expect(newCaseFile.fileName).toEqual(FILE_NAME);
-    expect(newCaseFile.caseUlid).toEqual(CASE_ULID);
-    expect(newCaseFile.filePath).toEqual(FILE_PATH);
-    expect(newCaseFile.preceedingDirectoryUlid).toEqual(PRECEEDING_DIRECTORY_ULID);
+    expect(newCaseFile.fileName).toEqual(fileName);
+    expect(newCaseFile.caseUlid).toEqual(caseUlid);
+    expect(newCaseFile.filePath).toEqual(filePath);
+    expect(newCaseFile.preceedingDirectoryUlid).toEqual(preceedingDirectoryUlid);
 }

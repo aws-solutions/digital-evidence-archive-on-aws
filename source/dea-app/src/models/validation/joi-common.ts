@@ -11,7 +11,7 @@ export const allButDisallowed = new RegExp('^[^\\<>/]+$');
 export const filenameSafeCharsRegex = new RegExp('^[^<>:"\\/|?*]+$');
 
 // using unix convention. will have to see what we need to do to be unix and windows compatible
-export const filePathSafeCharsRegex = new RegExp('^[^<>:"\\|?*]+/$');
+export const filePathSafeCharsRegex = new RegExp('^[^<>:"\\|?*]*/$');
 
 export const htmlSafeCharsRegex = new RegExp('^[^&"\'<>]*$');
 
