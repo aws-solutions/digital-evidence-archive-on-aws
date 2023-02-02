@@ -6,7 +6,7 @@
 import Joi from 'joi';
 import { logger } from '../../logger';
 import { DeaCaseFile } from '../../models/case-file';
-import { completeCaseFileUploadSchema } from '../../models/validation/case-file';
+import { completeCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseFileService from '../services/case-file-service';
@@ -27,7 +27,7 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
     }
 
     const deaCaseFile: DeaCaseFile = JSON.parse(event.body);
-    Joi.assert(deaCaseFile, completeCaseFileUploadSchema);
+    Joi.assert(deaCaseFile, completeCaseFileUploadRequestSchema);
 
     const updateBody = await CaseFileService.completeCaseFileUpload(deaCaseFile, repositoryProvider);
 

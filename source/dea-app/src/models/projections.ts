@@ -54,11 +54,11 @@ export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFile =>
   return {
     ulid: caseFileEntity.ulid,
     caseUlid: caseFileEntity.caseUlid,
-    name: caseFileEntity.name,
+    fileName: caseFileEntity.fileName,
     fileType: caseFileEntity.fileType,
     filePath: caseFileEntity.filePath,
     preceedingDirectoryUlid: caseFileEntity.preceedingDirectoryUlid,
-    sizeMb: caseFileEntity.sizeMb,
+    fileSizeMb: caseFileEntity.fileSizeMb,
     uploadId: caseFileEntity.uploadId,
     sha256Hash: caseFileEntity.sha256Hash,
     contentPath: caseFileEntity.contentPath,

@@ -4,21 +4,45 @@
  */
 
 import Joi from 'joi';
-import { caseStatus, joiUlid, safeDescription, safeName, fileName, filePath, htmlSafeCharsRegex, sha256Hash } from './joi-common';
+import { caseStatus, joiUlid, safeDescription, safeName, fileName, filePath, fileType, htmlSafeCharsRegex, sha256Hash, uploadId } from './joi-common';
 
-export const initiateCaseFileUploadSchema = Joi.object({
+export const initiateCaseFileUploadRequestSchema = Joi.object({
     caseUlid: joiUlid,
     fileName: fileName,
     filePath: filePath,
-    fileType: safeName,
+    fileType: fileType,
+    preceedingDirectoryUlid: joiUlid,
     fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
 });
 
-export const completeCaseFileUploadSchema = Joi.object({
+export const initiateCaseFileUploadResponseSchema = Joi.object({
     caseUlid: joiUlid,
-    uploadId: Joi.string().pattern(htmlSafeCharsRegex).required(),
-    caseFileUlid: joiUlid,
+    uploadId: uploadId,
+    ulid: joiUlid,
     fileName: fileName,
     filePath: filePath,
+    fileType: fileType,
+    preceedingDirectoryUlid: joiUlid,
+    fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
+    preSignedUrls: Joi.array().items(Joi.string().uri()),
+});
+
+export const completeCaseFileUploadRequestSchema = Joi.object({
+    caseUlid: joiUlid,
+    uploadId: uploadId,
+    ulid: joiUlid,
+    fileName: fileName,
+    filePath: filePath,
+    preceedingDirectoryUlid: joiUlid,
+    sha256Hash: sha256Hash
+});
+
+export const completeCaseFileUploadResponseSchema = Joi.object({
+    caseUlid: joiUlid,
+    uploadId: uploadId,
+    ulid: joiUlid,
+    fileName: fileName,
+    filePath: filePath,
+    preceedingDirectoryUlid: joiUlid,
     sha256Hash: sha256Hash
 });
