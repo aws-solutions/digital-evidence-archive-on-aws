@@ -5,6 +5,7 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { DeaCase } from '../../models/case';
+import { OWNER_ACTIONS } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
 import { caseFromEntity } from '../../models/projections';
 import { DeaUser } from '../../models/user';
@@ -12,6 +13,7 @@ import * as CasePersistence from '../../persistence/case';
 import * as CaseUserPersistence from '../../persistence/case-user';
 import { isDefined } from '../../persistence/persistence-helpers';
 import { CaseType, defaultProvider } from '../../persistence/schema/entities';
+import * as CaseUserService from './case-user-service';
 
 export const createCases = async (
   deaCase: DeaCase,
