@@ -19,8 +19,6 @@ describe('get case api', () => {
   const deaApiUrl = envSettings.apiUrlOutput;
 
   beforeAll(async () => {
-    jest.setTimeout(15000);
-
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'GetCaseTestGroup', 'GetCase', 'TestUser');
   });
@@ -61,7 +59,7 @@ describe('get case api', () => {
     expect(fetchedCase).toEqual(createdCase);
 
     await deleteCase(deaApiUrl ?? fail(), fetchedCase.ulid ?? fail(), idToken, creds);
-  }, 10000);
+  }, 20000);
 
   it('should throw an error when the case is not found', async () => {
     const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
