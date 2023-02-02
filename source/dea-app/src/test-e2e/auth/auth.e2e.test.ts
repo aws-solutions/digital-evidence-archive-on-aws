@@ -32,7 +32,7 @@ describe('API authentication', () => {
 
     expect(response.status).toBe(200);
     expect(response.data).toBe('Hello DEA!');
-  }, 50000);
+  }, 30000);
 
   it('should disallow calls without credentials', async () => {
     const client = axios.create();

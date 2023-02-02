@@ -28,7 +28,7 @@ describe('create cases api', () => {
       await deleteCase(deaApiUrl, caseId, idToken, creds);
     }
     await cognitoHelper.cleanup();
-  }, 50000);
+  }, 30000);
 
   it('should create a new case', async () => {
     const [creds, idToken]  = await cognitoHelper.getCredentialsForUser(testUser);
@@ -47,7 +47,7 @@ describe('create cases api', () => {
     );
 
     caseIdsToDelete.push(createdCase.ulid ?? fail());
-  }, 50000);
+  }, 30000);
 
   it('should give an error when payload is missing', async () => {
     const response = await callDeaAPI(testUser, `${deaApiUrl}cases`, cognitoHelper, "POST", undefined);
@@ -80,5 +80,5 @@ describe('create cases api', () => {
       });
 
     expect(response.status).toEqual(500);
-  }, 50000);
+  }, 30000);
 });
