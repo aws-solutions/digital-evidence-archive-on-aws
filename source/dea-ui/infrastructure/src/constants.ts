@@ -12,12 +12,8 @@ function getConstants(): {
   API_BASE_URL: string;
   AWS_REGION: string;
   STACK_NAME: string;
-  S3_ACCESS_LOGS_BUCKET_PREFIX: string;
-  S3_UI_ACCESS_LOG_PREFIX: string;
   S3_ACCESS_LOGS_BUCKET_NAME_OUTPUT_KEY: string;
   S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY: string;
-  S3_ARTIFACT_BUCKET_NAME: string;
-  S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME: string;
 } {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const config: any = yaml.load(
@@ -31,10 +27,7 @@ function getConstants(): {
   const API_BASE_URL = config.apiUrlOutput?.replace('/dev/', '') || '';
   const AWS_REGION = config.awsRegion;
   const STACK_NAME = namePrefix;
-  const S3_ARTIFACT_BUCKET_NAME = `${namePrefix}-bucket`;
-  const S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME = `${namePrefix}-deployment-bucket`;
-  const S3_ACCESS_LOGS_BUCKET_PREFIX = 'dea-access-log';
-  const S3_UI_ACCESS_LOG_PREFIX = 'dea-ui-access-log';
+
 
   // CloudFormation Output Keys
   const S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY = 'S3BucketArtifactsArnOutput';
@@ -45,12 +38,8 @@ function getConstants(): {
     API_BASE_URL,
     AWS_REGION,
     STACK_NAME,
-    S3_ACCESS_LOGS_BUCKET_PREFIX,
-    S3_UI_ACCESS_LOG_PREFIX,
     S3_ACCESS_LOGS_BUCKET_NAME_OUTPUT_KEY,
     S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY,
-    S3_ARTIFACT_BUCKET_NAME,
-    S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME,
   };
 }
 

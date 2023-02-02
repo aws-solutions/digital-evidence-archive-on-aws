@@ -30,8 +30,9 @@ export class DeaMainStack extends cdk.Stack {
     // Create KMS key to pass into backend and UI
     const kmsKey = this._createEncryptionKey();
 
+    const uiAccessLogPrefix = 'dea-ui-access-log';
     // DEA Backend Construct
-    const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', { kmsKey: kmsKey });
+    const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', { kmsKey: kmsKey, accessLogsPrefixes: [uiAccessLogPrefix]});
 
     const region = this.region;
     const accountId = this.account;
@@ -58,6 +59,7 @@ export class DeaMainStack extends cdk.Stack {
       kmsKey: kmsKey,
       restApi: deaApi.deaRestApi,
       accessLogsBucket: backendConstruct.accessLogsBucket,
+      accessLogPrefix: uiAccessLogPrefix,
     });
 
     // Stack node resource handling
