@@ -24,7 +24,7 @@ export default function Navigation({ activeHref, header, onFollowHandler }: Navi
       <SideNavigation
         data-testid="sideNavigation"
         activeHref={activeHref}
-        header={header ? header : defaultNavHeader}
+        header={header ?? defaultNavHeader}
         onFollow={onFollowHandler}
       />
     </RouteGuard>

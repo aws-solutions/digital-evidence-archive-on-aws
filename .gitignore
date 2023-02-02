@@ -76,6 +76,10 @@ lib
 #next static export
 source/dea-ui/ui/out
 
+#cypress test run videos and screenshots
+source/dea-ui/ui/cypress/videos
+source/dea-ui/ui/cypress/screenshots
+
 #viperlight ignore
 .viperlightrc
 

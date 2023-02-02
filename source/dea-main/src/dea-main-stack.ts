@@ -4,18 +4,18 @@
  */
 
 /* eslint-disable no-new */
-import { DeaAuthConstruct, DeaBackendConstruct, DeaRestApiConstruct } from '@aws/dea-backend';
+import { createCfnOutput, DeaAuthConstruct, DeaBackendConstruct, DeaRestApiConstruct } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
 
-import { CfnOutput, CfnResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { CfnResource, Duration, RemovalPolicy } from 'aws-cdk-lib';
 import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountPrincipal,
   Effect,
   PolicyDocument,
   PolicyStatement,
-  ServicePrincipal,
+  ServicePrincipal
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
@@ -30,8 +30,9 @@ export class DeaMainStack extends cdk.Stack {
     // Create KMS key to pass into backend and UI
     const kmsKey = this._createEncryptionKey();
 
+    const uiAccessLogPrefix = 'dea-ui-access-log';
     // DEA Backend Construct
-    const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', { kmsKey: kmsKey });
+    const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', { kmsKey: kmsKey, accessLogsPrefixes: [uiAccessLogPrefix]});
 
     const region = this.region;
     const accountId = this.account;
@@ -58,6 +59,7 @@ export class DeaMainStack extends cdk.Stack {
       kmsKey: kmsKey,
       restApi: deaApi.deaRestApi,
       accessLogsBucket: backendConstruct.accessLogsBucket,
+      accessLogPrefix: uiAccessLogPrefix,
     });
 
     // Stack node resource handling
@@ -120,7 +122,7 @@ export class DeaMainStack extends cdk.Stack {
       pendingWindow: Duration.days(7),
     });
 
-    new CfnOutput(this, 'main account kms key', {
+    createCfnOutput(this, 'main account kms key', {
       value: key.keyArn,
     });
     return key;

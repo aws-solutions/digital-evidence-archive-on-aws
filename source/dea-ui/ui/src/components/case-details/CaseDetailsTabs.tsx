@@ -13,6 +13,7 @@ import ManageAccessForm from './ManageAccessForm';
 function CaseDetailsTabs(): JSX.Element {
   return (
     <Tabs
+      data-testid="case-details-tabs"
       tabs={[
         {
           label: caseDetailLabels.caseFilesLabel,
@@ -20,6 +21,7 @@ function CaseDetailsTabs(): JSX.Element {
           content: <CaseFilesTable></CaseFilesTable>,
         },
         {
+          
           label: caseDetailLabels.auditLogLabel,
           id: 'auditLog',
           content: <AuditLogTable></AuditLogTable>,

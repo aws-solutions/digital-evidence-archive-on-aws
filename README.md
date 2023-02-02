@@ -2,6 +2,13 @@
 
 Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest evidence data to aid digital data management
 
+# Code Coverage
+
+| Statements                                                                               | Branches                                                                             | Functions                                                                              | Lines                                                                          |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| ![Statements](https://img.shields.io/badge/statements-97.4%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-86.52%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-91.8%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-97.63%25-brightgreen.svg?style=flat) |
+
+
 ## Project Setup
 
 1. Sign in to GitHub

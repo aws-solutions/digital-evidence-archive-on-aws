@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -15,12 +19,28 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "paths": {
-      "^@/components/(.*)$": ["/components/*"],
-      "^@/pages/(.*)$": ["/pages/*"]
+      "^@/components/(.*)$": [
+        "/components/*"
+      ],
+      "^@/pages/(.*)$": [
+        "/pages/*"
+      ]
     },
-    "types": ["heft-jest", "node"]
+    "types": [
+      "heft-jest",
+      "node"
+    ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "infrastructure"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "jest-setup.ts"
+  ],
+  "exclude": [
+    "cypress.config.ts",
+    "node_modules",
+    "infrastructure"
+  ],
   "rootDir": "."
 }

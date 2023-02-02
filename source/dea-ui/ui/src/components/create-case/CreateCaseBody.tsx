@@ -11,6 +11,7 @@ import CreateCasesForm from './CreateCasesForm';
 function CreateCasePage() {
   return (
     <ContentLayout
+      data-testid="create-case-page"
       header={
         <SpaceBetween size="m">
           <Header variant="h1" description={createCaseLabels.createNewCaseDescription}>

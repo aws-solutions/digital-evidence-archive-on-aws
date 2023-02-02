@@ -19,8 +19,6 @@ describe('get case api', () => {
   const deaApiUrl = envSettings.apiUrlOutput;
 
   beforeAll(async () => {
-    jest.setTimeout(15000);
-
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'GetCaseTestGroup', 'GetCase', 'TestUser');
   });

@@ -9,7 +9,7 @@
       "statements": 90
     }
   },
-  "coverageReporters": ["json-summary", "json", "text"],
+  "coverageReporters": ["json-summary", "json", "lcov", "text"],
   "collectCoverageFrom": ["src/**"],
   "coveragePathIgnorePatterns": ["<rootDir>/src/test-e2e/", "<rootDir>/src/test/", "<rootDir>/src/index.ts"],
   "globalSetup": "<rootDir>/src/test/local-dynamo/setup.ts",

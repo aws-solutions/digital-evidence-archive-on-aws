@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import { PropertyFilterProps } from '@cloudscape-design/components';
 
 export const i18nStrings: PropertyFilterProps.I18nStrings = {
@@ -28,5 +33,5 @@ export const i18nStrings: PropertyFilterProps.I18nStrings = {
   tokenLimitShowFewer: 'Show fewer',
   clearFiltersText: 'Clear filters',
   removeTokenButtonAriaLabel: () => 'Remove token',
-  enteredTextLabel: (text: any) => `Use: "${text}"`,
+  enteredTextLabel: (text: string) => `Use: "${text}"`,
 };

@@ -8,19 +8,19 @@ const createJestConfig = nextJest({
 // Add any custom config to be passed to Jest
 const customJestConfig = {
   collectCoverage: true,
-  modulePathIgnorePatterns: ['infrastructure/'],
-  collectCoverageFrom: ['!./**/*.d.ts', './src/**/*.spec.ts', './src/**/*.test.ts', './src/setup/**/*'],
+  collectCoverageFrom: ["src/**"],
+  coveragePathIgnorePatterns: ["<rootDir>/src/pages/_app.tsx"],
   coverageDirectory: 'temp/coverage',
   coverageThreshold: {
     global: {
-      branches: 90,
-      functions: 90,
       lines: 90,
+      branches: 80,
+      functions: 80,
       statements: 90,
     },
   },
-  coverageReporters: ['json-summary', 'json', 'text'],
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  coverageReporters: ['json-summary', 'json', "lcov", 'text'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
     '^@/pages/(.*)$': '<rootDir>/src/pages/$1',

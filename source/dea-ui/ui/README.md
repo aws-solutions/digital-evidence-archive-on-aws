@@ -4,6 +4,12 @@
 
 This is a prototype app and you should expect to modify the source code to reflect your project needs.
 
+## Code Coverage
+
+| Statements                                                                                   | Branches                                                                                 | Functions                                                                                  | Lines                                                                              |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| ![Statements](https://img.shields.io/badge/statements-92.26%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-82.85%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-85.82%25-yellow.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-92.8%25-brightgreen.svg?style=flat) |
+
 ## Creating a stage file
 
 First, you will need to create a stage file. An example stage file (demo.yaml) can be found under dea-ui/ui/src/config. Create a stage file for your deployment with the stage name of your choice. Supply the stage name and region short name of your choice along with the aws region where you will deploy the UI (this will need to the same region where the DEA backend is deployed).

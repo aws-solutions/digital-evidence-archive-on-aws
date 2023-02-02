@@ -31,6 +31,7 @@ module.exports = {
       },
     ],
     'import/newline-after-import': ['error'],
+    curly: ['error'],
   },
   overrides: [
     // Only uses Testing Library lint rules in test files

@@ -18,6 +18,7 @@ export default function Header(): JSX.Element {
     <TopNavigation
       id="header"
       className="header"
+      data-testid="header-top-navigation"
       i18nStrings={headerLabels}
       identity={{
         href: `/${settings.stage}/ui`,

@@ -46,6 +46,7 @@ function AuditLogTable(): JSX.Element {
 
   return (
     <Table
+      data-testid="audit-table"
       columnDefinitions={[
         {
           id: 'timestamp',

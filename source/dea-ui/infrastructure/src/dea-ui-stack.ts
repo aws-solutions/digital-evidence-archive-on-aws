@@ -6,14 +6,11 @@
 import * as path from 'path';
 import { RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import {
-  AwsIntegration,
-  CfnDeployment,
-  CfnStage,
-  ContentHandling,
+  AwsIntegration, ContentHandling,
   MethodOptions,
   Model,
   PassthroughBehavior,
-  RestApi,
+  RestApi
 } from 'aws-cdk-lib/aws-apigateway';
 import { AnyPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -21,60 +18,35 @@ import {
   BlockPublicAccess,
   Bucket,
   BucketAccessControl,
-  BucketEncryption,
+  BucketEncryption
 } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 import { getConstants } from './constants';
 
 interface IUiStackProps extends StackProps {
-  kmsKey: Key;
-  restApi: RestApi;
-  accessLogsBucket: Bucket;
+  readonly kmsKey: Key;
+  readonly restApi: RestApi;
+  readonly accessLogsBucket: Bucket;
+  readonly accessLogPrefix: string;
 }
 
 export class DeaUiConstruct extends Construct {
-  public distributionEnvVars: {
-    STAGE: string;
-    STACK_NAME: string;
-    API_BASE_URL: string;
-    AWS_REGION: string;
-    S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY: string;
-    S3_ARTIFACT_BUCKET_NAME: string;
-    S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME: string;
-  };
 
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(scope: Construct, id: string, props: IUiStackProps) {
     const {
-      STAGE,
       STACK_NAME,
-      API_BASE_URL,
-      AWS_REGION,
-      S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY,
-      S3_ARTIFACT_BUCKET_NAME,
-      S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME,
-      S3_UI_ACCESS_LOG_PREFIX,
     } = getConstants();
     super(scope, STACK_NAME);
 
-    this.distributionEnvVars = {
-      STAGE,
-      STACK_NAME,
-      API_BASE_URL,
-      AWS_REGION,
-      S3_ARTIFACT_BUCKET_ARN_OUTPUT_KEY,
-      S3_ARTIFACT_BUCKET_NAME,
-      S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME,
-    };
-
-    const bucket = new Bucket(this, S3_ARTIFACT_BUCKET_NAME, {
+    const bucket = new Bucket(this, 'artifact-bucket', {
       accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       websiteIndexDocument: 'index.html',
       encryption: BucketEncryption.S3_MANAGED,
       serverAccessLogsBucket: props.accessLogsBucket,
-      serverAccessLogsPrefix: S3_UI_ACCESS_LOG_PREFIX,
+      serverAccessLogsPrefix: props.accessLogPrefix,
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
@@ -82,7 +54,7 @@ export class DeaUiConstruct extends Construct {
     this._addS3TLSSigV4BucketPolicy(bucket);
 
     // eslint-disable-next-line no-new
-    new BucketDeployment(this, this.distributionEnvVars.S3_ARTIFACT_BUCKET_DEPLOYMENT_NAME, {
+    new BucketDeployment(this, 'artifact-deployment-bucket', {
       destinationBucket: bucket,
       sources: [Source.asset(path.resolve(__dirname, '../../ui/out'))],
     });
@@ -183,34 +155,5 @@ export class DeaUiConstruct extends Construct {
         },
       })
     );
-  }
-
-  private _apiGwUiWarnSuppress(api: RestApi, stage: string): void {
-    // Don't need usage plan for UI API GW
-    const stageNode = api.node.findChild(`DeploymentStage.${stage}`).node.defaultChild;
-    const apiNode = api.node.findChild('Deployment').node.defaultChild;
-    if (apiNode instanceof CfnDeployment) {
-      apiNode.addMetadata('cfn_nag', {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        rules_to_suppress: [
-          {
-            id: 'W68',
-            reason: "'No need to enforce Usage Plan. This is only for serving UI' ",
-          },
-        ],
-      });
-    }
-
-    if (stageNode instanceof CfnStage) {
-      stageNode.addMetadata('cfn_nag', {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        rules_to_suppress: [
-          {
-            id: 'W64',
-            reason: "'No need to enforce Usage Plan. This is only for serving UI' ",
-          },
-        ],
-      });
-    }
   }
 }

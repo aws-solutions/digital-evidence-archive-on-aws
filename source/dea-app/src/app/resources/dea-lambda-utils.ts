@@ -5,6 +5,7 @@
 
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { getDeaUserFromToken, getTokenPayload } from '../../cognito-token-helpers';
+import { DeaUser } from '../../models/user';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as UserService from '../services/user-service';
@@ -34,8 +35,16 @@ export const runPreExecutionChecks = async (
     process.env.AWS_REGION ?? 'us-east-1'
   );
   const tokenId = idTokenPayload.sub;
-  if (await isFirstTimeFederatedUser(tokenId, repositoryProvider)) {
-    await addUserToDatabase(idTokenPayload, repositoryProvider);
+  const maybeUser = await getUserFromTokenId(tokenId, repositoryProvider);
+  if (!maybeUser) {
+    // Create the user in the database and store the new user's ulid
+    // into the event, so lambda execution code does not need to
+    // reverify and decode the token and call the ddb for the user
+    event.headers['userUlid'] = await addUserToDatabase(idTokenPayload, repositoryProvider);
+  } else {
+    // User already exist, store its ulid in the event so lambda execution code does not need to
+    // reverify and decode the token and call the ddb for the user
+    event.headers['userUlid'] = maybeUser.ulid;
   }
 
   // TODO: verify the session management requirements here
@@ -47,25 +56,25 @@ export const runPreExecutionChecks = async (
 
 // First time Federated User Helper Functions
 
-const isFirstTimeFederatedUser = async (
+const getUserFromTokenId = async (
   tokenId: string,
   repositoryProvider: LambdaRepositoryProvider
-): Promise<boolean> => {
-  const user = await UserService.getUserUsingTokenId(tokenId, repositoryProvider);
-
-  return !user;
+): Promise<DeaUser | undefined> => {
+  return UserService.getUserUsingTokenId(tokenId, repositoryProvider);
 };
 
 const addUserToDatabase = async (
   payload: CognitoIdTokenPayload,
   repositoryProvider: LambdaRepositoryProvider
-) => {
+): Promise<string> => {
   const deaUser = await getDeaUserFromToken(payload);
 
   const deaUserResult = await UserService.createUser(deaUser, repositoryProvider);
-  if (!deaUserResult) {
+  if (!deaUserResult.ulid) {
     throw new ValidationError('Unable to add newly federated user to the database');
   }
+
+  return deaUserResult.ulid;
 };
 
 // Session Management Checks Helper Functions

@@ -32,7 +32,7 @@ describe('DeaBackend constructs', () => {
     });
 
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', { kmsKey: key });
+    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', { kmsKey: key, accessLogsPrefixes: ['dea-ui-access-log'] });
     new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       kmsKey: key,
