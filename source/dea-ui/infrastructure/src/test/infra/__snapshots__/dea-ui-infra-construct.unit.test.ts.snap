@@ -53,7 +53,7 @@ Object {
         "Handler": "index.handler",
         "Layers": Array [
           Object {
-            "Ref": "DeaUiStackDeaUiStackdeploymentbucketAwsCliLayerE6B55D5A",
+            "Ref": "DeaUiStackartifactdeploymentbucketAwsCliLayer760BCEFB",
           },
         ],
         "Role": Object {
@@ -160,7 +160,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaUiStackDeaUiStackbucket2409F549",
+                    "DeaUiStackartifactbucketFFC87A37",
                     "Arn",
                   ],
                 },
@@ -170,7 +170,7 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "DeaUiStackDeaUiStackbucket2409F549",
+                          "DeaUiStackartifactbucketFFC87A37",
                           "Arn",
                         ],
                       },
@@ -209,7 +209,7 @@ Object {
             Array [
               "Lambda function for auto-deleting objects in ",
               Object {
-                "Ref": "DeaUiStackDeaUiStackbucket2409F549",
+                "Ref": "DeaUiStackartifactbucketFFC87A37",
               },
               " S3 bucket.",
             ],
@@ -250,7 +250,26 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeaUiStackDeaUiStackbucket2409F549": Object {
+    "DeaUiStackartifactbucketAutoDeleteObjectsCustomResource3D6F178A": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "DeaUiStackartifactbucketPolicy4886C807",
+      ],
+      "Properties": Object {
+        "BucketName": Object {
+          "Ref": "DeaUiStackartifactbucketFFC87A37",
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3AutoDeleteObjects",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaUiStackartifactbucketFFC87A37": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
         "AccessControl": "LogDeliveryWrite",
@@ -281,7 +300,7 @@ Object {
             "Value": "true",
           },
           Object {
-            "Key": "aws-cdk:cr-owned:fb025039",
+            "Key": "aws-cdk:cr-owned:b197ded3",
             "Value": "true",
           },
         ],
@@ -292,29 +311,10 @@ Object {
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
     },
-    "DeaUiStackDeaUiStackbucketAutoDeleteObjectsCustomResource59A9A4D8": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "DeaUiStackDeaUiStackbucketPolicy3F40F0AF",
-      ],
-      "Properties": Object {
-        "BucketName": Object {
-          "Ref": "DeaUiStackDeaUiStackbucket2409F549",
-        },
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::S3AutoDeleteObjects",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DeaUiStackDeaUiStackbucketPolicy3F40F0AF": Object {
+    "DeaUiStackartifactbucketPolicy4886C807": Object {
       "Properties": Object {
         "Bucket": Object {
-          "Ref": "DeaUiStackDeaUiStackbucket2409F549",
+          "Ref": "DeaUiStackartifactbucketFFC87A37",
         },
         "PolicyDocument": Object {
           "Statement": Array [
@@ -336,7 +336,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaUiStackDeaUiStackbucket2409F549",
+                    "DeaUiStackartifactbucketFFC87A37",
                     "Arn",
                   ],
                 },
@@ -346,7 +346,7 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "DeaUiStackDeaUiStackbucket2409F549",
+                          "DeaUiStackartifactbucketFFC87A37",
                           "Arn",
                         ],
                       },
@@ -370,7 +370,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaUiStackDeaUiStackbucket2409F549",
+                    "DeaUiStackartifactbucketFFC87A37",
                     "Arn",
                   ],
                 },
@@ -380,7 +380,7 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "DeaUiStackDeaUiStackbucket2409F549",
+                          "DeaUiStackartifactbucketFFC87A37",
                           "Arn",
                         ],
                       },
@@ -408,7 +408,7 @@ Object {
                   Array [
                     Object {
                       "Fn::GetAtt": Array [
-                        "DeaUiStackDeaUiStackbucket2409F549",
+                        "DeaUiStackartifactbucketFFC87A37",
                         "Arn",
                       ],
                     },
@@ -424,7 +424,7 @@ Object {
       },
       "Type": "AWS::S3::BucketPolicy",
     },
-    "DeaUiStackDeaUiStackdeploymentbucketAwsCliLayerE6B55D5A": Object {
+    "DeaUiStackartifactdeploymentbucketAwsCliLayer760BCEFB": Object {
       "Properties": Object {
         "Content": Object {
           "S3Bucket": Object {
@@ -436,11 +436,11 @@ Object {
       },
       "Type": "AWS::Lambda::LayerVersion",
     },
-    "DeaUiStackDeaUiStackdeploymentbucketCustomResource5769B150": Object {
+    "DeaUiStackartifactdeploymentbucketCustomResourceC6B8B11C": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
         "DestinationBucketName": Object {
-          "Ref": "DeaUiStackDeaUiStackbucket2409F549",
+          "Ref": "DeaUiStackartifactbucketFFC87A37",
         },
         "Prune": true,
         "ServiceToken": Object {
@@ -499,7 +499,7 @@ Object {
               "Resource": Array [
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaUiStackDeaUiStackbucket2409F549",
+                    "DeaUiStackartifactbucketFFC87A37",
                     "Arn",
                   ],
                 },
@@ -509,7 +509,7 @@ Object {
                     Array [
                       Object {
                         "Fn::GetAtt": Array [
-                          "DeaUiStackDeaUiStackbucket2409F549",
+                          "DeaUiStackartifactbucketFFC87A37",
                           "Arn",
                         ],
                       },
@@ -587,7 +587,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::RestApi",
     },
-    "testApiDeployment3727A0B911a3d6f3089853cb0ac40dd95a583e66": Object {
+    "testApiDeployment3727A0B9fad01d0f612a090752eb1a8cd3905bfc": Object {
       "DependsOn": Array [
         "testApiuiproxyGET92230E90",
         "testApiuiproxyDDF9EC1E",
@@ -608,7 +608,7 @@ Object {
       ],
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "testApiDeployment3727A0B911a3d6f3089853cb0ac40dd95a583e66",
+          "Ref": "testApiDeployment3727A0B9fad01d0f612a090752eb1a8cd3905bfc",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",
@@ -674,7 +674,7 @@ Object {
                 },
                 ":s3:path/",
                 Object {
-                  "Ref": "DeaUiStackDeaUiStackbucket2409F549",
+                  "Ref": "DeaUiStackartifactbucketFFC87A37",
                 },
                 "/index.html",
               ],
@@ -761,7 +761,7 @@ Object {
                 },
                 ":s3:path/",
                 Object {
-                  "Ref": "DeaUiStackDeaUiStackbucket2409F549",
+                  "Ref": "DeaUiStackartifactbucketFFC87A37",
                 },
                 "/{proxy}",
               ],
