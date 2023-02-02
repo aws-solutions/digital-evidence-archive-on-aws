@@ -70,7 +70,7 @@ const addUserToDatabase = async (
   const deaUser = await getDeaUserFromToken(payload);
 
   const deaUserResult = await UserService.createUser(deaUser, repositoryProvider);
-  if (!deaUserResult || !deaUserResult.ulid) {
+  if (!deaUserResult.ulid) {
     throw new ValidationError('Unable to add newly federated user to the database');
   }
 
