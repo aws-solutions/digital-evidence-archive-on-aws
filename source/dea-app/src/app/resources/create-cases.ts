@@ -26,10 +26,16 @@ export const createCases: DEAGatewayProxyHandler = async (
     throw new ValidationError('Create cases payload missing.');
   }
 
+  const userUlid = event.headers['userUlid'];
+  if (!userUlid) {
+    // runLambdaPreChecks should have added the userUlid, this is server error
+    throw new Error('userUlid was not present in the event header');
+  }
+
   const deaCase: DeaCase = JSON.parse(event.body);
   Joi.assert(deaCase, createCaseSchema);
 
-  const updateBody = await CaseService.createCases(deaCase, repositoryProvider);
+  const updateBody = await CaseService.createCases(deaCase, userUlid, repositoryProvider);
 
   return {
     statusCode: 200,
