@@ -3,8 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { CaseStatus } from './case-status';
-
 export interface DeaCaseFile {
     readonly caseUlid: string;
     readonly fileName: string;

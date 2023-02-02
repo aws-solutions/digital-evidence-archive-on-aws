@@ -26,7 +26,7 @@ const setup = async (): Promise<void> => {
     await waitPort({
         host: '0.0.0.0',
         port: PORT,
-        timeout: 50000,
+        timeout: 30000,
     });
 
     process.env.DYNAMODB_PID = String(dynamodb.pid)

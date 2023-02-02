@@ -4,11 +4,9 @@
  */
 
 import { fail } from "assert";
-import Joi from "joi";
 import { completeCaseFileUpload } from "../../../app/resources/complete-case-file-upload";
 import { initiateCaseFileUpload } from "../../../app/resources/initiate-case-file-upload";
 import { DeaCaseFile } from "../../../models/case-file";
-import { caseResponseSchema } from "../../../models/validation/case";
 import { ModelRepositoryProvider } from "../../../persistence/schema/entities";
 import { dummyContext, dummyEvent } from "../../integration-objects";
 import { getTestRepositoryProvider } from "./get-test-repository";

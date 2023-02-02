@@ -3,11 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Paged } from 'dynamodb-onetable';
 import { DeaCaseFile } from '../models/case-file';
 import { caseFileFromEntity } from '../models/projections';
-import { isDefined } from './persistence-helpers';
-import { CaseModel, CaseFileModelRepositoryProvider, CaseFileModel } from './schema/entities';
+import { CaseFileModelRepositoryProvider, CaseFileModel } from './schema/entities';
 
 export const initiateCaseFileUpload = async (
     deaCaseFile: DeaCaseFile,
@@ -19,6 +17,7 @@ export const initiateCaseFileUpload = async (
 ): Promise<DeaCaseFile> => {
     const newEntity = await repositoryProvider.CaseFileModel.create({
         ...deaCaseFile,
+        isFile: true
     });
     return caseFileFromEntity(newEntity);
 };

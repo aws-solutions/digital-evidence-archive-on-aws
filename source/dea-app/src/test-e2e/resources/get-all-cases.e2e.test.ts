@@ -29,7 +29,7 @@ describe('get all cases api', () => {
       await deleteCase(deaApiUrl, caseId, idToken, creds);
     }
     await cognitoHelper.cleanup();
-  }, 10000);
+  }, 30000);
 
   it('should get all cases', async () => {
     const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);

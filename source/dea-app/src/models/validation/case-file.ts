@@ -4,7 +4,7 @@
  */
 
 import Joi from 'joi';
-import { caseStatus, joiUlid, safeDescription, safeName, fileName, filePath, fileType, htmlSafeCharsRegex, sha256Hash, uploadId } from './joi-common';
+import { joiUlid, fileName, filePath, fileType, sha256Hash, uploadId } from './joi-common';
 
 export const initiateCaseFileUploadRequestSchema = Joi.object({
     caseUlid: joiUlid,

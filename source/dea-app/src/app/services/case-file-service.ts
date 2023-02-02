@@ -3,15 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { DeaCase } from '../../models/case';
 import { DeaCaseFile } from '../../models/case-file';
-import { CaseStatus } from '../../models/case-status';
-import { caseFromEntity } from '../../models/projections';
-import * as CasePersistence from '../../persistence/case';
 import * as CaseFilePersistence from '../../persistence/case-file';
-import * as CaseUserPersistence from '../../persistence/case-user';
-import { isDefined } from '../../persistence/persistence-helpers';
-import { CaseType, defaultProvider } from '../../persistence/schema/entities';
+import { defaultProvider } from '../../persistence/schema/entities';
 
 export const initiateCaseFileUpload = async (
     deaCaseFile: DeaCaseFile,
