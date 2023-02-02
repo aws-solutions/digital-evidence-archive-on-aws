@@ -27,6 +27,10 @@ describe('getMyCases', () => {
     repositoryProvider = await getTestRepositoryProvider('getMyCasesTest');
   });
 
+  afterEach(async () => {
+    delete dummyEvent.headers['userUlid'];
+  });
+
   afterAll(async () => {
     await repositoryProvider.table.deleteTable('DeleteTableForever');
   });
@@ -104,11 +108,14 @@ describe('getMyCases', () => {
       {
         ...dummyEvent,
         queryStringParameters: {
-          userUlid: user.ulid,
           limit: '20',
         },
       }
     );
+    // simulate runLambdaPreChecks by adding the userUlid to the event
+    // the integration between runLambdaPrechecks and this lambda handler
+    // will be tested in the e2e tests
+    event.headers['userUlid'] = user.ulid;
     const response = await getMyCases(event, dummyContext, repositoryProvider);
 
     // THEN only cases with memberships (1 + 2) are returned
@@ -201,6 +208,10 @@ describe('getMyCases', () => {
         },
       }
     );
+    // simulate runLambdaPreChecks by adding the userUlid to the event
+    // the integration between runLambdaPrechecks and this lambda handler
+    // will be tested in the e2e tests
+    event.headers['userUlid'] = user.ulid;
     const response = await getMyCases(event, dummyContext, repositoryProvider);
 
     // THEN only cases with memberships (1 + 2) are returned
@@ -235,5 +246,62 @@ describe('getMyCases', () => {
     expect(allCases.find((deacase) => deacase.name === case1.name)).toBeDefined();
     expect(allCases.find((deacase) => deacase.name === case2.name)).toBeDefined();
     expect(allCases.find((deacase) => deacase.name === case3.name)).toBeUndefined();
+  });
+
+  it('should fail when the userUlid is not present in the event', async () => {
+    // runLambdaPreChecks inserts the userUlid into the event header so dea lambda
+    // execution will not have to reverify and decode the cognito token and
+    // grab the user from the database.
+    // Therefore, if the event does not contain the ulid, GetMyCases should fail
+    // GIVEN a user with membership to case 1 and 2
+    //create cases
+    const case1 =
+      (await createCase(
+        {
+          name: 'getMyCases-1c',
+          status: CaseStatus.ACTIVE,
+        },
+        repositoryProvider
+      )) ?? fail();
+
+    // create user
+    const user =
+      (await createUser(
+        {
+          tokenId: 'michaeljack',
+          firstName: 'Michael',
+          lastName: 'Jack',
+        },
+        repositoryProvider
+      )) ?? fail();
+
+    // create user-case memberships
+    await createCaseUser(
+      {
+        caseUlid: case1.ulid ?? 'bogus',
+        userUlid: user.ulid ?? 'bogus',
+        actions: [CaseAction.VIEW_CASE_DETAILS],
+        caseName: case1.name,
+        userFirstName: user.firstName,
+        userLastName: user.lastName,
+      },
+      repositoryProvider
+    );
+
+    // WHEN requesting the user's cases
+    // test sut
+    const event = Object.assign(
+      {},
+      {
+        ...dummyEvent,
+        queryStringParameters: {
+          limit: '20',
+        },
+      }
+    );
+
+    await expect(getMyCases(event, dummyContext, repositoryProvider)).rejects.toThrowError(
+      'userUlid was not present in the event header'
+    );
   });
 });

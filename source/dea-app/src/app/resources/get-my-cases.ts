@@ -5,7 +5,6 @@
 
 import { logger } from '../../logger';
 import { defaultProvider } from '../../persistence/schema/entities';
-import { ValidationError } from '../exceptions/validation-exception';
 import { listCasesForUser } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
@@ -20,19 +19,17 @@ export const getMyCases: DEAGatewayProxyHandler = async (
   logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
   let limit: number | undefined;
   let next: string | undefined;
-  let userUlid: string | undefined;
   if (event.queryStringParameters) {
     if (event.queryStringParameters['limit']) {
       limit = parseInt(event.queryStringParameters['limit']);
     }
     next = event.queryStringParameters['next'];
-    // THIS IS TEMPORARY - THE USER CONTEXT WILL BE SET BY THE REQUESTING USER WHEN AUTH IS IN PLACE
-    userUlid = event.queryStringParameters['userUlid'];
   }
 
-  // THIS IS TEMPORARY - THE USER CONTEXT WILL BE SET BY THE REQUESTING USER WHEN AUTH IS IN PLACE
+  const userUlid = event.headers['userUlid'];
   if (!userUlid) {
-    throw new ValidationError('userUlid query parameter is currently required');
+    // runLambdaPreChecks should have added the userUlid, this is server error
+    throw new Error('userUlid was not present in the event header');
   }
 
   let nextToken: object | undefined = undefined;
