@@ -1,0 +1,89 @@
+{
+  "stage": "test",
+  "userGroups": [
+    {
+      "name": "CaseWorkerGroup",
+      "description": "containing users who need access to case APIs",
+      "precedence": 1,
+      "endpoints": [
+        {
+          "path": "/cases",
+          "method": "GET"
+        },
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}",
+          "method": "DELETE"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships",
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "name": "AuthTestGroup",
+      "description": "used for auth e2e testing",
+      "precedence": 100,
+      "endpoints": [
+        {
+          "path": "/hi",
+          "method": "GET"
+        },
+        {
+          "path": "/bye",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "name": "CreateCasesTestGroup",
+      "description": "used for create cases API e2e testing",
+      "precedence": 100,
+      "endpoints": [
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}",
+          "method": "DELETE"
+        },
+        {
+          "path": "/cases/all-cases",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "name": "GetCaseTestGroup",
+      "description": "used for get cases API e2e testing",
+      "precedence": 100,
+      "endpoints": [
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}",
+          "method": "DELETE"
+        }
+      ]
+    }
+  ]
+}

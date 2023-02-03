@@ -52,8 +52,7 @@ describe('get case api', () => {
     );
 
     expect(getResponse.status).toEqual(200);
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const fetchedCase = (await getResponse.data) as DeaCase;
+    const fetchedCase: DeaCase = await getResponse.data;
     Joi.assert(fetchedCase, caseResponseSchema);
 
     expect(fetchedCase).toEqual(createdCase);

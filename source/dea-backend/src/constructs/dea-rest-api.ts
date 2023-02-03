@@ -8,10 +8,10 @@ import { Duration } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   AuthorizationType,
+  Cors,
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
-  Cors,
 } from 'aws-cdk-lib/aws-apigateway';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -19,7 +19,7 @@ import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
-import { getConstants } from '../constants';
+import { deaConfig } from '../config';
 import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway-route-config';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
 import { createCfnOutput } from './construct-support';
@@ -52,7 +52,7 @@ export class DeaRestApiConstruct extends Construct {
       encryptionKey: props.kmsKey,
     });
 
-    const { STAGE } = getConstants();
+    const STAGE = deaConfig.stage();
 
     this.deaRestApi = new RestApi(this, `dea-api`, {
       description: 'Backend API',

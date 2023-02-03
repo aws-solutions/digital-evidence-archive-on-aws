@@ -9,6 +9,7 @@ const throwUnset = (varName: string) => {
 }
 
 export const envSettings = {
+  stage: process.env.STAGE ?? 'test',
   awsRegion: process.env.AWS_REGION ?? 'us-east-1',
   apiUrlOutput: process.env.DEA_API_URL ?? throwUnset('DEA_API_URL'),
   identityPoolId: process.env.IDENTITY_POOL_ID ?? throwUnset('IDENTITY_POOL_ID'),
