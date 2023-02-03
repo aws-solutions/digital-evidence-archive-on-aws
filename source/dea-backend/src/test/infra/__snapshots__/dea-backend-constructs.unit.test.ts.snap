@@ -202,15 +202,8 @@ Object {
         "BucketEncryption": Object {
           "ServerSideEncryptionConfiguration": Array [
             Object {
-              "BucketKeyEnabled": true,
               "ServerSideEncryptionByDefault": Object {
-                "KMSMasterKeyID": Object {
-                  "Fn::GetAtt": Array [
-                    "testKey1CDDDD5E",
-                    "Arn",
-                  ],
-                },
-                "SSEAlgorithm": "aws:kms",
+                "SSEAlgorithm": "AES256",
               },
             },
           ],

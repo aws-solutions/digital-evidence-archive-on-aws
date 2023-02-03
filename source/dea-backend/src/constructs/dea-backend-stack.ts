@@ -28,7 +28,7 @@ export class DeaBackendConstruct extends Construct {
     this.deaTable = this._createDeaTable(props.kmsKey);
     const datasetsPrefix = 'dea-datasets-access-log';
     const prefixes = props.accessLogsPrefixes.concat([datasetsPrefix]);
-    this.accessLogsBucket = this._createAccessLogsBucket(props.kmsKey, `${scope.node.id}-DeaS3AccessLogs`, prefixes);
+    this.accessLogsBucket = this._createAccessLogsBucket(`${scope.node.id}-DeaS3AccessLogs`, prefixes);
     this.datasetsBucket = this._createDatasetsBucket(
       props.kmsKey,
       this.accessLogsBucket,
@@ -81,16 +81,13 @@ export class DeaBackendConstruct extends Construct {
   }
 
   private _createAccessLogsBucket(
-    key: Readonly<Key>,
     bucketNameOutput: Readonly<string>,
     accessLogPrefixes: ReadonlyArray<string>
   ): Bucket {
     const s3AccessLogsBucket = new Bucket(this, 'S3AccessLogsBucket', {
       autoDeleteObjects: false,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-      bucketKeyEnabled: true,
-      encryption: BucketEncryption.KMS,
-      encryptionKey: key,
+      encryption: BucketEncryption.S3_MANAGED,
       enforceSSL: true,
       publicReadAccess: false,
       removalPolicy: RemovalPolicy.RETAIN,
