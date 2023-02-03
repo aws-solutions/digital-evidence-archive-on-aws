@@ -5,7 +5,7 @@
 
 import { CaseAction } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
-import { allButDisallowed, ulidRegex, precedingDirectoryUlidRegex } from '../../models/validation/joi-common';
+import {allButDisallowed, ulidRegex, precedingDirectoryUlidRegex, filePathSafeCharsRegex} from '../../models/validation/joi-common';
 
 export const DeaSchema = {
   format: 'onetable:1.1.0',
@@ -54,20 +54,24 @@ export const DeaSchema = {
       updated: { type: Date },
     },
     CaseFile: {
-      PK: { type: String, value: 'CASE#${caseUlid}#${precedingDirectoryUlid}#', required: true },
-      SK: { type: String, value: 'FILE#${fileName}#${ulid}', required: true },
-      GSI1PK: { type: String, value: 'CASE#${caseUlid}#${ulid}#' },
-      GSI1SK: { type: String, value: 'FILE#${isFile}#' },
+      // Get files and folders in given folder path
+      PK: { type: String, value: 'CASE#${caseUlid}#${filePath}#', required: true },
+      SK: { type: String, value: 'FILE#${ulid}#', required: true },
+
+      // Get file or folder by full path
+      GSI1PK: { type: String, value: 'CASE#${caseUlid}#${filePath}${fileName}#', required: true },
+      GSI1SK: { type: String, value: 'FILE#${isFile}#', required: true },
+
       ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
       fileName: { type: String, required: true, validate: allButDisallowed },
+      filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // whole s3 prefix within case dataset. ex: /meal/lunch/
       precedingDirectoryUlid: { type: String, validate: precedingDirectoryUlidRegex },
       caseUlid: { type: String, validate: ulidRegex, required: true },
-      isFile: { type: Boolean },
+      isFile: { type: Boolean, required: true },
       contentPath: { type: String },
       uploadId: { type: String },
       sha256Hash: { type: String },
       fileType: { type: String },
-      filePath: { type: String }, // whole s3 prefix within case dataset. ex: /meal/lunch/
       fileSizeMb: { type: Number },
       //managed by onetable - but included for entity generation
       created: { type: Date },

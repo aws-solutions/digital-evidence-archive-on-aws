@@ -64,5 +64,6 @@ export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFile =>
     contentPath: caseFileEntity.contentPath,
     created: caseFileEntity.created,
     updated: caseFileEntity.updated,
+    isFile: caseFileEntity.isFile,
   };
 };
