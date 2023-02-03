@@ -35,7 +35,7 @@ describe('Test case file upload', () => {
 
     it('should successfully complete a file upload', async () => {
         const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate();
-        completeCaseFileUploadAndValidate(caseFile.ulid);
+        await completeCaseFileUploadAndValidate(caseFile.ulid);
     });
 
     it('should throw a validation exception when no payload is provided', async () => {
