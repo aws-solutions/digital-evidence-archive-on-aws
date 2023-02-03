@@ -9,18 +9,30 @@ import Joi from 'joi';
 import { updateCases } from '../../../app/resources/update-cases';
 import { DeaCase } from '../../../models/case';
 import { CaseStatus } from '../../../models/case-status';
+import { DeaUser } from '../../../models/user';
 import { caseResponseSchema } from '../../../models/validation/case';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { createCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
+import { createUser } from '../../../persistence/user';
 import { dummyContext, dummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from './get-test-repository';
 
 let repositoryProvider: ModelRepositoryProvider;
+let caseOwner: DeaUser;
 
 describe('update cases resource', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('updateCaseTest');
+
+    caseOwner = (await createUser(
+      {
+        tokenId: 'caseowner',
+        firstName: 'Case',
+        lastName: 'Owner',
+      },
+      repositoryProvider
+    )) ?? fail();
   });
 
   afterAll(async () => {
@@ -35,7 +47,7 @@ describe('update cases resource', () => {
       status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
-    const createdCase = await createCase(theCase, repositoryProvider);
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     const event = Object.assign(
       {},
@@ -141,7 +153,7 @@ describe('update cases resource', () => {
       status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
-    const createdCase = await createCase(theCase, repositoryProvider);
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     const event = Object.assign(
       {},
@@ -170,7 +182,7 @@ describe('update cases resource', () => {
       status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
-    const createdCase = await createCase(theCase, repositoryProvider);
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     const event = Object.assign(
       {},
@@ -224,8 +236,8 @@ describe('update cases resource', () => {
       status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
-    const createdCase1 = await createCase(theCase1, repositoryProvider);
-    const createdCase2 = await createCase(theCase2, repositoryProvider);
+    const createdCase1 = await createCase(theCase1, caseOwner, repositoryProvider);
+    const createdCase2 = await createCase(theCase2, caseOwner, repositoryProvider);
 
     const event = Object.assign(
       {},
@@ -259,8 +271,8 @@ describe('update cases resource', () => {
       status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
-    const createdCase1 = await createCase(theCase1, repositoryProvider);
-    const createdCase2 = await createCase(theCase2, repositoryProvider);
+    const createdCase1 = await createCase(theCase1, caseOwner, repositoryProvider);
+    const createdCase2 = await createCase(theCase2, caseOwner, repositoryProvider);
 
     const event = Object.assign(
       {},

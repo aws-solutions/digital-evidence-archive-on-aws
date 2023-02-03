@@ -7,6 +7,7 @@ import { Paged } from 'dynamodb-onetable';
 import { DeaCase } from '../../models/case';
 import { CaseStatus } from '../../models/case-status';
 import { caseFromEntity } from '../../models/projections';
+import { DeaUser } from '../../models/user';
 import * as CasePersistence from '../../persistence/case';
 import * as CaseUserPersistence from '../../persistence/case-user';
 import { isDefined } from '../../persistence/persistence-helpers';
@@ -14,6 +15,7 @@ import { CaseType, defaultProvider } from '../../persistence/schema/entities';
 
 export const createCases = async (
   deaCase: DeaCase,
+  owner: DeaUser,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
@@ -24,9 +26,9 @@ export const createCases = async (
     objectCount: 0,
   };
 
-  // TODO: create initial User/Owner on CreateCase
+  const createdCase = await CasePersistence.createCase(currentCase, owner, repositoryProvider);
 
-  return await CasePersistence.createCase(currentCase, repositoryProvider);
+  return createdCase;
 };
 
 export const listAllCases = async (

@@ -19,18 +19,19 @@ import {
   updateCaseUser,
 } from '../../persistence/case-user';
 import {
-  CaseModelRepositoryProvider,
   CaseUserModelRepositoryProvider,
+  ModelRepositoryProvider,
   UserModelRepositoryProvider,
 } from '../../persistence/schema/entities';
 import { createUser } from '../../persistence/user';
-import { initLocalDb } from './local-db-table';
+import { getTestRepositoryProvider, initLocalDb } from './local-db-table';
 
 describe('caseUser persistence', () => {
+  let repositoryProvider: ModelRepositoryProvider;
   let testTable: Table;
   let caseUserModelProvider: CaseUserModelRepositoryProvider;
   let userModelProvider: UserModelRepositoryProvider;
-  let caseModelProvider: CaseModelRepositoryProvider;
+  let caseOwner: DeaUser;
   let testUser: DeaUser;
   let testCase: DeaCase;
   let userUlid: string;
@@ -51,11 +52,19 @@ describe('caseUser persistence', () => {
     testTable = await initLocalDb('caseUserTestsTable');
     caseUserModelProvider = { CaseUserModel: testTable.getModel('CaseUser') };
     userModelProvider = { UserModel: testTable.getModel('User') };
-    caseModelProvider = { CaseModel: testTable.getModel('Case') };
+    repositoryProvider = getTestRepositoryProvider(testTable);
     testUser = (await createUser({ tokenId: 'caseman', firstName: 'Case', lastName: 'Man' }, userModelProvider)) ?? fail();
     userUlid = testUser.ulid ?? fail();
+    caseOwner = (await createUser(
+      {
+        tokenId: 'caseowner',
+        firstName: 'Case',
+        lastName: 'Owner',
+      },
+      repositoryProvider
+    )) ?? fail();
     testCase =
-      (await createCase({ name: 'TheCase', status: CaseStatus.ACTIVE }, caseModelProvider)) ?? fail();
+      (await createCase({ name: 'TheCase', status: CaseStatus.ACTIVE }, caseOwner, repositoryProvider)) ?? fail();
     caseUlid = testCase.ulid ?? fail();
 
     //list endpoints
@@ -183,13 +192,14 @@ describe('caseUser persistence', () => {
     listUser2 = (await createUser({ tokenId: 'terrypratchet', firstName: 'Terry', lastName: 'Pratchet' }, userModelProvider)) ?? fail();
     listUser2Ulid = listUser2.ulid ?? fail();
     listCase1 =
-      (await createCase({ name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE }, caseModelProvider)) ??
+      (await createCase({ name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE }, caseOwner, repositoryProvider)) ??
       fail();
     listCase1Ulid = listCase1.ulid ?? fail();
     listCase2 =
       (await createCase(
         { name: 'Between a rock and a hard case', status: CaseStatus.ACTIVE },
-        caseModelProvider
+        caseOwner,
+        repositoryProvider
       )) ?? fail();
     listCase2Ulid = listCase2.ulid ?? fail();
 

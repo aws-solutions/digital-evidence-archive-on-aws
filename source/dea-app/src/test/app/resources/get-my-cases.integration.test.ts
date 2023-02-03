@@ -8,6 +8,7 @@ import { getMyCases } from '../../../app/resources/get-my-cases';
 import { DeaCase } from '../../../models/case';
 import { CaseAction } from '../../../models/case-action';
 import { CaseStatus } from '../../../models/case-status';
+import { DeaUser } from '../../../models/user';
 import { createCase } from '../../../persistence/case';
 import { createCaseUser } from '../../../persistence/case-user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
@@ -16,6 +17,7 @@ import { dummyContext, dummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from './get-test-repository';
 
 let repositoryProvider: ModelRepositoryProvider;
+let caseOwner: DeaUser;
 
 type ResponseCasePage = {
   cases: DeaCase[];
@@ -25,6 +27,15 @@ type ResponseCasePage = {
 describe('getMyCases', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('getMyCasesTest');
+
+    caseOwner = (await createUser(
+      {
+        tokenId: 'caseowner',
+        firstName: 'Case',
+        lastName: 'Owner',
+      },
+      repositoryProvider
+    )) ?? fail();
   });
 
   afterEach(async () => {
@@ -44,6 +55,7 @@ describe('getMyCases', () => {
           name: 'getMyCases-1',
           status: CaseStatus.ACTIVE,
         },
+        caseOwner,
         repositoryProvider
       )) ?? fail();
 
@@ -53,6 +65,7 @@ describe('getMyCases', () => {
           name: 'getMyCases-2',
           status: CaseStatus.ACTIVE,
         },
+        caseOwner,
         repositoryProvider
       )) ?? fail();
 
@@ -62,6 +75,7 @@ describe('getMyCases', () => {
           name: 'getMyCases-3',
           status: CaseStatus.ACTIVE,
         },
+        caseOwner,
         repositoryProvider
       )) ?? fail();
 
@@ -139,6 +153,7 @@ describe('getMyCases', () => {
           name: 'getMyCases-1a',
           status: CaseStatus.ACTIVE,
         },
+        caseOwner,
         repositoryProvider
       )) ?? fail();
 
@@ -148,6 +163,7 @@ describe('getMyCases', () => {
           name: 'getMyCases-2a',
           status: CaseStatus.ACTIVE,
         },
+        caseOwner,
         repositoryProvider
       )) ?? fail();
 
@@ -157,6 +173,7 @@ describe('getMyCases', () => {
           name: 'getMyCases-3a',
           status: CaseStatus.ACTIVE,
         },
+        caseOwner,
         repositoryProvider
       )) ?? fail();
 
@@ -261,6 +278,7 @@ describe('getMyCases', () => {
           name: 'getMyCases-1c',
           status: CaseStatus.ACTIVE,
         },
+        caseOwner,
         repositoryProvider
       )) ?? fail();
 

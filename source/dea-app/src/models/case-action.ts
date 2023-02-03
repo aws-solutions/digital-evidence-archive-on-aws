@@ -4,13 +4,14 @@
  */
 
 export enum CaseAction {
-    VIEW_CASE_DETAILS = 'VIEW_CASE_DETAILS',
-    UPLOAD = 'UPLOAD',
-    DOWNLOAD = 'DOWNLOAD',
-    ARCHIVE = 'ARCHIVE',
-    RESTORE = 'RESTORE',
-    VIEW_FILES = 'VIEW_FILES',
-    CASE_AUDIT = 'CASE_AUDIT',
-    INVITE = 'INVITE',
-  }
-  
+  VIEW_CASE_DETAILS = 'VIEW_CASE_DETAILS',
+  UPLOAD = 'UPLOAD',
+  DOWNLOAD = 'DOWNLOAD',
+  ARCHIVE = 'ARCHIVE',
+  RESTORE = 'RESTORE',
+  VIEW_FILES = 'VIEW_FILES',
+  CASE_AUDIT = 'CASE_AUDIT',
+  INVITE = 'INVITE',
+}
+
+export const OWNER_ACTIONS: CaseAction[] = Object.values(CaseAction);
