@@ -549,7 +549,7 @@ components:
       properties:
         name:
           type: string
-        preceedingDirectoryUlid:
+        precedingDirectoryUlid:
           type: string
         ulid:
           type: string

@@ -15,9 +15,14 @@ export const filePathSafeCharsRegex = new RegExp('^[^<>:"\\|?*]*/$');
 
 export const htmlSafeCharsRegex = new RegExp('^[^&"\'<>]*$');
 
+export const ulidRegex = new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$');
+
+// match ULID or '/' when the preceding directory is case root directory
+export const precedingDirectoryUlidRegex = new RegExp('^([0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}|/)$');
+
 export const uploadId = Joi.string().pattern(htmlSafeCharsRegex).required();
 
-export const joiUlid = Joi.string().pattern(new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$'));
+export const joiUlid = Joi.string().pattern(ulidRegex);
 
 export const sha256Hash = Joi.string().pattern(new RegExp('^[a-fA-F0-9]{64}$')).required();
 

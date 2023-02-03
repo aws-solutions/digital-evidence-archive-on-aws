@@ -5,9 +5,7 @@
 
 import { CaseAction } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
-import { allButDisallowed } from '../../models/validation/joi-common';
-
-const ulidMatch = /^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$/;
+import { allButDisallowed, ulidRegex, precedingDirectoryUlidRegex } from '../../models/validation/joi-common';
 
 export const DeaSchema = {
   format: 'onetable:1.1.0',
@@ -23,7 +21,7 @@ export const DeaSchema = {
       SK: { type: String, value: 'CASE#', required: true },
       GSI1PK: { type: String, value: 'CASE#' },
       GSI1SK: { type: String, value: 'CASE#${lowerCaseName}#${ulid}#' },
-      ulid: { type: String, generate: 'ulid', validate: ulidMatch, required: true },
+      ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
       name: { type: String, required: true, unique: true, validate: allButDisallowed },
       lowerCaseName: { type: String, required: true, validate: allButDisallowed },
       status: { type: String, required: true, enum: Object.keys(CaseStatus) },
@@ -42,8 +40,8 @@ export const DeaSchema = {
       // gsi2 enable list all cases for a user, sorted by case name
       GSI2PK: { type: String, value: 'USER#${userUlid}#' },
       GSI2SK: { type: String, value: 'CASE#${lowerCaseName}#' },
-      caseUlid: { type: String, validate: ulidMatch, required: true },
-      userUlid: { type: String, validate: ulidMatch, required: true },
+      caseUlid: { type: String, validate: ulidRegex, required: true },
+      userUlid: { type: String, validate: ulidRegex, required: true },
       actions: { type: Array, items: { type: String, enum: Object.keys(CaseAction), required: true } },
       caseName: { type: String, required: true, validate: allButDisallowed },
       lowerCaseName: { type: String, required: true, validate: allButDisallowed },
@@ -56,14 +54,14 @@ export const DeaSchema = {
       updated: { type: Date },
     },
     CaseFile: {
-      PK: { type: String, value: 'CASE#${caseUlid}#${preceedingDirectoryUlid}#', required: true },
+      PK: { type: String, value: 'CASE#${caseUlid}#${precedingDirectoryUlid}#', required: true },
       SK: { type: String, value: 'FILE#${fileName}#${ulid}', required: true },
       GSI1PK: { type: String, value: 'CASE#${caseUlid}#${ulid}#' },
       GSI1SK: { type: String, value: 'FILE#${isFile}#' },
-      ulid: { type: String, generate: 'ulid', validate: ulidMatch, required: true },
+      ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
       fileName: { type: String, required: true, validate: allButDisallowed },
-      preceedingDirectoryUlid: { type: String, validate: ulidMatch },
-      caseUlid: { type: String, validate: ulidMatch, required: true },
+      precedingDirectoryUlid: { type: String, validate: precedingDirectoryUlidRegex },
+      caseUlid: { type: String, validate: ulidRegex, required: true },
       isFile: { type: Boolean },
       contentPath: { type: String },
       uploadId: { type: String },
@@ -83,7 +81,7 @@ export const DeaSchema = {
       // gsi2 determine if user is federated for the first time using the sub from the cognito token
       GSI2PK: { type: String, value: 'USER#${tokenId}#' },
       GSI2SK: { type: String, value: 'USER#' },
-      ulid: { type: String, generate: 'ulid', validate: ulidMatch, required: true },
+      ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
       tokenId: { type: String, required: true },
       firstName: { type: String, required: true, validate: allButDisallowed },
       lastName: { type: String, required: true, validate: allButDisallowed },

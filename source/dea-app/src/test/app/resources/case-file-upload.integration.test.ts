@@ -17,7 +17,7 @@ const FILE_NAME = "fileName";
 const CASE_ULID = "ABCDEFGHHJKKMNNPQRSTTVWXYZ";
 const FILE_ULID = "ABCDEFGHHJKKMNNPQRSTTVWXY9";
 const FILE_PATH = "/food/sushi/";
-const PRECEEDING_DIRECTORY_ULID = "9BCDEFGHHJKKMNNPQRSTTVWXYZ";
+const PRECEDING_DIRECTORY_ULID = "9BCDEFGHHJKKMNNPQRSTTVWXYZ";
 const UPLOAD_ID = "123456";
 const SHA256_HASH = "030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B";
 const FILE_SIZE_MB = 50;
@@ -84,7 +84,7 @@ describe('Test case file upload', () => {
         await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 4_999_999));
         await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 1));
 
-        // validate preceedingDirectoryUlid
+        // validate precedingDirectoryUlid
         await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, FILE_SIZE_MB, 'ABC')).rejects.toThrow();
         await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, FILE_SIZE_MB, '')).rejects.toThrow();
     });
@@ -97,7 +97,7 @@ async function initiateCaseFileUploadAndValidate (
     filePath: string = FILE_PATH,
     fileType: string = FILE_TYPE,
     fileSizeMb: number = FILE_SIZE_MB,
-    preceedingDirectoryUlid: string = PRECEEDING_DIRECTORY_ULID): Promise<DeaCaseFile> {
+    precedingDirectoryUlid: string = PRECEDING_DIRECTORY_ULID): Promise<DeaCaseFile> {
 
     const event = Object.assign({}, {
         ...dummyEvent,
@@ -105,7 +105,7 @@ async function initiateCaseFileUploadAndValidate (
             caseUlid,
             fileName,
             filePath,
-            preceedingDirectoryUlid,
+            precedingDirectoryUlid,
             fileType,
             fileSizeMb
         }),
@@ -124,7 +124,7 @@ async function initiateCaseFileUploadAndValidate (
     expect(newCaseFile.fileName).toEqual(fileName);
     expect(newCaseFile.caseUlid).toEqual(caseUlid);
     expect(newCaseFile.filePath).toEqual(filePath);
-    expect(newCaseFile.preceedingDirectoryUlid).toEqual(preceedingDirectoryUlid);
+    expect(newCaseFile.precedingDirectoryUlid).toEqual(precedingDirectoryUlid);
 
     return newCaseFile;
 }
@@ -136,7 +136,7 @@ async function completeCaseFileUploadAndValidate(
     filePath: string = FILE_PATH,
     uploadId: string = UPLOAD_ID,
     sha256Hash: string = SHA256_HASH,
-    preceedingDirectoryUlid: string = PRECEEDING_DIRECTORY_ULID): Promise<void> {
+    precedingDirectoryUlid: string = PRECEDING_DIRECTORY_ULID): Promise<void> {
 
     const event = Object.assign({}, {
         ...dummyEvent,
@@ -144,7 +144,7 @@ async function completeCaseFileUploadAndValidate(
             caseUlid,
             fileName,
             filePath,
-            preceedingDirectoryUlid,
+            precedingDirectoryUlid: precedingDirectoryUlid,
             uploadId,
             sha256Hash,
             ulid
@@ -164,5 +164,5 @@ async function completeCaseFileUploadAndValidate(
     expect(newCaseFile.fileName).toEqual(fileName);
     expect(newCaseFile.caseUlid).toEqual(caseUlid);
     expect(newCaseFile.filePath).toEqual(filePath);
-    expect(newCaseFile.preceedingDirectoryUlid).toEqual(preceedingDirectoryUlid);
+    expect(newCaseFile.precedingDirectoryUlid).toEqual(precedingDirectoryUlid);
 }

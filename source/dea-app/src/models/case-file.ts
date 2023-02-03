@@ -10,7 +10,7 @@ export interface DeaCaseFile {
     readonly fileSizeMb?: number;
     readonly preSignedUrls?: [string];
     readonly filePath?: string;
-    readonly preceedingDirectoryUlid?: string;
+    readonly precedingDirectoryUlid?: string;
     readonly fileType?: string;
     readonly uploadId?: string;
     readonly sha256Hash?: string;
