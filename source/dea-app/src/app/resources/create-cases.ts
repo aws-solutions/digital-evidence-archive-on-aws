@@ -4,6 +4,7 @@
  */
 
 import Joi from 'joi';
+import { getUserUlid } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { DeaCase } from '../../models/case';
 import { createCaseSchema } from '../../models/validation/case';
@@ -26,11 +27,7 @@ export const createCases: DEAGatewayProxyHandler = async (
     throw new ValidationError('Create cases payload missing.');
   }
 
-  const userUlid = event.headers['userUlid'];
-  if (!userUlid) {
-    // runLambdaPreChecks should have added the userUlid, this is server error
-    throw new Error('userUlid was not present in the event header');
-  }
+  const userUlid = getUserUlid(event);
 
   const deaCase: DeaCase = JSON.parse(event.body);
   Joi.assert(deaCase, createCaseSchema);
