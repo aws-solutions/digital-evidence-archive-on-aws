@@ -54,11 +54,11 @@ export const DeaSchema = {
       updated: { type: Date },
     },
     CaseFile: {
-      // Get files and folders in given folder path
+      // Get all files and folders in given folder path. SK ensures unique PK+SK combo
       PK: { type: String, value: 'CASE#${caseUlid}#${filePath}#', required: true },
       SK: { type: String, value: 'FILE#${ulid}#', required: true },
 
-      // Get file or folder by full path
+      // Get specific file or folder by full path
       GSI1PK: { type: String, value: 'CASE#${caseUlid}#${filePath}${fileName}#', required: true },
       GSI1SK: { type: String, value: 'FILE#${isFile}#', required: true },
 
