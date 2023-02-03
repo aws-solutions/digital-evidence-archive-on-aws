@@ -1,0 +1,10 @@
+{
+  "userGroups": [
+    {
+      "name": "InvalidEndpointConfig",
+      "description": "used for auth e2e testing",
+      "precedence": 100,
+      "endpoints": "InvalidEndpoints"
+    }
+  ]
+}

@@ -22,7 +22,6 @@ import {
 } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
-import { getConstants } from './constants';
 
 interface IUiStackProps extends StackProps {
   readonly kmsKey: Key;
@@ -33,12 +32,8 @@ interface IUiStackProps extends StackProps {
 
 export class DeaUiConstruct extends Construct {
 
-  // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-  constructor(scope: Construct, id: string, props: IUiStackProps) {
-    const {
-      STACK_NAME,
-    } = getConstants();
-    super(scope, STACK_NAME);
+  public constructor(scope: Construct, id: string, props: IUiStackProps) {
+    super(scope, 'DeaUiStack');
 
     const bucket = new Bucket(this, 'artifact-bucket', {
       accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
