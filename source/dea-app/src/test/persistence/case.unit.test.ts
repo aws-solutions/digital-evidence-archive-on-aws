@@ -5,14 +5,20 @@
 
 import { Paged, Table } from 'dynamodb-onetable';
 import { DeaCase } from '../../models/case';
+import { OWNER_ACTIONS } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
+import { DeaUser } from '../../models/user';
 import { createCase, deleteCase, getCase, listCases, updateCase } from '../../persistence/case';
-import { CaseModelRepositoryProvider } from '../../persistence/schema/entities';
-import { initLocalDb } from './local-db-table';
+import { getCaseUser } from '../../persistence/case-user';
+import { CaseModelRepositoryProvider, ModelRepositoryProvider } from '../../persistence/schema/entities';
+import { createUser } from '../../persistence/user';
+import { getTestRepositoryProvider, initLocalDb } from './local-db-table';
 
 describe('case persistence', () => {
   let testTable: Table;
   let caseModelProvider: CaseModelRepositoryProvider;
+  let repositoryProvider: ModelRepositoryProvider;
+  let caseOwner: DeaUser;
   let testCase: DeaCase;
   let caseUlid: string;
   let listCase1: DeaCase;
@@ -27,10 +33,20 @@ describe('case persistence', () => {
   beforeAll(async () => {
     testTable = await initLocalDb('caseTestsTable');
     caseModelProvider = { CaseModel: testTable.getModel('Case') };
+    repositoryProvider = getTestRepositoryProvider(testTable);
+    caseOwner = (await createUser(
+      {
+        tokenId: 'caseowner',
+        firstName: 'Case',
+        lastName: 'Owner',
+      },
+      repositoryProvider
+    )) ?? fail();
     testCase =
       (await createCase(
         { name: 'TheCase', status: CaseStatus.ACTIVE, description: 'TheDescription' },
-        caseModelProvider
+        caseOwner,
+        repositoryProvider
       )) ?? fail();
     caseUlid = testCase.ulid ?? fail();
 
@@ -40,6 +56,19 @@ describe('case persistence', () => {
 
   afterAll(async () => {
     await testTable.deleteTable('DeleteTableForever');
+  });
+
+  it('should add the creator as a case user with all permissions', async () => {
+    const caseUser = await getCaseUser({
+      caseUlid: testCase.ulid ?? fail(),
+      userUlid: caseOwner.ulid ?? fail(),
+    }, repositoryProvider);
+
+    expect(caseUser).toBeDefined();
+    expect(caseUser?.actions).toEqual(OWNER_ACTIONS);
+    expect(caseUser?.caseName).toStrictEqual(testCase.name);
+    expect(caseUser?.userFirstName).toStrictEqual(caseOwner.firstName);
+    expect(caseUser?.userLastName).toStrictEqual(caseOwner.lastName);
   });
 
   it('should return undefined if a case is not found', async () => {
@@ -99,7 +128,7 @@ describe('case persistence', () => {
       objectCount: 0,
     };
 
-    await expect(createCase(currentTestCase, caseModelProvider)).rejects.toThrow(
+    await expect(createCase(currentTestCase, caseOwner, repositoryProvider)).rejects.toThrow(
       'Validation Error in "Case" for "name, lowerCaseName"'
     );
   });
@@ -112,7 +141,7 @@ describe('case persistence', () => {
       objectCount: 0,
     };
 
-    const createdCase = await createCase(currentTestCase, caseModelProvider);
+    const createdCase = await createCase(currentTestCase, caseOwner, repositoryProvider);
 
     const readCase = await getCase(createdCase?.ulid ?? 'bogus', undefined, caseModelProvider);
 
@@ -146,7 +175,7 @@ describe('case persistence', () => {
 
   async function createListData(): Promise<void> {
     listCase1 =
-      (await createCase({ name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE }, caseModelProvider)) ??
+      (await createCase({ name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE }, caseOwner, repositoryProvider)) ??
       fail();
     listCase1Ulid = listCase1.ulid ?? fail();
     listCase1Created = listCase1.created ?? fail();
@@ -154,7 +183,8 @@ describe('case persistence', () => {
     listCase2 =
       (await createCase(
         { name: 'Between a rock and a hard case', status: CaseStatus.ACTIVE },
-        caseModelProvider
+        caseOwner,
+        repositoryProvider
       )) ?? fail();
     listCase2Ulid = listCase2.ulid ?? fail();
     listCase2Created = listCase2.created ?? fail();
@@ -169,7 +199,7 @@ describe('case persistence', () => {
       objectCount: 0,
     };
 
-    const createdCase = await createCase(currentTestCase, caseModelProvider);
+    const createdCase = await createCase(currentTestCase, caseOwner, repositoryProvider);
 
     const readCase = await getCase(createdCase?.ulid ?? fail(), undefined, caseModelProvider);
 

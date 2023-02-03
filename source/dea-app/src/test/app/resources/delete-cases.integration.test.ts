@@ -7,6 +7,7 @@ import { fail } from "assert";
 import { ValidationError } from "../../../app/exceptions/validation-exception";
 import { deleteCase } from "../../../app/resources/delete-cases";
 import { getCase } from "../../../app/services/case-service";
+import { createUser } from "../../../app/services/user-service";
 import { DeaCase } from "../../../models/case";
 import { CaseStatus } from "../../../models/case-status";
 import { createCase } from "../../../persistence/case";
@@ -40,12 +41,18 @@ describe('delete cases resource', () => {
     });
 
     it('should successfully delete a case', async () => {
+        const user = await createUser({
+            tokenId: 'mickybell',
+            firstName: 'Micky',
+            lastName: 'Bell',
+        }, repositoryProvider);
+
         const theCase: DeaCase = {
             name: "ACaseForDeleting",
             status: CaseStatus.ACTIVE,
             description: "An initial description",
         };
-        const createdCase = await createCase(theCase, repositoryProvider);
+        const createdCase = await createCase(theCase, user, repositoryProvider);
         if (!createdCase.ulid) {
             fail();
         }

@@ -18,14 +18,25 @@ import { DeaUser } from '../../../models/user';
 import { caseUserResponseSchema } from '../../../models/validation/case-user';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
+import { createUser } from '../../../persistence/user';
 import { dummyContext, dummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from './get-test-repository';
 
 let repositoryProvider: ModelRepositoryProvider;
+let caseOwner: DeaUser;
 
 describe('create case membership resource', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('createCaseMembershipTest');
+
+    caseOwner = (await createUser(
+      {
+        tokenId: 'caseowner',
+        firstName: 'Case',
+        lastName: 'Owner',
+      },
+      repositoryProvider
+    )) ?? fail();
   });
 
   afterAll(async () => {
@@ -33,18 +44,11 @@ describe('create case membership resource', () => {
   });
 
   it('should create a user-case membership', async () => {
-    const caseOwner: DeaUser = {
-      tokenId: 'mrcaseman',
-      firstName: 'Case',
-      lastName: 'Man',
-    };
-    const ownerUlid = (await UserService.createUser(caseOwner, repositoryProvider)).ulid ?? fail();
-
     const deaCase: DeaCase = {
       name: 'ThirteenSilverDollars',
       status: CaseStatus.ACTIVE,
     };
-    const newCase = await CaseService.createCases(deaCase, ownerUlid, repositoryProvider);
+    const newCase = await CaseService.createCases(deaCase, caseOwner, repositoryProvider);
 
     // user to be invited
     const deaUser: DeaUser = {
@@ -183,7 +187,7 @@ describe('create case membership resource', () => {
       name: 'Bar Breaker',
       status: CaseStatus.ACTIVE,
     };
-    const newCase = await CaseService.createCases(deaCase, user.ulid ?? fail(), repositoryProvider);
+    const newCase = await CaseService.createCases(deaCase, user, repositoryProvider);
 
     const bogusUlid = '02ARZ3NDEKTSV4RRFFQ69G5FAV';
     const event = Object.assign(

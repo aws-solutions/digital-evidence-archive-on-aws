@@ -5,18 +5,17 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { DeaCase } from '../../models/case';
-import { OWNER_ACTIONS } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
 import { caseFromEntity } from '../../models/projections';
+import { DeaUser } from '../../models/user';
 import * as CasePersistence from '../../persistence/case';
 import * as CaseUserPersistence from '../../persistence/case-user';
 import { isDefined } from '../../persistence/persistence-helpers';
 import { CaseType, defaultProvider } from '../../persistence/schema/entities';
-import * as CaseUserService from './case-user-service';
 
 export const createCases = async (
   deaCase: DeaCase,
-  creatorUserUlid: string,
+  owner: DeaUser,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
@@ -27,27 +26,7 @@ export const createCases = async (
     objectCount: 0,
   };
 
-  const createdCase = await CasePersistence.createCase(currentCase, repositoryProvider);
-  if (!createdCase.ulid) {
-    throw new Error('Case was not created correctly. Manual clean may be in order.');
-  }
-
-  // Now add the user as a case user with all the permissions
-  try {
-    await CaseUserService.createCaseUserMembershipFromDTO(
-      {
-        caseUlid: createdCase.ulid,
-        userUlid: creatorUserUlid,
-        actions: OWNER_ACTIONS,
-      },
-      repositoryProvider
-    );
-  } catch (error) {
-    // if case user fails to be created, delete the case
-    await deleteCase(createdCase.ulid, repositoryProvider);
-
-    throw new Error(error);
-  }
+  const createdCase = await CasePersistence.createCase(currentCase, owner, repositoryProvider);
 
   return createdCase;
 };

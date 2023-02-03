@@ -11,6 +11,7 @@ import { createCaseSchema } from '../../models/validation/case';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
+import { getUser } from '../services/user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
 export const createCases: DEAGatewayProxyHandler = async (
@@ -28,11 +29,18 @@ export const createCases: DEAGatewayProxyHandler = async (
   }
 
   const userUlid = getUserUlid(event);
+  const user = await getUser(userUlid, repositoryProvider);
+  if (!user) {
+    // Note: before every lambda checks are run to add first time
+    // federated users to the db. If the caller is not in the db
+    // a server error has occured
+    throw new Error("Could not find case creator as a user in the DB");
+  }
 
   const deaCase: DeaCase = JSON.parse(event.body);
   Joi.assert(deaCase, createCaseSchema);
 
-  const updateBody = await CaseService.createCases(deaCase, userUlid, repositoryProvider);
+  const updateBody = await CaseService.createCases(deaCase, user, repositoryProvider);
 
   return {
     statusCode: 200,

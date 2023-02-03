@@ -5,7 +5,9 @@
 
 import { Table } from "dynamodb-onetable";
 import { DeaSchema } from "../../persistence/schema/dea-schema";
+import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { dynamoTestClient } from "../local-dynamo/setup";
+
 
 export const initLocalDb = async (tableName: string): Promise<Table> => {
 
@@ -19,4 +21,14 @@ export const initLocalDb = async (tableName: string): Promise<Table> => {
     await testTable.createTable();
 
     return testTable;
+}
+
+export const getTestRepositoryProvider = (testTable: Table): ModelRepositoryProvider => {
+    return {
+        table: testTable,
+        CaseModel: testTable.getModel('Case'),
+        CaseUserModel: testTable.getModel('CaseUser'),
+        CaseFileModel: testTable.getModel('CaseFile'),
+        UserModel: testTable.getModel('User'),
+    }
 }

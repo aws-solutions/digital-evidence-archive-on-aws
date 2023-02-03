@@ -8,6 +8,7 @@ import Joi from "joi";
 import { NotFoundError } from "../../../app/exceptions/not-found-exception";
 import { ValidationError } from "../../../app/exceptions/validation-exception";
 import { getCase } from "../../../app/resources/get-case-details";
+import { createUser } from '../../../app/services/user-service';
 import { DeaCase } from "../../../models/case";
 import { CaseStatus } from "../../../models/case-status";
 import { caseResponseSchema } from "../../../models/validation/case";
@@ -30,12 +31,18 @@ describe('get case details resource', () => {
     });
 
     it('should retrieve a case', async () => {
+        const user = await createUser({
+            tokenId: 'creator',
+            firstName: 'Create',
+            lastName: 'Case',
+        }, repositoryProvider);
+
         const theCase: DeaCase = {
             name: "ACaseForRetrieving",
             status: CaseStatus.ACTIVE,
             description: "An initial description",
         };
-        const createdCase = await createCase(theCase, repositoryProvider);
+        const createdCase = await createCase(theCase, user, repositoryProvider);
 
         const event = Object.assign({}, {
             ...dummyEvent,
