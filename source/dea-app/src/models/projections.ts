@@ -4,7 +4,8 @@
  */
 
 import { DeaCase } from '../models/case';
-import { CaseType, CaseUserType, UserType } from '../persistence/schema/entities';
+import { DeaCaseFile } from '../models/case-file';
+import { CaseType, CaseUserType, UserType, CaseFileType } from '../persistence/schema/entities';
 import { CaseAction } from './case-action';
 import { CaseStatus } from './case-status';
 import { CaseUser } from './case-user';
@@ -46,5 +47,22 @@ export const caseUserFromEntity = (caseUserEntity: CaseUserType): CaseUser => {
     actions: caseUserEntity.actions?.map((action) => action as CaseAction) ?? [],
     created: caseUserEntity.created,
     updated: caseUserEntity.updated,
+  };
+};
+
+export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFile => {
+  return {
+    ulid: caseFileEntity.ulid,
+    caseUlid: caseFileEntity.caseUlid,
+    fileName: caseFileEntity.fileName,
+    fileType: caseFileEntity.fileType,
+    filePath: caseFileEntity.filePath,
+    preceedingDirectoryUlid: caseFileEntity.preceedingDirectoryUlid,
+    fileSizeMb: caseFileEntity.fileSizeMb,
+    uploadId: caseFileEntity.uploadId,
+    sha256Hash: caseFileEntity.sha256Hash,
+    contentPath: caseFileEntity.contentPath,
+    created: caseFileEntity.created,
+    updated: caseFileEntity.updated,
   };
 };

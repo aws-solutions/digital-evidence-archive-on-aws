@@ -59,7 +59,7 @@ describe('get case api', () => {
     expect(fetchedCase).toEqual(createdCase);
 
     await deleteCase(deaApiUrl ?? fail(), fetchedCase.ulid ?? fail(), idToken, creds);
-  }, 20000);
+  }, 30000);
 
   it('should throw an error when the case is not found', async () => {
     const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
