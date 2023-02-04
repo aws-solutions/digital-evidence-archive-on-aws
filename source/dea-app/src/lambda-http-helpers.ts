@@ -32,3 +32,12 @@ export const getUserUlid = (event: APIGatewayProxyEventV2): string => {
   logger.error('User Ulid missing from event');
   throw new Error('userUlid was not present in the event header');
 };
+
+export const getRequiredEnv = (envName: string, defaultValue?: string): string => {
+  const value = process.env[envName] ?? defaultValue;
+  if (!value) {
+    throw new Error(`Required ENV ${envName} not set.`);
+  }
+
+  return value;
+};

@@ -12,7 +12,7 @@ import { getUserByTokenId, listUsers } from '../../../persistence/user';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { envSettings } from '../../../test-e2e/helpers/settings';
 import { dummyContext, dummyEvent } from '../../integration-objects';
-import { getTestRepositoryProvider } from './get-test-repository';
+import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
 
@@ -30,14 +30,14 @@ describe('lambda pre-execution checks', () => {
   });
 
   afterAll(async () => {
+    await cognitoHelper.cleanup(repositoryProvider);
     await repositoryProvider.table.deleteTable('DeleteTableForever');
-    await cognitoHelper.cleanup();
   });
 
   it('should add first time federated user to dynamo table', async () => {
     const idToken = await cognitoHelper.getIdTokenForUser(testUser);
 
-    const tokenId = await (await getTokenPayload(idToken, region)).sub;
+    const tokenId = (await getTokenPayload(idToken, region)).sub;
     const event = Object.assign(
       {},
       {

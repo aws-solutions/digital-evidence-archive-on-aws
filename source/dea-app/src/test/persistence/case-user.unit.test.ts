@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Paged, Table } from 'dynamodb-onetable';
+import { Paged } from 'dynamodb-onetable';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
@@ -18,19 +18,12 @@ import {
   listCaseUsersByUser,
   updateCaseUser,
 } from '../../persistence/case-user';
-import {
-  CaseUserModelRepositoryProvider,
-  ModelRepositoryProvider,
-  UserModelRepositoryProvider,
-} from '../../persistence/schema/entities';
+import { CaseUserModelRepositoryProvider, ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { createUser } from '../../persistence/user';
-import { getTestRepositoryProvider, initLocalDb } from './local-db-table';
+import { getTestRepositoryProvider } from './local-db-table';
 
 describe('caseUser persistence', () => {
   let repositoryProvider: ModelRepositoryProvider;
-  let testTable: Table;
-  let caseUserModelProvider: CaseUserModelRepositoryProvider;
-  let userModelProvider: UserModelRepositoryProvider;
   let caseOwner: DeaUser;
   let testUser: DeaUser;
   let testCase: DeaCase;
@@ -49,22 +42,23 @@ describe('caseUser persistence', () => {
   let listCaseUser2_1: CaseUser;
 
   beforeAll(async () => {
-    testTable = await initLocalDb('caseUserTestsTable');
-    caseUserModelProvider = { CaseUserModel: testTable.getModel('CaseUser') };
-    userModelProvider = { UserModel: testTable.getModel('User') };
-    repositoryProvider = getTestRepositoryProvider(testTable);
-    testUser = (await createUser({ tokenId: 'caseman', firstName: 'Case', lastName: 'Man' }, userModelProvider)) ?? fail();
+    repositoryProvider = await getTestRepositoryProvider('caseUserTestsTable');
+    testUser =
+      (await createUser({ tokenId: 'caseman', firstName: 'Case', lastName: 'Man' }, repositoryProvider)) ??
+      fail();
     userUlid = testUser.ulid ?? fail();
-    caseOwner = (await createUser(
-      {
-        tokenId: 'caseowner',
-        firstName: 'Case',
-        lastName: 'Owner',
-      },
-      repositoryProvider
-    )) ?? fail();
+    caseOwner =
+      (await createUser(
+        {
+          tokenId: 'caseowner',
+          firstName: 'Case',
+          lastName: 'Owner',
+        },
+        repositoryProvider
+      )) ?? fail();
     testCase =
-      (await createCase({ name: 'TheCase', status: CaseStatus.ACTIVE }, caseOwner, repositoryProvider)) ?? fail();
+      (await createCase({ name: 'TheCase', status: CaseStatus.ACTIVE }, caseOwner, repositoryProvider)) ??
+      fail();
     caseUlid = testCase.ulid ?? fail();
 
     //list endpoints
@@ -72,7 +66,7 @@ describe('caseUser persistence', () => {
   });
 
   afterAll(async () => {
-    await testTable.deleteTable('DeleteTableForever');
+    await repositoryProvider.table.deleteTable('DeleteTableForever');
   });
 
   it('should create, get and update caseUser by ids', async () => {
@@ -84,7 +78,7 @@ describe('caseUser persistence', () => {
       caseName: testCase.name,
       actions: [CaseAction.UPLOAD],
     };
-    const createdCaseUser = await createCaseUser(caseUser, caseUserModelProvider);
+    const createdCaseUser = await createCaseUser(caseUser, repositoryProvider);
 
     expect(createdCaseUser).toEqual({
       ...caseUser,
@@ -92,7 +86,7 @@ describe('caseUser persistence', () => {
       updated: createdCaseUser.updated,
     });
 
-    const readCaseUser = await getCaseUser({ caseUlid, userUlid }, caseUserModelProvider);
+    const readCaseUser = await getCaseUser({ caseUlid, userUlid }, repositoryProvider);
 
     expect(readCaseUser).toEqual(createdCaseUser);
 
@@ -101,7 +95,7 @@ describe('caseUser persistence', () => {
       actions: [CaseAction.DOWNLOAD],
     };
 
-    const updatedCaseUser = await updateCaseUser(caseUserForUpdate, caseUserModelProvider);
+    const updatedCaseUser = await updateCaseUser(caseUserForUpdate, repositoryProvider);
 
     expect(updatedCaseUser).toEqual({
       ...caseUserForUpdate,
@@ -109,11 +103,11 @@ describe('caseUser persistence', () => {
       updated: updatedCaseUser?.updated,
     });
 
-    await deleteAndVerifyCaseUser({ caseUlid, userUlid }, caseUserModelProvider);
+    await deleteAndVerifyCaseUser({ caseUlid, userUlid }, repositoryProvider);
   });
 
   it('should return undefined if a case is not found', async () => {
-    const caseUser = await getCaseUser({ caseUlid: 'bogus', userUlid: 'bogus' }, caseUserModelProvider);
+    const caseUser = await getCaseUser({ caseUlid: 'bogus', userUlid: 'bogus' }, repositoryProvider);
 
     expect(caseUser).toBeUndefined();
   });
@@ -145,9 +139,9 @@ describe('caseUser persistence', () => {
     expectedCaseUsers.next = undefined;
     expectedCaseUsers.prev = undefined;
 
-    const actualWithLimit1 = await listCaseUsersByCase(listCase1Ulid, 1, undefined, caseUserModelProvider);
+    const actualWithLimit1 = await listCaseUsersByCase(listCase1Ulid, 1, undefined, repositoryProvider);
     expect(actualWithLimit1.length).toEqual(1);
-    const actual = await listCaseUsersByCase(listCase1Ulid, undefined, undefined, caseUserModelProvider);
+    const actual = await listCaseUsersByCase(listCase1Ulid, undefined, undefined, repositoryProvider);
 
     expect(actual.values).toEqual(expectedCaseUsers.values);
   });
@@ -179,21 +173,32 @@ describe('caseUser persistence', () => {
     expectedCaseUsers.next = undefined;
     expectedCaseUsers.prev = undefined;
 
-    const actualWithLimit1 = await listCaseUsersByUser(listUser1Ulid, 1, undefined, caseUserModelProvider);
+    const actualWithLimit1 = await listCaseUsersByUser(listUser1Ulid, 1, undefined, repositoryProvider);
     expect(actualWithLimit1.length).toEqual(1);
-    const actual = await listCaseUsersByUser(listUser1Ulid, undefined, undefined, caseUserModelProvider);
+    const actual = await listCaseUsersByUser(listUser1Ulid, undefined, undefined, repositoryProvider);
 
     expect(actual.values).toEqual(expectedCaseUsers.values);
   });
 
   async function createListData(): Promise<void> {
-    listUser1 = (await createUser({ tokenId: 'morganfreeman', firstName: 'Morgan', lastName: 'Freeman' }, userModelProvider)) ?? fail();
+    listUser1 =
+      (await createUser(
+        { tokenId: 'morganfreeman', firstName: 'Morgan', lastName: 'Freeman' },
+        repositoryProvider
+      )) ?? fail();
     listUser1Ulid = listUser1.ulid ?? fail();
-    listUser2 = (await createUser({ tokenId: 'terrypratchet', firstName: 'Terry', lastName: 'Pratchet' }, userModelProvider)) ?? fail();
+    listUser2 =
+      (await createUser(
+        { tokenId: 'terrypratchet', firstName: 'Terry', lastName: 'Pratchet' },
+        repositoryProvider
+      )) ?? fail();
     listUser2Ulid = listUser2.ulid ?? fail();
     listCase1 =
-      (await createCase({ name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE }, caseOwner, repositoryProvider)) ??
-      fail();
+      (await createCase(
+        { name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE },
+        caseOwner,
+        repositoryProvider
+      )) ?? fail();
     listCase1Ulid = listCase1.ulid ?? fail();
     listCase2 =
       (await createCase(
@@ -212,7 +217,7 @@ describe('caseUser persistence', () => {
         caseName: listCase1.name,
         actions: [CaseAction.VIEW_CASE_DETAILS],
       },
-      caseUserModelProvider
+      repositoryProvider
     );
     listCaseUser1_2 = await createCaseUser(
       {
@@ -223,7 +228,7 @@ describe('caseUser persistence', () => {
         caseName: listCase2.name,
         actions: [CaseAction.VIEW_CASE_DETAILS, CaseAction.VIEW_FILES],
       },
-      caseUserModelProvider
+      repositoryProvider
     );
     listCaseUser2_1 = await createCaseUser(
       {
@@ -234,7 +239,7 @@ describe('caseUser persistence', () => {
         caseName: listCase1.name,
         actions: [CaseAction.VIEW_CASE_DETAILS, CaseAction.VIEW_FILES],
       },
-      caseUserModelProvider
+      repositoryProvider
     );
   }
 });

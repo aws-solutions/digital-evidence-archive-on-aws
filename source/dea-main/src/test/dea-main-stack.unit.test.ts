@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { validateBackendConstruct } from '@aws/dea-backend';
+import { deaConfig, validateBackendConstruct } from '@aws/dea-backend';
 import { validateDeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
@@ -39,6 +39,16 @@ describe('DeaMainStack', () => {
       print: (val) => {
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const newVal = (val as string).replace(/([A-Fa-f0-9]{64})/, '[HASH REMOVED]');
+        return `"${newVal}"`;
+      },
+    });
+
+    expect.addSnapshotSerializer({
+      test: (val) => typeof val === 'string' && val.includes(deaConfig.stage()),
+      print: (val) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        const newVal1 = (val as string).replace(deaConfig.stage(), '[STAGE-REMOVED]');
+        const newVal = newVal1.replace(/([A-Fa-f0-9]{8})/, '[HASH REMOVED]');
         return `"${newVal}"`;
       },
     });

@@ -16,7 +16,7 @@ import { createCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { dummyContext, dummyEvent } from '../../integration-objects';
-import { getTestRepositoryProvider } from './get-test-repository';
+import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
 let caseOwner: DeaUser;
@@ -25,14 +25,15 @@ describe('update cases resource', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('updateCaseTest');
 
-    caseOwner = (await createUser(
-      {
-        tokenId: 'caseowner',
-        firstName: 'Case',
-        lastName: 'Owner',
-      },
-      repositoryProvider
-    )) ?? fail();
+    caseOwner =
+      (await createUser(
+        {
+          tokenId: 'caseowner',
+          firstName: 'Case',
+          lastName: 'Owner',
+        },
+        repositoryProvider
+      )) ?? fail();
   });
 
   afterAll(async () => {

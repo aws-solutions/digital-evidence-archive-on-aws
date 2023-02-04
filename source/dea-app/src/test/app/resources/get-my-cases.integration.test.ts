@@ -14,7 +14,7 @@ import { createCaseUser } from '../../../persistence/case-user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { dummyContext, dummyEvent } from '../../integration-objects';
-import { getTestRepositoryProvider } from './get-test-repository';
+import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
 let caseOwner: DeaUser;
@@ -28,14 +28,15 @@ describe('getMyCases', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('getMyCasesTest');
 
-    caseOwner = (await createUser(
-      {
-        tokenId: 'caseowner',
-        firstName: 'Case',
-        lastName: 'Owner',
-      },
-      repositoryProvider
-    )) ?? fail();
+    caseOwner =
+      (await createUser(
+        {
+          tokenId: 'caseowner',
+          firstName: 'Case',
+          lastName: 'Owner',
+        },
+        repositoryProvider
+      )) ?? fail();
   });
 
   afterEach(async () => {

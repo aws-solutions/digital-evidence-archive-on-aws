@@ -1,5 +1,9 @@
 name: Pull Request Workflow
 
+env:
+  CONFIGNAME: 'test'
+  STAGE: RUN${{github.run_number}}
+
 on:
   pull_request:
     branches:
@@ -42,7 +46,7 @@ jobs:
       - name: cdk synth
         run: |
           cd dea-main
-          STAGE=test npm run cdk synth
+          npm run cdk synth
           cd ..
       - name: cfn_nag
         uses: stelligent/cfn_nag@master
@@ -61,11 +65,11 @@ jobs:
       - name: cdk deploy
         run: |
           cd dea-main
-          STAGE=test npm run cdk deploy
-          echo "DEA_API_URL=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == 'deaApiUrl'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
-          echo "IDENTITY_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == 'identityPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
-          echo "USER_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == 'userPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
-          echo "USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == 'userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          npm run cdk deploy
+          echo "DEA_API_URL=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-deaApiUrl'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "IDENTITY_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-identityPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "USER_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:only --verbose
@@ -73,4 +77,4 @@ jobs:
         if: always()
         run: |
           cd dea-main
-          STAGE=test npm run cdk destroy -- --force
+          npm run cdk destroy -- --force

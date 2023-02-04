@@ -11,7 +11,7 @@ import { CaseStatus } from '../../../models/case-status';
 import { createCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { dummyContext, dummyEvent } from '../../integration-objects';
-import { getTestRepositoryProvider } from './get-test-repository';
+import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
 
@@ -30,17 +30,23 @@ describe('get all cases resource', () => {
   });
 
   it('should can fetch cases across pages', async () => {
-    const user1 = await createUser({
+    const user1 = await createUser(
+      {
         tokenId: 'creator1',
         firstName: 'Create',
         lastName: 'One',
-    }, repositoryProvider);
+      },
+      repositoryProvider
+    );
 
-    const user2 = await createUser({
+    const user2 = await createUser(
+      {
         tokenId: 'creator2',
         firstName: 'Create',
         lastName: 'Two',
-    }, repositoryProvider);
+      },
+      repositoryProvider
+    );
 
     const case1 =
       (await createCase(
