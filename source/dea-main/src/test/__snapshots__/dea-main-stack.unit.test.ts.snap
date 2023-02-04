@@ -3809,6 +3809,17 @@ Object {
                   },
                   "Value": "GetCaseTestGroup",
                 },
+                Object {
+                  "Claim": "cognito:groups",
+                  "MatchType": "Contains",
+                  "RoleARN": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaAuthDeaAuthTESTGetMyCasesTestGroupRole8B400D63",
+                      "Arn",
+                    ],
+                  },
+                  "Value": "GetMyCasesTestGroup",
+                },
               ],
             },
             "Type": "Token",
