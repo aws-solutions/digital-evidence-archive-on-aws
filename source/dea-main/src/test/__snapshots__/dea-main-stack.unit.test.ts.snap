@@ -3686,6 +3686,213 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
+    "DeaAuthGetMyCasesTestGroup2D16B15A": Object {
+      "Properties": Object {
+        "Description": "Group used for get my cases API e2e testing",
+        "GroupName": "GetMyCasesTestGroup",
+        "Precedence": 100,
+        "RoleArn": Object {
+          "Fn::GetAtt": Array [
+            "DeaAuthGetMyCasesTestGroupRoleBDF3089F",
+            "Arn",
+          ],
+        },
+        "UserPoolId": Object {
+          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolGroup",
+    },
+    "DeaAuthGetMyCasesTestGroupRoleBDF3089F": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": Object {
+                "ForAnyValue:StringLike": Object {
+                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                },
+                "StringEquals": Object {
+                  "cognito-identity.amazonaws.com:aud": Object {
+                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Federated": "cognito-identity.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Description": "Role used for get my cases API e2e testing",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaAuthGetMyCasesTestGroupRolePolicy5E863018": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "execute-api:Invoke",
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
+                      },
+                      "/POST/cases",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
+                      },
+                      "/GET/cases/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
+                      },
+                      "/DELETE/cases/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
+                      },
+                      "/GET/cases/my-cases",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStagetestDA53C9A7",
+                      },
+                      "/POST/cases/*/userMemberships",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaAuthGetMyCasesTestGroupRolePolicy5E863018",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaAuthGetMyCasesTestGroupRoleBDF3089F",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "DeaAuthIdPoolAuthenticatedRole3AD16775": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -3814,7 +4021,7 @@ Object {
                   "MatchType": "Contains",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
-                      "DeaAuthDeaAuthTESTGetMyCasesTestGroupRole8B400D63",
+                      "DeaAuthGetMyCasesTestGroupRoleBDF3089F",
                       "Arn",
                     ],
                   },
