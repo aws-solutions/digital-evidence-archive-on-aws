@@ -57,3 +57,13 @@ export const getCaseUsersForUser = async (
 ): Promise<Paged<CaseUser>> => {
   return CaseUserPersistence.listCaseUsersByUser(userUlid, limit, nextToken, repositoryProvider);
 };
+
+export const deleteCaseUser = async (
+  userUlid: string,
+  caseUlid: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider = defaultProvider
+): Promise<void> => {
+  await CaseUserPersistence.deleteCaseUser({userUlid, caseUlid}, repositoryProvider);
+};

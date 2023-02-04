@@ -57,7 +57,7 @@ describe('get case api', () => {
 
     expect(fetchedCase).toEqual(createdCase);
 
-    await deleteCase(deaApiUrl ?? fail(), fetchedCase.ulid ?? fail(), idToken, creds);
+    await deleteCase(deaApiUrl ?? fail(), fetchedCase.ulid ?? fail(), idToken, creds, region);
   }, 30000);
 
   it('should throw an error when the case is not found', async () => {
