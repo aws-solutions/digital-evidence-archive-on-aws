@@ -3,7 +3,7 @@
 exports[`DeaBackend constructs synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
-    "DeaBackendConstructteststackDeaS3AccessLogs50BF6416": Object {
+    "DeaBackendConstruct[STAGE-REMOVED]stackDeaS3AccessLogs[HASH REMOVED]": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-test-stack-DeaS3AccessLogs",
       },
@@ -11,7 +11,7 @@ Object {
         "Ref": "DeaBackendConstructS3AccessLogsBucket2074272F",
       },
     },
-    "DeaBackendConstructteststackDeaS3Datasets88052100": Object {
+    "DeaBackendConstruct[STAGE-REMOVED]stackDeaS3Datasets[HASH REMOVED]": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-test-stack-DeaS3Datasets",
       },
@@ -163,7 +163,7 @@ Object {
         "SSESpecification": Object {
           "KMSMasterKeyId": Object {
             "Fn::GetAtt": Array [
-              "testKey1CDDDD5E",
+              "[STAGE-REMOVED]Key[HASH REMOVED]",
               "Arn",
             ],
           },
@@ -308,7 +308,7 @@ Object {
               "ServerSideEncryptionByDefault": Object {
                 "KMSMasterKeyID": Object {
                   "Fn::GetAtt": Array [
-                    "testKey1CDDDD5E",
+                    "[STAGE-REMOVED]Key[HASH REMOVED]",
                     "Arn",
                   ],
                 },
@@ -400,7 +400,7 @@ Object {
       "Properties": Object {
         "KmsKeyId": Object {
           "Fn::GetAtt": Array [
-            "testKey1CDDDD5E",
+            "[STAGE-REMOVED]Key[HASH REMOVED]",
             "Arn",
           ],
         },
@@ -427,7 +427,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -480,7 +480,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -533,7 +533,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -586,7 +586,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -639,7 +639,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -692,7 +692,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -745,7 +745,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -798,7 +798,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -851,7 +851,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -1121,7 +1121,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapibyeGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETbyeB5A3F6C1": Object {
+    "DeaRestApiConstructdeaapibyeGETApiPermissionTest[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]GETbyeB5A3F6C1": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -1151,14 +1151,14 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapi6587DDA1",
               },
-              "/test-invoke-stage/GET/bye",
+              "/[STAGE-REMOVED]-invoke-stage/GET/bye",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapibyeGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETbyeCB20EC60": Object {
+    "DeaRestApiConstructdeaapibyeGETApiPermission[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]GETbyeCB20EC60": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -1336,7 +1336,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasesB76BA281": Object {
+    "DeaRestApiConstructdeaapicasesPOSTApiPermissionTest[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]POSTcasesB76BA281": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -1366,14 +1366,14 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapi6587DDA1",
               },
-              "/test-invoke-stage/POST/cases",
+              "/[STAGE-REMOVED]-invoke-stage/POST/cases",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcases9AE2A82E": Object {
+    "DeaRestApiConstructdeaapicasesPOSTApiPermission[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]POSTcases9AE2A82E": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -1474,7 +1474,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases0A56C052": Object {
+    "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTest[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]GETcasesallcases0A56C052": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -1504,14 +1504,14 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapi6587DDA1",
               },
-              "/test-invoke-stage/GET/cases/all-cases",
+              "/[STAGE-REMOVED]-invoke-stage/GET/cases/all-cases",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases8A384810": Object {
+    "DeaRestApiConstructdeaapicasesallcasesGETApiPermission[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]GETcasesallcases8A384810": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -1605,7 +1605,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapicasescaseIdDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdF0BFC230": Object {
+    "DeaRestApiConstructdeaapicasescaseIdDELETEApiPermissionTest[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]DELETEcasescaseIdF0BFC230": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -1635,14 +1635,14 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapi6587DDA1",
               },
-              "/test-invoke-stage/DELETE/cases/*",
+              "/[STAGE-REMOVED]-invoke-stage/DELETE/cases/*",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasescaseIdDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseId683887F7": Object {
+    "DeaRestApiConstructdeaapicasescaseIdDELETEApiPermission[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]DELETEcasescaseId683887F7": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -1763,7 +1763,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseId9EC4CD2A": Object {
+    "DeaRestApiConstructdeaapicasescaseIdGETApiPermissionTest[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]GETcasescaseId9EC4CD2A": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -1793,14 +1793,14 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapi6587DDA1",
               },
-              "/test-invoke-stage/GET/cases/*",
+              "/[STAGE-REMOVED]-invoke-stage/GET/cases/*",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasescaseIdGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseId3A6CC8C8": Object {
+    "DeaRestApiConstructdeaapicasescaseIdGETApiPermission[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]GETcasescaseId3A6CC8C8": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -1882,7 +1882,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseId37A77CC0": Object {
+    "DeaRestApiConstructdeaapicasescaseIdPUTApiPermissionTest[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]PUTcasescaseId37A77CC0": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -1912,14 +1912,14 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapi6587DDA1",
               },
-              "/test-invoke-stage/PUT/cases/*",
+              "/[STAGE-REMOVED]-invoke-stage/PUT/cases/*",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasescaseIdPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseId6D37C013": Object {
+    "DeaRestApiConstructdeaapicasescaseIdPUTApiPermission[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]PUTcasescaseId6D37C013": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -2093,7 +2093,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMembershipsBD47C55D": Object {
+    "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionTest[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]POSTcasescaseIduserMembershipsBD47C55D": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -2123,14 +2123,14 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapi6587DDA1",
               },
-              "/test-invoke-stage/POST/cases/*/userMemberships",
+              "/[STAGE-REMOVED]-invoke-stage/POST/cases/*/userMemberships",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258": Object {
+    "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermission[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]POSTcasescaseIduserMemberships7500E258": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -2183,7 +2183,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesC2E61486": Object {
+    "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionTest[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]GETcasesmycasesC2E61486": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -2213,14 +2213,14 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapi6587DDA1",
               },
-              "/test-invoke-stage/GET/cases/my-cases",
+              "/[STAGE-REMOVED]-invoke-stage/GET/cases/my-cases",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesEA5EFE48": Object {
+    "DeaRestApiConstructdeaapicasesmycasesGETApiPermission[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]GETcasesmycasesEA5EFE48": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -2365,7 +2365,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapihiGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GEThi9F62F9B4": Object {
+    "DeaRestApiConstructdeaapihiGETApiPermissionTest[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]GEThi9F62F9B4": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -2395,14 +2395,14 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapi6587DDA1",
               },
-              "/test-invoke-stage/GET/hi",
+              "/[STAGE-REMOVED]-invoke-stage/GET/hi",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapihiGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GEThi771DF2AF": Object {
+    "DeaRestApiConstructdeaapihiGETApiPermission[STAGE-REMOVED]stackDeaRestApiConstructdeaapi[HASH REMOVED]GEThi771DF2AF": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -2615,7 +2615,7 @@ Object {
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "testKey1CDDDD5E",
+                  "[STAGE-REMOVED]Key[HASH REMOVED]",
                   "Arn",
                 ],
               },
@@ -2659,7 +2659,7 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
-    "testKey1CDDDD5E": Object {
+    "[STAGE-REMOVED]Key[HASH REMOVED]": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
         "EnableKeyRotation": true,
