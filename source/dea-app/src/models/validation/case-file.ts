@@ -11,7 +11,6 @@ export const initiateCaseFileUploadRequestSchema = Joi.object({
     fileName: fileName,
     filePath: filePath,
     fileType: fileType,
-    preceedingDirectoryUlid: joiUlid,
     fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
 });
 
@@ -22,7 +21,6 @@ export const initiateCaseFileUploadResponseSchema = Joi.object({
     fileName: fileName,
     filePath: filePath,
     fileType: fileType,
-    preceedingDirectoryUlid: joiUlid,
     fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
     preSignedUrls: Joi.array().items(Joi.string().uri()),
 });
@@ -33,7 +31,6 @@ export const completeCaseFileUploadRequestSchema = Joi.object({
     ulid: joiUlid,
     fileName: fileName,
     filePath: filePath,
-    preceedingDirectoryUlid: joiUlid,
     sha256Hash: sha256Hash
 });
 
@@ -43,6 +40,5 @@ export const completeCaseFileUploadResponseSchema = Joi.object({
     ulid: joiUlid,
     fileName: fileName,
     filePath: filePath,
-    preceedingDirectoryUlid: joiUlid,
     sha256Hash: sha256Hash
 });
