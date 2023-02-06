@@ -7,12 +7,12 @@
 # are committed. The command is defined in common/config/rush/command-line.json
 # and uses the "rush-prettier" autoinstaller.
 
-if [ "$RUN_HOOKS" == true ]; then
     cd source
-    node common/scripts/install-run-rush.js git-secrets-scan || exit $?
-    node common/scripts/install-run-rush.js prettier || exit $?
-    node common/scripts/install-run-rush.js lint:fix || exit $?
     node common/scripts/install-run-rush.js add-license-header|| exit $?
+    node common/scripts/install-run-rush.js prettier || exit $?
+if [ "$RUN_HOOKS" == true ]; then
+    node common/scripts/install-run-rush.js git-secrets-scan || exit $?
+    node common/scripts/install-run-rush.js lint:fix || exit $?
     node common/scripts/install-run-rush.js sort-package-json && git add **/package.json || exit $?
     if ! node common/scripts/install-run-rush.js build:test; then
         echo "\033[0;31mA Failure was encountered, please check the output above\033[0m"
