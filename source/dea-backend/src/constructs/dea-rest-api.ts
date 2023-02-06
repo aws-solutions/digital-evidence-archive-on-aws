@@ -27,6 +27,8 @@ import { createCfnOutput } from './construct-support';
 interface DeaRestApiProps {
   deaTableArn: string;
   deaTableName: string;
+  deaDatasetsBucketArn: string;
+  deaDatasetsBucketName: string;
   kmsKey: Key;
   region: string;
   accountId: string;
@@ -45,6 +47,7 @@ export class DeaRestApiConstruct extends Construct {
     this.lambdaBaseRole = this._createLambdaBaseRole(
       props.kmsKey.keyArn,
       props.deaTableArn,
+      props.deaDatasetsBucketArn,
       props.region,
       props.accountId
     );
@@ -87,12 +90,11 @@ export class DeaRestApiConstruct extends Construct {
       },
     });
 
-    this._configureApiGateway(props.deaTableArn, props.kmsKey, deaApiRouteConfig, props.deaTableName);
+    this._configureApiGateway(props.deaDatasetsBucketName, deaApiRouteConfig, props.deaTableName);
   }
 
   private _configureApiGateway(
-    tableArn: string,
-    key: Key,
+    datasetsBucketName: string,
     routeConfig: ApiGatewayRouteConfig,
     deaTableName: string
   ): void {
@@ -114,11 +116,17 @@ export class DeaRestApiConstruct extends Construct {
     });
 
     routeConfig.routes.forEach((route) =>
-      this._addMethod(this.deaRestApi, route, this.lambdaBaseRole, deaTableName)
+      this._addMethod(this.deaRestApi, route, this.lambdaBaseRole, deaTableName, datasetsBucketName)
     );
   }
 
-  private _addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, tableName: string): void {
+  private _addMethod(
+    api: RestApi,
+    route: ApiGatewayRoute,
+    role: Role,
+    tableName: string,
+    datasetsBucketName: string
+  ): void {
     const urlParts = route.path.split('/').filter((str) => str);
     let parent = api.root;
     urlParts.forEach((part, index) => {
@@ -128,7 +136,13 @@ export class DeaRestApiConstruct extends Construct {
       }
 
       if (index === urlParts.length - 1) {
-        const lambda = this._createLambda(`${route.httpMethod}_${part}`, role, route.pathToSource, tableName);
+        const lambda = this._createLambda(
+          `${route.httpMethod}_${part}`,
+          role,
+          route.pathToSource,
+          tableName,
+          datasetsBucketName
+        );
 
         const paginationParams = {
           'integration.request.querystring.limit': 'method.request.querystring.limit',
@@ -155,7 +169,13 @@ export class DeaRestApiConstruct extends Construct {
     });
   }
 
-  private _createLambda(id: string, role: Role, pathToSource: string, tableName: string): NodejsFunction {
+  private _createLambda(
+    id: string,
+    role: Role,
+    pathToSource: string,
+    tableName: string,
+    datasetsBucketName: string
+  ): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
       memorySize: 512,
       role: role,
@@ -167,6 +187,7 @@ export class DeaRestApiConstruct extends Construct {
       environment: {
         NODE_OPTIONS: '--enable-source-maps',
         TABLE_NAME: tableName,
+        DATASETS_BUCKET_NAME: datasetsBucketName,
         STAGE: deaConfig.stage(),
       },
       bundling: {
@@ -206,6 +227,7 @@ export class DeaRestApiConstruct extends Construct {
   private _createLambdaBaseRole(
     kmsKeyArn: string,
     tableArn: string,
+    datasetsBucketArn: string,
     region: string,
     accountId: string
   ): Role {
@@ -229,6 +251,18 @@ export class DeaRestApiConstruct extends Construct {
           'dynamodb:UpdateItem',
         ],
         resources: [tableArn, `${tableArn}/index/GSI1`, `${tableArn}/index/GSI2`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          's3:CreateMultipartUpload',
+          's3:CompleteMultipartUpload',
+          's3:AbortMultipartUpload',
+          's3:ListMultipartUploads',
+        ],
+        resources: [datasetsBucketArn],
       })
     );
 
