@@ -7,12 +7,15 @@ import { SSMClient, GetParametersCommand } from '@aws-sdk/client-ssm';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { ValidationError } from './app/exceptions/validation-exception';
+import { getRequiredEnv } from './lambda-http-helpers';
 import { DeaUser } from './models/user';
+
+const stage = getRequiredEnv('STAGE', 'test');
 
 export const getTokenPayload = async (idToken: string, region: string): Promise<CognitoIdTokenPayload> => {
   const ssmClient = new SSMClient({ region });
-  const userPoolIdPath = `/dea/${region}/userpool-id-param`;
-  const clientIdPath = `/dea/${region}/userpool-client-id-param`;
+  const userPoolIdPath = `/dea/${region}/${stage}-userpool-id-param`;
+  const clientIdPath = `/dea/${region}/${stage}-userpool-client-id-param`;
   const response = await ssmClient.send(
     new GetParametersCommand({
       Names: [userPoolIdPath, clientIdPath],

@@ -196,23 +196,20 @@ export class DeaAuthConstruct extends Construct {
       },
     });
 
-    createCfnOutput(this, 'Identity Pool', {
+    createCfnOutput(this, 'identityPoolId', {
       value: idPool.ref,
-      exportName: 'identityPoolId',
     });
 
-    createCfnOutput(this, 'UserPoolId', {
+    createCfnOutput(this, 'userPoolId', {
       value: pool.userPoolId,
-      exportName: 'userPoolId',
     });
 
-    createCfnOutput(this, 'Pool Provider Url', {
+    createCfnOutput(this, 'poolProviderUrl', {
       value: pool.userPoolProviderUrl,
     });
 
-    createCfnOutput(this, 'UserPoolClientId', {
+    createCfnOutput(this, 'userPoolClientId', {
       value: poolClient.userPoolClientId,
-      exportName: 'userPoolClientId',
     });
 
     // Add the user pool id and client id to SSM for use in the backend for verifying and decoding tokens
@@ -266,7 +263,6 @@ export class DeaAuthConstruct extends Construct {
         emailBody: 'Hello {username}, you have been invited to use DEA! Your temporary password is {####}',
         smsMessage: 'Hello {username}, your temporary password for our DEA is {####}',
       },
-      userPoolName: 'DEAUserPool',
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -335,8 +331,9 @@ export class DeaAuthConstruct extends Construct {
   // Store the user pool id and client id in the parameter store so that we can verify
   // and decode tokens on the backend
   private _addCognitoInformationToSSM(userPoolId: string, userPoolClientId: string, region: string) {
+    const stage = deaConfig.stage();
     new StringParameter(this, 'user-pool-id-ssm-param', {
-      parameterName: `/dea/${region}/userpool-id-param`,
+      parameterName: `/dea/${region}/${stage}-userpool-id-param`,
       stringValue: userPoolId,
       description: 'stores the user pool id for use in token verification on the backend',
       tier: ParameterTier.STANDARD,
@@ -344,7 +341,7 @@ export class DeaAuthConstruct extends Construct {
     });
 
     new StringParameter(this, 'user-pool-client-id-ssm-param', {
-      parameterName: `/dea/${region}/userpool-client-id-param`,
+      parameterName: `/dea/${region}/${stage}-userpool-client-id-param`,
       stringValue: userPoolClientId,
       description: 'stores the user pool client id for use in token verification on the backend',
       tier: ParameterTier.STANDARD,

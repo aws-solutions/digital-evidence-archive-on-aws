@@ -21,8 +21,8 @@ import {
   MessageActionType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Credentials } from 'aws4-axios';
-import { getTokenPayload  } from '../../cognito-token-helpers';
-import { defaultProvider } from '../../persistence/schema/entities';
+import { getTokenPayload } from '../../cognito-token-helpers';
+import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { deleteUser, getUserByTokenId } from '../../persistence/user';
 import { envSettings } from './settings';
 
@@ -39,7 +39,7 @@ export default class CognitoHelper {
   private _testPassword: string;
 
   public constructor() {
-    this._region = envSettings.awsRegion
+    this._region = envSettings.awsRegion;
     this._userPoolId = envSettings.userPoolId;
     this._userPoolClientId = envSettings.clientId;
     this._identityPoolId = envSettings.identityPoolId;
@@ -52,7 +52,12 @@ export default class CognitoHelper {
     this._testPassword = generatePassword();
   }
 
-  public async createUser(userName: string, groupName: string, firstName: string, lastName: string): Promise<void> {
+  public async createUser(
+    userName: string,
+    groupName: string,
+    firstName: string,
+    lastName: string
+  ): Promise<void> {
     // 1. Create User
     try {
       const user = await this._userPoolProvider.send(
@@ -61,16 +66,16 @@ export default class CognitoHelper {
           MessageAction: MessageActionType.SUPPRESS,
           Username: userName,
           TemporaryPassword: generatePassword(),
-          UserAttributes: [ 
-            { 
-               Name: "given_name",
-               Value: firstName,
+          UserAttributes: [
+            {
+              Name: 'given_name',
+              Value: firstName,
             },
-            { 
-              Name: "family_name",
+            {
+              Name: 'family_name',
               Value: lastName,
-           }
-         ],
+            },
+          ],
         })
       );
       if (user.User?.Username) {
@@ -135,7 +140,7 @@ export default class CognitoHelper {
     );
 
     if (!result.AuthenticationResult) {
-      throw new Error("Unable to authenticate with the user pool.");
+      throw new Error('Unable to authenticate with the user pool.');
     }
 
     return result.AuthenticationResult;
@@ -145,7 +150,7 @@ export default class CognitoHelper {
     const result = await this.getUserPoolAuthForUser(userName);
 
     if (!result.IdToken) {
-      throw new Error("Unable to get id token from user pool.");
+      throw new Error('Unable to get id token from user pool.');
     }
 
     return result.IdToken;
@@ -180,29 +185,33 @@ export default class CognitoHelper {
     }
     const creds = response.Credentials;
     if (creds.AccessKeyId && creds.SecretKey && creds.SessionToken) {
-      return [{
-        accessKeyId: creds.AccessKeyId,
-        secretAccessKey: creds.SecretKey,
-        sessionToken: creds.SessionToken,
-      }, idToken];
+      return [
+        {
+          accessKeyId: creds.AccessKeyId,
+          secretAccessKey: creds.SecretKey,
+          sessionToken: creds.SessionToken,
+        },
+        idToken,
+      ];
     } else {
       throw new Error('Failed to get credentials from the identity pool:');
     }
   }
 
-  public async cleanup(repositoryProvider = defaultProvider): Promise<void> {
+  public async cleanup(repositoryProvider?: ModelRepositoryProvider): Promise<void> {
     // Clean the users made
     await Promise.all(
       this._usersCreated.map(async (username) => {
-
         // try to remove the user from the db
         // NOTE: it won't be there unless you called
         // lambda using creds from the the user
         const idToken = await this.getIdTokenForUser(username);
-        const tokenId = await (await getTokenPayload(idToken, this._region)).sub;
-        const dbUser = await getUserByTokenId(tokenId, repositoryProvider);
-        if (dbUser) {
-          await deleteUser(dbUser.ulid ?? fail(), repositoryProvider);
+        const tokenId = (await getTokenPayload(idToken, this._region)).sub;
+        if (repositoryProvider) {
+          const dbUser = await getUserByTokenId(tokenId, repositoryProvider);
+          if (dbUser) {
+            await deleteUser(dbUser.ulid ?? fail(), repositoryProvider);
+          }
         }
 
         // Now delete the user from the user pool

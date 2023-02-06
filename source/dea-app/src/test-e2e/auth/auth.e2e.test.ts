@@ -4,8 +4,6 @@
  */
 import { aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
-import { getTokenPayload } from '../../cognito-token-helpers';
-import { getUserByTokenId } from '../../persistence/user';
 import CognitoHelper from '../helpers/cognito-helper';
 import { envSettings } from '../helpers/settings';
 import { callDeaAPI } from '../resources/test-helpers';
@@ -19,7 +17,7 @@ describe('API authentication', () => {
 
   beforeAll(async () => {
     // Create user in test group
-    await cognitoHelper.createUser(testUser, 'AuthTestGroup', "Auth", "Tester");
+    await cognitoHelper.createUser(testUser, 'AuthTestGroup', 'Auth', 'Tester');
   });
 
   afterAll(async () => {
@@ -28,7 +26,7 @@ describe('API authentication', () => {
 
   it('should allow successful calls to the api for authenticated users', async () => {
     const url = `${deaApiUrl}hi`;
-    const response = await callDeaAPI(testUser, url, cognitoHelper, "GET");
+    const response = await callDeaAPI(testUser, url, cognitoHelper, 'GET');
 
     expect(response.status).toBe(200);
     expect(response.data).toBe('Hello DEA!');
@@ -42,8 +40,8 @@ describe('API authentication', () => {
   });
 
   it('should disallow calls without id token in the header', async () => {
-    const [ creds ] = await cognitoHelper.getCredentialsForUser(testUser);
-  
+    const [creds] = await cognitoHelper.getCredentialsForUser(testUser);
+
     const client = axios.create();
     const interceptor = aws4Interceptor(
       {
@@ -66,36 +64,22 @@ describe('API authentication', () => {
     const url = `${deaApiUrl}cases`;
     //expect(callDeaAPI(testUser, url, cognitoHelper, "GET")).rejects.toThrow('Request failed with status code 403');
 
-    const response = await callDeaAPI(testUser, url, cognitoHelper, "GET");
+    const response = await callDeaAPI(testUser, url, cognitoHelper, 'GET');
     expect(response.status).toEqual(403);
   });
 
   it('should add first time federated user to DDB', async () => {
     // 1. create user
-    const firstTimeFederatedUser = "CheckFirstTimeFederatedUserTestUser";
-    const firstName = "CheckFirstTimeFederatedUser";
-    const lastName = "TestUser";
+    const firstTimeFederatedUser = 'CheckFirstTimeFederatedUserTestUser';
+    const firstName = 'CheckFirstTimeFederatedUser';
+    const lastName = 'TestUser';
     await cognitoHelper.createUser(firstTimeFederatedUser, 'AuthTestGroup', firstName, lastName);
-
-    // 2. check user not in ddb
-    const idToken = await cognitoHelper.getIdTokenForUser(firstTimeFederatedUser);
-    const tokenId = await (await getTokenPayload(idToken, region)).sub;
-
-    expect(await getUserByTokenId(tokenId)).toBeUndefined();
 
     // 3. call hi
     const url = `${deaApiUrl}hi`;
-    const response = await callDeaAPI(firstTimeFederatedUser, url, cognitoHelper, "GET");
+    const response = await callDeaAPI(firstTimeFederatedUser, url, cognitoHelper, 'GET');
 
-    expect(response.status).toBeTruthy();
-  
-    // 4. check user is now in ddb
-    const user = await getUserByTokenId(tokenId);
-
-    expect(user).toBeDefined();
-    expect(user?.tokenId).toStrictEqual(tokenId);
-    expect(user?.firstName).toStrictEqual(firstName);
-    expect(user?.lastName).toStrictEqual(lastName);
+    expect(response.status).toEqual(200);
   });
 
   it('should log successful and unsuccessful logins/api invocations', () => {

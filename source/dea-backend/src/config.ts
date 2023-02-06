@@ -49,6 +49,12 @@ const convictSchema = {
     default: 'test',
     env: 'STAGE',
   },
+  configname: {
+    doc: 'The deployment configuration filename. This is optional, by default it will use the stage name.',
+    format: String,
+    default: undefined,
+    env: 'CONFIGNAME',
+  },
   region: {
     doc: 'The AWS region for deployment',
     format: String,
@@ -122,6 +128,7 @@ convict.addFormat(endpointArrayFormat);
 
 interface DEAConfig {
   stage(): string;
+  configName(): string | undefined;
   region(): string;
   cognitoDomain(): string | undefined;
   userGroups(): DEAUserPoolGroupDefinition[];
@@ -132,6 +139,7 @@ const convictConfig = convict(convictSchema);
 //wrap convict with some getters to be more friendly
 export const deaConfig: DEAConfig = {
   stage: () => convictConfig.get('stage'),
+  configName: () => convictConfig.get('configname'),
   region: () => convictConfig.get('region'),
   cognitoDomain: () => convictConfig.get('cognito.domain'),
   userGroups: () => convictConfig.get('userGroups'),
@@ -142,6 +150,5 @@ export const loadConfig = (stage: string): void => {
   convictConfig.loadFile(`${sourceDir}/common/config/${stage}.json`);
   convictConfig.validate({ allowed: 'strict' });
 };
-
-const stage = deaConfig.stage();
-loadConfig(stage);
+const configFilename = deaConfig.configName() ?? deaConfig.stage();
+loadConfig(configFilename);

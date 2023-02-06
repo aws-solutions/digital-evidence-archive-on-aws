@@ -38,6 +38,7 @@ export class DeaMainStack extends cdk.Stack {
     const accountId = this.account;
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
       deaTableArn: backendConstruct.deaTable.tableArn,
+      deaTableName: backendConstruct.deaTable.tableName,
       kmsKey,
       region,
       accountId,
@@ -122,7 +123,7 @@ export class DeaMainStack extends cdk.Stack {
       pendingWindow: Duration.days(7),
     });
 
-    createCfnOutput(this, 'main account kms key', {
+    createCfnOutput(this, 'mainAccountKmsKey', {
       value: key.keyArn,
     });
     return key;

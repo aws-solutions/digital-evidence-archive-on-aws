@@ -3,32 +3,31 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Table } from "dynamodb-onetable";
-import { DeaSchema } from "../../persistence/schema/dea-schema";
+import { Table } from 'dynamodb-onetable';
+import { DeaSchema } from '../../persistence/schema/dea-schema';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
-import { dynamoTestClient } from "../local-dynamo/setup";
-
+import { dynamoTestClient } from '../local-dynamo/setup';
 
 export const initLocalDb = async (tableName: string): Promise<Table> => {
+  const testTable = new Table({
+    client: dynamoTestClient,
+    name: tableName,
+    schema: DeaSchema,
+    partial: false,
+  });
 
-    const testTable = new Table({
-        client: dynamoTestClient,
-        name: tableName,
-        schema: DeaSchema,
-        partial: false,
-    });
+  await testTable.createTable();
 
-    await testTable.createTable();
+  return testTable;
+};
 
-    return testTable;
-}
-
-export const getTestRepositoryProvider = (testTable: Table): ModelRepositoryProvider => {
-    return {
-        table: testTable,
-        CaseModel: testTable.getModel('Case'),
-        CaseUserModel: testTable.getModel('CaseUser'),
-        CaseFileModel: testTable.getModel('CaseFile'),
-        UserModel: testTable.getModel('User'),
-    }
-}
+export const getTestRepositoryProvider = async (tableName: string): Promise<ModelRepositoryProvider> => {
+  const table = await initLocalDb(tableName);
+  return {
+    table: table,
+    CaseModel: table.getModel('Case'),
+    CaseUserModel: table.getModel('CaseUser'),
+    CaseFileModel: table.getModel('CaseFile'),
+    UserModel: table.getModel('User'),
+  };
+};

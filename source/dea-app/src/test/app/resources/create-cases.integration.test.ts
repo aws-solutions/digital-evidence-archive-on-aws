@@ -14,7 +14,7 @@ import { caseResponseSchema } from '../../../models/validation/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { dummyContext, dummyEvent } from '../../integration-objects';
-import { getTestRepositoryProvider } from './get-test-repository';
+import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
 let user: DeaUser;
@@ -79,11 +79,15 @@ describe('create cases resource', () => {
   it('should fail when the caller is not in the DB', async () => {
     // runLambdaPreChecks adds all first time federated users to the db
     // before any exection code is run. So if the caller is not
-    // added to the db before the create-case code is run, it is 
+    // added to the db before the create-case code is run, it is
     // a server error and CreateCase should fail
     try {
       // Pass in fake ulid
-      await createAndValidateCase('ANewCaseFail', 'A description of the new case', '01ARZ3NDEKTSV4RRFFQ69G5FAV');
+      await createAndValidateCase(
+        'ANewCaseFail',
+        'A description of the new case',
+        '01ARZ3NDEKTSV4RRFFQ69G5FAV'
+      );
       fail(); // should not reach this statement
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -110,7 +114,7 @@ describe('create cases resource', () => {
     );
     event.headers['userUlid'] = user.ulid;
     await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      "Transaction Cancelled"
+      'Transaction Cancelled'
     );
   });
 

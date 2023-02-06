@@ -4,7 +4,7 @@
  */
 
 /* eslint-disable no-new */
-import { Aws, CfnResource, RemovalPolicy, StackProps, Duration } from 'aws-cdk-lib';
+import { Aws, RemovalPolicy, StackProps, Duration } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -39,7 +39,6 @@ export class DeaBackendConstruct extends Construct {
 
   private _createDeaTable(key: Key): Table {
     const deaTable = new Table(this, 'DeaTable', {
-      tableName: 'DeaTable',
       billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: { name: 'PK', type: AttributeType.STRING },
       //should probably be RETAIN later
@@ -63,19 +62,6 @@ export class DeaBackendConstruct extends Construct {
       partitionKey: { name: 'GSI2PK', type: AttributeType.STRING },
       sortKey: { name: 'GSI2SK', type: AttributeType.STRING },
     });
-
-    const tableNode = deaTable.node.defaultChild;
-    if (tableNode instanceof CfnResource) {
-      tableNode.addMetadata('cfn_nag', {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        rules_to_suppress: [
-          {
-            id: 'W28',
-            reason: 'Table requires an explicit name to be referenced by Onetable',
-          },
-        ],
-      });
-    }
 
     return deaTable;
   }
@@ -127,7 +113,6 @@ export class DeaBackendConstruct extends Construct {
 
     createCfnOutput(this, bucketNameOutput, {
       value: s3AccessLogsBucket.bucketName,
-      exportName: bucketNameOutput,
     });
     return s3AccessLogsBucket;
   }
@@ -161,7 +146,6 @@ export class DeaBackendConstruct extends Construct {
     }
     createCfnOutput(this, bucketNameOutput, {
       value: datasetsBucket.bucketName,
-      exportName: bucketNameOutput,
     });
 
     return datasetsBucket;

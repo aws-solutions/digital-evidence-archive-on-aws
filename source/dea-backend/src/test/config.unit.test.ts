@@ -6,8 +6,7 @@
 import { deaConfig, loadConfig } from '../config';
 
 describe('convict based config', () => {
-  it('loads configuration', () => {
-    expect(deaConfig.stage()).toEqual('test');
+  it('loads configuration from the stage', () => {
     expect(deaConfig.cognitoDomain()).toBeUndefined();
     expect(deaConfig.region()).toBeDefined();
 
@@ -68,7 +67,6 @@ describe('convict based config', () => {
   it('throws an error for invalid endpoint config', () => {
     expect(() => {
       loadConfig('invalid2');
-      console.log(deaConfig.userGroups());
     }).toThrow('endpoints: must be of type Array: value was "InvalidEndpoints"');
   });
 });

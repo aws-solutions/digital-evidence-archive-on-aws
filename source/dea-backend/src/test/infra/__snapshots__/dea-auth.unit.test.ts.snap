@@ -3,15 +3,18 @@
 exports[`DeaBackend constructs synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
-    "DeaAuthIdentityPool7519C87D": Object {
+    "DeaAuthidentityPoolIdEBA0D0C1": Object {
       "Export": Object {
-        "Name": "identityPoolId",
+        "Name": "[STAGE-REMOVED]-identityPoolId",
       },
       "Value": Object {
         "Ref": "DeaAuthDEAIdentityPool0B891C1B",
       },
     },
-    "DeaAuthPoolProviderUrl8350014C": Object {
+    "DeaAuthpoolProviderUrl9C814957": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-poolProviderUrl",
+      },
       "Value": Object {
         "Fn::GetAtt": Array [
           "DeaAuthDEAUserPool22DB2BAB",
@@ -19,17 +22,17 @@ Object {
         ],
       },
     },
-    "DeaAuthUserPoolClientId0B9AE544": Object {
+    "DeaAuthuserPoolClientId8B436482": Object {
       "Export": Object {
-        "Name": "userPoolClientId",
+        "Name": "[STAGE-REMOVED]-userPoolClientId",
       },
       "Value": Object {
         "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
       },
     },
-    "DeaAuthUserPoolId0E4885B2": Object {
+    "DeaAuthuserPoolIdB0FAC1EB": Object {
       "Export": Object {
-        "Name": "userPoolId",
+        "Name": "[STAGE-REMOVED]-userPoolId",
       },
       "Value": Object {
         "Ref": "DeaAuthDEAUserPool22DB2BAB",
@@ -304,7 +307,6 @@ Object {
           },
         ],
         "SmsVerificationMessage": "The verification code to your new account is {####}",
-        "UserPoolName": "DEAUserPool",
         "VerificationMessageTemplate": Object {
           "DefaultEmailOption": "CONFIRM_WITH_CODE",
           "EmailMessage": "The verification code to your new account is {####}",
@@ -571,7 +573,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the user pool client id for use in token verification on the backend",
-        "Name": "/dea/us-east-1/userpool-client-id-param",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-client-id-param",
         "Tier": "Standard",
         "Type": "String",
         "Value": Object {
@@ -584,7 +586,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the user pool id for use in token verification on the backend",
-        "Name": "/dea/us-east-1/userpool-id-param",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-id-param",
         "Tier": "Standard",
         "Type": "String",
         "Value": Object {

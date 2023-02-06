@@ -13,7 +13,6 @@ export const validateBackendConstruct = (template: Template): void => {
 
   //the backend construct
   template.hasResourceProperties('AWS::DynamoDB::Table', {
-    TableName: 'DeaTable',
     KeySchema: Match.arrayWith([
       Match.objectLike({
         AttributeName: 'PK',

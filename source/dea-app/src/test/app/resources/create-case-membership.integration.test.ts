@@ -20,7 +20,7 @@ import { jsonParseWithDates } from '../../../models/validation/json-parse-with-d
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { dummyContext, dummyEvent } from '../../integration-objects';
-import { getTestRepositoryProvider } from './get-test-repository';
+import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
 let caseOwner: DeaUser;
@@ -29,14 +29,15 @@ describe('create case membership resource', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('createCaseMembershipTest');
 
-    caseOwner = (await createUser(
-      {
-        tokenId: 'caseowner',
-        firstName: 'Case',
-        lastName: 'Owner',
-      },
-      repositoryProvider
-    )) ?? fail();
+    caseOwner =
+      (await createUser(
+        {
+          tokenId: 'caseowner',
+          firstName: 'Case',
+          lastName: 'Owner',
+        },
+        repositoryProvider
+      )) ?? fail();
   });
 
   afterAll(async () => {
