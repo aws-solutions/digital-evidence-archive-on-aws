@@ -3,14 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import {
-  ContentLayout,
-  SpaceBetween,
-  Header,
-  Container,
-  ColumnLayout,
-  StatusIndicator,
-} from '@cloudscape-design/components';
+import { ContentLayout, SpaceBetween, Header, Container, ColumnLayout } from '@cloudscape-design/components';
 import { useGetCaseById } from '../../api/cases';
 import { commonLabels } from '../../common/labels';
 import CaseDetailsTabs from './CaseDetailsTabs';
@@ -51,11 +44,6 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
             <div>
               {' '}
               <h4>Status</h4>
-              <p>
-                <StatusIndicator type={caseDetail.status === 'ACTIVE' ? 'success' : 'error'}>
-                  {caseDetail.status}
-                </StatusIndicator>
-              </p>
             </div>
           </ColumnLayout>
         </Container>

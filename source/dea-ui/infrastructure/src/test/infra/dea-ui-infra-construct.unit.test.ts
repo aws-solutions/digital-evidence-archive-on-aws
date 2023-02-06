@@ -15,7 +15,7 @@ import { DeaUiConstruct } from '../../dea-ui-stack';
 
 describe('DeaMainStack', () => {
   beforeAll(() => {
-    process.env.STAGE = 'test';
+    process.env.STAGE = 'chewbacca';
   });
 
   afterAll(() => {
@@ -33,12 +33,17 @@ describe('DeaMainStack', () => {
     });
 
     const accessLogsBucket = new Bucket(stack, 'testS3AccessLogBucket', {
-        blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-      });
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+    });
 
     const restApi = new RestApi(stack, 'testApi', { description: 'Backend API' });
 
-    new DeaUiConstruct(stack, 'DeaUiConstruct', { kmsKey: key, accessLogsBucket: accessLogsBucket, restApi, accessLogPrefix: 'dea-ui-access-log' });
+    new DeaUiConstruct(stack, 'DeaUiConstruct', {
+      kmsKey: key,
+      accessLogsBucket: accessLogsBucket,
+      restApi,
+      accessLogPrefix: 'dea-ui-access-log',
+    });
 
     // Prepare the stack for assertions.
     const template = Template.fromStack(stack);
