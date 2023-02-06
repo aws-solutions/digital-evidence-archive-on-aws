@@ -24,127 +24,143 @@ const FILE_SIZE_MB = 50;
 const FILE_TYPE = 'image/jpeg';
 
 describe('Test case file upload', () => {
-    beforeAll(async () => {
-        repositoryProvider = await getTestRepositoryProvider('CaseFileUploadTest');
-    });
+  beforeAll(async () => {
+    repositoryProvider = await getTestRepositoryProvider('CaseFileUploadTest');
+  });
 
-    afterAll(async () => {
-        await repositoryProvider.table.deleteTable('DeleteTableForever');
-    });
+  afterAll(async () => {
+    await repositoryProvider.table.deleteTable('DeleteTableForever');
+  });
 
-    it('should successfully complete a file upload', async () => {
-        const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate();
-        await completeCaseFileUploadAndValidate(caseFile.ulid);
-    });
+  it('should successfully complete a file upload', async () => {
+    const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate();
+    await completeCaseFileUploadAndValidate(caseFile.ulid);
+  });
 
-    it('should throw a validation exception when no payload is provided', async () => {
-        await expect(initiateCaseFileUpload(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow('Initiate case file upload payload missing.');
-        await expect(completeCaseFileUpload(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow('Complete case file upload payload missing.');
-    });
+  it('should throw a validation exception when no payload is provided', async () => {
+    await expect(initiateCaseFileUpload(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(
+      'Initiate case file upload payload missing.'
+    );
+    await expect(completeCaseFileUpload(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(
+      'Complete case file upload payload missing.'
+    );
+  });
 
-    it('initiate upload should enforce a strict payload', async () => {
-        // validate caseUlid
-        await expect(initiateCaseFileUploadAndValidate('ABCD')).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate('')).rejects.toThrow();
+  it('initiate upload should enforce a strict payload', async () => {
+    // validate caseUlid
+    await expect(initiateCaseFileUploadAndValidate('ABCD')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate('')).rejects.toThrow();
 
-        // validate fileName
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc>ff')).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc<ff')).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc:ff')).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc|ff')).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc?ff')).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc*ff')).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, '')).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, '/food/ramen.jpg')).rejects.toThrow();
+    // validate fileName
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc>ff')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc<ff')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc:ff')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc|ff')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc?ff')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc*ff')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, '')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, '/food/ramen.jpg')).rejects.toThrow();
 
-        // allowed fileNames
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen.jpg'));
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen-jpg'));
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen_jpg'));
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen jpg'));
+    // allowed fileNames
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen.jpg'));
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen-jpg'));
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen_jpg'));
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen jpg'));
 
-        // validate filePath
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, 'foo')).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '')).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, 'foo\\')).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, 'foo&&')).rejects.toThrow();
+    // validate filePath
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, 'foo')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, 'foo\\')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, 'foo&&')).rejects.toThrow();
 
-        // allowed filePaths
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/'));
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/foo/'));
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/foo/bar/'));
+    // allowed filePaths
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/'));
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/foo/'));
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/foo/bar/'));
 
-        // validate fileSizeMb
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 0)).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, -1)).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 5_000_001)).rejects.toThrow();
+    // validate fileSizeMb
+    await expect(
+      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 0)
+    ).rejects.toThrow();
+    await expect(
+      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, -1)
+    ).rejects.toThrow();
+    await expect(
+      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 5_000_001)
+    ).rejects.toThrow();
 
-        // allowed fileSizeMb
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 4_999_999));
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 1));
-    });
-
+    // allowed fileSizeMb
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 4_999_999));
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 1));
+  });
 });
 
-async function initiateCaseFileUploadAndValidate (
-    caseUlid: string = CASE_ULID,
-    fileName: string = FILE_NAME,
-    filePath: string = FILE_PATH,
-    fileType: string = FILE_TYPE,
-    fileSizeMb: number = FILE_SIZE_MB): Promise<DeaCaseFile> {
-
-    const event = Object.assign({}, {
-        ...dummyEvent,
-        body: JSON.stringify({
-            caseUlid,
-            fileName,
-            filePath,
-            fileType,
-            fileSizeMb
-        }),
-    });
-    const response = await initiateCaseFileUpload(event, dummyContext, repositoryProvider);
-    return validateApiResponse(response, fileName, caseUlid, filePath);
+async function initiateCaseFileUploadAndValidate(
+  caseUlid: string = CASE_ULID,
+  fileName: string = FILE_NAME,
+  filePath: string = FILE_PATH,
+  fileType: string = FILE_TYPE,
+  fileSizeMb: number = FILE_SIZE_MB
+): Promise<DeaCaseFile> {
+  const event = Object.assign(
+    {},
+    {
+      ...dummyEvent,
+      body: JSON.stringify({
+        caseUlid,
+        fileName,
+        filePath,
+        fileType,
+        fileSizeMb,
+      }),
+    }
+  );
+  const response = await initiateCaseFileUpload(event, dummyContext, repositoryProvider);
+  return validateApiResponse(response, fileName, caseUlid, filePath);
 }
 
 async function completeCaseFileUploadAndValidate(
-    ulid: string = FILE_ULID,
-    caseUlid: string = CASE_ULID,
-    fileName: string = FILE_NAME,
-    filePath: string = FILE_PATH,
-    uploadId: string = UPLOAD_ID,
-    sha256Hash: string = SHA256_HASH): Promise<DeaCaseFile> {
-
-    const event = Object.assign({}, {
-        ...dummyEvent,
-        body: JSON.stringify({
-            caseUlid,
-            fileName,
-            filePath,
-            uploadId,
-            sha256Hash,
-            ulid
-        }),
-    });
-    const response = await completeCaseFileUpload(event, dummyContext, repositoryProvider);
-    return validateApiResponse(response, fileName, caseUlid, filePath);
+  ulid: string = FILE_ULID,
+  caseUlid: string = CASE_ULID,
+  fileName: string = FILE_NAME,
+  filePath: string = FILE_PATH,
+  uploadId: string = UPLOAD_ID,
+  sha256Hash: string = SHA256_HASH
+): Promise<DeaCaseFile> {
+  const event = Object.assign(
+    {},
+    {
+      ...dummyEvent,
+      body: JSON.stringify({
+        caseUlid,
+        fileName,
+        filePath,
+        uploadId,
+        sha256Hash,
+        ulid,
+      }),
+    }
+  );
+  const response = await completeCaseFileUpload(event, dummyContext, repositoryProvider);
+  return validateApiResponse(response, fileName, caseUlid, filePath);
 }
 
 async function validateApiResponse(
-    response: APIGatewayProxyStructuredResultV2,
-    fileName: string,
-    caseUlid: string,
-    filePath: string): Promise<DeaCaseFile> {
-    expect(response.statusCode).toEqual(200);
+  response: APIGatewayProxyStructuredResultV2,
+  fileName: string,
+  caseUlid: string,
+  filePath: string
+): Promise<DeaCaseFile> {
+  expect(response.statusCode).toEqual(200);
 
-    if (!response.body) {
-        fail();
-    }
+  if (!response.body) {
+    fail();
+  }
 
-    const newCaseFile: DeaCaseFile = JSON.parse(response.body);
-    expect(newCaseFile.fileName).toEqual(fileName);
-    expect(newCaseFile.caseUlid).toEqual(caseUlid);
-    expect(newCaseFile.filePath).toEqual(filePath);
+  const newCaseFile: DeaCaseFile = JSON.parse(response.body);
+  expect(newCaseFile.fileName).toEqual(fileName);
+  expect(newCaseFile.caseUlid).toEqual(caseUlid);
+  expect(newCaseFile.filePath).toEqual(filePath);
 
-    return newCaseFile;
+  return newCaseFile;
 }
