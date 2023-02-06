@@ -3,29 +3,27 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { fail } from "assert";
+import { fail } from 'assert';
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
-import { completeCaseFileUpload } from "../../../app/resources/complete-case-file-upload";
-import { initiateCaseFileUpload } from "../../../app/resources/initiate-case-file-upload";
-import { DeaCaseFile } from "../../../models/case-file";
-import { ModelRepositoryProvider } from "../../../persistence/schema/entities";
-import { dummyContext, dummyEvent } from "../../integration-objects";
-import { getTestRepositoryProvider } from "./get-test-repository";
-
+import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
+import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
+import { DeaCaseFile } from '../../../models/case-file';
+import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
+import { dummyContext, dummyEvent } from '../../integration-objects';
+import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
 
-const FILE_NAME = "fileName";
-const CASE_ULID = "ABCDEFGHHJKKMNNPQRSTTVWXYZ";
-const FILE_ULID = "ABCDEFGHHJKKMNNPQRSTTVWXY9";
-const FILE_PATH = "/food/sushi/";
-const UPLOAD_ID = "123456";
-const SHA256_HASH = "030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B";
+const FILE_NAME = 'fileName';
+const CASE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXYZ';
+const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
+const FILE_PATH = '/food/sushi/';
+const UPLOAD_ID = '123456';
+const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
 const FILE_SIZE_MB = 50;
-const FILE_TYPE = "image/jpeg";
+const FILE_TYPE = 'image/jpeg';
 
 describe('Test case file upload', () => {
-
     beforeAll(async () => {
         repositoryProvider = await getTestRepositoryProvider('CaseFileUploadTest');
     });
@@ -137,7 +135,6 @@ async function validateApiResponse(
     fileName: string,
     caseUlid: string,
     filePath: string): Promise<DeaCaseFile> {
-
     expect(response.statusCode).toEqual(200);
 
     if (!response.body) {
@@ -145,7 +142,6 @@ async function validateApiResponse(
     }
 
     const newCaseFile: DeaCaseFile = JSON.parse(response.body);
-
     expect(newCaseFile.fileName).toEqual(fileName);
     expect(newCaseFile.caseUlid).toEqual(caseUlid);
     expect(newCaseFile.filePath).toEqual(filePath);

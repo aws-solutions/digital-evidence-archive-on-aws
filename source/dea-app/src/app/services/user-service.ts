@@ -16,6 +16,15 @@ export const createUser = async (
   return await UserPersistence.createUser(user, repositoryProvider);
 };
 
+export const getUser = async (
+  userUlid: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider = defaultProvider
+): Promise<DeaUser | undefined> => {
+  return await UserPersistence.getUser(userUlid, repositoryProvider)
+}
+
 export const getUserUsingTokenId = async (
   tokenId: string,
   /* the default case is handled in e2e tests */

@@ -12,14 +12,13 @@ import {
   CfnIdentityPoolRoleAttachment,
   CfnUserPoolGroup,
   UserPool,
-  UserPoolClient
+  UserPoolClient,
 } from 'aws-cdk-lib/aws-cognito';
 import { FederatedPrincipal, Policy, PolicyStatement, Role, WebIdentityPrincipal } from 'aws-cdk-lib/aws-iam';
 import { ParameterTier, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { uniqueId } from 'lodash';
-import { getConstants } from '../constants';
-import { ApiGatewayMethod } from '../resources/api-gateway-route-config';
+import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 
 interface DeaAuthProps {
@@ -29,17 +28,11 @@ interface DeaAuthProps {
 }
 
 export class DeaAuthConstruct extends Construct {
-  private _stackName: string;
-  private _stage: string;
-
   public constructor(scope: Construct, stackName: string, props: DeaAuthProps) {
-    const { AWS_REGION, COGNITO_DOMAIN, IS_TESTING_ENV, STAGE } = getConstants();
-
     super(scope, stackName);
-    this._stackName = stackName;
-    this._stage = STAGE;
 
-    const region = process.env.AWS_REGION ?? AWS_REGION;
+    const region = deaConfig.region();
+    const cognitoDomain = deaConfig.cognitoDomain();
 
     // Auth Stack. Used to determine which APIs a user can access by assigning them
     // an IAM Role based on their Group/Role. E.g. User federates with the auth stack, given credentials based
@@ -49,7 +42,7 @@ export class DeaAuthConstruct extends Construct {
     // For production deployments, follow the ImplementationGuide on how to setup
     // and connect your existing CJIS-compatible IdP for SSO. IAM Role assigned
     // according to the UserRole defined in the SAML assertion document
-    this._createAuthStack(props.apiEndpointArns, COGNITO_DOMAIN, region, IS_TESTING_ENV);
+    this._createAuthStack(props.apiEndpointArns, cognitoDomain, region);
   }
 
   private _createIamRole(
@@ -83,8 +76,7 @@ export class DeaAuthConstruct extends Construct {
   private _createCognitoGroups(
     apiEndpointArns: Map<string, string>,
     userPoolId: string,
-    identityPoolId: string,
-    isTestingEnv: boolean
+    identityPoolId: string
   ): Map<CfnUserPoolGroup, Role> {
     // Create Cognito Groups with IAM Roles that define what APIs are allowed to be called
     // The groups we create {Auditor, CaseWorker, Admin} are just examples
@@ -102,43 +94,28 @@ export class DeaAuthConstruct extends Construct {
     // * Auditors: can call Audit APIs to generate reports
     // * Case Workers: can create cases, and upload/download to cases they have permissions to (case ACL)
 
-    // TODO: create Admin Group
-
-    // TODO: create Auditors Group
-
-    // TODO: complete CaseWorkers Group with the rest of the APIs as necessary
-    const caseWorkerEndpoints = this._getEndpoints(apiEndpointArns, [
-      '/cases' + ApiGatewayMethod.GET,
-      '/cases' + ApiGatewayMethod.POST,
-      '/cases/{caseId}' + ApiGatewayMethod.GET,
-      '/cases/{caseId}' + ApiGatewayMethod.PUT,
-      '/cases/{caseId}' + ApiGatewayMethod.DELETE,
-      '/cases/{caseId}/userMemberships' + ApiGatewayMethod.POST,
-    ]);
-    this._createCognitoGroup(
-      'CaseWorkerGroup',
-      'containing users who need access to case APIs',
-      groupRoleMapping,
-      caseWorkerEndpoints,
-      principal,
-      userPoolId,
-      /*precendence=*/ 1
-    );
-
-    // If isTestingEnv is set in the config file, then create Cognito Groups/Roles needed for the
-    // E2E tests to be run
-    if (isTestingEnv) {
-      this._createTestingCognitoGroups(apiEndpointArns, groupRoleMapping, principal, userPoolId);
-    }
+    const cognitoGroups = deaConfig.userGroups();
+    cognitoGroups.forEach((group) => {
+      const endpointStrings = group.endpoints.map((endpoint) => `${endpoint.path}${endpoint.method}`);
+      const groupEndpoints = this._getEndpoints(apiEndpointArns, endpointStrings);
+      this._createCognitoGroup(
+        group.name,
+        group.description,
+        groupRoleMapping,
+        groupEndpoints,
+        principal,
+        userPoolId,
+        group.precedence
+      );
+    });
 
     return groupRoleMapping;
   }
 
   private _createAuthStack(
     apiEndpointArns: Map<string, string>,
-    domain: string,
-    region: string,
-    isTestingEnv: boolean
+    domain: string | undefined,
+    region: string
   ): void {
     // See Implementation Guide for how to substitute your existing
     // Identity Provider in place of Cognito for SSO
@@ -164,8 +141,7 @@ export class DeaAuthConstruct extends Construct {
     const groups: Map<CfnUserPoolGroup, Role> = this._createCognitoGroups(
       apiEndpointArns,
       pool.userPoolId,
-      idPool.ref,
-      isTestingEnv
+      idPool.ref
     );
     const rules: CfnIdentityPoolRoleAttachment.MappingRuleProperty[] = new Array(groups.size);
     Array.from(groups.entries()).forEach((entry) => {
@@ -220,23 +196,20 @@ export class DeaAuthConstruct extends Construct {
       },
     });
 
-    createCfnOutput(this, 'Identity Pool', {
+    createCfnOutput(this, 'identityPoolId', {
       value: idPool.ref,
-      exportName: 'identityPoolId',
     });
 
-    createCfnOutput(this, 'UserPoolId', {
+    createCfnOutput(this, 'userPoolId', {
       value: pool.userPoolId,
-      exportName: 'userPoolId',
     });
 
-    createCfnOutput(this, 'Pool Provider Url', {
+    createCfnOutput(this, 'poolProviderUrl', {
       value: pool.userPoolProviderUrl,
     });
 
-    createCfnOutput(this, 'UserPoolClientId', {
+    createCfnOutput(this, 'userPoolClientId', {
       value: poolClient.userPoolClientId,
-      exportName: 'userPoolClientId',
     });
 
     // Add the user pool id and client id to SSM for use in the backend for verifying and decoding tokens
@@ -250,7 +223,7 @@ export class DeaAuthConstruct extends Construct {
 
   // We use CognitoUserPool as the IdP for the reference application
   // TODO: determine if Cognito is CJIS compatible
-  private _createCognitoIdP(domain: string): [UserPool, UserPoolClient] {
+  private _createCognitoIdP(domain: string | undefined): [UserPool, UserPoolClient] {
     const tempPasswordValidity = Duration.days(1);
     // must re-authenticate in every 12 hours
     // Note when inactive for 30+ minutes, you will also have to reauthenticate
@@ -290,7 +263,6 @@ export class DeaAuthConstruct extends Construct {
         emailBody: 'Hello {username}, you have been invited to use DEA! Your temporary password is {####}',
         smsMessage: 'Hello {username}, your temporary password for our DEA is {####}',
       },
-      userPoolName: 'DEAUserPool',
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -336,72 +308,16 @@ export class DeaAuthConstruct extends Construct {
     userPoolId: string,
     precedence?: number
   ): void {
-    const groupRole = this._createIamRole(
-      this._stackName + this._stage.toUpperCase() + name + 'Role',
-      'Role ' + desc,
-      endpoints,
-      principal
-    );
+    const groupRole = this._createIamRole(`${name}Role`, `Role ${desc}`, endpoints, principal);
     const group = new CfnUserPoolGroup(this, name, {
       userPoolId: userPoolId,
 
-      description: 'Group ' + desc,
+      description: `Group ${desc}`,
       groupName: name,
       precedence: precedence ?? 100,
       roleArn: groupRole.roleArn,
     });
     groupRoleMapping.set(group, groupRole);
-  }
-
-  private _createTestingCognitoGroups(
-    apiEndpointArns: Map<string, string>,
-    groupRoleMapping: Map<CfnUserPoolGroup, Role>,
-    principal: WebIdentityPrincipal,
-    userPoolId: string
-  ): void {
-    // Create Test Group for Auth E2E Test
-    const authTestEndpoints = this._getEndpoints(apiEndpointArns, [
-      '/hi' + ApiGatewayMethod.GET,
-      '/bye' + ApiGatewayMethod.GET,
-    ]);
-    this._createCognitoGroup(
-      'AuthTestGroup',
-      'used for auth e2e testing',
-      groupRoleMapping,
-      authTestEndpoints,
-      principal,
-      userPoolId
-    );
-
-    // Create Test Group for Create Cases E2E Test
-    const createCasesTestEndpoints = this._getEndpoints(apiEndpointArns, [
-      '/cases' + ApiGatewayMethod.POST,
-      '/cases/{caseId}' + ApiGatewayMethod.DELETE,
-      '/cases/all-cases' + ApiGatewayMethod.GET,
-    ]);
-    this._createCognitoGroup(
-      'CreateCasesTestGroup',
-      'used for create cases API e2e testing',
-      groupRoleMapping,
-      createCasesTestEndpoints,
-      principal,
-      userPoolId
-    );
-
-    // Create Test Group for Get Cases E2E Test
-    const getCaseTestEndpoints = this._getEndpoints(apiEndpointArns, [
-      '/cases' + ApiGatewayMethod.POST,
-      '/cases/{caseId}' + ApiGatewayMethod.GET,
-      '/cases/{caseId}' + ApiGatewayMethod.DELETE,
-    ]);
-    this._createCognitoGroup(
-      'GetCaseTestGroup',
-      'used for get cases API e2e testing',
-      groupRoleMapping,
-      getCaseTestEndpoints,
-      principal,
-      userPoolId
-    );
   }
 
   private _getEndpoints(apiEndpointArns: Map<string, string>, paths: string[]): string[] {
@@ -415,8 +331,9 @@ export class DeaAuthConstruct extends Construct {
   // Store the user pool id and client id in the parameter store so that we can verify
   // and decode tokens on the backend
   private _addCognitoInformationToSSM(userPoolId: string, userPoolClientId: string, region: string) {
+    const stage = deaConfig.stage();
     new StringParameter(this, 'user-pool-id-ssm-param', {
-      parameterName: `/dea/${region}/userpool-id-param`,
+      parameterName: `/dea/${region}/${stage}-userpool-id-param`,
       stringValue: userPoolId,
       description: 'stores the user pool id for use in token verification on the backend',
       tier: ParameterTier.STANDARD,
@@ -424,7 +341,7 @@ export class DeaAuthConstruct extends Construct {
     });
 
     new StringParameter(this, 'user-pool-client-id-ssm-param', {
-      parameterName: `/dea/${region}/userpool-client-id-param`,
+      parameterName: `/dea/${region}/${stage}-userpool-client-id-param`,
       stringValue: userPoolClientId,
       description: 'stores the user pool client id for use in token verification on the backend',
       tier: ParameterTier.STANDARD,

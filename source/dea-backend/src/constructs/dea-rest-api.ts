@@ -8,10 +8,10 @@ import { Duration } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   AuthorizationType,
+  Cors,
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
-  Cors,
 } from 'aws-cdk-lib/aws-apigateway';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -19,13 +19,14 @@ import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
-import { getConstants } from '../constants';
+import { deaConfig } from '../config';
 import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway-route-config';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
 import { createCfnOutput } from './construct-support';
 
 interface DeaRestApiProps {
   deaTableArn: string;
+  deaTableName: string;
   kmsKey: Key;
   region: string;
   accountId: string;
@@ -52,7 +53,7 @@ export class DeaRestApiConstruct extends Construct {
       encryptionKey: props.kmsKey,
     });
 
-    const { STAGE } = getConstants();
+    const STAGE = deaConfig.stage();
 
     this.deaRestApi = new RestApi(this, `dea-api`, {
       description: 'Backend API',
@@ -86,10 +87,15 @@ export class DeaRestApiConstruct extends Construct {
       },
     });
 
-    this._configureApiGateway(props.deaTableArn, props.kmsKey, deaApiRouteConfig);
+    this._configureApiGateway(props.deaTableArn, props.kmsKey, deaApiRouteConfig, props.deaTableName);
   }
 
-  private _configureApiGateway(tableArn: string, key: Key, routeConfig: ApiGatewayRouteConfig): void {
+  private _configureApiGateway(
+    tableArn: string,
+    key: Key,
+    routeConfig: ApiGatewayRouteConfig,
+    deaTableName: string
+  ): void {
     const plan = this.deaRestApi.addUsagePlan('DEA Usage Plan', {
       name: 'dea-usage-plan',
       throttle: {
@@ -103,15 +109,16 @@ export class DeaRestApiConstruct extends Construct {
       stage: this.deaRestApi.deploymentStage,
     });
 
-    createCfnOutput(this, 'deaApiUrlOutput', {
+    createCfnOutput(this, 'deaApiUrl', {
       value: this.deaRestApi.url,
-      exportName: 'deaApiUrl',
     });
 
-    routeConfig.routes.forEach((route) => this._addMethod(this.deaRestApi, route, this.lambdaBaseRole));
+    routeConfig.routes.forEach((route) =>
+      this._addMethod(this.deaRestApi, route, this.lambdaBaseRole, deaTableName)
+    );
   }
 
-  private _addMethod(api: RestApi, route: ApiGatewayRoute, role: Role): void {
+  private _addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, tableName: string): void {
     const urlParts = route.path.split('/').filter((str) => str);
     let parent = api.root;
     urlParts.forEach((part, index) => {
@@ -121,7 +128,7 @@ export class DeaRestApiConstruct extends Construct {
       }
 
       if (index === urlParts.length - 1) {
-        const lambda = this._createLambda(`${route.httpMethod}_${part}`, role, route.pathToSource);
+        const lambda = this._createLambda(`${route.httpMethod}_${part}`, role, route.pathToSource, tableName);
 
         const paginationParams = {
           'integration.request.querystring.limit': 'method.request.querystring.limit',
@@ -148,7 +155,7 @@ export class DeaRestApiConstruct extends Construct {
     });
   }
 
-  private _createLambda(id: string, role: Role, pathToSource: string): NodejsFunction {
+  private _createLambda(id: string, role: Role, pathToSource: string, tableName: string): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
       memorySize: 512,
       role: role,
@@ -159,6 +166,8 @@ export class DeaRestApiConstruct extends Construct {
       depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
       environment: {
         NODE_OPTIONS: '--enable-source-maps',
+        TABLE_NAME: tableName,
+        STAGE: deaConfig.stage(),
       },
       bundling: {
         externalModules: ['aws-sdk'],

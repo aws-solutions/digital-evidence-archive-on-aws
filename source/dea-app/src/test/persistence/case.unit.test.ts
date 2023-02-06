@@ -3,16 +3,20 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Paged, Table } from 'dynamodb-onetable';
+import { Paged } from 'dynamodb-onetable';
 import { DeaCase } from '../../models/case';
+import { OWNER_ACTIONS } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
+import { DeaUser } from '../../models/user';
 import { createCase, deleteCase, getCase, listCases, updateCase } from '../../persistence/case';
-import { CaseModelRepositoryProvider } from '../../persistence/schema/entities';
-import { initLocalDb } from './local-db-table';
+import { getCaseUser } from '../../persistence/case-user';
+import { ModelRepositoryProvider } from '../../persistence/schema/entities';
+import { createUser } from '../../persistence/user';
+import { getTestRepositoryProvider } from './local-db-table';
 
 describe('case persistence', () => {
-  let testTable: Table;
-  let caseModelProvider: CaseModelRepositoryProvider;
+  let repositoryProvider: ModelRepositoryProvider;
+  let caseOwner: DeaUser;
   let testCase: DeaCase;
   let caseUlid: string;
   let listCase1: DeaCase;
@@ -25,12 +29,21 @@ describe('case persistence', () => {
   let listCase2Updated: Date;
 
   beforeAll(async () => {
-    testTable = await initLocalDb('caseTestsTable');
-    caseModelProvider = { CaseModel: testTable.getModel('Case') };
+    repositoryProvider = await getTestRepositoryProvider('caseTestsTable');
+    caseOwner =
+      (await createUser(
+        {
+          tokenId: 'caseowner',
+          firstName: 'Case',
+          lastName: 'Owner',
+        },
+        repositoryProvider
+      )) ?? fail();
     testCase =
       (await createCase(
         { name: 'TheCase', status: CaseStatus.ACTIVE, description: 'TheDescription' },
-        caseModelProvider
+        caseOwner,
+        repositoryProvider
       )) ?? fail();
     caseUlid = testCase.ulid ?? fail();
 
@@ -39,17 +52,33 @@ describe('case persistence', () => {
   });
 
   afterAll(async () => {
-    await testTable.deleteTable('DeleteTableForever');
+    await repositoryProvider.table.deleteTable('DeleteTableForever');
+  });
+
+  it('should add the creator as a case user with all permissions', async () => {
+    const caseUser = await getCaseUser(
+      {
+        caseUlid: testCase.ulid ?? fail(),
+        userUlid: caseOwner.ulid ?? fail(),
+      },
+      repositoryProvider
+    );
+
+    expect(caseUser).toBeDefined();
+    expect(caseUser?.actions).toEqual(OWNER_ACTIONS);
+    expect(caseUser?.caseName).toStrictEqual(testCase.name);
+    expect(caseUser?.userFirstName).toStrictEqual(caseOwner.firstName);
+    expect(caseUser?.userLastName).toStrictEqual(caseOwner.lastName);
   });
 
   it('should return undefined if a case is not found', async () => {
-    const currentCase = await getCase('bogus', undefined, caseModelProvider);
+    const currentCase = await getCase('bogus', undefined, repositoryProvider);
 
     expect(currentCase).toBeUndefined();
   });
 
   it('should get a case by id', async () => {
-    const currentCase = await getCase(caseUlid, undefined, caseModelProvider);
+    const currentCase = await getCase(caseUlid, undefined, repositoryProvider);
 
     expect(currentCase).toEqual(testCase);
   });
@@ -86,7 +115,7 @@ describe('case persistence', () => {
     expectedCases.next = undefined;
     expectedCases.prev = undefined;
 
-    const actual = await listCases(undefined, undefined, caseModelProvider);
+    const actual = await listCases(undefined, undefined, repositoryProvider);
 
     expect(actual.values).toEqual(expectedCases.values);
   });
@@ -99,7 +128,7 @@ describe('case persistence', () => {
       objectCount: 0,
     };
 
-    await expect(createCase(currentTestCase, caseModelProvider)).rejects.toThrow(
+    await expect(createCase(currentTestCase, caseOwner, repositoryProvider)).rejects.toThrow(
       'Validation Error in "Case" for "name, lowerCaseName"'
     );
   });
@@ -112,9 +141,9 @@ describe('case persistence', () => {
       objectCount: 0,
     };
 
-    const createdCase = await createCase(currentTestCase, caseModelProvider);
+    const createdCase = await createCase(currentTestCase, caseOwner, repositoryProvider);
 
-    const readCase = await getCase(createdCase?.ulid ?? 'bogus', undefined, caseModelProvider);
+    const readCase = await getCase(createdCase?.ulid ?? 'bogus', undefined, repositoryProvider);
 
     const caseCheck: DeaCase = {
       ulid: createdCase?.ulid,
@@ -132,7 +161,7 @@ describe('case persistence', () => {
       description: 'The first 6 were better',
     };
 
-    const updatedCase = await updateCase(updateTestCase, caseModelProvider);
+    const updatedCase = await updateCase(updateTestCase, repositoryProvider);
 
     const updateCheck: DeaCase = {
       ...updateTestCase,
@@ -146,15 +175,19 @@ describe('case persistence', () => {
 
   async function createListData(): Promise<void> {
     listCase1 =
-      (await createCase({ name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE }, caseModelProvider)) ??
-      fail();
+      (await createCase(
+        { name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE },
+        caseOwner,
+        repositoryProvider
+      )) ?? fail();
     listCase1Ulid = listCase1.ulid ?? fail();
     listCase1Created = listCase1.created ?? fail();
     listCase1Updated = listCase1.updated ?? fail();
     listCase2 =
       (await createCase(
         { name: 'Between a rock and a hard case', status: CaseStatus.ACTIVE },
-        caseModelProvider
+        caseOwner,
+        repositoryProvider
       )) ?? fail();
     listCase2Ulid = listCase2.ulid ?? fail();
     listCase2Created = listCase2.created ?? fail();
@@ -169,9 +202,9 @@ describe('case persistence', () => {
       objectCount: 0,
     };
 
-    const createdCase = await createCase(currentTestCase, caseModelProvider);
+    const createdCase = await createCase(currentTestCase, caseOwner, repositoryProvider);
 
-    const readCase = await getCase(createdCase?.ulid ?? fail(), undefined, caseModelProvider);
+    const readCase = await getCase(createdCase?.ulid ?? fail(), undefined, repositoryProvider);
 
     const caseCheck: DeaCase = {
       ulid: createdCase?.ulid,
@@ -182,9 +215,9 @@ describe('case persistence', () => {
     expect(readCase).toEqual(caseCheck);
 
     // Delete
-    await deleteCase(createdCase?.ulid ?? fail(), caseModelProvider);
+    await deleteCase(createdCase?.ulid ?? fail(), repositoryProvider);
 
-    const nullCase = await getCase(createdCase?.ulid ?? fail(), undefined, caseModelProvider);
+    const nullCase = await getCase(createdCase?.ulid ?? fail(), undefined, repositoryProvider);
 
     expect(nullCase).toBeFalsy();
   });

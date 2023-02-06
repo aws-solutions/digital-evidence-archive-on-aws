@@ -7,8 +7,10 @@
 
 /* eslint-disable no-new */
 import 'source-map-support/register';
+import { deaConfig } from '@aws/dea-backend';
 import * as cdk from 'aws-cdk-lib';
 import { DeaMainStack } from './dea-main-stack';
 
 const app: cdk.App = new cdk.App();
-new DeaMainStack(app, 'DeaMainStack', {});
+const stage = deaConfig.stage();
+new DeaMainStack(app, `${stage}-DeaMainStack`, {});

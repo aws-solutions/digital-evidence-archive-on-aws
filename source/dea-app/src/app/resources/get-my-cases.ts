@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { getUserUlid } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { listCasesForUser } from '../services/case-service';
@@ -26,11 +27,7 @@ export const getMyCases: DEAGatewayProxyHandler = async (
     next = event.queryStringParameters['next'];
   }
 
-  const userUlid = event.headers['userUlid'];
-  if (!userUlid) {
-    // runLambdaPreChecks should have added the userUlid, this is server error
-    throw new Error('userUlid was not present in the event header');
-  }
+  const userUlid = getUserUlid(event);
 
   let nextToken: object | undefined = undefined;
   if (next) {

@@ -8,6 +8,7 @@ import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import 'source-map-support/register';
+import { deaConfig } from '../../config';
 import { DeaBackendConstruct } from '../../constructs/dea-backend-stack';
 import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
 import { validateBackendConstruct } from './validate-backend-construct';
@@ -32,9 +33,13 @@ describe('DeaBackend constructs', () => {
     });
 
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', { kmsKey: key, accessLogsPrefixes: ['dea-ui-access-log'] });
+    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', {
+      kmsKey: key,
+      accessLogsPrefixes: ['dea-ui-access-log'],
+    });
     new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
+      deaTableName: backend.deaTable.tableName,
       kmsKey: key,
       region: stack.region,
       accountId: stack.account,
@@ -60,6 +65,16 @@ describe('DeaBackend constructs', () => {
       print: (val) => {
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const newVal = (val as string).replace(/([A-Fa-f0-9]{64})/, '[HASH REMOVED]');
+        return `"${newVal}"`;
+      },
+    });
+
+    expect.addSnapshotSerializer({
+      test: (val) => typeof val === 'string' && val.includes(deaConfig.stage()),
+      print: (val) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        const newVal1 = (val as string).replace(deaConfig.stage(), '[STAGE-REMOVED]');
+        const newVal = newVal1.replace(/([A-Fa-f0-9]{8})/, '[HASH REMOVED]');
         return `"${newVal}"`;
       },
     });

@@ -21,3 +21,23 @@ export const getRequiredPathParam = (event: APIGatewayProxyEventV2, paramName: s
   });
   throw new ValidationError(`Required path param '${paramName}' is missing.`);
 };
+
+export const getUserUlid = (event: APIGatewayProxyEventV2): string => {
+  const maybeUserUlid = event.headers['userUlid'];
+  if (maybeUserUlid) {
+    return maybeUserUlid;
+  }
+
+  // runLambdaPreChecks should have added the userUlid, this is server error
+  logger.error('User Ulid missing from event');
+  throw new Error('userUlid was not present in the event header');
+};
+
+export const getRequiredEnv = (envName: string, defaultValue?: string): string => {
+  const value = process.env[envName] ?? defaultValue;
+  if (!value) {
+    throw new Error(`Required ENV ${envName} not set.`);
+  }
+
+  return value;
+};

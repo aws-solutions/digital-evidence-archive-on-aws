@@ -20,7 +20,7 @@ describe('get all cases api', () => {
   const caseIdsToDelete: string[] = [];
 
   beforeAll(async () => {
-    await cognitoHelper.createUser(testUser, 'CreateCasesTestGroup', "GetAllCases", "TestUser");
+    await cognitoHelper.createUser(testUser, 'CreateCasesTestGroup', 'GetAllCases', 'TestUser');
   });
 
   afterAll(async () => {
@@ -52,11 +52,10 @@ describe('get all cases api', () => {
     }
     createdCases.forEach((createdCase) => caseIdsToDelete.push(createdCase.ulid ?? fail()));
 
-    const getResponse = await callDeaAPIWithCreds(`${deaApiUrl}cases/all-cases`, "GET", idToken, creds);
+    const getResponse = await callDeaAPIWithCreds(`${deaApiUrl}cases/all-cases`, 'GET', idToken, creds);
 
     expect(getResponse.status).toEqual(200);
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const fetchedCases = (await getResponse.data.cases) as DeaCase[];
+    const fetchedCases: DeaCase[] = await getResponse.data.cases;
     fetchedCases.forEach((fetchedCase) => Joi.assert(fetchedCase, caseResponseSchema));
   }, 20000);
 });

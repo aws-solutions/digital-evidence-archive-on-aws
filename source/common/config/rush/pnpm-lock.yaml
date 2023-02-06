@@ -144,6 +144,7 @@ importers:
       '@rushstack/heft-jest-plugin': ^0.3.28
       '@rushstack/heft-node-rig': ^1.10.5
       '@types/aws-lambda': ^8.10.110
+      '@types/convict': ~6.1.1
       '@types/heft-jest': 1.0.2
       '@types/js-yaml': ^4.0.5
       '@types/lodash': ^4.14.181
@@ -153,6 +154,7 @@ importers:
       aws-lambda: ^1.0.7
       axios: ^0.27.1
       constructs: 10.0.5
+      convict: ~6.2.4
       depcheck: ^1.4.3
       dynamodb-onetable: ~2.5.1
       esbuild: ^0.14.21
@@ -199,6 +201,7 @@ importers:
       '@rushstack/heft': 0.48.8
       '@rushstack/heft-jest-plugin': 0.3.45_@rushstack+heft@0.48.8
       '@rushstack/heft-node-rig': 1.11.8_@rushstack+heft@0.48.8
+      '@types/convict': 6.1.1
       '@types/heft-jest': 1.0.2
       '@types/js-yaml': 4.0.5
       '@types/lodash': 4.14.188
@@ -206,6 +209,7 @@ importers:
       aws-cdk: 2.63.0
       aws-cdk-lib: 2.63.0_constructs@10.0.5
       axios: 0.27.2
+      convict: 6.2.4
       depcheck: 1.4.3
       dynamodb-onetable: 2.5.1
       esbuild: 0.14.54
@@ -240,6 +244,7 @@ importers:
       '@types/node': ^14
       aws-cdk: ~2.63.0
       aws-cdk-lib: ~2.63.0
+      aws-jwt-verify: ^3.4.0
       aws-lambda: ^1.0.7
       axios: ^0.27.1
       constructs: 10.0.5
@@ -266,6 +271,7 @@ importers:
       '@aws/dea-ui': link:../dea-ui/ui
       '@aws/dea-ui-infrastructure': link:../dea-ui/infrastructure
       '@types/aws-lambda': 8.10.110
+      aws-jwt-verify: 3.4.0
       aws-lambda: 1.0.7
       constructs: 10.0.5
       js-yaml: 4.1.0
@@ -4351,6 +4357,12 @@ packages:
       '@types/node': 14.18.33
     dev: true
 
+  /@types/convict/6.1.1:
+    resolution: {integrity: sha512-R+JLaTvhsD06p4jyjUDtbd5xMtZTRE3c0iI+lrFWZogSVEjgTWPYwvJPVf+t92E+yrlbXa4X4Eg9ro6gPdUt4w==}
+    dependencies:
+      '@types/node': 14.18.33
+    dev: true
+
   /@types/cookie-parser/1.4.3:
     resolution: {integrity: sha512-CqSKwFwefj4PzZ5n/iwad/bow2hTCh0FlNAeWLtQM3JA/NX/iYagIpWG2cf1bQKQ2c9gU2log5VUCrn7LDOs0w==}
     dependencies:
@@ -5821,6 +5833,14 @@ packages:
 
   /convert-source-map/1.9.0:
     resolution: {integrity: sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==}
+    dev: true
+
+  /convict/6.2.4:
+    resolution: {integrity: sha512-qN60BAwdMVdofckX7AlohVJ2x9UvjTNoKVXCL2LxFk1l7757EJqf1nySdMkPQer0bt8kQ5lQiyZ9/2NvrFBuwQ==}
+    engines: {node: '>=6'}
+    dependencies:
+      lodash.clonedeep: 4.5.0
+      yargs-parser: 20.2.9
     dev: true
 
   /cookie-parser/1.4.6:
@@ -9147,6 +9167,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       p-locate: 5.0.0
+    dev: true
+
+  /lodash.clonedeep/4.5.0:
+    resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
     dev: true
 
   /lodash.debounce/4.0.8:
