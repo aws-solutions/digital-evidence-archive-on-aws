@@ -5,7 +5,7 @@
 
 import { CaseAction } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
-import {allButDisallowed, ulidRegex, precedingDirectoryUlidRegex, filePathSafeCharsRegex} from '../../models/validation/joi-common';
+import {allButDisallowed, ulidRegex, filePathSafeCharsRegex} from '../../models/validation/joi-common';
 
 export const DeaSchema = {
   format: 'onetable:1.1.0',
@@ -54,18 +54,21 @@ export const DeaSchema = {
       updated: { type: Date },
     },
     CaseFile: {
-      // Get all files and folders in given folder path. SK ensures unique PK+SK combo
-      PK: { type: String, value: 'CASE#${caseUlid}#${filePath}#', required: true },
+      // Get file or folder by ulid
+      PK: { type: String, value: 'CASE#${caseUlid}#', required: true },
       SK: { type: String, value: 'FILE#${ulid}#', required: true },
 
+      // For UI folder navigation. Get all files and folders in given folder path
+      GSI1PK: { type: String, value: 'CASE#${caseUlid}#${filePath}#', required: true },
+      GSI1SK: { type: String, value: 'FILE#${fileName}#', required: true },
+
       // Get specific file or folder by full path
-      GSI1PK: { type: String, value: 'CASE#${caseUlid}#${filePath}${fileName}#', required: true },
-      GSI1SK: { type: String, value: 'FILE#${isFile}#', required: true },
+      GSI2PK: { type: String, value: 'CASE#${caseUlid}#${filePath}${fileName}#', required: true },
+      GSI2SK: { type: String, value: 'FILE#${isFile}#', required: true },
 
       ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
       fileName: { type: String, required: true, validate: allButDisallowed },
       filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // whole s3 prefix within case dataset. ex: /meal/lunch/
-      precedingDirectoryUlid: { type: String, validate: precedingDirectoryUlidRegex },
       caseUlid: { type: String, validate: ulidRegex, required: true },
       isFile: { type: Boolean, required: true },
       contentPath: { type: String },

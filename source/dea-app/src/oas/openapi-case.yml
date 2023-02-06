@@ -547,9 +547,13 @@ components:
     CaseFile:
       type: object
       properties:
-        name:
+        fileName:
           type: string
-        precedingDirectoryUlid:
+        filePath:
+          type: string
+        caseId:
+          type: string
+        sha256Hash:
           type: string
         ulid:
           type: string

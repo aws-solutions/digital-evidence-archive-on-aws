@@ -4,6 +4,7 @@
  */
 
 import { fail } from "assert";
+import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { completeCaseFileUpload } from "../../../app/resources/complete-case-file-upload";
 import { initiateCaseFileUpload } from "../../../app/resources/initiate-case-file-upload";
 import { DeaCaseFile } from "../../../models/case-file";
@@ -11,13 +12,13 @@ import { ModelRepositoryProvider } from "../../../persistence/schema/entities";
 import { dummyContext, dummyEvent } from "../../integration-objects";
 import { getTestRepositoryProvider } from "./get-test-repository";
 
+
 let repositoryProvider: ModelRepositoryProvider;
 
 const FILE_NAME = "fileName";
 const CASE_ULID = "ABCDEFGHHJKKMNNPQRSTTVWXYZ";
 const FILE_ULID = "ABCDEFGHHJKKMNNPQRSTTVWXY9";
 const FILE_PATH = "/food/sushi/";
-const PRECEDING_DIRECTORY_ULID = "9BCDEFGHHJKKMNNPQRSTTVWXYZ";
 const UPLOAD_ID = "123456";
 const SHA256_HASH = "030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B";
 const FILE_SIZE_MB = 50;
@@ -83,10 +84,6 @@ describe('Test case file upload', () => {
         // allowed fileSizeMb
         await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 4_999_999));
         await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 1));
-
-        // validate precedingDirectoryUlid
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, FILE_SIZE_MB, 'ABC')).rejects.toThrow();
-        await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, FILE_SIZE_MB, '')).rejects.toThrow();
     });
 
 });
@@ -96,8 +93,7 @@ async function initiateCaseFileUploadAndValidate (
     fileName: string = FILE_NAME,
     filePath: string = FILE_PATH,
     fileType: string = FILE_TYPE,
-    fileSizeMb: number = FILE_SIZE_MB,
-    precedingDirectoryUlid: string = PRECEDING_DIRECTORY_ULID): Promise<DeaCaseFile> {
+    fileSizeMb: number = FILE_SIZE_MB): Promise<DeaCaseFile> {
 
     const event = Object.assign({}, {
         ...dummyEvent,
@@ -105,28 +101,12 @@ async function initiateCaseFileUploadAndValidate (
             caseUlid,
             fileName,
             filePath,
-            precedingDirectoryUlid,
             fileType,
             fileSizeMb
         }),
     });
     const response = await initiateCaseFileUpload(event, dummyContext, repositoryProvider);
-
-    expect(response.statusCode).toEqual(200);
-
-    if (!response.body) {
-        fail();
-    }
-
-    const newCaseFile: DeaCaseFile = JSON.parse(response.body);
-
-    // Joi.assert(newCase, caseResponseSchema);
-    expect(newCaseFile.fileName).toEqual(fileName);
-    expect(newCaseFile.caseUlid).toEqual(caseUlid);
-    expect(newCaseFile.filePath).toEqual(filePath);
-    expect(newCaseFile.precedingDirectoryUlid).toEqual(precedingDirectoryUlid);
-
-    return newCaseFile;
+    return validateApiResponse(response, fileName, caseUlid, filePath);
 }
 
 async function completeCaseFileUploadAndValidate(
@@ -135,8 +115,7 @@ async function completeCaseFileUploadAndValidate(
     fileName: string = FILE_NAME,
     filePath: string = FILE_PATH,
     uploadId: string = UPLOAD_ID,
-    sha256Hash: string = SHA256_HASH,
-    precedingDirectoryUlid: string = PRECEDING_DIRECTORY_ULID): Promise<void> {
+    sha256Hash: string = SHA256_HASH): Promise<DeaCaseFile> {
 
     const event = Object.assign({}, {
         ...dummyEvent,
@@ -144,13 +123,20 @@ async function completeCaseFileUploadAndValidate(
             caseUlid,
             fileName,
             filePath,
-            precedingDirectoryUlid: precedingDirectoryUlid,
             uploadId,
             sha256Hash,
             ulid
         }),
     });
     const response = await completeCaseFileUpload(event, dummyContext, repositoryProvider);
+    return validateApiResponse(response, fileName, caseUlid, filePath);
+}
+
+async function validateApiResponse(
+    response: APIGatewayProxyStructuredResultV2,
+    fileName: string,
+    caseUlid: string,
+    filePath: string): Promise<DeaCaseFile> {
 
     expect(response.statusCode).toEqual(200);
 
@@ -160,9 +146,9 @@ async function completeCaseFileUploadAndValidate(
 
     const newCaseFile: DeaCaseFile = JSON.parse(response.body);
 
-    // Joi.assert(newCase, caseResponseSchema);
     expect(newCaseFile.fileName).toEqual(fileName);
     expect(newCaseFile.caseUlid).toEqual(caseUlid);
     expect(newCaseFile.filePath).toEqual(filePath);
-    expect(newCaseFile.precedingDirectoryUlid).toEqual(precedingDirectoryUlid);
+
+    return newCaseFile;
 }
