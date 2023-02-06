@@ -49,7 +49,7 @@ Object {
   "Resources": Object {
     "DeaAuthAuthTestGroup72A5E3A7": Object {
       "Properties": Object {
-        "Description": "Group used for auth e2e [STAGE-REMOVED]ing",
+        "Description": "Group used for auth e2e testing",
         "GroupName": "AuthTestGroup",
         "Precedence": 100,
         "RoleArn": Object {
@@ -88,7 +88,7 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Description": "Role used for auth e2e [STAGE-REMOVED]ing",
+        "Description": "Role used for auth e2e testing",
       },
       "Type": "AWS::IAM::Role",
     },
@@ -179,7 +179,7 @@ Object {
     },
     "DeaAuthCreateCasesTestGroup7CEF506E": Object {
       "Properties": Object {
-        "Description": "Group used for create cases API e2e [STAGE-REMOVED]ing",
+        "Description": "Group used for create cases API e2e testing",
         "GroupName": "CreateCasesTestGroup",
         "Precedence": 100,
         "RoleArn": Object {
@@ -218,7 +218,7 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Description": "Role used for create cases API e2e [STAGE-REMOVED]ing",
+        "Description": "Role used for create cases API e2e testing",
       },
       "Type": "AWS::IAM::Role",
     },
@@ -361,7 +361,7 @@ Object {
     },
     "DeaAuthGetCaseTestGroup01C4525C": Object {
       "Properties": Object {
-        "Description": "Group used for get cases API e2e [STAGE-REMOVED]ing",
+        "Description": "Group used for get cases API e2e testing",
         "GroupName": "GetCaseTestGroup",
         "Precedence": 100,
         "RoleArn": Object {
@@ -400,7 +400,7 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Description": "Role used for get cases API e2e [STAGE-REMOVED]ing",
+        "Description": "Role used for get cases API e2e testing",
       },
       "Type": "AWS::IAM::Role",
     },

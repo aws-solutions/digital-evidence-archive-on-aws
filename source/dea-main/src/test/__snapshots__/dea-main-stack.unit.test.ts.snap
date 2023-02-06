@@ -147,7 +147,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)             indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)             indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -318,7 +318,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)             indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)             indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -409,7 +409,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -462,7 +462,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -515,7 +515,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -568,7 +568,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -621,7 +621,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -674,7 +674,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -727,7 +727,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -780,7 +780,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -833,7 +833,7 @@ Object {
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/la[STAGE-REMOVED]/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -1140,7 +1140,7 @@ Object {
               Object {
                 "Ref": "DeaApiGatewaydeaapi822A9228",
               },
-              "/[STAGE-REMOVED]-invoke-stage/GET/bye",
+              "/test-invoke-stage/GET/bye",
             ],
           ],
         },
@@ -1395,7 +1395,7 @@ Object {
               Object {
                 "Ref": "DeaApiGatewaydeaapi822A9228",
               },
-              "/[STAGE-REMOVED]-invoke-stage/POST/cases",
+              "/test-invoke-stage/POST/cases",
             ],
           ],
         },
@@ -1533,7 +1533,7 @@ Object {
               Object {
                 "Ref": "DeaApiGatewaydeaapi822A9228",
               },
-              "/[STAGE-REMOVED]-invoke-stage/GET/cases/all-cases",
+              "/test-invoke-stage/GET/cases/all-cases",
             ],
           ],
         },
@@ -1704,7 +1704,7 @@ Object {
               Object {
                 "Ref": "DeaApiGatewaydeaapi822A9228",
               },
-              "/[STAGE-REMOVED]-invoke-stage/DELETE/cases/*",
+              "/test-invoke-stage/DELETE/cases/*",
             ],
           ],
         },
@@ -1822,7 +1822,7 @@ Object {
               Object {
                 "Ref": "DeaApiGatewaydeaapi822A9228",
               },
-              "/[STAGE-REMOVED]-invoke-stage/GET/cases/*",
+              "/test-invoke-stage/GET/cases/*",
             ],
           ],
         },
@@ -1981,7 +1981,7 @@ Object {
               Object {
                 "Ref": "DeaApiGatewaydeaapi822A9228",
               },
-              "/[STAGE-REMOVED]-invoke-stage/PUT/cases/*",
+              "/test-invoke-stage/PUT/cases/*",
             ],
           ],
         },
@@ -2152,7 +2152,7 @@ Object {
               Object {
                 "Ref": "DeaApiGatewaydeaapi822A9228",
               },
-              "/[STAGE-REMOVED]-invoke-stage/POST/cases/*/userMemberships",
+              "/test-invoke-stage/POST/cases/*/userMemberships",
             ],
           ],
         },
@@ -2290,7 +2290,7 @@ Object {
               Object {
                 "Ref": "DeaApiGatewaydeaapi822A9228",
               },
-              "/[STAGE-REMOVED]-invoke-stage/GET/cases/my-cases",
+              "/test-invoke-stage/GET/cases/my-cases",
             ],
           ],
         },
@@ -2424,7 +2424,7 @@ Object {
               Object {
                 "Ref": "DeaApiGatewaydeaapi822A9228",
               },
-              "/[STAGE-REMOVED]-invoke-stage/GET/hi",
+              "/test-invoke-stage/GET/hi",
             ],
           ],
         },
@@ -2928,7 +2928,7 @@ Object {
     },
     "DeaAuthAuthTestGroup72A5E3A7": Object {
       "Properties": Object {
-        "Description": "Group used for auth e2e [STAGE-REMOVED]ing",
+        "Description": "Group used for auth e2e testing",
         "GroupName": "AuthTestGroup",
         "Precedence": 100,
         "RoleArn": Object {
@@ -2967,7 +2967,7 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Description": "Role used for auth e2e [STAGE-REMOVED]ing",
+        "Description": "Role used for auth e2e testing",
       },
       "Type": "AWS::IAM::Role",
     },
@@ -3258,7 +3258,7 @@ Object {
     },
     "DeaAuthCreateCasesTestGroup7CEF506E": Object {
       "Properties": Object {
-        "Description": "Group used for create cases API e2e [STAGE-REMOVED]ing",
+        "Description": "Group used for create cases API e2e testing",
         "GroupName": "CreateCasesTestGroup",
         "Precedence": 100,
         "RoleArn": Object {
@@ -3297,7 +3297,7 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Description": "Role used for create cases API e2e [STAGE-REMOVED]ing",
+        "Description": "Role used for create cases API e2e testing",
       },
       "Type": "AWS::IAM::Role",
     },
@@ -3526,7 +3526,7 @@ Object {
     },
     "DeaAuthGetCaseTestGroup01C4525C": Object {
       "Properties": Object {
-        "Description": "Group used for get cases API e2e [STAGE-REMOVED]ing",
+        "Description": "Group used for get cases API e2e testing",
         "GroupName": "GetCaseTestGroup",
         "Precedence": 100,
         "RoleArn": Object {
@@ -3565,7 +3565,7 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Description": "Role used for get cases API e2e [STAGE-REMOVED]ing",
+        "Description": "Role used for get cases API e2e testing",
       },
       "Type": "AWS::IAM::Role",
     },
