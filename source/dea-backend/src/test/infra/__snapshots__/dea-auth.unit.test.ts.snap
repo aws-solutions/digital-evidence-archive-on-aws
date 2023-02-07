@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DeaBackend constructs synthesizes the way we expect 1`] = `
+exports[`DeaAuth constructs synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
     "DeaAuthidentityPoolIdEBA0D0C1": Object {
@@ -317,6 +317,17 @@ Object {
       "Type": "AWS::Cognito::UserPool",
       "UpdateReplacePolicy": "Delete",
     },
+    "DeaAuthDEAUserPoolCognitoDomainAB9C904A": Object {
+      "Properties": Object {
+        "Domain": Object {
+          "Ref": "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]",
+        },
+        "UserPoolId": Object {
+          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolDomain",
+    },
     "DeaAuthDEAUserPooldeaappclient3742F9D7": Object {
       "Properties": Object {
         "AccessTokenValidity": 720,
@@ -568,6 +579,15 @@ Object {
         },
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+    },
+    "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]": Object {
+      "Properties": Object {
+        "Domain": "[DOMAIN-REMOVED]",
+        "UserPoolId": Object {
+          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolDomain",
     },
     "DeaAuthuserpoolclientidssmparam605B45CC": Object {
       "Properties": Object {

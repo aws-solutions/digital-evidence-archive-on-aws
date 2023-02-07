@@ -8,9 +8,9 @@ import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import 'source-map-support/register';
-import { deaConfig } from '../../config';
 import { DeaBackendConstruct } from '../../constructs/dea-backend-stack';
 import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
+import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
 
 describe('DeaBackend constructs', () => {
@@ -57,27 +57,10 @@ describe('DeaBackend constructs', () => {
     });
 
     //handlers
-    template.resourceCountIs('AWS::Lambda::Function', 9);
+    template.resourceCountIs('AWS::Lambda::Function', 10);
     template.resourceCountIs('AWS::ApiGateway::Method', 17);
 
-    expect.addSnapshotSerializer({
-      test: (val) => typeof val === 'string' && val.includes('zip'),
-      print: (val) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const newVal = (val as string).replace(/([A-Fa-f0-9]{64})/, '[HASH REMOVED]');
-        return `"${newVal}"`;
-      },
-    });
-
-    expect.addSnapshotSerializer({
-      test: (val) => typeof val === 'string' && val.includes(deaConfig.stage()),
-      print: (val) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const newVal1 = (val as string).replace(deaConfig.stage(), '[STAGE-REMOVED]');
-        const newVal = newVal1.replace(/([A-Fa-f0-9]{8})/, '[HASH REMOVED]');
-        return `"${newVal}"`;
-      },
-    });
+    addSnapshotSerializers();
 
     expect(template).toMatchSnapshot();
   });

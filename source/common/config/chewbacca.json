@@ -1,5 +1,6 @@
 {
   "stage": "chewbacca",
+  "testStack": true,
   "userGroups": [
     {
       "name": "CaseWorkerGroup",

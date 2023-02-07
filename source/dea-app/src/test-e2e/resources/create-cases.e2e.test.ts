@@ -6,20 +6,20 @@
 import { fail } from 'assert';
 import { CaseStatus } from '../../models/case-status';
 import CognitoHelper from '../helpers/cognito-helper';
-import { envSettings } from '../helpers/settings';
+import { testEnv } from '../helpers/settings';
 import { callDeaAPI, callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
 
 describe('create cases api', () => {
   const cognitoHelper = new CognitoHelper();
 
   const testUser = 'createCaseTestUser';
-  const deaApiUrl = envSettings.apiUrlOutput;
+  const deaApiUrl = testEnv.apiUrlOutput;
 
   const caseIdsToDelete: string[] = [];
 
   beforeAll(async () => {
     // Create user in test group
-    await cognitoHelper.createUser(testUser, 'CreateCasesTestGroup', "CreateCases", "TestUser");
+    await cognitoHelper.createUser(testUser, 'CreateCasesTestGroup', 'CreateCases', 'TestUser');
   });
 
   afterAll(async () => {
@@ -31,7 +31,7 @@ describe('create cases api', () => {
   }, 30000);
 
   it('should create a new case', async () => {
-    const [creds, idToken]  = await cognitoHelper.getCredentialsForUser(testUser);
+    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
     const caseName = 'CASE B';
 
@@ -50,13 +50,13 @@ describe('create cases api', () => {
   }, 30000);
 
   it('should give an error when payload is missing', async () => {
-    const response = await callDeaAPI(testUser, `${deaApiUrl}cases`, cognitoHelper, "POST", undefined);
+    const response = await callDeaAPI(testUser, `${deaApiUrl}cases`, cognitoHelper, 'POST', undefined);
 
     expect(response.status).toEqual(400);
   });
 
   it('should give an error when the name is in use', async () => {
-    const [creds, idToken]  = await cognitoHelper.getCredentialsForUser(testUser);
+    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
     const caseName = 'CASE C';
     const createdCase = await createCaseSuccess(
@@ -72,12 +72,11 @@ describe('create cases api', () => {
 
     caseIdsToDelete.push(createdCase.ulid ?? fail());
 
-    const response = await callDeaAPIWithCreds(`${deaApiUrl}cases`, "POST", idToken, creds,
-      {
-        name: caseName,
-        status: 'ACTIVE',
-        description: 'any description',
-      });
+    const response = await callDeaAPIWithCreds(`${deaApiUrl}cases`, 'POST', idToken, creds, {
+      name: caseName,
+      status: 'ACTIVE',
+      description: 'any description',
+    });
 
     expect(response.status).toEqual(500);
   }, 30000);

@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { addSnapshotSerializers } from '@aws/dea-backend';
 import * as cdk from 'aws-cdk-lib';
 import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
@@ -66,14 +67,7 @@ describe('DeaMainStack', () => {
     template.resourceCountIs('AWS::ApiGateway::Method', 2);
     template.resourceCountIs('AWS::Lambda::Function', 2);
 
-    expect.addSnapshotSerializer({
-      test: (val) => typeof val === 'string' && val.includes('zip'),
-      print: (val) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const newVal = (val as string).replace(/([A-Fa-f0-9]{64})/, '[HASH REMOVED]');
-        return `"${newVal}"`;
-      },
-    });
+    addSnapshotSerializers();
 
     expect(template).toMatchSnapshot();
   });
