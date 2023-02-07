@@ -68,7 +68,7 @@ export const DeaSchema = {
       contentPath: { type: String },
       uploadId: { type: String },
       sha256Hash: { type: String },
-      fileType: { type: String },
+      contentType: { type: String },
       filePath: { type: String }, // whole s3 prefix within case dataset. ex: /meal/lunch/
       fileSizeMb: { type: Number },
       //managed by onetable - but included for entity generation

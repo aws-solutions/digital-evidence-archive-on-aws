@@ -261,6 +261,7 @@ export class DeaRestApiConstruct extends Construct {
           's3:CompleteMultipartUpload',
           's3:AbortMultipartUpload',
           's3:ListMultipartUploads',
+          's3:PutObject',
         ],
         resources: [datasetsBucketArn],
       })

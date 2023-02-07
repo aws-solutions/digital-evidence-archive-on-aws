@@ -40,6 +40,8 @@ describe('DeaBackend constructs', () => {
     new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
+      deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
+      deaDatasetsBucketName: backend.datasetsBucket.bucketName,
       kmsKey: key,
       region: stack.region,
       accountId: stack.account,
