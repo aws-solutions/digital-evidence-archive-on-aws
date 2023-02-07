@@ -22,7 +22,7 @@ export const initiateCaseFileUploadResponseSchema = Joi.object({
   filePath: filePath,
   fileType: fileType,
   fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
-  preSignedUrls: Joi.array().items(Joi.string().uri()),
+  presignedUrls: Joi.array().items(Joi.string().uri()),
 });
 
 export const completeCaseFileUploadRequestSchema = Joi.object({

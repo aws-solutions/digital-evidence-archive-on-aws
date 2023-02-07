@@ -124,6 +124,7 @@ importers:
       '@rushstack/heft': ^0.48.8
       '@rushstack/heft-jest-plugin': ^0.3.28
       '@rushstack/heft-node-rig': ^1.10.5
+      '@types/aws-lambda': ^8.10.110
       '@types/convict': ~6.1.1
       '@types/heft-jest': 1.0.2
       '@types/js-yaml': ^4.0.5
@@ -157,6 +158,7 @@ importers:
       '@aws-cdk/aws-cognito-identitypool-alpha': 2.22.0-alpha.0_b34577f0c73554830e7afa6f4731bdc8
       '@aws-sdk/client-cloudformation': 3.264.0
       '@aws/dea-app': link:../dea-app
+      '@types/aws-lambda': 8.10.110
       aws-lambda: 1.0.7
       constructs: 10.0.5
       lodash: 4.17.21

@@ -3,7 +3,15 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { S3Client, CreateMultipartUploadCommand, UploadPartCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  CreateMultipartUploadCommand,
+  CompleteMultipartUploadCommand,
+  UploadPartCommand,
+  ListPartsCommand,
+  ListPartsOutput,
+  Part,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getRequiredEnv } from '../../lambda-http-helpers';
 import { DeaCaseFile } from '../../models/case-file';
@@ -45,21 +53,22 @@ export const initiateCaseFileUpload = async (
     })
   );
 
-  if (response.UploadId == undefined) {
-  }
-
   const uploadId = response.UploadId as string;
 
   // using 500MB chunks so we can support a max file size of 5TB with a max of 10,000 chunks
   // limits obtained from link below on 2/7/2023
   // https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html
-  const fileParts = Math.ceil(deaCaseFile.fileSizeMb / 10);
+  const fileParts = Math.ceil(deaCaseFile.fileSizeMb / 500); // fixme: chunk size should be a variable for testing purposes
   const presignedUrlPromises = [];
-  for (let i = 0; i < fileParts; i += 1) {
+  for (let i = 0; i < fileParts; i++) {
     presignedUrlPromises[i] = _getPresignedUrlPromise(bucketName, s3Key, uploadId, i + 1);
   }
-  const presignedUrls = await Promise.all(presignedUrlPromises);
+  await Promise.all(presignedUrlPromises).then((presignedUrls) => {
+    caseFile.presignedUrls = presignedUrls;
+  });
+
   // update ddb with upload-id
+  caseFile.uploadId = uploadId;
 
   return caseFile;
 };
@@ -70,6 +79,43 @@ export const completeCaseFileUpload = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ): Promise<DeaCaseFile> => {
+  // todo: check if case-file exists and that it is actually pending
+
+  let uploadedParts: Part[] = [];
+  let listPartsResponse: ListPartsOutput;
+  let partNumberMarker;
+  /* eslint-disable no-await-in-loop */
+  do {
+    listPartsResponse = await s3Client.send(
+      new ListPartsCommand({
+        Bucket: bucketName,
+        Key: _getS3KeyForCaseFile(deaCaseFile),
+        PartNumberMarker: partNumberMarker,
+        UploadId: deaCaseFile.uploadId,
+      })
+    );
+    if (listPartsResponse !== undefined && listPartsResponse.Parts) {
+      uploadedParts = uploadedParts.concat(
+        listPartsResponse.Parts.map(function (part) {
+          return { ETag: part.ETag, PartNumber: part.PartNumber };
+        })
+      );
+    }
+
+    partNumberMarker = listPartsResponse.NextPartNumberMarker;
+  } while (listPartsResponse.IsTruncated);
+
+  await s3Client.send(
+    new CompleteMultipartUploadCommand({
+      Bucket: bucketName,
+      Key: _getS3KeyForCaseFile(deaCaseFile),
+      //ChecksumSHA256: deaCaseFile.sha256Hash,
+      UploadId: deaCaseFile.uploadId,
+      MultipartUpload: { Parts: uploadedParts },
+    })
+  );
+
+  // update status and remove ttl
   return await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider);
 };
 
@@ -89,6 +135,5 @@ async function _getPresignedUrlPromise(
     UploadId: uploadId,
     PartNumber: partNumber,
   });
-
   return getSignedUrl(s3Client, uploadPartCommand, { expiresIn: 3600 });
 }
