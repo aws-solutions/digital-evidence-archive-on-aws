@@ -5,7 +5,7 @@
 
 import { getDeaUserFromToken, getTokenPayload } from '../cognito-token-helpers';
 import CognitoHelper from '../test-e2e/helpers/cognito-helper';
-import { envSettings } from '../test-e2e/helpers/settings';
+import { testEnv } from '../test-e2e/helpers/settings';
 
 describe('cognito helpers integration test', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
@@ -13,7 +13,7 @@ describe('cognito helpers integration test', () => {
   const testUser = 'cognitoHelpersIntegrationTestUser';
   const firstName = 'CognitoTokenHelper';
   const lastName = 'TestUser';
-  const region = envSettings.awsRegion;
+  const region = testEnv.awsRegion;
 
   beforeAll(async () => {
     // Create user in test group

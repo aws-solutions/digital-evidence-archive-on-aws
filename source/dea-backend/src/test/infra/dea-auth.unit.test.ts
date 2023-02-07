@@ -7,16 +7,12 @@ import * as cdk from 'aws-cdk-lib';
 import { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import 'source-map-support/register';
-import { deaConfig } from '../../config';
+import { convictConfig } from '../../config';
 import { DeaAuthConstruct } from '../../constructs/dea-auth';
+import { addSnapshotSerializers } from './dea-snapshot-serializers';
 
-describe('DeaBackend constructs', () => {
-  afterAll(() => {
-    delete process.env.STAGE;
-  });
-
+describe('DeaAuth constructs', () => {
   it('synthesizes the way we expect', () => {
-    process.env.STAGE = 'chewbacca';
     const app = new cdk.App();
     const stack = new Stack(app, 'test-stack');
 
@@ -31,30 +27,13 @@ describe('DeaBackend constructs', () => {
     // Prepare the stack for assertions.
     const template = Template.fromStack(stack);
 
-    expect.addSnapshotSerializer({
-      test: (val) => typeof val === 'string' && val.includes('zip'),
-      print: (val) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const newVal = (val as string).replace(/([A-Fa-f0-9]{64})/, '[HASH REMOVED]');
-        return `"${newVal}"`;
-      },
-    });
-
-    expect.addSnapshotSerializer({
-      test: (val) => typeof val === 'string' && val.includes(deaConfig.stage()),
-      print: (val) => {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const newVal1 = (val as string).replace(deaConfig.stage(), '[STAGE-REMOVED]');
-        const newVal = newVal1.replace(/([A-Fa-f0-9]{8})/, '[HASH REMOVED]');
-        return `"${newVal}"`;
-      },
-    });
+    addSnapshotSerializers();
 
     expect(template).toMatchSnapshot();
   });
 
-  it('works with a domain config', () => {
-    process.env.STAGE = 'demo';
+  it('works without a domain config', () => {
+    convictConfig.set('cognito.domain', undefined);
 
     const app = new cdk.App();
     const stack = new Stack(app, 'test-stack');
@@ -67,11 +46,9 @@ describe('DeaBackend constructs', () => {
     ]);
     new DeaAuthConstruct(stack, 'DeaAuth', { apiEndpointArns });
 
-    // Prepare the stack for assertions.
-    const template = Template.fromStack(stack);
-
-    template.hasResourceProperties('AWS::Cognito::IdentityPool', {
-      AllowUnauthenticatedIdentities: false,
-    });
+    // throws due to unassigned parameter
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrow('ID components may not include unresolved tokens');
   });
 });

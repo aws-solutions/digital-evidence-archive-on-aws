@@ -5,7 +5,7 @@
 
 import { assert } from 'console';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
-import { Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { CfnParameter, Duration } from 'aws-cdk-lib';
 import {
   AccountRecovery,
   CfnIdentityPool,
@@ -13,6 +13,7 @@ import {
   CfnUserPoolGroup,
   UserPool,
   UserPoolClient,
+  UserPoolDomain,
 } from 'aws-cdk-lib/aws-cognito';
 import { FederatedPrincipal, Policy, PolicyStatement, Role, WebIdentityPrincipal } from 'aws-cdk-lib/aws-iam';
 import { ParameterTier, StringParameter } from 'aws-cdk-lib/aws-ssm';
@@ -32,7 +33,6 @@ export class DeaAuthConstruct extends Construct {
     super(scope, stackName);
 
     const region = deaConfig.region();
-    const cognitoDomain = deaConfig.cognitoDomain();
 
     // Auth Stack. Used to determine which APIs a user can access by assigning them
     // an IAM Role based on their Group/Role. E.g. User federates with the auth stack, given credentials based
@@ -42,7 +42,7 @@ export class DeaAuthConstruct extends Construct {
     // For production deployments, follow the ImplementationGuide on how to setup
     // and connect your existing CJIS-compatible IdP for SSO. IAM Role assigned
     // according to the UserRole defined in the SAML assertion document
-    this._createAuthStack(props.apiEndpointArns, cognitoDomain, region);
+    this._createAuthStack(props.apiEndpointArns, region);
   }
 
   private _createIamRole(
@@ -112,14 +112,10 @@ export class DeaAuthConstruct extends Construct {
     return groupRoleMapping;
   }
 
-  private _createAuthStack(
-    apiEndpointArns: Map<string, string>,
-    domain: string | undefined,
-    region: string
-  ): void {
+  private _createAuthStack(apiEndpointArns: Map<string, string>, region: string): void {
     // See Implementation Guide for how to substitute your existing
     // Identity Provider in place of Cognito for SSO
-    const [pool, poolClient] = this._createCognitoIdP(domain);
+    const [pool, poolClient] = this._createCognitoIdP();
 
     const providerUrl = `cognito-idp.${region}.amazonaws.com/${pool.userPoolId}:${poolClient.userPoolClientId}`;
 
@@ -223,7 +219,7 @@ export class DeaAuthConstruct extends Construct {
 
   // We use CognitoUserPool as the IdP for the reference application
   // TODO: determine if Cognito is CJIS compatible
-  private _createCognitoIdP(domain: string | undefined): [UserPool, UserPoolClient] {
+  private _createCognitoIdP(): [UserPool, UserPoolClient] {
     const tempPasswordValidity = Duration.days(1);
     // must re-authenticate in every 12 hours
     // Note when inactive for 30+ minutes, you will also have to reauthenticate
@@ -232,7 +228,7 @@ export class DeaAuthConstruct extends Construct {
     const idTokenValidity = Duration.hours(12);
     const refreshTokenValidity = Duration.hours(12);
 
-    const pool = new UserPool(this, 'DEAUserPool', {
+    const userPool = new UserPool(this, 'DEAUserPool', {
       accountRecovery: AccountRecovery.EMAIL_ONLY,
       // Below is Basic Password Policy, though it is missing the ability for
       // banned passwords, password expiry, password history etc
@@ -263,18 +259,35 @@ export class DeaAuthConstruct extends Construct {
         emailBody: 'Hello {username}, you have been invited to use DEA! Your temporary password is {####}',
         smsMessage: 'Hello {username}, your temporary password for our DEA is {####}',
       },
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: deaConfig.retainPolicy(),
     });
 
-    if (domain) {
-      pool.addDomain('CognitoDomain', {
-        cognitoDomain: {
-          domainPrefix: domain,
-        },
+    let domainPrefix = deaConfig.cognitoDomain();
+
+    // The idea here is to use DOMAIN_PREFIX env as we do development, each of us setting a unique name locally.
+    // For the one click generation we will not specify a prefix and thus the template will be generated with a parameter to be entered at deploy time
+    if (!domainPrefix) {
+      const cognitoPrefixParam = new CfnParameter(this, 'CognitoDomainPrefix', {
+        type: 'String',
+        description: 'The prefix of the cognito domain to associate to the user pool',
       });
+      domainPrefix = cognitoPrefixParam.valueAsString;
     }
 
-    const poolClient = pool.addClient('dea-app-client', {
+    const newDomain = new UserPoolDomain(this, domainPrefix, {
+      userPool,
+      cognitoDomain: {
+        domainPrefix,
+      },
+    });
+
+    userPool.addDomain('CognitoDomain', {
+      cognitoDomain: {
+        domainPrefix: newDomain.domainName,
+      },
+    });
+
+    const poolClient = userPool.addClient('dea-app-client', {
       accessTokenValidity: accessTokenValidity,
       // use Server-side authentication workflow
       authFlows: {
@@ -296,7 +309,7 @@ export class DeaAuthConstruct extends Construct {
       userPoolClientName: 'dea-app-client',
     });
 
-    return [pool, poolClient];
+    return [userPool, poolClient];
   }
 
   private _createCognitoGroup(

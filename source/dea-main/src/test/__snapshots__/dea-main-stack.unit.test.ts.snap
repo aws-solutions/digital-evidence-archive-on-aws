@@ -336,7 +336,7 @@ Object {
             Array [
               "Lambda function for auto-deleting objects in ",
               Object {
-                "Ref": "DeaUiStackartifactbucketFFC87A37",
+                "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
               },
               " S3 bucket.",
             ],
@@ -3482,6 +3482,17 @@ Object {
       "Type": "AWS::Cognito::UserPool",
       "UpdateReplacePolicy": "Delete",
     },
+    "DeaAuthDEAUserPoolCognitoDomainAB9C904A": Object {
+      "Properties": Object {
+        "Domain": Object {
+          "Ref": "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]",
+        },
+        "UserPoolId": Object {
+          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolDomain",
+    },
     "DeaAuthDEAUserPooldeaappclient3742F9D7": Object {
       "Properties": Object {
         "AccessTokenValidity": 720,
@@ -3820,6 +3831,15 @@ Object {
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
     },
+    "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]": Object {
+      "Properties": Object {
+        "Domain": "[DOMAIN-REMOVED]",
+        "UserPoolId": Object {
+          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolDomain",
+    },
     "DeaAuthuserpoolclientidssmparam605B45CC": Object {
       "Properties": Object {
         "AllowedPattern": ".*",
@@ -3938,7 +3958,7 @@ Object {
       "UpdateReplacePolicy": "Delete",
     },
     "DeaBackendStackS3AccessLogsBucket46FDD3E0": Object {
-      "DeletionPolicy": "Retain",
+      "DeletionPolicy": "Delete",
       "Metadata": Object {
         "cfn_nag": Object {
           "rules_to_suppress": Array [
@@ -3966,9 +3986,34 @@ Object {
           "IgnorePublicAcls": true,
           "RestrictPublicBuckets": true,
         },
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true",
+          },
+        ],
       },
       "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Retain",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaBackendStackS3AccessLogsBucketAutoDeleteObjectsCustomResource54474E78": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "DeaBackendStackS3AccessLogsBucketPolicyCF6769D3",
+      ],
+      "Properties": Object {
+        "BucketName": Object {
+          "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3AutoDeleteObjects",
+      "UpdateReplacePolicy": "Delete",
     },
     "DeaBackendStackS3AccessLogsBucketPolicyCF6769D3": Object {
       "Properties": Object {
@@ -3987,6 +4032,44 @@ Object {
               "Effect": "Deny",
               "Principal": Object {
                 "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn",
+                  ],
+                },
               },
               "Resource": Array [
                 Object {
@@ -4062,7 +4145,7 @@ Object {
       "Type": "AWS::S3::BucketPolicy",
     },
     "DeaBackendStackS3DatasetsBucket408FF954": Object {
-      "DeletionPolicy": "Retain",
+      "DeletionPolicy": "Delete",
       "Properties": Object {
         "BucketEncryption": Object {
           "ServerSideEncryptionConfiguration": Array [
@@ -4104,12 +4187,37 @@ Object {
           "IgnorePublicAcls": true,
           "RestrictPublicBuckets": true,
         },
+        "Tags": Array [
+          Object {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true",
+          },
+        ],
         "VersioningConfiguration": Object {
           "Status": "Enabled",
         },
       },
       "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Retain",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaBackendStackS3DatasetsBucketAutoDeleteObjectsCustomResource4F25360D": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "DeaBackendStackS3DatasetsBucketPolicy328F21B8",
+      ],
+      "Properties": Object {
+        "BucketName": Object {
+          "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3AutoDeleteObjects",
+      "UpdateReplacePolicy": "Delete",
     },
     "DeaBackendStackS3DatasetsBucketPolicy328F21B8": Object {
       "Properties": Object {
@@ -4128,6 +4236,44 @@ Object {
               "Effect": "Deny",
               "Principal": Object {
                 "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3DatasetsBucket408FF954",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3DatasetsBucket408FF954",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn",
+                  ],
+                },
               },
               "Resource": Array [
                 Object {

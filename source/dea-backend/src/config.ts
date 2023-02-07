@@ -4,6 +4,7 @@
  */
 
 import path from 'path';
+import { RemovalPolicy } from 'aws-cdk-lib';
 import convict from 'convict';
 // https://www.npmjs.com/package/convict
 
@@ -42,6 +43,15 @@ const endpointArrayFormat: convict.Format = {
   },
 };
 
+const cognitoDomainFormat: convict.Format = {
+  name: 'cognito-domain',
+  validate: function (val) {
+    if (!/^[a-z0-9-]+$/.test(val)) {
+      throw new Error('Cognito domain may only contain lowercase alphanumerics and hyphens.');
+    }
+  },
+};
+
 const convictSchema = {
   stage: {
     doc: 'The deployment stage.',
@@ -64,9 +74,15 @@ const convictSchema = {
   cognito: {
     domain: {
       doc: 'The cognito domain',
-      format: String,
+      format: cognitoDomainFormat.name,
       default: undefined,
+      env: 'DOMAIN_PREFIX',
     },
+  },
+  testStack: {
+    doc: 'Boolean to indicate if this is a test stack',
+    format: Boolean,
+    default: false,
   },
   userGroups: {
     doc: 'User Pool Groups config',
@@ -125,16 +141,19 @@ export interface DEAUserPoolGroupDefinition {
 
 convict.addFormat(groupArrayFormat);
 convict.addFormat(endpointArrayFormat);
+convict.addFormat(cognitoDomainFormat);
 
 interface DEAConfig {
   stage(): string;
   configName(): string | undefined;
   region(): string;
   cognitoDomain(): string | undefined;
+  isTestStack(): boolean;
   userGroups(): DEAUserPoolGroupDefinition[];
+  retainPolicy(): RemovalPolicy;
 }
 
-const convictConfig = convict(convictSchema);
+export const convictConfig = convict(convictSchema);
 
 //wrap convict with some getters to be more friendly
 export const deaConfig: DEAConfig = {
@@ -142,7 +161,9 @@ export const deaConfig: DEAConfig = {
   configName: () => convictConfig.get('configname'),
   region: () => convictConfig.get('region'),
   cognitoDomain: () => convictConfig.get('cognito.domain'),
+  isTestStack: () => convictConfig.get('testStack'),
   userGroups: () => convictConfig.get('userGroups'),
+  retainPolicy: () => (convictConfig.get('testStack') ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN),
 };
 
 export const loadConfig = (stage: string): void => {

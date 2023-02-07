@@ -5,15 +5,15 @@
 import { aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import CognitoHelper from '../helpers/cognito-helper';
-import { envSettings } from '../helpers/settings';
+import { testEnv } from '../helpers/settings';
 import { callDeaAPI } from '../resources/test-helpers';
 
 describe('API authentication', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
   const testUser = 'authE2ETestUser';
-  const deaApiUrl = envSettings.apiUrlOutput;
-  const region = envSettings.awsRegion;
+  const deaApiUrl = testEnv.apiUrlOutput;
+  const region = testEnv.awsRegion;
 
   beforeAll(async () => {
     // Create user in test group

@@ -3,6 +3,7 @@ name: Pull Request Workflow
 env:
   CONFIGNAME: 'chewbacca'
   STAGE: RUN${{github.run_number}}
+  DOMAIN_PREFIX: deatestenv
 
 on:
   pull_request:

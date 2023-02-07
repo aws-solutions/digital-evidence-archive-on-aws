@@ -9,14 +9,14 @@ import { DeaCase } from '../../models/case';
 import { CaseStatus } from '../../models/case-status';
 import { caseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
-import { envSettings } from '../helpers/settings';
+import { testEnv } from '../helpers/settings';
 import { callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
 
 describe('get case api', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
   const testUser = 'getCaseE2ETestUser';
-  const deaApiUrl = envSettings.apiUrlOutput;
+  const deaApiUrl = testEnv.apiUrlOutput;
 
   beforeAll(async () => {
     // Create user in test group
