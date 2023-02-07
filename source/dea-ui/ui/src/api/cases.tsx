@@ -8,7 +8,7 @@ import useSWR from 'swr';
 import { httpApiGet, httpApiPost } from '../helpers/apiHelper';
 import { CreateCaseForm } from '../models/Cases';
 
-const STAGE = 'test';
+const STAGE = process.env.STAGE ?? 'chewbacca';
 
 const useListAllCases = (): { cases: DeaCase[]; areCasesLoading: boolean } => {
   const { data, isValidating } = useSWR(() => `/${STAGE}/cases/all-cases`, httpApiGet);
@@ -17,7 +17,7 @@ const useListAllCases = (): { cases: DeaCase[]; areCasesLoading: boolean } => {
 };
 
 const useGetCaseById = (id: string): { caseDetail: DeaCase; areCasesLoading: boolean } => {
-  const { data, isValidating } = useSWR(() => (`/${STAGE}/cases/${id}/`), httpApiGet);
+  const { data, isValidating } = useSWR(() => `/${STAGE}/cases/${id}/`, httpApiGet);
   const caseDetail: DeaCase = data;
   return { caseDetail, areCasesLoading: isValidating };
 };

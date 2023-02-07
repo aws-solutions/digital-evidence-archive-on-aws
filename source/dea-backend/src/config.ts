@@ -46,7 +46,7 @@ const convictSchema = {
   stage: {
     doc: 'The deployment stage.',
     format: String,
-    default: 'test',
+    default: 'chewbacca',
     env: 'STAGE',
   },
   configname: {

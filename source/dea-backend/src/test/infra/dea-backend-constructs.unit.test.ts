@@ -15,7 +15,7 @@ import { validateBackendConstruct } from './validate-backend-construct';
 
 describe('DeaBackend constructs', () => {
   beforeAll(() => {
-    process.env.STAGE = 'test';
+    process.env.STAGE = 'chewbacca';
   });
 
   afterAll(() => {

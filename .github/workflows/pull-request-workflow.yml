@@ -1,7 +1,7 @@
 name: Pull Request Workflow
 
 env:
-  CONFIGNAME: 'test'
+  CONFIGNAME: 'chewbacca'
   STAGE: RUN${{github.run_number}}
 
 on:

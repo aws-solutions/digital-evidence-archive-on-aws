@@ -16,7 +16,7 @@ describe('DeaBackend constructs', () => {
   });
 
   it('synthesizes the way we expect', () => {
-    process.env.STAGE = 'test';
+    process.env.STAGE = 'chewbacca';
     const app = new cdk.App();
     const stack = new Stack(app, 'test-stack');
 
