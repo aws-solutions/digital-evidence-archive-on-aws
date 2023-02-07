@@ -11,13 +11,16 @@ export const allButDisallowed = new RegExp('^[^\\<>/]+$');
 export const filenameSafeCharsRegex = new RegExp('^[^<>:"\\/|?*]+$');
 
 // using unix convention. will have to see what we need to do to be unix and windows compatible
-export const filePathSafeCharsRegex = new RegExp('^[^<>:"\\|?*]*/$');
+// allow '/' for root directory, enforce path starts and ends with '/' for anything else
+export const filePathSafeCharsRegex = new RegExp('^(/[^<>:"\\|?*]+/|/)$');
 
 export const htmlSafeCharsRegex = new RegExp('^[^&"\'<>]*$');
 
+export const ulidRegex = new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$');
+
 export const uploadId = Joi.string().pattern(htmlSafeCharsRegex).required();
 
-export const joiUlid = Joi.string().pattern(new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$'));
+export const joiUlid = Joi.string().pattern(ulidRegex);
 
 export const sha256Hash = Joi.string().pattern(new RegExp('^[a-fA-F0-9]{64}$')).required();
 

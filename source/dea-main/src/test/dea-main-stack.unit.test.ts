@@ -12,7 +12,7 @@ import { DeaMainStack } from '../dea-main-stack';
 
 describe('DeaMainStack', () => {
   beforeAll(() => {
-    process.env.STAGE = 'test';
+    process.env.STAGE = 'chewbacca';
   });
 
   afterAll(() => {

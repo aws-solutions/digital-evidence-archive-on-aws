@@ -6,11 +6,11 @@
 export interface DeaCaseFile {
   readonly caseUlid: string;
   readonly fileName: string;
+  readonly filePath: string;
+  readonly isFile: boolean;
   readonly ulid?: string; // ulid will not exist before case-file is persisted
   readonly fileSizeMb: number;
   readonly preSignedUrls?: [string];
-  readonly filePath?: string;
-  readonly preceedingDirectoryUlid?: string;
   readonly contentType?: string;
   readonly uploadId?: string;
   readonly sha256Hash?: string;

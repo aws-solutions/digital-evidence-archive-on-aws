@@ -27,5 +27,5 @@ export const defaultAppSettings: IAppSettings = {
   slogan: 'Better ingredients better evidence',
   description:
     'The Digital Evidence Archive is the perfect place to store all your evidence and pizza toppings.',
-  stage: 'test',
+  stage: process.env.STAGE ?? 'chewbacca',
 };
