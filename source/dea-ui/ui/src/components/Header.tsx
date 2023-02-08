@@ -29,7 +29,7 @@ export default function Header(): JSX.Element {
           type: 'menu-dropdown',
           text: `Sherlock Holmes`,
           items: profileActions,
-          onItemClick: async () => await signOut(),
+          onItemClick: async () => signOut(),
         },
       ]}
     />

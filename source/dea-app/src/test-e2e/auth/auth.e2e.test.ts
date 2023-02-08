@@ -36,7 +36,7 @@ describe('API authentication', () => {
     const client = axios.create();
     const url = `${deaApiUrl}hi`;
 
-    expect(client.get(url)).rejects.toThrow('Request failed with status code 403');
+    await expect(client.get(url)).rejects.toThrow('Request failed with status code 403');
   });
 
   it('should disallow calls without id token in the header', async () => {
@@ -54,7 +54,7 @@ describe('API authentication', () => {
 
     const url = `${deaApiUrl}hi`;
 
-    expect(client.get(url)).rejects.toThrow('Request failed with status code 400');
+    await expect(client.get(url)).rejects.toThrow('Request failed with status code 400');
     // const response = await client.get(url);
 
     // expect(response.status).toEqual(400);
