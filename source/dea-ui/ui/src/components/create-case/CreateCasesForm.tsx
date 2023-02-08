@@ -35,11 +35,13 @@ function CreateCasesForm(): JSX.Element {
       await createCase(formData);
     } finally {
       setIsSubmitLoading(false);
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       router.push('/');
     }
   }
 
   function onCancelHandler() {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     router.push('/');
   }
 

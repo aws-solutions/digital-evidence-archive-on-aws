@@ -39,7 +39,7 @@ describe('cognito helpers integration test', () => {
 
     const fakeRegion = region === 'us-east-1' ? 'us-east-2' : 'us-east-1';
 
-    expect(getTokenPayload(idToken, fakeRegion)).rejects.toThrow(
+    await expect(getTokenPayload(idToken, fakeRegion)).rejects.toThrow(
       'Unable to grab the parameters in SSM needed for token verification.'
     );
   });
@@ -52,7 +52,7 @@ describe('cognito helpers integration test', () => {
     const modifiedToken =
       token.substring(0, replacementIndex) + replacementChar + token.substring(replacementIndex + 1);
 
-    expect(getTokenPayload(modifiedToken, region)).rejects.toThrow('Unable to verify id token: ');
+    await expect(getTokenPayload(modifiedToken, region)).rejects.toThrow('Unable to verify id token: ');
   });
 
   it('should decode and return a DeaUser from the token', async () => {
@@ -73,13 +73,13 @@ describe('cognito helpers integration test', () => {
     const tokenPayload = await getTokenPayload(token, region);
 
     delete tokenPayload['given_name'];
-    expect(getDeaUserFromToken(tokenPayload)).rejects.toThrow(
+    await expect(getDeaUserFromToken(tokenPayload)).rejects.toThrow(
       'First and/or last name not given in id token.'
     );
 
     tokenPayload['given_name'] = firstName;
     delete tokenPayload['family_name'];
-    expect(getDeaUserFromToken(tokenPayload)).rejects.toThrow(
+    await expect(getDeaUserFromToken(tokenPayload)).rejects.toThrow(
       'First and/or last name not given in id token.'
     );
   });

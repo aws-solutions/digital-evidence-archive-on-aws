@@ -60,7 +60,7 @@ export const listCasesForUser = async (
   // Build a batch object of get requests for the case in each membership
   const batch = {};
   for (const caseMembership of caseMemberships) {
-    CasePersistence.getCase(caseMembership.caseUlid, batch, repositoryProvider);
+    await CasePersistence.getCase(caseMembership.caseUlid, batch, repositoryProvider);
   }
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const caseEntities = (await repositoryProvider.table.batchGet(batch, {

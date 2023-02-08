@@ -115,12 +115,12 @@ describe('create case membership resource', () => {
       }
     );
 
-    expect(createCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
       'CaseUser payload missing.'
     );
   });
 
-  it('should error if the resource and path ids do not match', () => {
+  it('should error if the resource and path ids do not match', async () => {
     const ulid1 = '01ARZ3NDEKTSV4RRFFQ69G5FAV';
     const ulid2 = '02ARZ3NDEKTSV4RRFFQ69G5FAV';
     const ulid3 = '03ARZ3NDEKTSV4RRFFQ69G5FAV';
@@ -139,7 +139,7 @@ describe('create case membership resource', () => {
       }
     );
 
-    expect(createCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
       'Requested Case Ulid does not match resource'
     );
   });

@@ -62,10 +62,10 @@ describe('Test case file upload', () => {
     await expect(initiateCaseFileUploadAndValidate(CASE_ULID, '/food/ramen.jpg')).rejects.toThrow();
 
     // allowed fileNames
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen.jpg'));
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen-jpg'));
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen_jpg'));
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen jpg'));
+    expect(await initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen.jpg')).toBeDefined();
+    expect(await initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen-jpg')).toBeDefined();
+    expect(await initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen_jpg')).toBeDefined();
+    expect(await initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen jpg')).toBeDefined();
 
     // validate filePath
     await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, 'foo')).rejects.toThrow();
@@ -74,9 +74,9 @@ describe('Test case file upload', () => {
     await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, 'foo&&')).rejects.toThrow();
 
     // allowed filePaths
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/'));
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/foo/'));
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/foo/bar/'));
+    expect(await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/')).toBeDefined();
+    expect(await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/foo/')).toBeDefined();
+    expect(await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, '/foo/bar/')).toBeDefined();
 
     // validate fileSizeMb
     await expect(
@@ -90,8 +90,12 @@ describe('Test case file upload', () => {
     ).rejects.toThrow();
 
     // allowed fileSizeMb
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 4_999_999));
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 1));
+    expect(
+      await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 4_999_999)
+    ).toBeDefined();
+    expect(
+      await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 1)
+    ).toBeDefined();
   });
 });
 

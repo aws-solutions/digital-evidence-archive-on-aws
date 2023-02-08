@@ -71,7 +71,7 @@ describe('lambda pre-execution checks', () => {
     // make sure not added twice (in the getByToken code, we assert only 1 exists)
 
     const idToken2 = await cognitoHelper.getIdTokenForUser(testUser);
-    const tokenId2 = await (await getTokenPayload(idToken, region)).sub;
+    const tokenId2 = (await getTokenPayload(idToken, region)).sub;
     expect(tokenId2).toStrictEqual(tokenId);
 
     const event2 = Object.assign(
