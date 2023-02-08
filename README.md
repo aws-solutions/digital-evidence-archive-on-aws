@@ -42,6 +42,13 @@ rush cupdate
 git defender --setup
 ```
 
+## Local Environment Setup
+Deployments are controlled by your `STAGE` environment variable. If unspecified this will default to `chewbacca`.
+Any deployments cohabitating on a single AWS account will require an account-unique `STAGE` name.
+By default the build process will seek a configuration file ([example](/source/common/config/chewbacca.json)) with the same name as your `STAGE`, however, you can optionally specify `CONFIGNAME` in your environment to specify a filename separate from your `STAGE`, this is useful if you want multiple stages that share the same configuration.
+DEA deployment requires a Cognito Domain Prefix to be specified for creation and reference during CDK deployment, for this you must set a value for `COGNITO_PREFIX` in your environment. If a value is not specified a CfnParameter will be added to the stack, which will produce an error if not specified during deployment along the lines of `Resolution error: ID components may not include unresolved tokens`.
+There are several environment values required to run E2E tests successfully, these should be set for you when running the test suite after deploying your stack. If you notice your tests failing due to unset values you can run the [setEnv](/source/dea-app/setEnv.sh) script to pull these values from your stack (e.g. `source ./dea-app/setEnv.sh`).
+
 ## Creating a PR from a Commit(s)
 
 OPTIONAL: run commit hooks locally
