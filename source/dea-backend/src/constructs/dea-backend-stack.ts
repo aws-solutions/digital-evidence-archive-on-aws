@@ -4,12 +4,13 @@
  */
 
 /* eslint-disable no-new */
-import { Aws, RemovalPolicy, StackProps, Duration } from 'aws-cdk-lib';
+import { Aws, StackProps, Duration } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { BlockPublicAccess, Bucket, BucketEncryption, CfnBucket, LifecycleRule } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
+import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 
 interface IBackendStackProps extends StackProps {
@@ -32,7 +33,7 @@ export class DeaBackendConstruct extends Construct {
     this.datasetsBucket = this._createDatasetsBucket(
       props.kmsKey,
       this.accessLogsBucket,
-      `DeaS3Datasets`,
+      `${scope.node.id}-DeaS3Datasets`,
       datasetsPrefix
     );
   }
@@ -41,8 +42,7 @@ export class DeaBackendConstruct extends Construct {
     const deaTable = new Table(this, 'DeaTable', {
       billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: { name: 'PK', type: AttributeType.STRING },
-      //should probably be RETAIN later
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: deaConfig.retainPolicy(),
       sortKey: { name: 'SK', type: AttributeType.STRING },
       encryption: TableEncryption.CUSTOMER_MANAGED,
       encryptionKey: key,
@@ -71,12 +71,12 @@ export class DeaBackendConstruct extends Construct {
     accessLogPrefixes: ReadonlyArray<string>
   ): Bucket {
     const s3AccessLogsBucket = new Bucket(this, 'S3AccessLogsBucket', {
-      autoDeleteObjects: false,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       encryption: BucketEncryption.S3_MANAGED,
       enforceSSL: true,
       publicReadAccess: false,
-      removalPolicy: RemovalPolicy.RETAIN,
+      removalPolicy: deaConfig.retainPolicy(),
+      autoDeleteObjects: deaConfig.isTestStack(),
       versioned: false, // https://github.com/awslabs/aws-solutions-constructs/issues/44
     });
 
@@ -124,7 +124,6 @@ export class DeaBackendConstruct extends Construct {
     accessLogPrefix: Readonly<string>
   ): Bucket {
     const datasetsBucket = new Bucket(this, 'S3DatasetsBucket', {
-      autoDeleteObjects: false,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       bucketKeyEnabled: true,
       encryption: BucketEncryption.KMS,
@@ -132,7 +131,8 @@ export class DeaBackendConstruct extends Construct {
       enforceSSL: true,
       lifecycleRules: this._getLifeCycleRules(),
       publicReadAccess: false,
-      removalPolicy: RemovalPolicy.RETAIN,
+      removalPolicy: deaConfig.retainPolicy(),
+      autoDeleteObjects: deaConfig.isTestStack(),
       versioned: true,
       serverAccessLogsBucket: accessLogBucket,
       serverAccessLogsPrefix: accessLogPrefix,

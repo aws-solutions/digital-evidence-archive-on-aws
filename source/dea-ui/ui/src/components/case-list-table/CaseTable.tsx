@@ -45,6 +45,7 @@ function CaseTable(): JSX.Element {
     selection: {},
   });
   function createNewCaseHandler() {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     router.push('/create-cases');
   }
 
@@ -83,6 +84,7 @@ function CaseTable(): JSX.Element {
               href={`/${e.ulid}`}
               onFollow={(e) => {
                 e.preventDefault();
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 router.push(`${e.detail.href}`);
               }}
             >

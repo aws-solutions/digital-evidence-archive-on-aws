@@ -4,22 +4,19 @@
  */
 /* eslint-disable no-new */
 import * as path from 'path';
-import { RemovalPolicy, StackProps } from 'aws-cdk-lib';
+import { deaConfig } from '@aws/dea-backend';
+import { StackProps } from 'aws-cdk-lib';
 import {
-  AwsIntegration, ContentHandling,
+  AwsIntegration,
+  ContentHandling,
   MethodOptions,
   Model,
   PassthroughBehavior,
-  RestApi
+  RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
 import { AnyPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import {
-  BlockPublicAccess,
-  Bucket,
-  BucketAccessControl,
-  BucketEncryption
-} from 'aws-cdk-lib/aws-s3';
+import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 
@@ -31,7 +28,6 @@ interface IUiStackProps extends StackProps {
 }
 
 export class DeaUiConstruct extends Construct {
-
   public constructor(scope: Construct, id: string, props: IUiStackProps) {
     super(scope, 'DeaUiStack');
 
@@ -42,8 +38,8 @@ export class DeaUiConstruct extends Construct {
       encryption: BucketEncryption.S3_MANAGED,
       serverAccessLogsBucket: props.accessLogsBucket,
       serverAccessLogsPrefix: props.accessLogPrefix,
-      removalPolicy: RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
+      removalPolicy: deaConfig.retainPolicy(),
+      autoDeleteObjects: deaConfig.isTestStack(),
     });
 
     this._addS3TLSSigV4BucketPolicy(bucket);

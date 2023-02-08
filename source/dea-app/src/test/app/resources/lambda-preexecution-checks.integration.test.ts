@@ -10,7 +10,7 @@ import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { getUserByTokenId, listUsers } from '../../../persistence/user';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
-import { envSettings } from '../../../test-e2e/helpers/settings';
+import { testEnv } from '../../../test-e2e/helpers/settings';
 import { dummyContext, dummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
@@ -22,7 +22,7 @@ describe('lambda pre-execution checks', () => {
   const testUser = 'lambdaPreExecutionChecksTestUser';
   const firstName = 'PreExecCheck';
   const lastName = 'TestUser';
-  const region = envSettings.awsRegion;
+  const region = testEnv.awsRegion;
 
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
@@ -71,7 +71,7 @@ describe('lambda pre-execution checks', () => {
     // make sure not added twice (in the getByToken code, we assert only 1 exists)
 
     const idToken2 = await cognitoHelper.getIdTokenForUser(testUser);
-    const tokenId2 = await (await getTokenPayload(idToken, region)).sub;
+    const tokenId2 = (await getTokenPayload(idToken, region)).sub;
     expect(tokenId2).toStrictEqual(tokenId);
 
     const event2 = Object.assign(

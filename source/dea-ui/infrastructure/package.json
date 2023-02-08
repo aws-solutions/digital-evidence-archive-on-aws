@@ -35,6 +35,7 @@
     "watch": "tsc -w"
   },
   "dependencies": {
+    "@aws/dea-backend": "workspace:*",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {

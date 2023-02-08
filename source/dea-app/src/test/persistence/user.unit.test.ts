@@ -67,11 +67,9 @@ describe('user persistence', () => {
     const lastName = 'Machio';
     const tokenId = 'ralphamachio';
 
-
     const firstName2 = 'Randy';
     const lastName2 = 'Savage';
     const tokenId2 = 'randysavage';
-
 
     const user1 = await createUser({ tokenId, firstName, lastName }, modelProvider);
     const user2 = await createUser(
@@ -115,8 +113,8 @@ describe('user persistence', () => {
 
     expect(actual.values).toEqual(expectedUsers.values);
 
-    deleteAndVerifyUser(user1.ulid, modelProvider);
-    deleteAndVerifyUser(user2.ulid, modelProvider);
+    await deleteAndVerifyUser(user1.ulid, modelProvider);
+    await deleteAndVerifyUser(user2.ulid, modelProvider);
   });
 
   it('should update a user', async () => {
@@ -127,7 +125,7 @@ describe('user persistence', () => {
     const updatedLastName = 'Van Winkle';
 
     const deaUser: DeaUser = {
-    tokenId,
+      tokenId,
       firstName,
       lastName,
     };

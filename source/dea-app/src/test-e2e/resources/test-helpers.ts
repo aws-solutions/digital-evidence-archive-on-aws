@@ -8,7 +8,7 @@ import Joi from 'joi';
 import { DeaCase } from '../../models/case';
 import { caseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
-import { envSettings } from '../helpers/settings';
+import { testEnv } from '../helpers/settings';
 
 // we don't want axios throwing an exception on non 200 codes
 export const validateStatus = () => true;
@@ -76,7 +76,7 @@ export async function callDeaAPIWithCreds(
   const interceptor = aws4Interceptor(
     {
       service: 'execute-api',
-      region: envSettings.awsRegion,
+      region: testEnv.awsRegion,
     },
     creds
   );

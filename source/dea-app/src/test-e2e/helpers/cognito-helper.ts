@@ -24,7 +24,7 @@ import { Credentials } from 'aws4-axios';
 import { getTokenPayload } from '../../cognito-token-helpers';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { deleteUser, getUserByTokenId } from '../../persistence/user';
-import { envSettings } from './settings';
+import { testEnv } from './settings';
 
 export default class CognitoHelper {
   private _identityPoolClient: CognitoIdentityClient;
@@ -39,10 +39,10 @@ export default class CognitoHelper {
   private _testPassword: string;
 
   public constructor() {
-    this._region = envSettings.awsRegion;
-    this._userPoolId = envSettings.userPoolId;
-    this._userPoolClientId = envSettings.clientId;
-    this._identityPoolId = envSettings.identityPoolId;
+    this._region = testEnv.awsRegion;
+    this._userPoolId = testEnv.userPoolId;
+    this._userPoolClientId = testEnv.clientId;
+    this._identityPoolId = testEnv.identityPoolId;
 
     this._idpUrl = `cognito-idp.${this._region}.amazonaws.com/${this._userPoolId}`;
 

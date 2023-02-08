@@ -5,15 +5,15 @@
 import { aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import CognitoHelper from '../helpers/cognito-helper';
-import { envSettings } from '../helpers/settings';
+import { testEnv } from '../helpers/settings';
 import { callDeaAPI } from '../resources/test-helpers';
 
 describe('API authentication', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
   const testUser = 'authE2ETestUser';
-  const deaApiUrl = envSettings.apiUrlOutput;
-  const region = envSettings.awsRegion;
+  const deaApiUrl = testEnv.apiUrlOutput;
+  const region = testEnv.awsRegion;
 
   beforeAll(async () => {
     // Create user in test group
@@ -36,7 +36,7 @@ describe('API authentication', () => {
     const client = axios.create();
     const url = `${deaApiUrl}hi`;
 
-    expect(client.get(url)).rejects.toThrow('Request failed with status code 403');
+    await expect(client.get(url)).rejects.toThrow('Request failed with status code 403');
   });
 
   it('should disallow calls without id token in the header', async () => {
@@ -54,7 +54,7 @@ describe('API authentication', () => {
 
     const url = `${deaApiUrl}hi`;
 
-    expect(client.get(url)).rejects.toThrow('Request failed with status code 400');
+    await expect(client.get(url)).rejects.toThrow('Request failed with status code 400');
     // const response = await client.get(url);
 
     // expect(response.status).toEqual(400);

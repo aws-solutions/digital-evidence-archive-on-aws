@@ -8,7 +8,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'next/core-web-vitals',
   ],
-  parserOptions: { tsconfigRootDir: __dirname },
+  parserOptions: { tsconfigRootDir: __dirname, project: './tsconfig.json' },
   plugins: ['testing-library', '@typescript-eslint', 'security', 'import'],
   parser: '@typescript-eslint/parser',
   rules: {
@@ -32,6 +32,8 @@ module.exports = {
     ],
     'import/newline-after-import': ['error'],
     curly: ['error'],
+    '@typescript-eslint/no-floating-promises': 'error',
+    '@typescript-eslint/await-thenable': 'error',
   },
   overrides: [
     // Only uses Testing Library lint rules in test files
