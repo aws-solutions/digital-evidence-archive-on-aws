@@ -4,17 +4,18 @@
  */
 
 import { fail } from 'assert';
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
 import { DeaCaseFile } from '../../../models/case-file';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { envSettings } from '../../../test-e2e/helpers/settings';
 import { dummyContext, dummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
+let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
 const FILE_NAME = 'fileName';
 const CASE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXYZ';
@@ -25,13 +26,19 @@ const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02
 const FILE_SIZE_MB = 50;
 const FILE_TYPE = 'image/jpeg';
 const DATASETS_PROVIDER = {
-  s3Client: new S3Client({ region: envSettings.awsRegion }),
-  bucketName: envSettings.datasetsBucketName,
+  s3Client: new S3Client({ region: 'us-east-1' }),
+  bucketName: 'testBucket',
 };
+
+jest.setTimeout(20000);
 
 describe('Test case file upload', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('CaseFileUploadTest');
+    s3Mock = mockClient(S3Client);
+    s3Mock.resolves({
+      UploadId: UPLOAD_ID,
+    });
   });
 
   afterAll(async () => {
@@ -103,6 +110,9 @@ describe('Test case file upload', () => {
       await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 1)
     ).toBeDefined();
   });
+
+  // add tests for complete also
+  // validate s3 input
 });
 
 async function initiateCaseFileUploadAndValidate(

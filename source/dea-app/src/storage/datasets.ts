@@ -34,7 +34,6 @@ export const generatePresignedUrlsForCaseFile = async (
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ): Promise<void> => {
   const s3Key = _getS3KeyForCaseFile(caseFile);
-  console.log(`yolo: ${datasetsProvider.bucketName}`);
 
   // define constants
   const response = await datasetsProvider.s3Client.send(
