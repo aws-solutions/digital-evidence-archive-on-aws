@@ -3,17 +3,17 @@
 exports[`DeaBackend constructs synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
-    "DeaBackendConstructteststackDeaS3AccessLogs50BF6416": Object {
+    "DeaBackendConstructDeaS3AccessLogs327B4237": Object {
       "Export": Object {
-        "Name": "[STAGE-REMOVED]-test-stack-DeaS3AccessLogs",
+        "Name": "[STAGE-REMOVED]-DeaS3AccessLogs",
       },
       "Value": Object {
         "Ref": "DeaBackendConstructS3AccessLogsBucket2074272F",
       },
     },
-    "DeaBackendConstructteststackDeaS3Datasets88052100": Object {
+    "DeaBackendConstructDeaS3DatasetsF44ADC66": Object {
       "Export": Object {
-        "Name": "[STAGE-REMOVED]-test-stack-DeaS3Datasets",
+        "Name": "[STAGE-REMOVED]-DeaS3Datasets",
       },
       "Value": Object {
         "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -442,6 +442,9 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -495,6 +498,9 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -548,6 +554,9 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -601,6 +610,9 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -654,6 +666,9 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -707,6 +722,9 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -760,6 +778,9 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -813,6 +834,9 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -866,6 +890,9 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2606,6 +2633,22 @@ Object {
                   ],
                 },
               ],
+            },
+            Object {
+              "Action": Array [
+                "s3:CreateMultipartUpload",
+                "s3:CompleteMultipartUpload",
+                "s3:AbortMultipartUpload",
+                "s3:ListMultipartUploads",
+                "s3:PutObject",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                  "Arn",
+                ],
+              },
             },
             Object {
               "Action": Array [

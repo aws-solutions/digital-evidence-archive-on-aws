@@ -4,11 +4,13 @@
  */
 
 import { fail } from 'assert';
+import { S3Client } from '@aws-sdk/client-s3';
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
 import { DeaCaseFile } from '../../../models/case-file';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
+import { envSettings } from '../../../test-e2e/helpers/settings';
 import { dummyContext, dummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
@@ -22,6 +24,10 @@ const UPLOAD_ID = '123456';
 const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
 const FILE_SIZE_MB = 50;
 const FILE_TYPE = 'image/jpeg';
+const DATASETS_PROVIDER = {
+  s3Client: new S3Client({ region: envSettings.awsRegion }),
+  bucketName: envSettings.datasetsBucketName,
+};
 
 describe('Test case file upload', () => {
   beforeAll(async () => {
@@ -38,12 +44,12 @@ describe('Test case file upload', () => {
   });
 
   it('should throw a validation exception when no payload is provided', async () => {
-    await expect(initiateCaseFileUpload(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(
-      'Initiate case file upload payload missing.'
-    );
-    await expect(completeCaseFileUpload(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(
-      'Complete case file upload payload missing.'
-    );
+    await expect(
+      initiateCaseFileUpload(dummyEvent, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+    ).rejects.toThrow('Initiate case file upload payload missing.');
+    await expect(
+      completeCaseFileUpload(dummyEvent, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+    ).rejects.toThrow('Complete case file upload payload missing.');
   });
 
   it('initiate upload should enforce a strict payload', async () => {
@@ -115,7 +121,7 @@ async function initiateCaseFileUploadAndValidate(
       }),
     }
   );
-  const response = await initiateCaseFileUpload(event, dummyContext, repositoryProvider);
+  const response = await initiateCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   return validateApiResponse(response, fileName, caseUlid, filePath);
 }
 
@@ -141,7 +147,7 @@ async function completeCaseFileUploadAndValidate(
       }),
     }
   );
-  const response = await completeCaseFileUpload(event, dummyContext, repositoryProvider);
+  const response = await completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   return validateApiResponse(response, fileName, caseUlid, filePath);
 }
 

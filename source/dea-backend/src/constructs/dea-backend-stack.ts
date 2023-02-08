@@ -28,12 +28,12 @@ export class DeaBackendConstruct extends Construct {
     this.deaTable = this._createDeaTable(props.kmsKey);
     const datasetsPrefix = 'dea-datasets-access-log';
     const prefixes = props.accessLogsPrefixes.concat([datasetsPrefix]);
-    this.accessLogsBucket = this._createAccessLogsBucket(`${scope.node.id}-DeaS3AccessLogs`, prefixes);
+    this.accessLogsBucket = this._createAccessLogsBucket(`DeaS3AccessLogs`, prefixes);
     this.datasetsBucket = this._createDatasetsBucket(
       props.kmsKey,
       this.accessLogsBucket,
-      `${scope.node.id}-DeaS3Datasets`,
-      datasetsPrefix,
+      `DeaS3Datasets`,
+      datasetsPrefix
     );
   }
 
@@ -80,7 +80,7 @@ export class DeaBackendConstruct extends Construct {
       versioned: false, // https://github.com/awslabs/aws-solutions-constructs/issues/44
     });
 
-    const resources = accessLogPrefixes.map(prefix => `${s3AccessLogsBucket.bucketArn}/${prefix}*`);
+    const resources = accessLogPrefixes.map((prefix) => `${s3AccessLogsBucket.bucketArn}/${prefix}*`);
 
     s3AccessLogsBucket.addToResourcePolicy(
       new PolicyStatement({
@@ -121,7 +121,7 @@ export class DeaBackendConstruct extends Construct {
     key: Readonly<Key>,
     accessLogBucket: Readonly<Bucket>,
     bucketNameOutput: Readonly<string>,
-    accessLogPrefix: Readonly<string>,
+    accessLogPrefix: Readonly<string>
   ): Bucket {
     const datasetsBucket = new Bucket(this, 'S3DatasetsBucket', {
       autoDeleteObjects: false,

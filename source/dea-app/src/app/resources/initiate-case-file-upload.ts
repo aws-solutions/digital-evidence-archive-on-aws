@@ -8,6 +8,7 @@ import { logger } from '../../logger';
 import { DeaCaseFile } from '../../models/case-file';
 import { initiateCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { defaultProvider } from '../../persistence/schema/entities';
+import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseFileService from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -17,7 +18,8 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider = defaultProvider,
+  datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {
   logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
   logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
@@ -31,7 +33,8 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
 
   const initiateUploadResponse = await CaseFileService.initiateCaseFileUpload(
     deaCaseFile,
-    repositoryProvider
+    repositoryProvider,
+    datasetsProvider
   );
 
   return {
