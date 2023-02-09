@@ -5,9 +5,13 @@
 
 import { fail } from 'assert';
 import Joi from 'joi';
-import { DeaCase } from '../../models/case';
+//import fetch, { Response } from 'node-fetch';
+import { DeaCaseFile } from '../../models/case-file';
 import { CaseStatus } from '../../models/case-status';
-import { initiateCaseFileUploadResponseSchema } from '../../models/validation/case-file';
+import {
+  completeCaseFileUploadResponseSchema,
+  initiateCaseFileUploadResponseSchema,
+} from '../../models/validation/case-file';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
@@ -57,7 +61,7 @@ describe('Test case file upload', () => {
     );
     caseIdsToDelete.push(createdCase.ulid ?? fail());
 
-    const getResponse = await callDeaAPIWithCreds(
+    const initiateUploadResponse = await callDeaAPIWithCreds(
       `${deaApiUrl}cases/${createdCase.ulid}/files`,
       'POST',
       idToken,
@@ -70,11 +74,36 @@ describe('Test case file upload', () => {
         fileSizeMb: 1,
       }
     );
-    console.log('yolo');
-    console.log(getResponse);
 
-    expect(getResponse.status).toEqual(200);
-    const fetchedCase: DeaCase = await getResponse.data;
-    Joi.assert(fetchedCase, initiateCaseFileUploadResponseSchema);
+    expect(initiateUploadResponse.status).toEqual(200);
+    const initiatedCaseFile: DeaCaseFile = await initiateUploadResponse.data;
+    Joi.assert(initiatedCaseFile, initiateCaseFileUploadResponseSchema);
+
+    const presignedUrls = initiatedCaseFile.presignedUrls ?? [];
+    const uploadPromises: Promise<Response>[] = [];
+
+    presignedUrls.forEach((url, index) => {
+      uploadPromises[index] = fetch(url, { body: 'hello world', method: 'PUT' });
+    });
+
+    await Promise.all(uploadPromises);
+    const completeUploadResponse = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${createdCase.ulid}/files/${initiatedCaseFile.ulid}`,
+      'POST',
+      idToken,
+      creds,
+      {
+        caseUlid: createdCase.ulid,
+        ulid: initiatedCaseFile.ulid,
+        uploadId: initiatedCaseFile.uploadId,
+        fileName: 'filename',
+        filePath: '/',
+        sha256Hash: 'B94D27B9934D3E08A52E52D7DA7DABFAC484EFE37A5380EE9088F7ACE2EFCDE9',
+      }
+    );
+
+    expect(completeUploadResponse.status).toEqual(200);
+    const uploadedCaseFile: DeaCaseFile = await completeUploadResponse.data;
+    Joi.assert(uploadedCaseFile, completeCaseFileUploadResponseSchema);
   });
 });
