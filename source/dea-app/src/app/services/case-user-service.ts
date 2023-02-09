@@ -62,7 +62,7 @@ export const deleteCaseUsersForCase = async (caseUlid: string, repositoryProvide
   let batch = {};
   const caseUsers = await CaseUserPersistence.listCaseUsersByCase(
     caseUlid,
-    100,
+    /* limit */ 25,
     undefined,
     repositoryProvider
   );
@@ -73,14 +73,16 @@ export const deleteCaseUsersForCase = async (caseUlid: string, repositoryProvide
       batch
     );
   }
+
   await repositoryProvider.table.batchWrite(batch);
 
-  while (caseUsers.next) {
+  let next = caseUsers.next;
+  while (next) {
     batch = {};
     const additionalCaseUsers = await CaseUserPersistence.listCaseUsersByCase(
       caseUlid,
-      100,
-      caseUsers.next,
+      /* limit */ 25,
+      next,
       repositoryProvider
     );
     for (const caseUser of additionalCaseUsers) {
@@ -91,6 +93,7 @@ export const deleteCaseUsersForCase = async (caseUlid: string, repositoryProvide
       );
     }
     await repositoryProvider.table.batchWrite(batch);
+    next = additionalCaseUsers.next;
   }
 };
 

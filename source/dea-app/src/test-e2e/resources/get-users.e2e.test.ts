@@ -45,8 +45,6 @@ describe('get users api', () => {
     const users: DeaUser[] = await response.data.users;
     users.forEach((user) => Joi.assert(user, userResponseSchema));
 
-    console.log(JSON.stringify(users));
-
     //Both users in the DB are found
     expect(users.find((user) => user.firstName === user1FirstName)).toBeDefined();
     expect(users.find((user) => user.firstName === user2FirstName)).toBeDefined();
