@@ -4,6 +4,8 @@
  */
 
 import { fail } from 'assert';
+import fs from 'fs';
+import axios from 'axios';
 import Joi from 'joi';
 //import fetch, { Response } from 'node-fetch';
 import { DeaCaseFile } from '../../models/case-file';
@@ -16,7 +18,8 @@ import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
 
-const FILE_TYPE = 'image/jpeg';
+const FILE_TYPE = 'application/octet-stream';
+export const validateStatus = () => true;
 
 describe('Test case file upload', () => {
   const cognitoHelper = new CognitoHelper();
@@ -75,6 +78,7 @@ describe('Test case file upload', () => {
       }
     );
 
+    console.log(initiateUploadResponse);
     expect(initiateUploadResponse.status).toEqual(200);
     const initiatedCaseFile: DeaCaseFile = await initiateUploadResponse.data;
     Joi.assert(initiatedCaseFile, initiateCaseFileUploadResponseSchema);
@@ -82,14 +86,23 @@ describe('Test case file upload', () => {
     const presignedUrls = initiatedCaseFile.presignedUrls ?? [];
     const uploadPromises: Promise<Response>[] = [];
 
+    const httpClient = axios.create({
+      headers: {
+        'Content-Type': FILE_TYPE,
+      },
+    });
+
+    const file = fs.readFileSync('/tmp/helloworld');
+    console.log('initiate completed');
     presignedUrls.forEach((url, index) => {
-      uploadPromises[index] = fetch(url, { body: 'hello world', method: 'PUT' });
+      uploadPromises[index] = httpClient.put(url, file, { validateStatus });
     });
 
     await Promise.all(uploadPromises);
+    console.log(uploadPromises);
     const completeUploadResponse = await callDeaAPIWithCreds(
       `${deaApiUrl}cases/${createdCase.ulid}/files/${initiatedCaseFile.ulid}`,
-      'POST',
+      'PUT',
       idToken,
       creds,
       {
@@ -101,6 +114,8 @@ describe('Test case file upload', () => {
         sha256Hash: 'B94D27B9934D3E08A52E52D7DA7DABFAC484EFE37A5380EE9088F7ACE2EFCDE9',
       }
     );
+
+    console.log(completeUploadResponse);
 
     expect(completeUploadResponse.status).toEqual(200);
     const uploadedCaseFile: DeaCaseFile = await completeUploadResponse.data;

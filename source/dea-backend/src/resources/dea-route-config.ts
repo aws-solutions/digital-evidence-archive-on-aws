@@ -50,7 +50,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/initiate-case-file-upload-handler.ts',
     },
     {
-      path: '/cases/{caseId}/files',
+      path: '/cases/{caseId}/files/{fileId}',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/complete-case-file-upload-handler.ts',
     },

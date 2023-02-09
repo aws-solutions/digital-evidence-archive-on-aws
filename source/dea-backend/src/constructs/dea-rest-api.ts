@@ -270,7 +270,7 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['kms:Encrypt', 'kms:Decrypt'],
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
         resources: [kmsKeyArn],
       })
     );

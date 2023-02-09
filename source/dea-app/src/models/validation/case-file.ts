@@ -45,6 +45,7 @@ export const completeCaseFileUploadResponseSchema = Joi.object({
   fileName: fileName,
   filePath: filePath,
   sha256Hash: sha256Hash,
+  fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
   created: Joi.date(),
   updated: Joi.date(),
 });

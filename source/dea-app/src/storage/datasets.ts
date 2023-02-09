@@ -12,7 +12,6 @@ import {
   ListPartsOutput,
   Part,
 } from '@aws-sdk/client-s3';
-
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getRequiredEnv } from '../lambda-http-helpers';
 import { logger } from '../logger';
@@ -47,9 +46,9 @@ export const generatePresignedUrlsForCaseFile = async (
       // BucketKeyEnabled: true,
       // ServerSideEncryption: 'aws:kms',
       //ChecksumAlgorithm: 'SHA256'
-      ContentType: caseFile.contentType,
-      ObjectLockLegalHoldStatus: 'ON',
-      StorageClass: 'INTELLIGENT_TIERING',
+      //ContentType: caseFile.contentType,
+      //ObjectLockLegalHoldStatus: 'ON',
+      //StorageClass: 'INTELLIGENT_TIERING',
     })
   );
 
@@ -91,6 +90,7 @@ export const completeUploadForCaseFile = async (
   let uploadedParts: Part[] = [];
   let listPartsResponse: ListPartsOutput;
   let partNumberMarker;
+  logger.debug('Collecting parts');
   /* eslint-disable no-await-in-loop */
   do {
     listPartsResponse = await datasetsProvider.s3Client.send(
@@ -111,6 +111,8 @@ export const completeUploadForCaseFile = async (
 
     partNumberMarker = listPartsResponse.NextPartNumberMarker;
   } while (listPartsResponse.IsTruncated);
+  logger.debug('Collected parts. Trying to mark completed');
+  logger.debug(`uploaded parts: ${uploadedParts}`);
 
   await datasetsProvider.s3Client.send(
     new CompleteMultipartUploadCommand({
@@ -121,6 +123,8 @@ export const completeUploadForCaseFile = async (
       MultipartUpload: { Parts: uploadedParts },
     })
   );
+
+  logger.debug('Completed upload');
 };
 
 function _getS3KeyForCaseFile(caseFile: DeaCaseFile): string {
