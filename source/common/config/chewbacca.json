@@ -30,6 +30,21 @@
         {
           "path": "/cases/{caseId}/userMemberships",
           "method": "POST"
+        },
+        {
+          "path": "/users",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "name": "NoPermissionsGroup",
+      "description": "containing users who can't do anything in the system",
+      "precedence": 1,
+      "endpoints": [
+        {
+          "path": "/hi",
+          "method": "GET"
         }
       ]
     },
@@ -83,6 +98,37 @@
         {
           "path": "/cases/{caseId}",
           "method": "DELETE"
+        }
+      ]
+    },
+    {
+      "name": "GetMyCasesTestGroup",
+      "description": "used for get my cases API e2e testing",
+      "precedence": 100,
+      "endpoints": [
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}",
+          "method": "DELETE"
+        },
+        {
+          "path": "/cases/my-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships",
+          "method": "POST"
+        },
+        {
+          "path": "/users",
+          "method": "GET"
         }
       ]
     }

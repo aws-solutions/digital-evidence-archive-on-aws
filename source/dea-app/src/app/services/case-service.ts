@@ -12,6 +12,7 @@ import * as CasePersistence from '../../persistence/case';
 import * as CaseUserPersistence from '../../persistence/case-user';
 import { isDefined } from '../../persistence/persistence-helpers';
 import { CaseType, defaultProvider } from '../../persistence/schema/entities';
+import * as CaseUserService from './case-user-service';
 
 export const createCases = async (
   deaCase: DeaCase,
@@ -102,5 +103,6 @@ export const deleteCase = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ): Promise<void> => {
-  return await CasePersistence.deleteCase(caseUlid, repositoryProvider);
+  await CasePersistence.deleteCase(caseUlid, repositoryProvider);
+  await CaseUserService.deleteCaseUsersForCase(caseUlid, repositoryProvider);
 };

@@ -14,6 +14,7 @@ import { deleteCase } from './app/resources/delete-cases';
 import { getAllCases } from './app/resources/get-all-cases';
 import { getCase } from './app/resources/get-case-details';
 import { getMyCases } from './app/resources/get-my-cases';
+import { getUsers } from './app/resources/get-users';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
 import { sayBye } from './app/resources/say-bye';
 import { sayHello } from './app/resources/say-hello';
@@ -33,6 +34,7 @@ export {
   runPreExecutionChecks,
   updateCases,
   createCaseMembership,
+  getUsers,
   DeaCase,
   DEAGatewayProxyHandler,
   DEAPreLambdaExecutionChecks,

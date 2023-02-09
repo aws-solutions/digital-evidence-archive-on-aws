@@ -7,6 +7,7 @@ import { logger } from '../../logger';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { listAllCases } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { getNextToken } from './get-next-token';
 
 export const getAllCases: DEAGatewayProxyHandler = async (
   event,
@@ -44,11 +45,4 @@ export const getAllCases: DEAGatewayProxyHandler = async (
       'Access-Control-Allow-Origin': '*',
     },
   };
-};
-
-const getNextToken = (nextToken: object | undefined): string | undefined => {
-  if (nextToken) {
-    return Buffer.from(JSON.stringify(nextToken)).toString('base64');
-  }
-  return undefined;
 };

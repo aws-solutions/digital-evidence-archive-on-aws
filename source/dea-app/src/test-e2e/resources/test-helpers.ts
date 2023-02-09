@@ -2,6 +2,8 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+
+import { randomBytes } from 'crypto';
 import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import Joi from 'joi';
@@ -12,6 +14,10 @@ import { testEnv } from '../helpers/settings';
 
 // we don't want axios throwing an exception on non 200 codes
 export const validateStatus = () => true;
+
+export const randomSuffix = (length = 10) => {
+  return randomBytes(10).toString('hex').substring(0, length);
+};
 
 export async function deleteCase(
   baseUrl: string,
