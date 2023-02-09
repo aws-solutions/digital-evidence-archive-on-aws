@@ -21,8 +21,11 @@ export const initiateCaseFileUploadResponseSchema = Joi.object({
   fileName: fileName,
   filePath: filePath,
   fileType: fileType,
+  isFile: Joi.boolean(),
   fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
   presignedUrls: Joi.array().items(Joi.string().uri()),
+  created: Joi.date(),
+  updated: Joi.date(),
 });
 
 export const completeCaseFileUploadRequestSchema = Joi.object({
@@ -38,7 +41,10 @@ export const completeCaseFileUploadResponseSchema = Joi.object({
   caseUlid: joiUlid,
   uploadId: uploadId,
   ulid: joiUlid,
+  isFile: Joi.boolean(),
   fileName: fileName,
   filePath: filePath,
   sha256Hash: sha256Hash,
+  created: Joi.date(),
+  updated: Joi.date(),
 });

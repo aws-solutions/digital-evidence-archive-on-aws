@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { logger } from '../../logger';
 import { DeaCaseFile } from '../../models/case-file';
 import * as CaseFilePersistence from '../../persistence/case-file';
 import { defaultProvider } from '../../persistence/schema/entities';
@@ -30,9 +31,10 @@ export const initiateCaseFileUpload = async (
     deaCaseFile,
     repositoryProvider
   );
-
+  logger.debug('Created case-file in DDB. Trying to create presigned URLs');
   await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider);
 
+  logger.debug('Done creating presigned URLs. Returning successfully');
   return caseFile;
 };
 

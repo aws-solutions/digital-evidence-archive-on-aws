@@ -4,10 +4,13 @@
  */
 
 import { fail } from 'assert';
+import Joi from 'joi';
+import { DeaCase } from '../../models/case';
 import { CaseStatus } from '../../models/case-status';
+import { initiateCaseFileUploadResponseSchema } from '../../models/validation/case-file';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPI, callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
+import { callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
 
 const FILE_TYPE = 'image/jpeg';
 
@@ -23,7 +26,7 @@ describe('Test case file upload', () => {
 
   beforeAll(async () => {
     // Create user in test group
-    await cognitoHelper.createUser(testUser, 'CaseFileUploadTestGroup', 'CaseFile', 'Uploader');
+    await cognitoHelper.createUser(testUser, 'CaseWorkerGroup', 'CaseFile', 'Uploader');
   });
 
   afterAll(async () => {
@@ -61,7 +64,7 @@ describe('Test case file upload', () => {
       creds,
       {
         caseUlid: createdCase.ulid,
-        fileName: new Date().toUTCString(),
+        fileName: 'filename',
         filePath: '/',
         fileType: FILE_TYPE,
         fileSizeMb: 1,
@@ -69,5 +72,9 @@ describe('Test case file upload', () => {
     );
     console.log('yolo');
     console.log(getResponse);
+
+    expect(getResponse.status).toEqual(200);
+    const fetchedCase: DeaCase = await getResponse.data;
+    Joi.assert(fetchedCase, initiateCaseFileUploadResponseSchema);
   });
 });

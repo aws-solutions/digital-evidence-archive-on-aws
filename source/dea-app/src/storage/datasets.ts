@@ -15,6 +15,7 @@ import {
 
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getRequiredEnv } from '../lambda-http-helpers';
+import { logger } from '../logger';
 import { DeaCaseFile } from '../models/case-file';
 
 const region = process.env.AWS_REGION ?? 'us-east-1';
@@ -35,19 +36,25 @@ export const generatePresignedUrlsForCaseFile = async (
 ): Promise<void> => {
   const s3Key = _getS3KeyForCaseFile(caseFile);
 
+  logger.debug(`Generated s3Key - ${s3Key}`);
+  logger.debug(`S3 bucket - ${datasetsProvider.bucketName}`);
+
   // define constants
   const response = await datasetsProvider.s3Client.send(
     new CreateMultipartUploadCommand({
       Bucket: datasetsProvider.bucketName,
       Key: s3Key,
-      BucketKeyEnabled: true,
-      ServerSideEncryption: 'aws:kms',
+      // BucketKeyEnabled: true,
+      // ServerSideEncryption: 'aws:kms',
       //ChecksumAlgorithm: 'SHA256'
       ContentType: caseFile.contentType,
       ObjectLockLegalHoldStatus: 'ON',
       StorageClass: 'INTELLIGENT_TIERING',
     })
   );
+
+  logger.debug('Multipart upload initiated. Going to create presigned URLs');
+  logger.debug(String(response));
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const uploadId = response.UploadId as string;
@@ -56,6 +63,8 @@ export const generatePresignedUrlsForCaseFile = async (
   // limits obtained from link below on 2/7/2023
   // https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html
   const fileParts = Math.ceil(caseFile.fileSizeMb / 500); // fixme: chunk size should be a variable for testing purposes
+
+  logger.debug(`We need ${fileParts} number of chunks`);
   const presignedUrlPromises = [];
   for (let i = 0; i < fileParts; i++) {
     presignedUrlPromises[i] = _getPresignedUrlPromise(
@@ -70,6 +79,7 @@ export const generatePresignedUrlsForCaseFile = async (
     caseFile.presignedUrls = presignedUrls;
   });
 
+  logger.debug('Generated presigned URLs');
   // update ddb with upload-id
   caseFile.uploadId = uploadId;
 };

@@ -34,6 +34,22 @@
         {
           "path": "/users",
           "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/files",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships/files/{fileId}",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships/files/{fileId}",
+          "method": "GET"
         }
       ]
     },

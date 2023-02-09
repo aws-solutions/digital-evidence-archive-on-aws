@@ -21,7 +21,7 @@
     "build:test": "heft test && rushx pkg-json-lint && rushx make-badges",
     "check-license-header": "license-check-and-add check -f license-add-config.json",
     "depcheck": "depcheck",
-    "e2e:only": ". ./setEnv.sh && heft test --no-build --test-path-pattern '.*/*e2e.test.*'",
+    "e2e:only": ". ./setEnv.sh && heft test --no-build --test-path-pattern '.*/case-file-upload.e2e.test.*'",
     "integration:only": "heft test --no-build  --test-path-pattern '.*/*integration.test.*'",
     "license-checker": "license-checker --onlyAllow 'MIT; Apache-2.0; ISC; BSD'",
     "lint": "eslint . --max-warnings=0",

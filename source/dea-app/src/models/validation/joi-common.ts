@@ -8,7 +8,7 @@ import { CaseStatus } from '../case-status';
 
 export const allButDisallowed = new RegExp('^[^\\<>/]+$');
 
-export const filenameSafeCharsRegex = new RegExp('^[^<>:"\\/|?*]+$');
+export const filenameSafeCharsRegex = new RegExp('^[^/\\0]+$');
 
 // using unix convention. will have to see what we need to do to be unix and windows compatible
 // allow '/' for root directory, enforce path starts and ends with '/' for anything else

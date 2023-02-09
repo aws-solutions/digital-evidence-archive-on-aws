@@ -257,13 +257,14 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: [
-          's3:CreateMultipartUpload',
-          's3:CompleteMultipartUpload',
           's3:AbortMultipartUpload',
-          's3:ListMultipartUploads',
+          's3:ListMultipartUploadParts',
           's3:PutObject',
+          's3:GetObject',
+          's3:GetObjectLegalHold',
+          's3:PutObjectLegalHold',
         ],
-        resources: [datasetsBucketArn],
+        resources: [`${datasetsBucketArn}/*`],
       })
     );
 

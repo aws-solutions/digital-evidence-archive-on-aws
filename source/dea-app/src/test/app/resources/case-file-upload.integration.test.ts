@@ -65,17 +65,13 @@ describe('Test case file upload', () => {
     await expect(initiateCaseFileUploadAndValidate('')).rejects.toThrow();
 
     // validate fileName
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc>ff')).rejects.toThrow();
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc<ff')).rejects.toThrow();
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc:ff')).rejects.toThrow();
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc|ff')).rejects.toThrow();
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc?ff')).rejects.toThrow();
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc*ff')).rejects.toThrow();
     await expect(initiateCaseFileUploadAndValidate(CASE_ULID, '')).rejects.toThrow();
     await expect(initiateCaseFileUploadAndValidate(CASE_ULID, '/food/ramen.jpg')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'hello\0')).rejects.toThrow();
 
     // allowed fileNames
     expect(await initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen.jpg')).toBeDefined();
+    expect(await initiateCaseFileUploadAndValidate(CASE_ULID, '01234')).toBeDefined();
     expect(await initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen-jpg')).toBeDefined();
     expect(await initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen_jpg')).toBeDefined();
     expect(await initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen jpg')).toBeDefined();
