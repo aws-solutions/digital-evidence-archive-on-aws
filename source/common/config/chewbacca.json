@@ -30,6 +30,21 @@
         {
           "path": "/cases/{caseId}/userMemberships",
           "method": "POST"
+        },
+        {
+          "path": "/users",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "name": "NoPermissionsGroup",
+      "description": "containing users who can't do anything in the system",
+      "precedence": 1,
+      "endpoints": [
+        {
+          "path": "/hi",
+          "method": "GET"
         }
       ]
     },
@@ -110,6 +125,10 @@
         {
           "path": "/cases/{caseId}/userMemberships",
           "method": "POST"
+        },
+        {
+          "path": "/users",
+          "method": "GET"
         }
       ]
     }

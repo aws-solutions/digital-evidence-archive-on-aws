@@ -595,6 +595,17 @@ Object {
                   "MatchType": "Contains",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
+                      "DeaAuthNoPermissionsGroupRole1E0F8CCF",
+                      "Arn",
+                    ],
+                  },
+                  "Value": "NoPermissionsGroup",
+                },
+                Object {
+                  "Claim": "cognito:groups",
+                  "MatchType": "Contains",
+                  "RoleARN": Object {
+                    "Fn::GetAtt": Array [
                       "DeaAuthAuthTestGroupRole23D2E7FA",
                       "Arn",
                     ],
@@ -655,6 +666,71 @@ Object {
         },
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+    },
+    "DeaAuthNoPermissionsGroupEF9BAFBD": Object {
+      "Properties": Object {
+        "Description": "Group containing users who can't do anything in the system",
+        "GroupName": "NoPermissionsGroup",
+        "Precedence": 1,
+        "RoleArn": Object {
+          "Fn::GetAtt": Array [
+            "DeaAuthNoPermissionsGroupRole1E0F8CCF",
+            "Arn",
+          ],
+        },
+        "UserPoolId": Object {
+          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolGroup",
+    },
+    "DeaAuthNoPermissionsGroupRole1E0F8CCF": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": Object {
+                "ForAnyValue:StringLike": Object {
+                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                },
+                "StringEquals": Object {
+                  "cognito-identity.amazonaws.com:aud": Object {
+                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Federated": "cognito-identity.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Description": "Role containing users who can't do anything in the system",
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaAuthNoPermissionsGroupRolePolicy8475E5D3": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "execute-api:Invoke",
+              "Effect": "Allow",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaAuthNoPermissionsGroupRolePolicy8475E5D3",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaAuthNoPermissionsGroupRole1E0F8CCF",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]": Object {
       "Properties": Object {

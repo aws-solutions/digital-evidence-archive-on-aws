@@ -25,7 +25,7 @@ describe('create cases api', () => {
   afterAll(async () => {
     const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
     for (const caseId of caseIdsToDelete) {
-      await deleteCase(deaApiUrl, caseId, idToken, creds, region);
+      await deleteCase(deaApiUrl, caseId, idToken, creds);
     }
     await cognitoHelper.cleanup();
   }, 30000);
