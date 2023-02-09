@@ -20,7 +20,9 @@ export const initiateCaseFileUpload = async (
   repositoryProvider = defaultProvider,
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ): Promise<DeaCaseFile> => {
-  // need to see who is initiating upload. add that info to s3 and ddb
+  // todo: need to see who is initiating upload. add that info to s3 and ddb
+  // check if case exists
+  // check case-user has permissions
   // check if file already exists
   // need to add a status to indicate if file has been uploaded or is pending
   // need to add a ttl to clear out incomplete case-files
@@ -42,6 +44,8 @@ export const completeCaseFileUpload = async (
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ): Promise<DeaCaseFile> => {
   // todo: check if case-file exists and that it is actually pending
+  // check if case exists
+  // check case-user has permissions
 
   await completeUploadForCaseFile(deaCaseFile, datasetsProvider);
 

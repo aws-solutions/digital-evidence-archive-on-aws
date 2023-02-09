@@ -321,7 +321,7 @@ paths:
           description: unchanged status
   /cases/{caseId}/files:
     post:
-      summary: Upload files to a case
+      summary: Begin file upload to a case
       tags:
         - cases
       parameters:
@@ -408,6 +408,33 @@ paths:
                     type: string
                   file:
                     $ref: '#/components/schemas/CaseFile'
+    put:
+      summary: Complete file upload to a case
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseFiles'
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseUploadResponse'
   /cases/{caseId}/files/{fileId}/contents:
     get:
       summary: Download file
@@ -553,9 +580,13 @@ components:
           type: string
         caseId:
           type: string
+        fileSizeMb:
+          type: number
         sha256Hash:
           type: string
         ulid:
+          type: string
+        uploadId:
           type: string
         isFile:
           type: boolean
@@ -570,7 +601,9 @@ components:
       properties:
         caseId:
           type: string
-        uploadUrls:
+        uploadId:
+          type: string
+        presignedUrls:
           type: array
           items:
             type: string
