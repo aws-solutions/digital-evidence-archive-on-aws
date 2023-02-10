@@ -59,8 +59,8 @@ describe('DeaBackend constructs', () => {
     });
 
     //handlers
-    template.resourceCountIs('AWS::Lambda::Function', 11);
-    template.resourceCountIs('AWS::ApiGateway::Method', 19);
+    template.resourceCountIs('AWS::Lambda::Function', 13);
+    template.resourceCountIs('AWS::ApiGateway::Method', 23);
 
     addSnapshotSerializers();
 

@@ -320,7 +320,7 @@ Object {
     "DeaAuthDEAUserPoolCognitoDomainAB9C904A": Object {
       "Properties": Object {
         "Domain": Object {
-          "Ref": "DeaAuthamuthanadeadeviad[STAGE-REMOVED][HASH REMOVED]",
+          "Ref": "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]",
         },
         "UserPoolId": Object {
           "Ref": "DeaAuthDEAUserPool22DB2BAB",
@@ -732,7 +732,7 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DeaAuthamuthanadeadeviad[STAGE-REMOVED][HASH REMOVED]": Object {
+    "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]": Object {
       "Properties": Object {
         "Domain": "[DOMAIN-REMOVED]",
         "UserPoolId": Object {
