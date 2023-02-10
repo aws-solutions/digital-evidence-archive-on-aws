@@ -57,3 +57,52 @@ export const getCaseUsersForUser = async (
 ): Promise<Paged<CaseUser>> => {
   return CaseUserPersistence.listCaseUsersByUser(userUlid, limit, nextToken, repositoryProvider);
 };
+
+export const deleteCaseUsersForCase = async (caseUlid: string, repositoryProvider = defaultProvider) => {
+  let batch = {};
+  const caseUsers = await CaseUserPersistence.listCaseUsersByCase(
+    caseUlid,
+    /* limit */ 25,
+    undefined,
+    repositoryProvider
+  );
+  for (const caseUser of caseUsers) {
+    await CaseUserPersistence.deleteCaseUser(
+      { userUlid: caseUser.userUlid, caseUlid: caseUser.caseUlid },
+      repositoryProvider,
+      batch
+    );
+  }
+
+  await repositoryProvider.table.batchWrite(batch);
+
+  let next = caseUsers.next;
+  while (next) {
+    batch = {};
+    const additionalCaseUsers = await CaseUserPersistence.listCaseUsersByCase(
+      caseUlid,
+      /* limit */ 25,
+      next,
+      repositoryProvider
+    );
+    for (const caseUser of additionalCaseUsers) {
+      await CaseUserPersistence.deleteCaseUser(
+        { userUlid: caseUser.userUlid, caseUlid: caseUser.caseUlid },
+        repositoryProvider,
+        batch
+      );
+    }
+    await repositoryProvider.table.batchWrite(batch);
+    next = additionalCaseUsers.next;
+  }
+};
+
+export const deleteCaseUser = async (
+  userUlid: string,
+  caseUlid: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider = defaultProvider
+): Promise<void> => {
+  await CaseUserPersistence.deleteCaseUser({ userUlid, caseUlid }, repositoryProvider);
+};

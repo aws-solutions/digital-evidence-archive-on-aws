@@ -439,6 +439,10 @@
       "allowedCategories": ["production"]
     },
     {
+      "name": "minimist",
+      "allowedCategories": ["production"]
+    },
+    {
       "name": "next",
       "allowedCategories": ["production", "prototypes"]
     },

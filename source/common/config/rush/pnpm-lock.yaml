@@ -27,6 +27,7 @@ importers:
       '@types/jest': ^27.4.1
       '@types/js-yaml': ^4.0.5
       '@types/lodash': ^4.14.181
+      '@types/minimist': ~1.2.2
       '@types/node': ^14
       '@types/node-fetch': 2.6.2
       '@types/uuid': ^8.3.4
@@ -53,6 +54,7 @@ importers:
       license-check-and-add: ^4.0.5
       license-checker: ^25.0.1
       lodash: ^4.17.21
+      minimist: ~1.2.8
       node-fetch: ^3.3.0
       nodemon: ^2.0.19
       npm-package-json-lint: ^6.3.0
@@ -61,6 +63,7 @@ importers:
       sort-package-json: ^1.57.0
       ts-jest: ^27.1.3
       ts-mockito: ~2.6.1
+      ts-node: ^10.4.0
       typescript: ^4.5.2
       uuid: ^9.0.0
       wait-port: ~1.0.4
@@ -86,14 +89,15 @@ importers:
       '@aws/workbench-core-logging': 0.1.1
       '@rushstack/eslint-config': 3.1.1_eslint@8.27.0+typescript@4.8.4
       '@rushstack/heft': 0.48.8
-      '@rushstack/heft-jest-plugin': 0.3.45_@rushstack+heft@0.48.8
-      '@rushstack/heft-node-rig': 1.11.8_@rushstack+heft@0.48.8
+      '@rushstack/heft-jest-plugin': 0.3.45_ed2b2ce8c15b6b39e2970b3fe70a152d
+      '@rushstack/heft-node-rig': 1.11.8_ed2b2ce8c15b6b39e2970b3fe70a152d
       '@types/cookie-parser': 1.4.3
       '@types/cors': 2.8.12
       '@types/heft-jest': 1.0.2
       '@types/jest': 27.5.2
       '@types/js-yaml': 4.0.5
       '@types/lodash': 4.14.188
+      '@types/minimist': 1.2.2
       '@types/node': 14.18.33
       '@types/node-fetch': 2.6.2
       '@types/uuid': 8.3.4
@@ -110,10 +114,11 @@ importers:
       eslint-plugin-import: 2.26.0_eslint@8.27.0
       eslint-plugin-security: 1.5.0
       istanbul-badges-readme: 1.8.1
-      jest: 27.5.1
+      jest: 27.5.1_ts-node@10.9.1
       joi: 17.7.0
       license-check-and-add: 4.0.5
       license-checker: 25.0.1
+      minimist: 1.2.8
       node-fetch: 3.3.0
       nodemon: 2.0.20
       npm-package-json-lint: 6.3.0
@@ -121,6 +126,7 @@ importers:
       sort-package-json: 1.57.0
       ts-jest: 27.1.5_3e98952c91d0ad38e7beba6fb8181295
       ts-mockito: 2.6.1
+      ts-node: 10.9.1_c386e8b7aaca4ce6057194a7156a4f00
       typescript: 4.8.4
       wait-port: 1.0.4
 
@@ -6003,7 +6009,7 @@ packages:
       listr2: 3.14.0_enquirer@2.3.6
       lodash: 4.17.21
       log-symbols: 4.1.0
-      minimist: 1.2.7
+      minimist: 1.2.8
       ospath: 1.2.2
       pretty-bytes: 5.6.0
       proxy-from-env: 1.0.0
@@ -9001,7 +9007,7 @@ packages:
     resolution: {integrity: sha512-aKS4WQjPenRxiQsC93MNfjx+nbF4PAdYzmd/1JIj8HYzqfbu86beTuNgXDzPknWk0n0uARlyewZo4s++ES36Ow==}
     hasBin: true
     dependencies:
-      minimist: 1.2.7
+      minimist: 1.2.8
     dev: true
 
   /json5/2.2.1:
@@ -9390,6 +9396,10 @@ packages:
     resolution: {integrity: sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==}
     dev: true
 
+  /minimist/1.2.8:
+    resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
+    dev: true
+
   /mkdirp-classic/0.5.3:
     resolution: {integrity: sha512-gKLcREMhtuZRwRAfqP3RFW+TK4JqApVBtOIftVgjuABpAtpxhPGaDcfvbhNvD0B8iD1oUr/txX35NjcaY6Ns/A==}
 
@@ -9397,7 +9407,7 @@ packages:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
     hasBin: true
     dependencies:
-      minimist: 1.2.7
+      minimist: 1.2.8
     dev: true
 
   /mnemonist/0.38.3:
@@ -11247,7 +11257,7 @@ packages:
       '@types/jest': 27.5.2
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
-      jest: 27.5.1
+      jest: 27.5.1_ts-node@10.9.1
       jest-util: 27.5.1
       json5: 2.2.1
       lodash.memoize: 4.1.2
@@ -11335,7 +11345,7 @@ packages:
     dependencies:
       '@types/json5': 0.0.29
       json5: 1.0.1
-      minimist: 1.2.7
+      minimist: 1.2.8
       strip-bom: 3.0.0
     dev: true
 
@@ -11666,7 +11676,7 @@ packages:
       axios: 0.27.2_debug@4.3.4
       joi: 17.7.0
       lodash: 4.17.21
-      minimist: 1.2.7
+      minimist: 1.2.8
       rxjs: 7.8.0
     transitivePeerDependencies:
       - debug

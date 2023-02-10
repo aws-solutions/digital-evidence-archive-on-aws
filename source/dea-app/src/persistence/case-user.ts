@@ -134,10 +134,16 @@ export const deleteCaseUser = async (
   /* istanbul ignore next */
   repositoryProvider: CaseUserModelRepositoryProvider = {
     CaseUserModel: CaseUserModel,
-  }
+  },
+  batch: object | undefined = undefined
 ): Promise<void> => {
-  await repositoryProvider.CaseUserModel.remove({
-    PK: `USER#${caseUserIds.userUlid}#`,
-    SK: `CASE#${caseUserIds.caseUlid}#`,
-  });
+  await repositoryProvider.CaseUserModel.remove(
+    {
+      PK: `USER#${caseUserIds.userUlid}#`,
+      SK: `CASE#${caseUserIds.caseUlid}#`,
+    },
+    {
+      batch,
+    }
+  );
 };

@@ -27,12 +27,12 @@ describe('lambda pre-execution checks', () => {
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
     repositoryProvider = await getTestRepositoryProvider('lambdaPreExecutionChecksTest');
-  });
+  }, 10000);
 
   afterAll(async () => {
     await cognitoHelper.cleanup(repositoryProvider);
     await repositoryProvider.table.deleteTable('DeleteTableForever');
-  });
+  }, 10000);
 
   it('should add first time federated user to dynamo table', async () => {
     const idToken = await cognitoHelper.getIdTokenForUser(testUser);
@@ -71,7 +71,7 @@ describe('lambda pre-execution checks', () => {
     // make sure not added twice (in the getByToken code, we assert only 1 exists)
 
     const idToken2 = await cognitoHelper.getIdTokenForUser(testUser);
-    const tokenId2 = await (await getTokenPayload(idToken, region)).sub;
+    const tokenId2 = (await getTokenPayload(idToken, region)).sub;
     expect(tokenId2).toStrictEqual(tokenId);
 
     const event2 = Object.assign(
@@ -101,7 +101,7 @@ describe('lambda pre-execution checks', () => {
     expect(users.length).toBe(1);
     expect(users[0].tokenId).toStrictEqual(tokenId);
     expect(users[0].ulid).toStrictEqual(user2?.ulid);
-  });
+  }, 10000);
 
   it('should log successful and unsuccessful logins/api invocations', () => {
     /* TODO */

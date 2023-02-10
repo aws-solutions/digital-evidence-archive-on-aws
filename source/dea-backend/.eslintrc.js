@@ -39,8 +39,10 @@ module.exports = {
     ],
     'import/newline-after-import': ['error'],
     curly: ['error'],
+    '@typescript-eslint/no-floating-promises': 'error',
+    '@typescript-eslint/await-thenable': 'error',
   },
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'security', 'import'],
-  parserOptions: { tsconfigRootDir: __dirname },
+  parserOptions: { tsconfigRootDir: __dirname, project: './tsconfig.json' },
 };

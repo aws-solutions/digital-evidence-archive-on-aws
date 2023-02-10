@@ -107,7 +107,7 @@ describe('update cases resource', () => {
       }
     );
 
-    expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
       'Requested Case Ulid does not match resource'
     );
   });
@@ -124,7 +124,7 @@ describe('update cases resource', () => {
       }
     );
 
-    expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
       'Update cases payload missing.'
     );
   });

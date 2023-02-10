@@ -39,7 +39,7 @@ export default class CognitoHelper {
   private _usersCreated: string[] = [];
   private _testPassword: string;
 
-  public constructor() {
+  public constructor(globalPassword?: string) {
     this._region = testEnv.awsRegion;
     this._userPoolId = testEnv.userPoolId;
     this._userPoolClientId = testEnv.clientId;
@@ -50,7 +50,7 @@ export default class CognitoHelper {
     this._identityPoolClient = new CognitoIdentityClient({ region: this._region });
     this._userPoolProvider = new CognitoIdentityProviderClient({ region: this._region });
 
-    this._testPassword = generatePassword();
+    this._testPassword = globalPassword ?? generatePassword();
   }
 
   public async createUser(
@@ -266,6 +266,15 @@ export default class CognitoHelper {
     if (this._userPoolProvider) {
       this._userPoolProvider.destroy();
     }
+  }
+
+  public async deleteUser(username: string): Promise<void> {
+    await this._userPoolProvider.send(
+      new AdminDeleteUserCommand({
+        Username: username,
+        UserPoolId: this._userPoolId,
+      })
+    );
   }
 }
 

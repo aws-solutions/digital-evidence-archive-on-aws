@@ -3,14 +3,13 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getUserUlid } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { defaultProvider } from '../../persistence/schema/entities';
-import { listCasesForUser } from '../services/case-service';
+import * as UserService from '../services/user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { getNextToken } from './get-next-token';
 
-export const getMyCases: DEAGatewayProxyHandler = async (
+export const getUsers: DEAGatewayProxyHandler = async (
   event,
   context,
   /* the default case is handled in e2e tests */
@@ -28,21 +27,21 @@ export const getMyCases: DEAGatewayProxyHandler = async (
     next = event.queryStringParameters['next'];
   }
 
-  const userUlid = getUserUlid(event);
-
   let nextToken: object | undefined = undefined;
   if (next) {
     nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
   }
 
-  const pageOfCases = await listCasesForUser(userUlid, limit, nextToken, repositoryProvider);
+  const pageOfUsers = await UserService.getUsers(limit, nextToken, repositoryProvider);
 
   return {
     statusCode: 200,
     body: JSON.stringify({
-      cases: pageOfCases,
-      total: pageOfCases.count,
-      next: getNextToken(pageOfCases.next),
+      //intentionally unused tokenId - this removes it during the map operation
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      users: pageOfUsers.map(({ tokenId, ...user }) => user),
+      total: pageOfUsers.count,
+      next: getNextToken(pageOfUsers.next),
     }),
   };
 };

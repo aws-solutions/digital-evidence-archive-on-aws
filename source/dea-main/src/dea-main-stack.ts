@@ -86,7 +86,7 @@ export class DeaMainStack extends cdk.Stack {
     this._apiGwAuthNagSuppresions();
   }
 
-  private async _uiStackConstructNagSuppress(): Promise<void> {
+  private _uiStackConstructNagSuppress(): void {
     const cdkLambda = this.node.findChild('Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C').node
       .defaultChild;
     if (cdkLambda instanceof CfnFunction) {

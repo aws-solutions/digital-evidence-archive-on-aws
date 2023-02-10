@@ -12,6 +12,7 @@ import * as CasePersistence from '../../persistence/case';
 import * as CaseUserPersistence from '../../persistence/case-user';
 import { isDefined } from '../../persistence/persistence-helpers';
 import { CaseType, defaultProvider } from '../../persistence/schema/entities';
+import * as CaseUserService from './case-user-service';
 
 export const createCases = async (
   deaCase: DeaCase,
@@ -58,16 +59,32 @@ export const listCasesForUser = async (
   );
 
   // Build a batch object of get requests for the case in each membership
-  const batch = {};
+  let caseEntities: CaseType[] = [];
+  let batch = {};
+  let batchSize = 0;
   for (const caseMembership of caseMemberships) {
-    CasePersistence.getCase(caseMembership.caseUlid, batch, repositoryProvider);
+    await CasePersistence.getCase(caseMembership.caseUlid, batch, repositoryProvider);
+    ++batchSize;
+    if (batchSize === 25) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const cases = (await repositoryProvider.table.batchGet(batch, {
+        parse: true,
+        hidden: false,
+        consistent: true,
+      })) as CaseType[];
+      caseEntities = caseEntities.concat(cases);
+      batch = {};
+      batchSize = 0;
+    }
   }
+
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const caseEntities = (await repositoryProvider.table.batchGet(batch, {
+  const finalCases = (await repositoryProvider.table.batchGet(batch, {
     parse: true,
     hidden: false,
     consistent: true,
   })) as CaseType[];
+  caseEntities = caseEntities.concat(finalCases);
 
   const cases: Paged<DeaCase> = caseEntities
     .map((caseEntity) => caseFromEntity(caseEntity))
@@ -102,5 +119,6 @@ export const deleteCase = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ): Promise<void> => {
-  return await CasePersistence.deleteCase(caseUlid, repositoryProvider);
+  await CasePersistence.deleteCase(caseUlid, repositoryProvider);
+  await CaseUserService.deleteCaseUsersForCase(caseUlid, repositoryProvider);
 };

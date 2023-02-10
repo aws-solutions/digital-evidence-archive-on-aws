@@ -57,6 +57,11 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/say-hello-handler.ts',
     },
     {
+      path: '/users',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-users-handler.ts',
+    },
+    {
       path: '/bye',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/say-bye-handler.ts',
