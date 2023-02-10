@@ -12,6 +12,18 @@ import { defaultProvider } from '../../persistence/schema/entities';
 import { getUser } from '../../persistence/user';
 import { NotFoundError } from '../exceptions/not-found-exception';
 
+export const getCaseUser = async (
+  caseUserIds: {
+    readonly caseUlid: string;
+    readonly userUlid: string;
+  },
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider = defaultProvider
+): Promise<CaseUser | undefined> => {
+  return CaseUserPersistence.getCaseUser(caseUserIds, repositoryProvider);
+};
+
 export const createCaseUserMembershipFromDTO = async (
   caseUserDto: CaseUserDTO,
   /* the default case is handled in e2e tests */

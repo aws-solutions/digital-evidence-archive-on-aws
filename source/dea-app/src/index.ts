@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { ForbiddenError, FORBIDDEN_ERROR_NAME } from './app/exceptions/forbidden-exception';
 import { NotFoundError, NOT_FOUND_ERROR_NAME } from './app/exceptions/not-found-exception';
 import { ValidationError, VALIDATION_ERROR_NAME } from './app/exceptions/validation-exception';
 import { completeCaseFileUpload } from './app/resources/complete-case-file-upload';
@@ -20,7 +21,11 @@ import { initiateCaseFileUpload } from './app/resources/initiate-case-file-uploa
 import { sayBye } from './app/resources/say-bye';
 import { sayHello } from './app/resources/say-hello';
 import { updateCases } from './app/resources/update-cases';
+import { verifyCaseACLs } from './app/resources/verify-case-acls';
+import { getCaseUser } from './app/services/case-user-service';
+import { getRequiredPathParam, getUserUlid } from './lambda-http-helpers';
 import { DeaCase } from './models/case';
+import { CaseAction } from './models/case-action';
 
 export {
   sayBye,
@@ -36,10 +41,17 @@ export {
   runPreExecutionChecks,
   updateCases,
   createCaseMembership,
+  getCaseUser,
+  getRequiredPathParam,
   getUsers,
+  getUserUlid,
+  verifyCaseACLs,
+  CaseAction,
   DeaCase,
   DEAGatewayProxyHandler,
   DEAPreLambdaExecutionChecks,
+  ForbiddenError,
+  FORBIDDEN_ERROR_NAME,
   NotFoundError,
   NOT_FOUND_ERROR_NAME,
   ValidationError,

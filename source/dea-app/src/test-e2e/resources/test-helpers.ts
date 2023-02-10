@@ -15,6 +15,8 @@ import { testEnv } from '../helpers/settings';
 // we don't want axios throwing an exception on non 200 codes
 export const validateStatus = () => true;
 
+export type DeaHttpMethod = 'PUT' | 'POST' | 'GET' | 'DELETE';
+
 export const randomSuffix = (length = 10) => {
   return randomBytes(10).toString('hex').substring(0, length);
 };
@@ -57,9 +59,8 @@ export async function callDeaAPI(
   testUser: string,
   url: string,
   cognitoHelper: CognitoHelper,
-  method: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data?: any
+  method: DeaHttpMethod,
+  data?: unknown
 ) {
   const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
   return await callDeaAPIWithCreds(url, method, idToken, creds, data);
@@ -67,11 +68,10 @@ export async function callDeaAPI(
 
 export async function callDeaAPIWithCreds(
   url: string,
-  method: string,
+  method: DeaHttpMethod,
   idToken: string,
   creds: Credentials,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data?: any
+  data?: unknown
 ) {
   const client = axios.create({
     headers: {
@@ -108,7 +108,5 @@ export async function callDeaAPIWithCreds(
       return await client.delete(url, {
         validateStatus,
       });
-    default:
-      throw new Error('Invalid method input.');
   }
 }

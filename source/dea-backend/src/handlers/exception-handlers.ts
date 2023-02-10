@@ -3,12 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { NOT_FOUND_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/not-found-exception';
-import { VALIDATION_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/validation-exception';
+import { NOT_FOUND_ERROR_NAME, VALIDATION_ERROR_NAME, FORBIDDEN_ERROR_NAME } from '@aws/dea-app';
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import Joi from 'joi';
+import { logger } from '../logger';
 
-// If you have a new error case that you want to support, create a new Class that extends Error 
+// If you have a new error case that you want to support, create a new Class that extends Error
 // and add a handler here that responds with an appropriate status code.
 
 export type ExceptionHandler = (error: Error) => Promise<APIGatewayProxyStructuredResultV2>;
@@ -37,6 +37,14 @@ const joiValidationErrorHandler: ExceptionHandler = async (error) => {
   return validationErrorHandler(error);
 };
 
+const forbiddenErrorHandler: ExceptionHandler = async (error) => {
+  logger.error('Forbidden', { message: error.message });
+  return {
+    statusCode: 403,
+    body: 'Forbidden',
+  };
+};
+
 const defaultErrorHandler: ExceptionHandler = async () => {
   return {
     statusCode: 500,
@@ -52,3 +60,4 @@ exceptionHandlers.set(errorInstance.name, defaultErrorHandler);
 exceptionHandlers.set(VALIDATION_ERROR_NAME, validationErrorHandler);
 exceptionHandlers.set(NOT_FOUND_ERROR_NAME, notFoundHandler);
 exceptionHandlers.set(joiInstance.name, joiValidationErrorHandler);
+exceptionHandlers.set(FORBIDDEN_ERROR_NAME, forbiddenErrorHandler);
