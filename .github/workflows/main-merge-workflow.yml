@@ -1,0 +1,40 @@
+name: Merge to Main Workflow
+
+env:
+  STAGE: palpatine
+  DOMAIN_PREFIX: deaplayground
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+      id-token: write   # This is required for requesting the JWT
+      contents: read    # This is required for actions/checkout
+jobs:
+  verify:
+    environment: dea-test
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./source
+    name: Deploy Playground
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/baseAction
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GITHUBACTIONSESSION
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: cdk deploy
+        run: |
+          cd dea-main
+          npm run cdk deploy

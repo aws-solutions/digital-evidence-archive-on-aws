@@ -1,0 +1,31 @@
+Config
+glob-parent
+rush.json
+package.json
+tools
+.vscode
+common
+node_modules
+build
+coverage
+README.md
+cdk.out
+.github
+.github/workflows/pipeline.yml
+
+# Line specific ignores
+
+CODE_OF_CONDUCT.md:4
+CONTRIBUTING.md:50
+
+# Bogus email ignores
+
+source/dea-main/config/test.json:5
+source/dea-backend/config/test.json:5
+source/dea-backend/src/config/test.yaml:5
+source/dea-ui/ui/src/models/User.ts:19
+source/dea-backend/src/config/demo.yaml:5
+
+# Ignore anything in submodule (This is mostly for local)
+
+source/solution-spark-on-aws

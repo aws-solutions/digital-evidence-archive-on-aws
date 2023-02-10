@@ -1,0 +1,611 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: DEA Case API
+paths:
+  /cases/all-cases:
+    get:
+      summary: Get all cases
+      description: admin-only returns list of cases
+      tags:
+        - elevated
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: next
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cases:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cases'
+                  next:
+                    type: string
+  /cases/{caseId}/owner:
+    post:
+      summary: Set new owner of a case
+      description: Admin-only set new owner of a case
+      tags:
+        - elevated
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                caseId:
+                  type: string
+                actions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CaseAction'
+                isOwner:
+                  type: boolean
+                  default: true
+      responses:
+        200:
+          description: Case successfully created
+          content:
+            application/json:
+              schema:
+                properties:
+                  userId:
+                    type: string
+                  caseId:
+                    type: string
+  /config:
+    put:
+      summary: Put storage config
+      tags:
+        - elevated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorageConfig'
+      responses:
+        200:
+          description: Storage config successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageConfig'
+    get:
+      summary: Get storage config
+      tags:
+        - elevated
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageConfig'
+  /cases:
+    post:
+      tags:
+        - cases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCaseObject'
+      responses:
+        200:
+          description: Case successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Case'
+  /cases/{caseId}/userMemberships:
+    post:
+      summary: Add a user as a collaborator to a case
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseUserRequest'
+      responses:
+        200:
+          description: Case successfully created
+          content:
+            application/json:
+              schema:
+                properties:
+                  userId:
+                    type: string
+                  caseId:
+                    type: string
+    get:
+      summary: Get all users by case
+      description: get all users with membership on a case
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: next
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Users'
+                  next:
+                    type: string
+  /cases/{caseId}/userMemberships/{userId}:
+    put:
+      summary: Update case user
+      description: Update the details on an existing case membership
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseUserRequest'
+      responses:
+        200:
+          description: Case successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseUserRequest'
+    delete:
+      summary: Remove case user
+      description: Remove a collaborator from a case
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        204:
+          description: No content, delete successful
+  /cases/my-cases:
+    get:
+      summary: get user's cases
+      description: returns array of cases on which the user has membership
+      tags:
+        - cases
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: next
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cases:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cases'
+                  next:
+                    type: string
+  /cases/{caseId}:
+    get:
+      summary: Return case details by case Id
+      description: Get metadata for a specific case. return not found if user doesn’t have access
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Case'
+    put:
+      summary: Update case details
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseUpdateRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Case'
+  /cases/{caseId}/status:
+    put:
+      summary: Update case status
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseStatusRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Case'
+        304:
+          description: unchanged status
+  /cases/{caseId}/files:
+    post:
+      summary: Upload files to a case
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseFiles'
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseUploadResponse'
+    get:
+      summary: list files by directory
+      description: List files within a case in a parent directory or case root
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: parentDir
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: next
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  caseFiles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CaseFiles'
+                  next:
+                    type: string
+  /cases/{caseId}/files/{fileId}:
+    get:
+      summary: File details
+      description: Get details for a file within a case
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  caseId:
+                    type: string
+                  file:
+                    $ref: '#/components/schemas/CaseFile'
+  /cases/{caseId}/files/{fileId}/contents:
+    get:
+      summary: Download file
+      description: Download the contents of a file via s3 signed url
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  caseId:
+                    type: string
+                  fileContents_presignedUrl:
+                    type: string
+                    format: uri
+  /users:
+    get:
+      summary: Get all users
+      tags:
+        - cases
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: next
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Users'
+                  next:
+                    type: string
+components:
+  schemas:
+    Case:
+      type: object
+      properties:
+        caseId:
+          type: string
+        caseName:
+          type: string
+        caseDescription:
+          type: string
+        createDate:
+          type: string
+        lastUpdateDate:
+          type: string
+        objectCount:
+          type: number
+        status:
+          $ref: '#/components/schemas/CaseStatus'
+    Cases:
+      type: array
+      items:
+        $ref: '#/components/schemas/Case'
+    CaseUpdateRequest:
+      type: object
+      properties:
+        caseId:
+          type: string
+        caseName:
+          type: string
+        caseDescription:
+          type: string
+    CaseStatusRequest:
+      type: object
+      properties:
+        caseId:
+          type: string
+        caseStatus:
+          $ref: '#/components/schemas/CaseStatus'
+    CreateCaseObject:
+      type: object
+      properties:
+        CaseName:
+          type: string
+          example: Cookie Stealing
+        CaseDescription:
+          type: string
+          example: Suspecting cookie monster stole all the cookies
+    CaseUser:
+      type: object
+      properties:
+        userId:
+          type: string
+        caseId:
+          type: string
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseAction'
+        caseName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+    CaseUserRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        caseId:
+          type: string
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseAction'
+        isOwner:
+          type: boolean
+    CaseFile:
+      type: object
+      properties:
+        fileName:
+          type: string
+        filePath:
+          type: string
+        caseId:
+          type: string
+        sha256Hash:
+          type: string
+        ulid:
+          type: string
+        isFile:
+          type: boolean
+        contentPath:
+          type: string
+    CaseFiles:
+      type: array
+      items:
+        $ref: '#/components/schemas/CaseFile'
+    CaseUploadResponse:
+      type: object
+      properties:
+        caseId:
+          type: string
+        uploadUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+    User:
+      type: object
+      properties:
+        ulid:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        lowerFirstName:
+          type: string
+        lowerLastName:
+          type: string
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+    StorageConfig:
+      type: object
+      properties:
+        ActiveStorage:
+          $ref: '#/components/schemas/StorageTier'
+        ArchiveStorage:
+          $ref: '#/components/schemas/StorageTier'
+
+    CaseAction:
+      type: string
+      enum: [VIEW_CASE_DETAILS, UPLOAD, DOWNLOAD, ARCHIVE, RESTORE, VIEW_FILES, CASE_AUDIT, INVITE, OWN]
+    CaseStatus:
+      type: string
+      enum: [ACTIVE, ARCHIVE, DELETED]
+    StorageTier:
+      type: string
+      enum: [S3STANDARD, GLACIER_INSTANT, GLACIER_FLEX, GLACIER_DEEP]

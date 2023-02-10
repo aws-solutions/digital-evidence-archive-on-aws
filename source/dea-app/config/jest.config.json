@@ -1,0 +1,20 @@
+{
+  "extends": "@rushstack/heft-node-rig/profiles/default/config/jest.config.json",
+  "collectCoverage": true,
+  "coverageThreshold": {
+    "global": {
+      "branches": 70,
+      "functions": 90,
+      "lines": 90,
+      "statements": 90
+    }
+  },
+  "coverageReporters": ["json-summary", "json", "lcov", "text"],
+  "collectCoverageFrom": ["src/**"],
+  "coveragePathIgnorePatterns": ["<rootDir>/src/test-e2e/", "<rootDir>/src/test/", "<rootDir>/src/index.ts"],
+  "globalSetup": "<rootDir>/src/test/local-dynamo/setup.ts",
+  "globalTeardown": "<rootDir>/src/test/local-dynamo/teardown.ts",
+  "moduleNameMapper": {
+    "#node-web-compat": "./node-web-compat-node.js"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/rush.schema.json",
+  "rushVersion": "5.62.1",
+  "pnpmVersion": "6.30.0",
+  "pnpmOptions": {
+    "strictPeerDependencies": true,
+    "useWorkspaces": true
+  },
+  "nodeSupportedVersionRange": ">=14.15.0 <15.0.0 || >=16.13.0 <17.0.0",
+  "ensureConsistentVersions": true,
+  "projectFolderMaxDepth": 5,
+  "approvedPackagesPolicy": {
+    "reviewCategories": ["production", "tools", "prototypes"],
+    "ignoredNpmScopes": ["@types"]
+  },
+  "gitPolicy": {
+    "versionBumpCommitMessage": "Bump versions [skip ci]",
+    "changeLogUpdateCommitMessage": "Update changelogs [skip ci]"
+  },
+  "repository": {
+    "url": "ssh://git.amazon.com/pkg/Digital-evidence-archive",
+    "defaultBranch": "mainline"
+  },
+  "eventHooks": {
+    "preRushInstall": [],
+    "postRushInstall": [],
+    "preRushBuild": [],
+    "postRushBuild": []
+  },
+  "variants": [],
+  "projects": [
+    {
+      "packageName": "@aws/dea-app",
+      "projectFolder": "dea-app",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@aws/dea-main",
+      "projectFolder": "dea-main",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@aws/dea-backend",
+      "projectFolder": "dea-backend",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@aws/dea-ui",
+      "projectFolder": "dea-ui/ui",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@aws/dea-ui-infrastructure",
+      "projectFolder": "dea-ui/infrastructure",
+      "reviewCategory": "production",
+      "shouldPublish": false
+    }
+  ]
+}

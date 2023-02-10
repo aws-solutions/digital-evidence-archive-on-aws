@@ -1,0 +1,65 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "dea-app:Integration Debug",
+      "program": "${workspaceFolder}/source/dea-app/node_modules/@rushstack/heft/lib/start.js",
+      "cwd": "${workspaceFolder}/source/dea-app/",
+      "args": ["--debug", "test", "--no-build", "--clean", "--test-path-pattern", ".*/*integration.test.*"],
+      "console": "integratedTerminal",
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "dea-app:Unit Debug",
+      "program": "${workspaceFolder}/source/dea-app/node_modules/@rushstack/heft/lib/start.js",
+      "cwd": "${workspaceFolder}/source/dea-app/",
+      "args": ["--debug", "test", "--no-build", "--clean", "--test-path-pattern", ".*/*unit.test.*"],
+      "console": "integratedTerminal",
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "dea-backend:Integration Debug",
+      "program": "${workspaceFolder}/source/dea-backend/node_modules/@rushstack/heft/lib/start.js",
+      "cwd": "${workspaceFolder}/source/dea-backend/",
+      "args": ["--debug", "test", "--no-build", "--clean", "--test-path-pattern", ".*/*integration.test.*"],
+      "console": "integratedTerminal",
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "dea-backend:Unit Debug",
+      "program": "${workspaceFolder}/source/dea-backend/node_modules/@rushstack/heft/lib/start.js",
+      "cwd": "${workspaceFolder}/source/dea-backend/",
+      "args": ["--debug", "test", "--no-build", "--clean", "--test-path-pattern", ".*/*unit.test.*"],
+      "console": "integratedTerminal",
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "dea-main:Integration Debug",
+      "program": "${workspaceFolder}/source/dea-main/node_modules/@rushstack/heft/lib/start.js",
+      "cwd": "${workspaceFolder}/source/dea-main/",
+      "args": ["--debug", "test", "--no-build", "--clean", "--test-path-pattern", ".*/*integration.test.*"],
+      "console": "integratedTerminal",
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "dea-main:Unit Debug",
+      "program": "${workspaceFolder}/source/dea-main/node_modules/@rushstack/heft/lib/start.js",
+      "cwd": "${workspaceFolder}/source/dea-main/",
+      "args": ["--debug", "test", "--no-build", "--clean", "--test-path-pattern", ".*/*unit.test.*"],
+      "console": "integratedTerminal",
+      "sourceMaps": true
+    }
+  ]
+}
