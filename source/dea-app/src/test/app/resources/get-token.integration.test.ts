@@ -32,8 +32,6 @@ describe('get-token', () => {
   it('successfully get id token using auth code', async () => {
     const authCode = await cognitoHelper.getAuthorizationCode(cognitoDomain, callbackUrl, testUser);
 
-    // WHEN requesting the user's cases
-    // test sut
     const event = Object.assign(
       {},
       {
@@ -53,8 +51,6 @@ describe('get-token', () => {
   });
 
   it('should throw an error if the authorization code is not valid', async () => {
-    // WHEN requesting the user's cases
-    // test sut
     const event = Object.assign(
       {},
       {
@@ -64,8 +60,6 @@ describe('get-token', () => {
         },
       }
     );
-
-    //  const response = await getToken(event, dummyContext);
 
     await expect(getToken(event, dummyContext)).rejects.toThrow(AxiosError);
   });

@@ -319,10 +319,6 @@ export class DeaAuthConstruct extends Construct {
       userPoolClientName: 'dea-app-client',
     });
 
-    createCfnOutput(this, 'cognitoDomainPrefix', {
-      value: domainPrefix,
-    });
-
     return [userPool, poolClient, newDomain.baseUrl()];
   }
 
