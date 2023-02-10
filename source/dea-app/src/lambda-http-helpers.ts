@@ -22,6 +22,29 @@ export const getRequiredPathParam = (event: APIGatewayProxyEventV2, paramName: s
   throw new ValidationError(`Required path param '${paramName}' is missing.`);
 };
 
+export const getRequiredHeader = (event: APIGatewayProxyEventV2, headerName: string): string => {
+  let value = event.headers[headerName];
+  if (value) {
+    return value;
+  }
+
+  // https://www.ietf.org/rfc/rfc2616.txt
+  // 4.2 Message Headers
+  // ... Field names are case-insensitive ...
+  // Api gateway doesnt send these headers lower-cased as it should, but some clients will
+  value = event.headers[headerName.toLowerCase()];
+
+  if (value) {
+    return value;
+  }
+
+  logger.error(`Required header missing: ${headerName}`, {
+    rawPath: event.rawPath,
+    headers: JSON.stringify(event.headers),
+  });
+  throw new ValidationError(`Required header '${headerName}' is missing.`);
+};
+
 export const getUserUlid = (event: APIGatewayProxyEventV2): string => {
   const maybeUserUlid = event.headers['userUlid'];
   if (maybeUserUlid) {
