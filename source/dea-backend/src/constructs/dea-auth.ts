@@ -24,7 +24,7 @@ import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 
 interface DeaAuthProps {
-  readonly restApi?: RestApi;
+  readonly restApi: RestApi;
   // We need to create IAM Roles with what APIs the Role can call
   // therefore we need the API endpoint ARNs from the API Gateway construct
   apiEndpointArns: Map<string, string>;
@@ -35,7 +35,7 @@ export class DeaAuthConstruct extends Construct {
     super(scope, stackName);
 
     const region = deaConfig.region();
-    const loginUrl = props.restApi ? `${props.restApi.url}ui/login` : '';
+    const loginUrl = `${props.restApi.url}ui/login`;
 
     // Auth Stack. Used to determine which APIs a user can access by assigning them
     // an IAM Role based on their Group/Role. E.g. User federates with the auth stack, given credentials based

@@ -8,10 +8,14 @@ import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import 'source-map-support/register';
+import { convictConfig } from '../../config';
+import { DeaAuthConstruct } from '../../constructs/dea-auth';
 import { DeaBackendConstruct } from '../../constructs/dea-backend-stack';
 import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
 import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
+
+let restApi: DeaRestApiConstruct;
 
 describe('DeaBackend constructs', () => {
   beforeAll(() => {
@@ -37,7 +41,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       accessLogsPrefixes: ['dea-ui-access-log'],
     });
-    new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
+    restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
       kmsKey: key,
@@ -63,5 +67,45 @@ describe('DeaBackend constructs', () => {
     addSnapshotSerializers();
 
     expect(template).toMatchSnapshot();
+  });
+
+  it('synthesizes the way we expect', () => {
+    const app = new cdk.App();
+    const stack = new Stack(app, 'test-stack');
+
+    const apiEndpointArns = new Map([
+      ['A', 'Aarn'],
+      ['B', 'Barn'],
+      ['C', 'Carn'],
+      ['D', 'Darn'],
+    ]);
+    new DeaAuthConstruct(stack, 'DeaAuth', { restApi: restApi.deaRestApi, apiEndpointArns: apiEndpointArns });
+
+    // Prepare the stack for assertions.
+    const template = Template.fromStack(stack);
+
+    addSnapshotSerializers();
+
+    expect(template).toMatchSnapshot();
+  });
+
+  it('works without a domain config', () => {
+    convictConfig.set('cognito.domain', undefined);
+
+    const app = new cdk.App();
+    const stack = new Stack(app, 'test-stack');
+
+    const apiEndpointArns = new Map([
+      ['A', 'Aarn'],
+      ['B', 'Barn'],
+      ['C', 'Carn'],
+      ['D', 'Darn'],
+    ]);
+    new DeaAuthConstruct(stack, 'DeaAuth', { restApi: restApi.deaRestApi, apiEndpointArns: apiEndpointArns });
+
+    // throws due to unassigned parameter
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrow('ID components may not include unresolved tokens');
   });
 });

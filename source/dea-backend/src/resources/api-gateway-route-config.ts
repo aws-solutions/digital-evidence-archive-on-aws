@@ -15,7 +15,7 @@ export interface ApiGatewayRoute {
   pathToSource: string;
   httpMethod: ApiGatewayMethod;
   pagination?: boolean;
-  authMethod?: AuthorizationType | undefined; //Override authorization type if auth type should be custom or none
+  authMethod?: AuthorizationType; //Override authorization type if auth type should be custom or none
 }
 
 export enum ApiGatewayMethod {
