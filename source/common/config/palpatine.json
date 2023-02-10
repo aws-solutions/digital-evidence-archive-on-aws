@@ -1,0 +1,43 @@
+{
+  "userGroups": [
+    {
+      "name": "CaseWorkerGroup",
+      "description": "containing users who need access to case APIs",
+      "precedence": 1,
+      "endpoints": [
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}",
+          "method": "DELETE"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships",
+          "method": "POST"
+        },
+        {
+          "path": "/users",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/all-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/my-cases",
+          "method": "GET"
+        }
+      ]
+    }
+  ]
+}
