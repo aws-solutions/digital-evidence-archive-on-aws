@@ -5,6 +5,7 @@
 
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { getDeaUserFromToken, getTokenPayload } from '../../cognito-token-helpers';
+import { getRequiredHeader } from '../../lambda-http-helpers';
 import { DeaUser } from '../../models/user';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
@@ -27,13 +28,8 @@ export const runPreExecutionChecks = async (
   // header to as the unique id, since we cannot verify identity id from client is trustworthy
   // since it is not encoded from the id pool
   // Additionally we get the first and last name of the user from the id token
-  if (!event.headers['idToken']) {
-    throw new ValidationError('Header does not include the id token.');
-  }
-  const idTokenPayload = await getTokenPayload(
-    event.headers['idToken'],
-    process.env.AWS_REGION ?? 'us-east-1'
-  );
+  const idToken = getRequiredHeader(event, 'idToken');
+  const idTokenPayload = await getTokenPayload(idToken, process.env.AWS_REGION ?? 'us-east-1');
   const tokenId = idTokenPayload.sub;
   const maybeUser = await getUserFromTokenId(tokenId, repositoryProvider);
   if (!maybeUser) {
