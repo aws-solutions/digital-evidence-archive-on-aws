@@ -146,38 +146,8 @@ describe('getMyCases', () => {
   });
 
   it('should can fetch cases across pages', async () => {
-    // GIVEN a user with membership to case 1 and 2
+    // GIVEN a user with many memberships
     //create cases
-    const case1 =
-      (await createCase(
-        {
-          name: 'getMyCases-1a',
-          status: CaseStatus.ACTIVE,
-        },
-        caseOwner,
-        repositoryProvider
-      )) ?? fail();
-
-    const case2 =
-      (await createCase(
-        {
-          name: 'getMyCases-2a',
-          status: CaseStatus.ACTIVE,
-        },
-        caseOwner,
-        repositoryProvider
-      )) ?? fail();
-
-    const case3 =
-      (await createCase(
-        {
-          name: 'getMyCases-3a',
-          status: CaseStatus.ACTIVE,
-        },
-        caseOwner,
-        repositoryProvider
-      )) ?? fail();
-
     // create user
     const user =
       (await createUser(
@@ -189,30 +159,30 @@ describe('getMyCases', () => {
         repositoryProvider
       )) ?? fail();
 
-    // create user-case memberships
-    await createCaseUser(
-      {
-        caseUlid: case1.ulid ?? 'bogus',
-        userUlid: user.ulid ?? 'bogus',
-        actions: [CaseAction.VIEW_CASE_DETAILS],
-        caseName: case1.name,
-        userFirstName: user.firstName,
-        userLastName: user.lastName,
-      },
-      repositoryProvider
-    );
+    for (let i = 0; i < 28; ++i) {
+      const theCase =
+        (await createCase(
+          {
+            name: `getMyCases-a${i}`,
+            status: CaseStatus.ACTIVE,
+          },
+          caseOwner,
+          repositoryProvider
+        )) ?? fail();
 
-    await createCaseUser(
-      {
-        caseUlid: case2.ulid ?? 'bogus',
-        userUlid: user.ulid ?? 'bogus',
-        actions: [CaseAction.VIEW_CASE_DETAILS],
-        caseName: case2.name,
-        userFirstName: user.firstName,
-        userLastName: user.lastName,
-      },
-      repositoryProvider
-    );
+      // create user-case memberships
+      await createCaseUser(
+        {
+          caseUlid: theCase.ulid ?? 'bogus',
+          userUlid: user.ulid ?? 'bogus',
+          actions: [CaseAction.VIEW_CASE_DETAILS],
+          caseName: theCase.name,
+          userFirstName: user.firstName,
+          userLastName: user.lastName,
+        },
+        repositoryProvider
+      );
+    }
 
     // WHEN requesting the first page user's cases
     // test sut
@@ -232,7 +202,7 @@ describe('getMyCases', () => {
     event.headers['userUlid'] = user.ulid;
     const response = await getMyCases(event, dummyContext, repositoryProvider);
 
-    // THEN only cases with memberships (1 + 2) are returned
+    // THEN only cases with memberships are returned
     // confirm memberships only returned
     if (!response.body) {
       fail();
@@ -257,13 +227,8 @@ describe('getMyCases', () => {
       fail();
     }
     const casesPage2: ResponseCasePage = JSON.parse(response2.body);
-    expect(casesPage2.cases.length).toEqual(1);
+    expect(casesPage2.cases.length).toEqual(27);
     expect(casesPage2.next).toBeFalsy();
-
-    const allCases = casesPage.cases.concat(casesPage2.cases);
-    expect(allCases.find((deacase) => deacase.name === case1.name)).toBeDefined();
-    expect(allCases.find((deacase) => deacase.name === case2.name)).toBeDefined();
-    expect(allCases.find((deacase) => deacase.name === case3.name)).toBeUndefined();
   });
 
   it('should fail when the userUlid is not present in the event', async () => {

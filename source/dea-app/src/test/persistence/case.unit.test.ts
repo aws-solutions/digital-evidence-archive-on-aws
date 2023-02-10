@@ -221,4 +221,21 @@ describe('case persistence', () => {
 
     expect(nullCase).toBeFalsy();
   });
+
+  it('cannot create if the owner is missing a ulid', async () => {
+    const currentTestCase: DeaCase = {
+      name: 'CaseMcCaseface',
+      status: CaseStatus.ACTIVE,
+      description: 'some days some nights',
+      objectCount: 0,
+    };
+
+    await expect(
+      createCase(
+        currentTestCase,
+        { ulid: undefined, tokenId: '', firstName: '', lastName: '' },
+        repositoryProvider
+      )
+    ).rejects.toThrow();
+  });
 });
