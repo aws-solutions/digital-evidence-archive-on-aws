@@ -31,7 +31,7 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   const deaCaseFile: DeaCaseFile = JSON.parse(event.body);
   Joi.assert(deaCaseFile, completeCaseFileUploadRequestSchema);
 
-  const updateBody = await CaseFileService.completeCaseFileUpload(
+  const completeUploadResponse = await CaseFileService.completeCaseFileUpload(
     deaCaseFile,
     repositoryProvider,
     datasetsProvider
@@ -39,7 +39,7 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
 
   return {
     statusCode: 200,
-    body: JSON.stringify(updateBody),
+    body: JSON.stringify(completeUploadResponse),
     headers: {
       'Access-Control-Allow-Origin': '*',
     },

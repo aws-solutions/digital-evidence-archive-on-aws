@@ -43,12 +43,12 @@ export const generatePresignedUrlsForCaseFile = async (
     new CreateMultipartUploadCommand({
       Bucket: datasetsProvider.bucketName,
       Key: s3Key,
-      // BucketKeyEnabled: true,
-      // ServerSideEncryption: 'aws:kms',
-      //ChecksumAlgorithm: 'SHA256'
-      //ContentType: caseFile.contentType,
+      BucketKeyEnabled: true,
+      ServerSideEncryption: 'aws:kms',
+      ChecksumAlgorithm: 'SHA256',
+      ContentType: caseFile.contentType,
       //ObjectLockLegalHoldStatus: 'ON',
-      //StorageClass: 'INTELLIGENT_TIERING',
+      StorageClass: 'INTELLIGENT_TIERING',
     })
   );
 
@@ -118,7 +118,7 @@ export const completeUploadForCaseFile = async (
     new CompleteMultipartUploadCommand({
       Bucket: datasetsProvider.bucketName,
       Key: _getS3KeyForCaseFile(caseFile),
-      //ChecksumSHA256: deaCaseFile.sha256Hash,
+      ChecksumSHA256: caseFile.sha256Hash,
       UploadId: caseFile.uploadId,
       MultipartUpload: { Parts: uploadedParts },
     })

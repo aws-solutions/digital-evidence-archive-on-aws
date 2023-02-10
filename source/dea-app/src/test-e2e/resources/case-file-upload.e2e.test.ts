@@ -6,8 +6,8 @@
 import { fail } from 'assert';
 import fs from 'fs';
 import axios from 'axios';
+import sha256 from 'crypto-js/sha256';
 import Joi from 'joi';
-//import fetch, { Response } from 'node-fetch';
 import { DeaCaseFile } from '../../models/case-file';
 import { CaseStatus } from '../../models/case-status';
 import {
@@ -86,15 +86,17 @@ describe('Test case file upload', () => {
     const presignedUrls = initiatedCaseFile.presignedUrls ?? [];
     const uploadPromises: Promise<Response>[] = [];
 
+    const file = fs.readFileSync('/tmp/helloworld');
     const httpClient = axios.create({
       headers: {
         'Content-Type': FILE_TYPE,
+        'x-amz-content-sha256': sha256('hello world').toString(),
       },
     });
 
-    const file = fs.readFileSync('/tmp/helloworld');
     console.log('initiate completed');
     presignedUrls.forEach((url, index) => {
+      console.log(`presigned url: ${url}`);
       uploadPromises[index] = httpClient.put(url, file, { validateStatus });
     });
 
@@ -111,7 +113,7 @@ describe('Test case file upload', () => {
         uploadId: initiatedCaseFile.uploadId,
         fileName: 'filename',
         filePath: '/',
-        sha256Hash: 'B94D27B9934D3E08A52E52D7DA7DABFAC484EFE37A5380EE9088F7ACE2EFCDE9',
+        sha256Hash: sha256(file.toString()).toString(),
       }
     );
 
