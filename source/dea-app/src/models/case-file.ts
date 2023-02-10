@@ -9,12 +9,12 @@ export interface DeaCaseFile {
   readonly filePath: string;
   readonly isFile: boolean;
   readonly fileSizeMb: number;
-  uploadId?: string;
-  presignedUrls?: ReadonlyArray<string>;
   readonly ulid?: string; // ulid will not exist before case-file is persisted
   readonly contentType?: string;
   readonly sha256Hash?: string;
   readonly contentPath?: string;
+  uploadId?: string;
+  presignedUrls?: ReadonlyArray<string>;
   readonly created?: Date;
   readonly updated?: Date;
 }

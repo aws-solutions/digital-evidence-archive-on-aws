@@ -10,15 +10,12 @@ import sha256 from 'crypto-js/sha256';
 import Joi from 'joi';
 import { DeaCaseFile } from '../../models/case-file';
 import { CaseStatus } from '../../models/case-status';
-import {
-  completeCaseFileUploadResponseSchema,
-  initiateCaseFileUploadResponseSchema,
-} from '../../models/validation/case-file';
+import { caseFileResponseSchema } from '../../models/validation/case-file';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
 
-const FILE_TYPE = 'application/octet-stream';
+const CONTENT_TYPE = 'application/octet-stream';
 export const validateStatus = () => true;
 
 describe('Test case file upload', () => {
@@ -73,7 +70,7 @@ describe('Test case file upload', () => {
         caseUlid: createdCase.ulid,
         fileName: 'filename',
         filePath: '/',
-        fileType: FILE_TYPE,
+        contentType: CONTENT_TYPE,
         fileSizeMb: 1,
       }
     );
@@ -81,7 +78,7 @@ describe('Test case file upload', () => {
     console.log(initiateUploadResponse);
     expect(initiateUploadResponse.status).toEqual(200);
     const initiatedCaseFile: DeaCaseFile = await initiateUploadResponse.data;
-    Joi.assert(initiatedCaseFile, initiateCaseFileUploadResponseSchema);
+    Joi.assert(initiatedCaseFile, caseFileResponseSchema);
 
     const presignedUrls = initiatedCaseFile.presignedUrls ?? [];
     const uploadPromises: Promise<Response>[] = [];
@@ -89,8 +86,7 @@ describe('Test case file upload', () => {
     const file = fs.readFileSync('/tmp/helloworld');
     const httpClient = axios.create({
       headers: {
-        'Content-Type': FILE_TYPE,
-        'x-amz-content-sha256': sha256('hello world').toString(),
+        'Content-Type': CONTENT_TYPE,
       },
     });
 
@@ -121,6 +117,6 @@ describe('Test case file upload', () => {
 
     expect(completeUploadResponse.status).toEqual(200);
     const uploadedCaseFile: DeaCaseFile = await completeUploadResponse.data;
-    Joi.assert(uploadedCaseFile, completeCaseFileUploadResponseSchema);
+    Joi.assert(uploadedCaseFile, caseFileResponseSchema);
   });
 });

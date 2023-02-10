@@ -16,9 +16,10 @@ import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
   event,
   context,
-  /* the default case is handled in e2e tests */
+  /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
+  /* istanbul ignore next */
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {
   logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });

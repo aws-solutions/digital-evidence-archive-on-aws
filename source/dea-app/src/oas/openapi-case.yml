@@ -321,7 +321,7 @@ paths:
           description: unchanged status
   /cases/{caseId}/files:
     post:
-      summary: Begin file upload to a case
+      summary: Begin case file upload
       tags:
         - cases
       parameters:
@@ -409,7 +409,7 @@ paths:
                   file:
                     $ref: '#/components/schemas/CaseFile'
     put:
-      summary: Complete file upload to a case
+      summary: Complete case file upload
       tags:
         - cases
       parameters:

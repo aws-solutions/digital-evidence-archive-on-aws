@@ -24,7 +24,7 @@ const FILE_PATH = '/food/sushi/';
 const UPLOAD_ID = '123456';
 const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
 const FILE_SIZE_MB = 50;
-const FILE_TYPE = 'image/jpeg';
+const CONTENT_TYPE = 'image/jpeg';
 const DATASETS_PROVIDER = {
   s3Client: new S3Client({ region: 'us-east-1' }),
   bucketName: 'testBucket',
@@ -89,21 +89,21 @@ describe('Test case file upload', () => {
 
     // validate fileSizeMb
     await expect(
-      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 0)
+      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, CONTENT_TYPE, 0)
     ).rejects.toThrow();
     await expect(
-      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, -1)
+      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, CONTENT_TYPE, -1)
     ).rejects.toThrow();
     await expect(
-      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 5_000_001)
+      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, CONTENT_TYPE, 5_000_001)
     ).rejects.toThrow();
 
     // allowed fileSizeMb
     expect(
-      await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 4_999_999)
+      await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, CONTENT_TYPE, 4_999_999)
     ).toBeDefined();
     expect(
-      await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 1)
+      await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, CONTENT_TYPE, 1)
     ).toBeDefined();
   });
 
@@ -115,7 +115,7 @@ async function initiateCaseFileUploadAndValidate(
   caseUlid: string = CASE_ULID,
   fileName: string = FILE_NAME,
   filePath: string = FILE_PATH,
-  fileType: string = FILE_TYPE,
+  contentType: string = CONTENT_TYPE,
   fileSizeMb: number = FILE_SIZE_MB
 ): Promise<DeaCaseFile> {
   const event = Object.assign(
@@ -126,7 +126,7 @@ async function initiateCaseFileUploadAndValidate(
         caseUlid,
         fileName,
         filePath,
-        fileType,
+        contentType,
         fileSizeMb,
       }),
     }
