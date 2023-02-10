@@ -90,11 +90,13 @@ export class DeaMainStack extends cdk.Stack {
       addLambdaSuppressions(cdkLambda);
     }
 
-    const autoDeleteLambda = this.node
-      .findChild('Custom::S3AutoDeleteObjectsCustomResourceProvider')
-      .node.findChild('Handler');
-    if (autoDeleteLambda instanceof CfnResource) {
-      addLambdaSuppressions(autoDeleteLambda);
+    // This will not exist in non-test deploys
+    const lambdaChild = this.node.tryFindChild('Custom::S3AutoDeleteObjectsCustomResourceProvider');
+    if (lambdaChild) {
+      const autoDeleteLambda = lambdaChild.node.findChild('Handler');
+      if (autoDeleteLambda instanceof CfnResource) {
+        addLambdaSuppressions(autoDeleteLambda);
+      }
     }
   }
 
