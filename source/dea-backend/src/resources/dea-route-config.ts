@@ -49,6 +49,9 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/auth/getToken/{authCode}',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/get-token-handler.ts',
+      // TODO: Implement custom authorizer for UI trying to access token exchange
+      // None for now, since this is the first endpoint we hit after logging in before
+      // we have the id_token
       authMethod: AuthorizationType.NONE,
     },
     {

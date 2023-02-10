@@ -42,7 +42,7 @@ export const getCognitoSsmParams = async (): Promise<[string, string, string]> =
   }
 };
 
-export const exchangeAuthorizationCode = async (authorizationCode: string) => {
+export const exchangeAuthorizationCode = async (authorizationCode: string): Promise<string> => {
   const [cognitoDomain, clientId, callbackUrl] = await getCognitoSsmParams();
   const axiosInstance = axios.create({
     baseURL: cognitoDomain,
