@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { AuthorizationType } from 'aws-cdk-lib/aws-apigateway';
 import { ApiGatewayMethod, ApiGatewayRouteConfig } from './api-gateway-route-config';
 
 export const deaApiRouteConfig: ApiGatewayRouteConfig = {
@@ -43,6 +44,12 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/cases/{caseId}/userMemberships',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/create-case-user-handler.ts',
+    },
+    {
+      path: '/auth/getToken/{authCode}',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/get-token-handler.ts',
+      authMethod: AuthorizationType.NONE,
     },
     {
       path: '/hi',

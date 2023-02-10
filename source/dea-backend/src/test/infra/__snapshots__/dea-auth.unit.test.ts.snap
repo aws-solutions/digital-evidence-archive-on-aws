@@ -3,6 +3,12 @@
 exports[`DeaAuth constructs synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
+    "DeaAuthcognitoDomainPrefixA3A7CC6A": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-cognitoDomainPrefix",
+      },
+      "Value": "[DOMAIN-REMOVED]",
+    },
     "DeaAuthidentityPoolIdEBA0D0C1": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-identityPoolId",
@@ -343,7 +349,7 @@ Object {
           "aws.cognito.signin.user.admin",
         ],
         "CallbackURLs": Array [
-          "https://example.com",
+          "",
         ],
         "ClientName": "dea-app-client",
         "EnableTokenRevocation": true,
@@ -589,6 +595,17 @@ Object {
       },
       "Type": "AWS::Cognito::UserPoolDomain",
     },
+    "DeaAuthclientcallbackurlssmparam21EED1EB": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the app client callback url for use in token verification on the backend",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-client-callback-url-param",
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": "",
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
     "DeaAuthuserpoolclientidssmparam605B45CC": Object {
       "Properties": Object {
         "AllowedPattern": ".*",
@@ -598,6 +615,32 @@ Object {
         "Type": "String",
         "Value": Object {
           "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaAuthuserpoolcognitodomainssmparam743ADBBC": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the user pool cognito domain for use in token verification on the backend",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-cognito-domain-param",
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "https://",
+              Object {
+                "Ref": "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]",
+              },
+              ".auth.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".amazoncognito.com",
+            ],
+          ],
         },
       },
       "Type": "AWS::SSM::Parameter",

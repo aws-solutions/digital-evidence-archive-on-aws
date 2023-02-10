@@ -146,7 +146,7 @@ export class DeaRestApiConstruct extends Construct {
         });
         const method = resource.addMethod(route.httpMethod, methodIntegration, {
           requestParameters: route.pagination ? paginationMethodParams : undefined,
-          authorizationType: AuthorizationType.IAM,
+          authorizationType: route.authMethod ?? AuthorizationType.IAM,
         });
 
         this.apiEndpointArns.set(route.path + route.httpMethod, method.methodArn);

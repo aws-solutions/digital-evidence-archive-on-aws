@@ -21,6 +21,7 @@ import {
   MessageActionType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Credentials } from 'aws4-axios';
+import puppeteer from 'puppeteer';
 import { getTokenPayload } from '../../cognito-token-helpers';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { deleteUser, getUserByTokenId } from '../../persistence/user';
@@ -196,6 +197,38 @@ export default class CognitoHelper {
     } else {
       throw new Error('Failed to get credentials from the identity pool:');
     }
+  }
+
+  public async getAuthorizationCode(cognitoDomainPath: string, callbackUrl: string, username: string) {
+    const browser = await puppeteer.launch();
+    // const browser = await puppeteer.launch({
+    //   headless: false, // set headless to false to open a browser window
+    // });
+    const page = await browser.newPage();
+
+    const clientId = this._userPoolClientId;
+
+    // Step 2: Sign in to the hosted UI
+    const hostedUiUrl = `${cognitoDomainPath}/login?response_type=code&client_id=${clientId}&redirect_uri=${callbackUrl}`;
+    await page.goto(hostedUiUrl);
+    await page.type('input[id="signInFormUsername"]', username);
+    await page.type('input[id="signInFormPassword"]', this._testPassword);
+
+    await page.click('input[name="signInSubmitButton"]');
+
+    await page.waitForNavigation({
+      waitUntil: 'load',
+    });
+
+    const redirectUri = page.url();
+    const authorizationCode = redirectUri.split('code=')[1];
+
+    if (!authorizationCode) {
+      throw new Error('Could not retrieve the authorization code');
+    }
+
+    await browser.close();
+    return authorizationCode;
   }
 
   public async cleanup(repositoryProvider?: ModelRepositoryProvider): Promise<void> {

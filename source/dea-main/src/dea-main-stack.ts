@@ -53,7 +53,10 @@ export class DeaMainStack extends cdk.Stack {
       accountId,
     });
 
-    new DeaAuthConstruct(this, 'DeaAuth', { apiEndpointArns: deaApi.apiEndpointArns });
+    new DeaAuthConstruct(this, 'DeaAuth', {
+      restApi: deaApi.deaRestApi,
+      apiEndpointArns: deaApi.apiEndpointArns,
+    });
 
     kmsKey.addToResourcePolicy(
       new PolicyStatement({

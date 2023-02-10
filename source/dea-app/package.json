@@ -51,7 +51,8 @@
     "cors": "^2.8.5",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "puppeteer": "18.1.0"
   },
   "devDependencies": {
     "@aws/workbench-core-logging": "~0.1.1",

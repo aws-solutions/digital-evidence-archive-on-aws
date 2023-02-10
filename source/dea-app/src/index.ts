@@ -14,6 +14,7 @@ import { deleteCase } from './app/resources/delete-cases';
 import { getAllCases } from './app/resources/get-all-cases';
 import { getCase } from './app/resources/get-case-details';
 import { getMyCases } from './app/resources/get-my-cases';
+import { getToken } from './app/resources/get-token';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
 import { sayBye } from './app/resources/say-bye';
 import { sayHello } from './app/resources/say-hello';
@@ -23,6 +24,7 @@ import { DeaCase } from './models/case';
 export {
   sayBye,
   sayHello,
+  getToken,
   createCases,
   deleteCase,
   getAllCases,

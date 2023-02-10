@@ -7,6 +7,7 @@ import * as path from 'path';
 import { deaConfig } from '@aws/dea-backend';
 import { StackProps } from 'aws-cdk-lib';
 import {
+  AuthorizationType,
   AwsIntegration,
   ContentHandling,
   MethodOptions,
@@ -114,6 +115,7 @@ export class DeaUiConstruct extends Construct {
           },
         },
       ],
+      authorizationType: AuthorizationType.NONE,
     };
   }
 
