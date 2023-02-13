@@ -11,9 +11,9 @@ Object {
         "Ref": "DeaBackendConstructS3AccessLogsBucket2074272F",
       },
     },
-    "DeaBackendConstructteststackDeaS3Datasets88052100": Object {
+    "DeaBackendConstructDeaS3DatasetsF44ADC66": Object {
       "Export": Object {
-        "Name": "[STAGE-REMOVED]-test-stack-DeaS3Datasets",
+        "Name": "[STAGE-REMOVED]-DeaS3Datasets",
       },
       "Value": Object {
         "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",

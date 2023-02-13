@@ -28,6 +28,7 @@ const CONTENT_TYPE = 'image/jpeg';
 const DATASETS_PROVIDER = {
   s3Client: new S3Client({ region: 'us-east-1' }),
   bucketName: 'testBucket',
+  chunkSizeMB: 5,
 };
 
 jest.setTimeout(20000);
@@ -107,7 +108,77 @@ describe('Test case file upload', () => {
     ).toBeDefined();
   });
 
-  // add tests for complete also
+  it('complete upload should enforce a strict payload', async () => {
+    // validate caseUlid
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, 'ABCD')).rejects.toThrow();
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, '')).rejects.toThrow();
+
+    // validate fileName
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, '')).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, '/food/ramen.jpg')
+    ).rejects.toThrow();
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, 'hello\0')).rejects.toThrow();
+
+    // validate filePath
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, 'foo')).rejects.toThrow();
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, '')).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, 'foo\\')
+    ).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, 'foo&&')
+    ).rejects.toThrow();
+
+    // validate ulid
+    await expect(
+      completeCaseFileUploadAndValidate('ABCD', CASE_ULID, FILE_NAME, CONTENT_TYPE)
+    ).rejects.toThrow();
+    await expect(completeCaseFileUploadAndValidate('', CASE_ULID, FILE_NAME, CONTENT_TYPE)).rejects.toThrow();
+
+    // validate uploadId
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, '&&')
+    ).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, '"foo"')
+    ).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, "'foo'")
+    ).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, '<food>')
+    ).rejects.toThrow();
+
+    // validate sha256Hash
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, UPLOAD_ID, '')
+    ).rejects.toThrow(); // empty
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, UPLOAD_ID, 'sha')
+    ).rejects.toThrow(); // short
+    await expect(
+      completeCaseFileUploadAndValidate(
+        FILE_ULID,
+        CASE_ULID,
+        FILE_NAME,
+        CONTENT_TYPE,
+        UPLOAD_ID,
+        '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFFFF02EBE0'
+      )
+    ).rejects.toThrow(); // long
+    await expect(
+      completeCaseFileUploadAndValidate(
+        FILE_ULID,
+        CASE_ULID,
+        FILE_NAME,
+        CONTENT_TYPE,
+        UPLOAD_ID,
+        '&30A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B'
+      )
+    ).rejects.toThrow(); // illegal character
+  });
+
   // validate s3 input
 });
 

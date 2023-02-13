@@ -33,7 +33,7 @@ export class DeaBackendConstruct extends Construct {
     this.datasetsBucket = this._createDatasetsBucket(
       props.kmsKey,
       this.accessLogsBucket,
-      `${scope.node.id}-DeaS3Datasets`,
+      `DeaS3Datasets`,
       datasetsPrefix
     );
   }

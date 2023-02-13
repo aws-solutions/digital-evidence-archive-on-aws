@@ -3,7 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { logger } from '../../logger';
 import { DeaCaseFile } from '../../models/case-file';
 import * as CaseFilePersistence from '../../persistence/case-file';
 import { defaultProvider } from '../../persistence/schema/entities';
@@ -21,20 +20,18 @@ export const initiateCaseFileUpload = async (
   repositoryProvider = defaultProvider,
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ): Promise<DeaCaseFile> => {
-  // todo: need to see who is initiating upload. add that info to s3 and ddb
-  // check if case exists
-  // check case-user has permissions
-  // check if file already exists
-  // need to add a status to indicate if file has been uploaded or is pending
-  // need to add a ttl to clear out incomplete case-files
+  // todo: need to see who is initiating upload. add that info to ddb
+  // todo: check if case exists
+  // todo: check case-user has permissions
+  // todo: check if file already exists
+  // todo: need to add a status to indicate if file has been uploaded or is pending
+  // todo: need to add a ttl to clear out incomplete case-files
   const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
     deaCaseFile,
     repositoryProvider
   );
-  logger.debug('Created case-file in DDB. Trying to create presigned URLs');
-  await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider);
 
-  logger.debug('Done creating presigned URLs. Returning successfully');
+  await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider);
   return caseFile;
 };
 
@@ -45,12 +42,12 @@ export const completeCaseFileUpload = async (
   repositoryProvider = defaultProvider,
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ): Promise<DeaCaseFile> => {
-  // todo: check if case-file exists and that it is actually pending
-  // check if case exists
-  // check case-user has permissions
+  // todo: check if case-file exists and that it is pending
+  // todo: need to see who is completing upload. should be same as user that initiated upload
+  // todo: check if case exists
+  // todo: check case-user has permissions
+  // todo: clear ttl and update case-file status as completed
 
   await completeUploadForCaseFile(deaCaseFile, datasetsProvider);
-
-  // update status and remove ttl
   return await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider);
 };
