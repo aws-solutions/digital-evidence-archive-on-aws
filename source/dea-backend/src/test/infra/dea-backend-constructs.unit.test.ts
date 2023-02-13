@@ -15,8 +15,6 @@ import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
 import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
 
-let restApi: DeaRestApiConstruct;
-
 describe('DeaBackend constructs', () => {
   beforeAll(() => {
     process.env.STAGE = 'chewbacca';
@@ -41,7 +39,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       accessLogsPrefixes: ['dea-ui-access-log'],
     });
-    restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
+    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
       kmsKey: key,
@@ -64,15 +62,7 @@ describe('DeaBackend constructs', () => {
     template.resourceCountIs('AWS::Lambda::Function', 12);
     template.resourceCountIs('AWS::ApiGateway::Method', 23);
 
-    addSnapshotSerializers();
-
-    expect(template).toMatchSnapshot();
-  });
-
-  it('synthesizes the way we expect', () => {
-    const app = new cdk.App();
-    const stack = new Stack(app, 'test-stack');
-
+    //Auth construct
     const apiEndpointArns = new Map([
       ['A', 'Aarn'],
       ['B', 'Barn'],
@@ -80,9 +70,6 @@ describe('DeaBackend constructs', () => {
       ['D', 'Darn'],
     ]);
     new DeaAuthConstruct(stack, 'DeaAuth', { restApi: restApi.deaRestApi, apiEndpointArns: apiEndpointArns });
-
-    // Prepare the stack for assertions.
-    const template = Template.fromStack(stack);
 
     addSnapshotSerializers();
 
@@ -94,6 +81,25 @@ describe('DeaBackend constructs', () => {
 
     const app = new cdk.App();
     const stack = new Stack(app, 'test-stack');
+
+    const key = new Key(stack, 'testKey', {
+      enableKeyRotation: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+      pendingWindow: Duration.days(7),
+    });
+
+    // Create the DeaBackendConstruct
+    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', {
+      kmsKey: key,
+      accessLogsPrefixes: ['dea-ui-access-log'],
+    });
+    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
+      deaTableArn: backend.deaTable.tableArn,
+      deaTableName: backend.deaTable.tableName,
+      kmsKey: key,
+      region: stack.region,
+      accountId: stack.account,
+    });
 
     const apiEndpointArns = new Map([
       ['A', 'Aarn'],
