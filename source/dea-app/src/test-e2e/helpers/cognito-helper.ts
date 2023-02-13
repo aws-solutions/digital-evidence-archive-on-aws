@@ -201,9 +201,6 @@ export default class CognitoHelper {
 
   public async getAuthorizationCode(cognitoDomainPath: string, callbackUrl: string, username: string) {
     const browser = await puppeteer.launch();
-    // const browser = await puppeteer.launch({
-    //   headless: false, // set headless to false to open a browser window
-    // });
     const page = await browser.newPage();
 
     const clientId = this._userPoolClientId;

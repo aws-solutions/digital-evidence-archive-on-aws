@@ -15,7 +15,7 @@ let cognitoDomain: string, callbackUrl: string;
 describe('get-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
-  const testUser = 'cognitoHelpersIntegrationTestUser';
+  const testUser = 'authCodeIntegrationTestUser';
   const firstName = 'CognitoTokenHelper';
   const lastName = 'TestUser';
 
@@ -48,7 +48,7 @@ describe('get-token', () => {
     if (!response.body) {
       fail();
     }
-  });
+  }, 20000);
 
   it('should throw an error if the authorization code is not valid', async () => {
     const event = Object.assign(
