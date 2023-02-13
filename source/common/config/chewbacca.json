@@ -32,6 +32,10 @@
           "method": "POST"
         },
         {
+          "path": "/users",
+          "method": "GET"
+        },
+        {
           "path": "/cases/{caseId}/files",
           "method": "POST"
         },

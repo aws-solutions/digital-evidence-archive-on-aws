@@ -36,6 +36,7 @@ jest.setTimeout(20000);
 describe('Test case file upload', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('CaseFileUploadTest');
+    //todo: validate calls to s3 mock
     s3Mock = mockClient(S3Client);
     s3Mock.resolves({
       UploadId: UPLOAD_ID,
@@ -178,8 +179,6 @@ describe('Test case file upload', () => {
       )
     ).rejects.toThrow(); // illegal character
   });
-
-  // validate s3 input
 });
 
 async function initiateCaseFileUploadAndValidate(
