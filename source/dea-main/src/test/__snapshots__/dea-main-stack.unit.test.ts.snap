@@ -58,12 +58,6 @@ Object {
         ],
       },
     },
-    "DeaAuthcognitoDomainPrefixA3A7CC6A": Object {
-      "Export": Object {
-        "Name": "[STAGE-REMOVED]-cognitoDomainPrefix",
-      },
-      "Value": "[DOMAIN-REMOVED]",
-    },
     "DeaAuthidentityPoolIdEBA0D0C1": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-identityPoolId",
