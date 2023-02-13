@@ -4914,15 +4914,6 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]": Object {
-      "Properties": Object {
-        "Domain": "[DOMAIN-REMOVED]",
-        "UserPoolId": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
-        },
-      },
-      "Type": "AWS::Cognito::UserPoolDomain",
-    },
     "DeaAuthclientcallbackurlssmparam21EED1EB": Object {
       "Properties": Object {
         "AllowedPattern": ".*",
@@ -4956,6 +4947,15 @@ Object {
         },
       },
       "Type": "AWS::SSM::Parameter",
+    },
+    "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]": Object {
+      "Properties": Object {
+        "Domain": "[DOMAIN-REMOVED]",
+        "UserPoolId": Object {
+          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+        },
+      },
+      "Type": "AWS::Cognito::UserPoolDomain",
     },
     "DeaAuthuserpoolclientidssmparam605B45CC": Object {
       "Properties": Object {
