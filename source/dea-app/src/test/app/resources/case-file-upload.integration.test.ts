@@ -28,7 +28,7 @@ const CONTENT_TYPE = 'image/jpeg';
 const DATASETS_PROVIDER = {
   s3Client: new S3Client({ region: 'us-east-1' }),
   bucketName: 'testBucket',
-  chunkSizeMB: 5,
+  chunkSizeMB: 500,
 };
 
 jest.setTimeout(20000);
@@ -154,10 +154,10 @@ describe('Test case file upload', () => {
     // validate sha256Hash
     await expect(
       completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, UPLOAD_ID, '')
-    ).rejects.toThrow(); // empty
+    ).rejects.toThrow(); // empty hash
     await expect(
       completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, UPLOAD_ID, 'sha')
-    ).rejects.toThrow(); // short
+    ).rejects.toThrow(); // short hash
     await expect(
       completeCaseFileUploadAndValidate(
         FILE_ULID,
@@ -167,7 +167,7 @@ describe('Test case file upload', () => {
         UPLOAD_ID,
         '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFFFF02EBE0'
       )
-    ).rejects.toThrow(); // long
+    ).rejects.toThrow(); // long hash
     await expect(
       completeCaseFileUploadAndValidate(
         FILE_ULID,
