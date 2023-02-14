@@ -3,7 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { aws4Interceptor } from 'aws4-axios';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { getCognitoSsmParams } from '../../app/services/auth-service';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPI } from '../resources/test-helpers';
@@ -80,6 +81,33 @@ describe('API authentication', () => {
     const response = await callDeaAPI(firstTimeFederatedUser, url, cognitoHelper, 'GET');
 
     expect(response.status).toEqual(200);
+  });
+
+  it('should ask for an authorization code and exchange for id token', async () => {
+    const client = axios.create();
+
+    // 1. create user
+    const authCodeUser = 'authCodeLoginUser';
+    const firstName = 'authCodeLoginUser';
+    const lastName = 'TestUser';
+    await cognitoHelper.createUser(authCodeUser, 'AuthTestGroup', firstName, lastName);
+
+    // 2. Get Auth Code
+    const [cognitoDomain, , callbackUrl] = await getCognitoSsmParams();
+    const authCode = await cognitoHelper.getAuthorizationCode(cognitoDomain, callbackUrl, testUser);
+
+    // 3. Exchange auth code for id token
+    const url = `${deaApiUrl}auth/getToken/${authCode}`;
+    const response = await client.post(url);
+    expect(response.status).toEqual(200);
+  }, 20000);
+
+  it('should fail with dummy token', async () => {
+    const client = axios.create();
+    const authCode = 'ABCDEFGHIJKL123';
+
+    const url = `${deaApiUrl}auth/getToken/${authCode}`;
+    await expect(client.post(url)).rejects.toThrow(AxiosError);
   });
 
   it('should log successful and unsuccessful logins/api invocations', () => {
