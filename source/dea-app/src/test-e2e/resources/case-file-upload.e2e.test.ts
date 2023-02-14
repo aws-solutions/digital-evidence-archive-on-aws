@@ -53,8 +53,6 @@ describe('Test case file upload', () => {
     await cognitoHelper.cleanup();
 
     for (const s3Object of s3ObjectsToDelete) {
-      console.log(`Bucket: ${testEnv.datasetsBucketName}`);
-      console.log(`Key: ${s3Object.key}`);
       // todo: need to add legal hold logic to datasets and here
       await s3Client.send(
         new DeleteObjectCommand({

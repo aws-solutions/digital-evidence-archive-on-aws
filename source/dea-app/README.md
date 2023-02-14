@@ -5,7 +5,7 @@
 
 | Statements                                                                         | Branches                                                                      | Functions                                                                        | Lines                                                                   |
 | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| ![Statements](https://img.shields.io/badge/statements-98.43%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-82.4%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-97.59%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-98.23%25-brightgreen.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-98.23%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-82.05%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-97.7%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-98.01%25-brightgreen.svg?style=flat) |
 
 
 This project is the routing package for `dea-backend`. It is used by `dea-backend` to generate routes for DEA API. Please refer [here](../dea-backend/README.md) for more information on how to use this project.
