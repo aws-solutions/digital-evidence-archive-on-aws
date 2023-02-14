@@ -29,11 +29,11 @@ export class DeaBackendConstruct extends Construct {
     this.deaTable = this._createDeaTable(props.kmsKey);
     const datasetsPrefix = 'dea-datasets-access-log';
     const prefixes = props.accessLogsPrefixes.concat([datasetsPrefix]);
-    this.accessLogsBucket = this._createAccessLogsBucket(`${scope.node.id}-DeaS3AccessLogs`, prefixes);
+    this.accessLogsBucket = this._createAccessLogsBucket(`DeaS3AccessLogs`, prefixes);
     this.datasetsBucket = this._createDatasetsBucket(
       props.kmsKey,
       this.accessLogsBucket,
-      `${scope.node.id}-DeaS3Datasets`,
+      `DeaS3Datasets`,
       datasetsPrefix
     );
   }

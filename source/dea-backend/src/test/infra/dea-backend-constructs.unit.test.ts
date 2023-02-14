@@ -42,6 +42,8 @@ describe('DeaBackend constructs', () => {
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
+      deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
+      deaDatasetsBucketName: backend.datasetsBucket.bucketName,
       kmsKey: key,
       region: stack.region,
       accountId: stack.account,
@@ -59,8 +61,8 @@ describe('DeaBackend constructs', () => {
     });
 
     //handlers
-    template.resourceCountIs('AWS::Lambda::Function', 12);
-    template.resourceCountIs('AWS::ApiGateway::Method', 23);
+    template.resourceCountIs('AWS::Lambda::Function', 14);
+    template.resourceCountIs('AWS::ApiGateway::Method', 27);
 
     //Auth construct
     const apiEndpointArns = new Map([
@@ -96,6 +98,8 @@ describe('DeaBackend constructs', () => {
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
+      deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
+      deaDatasetsBucketName: backend.datasetsBucket.bucketName,
       kmsKey: key,
       region: stack.region,
       accountId: stack.account,

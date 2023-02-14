@@ -42,15 +42,11 @@
     "unit:only": "heft test --no-build  --test-path-pattern '.*/*unit.test.*'"
   },
   "dependencies": {
-    "@aws-sdk/types": "^3.257.0",
     "@aws/dea-backend": "workspace:*",
     "@aws/dea-ui": "workspace:*",
     "@aws/dea-ui-infrastructure": "workspace:*",
-    "@types/aws-lambda": "^8.10.110",
-    "aws-jwt-verify": "^3.4.0",
     "aws-lambda": "^1.0.7",
     "constructs": "10.0.5",
-    "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "source-map-support": "^0.5.16"
   },

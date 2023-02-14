@@ -71,6 +71,7 @@ jobs:
           echo "IDENTITY_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-identityPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "USER_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:only --verbose

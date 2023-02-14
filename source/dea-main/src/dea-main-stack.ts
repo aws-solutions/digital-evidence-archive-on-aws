@@ -48,6 +48,8 @@ export class DeaMainStack extends cdk.Stack {
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
       deaTableArn: backendConstruct.deaTable.tableArn,
       deaTableName: backendConstruct.deaTable.tableName,
+      deaDatasetsBucketArn: backendConstruct.datasetsBucket.bucketArn,
+      deaDatasetsBucketName: backendConstruct.datasetsBucket.bucketName,
       kmsKey,
       region,
       accountId,

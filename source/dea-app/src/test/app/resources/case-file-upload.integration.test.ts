@@ -4,7 +4,9 @@
  */
 
 import { fail } from 'assert';
+import { S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
 import { DeaCaseFile } from '../../../models/case-file';
@@ -13,6 +15,7 @@ import { dummyContext, dummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
+let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
 const FILE_NAME = 'fileName';
 const CASE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXYZ';
@@ -21,11 +24,23 @@ const FILE_PATH = '/food/sushi/';
 const UPLOAD_ID = '123456';
 const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
 const FILE_SIZE_MB = 50;
-const FILE_TYPE = 'image/jpeg';
+const CONTENT_TYPE = 'image/jpeg';
+const DATASETS_PROVIDER = {
+  s3Client: new S3Client({ region: 'us-east-1' }),
+  bucketName: 'testBucket',
+  chunkSizeMB: 500,
+};
+
+jest.setTimeout(20000);
 
 describe('Test case file upload', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('CaseFileUploadTest');
+    //todo: validate calls to s3 mock
+    s3Mock = mockClient(S3Client);
+    s3Mock.resolves({
+      UploadId: UPLOAD_ID,
+    });
   });
 
   afterAll(async () => {
@@ -38,12 +53,12 @@ describe('Test case file upload', () => {
   });
 
   it('should throw a validation exception when no payload is provided', async () => {
-    await expect(initiateCaseFileUpload(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(
-      'Initiate case file upload payload missing.'
-    );
-    await expect(completeCaseFileUpload(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(
-      'Complete case file upload payload missing.'
-    );
+    await expect(
+      initiateCaseFileUpload(dummyEvent, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+    ).rejects.toThrow('Initiate case file upload payload missing.');
+    await expect(
+      completeCaseFileUpload(dummyEvent, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+    ).rejects.toThrow('Complete case file upload payload missing.');
   });
 
   it('initiate upload should enforce a strict payload', async () => {
@@ -52,17 +67,13 @@ describe('Test case file upload', () => {
     await expect(initiateCaseFileUploadAndValidate('')).rejects.toThrow();
 
     // validate fileName
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc>ff')).rejects.toThrow();
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc<ff')).rejects.toThrow();
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc:ff')).rejects.toThrow();
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc|ff')).rejects.toThrow();
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc?ff')).rejects.toThrow();
-    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'abc*ff')).rejects.toThrow();
     await expect(initiateCaseFileUploadAndValidate(CASE_ULID, '')).rejects.toThrow();
     await expect(initiateCaseFileUploadAndValidate(CASE_ULID, '/food/ramen.jpg')).rejects.toThrow();
+    await expect(initiateCaseFileUploadAndValidate(CASE_ULID, 'hello\0')).rejects.toThrow();
 
     // allowed fileNames
     expect(await initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen.jpg')).toBeDefined();
+    expect(await initiateCaseFileUploadAndValidate(CASE_ULID, '01234')).toBeDefined();
     expect(await initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen-jpg')).toBeDefined();
     expect(await initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen_jpg')).toBeDefined();
     expect(await initiateCaseFileUploadAndValidate(CASE_ULID, 'ramen jpg')).toBeDefined();
@@ -80,22 +91,93 @@ describe('Test case file upload', () => {
 
     // validate fileSizeMb
     await expect(
-      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 0)
+      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, CONTENT_TYPE, 0)
     ).rejects.toThrow();
     await expect(
-      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, -1)
+      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, CONTENT_TYPE, -1)
     ).rejects.toThrow();
     await expect(
-      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 5_000_001)
+      initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, CONTENT_TYPE, 5_000_001)
     ).rejects.toThrow();
 
     // allowed fileSizeMb
     expect(
-      await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 4_999_999)
+      await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, CONTENT_TYPE, 4_999_999)
     ).toBeDefined();
     expect(
-      await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, FILE_TYPE, 1)
+      await initiateCaseFileUploadAndValidate(CASE_ULID, FILE_NAME, FILE_PATH, CONTENT_TYPE, 1)
     ).toBeDefined();
+  });
+
+  it('complete upload should enforce a strict payload', async () => {
+    // validate caseUlid
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, 'ABCD')).rejects.toThrow();
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, '')).rejects.toThrow();
+
+    // validate fileName
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, '')).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, '/food/ramen.jpg')
+    ).rejects.toThrow();
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, 'hello\0')).rejects.toThrow();
+
+    // validate filePath
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, 'foo')).rejects.toThrow();
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, '')).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, 'foo\\')
+    ).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, 'foo&&')
+    ).rejects.toThrow();
+
+    // validate ulid
+    await expect(
+      completeCaseFileUploadAndValidate('ABCD', CASE_ULID, FILE_NAME, CONTENT_TYPE)
+    ).rejects.toThrow();
+    await expect(completeCaseFileUploadAndValidate('', CASE_ULID, FILE_NAME, CONTENT_TYPE)).rejects.toThrow();
+
+    // validate uploadId
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, '&&')
+    ).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, '"foo"')
+    ).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, "'foo'")
+    ).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, '<food>')
+    ).rejects.toThrow();
+
+    // validate sha256Hash
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, UPLOAD_ID, '')
+    ).rejects.toThrow(); // empty hash
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, UPLOAD_ID, 'sha')
+    ).rejects.toThrow(); // short hash
+    await expect(
+      completeCaseFileUploadAndValidate(
+        FILE_ULID,
+        CASE_ULID,
+        FILE_NAME,
+        CONTENT_TYPE,
+        UPLOAD_ID,
+        '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFFFF02EBE0'
+      )
+    ).rejects.toThrow(); // long hash
+    await expect(
+      completeCaseFileUploadAndValidate(
+        FILE_ULID,
+        CASE_ULID,
+        FILE_NAME,
+        CONTENT_TYPE,
+        UPLOAD_ID,
+        '&30A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B'
+      )
+    ).rejects.toThrow(); // illegal character
   });
 });
 
@@ -103,7 +185,7 @@ async function initiateCaseFileUploadAndValidate(
   caseUlid: string = CASE_ULID,
   fileName: string = FILE_NAME,
   filePath: string = FILE_PATH,
-  fileType: string = FILE_TYPE,
+  contentType: string = CONTENT_TYPE,
   fileSizeMb: number = FILE_SIZE_MB
 ): Promise<DeaCaseFile> {
   const event = Object.assign(
@@ -114,12 +196,12 @@ async function initiateCaseFileUploadAndValidate(
         caseUlid,
         fileName,
         filePath,
-        fileType,
+        contentType,
         fileSizeMb,
       }),
     }
   );
-  const response = await initiateCaseFileUpload(event, dummyContext, repositoryProvider);
+  const response = await initiateCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   return validateApiResponse(response, fileName, caseUlid, filePath);
 }
 
@@ -145,7 +227,7 @@ async function completeCaseFileUploadAndValidate(
       }),
     }
   );
-  const response = await completeCaseFileUpload(event, dummyContext, repositoryProvider);
+  const response = await completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   return validateApiResponse(response, fileName, caseUlid, filePath);
 }
 

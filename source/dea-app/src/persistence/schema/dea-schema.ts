@@ -5,7 +5,7 @@
 
 import { CaseAction } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
-import {allButDisallowed, ulidRegex, filePathSafeCharsRegex} from '../../models/validation/joi-common';
+import { allButDisallowed, ulidRegex, filePathSafeCharsRegex } from '../../models/validation/joi-common';
 
 export const DeaSchema = {
   format: 'onetable:1.1.0',
@@ -71,11 +71,12 @@ export const DeaSchema = {
       filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // whole s3 prefix within case dataset. ex: /meal/lunch/
       caseUlid: { type: String, validate: ulidRegex, required: true },
       isFile: { type: Boolean, required: true },
+      fileSizeMb: { type: Number, required: true },
       contentPath: { type: String },
       uploadId: { type: String },
       sha256Hash: { type: String },
-      fileType: { type: String },
-      fileSizeMb: { type: Number },
+      contentType: { type: String },
+
       //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },
