@@ -47,6 +47,7 @@
     "@aws-sdk/s3-request-presigner": "3.264.0",
     "@types/aws-lambda": "^8.10.110",
     "aws-sdk-client-mock": "^2.0.1",
+    "aws-sdk-client-mock-jest": "^2.0.1",
     "aws-jwt-verify": "^3.4.0",
     "aws-lambda": "^1.0.7",
     "@types/crypto-js": "^4.1.1",
