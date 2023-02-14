@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { AuthorizationType } from 'aws-cdk-lib/aws-apigateway';
 import { ApiGatewayMethod, ApiGatewayRouteConfig } from './api-gateway-route-config';
 
 export const deaApiRouteConfig: ApiGatewayRouteConfig = {
@@ -53,6 +54,15 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/cases/{caseId}/files/{fileId}',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/complete-case-file-upload-handler.ts',
+    },
+    {
+      path: '/auth/getToken/{authCode}',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/get-token-handler.ts',
+      // TODO: Implement custom authorizer for UI trying to access token exchange
+      // None for now, since this is the first endpoint we hit after logging in before
+      // we have the id_token
+      authMethod: AuthorizationType.NONE,
     },
     {
       path: '/hi',

@@ -6,6 +6,7 @@
 import { assert } from 'console';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
 import { CfnParameter, Duration } from 'aws-cdk-lib';
+import { RestApi } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountRecovery,
   CfnIdentityPool,
@@ -23,6 +24,7 @@ import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 
 interface DeaAuthProps {
+  readonly restApi: RestApi;
   // We need to create IAM Roles with what APIs the Role can call
   // therefore we need the API endpoint ARNs from the API Gateway construct
   apiEndpointArns: Map<string, string>;
@@ -33,6 +35,7 @@ export class DeaAuthConstruct extends Construct {
     super(scope, stackName);
 
     const region = deaConfig.region();
+    const loginUrl = `${props.restApi.url}ui/login`;
 
     // Auth Stack. Used to determine which APIs a user can access by assigning them
     // an IAM Role based on their Group/Role. E.g. User federates with the auth stack, given credentials based
@@ -42,7 +45,7 @@ export class DeaAuthConstruct extends Construct {
     // For production deployments, follow the ImplementationGuide on how to setup
     // and connect your existing CJIS-compatible IdP for SSO. IAM Role assigned
     // according to the UserRole defined in the SAML assertion document
-    this._createAuthStack(props.apiEndpointArns, region);
+    this._createAuthStack(props.apiEndpointArns, loginUrl, region);
   }
 
   private _createIamRole(
@@ -112,10 +115,10 @@ export class DeaAuthConstruct extends Construct {
     return groupRoleMapping;
   }
 
-  private _createAuthStack(apiEndpointArns: Map<string, string>, region: string): void {
+  private _createAuthStack(apiEndpointArns: Map<string, string>, callbackUrl: string, region: string): void {
     // See Implementation Guide for how to substitute your existing
     // Identity Provider in place of Cognito for SSO
-    const [pool, poolClient] = this._createCognitoIdP();
+    const [pool, poolClient, cognitoDomainUrl] = this._createCognitoIdP(callbackUrl);
 
     const providerUrl = `cognito-idp.${region}.amazonaws.com/${pool.userPoolId}:${poolClient.userPoolClientId}`;
 
@@ -209,7 +212,13 @@ export class DeaAuthConstruct extends Construct {
     });
 
     // Add the user pool id and client id to SSM for use in the backend for verifying and decoding tokens
-    this._addCognitoInformationToSSM(pool.userPoolId, poolClient.userPoolClientId, region);
+    this._addCognitoInformationToSSM(
+      pool.userPoolId,
+      poolClient.userPoolClientId,
+      cognitoDomainUrl,
+      callbackUrl,
+      region
+    );
   }
 
   // TODO add function for creating the IAM SAML IdP, which
@@ -219,7 +228,7 @@ export class DeaAuthConstruct extends Construct {
 
   // We use CognitoUserPool as the IdP for the reference application
   // TODO: determine if Cognito is CJIS compatible
-  private _createCognitoIdP(): [UserPool, UserPoolClient] {
+  private _createCognitoIdP(callbackUrl: string): [UserPool, UserPoolClient, string] {
     const tempPasswordValidity = Duration.days(1);
     // must re-authenticate in every 12 hours
     // Note when inactive for 30+ minutes, you will also have to reauthenticate
@@ -299,6 +308,7 @@ export class DeaAuthConstruct extends Construct {
       idTokenValidity: idTokenValidity,
 
       oAuth: {
+        callbackUrls: [callbackUrl],
         flows: {
           authorizationCodeGrant: true,
         },
@@ -309,7 +319,7 @@ export class DeaAuthConstruct extends Construct {
       userPoolClientName: 'dea-app-client',
     });
 
-    return [userPool, poolClient];
+    return [userPool, poolClient, newDomain.baseUrl()];
   }
 
   private _createCognitoGroup(
@@ -343,7 +353,13 @@ export class DeaAuthConstruct extends Construct {
 
   // Store the user pool id and client id in the parameter store so that we can verify
   // and decode tokens on the backend
-  private _addCognitoInformationToSSM(userPoolId: string, userPoolClientId: string, region: string) {
+  private _addCognitoInformationToSSM(
+    userPoolId: string,
+    userPoolClientId: string,
+    cognitoDomain: string,
+    callbackUrl: string,
+    region: string
+  ) {
     const stage = deaConfig.stage();
     new StringParameter(this, 'user-pool-id-ssm-param', {
       parameterName: `/dea/${region}/${stage}-userpool-id-param`,
@@ -357,6 +373,22 @@ export class DeaAuthConstruct extends Construct {
       parameterName: `/dea/${region}/${stage}-userpool-client-id-param`,
       stringValue: userPoolClientId,
       description: 'stores the user pool client id for use in token verification on the backend',
+      tier: ParameterTier.STANDARD,
+      allowedPattern: '.*',
+    });
+
+    new StringParameter(this, 'user-pool-cognito-domain-ssm-param', {
+      parameterName: `/dea/${region}/${stage}-userpool-cognito-domain-param`,
+      stringValue: cognitoDomain,
+      description: 'stores the user pool cognito domain for use in token verification on the backend',
+      tier: ParameterTier.STANDARD,
+      allowedPattern: '.*',
+    });
+
+    new StringParameter(this, 'client-callback-url-ssm-param', {
+      parameterName: `/dea/${region}/${stage}-client-callback-url-param`,
+      stringValue: callbackUrl,
+      description: 'stores the app client callback url for use in token verification on the backend',
       tier: ParameterTier.STANDARD,
       allowedPattern: '.*',
     });

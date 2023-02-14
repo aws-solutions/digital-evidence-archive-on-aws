@@ -491,6 +491,10 @@
       "allowedCategories": ["production"]
     },
     {
+      "name": "puppeteer",
+      "allowedCategories": ["production"]
+    },
+    {
       "name": "react",
       "allowedCategories": ["production", "prototypes"]
     },

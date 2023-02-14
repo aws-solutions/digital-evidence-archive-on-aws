@@ -32,6 +32,10 @@
           "method": "POST"
         },
         {
+          "path": "/auth/getToken/{authCode}",
+          "method": "POST"
+        },
+        {
           "path": "/users",
           "method": "GET"
         },
@@ -76,6 +80,10 @@
         {
           "path": "/bye",
           "method": "GET"
+        },
+        {
+          "path": "/auth/getToken/{authCode}",
+          "method": "POST"
         }
       ]
     },
@@ -95,6 +103,10 @@
         {
           "path": "/cases/all-cases",
           "method": "GET"
+        },
+        {
+          "path": "/auth/getToken/{authCode}",
+          "method": "POST"
         }
       ]
     },
@@ -114,6 +126,10 @@
         {
           "path": "/cases/{caseId}",
           "method": "DELETE"
+        },
+        {
+          "path": "/auth/getToken/{authCode}",
+          "method": "POST"
         }
       ]
     },
