@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { defineAbility } from '@casl/ability';
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { getRequiredPathParam, getUserUlid } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
@@ -38,13 +39,17 @@ export const verifyCaseACLs: VerifyCaseACLsSignature = async (
     return userForbidden(event, { userUlid, caseUlid });
   }
 
-  const grantedActionsIncludeAllRequiredActions = requiredActions.every((action) =>
-    caseUser.actions.includes(action)
-  );
-  if (!grantedActionsIncludeAllRequiredActions) {
-    // the user doesn't have all required actions
-    return userForbidden(event, { userUlid, caseUlid });
-  }
+  const userAbility = defineAbility((can) => {
+    caseUser.actions.forEach((action) => {
+      can(action, caseUlid);
+    });
+  });
+
+  requiredActions.forEach((requiredAction) => {
+    if (!userAbility.can(requiredAction, caseUlid)) {
+      return userForbidden(event, { userUlid, caseUlid });
+    }
+  });
 };
 
 const userForbidden = (

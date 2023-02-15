@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@aws/workbench-core-logging": "~0.1.1",
+    "@casl/ability": "~6.3.3",
     "@rushstack/eslint-config": "^3.0.0",
     "@rushstack/heft": "^0.48.8",
     "@rushstack/heft-jest-plugin": "^0.3.28",
