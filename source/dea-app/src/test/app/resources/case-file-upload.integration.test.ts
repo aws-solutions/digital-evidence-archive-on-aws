@@ -176,6 +176,77 @@ describe('Test case file upload', () => {
       )
     ).rejects.toThrow(); // illegal character
   });
+
+  it('complete upload should enforce a strict payload', async () => {
+    // validate caseUlid
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, 'ABCD')).rejects.toThrow();
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, '')).rejects.toThrow();
+
+    // validate fileName
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, '')).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, '/food/ramen.jpg')
+    ).rejects.toThrow();
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, 'hello\0')).rejects.toThrow();
+
+    // validate filePath
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, 'foo')).rejects.toThrow();
+    await expect(completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, '')).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, 'foo\\')
+    ).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, 'foo&&')
+    ).rejects.toThrow();
+
+    // validate ulid
+    await expect(
+      completeCaseFileUploadAndValidate('ABCD', CASE_ULID, FILE_NAME, CONTENT_TYPE)
+    ).rejects.toThrow();
+    await expect(completeCaseFileUploadAndValidate('', CASE_ULID, FILE_NAME, CONTENT_TYPE)).rejects.toThrow();
+
+    // validate uploadId
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, '&&')
+    ).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, '"foo"')
+    ).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, "'foo'")
+    ).rejects.toThrow();
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, '<food>')
+    ).rejects.toThrow();
+
+    // validate sha256Hash
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, UPLOAD_ID, '')
+    ).rejects.toThrow(); // empty hash
+    await expect(
+      completeCaseFileUploadAndValidate(FILE_ULID, CASE_ULID, FILE_NAME, CONTENT_TYPE, UPLOAD_ID, 'sha')
+    ).rejects.toThrow(); // short hash
+    await expect(
+      completeCaseFileUploadAndValidate(
+        FILE_ULID,
+        CASE_ULID,
+        FILE_NAME,
+        CONTENT_TYPE,
+        UPLOAD_ID,
+        '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFFFF02EBE0'
+      )
+    ).rejects.toThrow(); // long hash
+    await expect(
+      completeCaseFileUploadAndValidate(
+        FILE_ULID,
+        CASE_ULID,
+        FILE_NAME,
+        CONTENT_TYPE,
+        UPLOAD_ID,
+        '&30A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B'
+      )
+    ).rejects.toThrow(); // illegal character
+  });
 });
 
 async function initiateCaseFileUploadAndValidate(
@@ -220,6 +291,7 @@ async function callInitiateCaseFileUpload(
       }),
     }
   );
+
   return initiateCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
 }
 
@@ -274,6 +346,7 @@ async function callCompleteCaseFileUpload(
       }),
     }
   );
+
   return completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
 }
 
