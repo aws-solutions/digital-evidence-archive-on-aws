@@ -4,17 +4,17 @@
  */
 
 export interface DeaCaseFile {
-    readonly caseUlid: string;
-    readonly fileName: string;
-    readonly filePath: string;
-    readonly isFile: boolean;
-    readonly ulid?: string; // ulid will not exist before case-file is persisted
-    readonly fileSizeMb?: number;
-    readonly preSignedUrls?: [string];
-    readonly fileType?: string;
-    readonly uploadId?: string;
-    readonly sha256Hash?: string;
-    readonly contentPath?: string;
-    readonly created?: Date;
-    readonly updated?: Date;
+  readonly caseUlid: string;
+  readonly fileName: string;
+  readonly filePath: string;
+  readonly isFile: boolean;
+  readonly fileSizeMb: number;
+  readonly ulid?: string; // ulid will not exist before case-file is persisted
+  readonly contentType?: string;
+  readonly sha256Hash?: string;
+  readonly contentPath?: string;
+  uploadId?: string;
+  presignedUrls?: ReadonlyArray<string>;
+  readonly created?: Date;
+  readonly updated?: Date;
 }

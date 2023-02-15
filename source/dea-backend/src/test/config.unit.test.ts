@@ -24,6 +24,10 @@ describe('convict based config', () => {
             { path: '/cases/{caseId}', method: 'PUT' },
             { path: '/cases/{caseId}', method: 'DELETE' },
             { path: '/cases/{caseId}/userMemberships', method: 'POST' },
+            { path: '/cases/{caseId}/files', method: 'POST' },
+            { path: '/cases/{caseId}/files', method: 'GET' },
+            { path: '/cases/{caseId}/files/{fileId}', method: 'GET' },
+            { path: '/cases/{caseId}/files/{fileId}', method: 'PUT' },
           ]),
         },
         {
