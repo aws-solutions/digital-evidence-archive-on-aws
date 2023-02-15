@@ -12,6 +12,8 @@ import {
   CreateMultipartUploadCommand,
   CompleteMultipartUploadCommand,
   ListPartsCommand,
+  PutObjectLegalHoldCommand,
+  ObjectLockLegalHoldStatus,
 } from '@aws-sdk/client-s3';
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
@@ -319,6 +321,13 @@ async function completeCaseFileUploadAndValidate(
     Bucket: DATASETS_PROVIDER.bucketName,
     Key: `${caseUlid}/${deaCaseFile.ulid}`,
     UploadId: deaCaseFile.uploadId,
+  });
+
+  expect(s3Mock).toHaveReceivedCommandTimes(PutObjectLegalHoldCommand, 1);
+  expect(s3Mock).toHaveReceivedCommandWith(PutObjectLegalHoldCommand, {
+    Bucket: DATASETS_PROVIDER.bucketName,
+    Key: `${caseUlid}/${deaCaseFile.ulid}`,
+    LegalHold: { Status: ObjectLockLegalHoldStatus.ON },
   });
 
   return deaCaseFile;
