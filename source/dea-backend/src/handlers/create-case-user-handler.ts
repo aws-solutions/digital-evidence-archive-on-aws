@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { createCaseMembership } from "@aws/dea-app";
-import { createDeaHandler } from "./create-dea-handler";
+import { CaseAction, createCaseMembership } from '@aws/dea-app';
+import { createDeaHandler } from './create-dea-handler';
 
-export const handler = createDeaHandler(createCaseMembership);
+export const handler = createDeaHandler(createCaseMembership, [CaseAction.INVITE]);

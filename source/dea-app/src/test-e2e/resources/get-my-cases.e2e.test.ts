@@ -84,7 +84,7 @@ describe('get my cases api', () => {
     user2CaseIds.push(invitedCaseId);
 
     // Get the user ulid
-    const userResponse = await callDeaAPIWithCreds(`${deaApiUrl}users`, 'GET', idToken, creds);
+    const userResponse = await callDeaAPIWithCreds(`${deaApiUrl}users?limit=1000`, 'GET', idToken, creds);
 
     expect(userResponse.status).toEqual(200);
     const fetchedUsers: DeaUser[] = await userResponse.data.users;

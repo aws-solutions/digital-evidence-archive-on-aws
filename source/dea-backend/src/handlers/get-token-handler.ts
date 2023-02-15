@@ -4,10 +4,10 @@
  */
 
 import { getToken } from '@aws/dea-app';
-import { createDeaHandler } from './create-dea-handler';
+import { createDeaHandler, NO_ACL } from './create-dea-handler';
 
 const noOpPreExecution = () => {
   /* do nothing */
   return Promise.resolve();
 };
-export const handler = createDeaHandler(getToken, noOpPreExecution);
+export const handler = createDeaHandler(getToken, NO_ACL, noOpPreExecution);

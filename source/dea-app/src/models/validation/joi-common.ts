@@ -24,7 +24,7 @@ export const joiUlid = Joi.string().pattern(ulidRegex);
 
 export const sha256Hash = Joi.string().pattern(new RegExp('^[a-fA-F0-9]{64}$'));
 
-export const safeName = Joi.string().pattern(allButDisallowed).required().min(3).max(30);
+export const safeName = Joi.string().pattern(allButDisallowed).required().min(3).max(50);
 
 export const fileName = Joi.string().pattern(filenameSafeCharsRegex).required().max(255).required();
 

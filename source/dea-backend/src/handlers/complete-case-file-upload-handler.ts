@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { completeCaseFileUpload } from '@aws/dea-app';
+import { CaseAction, completeCaseFileUpload } from '@aws/dea-app';
 import { createDeaHandler } from './create-dea-handler';
 
-export const handler = createDeaHandler(completeCaseFileUpload);
+export const handler = createDeaHandler(completeCaseFileUpload, [CaseAction.UPLOAD]);

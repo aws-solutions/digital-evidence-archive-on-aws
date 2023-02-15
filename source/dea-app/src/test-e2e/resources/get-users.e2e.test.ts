@@ -39,7 +39,7 @@ describe('get users api', () => {
   it('should get all users', async () => {
     const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
-    const response = await callDeaAPIWithCreds(`${deaApiUrl}users`, 'GET', idToken, creds);
+    const response = await callDeaAPIWithCreds(`${deaApiUrl}users?limit=1000`, 'GET', idToken, creds);
 
     expect(response.status).toEqual(200);
     const users: DeaUser[] = await response.data.users;
