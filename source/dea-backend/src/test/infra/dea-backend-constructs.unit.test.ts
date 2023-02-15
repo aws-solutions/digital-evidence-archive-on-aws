@@ -17,7 +17,8 @@ import { validateBackendConstruct } from './validate-backend-construct';
 
 describe('DeaBackend constructs', () => {
   beforeAll(() => {
-    process.env.STAGE = 'chewbacca';
+    process.env.STAGE = 'RUN1';
+    process.env.CONFIGNAME = 'chewbacca';
   });
 
   afterAll(() => {
@@ -25,6 +26,10 @@ describe('DeaBackend constructs', () => {
   });
 
   it('synthesizes the way we expect', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const domain: any = 'deatestenv';
+    convictConfig.set('cognito.domain', domain);
+
     const app = new cdk.App();
     const stack = new Stack(app, 'test-stack');
 
