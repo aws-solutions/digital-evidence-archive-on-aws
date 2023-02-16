@@ -73,6 +73,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/users',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-users-handler.ts',
+      queryParams: ['nameBeginsWith'],
     },
     {
       path: '/bye',
