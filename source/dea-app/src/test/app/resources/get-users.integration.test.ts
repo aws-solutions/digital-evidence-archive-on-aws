@@ -86,4 +86,55 @@ describe('get users resource', () => {
     expect(allUsers.find((deauser) => deauser.lastName === user1.lastName)).toBeDefined();
     expect(allUsers.find((deauser) => deauser.lastName === user2.lastName)).toBeDefined();
   });
+
+  it('should fetch records beginning with a pattern', async () => {
+    const user1 = await createUser(
+      {
+        tokenId: 'apriloneil',
+        firstName: 'April',
+        lastName: 'Oneil',
+      },
+      repositoryProvider
+    );
+
+    const user2 = await createUser(
+      {
+        tokenId: 'aprilludgate',
+        firstName: 'April',
+        lastName: 'Ludgate',
+      },
+      repositoryProvider
+    );
+
+    await createUser(
+      {
+        tokenId: 'scroogemcduck',
+        firstName: 'Scrooge',
+        lastName: 'McDuck',
+      },
+      repositoryProvider
+    );
+
+    const event = Object.assign(
+      {},
+      {
+        ...dummyEvent,
+        queryStringParameters: {
+          nameBeginsWith: 'APRIL',
+        },
+      }
+    );
+    const response = await getUsers(event, dummyContext, repositoryProvider);
+
+    if (!response.body) {
+      fail();
+    }
+
+    const casesPage: ResponseUserPage = JSON.parse(response.body);
+    expect(casesPage.users.length).toEqual(2);
+    expect(casesPage.next).toBeFalsy();
+
+    expect(casesPage.users.find((user) => user.firstName === user1.firstName)).toBeDefined();
+    expect(casesPage.users.find((user) => user.firstName === user2.firstName)).toBeDefined();
+  });
 });

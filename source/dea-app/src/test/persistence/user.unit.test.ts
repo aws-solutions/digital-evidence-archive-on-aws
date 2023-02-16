@@ -107,9 +107,9 @@ describe('user persistence', () => {
     expectedUsers.next = undefined;
     expectedUsers.prev = undefined;
 
-    const actualWithLimit1 = await listUsers(1, undefined, modelProvider);
+    const actualWithLimit1 = await listUsers(1, undefined, undefined, modelProvider);
     expect(actualWithLimit1).toHaveLength(1);
-    const actual = await listUsers(undefined, undefined, modelProvider);
+    const actual = await listUsers(undefined, undefined, undefined, modelProvider);
 
     expect(actual.values).toEqual(expectedUsers.values);
 
