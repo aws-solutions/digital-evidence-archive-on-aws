@@ -70,6 +70,7 @@ export const DeaSchema = {
       fileName: { type: String, required: true, validate: allButDisallowed },
       filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // whole s3 prefix within case dataset. ex: /meal/lunch/
       caseUlid: { type: String, validate: ulidRegex, required: true },
+      createdBy: { type: String, validate: ulidRegex, required: true },
       isFile: { type: Boolean, required: true },
       fileSizeMb: { type: Number, required: true },
       contentPath: { type: String },

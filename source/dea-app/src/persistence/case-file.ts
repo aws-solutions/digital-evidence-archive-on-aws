@@ -9,6 +9,7 @@ import { CaseFileModelRepositoryProvider, CaseFileModel } from './schema/entitie
 
 export const initiateCaseFileUpload = async (
   deaCaseFile: DeaCaseFile,
+  userUlid: string,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider: CaseFileModelRepositoryProvider = {
@@ -18,6 +19,7 @@ export const initiateCaseFileUpload = async (
   const newEntity = await repositoryProvider.CaseFileModel.create({
     ...deaCaseFile,
     isFile: true,
+    createdBy: userUlid,
   });
   return caseFileFromEntity(newEntity);
 };

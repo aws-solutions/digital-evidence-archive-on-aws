@@ -4,13 +4,17 @@
  */
 
 import Joi from 'joi';
+import { getUserUlid } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { DeaCaseFile } from '../../models/case-file';
+import { CaseStatus } from '../../models/case-status';
 import { initiateCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseFileService from '../services/case-file-service';
+import { getCase } from '../services/case-service';
+import { getUser } from '../services/user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
 export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
@@ -29,11 +33,30 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
     throw new ValidationError('Initiate case file upload payload missing.');
   }
 
+  const userUlid = getUserUlid(event);
+  const user = await getUser(userUlid, repositoryProvider);
+  if (!user) {
+    // Note: before every lambda checks are run to add first time
+    // federated users to the db. If the caller is not in the db
+    // a server error has occured
+    throw new Error('Could not find case-file uploader as a user in the DB');
+  }
+
   const deaCaseFile: DeaCaseFile = JSON.parse(event.body);
   Joi.assert(deaCaseFile, initiateCaseFileUploadRequestSchema);
 
+  const deaCase = await getCase(deaCaseFile.caseUlid, repositoryProvider);
+  if (!deaCase) {
+    throw new Error(`Could not find case: ${deaCaseFile.caseUlid} in the DB`);
+  }
+
+  if (deaCase.status != CaseStatus.ACTIVE) {
+    throw new Error(`Can't upload a file to case in ${deaCase.status} state`);
+  }
+
   const initiateUploadResponse = await CaseFileService.initiateCaseFileUpload(
     deaCaseFile,
+    userUlid,
     repositoryProvider,
     datasetsProvider
   );

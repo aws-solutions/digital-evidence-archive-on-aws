@@ -30,6 +30,7 @@ export const caseFileResponseSchema = Joi.object({
   fileName: fileName,
   filePath: filePath,
   contentType: contentType,
+  createdBy: joiUlid,
   isFile: Joi.boolean(),
   fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
   presignedUrls: Joi.array().items(Joi.string().uri()),
