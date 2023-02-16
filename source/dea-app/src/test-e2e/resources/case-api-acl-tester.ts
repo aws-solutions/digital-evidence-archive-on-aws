@@ -129,13 +129,13 @@ const initializeACLE2ETest = async (
   testSuiteName: string,
   requiredActions: ReadonlyArray<CaseAction>
 ): Promise<ACLTestHarness> => {
-  const suffix = randomSuffix(5);
+  const prefix = randomSuffix(5);
   const companionSuffix = '-companion';
-  const ownerName = `owner_${testSuiteName}${suffix}`;
-  const userWithRequiredActionsName = `requiredActions_${testSuiteName}${suffix}`;
-  const userWithAllButRequiredActionsName = `allButRequiredActions_${testSuiteName}${suffix}`;
-  const userWithNoActionsName = `noActions_${testSuiteName}${suffix}`;
-  const userWithNoMembershipName = `noMembership_${testSuiteName}${suffix}`;
+  const ownerName = `${prefix}_owner_${testSuiteName}`;
+  const userWithRequiredActionsName = `${prefix}_requiredActions_${testSuiteName}`;
+  const userWithAllButRequiredActionsName = `${prefix}_allButRequiredActions_${testSuiteName}`;
+  const userWithNoActionsName = `${prefix}_noActions_${testSuiteName}`;
+  const userWithNoMembershipName = `${prefix}_noMembership_${testSuiteName}`;
 
   const testUsernames = [
     ownerName,
@@ -177,7 +177,7 @@ const initializeACLE2ETest = async (
 
   const [ownerCreds, ownerToken] = credsMap.get(ownerName)!;
   const userResponse = await callDeaAPIWithCreds(
-    `${deaApiUrl}users?limit=1000`,
+    `${deaApiUrl}users?nameBeginsWith=${prefix}`,
     'GET',
     ownerToken,
     ownerCreds

@@ -20,11 +20,13 @@ export const getUsers: DEAGatewayProxyHandler = async (
   logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
   let limit: number | undefined;
   let next: string | undefined;
+  let nameBeginsWith: string | undefined;
   if (event.queryStringParameters) {
     if (event.queryStringParameters['limit']) {
       limit = parseInt(event.queryStringParameters['limit']);
     }
     next = event.queryStringParameters['next'];
+    nameBeginsWith = event.queryStringParameters['nameBeginsWith'];
   }
 
   let nextToken: object | undefined = undefined;
@@ -32,7 +34,7 @@ export const getUsers: DEAGatewayProxyHandler = async (
     nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
   }
 
-  const pageOfUsers = await UserService.getUsers(limit, nextToken, repositoryProvider);
+  const pageOfUsers = await UserService.getUsers(limit, nextToken, nameBeginsWith, repositoryProvider);
 
   return {
     statusCode: 200,
