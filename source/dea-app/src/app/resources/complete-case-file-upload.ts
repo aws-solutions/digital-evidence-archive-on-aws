@@ -38,6 +38,15 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   const requestCaseFile: DeaCaseFile = JSON.parse(event.body);
   Joi.assert(requestCaseFile, completeCaseFileUploadRequestSchema);
 
+  const userUlid = getUserUlid(event);
+  const user = await getUser(userUlid, repositoryProvider);
+  if (!user) {
+    // Note: before every lambda checks are run to add first time
+    // federated users to the db. If the caller is not in the db
+    // a server error has occurred
+    throw new Error('Could not find case-file uploader as a user in the DB');
+  }
+
   const deaCase = await getCase(requestCaseFile.caseUlid, repositoryProvider);
   if (!deaCase) {
     throw new Error(`Could not find case: ${requestCaseFile.caseUlid} in the DB`);
@@ -48,8 +57,8 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   }
 
   // we know based on request validation that the ulid isn't null, so safe to cast to string
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const existingCaseFile = await getCaseFileByUlid(
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     requestCaseFile.ulid as string,
     requestCaseFile.caseUlid,
     repositoryProvider
@@ -62,17 +71,8 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
     throw new Error(`Can't complete upload for a file in ${existingCaseFile.status} state`);
   }
 
-  const userUlid = getUserUlid(event);
-  const user = await getUser(userUlid, repositoryProvider);
-  if (!user) {
-    // Note: before every lambda checks are run to add first time
-    // federated users to the db. If the caller is not in the db
-    // a server error has occurred
-    throw new Error('Could not find case-file uploader as a user in the DB');
-  }
-
   if (existingCaseFile.createdBy !== userUlid) {
-    throw new Error(`Mismatch in user creating and completing file upload`);
+    throw new Error('Mismatch in user creating and completing file upload');
   }
 
   const completeUploadResponse = await CaseFileService.completeCaseFileUpload(

@@ -102,42 +102,90 @@ describe('Test case file upload', () => {
     await expect(callInitiateCaseFileUpload()).rejects.toThrow(
       'Could not find case-file uploader as a user in the DB'
     );
+    await expect(callCompleteCaseFileUpload()).rejects.toThrow(
+      'Could not find case-file uploader as a user in the DB'
+    );
 
     delete EVENT.headers['userUlid'];
     await expect(callInitiateCaseFileUpload()).rejects.toThrow(
       'userUlid was not present in the event header'
     );
+    await expect(callCompleteCaseFileUpload()).rejects.toThrow(
+      'userUlid was not present in the event header'
+    );
   });
 
   it('should throw an exception when case does not exist in DB', async () => {
-    // use a fake ULID
+    // use a bogus ULID
     await expect(callInitiateCaseFileUpload(FILE_ULID)).rejects.toThrow(
+      `Could not find case: ${FILE_ULID} in the DB`
+    );
+    await expect(callCompleteCaseFileUpload(FILE_ULID, FILE_ULID)).rejects.toThrow(
       `Could not find case: ${FILE_ULID} in the DB`
     );
   });
 
   it('should throw an exception when case is inactive', async () => {
-    const inactiveCase = (await createCase('inactive', 'inactive', 'INACTIVE')).ulid ?? fail();
-    await expect(callInitiateCaseFileUpload(inactiveCase)).rejects.toThrow(
+    const inactiveCaseUlid = (await createCase('inactive', 'inactive', 'INACTIVE')).ulid ?? fail();
+    await expect(callInitiateCaseFileUpload(inactiveCaseUlid)).rejects.toThrow(
+      "Can't upload a file to case in INACTIVE state"
+    );
+    await expect(callCompleteCaseFileUpload(FILE_ULID, inactiveCaseUlid)).rejects.toThrow(
       "Can't upload a file to case in INACTIVE state"
     );
   });
 
-  it('should throw an exception when case-file is PENDING', async () => {
-    const pendingFileName = 'pendingFile';
+  it('initiate upload should throw an exception when case-file is PENDING', async () => {
+    const pendingFileName = 'initiatePendingFile';
     await initiateCaseFileUploadAndValidate(caseToUploadTo, pendingFileName);
     await expect(callInitiateCaseFileUpload(caseToUploadTo, pendingFileName)).rejects.toThrow(
       `${FILE_PATH}${pendingFileName} is currently being uploaded. Check again in 60 minutes`
     );
   });
 
-  it('should throw an exception when case-file exists', async () => {
-    const activeFileName = 'activeFile';
+  it('initiate upload should throw an exception when case-file exists', async () => {
+    const activeFileName = 'initiateActiveFile';
     const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate(caseToUploadTo, activeFileName);
     await completeCaseFileUploadAndValidate(caseFile.ulid, caseToUploadTo, activeFileName);
 
     await expect(callInitiateCaseFileUpload(caseToUploadTo, activeFileName)).rejects.toThrow(
       `${FILE_PATH}${activeFileName} already exists in the DB`
+    );
+  });
+
+  it("complete upload should throw an exception when case-file doesn't exist", async () => {
+    await expect(callCompleteCaseFileUpload(FILE_ULID)).rejects.toThrow(
+      `Could not find file: ${FILE_ULID} in the DB`
+    );
+  });
+
+  it("complete upload should throw an exception when case-file isn't pending", async () => {
+    const activeFileName = 'completeActiveFile';
+    const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate(caseToUploadTo, activeFileName);
+    await completeCaseFileUploadAndValidate(caseFile.ulid, caseToUploadTo, activeFileName);
+
+    await expect(callCompleteCaseFileUpload(caseFile.ulid, caseToUploadTo, activeFileName)).rejects.toThrow(
+      `Can't complete upload for a file in ${CaseFileStatus.ACTIVE} state`
+    );
+  });
+
+  it('complete upload should throw an exception when caller is different user', async () => {
+    const activeFileName = 'mismatchUserFile';
+    const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate(caseToUploadTo, activeFileName);
+
+    const newFileUploader =
+      (await createUser(
+        {
+          tokenId: 'newfileuploader',
+          firstName: 'NewFile',
+          lastName: 'Uploader',
+        },
+        repositoryProvider
+      )) ?? fail();
+    EVENT.headers['userUlid'] = newFileUploader.ulid;
+
+    await expect(callCompleteCaseFileUpload(caseFile.ulid, caseToUploadTo, activeFileName)).rejects.toThrow(
+      'Mismatch in user creating and completing file upload'
     );
   });
 
