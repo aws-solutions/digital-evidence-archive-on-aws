@@ -36,7 +36,21 @@ const inviteToCasesArgs: argsType = [
     actions: [],
   }),
 ];
+const deleteMembershipArgs: argsType = [
+  'removeFromCaseACLs',
+  [CaseAction.INVITE],
+  'cases/{caseId}/userMemberships/{companion}',
+  'DELETE',
+  JSON.stringify({
+    userUlid: '{companion}',
+    caseUlid: '{caseId}',
+    actions: [],
+  }),
+];
 
 describe('Case API ACL enforcement', () => {
-  describe.each([getCaseDetailsArgs, putCaseDetailsArgs, inviteToCasesArgs])('%s', validateEndpointACLs);
+  describe.each([getCaseDetailsArgs, putCaseDetailsArgs, inviteToCasesArgs, deleteMembershipArgs])(
+    '%s',
+    validateEndpointACLs
+  );
 });

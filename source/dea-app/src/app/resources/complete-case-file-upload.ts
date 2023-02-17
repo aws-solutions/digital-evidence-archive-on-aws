@@ -3,13 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import Joi from 'joi';
+import { getRequiredPayload } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { DeaCaseFile } from '../../models/case-file';
 import { completeCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
-import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseFileService from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
@@ -25,12 +24,11 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
   logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
 
-  if (!event.body) {
-    throw new ValidationError('Complete case file upload payload missing.');
-  }
-
-  const deaCaseFile: DeaCaseFile = JSON.parse(event.body);
-  Joi.assert(deaCaseFile, completeCaseFileUploadRequestSchema);
+  const deaCaseFile: DeaCaseFile = getRequiredPayload(
+    event,
+    'Complete case file upload',
+    completeCaseFileUploadRequestSchema
+  );
 
   const completeUploadResponse = await CaseFileService.completeCaseFileUpload(
     deaCaseFile,

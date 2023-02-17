@@ -4,6 +4,7 @@
  */
 
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import Joi from 'joi';
 import { ValidationError } from './app/exceptions/validation-exception';
 import { logger } from './logger';
 
@@ -21,6 +22,20 @@ export const getRequiredPathParam = (event: APIGatewayProxyEventV2, paramName: s
   });
   throw new ValidationError(`Required path param '${paramName}' is missing.`);
 };
+
+export function getRequiredPayload<T>(
+  event: APIGatewayProxyEventV2,
+  typeName: string,
+  validationSchema: Joi.ObjectSchema
+): T {
+  if (!event.body) {
+    throw new ValidationError(`${typeName} payload missing.`);
+  }
+  const payload: T = JSON.parse(event.body);
+  Joi.assert(payload, validationSchema);
+
+  return payload;
+}
 
 export const getRequiredHeader = (event: APIGatewayProxyEventV2, headerName: string): string => {
   let value = event.headers[headerName];

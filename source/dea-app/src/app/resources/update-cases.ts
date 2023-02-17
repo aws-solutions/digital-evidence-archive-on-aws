@@ -3,8 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import Joi from 'joi';
-import { getRequiredPathParam } from '../../lambda-http-helpers';
+import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { DeaCase } from '../../models/case';
 import { updateCaseSchema } from '../../models/validation/case';
@@ -25,13 +24,7 @@ export const updateCases: DEAGatewayProxyHandler = async (
 
   const caseId = getRequiredPathParam(event, 'caseId');
 
-  if (!event.body) {
-    throw new ValidationError('Update cases payload missing.');
-  }
-
-  const deaCase: DeaCase = JSON.parse(event.body);
-
-  Joi.assert(deaCase, updateCaseSchema);
+  const deaCase: DeaCase = getRequiredPayload(event, 'Update cases', updateCaseSchema);
 
   if (caseId !== deaCase.ulid) {
     throw new ValidationError('Requested Case Ulid does not match resource');
