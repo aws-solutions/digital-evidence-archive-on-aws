@@ -79,7 +79,7 @@ describe('get-credentials', () => {
       }
     );
 
-    await expect(getCredentials(event, dummyContext)).rejects.toThrow();
+    await expect(getCredentials(event, dummyContext)).rejects.toThrow(ValidationError);
   });
 
   it('should throw an error if the path param is missing', async () => {
