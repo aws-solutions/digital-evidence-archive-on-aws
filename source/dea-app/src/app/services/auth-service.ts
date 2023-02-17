@@ -15,7 +15,15 @@ import { getRequiredEnv } from '../../lambda-http-helpers';
 const stage = getRequiredEnv('STAGE', 'chewbacca');
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
 
-export const getCognitoSsmParams = async (): Promise<[string, string, string, string, string]> => {
+export interface CognitoSsmParams {
+  cognitoDomainUrl: string;
+  clientId: string;
+  callbackUrl: string;
+  identityPoolId: string;
+  userPoolId: string;
+}
+
+export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
   const ssmClient = new SSMClient({ region });
 
   const cognitoDomainPath = `/dea/${region}/${stage}-userpool-cognito-domain-param`;
@@ -63,7 +71,13 @@ export const getCognitoSsmParams = async (): Promise<[string, string, string, st
   });
 
   if (cognitoDomainUrl && clientId && callbackUrl && identityPoolId && userPoolId) {
-    return [cognitoDomainUrl, clientId, callbackUrl, identityPoolId, userPoolId];
+    return {
+      cognitoDomainUrl,
+      clientId,
+      callbackUrl,
+      identityPoolId,
+      userPoolId,
+    };
   } else {
     throw new Error(
       `Unable to grab the parameters in SSM needed for token verification: ${cognitoDomainUrl}, ${clientId}, ${callbackUrl}, ${identityPoolId}`
@@ -72,7 +86,7 @@ export const getCognitoSsmParams = async (): Promise<[string, string, string, st
 };
 
 export const getCredentialsByToken = async (idToken: string) => {
-  const [, , , identityPoolId, userPoolId] = await getCognitoSsmParams();
+  const cognitoParams = await getCognitoSsmParams();
 
   // Set up the Cognito Identity client
   const cognitoIdentityClient = new CognitoIdentityClient({
@@ -81,9 +95,9 @@ export const getCredentialsByToken = async (idToken: string) => {
 
   // Set up the request parameters
   const getIdCommand = new GetIdCommand({
-    IdentityPoolId: identityPoolId,
+    IdentityPoolId: cognitoParams.identityPoolId,
     Logins: {
-      [`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: idToken,
+      [`cognito-idp.${region}.amazonaws.com/${cognitoParams.userPoolId}`]: idToken,
     },
   });
 
@@ -93,7 +107,7 @@ export const getCredentialsByToken = async (idToken: string) => {
   const getCredentialsCommand = new GetCredentialsForIdentityCommand({
     IdentityId,
     Logins: {
-      [`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: idToken,
+      [`cognito-idp.${region}.amazonaws.com/${cognitoParams.userPoolId}`]: idToken,
     },
   });
 
@@ -103,16 +117,16 @@ export const getCredentialsByToken = async (idToken: string) => {
 };
 
 export const exchangeAuthorizationCode = async (authorizationCode: string): Promise<string> => {
-  const [cognitoDomain, clientId, callbackUrl] = await getCognitoSsmParams();
+  const cognitoParams = await getCognitoSsmParams();
   const axiosInstance = axios.create({
-    baseURL: cognitoDomain,
+    baseURL: cognitoParams.cognitoDomainUrl,
   });
 
   const data = new URLSearchParams();
   data.append('grant_type', 'authorization_code');
-  data.append('client_id', clientId);
+  data.append('client_id', cognitoParams.clientId);
   data.append('code', authorizationCode);
-  data.append('redirect_uri', callbackUrl);
+  data.append('redirect_uri', cognitoParams.callbackUrl);
 
   // make a request using the Axios instance
   const response = await axiosInstance.post('/oauth2/token', data, {

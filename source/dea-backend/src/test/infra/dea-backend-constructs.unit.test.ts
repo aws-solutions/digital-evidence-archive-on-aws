@@ -61,8 +61,8 @@ describe('DeaBackend constructs', () => {
     });
 
     //handlers
-    template.resourceCountIs('AWS::Lambda::Function', 14);
-    template.resourceCountIs('AWS::ApiGateway::Method', 27);
+    template.resourceCountIs('AWS::Lambda::Function', 15);
+    template.resourceCountIs('AWS::ApiGateway::Method', 30);
 
     //Auth construct
     const apiEndpointArns = new Map([

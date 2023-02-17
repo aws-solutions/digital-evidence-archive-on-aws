@@ -34,4 +34,6 @@ export const contentType = Joi.string().pattern(htmlSafeCharsRegex);
 
 export const caseStatus = Joi.string().valid(...Object.keys(CaseStatus));
 
+export const idToken = Joi.string().regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/);
+
 export const safeDescription = Joi.string().pattern(allButDisallowed).max(200).min(3).optional();

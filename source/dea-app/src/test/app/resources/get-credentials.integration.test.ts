@@ -5,12 +5,12 @@
 import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { getCredentials } from '../../../app/resources/get-credentials';
 import { getToken } from '../../../app/resources/get-token';
-import { getCognitoSsmParams } from '../../../app/services/auth-service';
+import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
 
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { dummyContext, dummyEvent } from '../../integration-objects';
 
-let cognitoDomain: string, callbackUrl: string;
+let cognitoParams: CognitoSsmParams;
 
 describe('get-credentials', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
@@ -22,7 +22,7 @@ describe('get-credentials', () => {
   beforeAll(async () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
-    [cognitoDomain, , callbackUrl] = await getCognitoSsmParams();
+    cognitoParams = await getCognitoSsmParams();
   });
 
   afterAll(async () => {
@@ -30,7 +30,11 @@ describe('get-credentials', () => {
   });
 
   it('successfully get credentials from id token', async () => {
-    const authCode = await cognitoHelper.getAuthorizationCode(cognitoDomain, callbackUrl, testUser);
+    const authCode = await cognitoHelper.getAuthorizationCode(
+      cognitoParams.cognitoDomainUrl,
+      cognitoParams.callbackUrl,
+      testUser
+    );
 
     const event = Object.assign(
       {},
