@@ -11,6 +11,7 @@ import { createCaseMembership } from './app/resources/create-case-membership';
 import { createCases } from './app/resources/create-cases';
 import { DEAGatewayProxyHandler } from './app/resources/dea-gateway-proxy-handler';
 import { DEAPreLambdaExecutionChecks, runPreExecutionChecks } from './app/resources/dea-lambda-utils';
+import { deleteCaseMembership } from './app/resources/delete-case-membership';
 import { deleteCase } from './app/resources/delete-cases';
 import { getAllCases } from './app/resources/get-all-cases';
 import { getCase } from './app/resources/get-case-details';
@@ -41,6 +42,7 @@ export {
   runPreExecutionChecks,
   updateCases,
   createCaseMembership,
+  deleteCaseMembership,
   getCaseUser,
   getRequiredPathParam,
   getUsers,

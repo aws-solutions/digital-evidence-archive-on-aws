@@ -70,7 +70,12 @@ export const getCaseUsersForUser = async (
   return CaseUserPersistence.listCaseUsersByUser(userUlid, limit, nextToken, repositoryProvider);
 };
 
-export const deleteCaseUsersForCase = async (caseUlid: string, repositoryProvider = defaultProvider) => {
+export const deleteCaseUsersForCase = async (
+  caseUlid: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider = defaultProvider
+) => {
   let batch = {};
   const caseUsers = await CaseUserPersistence.listCaseUsersByCase(
     caseUlid,
