@@ -144,22 +144,36 @@ export class DeaRestApiConstruct extends Construct {
           datasetsBucketName
         );
 
-        const paginationParams = {
-          'integration.request.querystring.limit': 'method.request.querystring.limit',
-          'integration.request.querystring.next': 'method.request.querystring.next',
-        };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let queryParams: any = {};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let methodQueryParams: any = {};
 
-        const paginationMethodParams = {
-          'method.request.querystring.limit': false,
-          'method.request.querystring.next': false,
-        };
+        if (route.pagination) {
+          queryParams['integration.request.querystring.limit'] = 'method.request.querystring.limit';
+          queryParams['integration.request.querystring.next'] = 'method.request.querystring.next';
+          methodQueryParams['method.request.querystring.limit'] = false;
+          methodQueryParams['method.request.querystring.next'] = false;
+        }
+
+        if (route.queryParams) {
+          route.queryParams.forEach((param) => {
+            queryParams[`integration.request.querystring.${param}`] = `method.request.querystring.${param}`;
+            methodQueryParams[`method.request.querystring.${param}`] = false;
+          });
+        }
+
+        if (Object.keys(queryParams).length === 0) {
+          queryParams = undefined;
+          methodQueryParams = undefined;
+        }
 
         const methodIntegration = new LambdaIntegration(lambda, {
           proxy: true,
-          requestParameters: route.pagination ? paginationParams : undefined,
+          requestParameters: queryParams,
         });
         const method = resource.addMethod(route.httpMethod, methodIntegration, {
-          requestParameters: route.pagination ? paginationMethodParams : undefined,
+          requestParameters: methodQueryParams,
           // Custom auth type or None based on dea-route-config. Usually reserved for auth or ui methods
           authorizationType: route.authMethod ?? AuthorizationType.IAM,
         });

@@ -13,10 +13,11 @@ import { callDeaAPIWithCreds, randomSuffix } from './test-helpers';
 describe('get users api', () => {
   const cognitoHelper = new CognitoHelper();
 
+  const suffix = randomSuffix();
   const testUser = 'getUsersE2EUser';
   const testUser2 = 'getUsersE2EUser2';
-  const user1FirstName = `GetUsersE2E${randomSuffix()}`;
-  const user2FirstName = `GetUsersE2E2${randomSuffix()}`;
+  const user1FirstName = `GetUsersE2E${suffix}`;
+  const user2FirstName = `GetUsersE2E${suffix}-2`;
   const testUser_blocked = 'notGranted_getUsersE2EUser';
   const deaApiUrl = testEnv.apiUrlOutput;
 
@@ -39,7 +40,12 @@ describe('get users api', () => {
   it('should get all users', async () => {
     const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
-    const response = await callDeaAPIWithCreds(`${deaApiUrl}users?limit=1000`, 'GET', idToken, creds);
+    const response = await callDeaAPIWithCreds(
+      `${deaApiUrl}users?nameBeginsWith=${user1FirstName}`,
+      'GET',
+      idToken,
+      creds
+    );
 
     expect(response.status).toEqual(200);
     const users: DeaUser[] = await response.data.users;

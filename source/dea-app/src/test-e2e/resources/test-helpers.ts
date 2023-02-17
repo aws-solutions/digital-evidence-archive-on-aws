@@ -8,6 +8,7 @@ import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import Joi from 'joi';
 import { DeaCase } from '../../models/case';
+import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -16,6 +17,8 @@ import { testEnv } from '../helpers/settings';
 export const validateStatus = () => true;
 
 export type DeaHttpMethod = 'PUT' | 'POST' | 'GET' | 'DELETE';
+
+export const bogusUlid = 'SVPERCA11FRAG111ST1CETCETC';
 
 export const randomSuffix = (length = 10) => {
   return randomBytes(10).toString('hex').substring(0, length);
@@ -110,3 +113,26 @@ export async function callDeaAPIWithCreds(
       });
   }
 }
+
+export const getSpecificUserByFirstName = async (
+  deaApiUrl: string,
+  userFirstName: string,
+  token: string,
+  creds: Credentials
+): Promise<DeaUser> => {
+  const userResponse = await callDeaAPIWithCreds(
+    `${deaApiUrl}users?nameBeginsWith=${userFirstName}`,
+    'GET',
+    token,
+    creds
+  );
+  expect(userResponse.status).toEqual(200);
+  const fetchedUsers: DeaUser[] = await userResponse.data.users;
+
+  const user = fetchedUsers.find((user) => user.firstName === userFirstName);
+  if (!user) {
+    throw new Error(`Expected user ${userFirstName} not found`);
+  }
+
+  return user;
+};

@@ -3,8 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import Joi from 'joi';
-import { getRequiredPathParam } from '../../lambda-http-helpers';
+import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { caseUserSchema } from '../../models/validation/case-user';
@@ -25,12 +24,7 @@ export const createCaseMembership: DEAGatewayProxyHandler = async (
 
   const caseId = getRequiredPathParam(event, 'caseId');
 
-  if (!event.body) {
-    throw new ValidationError('CaseUser payload missing.');
-  }
-
-  const caseUser: CaseUserDTO = JSON.parse(event.body);
-  Joi.assert(caseUser, caseUserSchema);
+  const caseUser: CaseUserDTO = getRequiredPayload(event, 'CaseUser', caseUserSchema);
 
   if (caseId !== caseUser.caseUlid) {
     throw new ValidationError('Requested Case Ulid does not match resource');

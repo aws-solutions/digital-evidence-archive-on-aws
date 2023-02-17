@@ -17,7 +17,8 @@ import { validateBackendConstruct } from './validate-backend-construct';
 
 describe('DeaBackend constructs', () => {
   beforeAll(() => {
-    process.env.STAGE = 'chewbacca';
+    process.env.STAGE = 'RUN1';
+    process.env.CONFIGNAME = 'chewbacca';
   });
 
   afterAll(() => {
@@ -25,6 +26,10 @@ describe('DeaBackend constructs', () => {
   });
 
   it('synthesizes the way we expect', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const domain: any = 'deatestenv';
+    convictConfig.set('cognito.domain', domain);
+
     const app = new cdk.App();
     const stack = new Stack(app, 'test-stack');
 
@@ -61,8 +66,10 @@ describe('DeaBackend constructs', () => {
     });
 
     //handlers
-    template.resourceCountIs('AWS::Lambda::Function', 14);
-    template.resourceCountIs('AWS::ApiGateway::Method', 27);
+    const expectedLambdaCount = 15;
+    const expectedMethodCount = 29;
+    template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCount);
+    template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCount);
 
     //Auth construct
     const apiEndpointArns = new Map([

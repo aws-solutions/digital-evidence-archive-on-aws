@@ -60,6 +60,23 @@ export const validateEndpointACLs = (
         data = data.replace('{caseId}', testHarness.targetCase.ulid!);
         data = data.replace('{rand}', randomSuffix());
       }
+
+      // for delete we need to create target resources
+      if (method === 'DELETE') {
+        for (let i = 0; i <= 4; ++i) {
+          const postEndpoint = targetUrl.slice(0, targetUrl.lastIndexOf('/'));
+          const postData = data?.replace('{companion}', testHarness.companionIds[i]);
+
+          const cr = await callDeaAPIWithCreds(
+            postEndpoint,
+            'POST',
+            testHarness.owner.idToken,
+            testHarness.owner.creds,
+            postData
+          );
+          expect(cr.status).toEqual(200);
+        }
+      }
     }, 30000);
 
     afterAll(async () => {
@@ -68,7 +85,7 @@ export const validateEndpointACLs = (
 
     it('should allow access to the owner', async () => {
       const response = await callDeaAPIWithCreds(
-        targetUrl,
+        targetUrl.replace('{companion}', testHarness.companionIds[0]),
         method,
         testHarness.owner.idToken,
         testHarness.owner.creds,
@@ -80,7 +97,7 @@ export const validateEndpointACLs = (
 
     it('should allow access to a user with all required actions', async () => {
       const response = await callDeaAPIWithCreds(
-        targetUrl,
+        targetUrl.replace('{companion}', testHarness.companionIds[1]),
         method,
         testHarness.userWithRequiredActions.idToken,
         testHarness.userWithRequiredActions.creds,
@@ -92,7 +109,7 @@ export const validateEndpointACLs = (
 
     it('should deny access to a user with all except the required actions', async () => {
       const response = await callDeaAPIWithCreds(
-        targetUrl,
+        targetUrl.replace('{companion}', testHarness.companionIds[2]),
         method,
         testHarness.userWithAllButRequiredActions.idToken,
         testHarness.userWithAllButRequiredActions.creds,
@@ -103,7 +120,7 @@ export const validateEndpointACLs = (
 
     it('should deny access to a user with no actions', async () => {
       const response = await callDeaAPIWithCreds(
-        targetUrl,
+        targetUrl.replace('{companion}', testHarness.companionIds[3]),
         method,
         testHarness.userWithNoActions.idToken,
         testHarness.userWithNoActions.creds,
@@ -114,7 +131,7 @@ export const validateEndpointACLs = (
 
     it('should deny access to a user with no membership', async () => {
       const response = await callDeaAPIWithCreds(
-        targetUrl,
+        targetUrl.replace('{companion}', testHarness.companionIds[4]),
         method,
         testHarness.userWithNoMembership.idToken,
         testHarness.userWithNoMembership.creds,
@@ -129,13 +146,13 @@ const initializeACLE2ETest = async (
   testSuiteName: string,
   requiredActions: ReadonlyArray<CaseAction>
 ): Promise<ACLTestHarness> => {
-  const suffix = randomSuffix(5);
+  const prefix = randomSuffix(5);
   const companionSuffix = '-companion';
-  const ownerName = `owner_${testSuiteName}${suffix}`;
-  const userWithRequiredActionsName = `requiredActions_${testSuiteName}${suffix}`;
-  const userWithAllButRequiredActionsName = `allButRequiredActions_${testSuiteName}${suffix}`;
-  const userWithNoActionsName = `noActions_${testSuiteName}${suffix}`;
-  const userWithNoMembershipName = `noMembership_${testSuiteName}${suffix}`;
+  const ownerName = `${prefix}_owner_${testSuiteName}`;
+  const userWithRequiredActionsName = `${prefix}_requiredActions_${testSuiteName}`;
+  const userWithAllButRequiredActionsName = `${prefix}_allButRequiredActions_${testSuiteName}`;
+  const userWithNoActionsName = `${prefix}_noActions_${testSuiteName}`;
+  const userWithNoMembershipName = `${prefix}_noMembership_${testSuiteName}`;
 
   const testUsernames = [
     ownerName,
@@ -177,7 +194,7 @@ const initializeACLE2ETest = async (
 
   const [ownerCreds, ownerToken] = credsMap.get(ownerName)!;
   const userResponse = await callDeaAPIWithCreds(
-    `${deaApiUrl}users?limit=1000`,
+    `${deaApiUrl}users?nameBeginsWith=${prefix}`,
     'GET',
     ownerToken,
     ownerCreds
