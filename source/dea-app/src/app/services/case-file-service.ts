@@ -15,6 +15,10 @@ import {
   defaultDatasetsProvider,
   DatasetsProvider,
 } from '../../storage/datasets';
+import { ForbiddenError } from '../exceptions/forbidden-exception';
+import { NotFoundError } from '../exceptions/not-found-exception';
+import { ValidationError } from '../exceptions/validation-exception';
+
 import { getCase } from './case-service';
 import { getUser } from './user-service';
 
@@ -26,7 +30,6 @@ export const initiateCaseFileUpload = async (
   repositoryProvider = defaultProvider,
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ): Promise<DeaCaseFile> => {
-  // todo: check if file already exists
   const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
     deaCaseFile,
     userUlid,
@@ -55,11 +58,13 @@ export const validateInitiateUploadRequirements = async (
     // todo: the error experience of this scenario can be improved upon based on UX/customer feedback
     // todo: add more protection to prevent creation of 2 files with same filePath+fileName
     if (existingCaseFile.status == CaseFileStatus.PENDING) {
-      throw new Error(
+      throw new ValidationError(
         `${existingCaseFile.filePath}${existingCaseFile.fileName} is currently being uploaded. Check again in 60 minutes`
       );
     }
-    throw new Error(`${existingCaseFile.filePath}${existingCaseFile.fileName} already exists in the DB`);
+    throw new ValidationError(
+      `${existingCaseFile.filePath}${existingCaseFile.fileName} already exists in the DB`
+    );
   }
 };
 
@@ -77,15 +82,15 @@ export const validateCompleteCaseFileRequirements = async (
     repositoryProvider
   );
   if (!existingCaseFile) {
-    throw new Error(`Could not find file: ${caseFile.ulid} in the DB`);
+    throw new NotFoundError(`Could not find file: ${caseFile.ulid} in the DB`);
   }
 
   if (existingCaseFile.status != CaseFileStatus.PENDING) {
-    throw new Error(`Can't complete upload for a file in ${existingCaseFile.status} state`);
+    throw new ValidationError(`Can't complete upload for a file in ${existingCaseFile.status} state`);
   }
 
   if (existingCaseFile.createdBy !== userUlid) {
-    throw new Error('Mismatch in user creating and completing file upload');
+    throw new ForbiddenError('Mismatch in user creating and completing file upload');
   }
 };
 
@@ -104,11 +109,11 @@ async function validateUploadRequirements(
 
   const deaCase = await getCase(caseFile.caseUlid, repositoryProvider);
   if (!deaCase) {
-    throw new Error(`Could not find case: ${caseFile.caseUlid} in the DB`);
+    throw new NotFoundError(`Could not find case: ${caseFile.caseUlid} in the DB`);
   }
 
   if (deaCase.status != CaseStatus.ACTIVE) {
-    throw new Error(`Can't upload a file to case in ${deaCase.status} state`);
+    throw new ValidationError(`Can't upload a file to case in ${deaCase.status} state`);
   }
 }
 
