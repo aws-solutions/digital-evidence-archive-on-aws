@@ -44,3 +44,49 @@ export const completeCaseFileUpload = async (
   });
   return caseFileFromEntity(newEntity);
 };
+
+export const getCaseFileByUlid = async (
+  ulid: string,
+  caseUlid: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider: CaseFileModelRepositoryProvider = {
+    CaseFileModel: CaseFileModel,
+  }
+): Promise<DeaCaseFile | undefined> => {
+  const caseFileEntity = await repositoryProvider.CaseFileModel.get({
+    PK: `CASE#${caseUlid}#`,
+    SK: `FILE#${ulid}#`,
+  });
+
+  if (!caseFileEntity) {
+    return caseFileEntity;
+  }
+  return caseFileFromEntity(caseFileEntity);
+};
+
+export const getCaseFileByFileLocation = async (
+  caseUlid: string,
+  filePath: string,
+  fileName: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider: CaseFileModelRepositoryProvider = {
+    CaseFileModel: CaseFileModel,
+  }
+): Promise<DeaCaseFile | undefined> => {
+  const caseFileEntity = await repositoryProvider.CaseFileModel.get(
+    {
+      GSI2PK: `CASE#${caseUlid}#${filePath}${fileName}#`,
+      GSI2SK: 'FILE#true#',
+    },
+    {
+      index: 'GSI2',
+    }
+  );
+
+  if (!caseFileEntity) {
+    return caseFileEntity;
+  }
+  return caseFileFromEntity(caseFileEntity);
+};

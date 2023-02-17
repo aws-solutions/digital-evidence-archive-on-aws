@@ -56,10 +56,6 @@ jest.setTimeout(20000);
 describe('Test case file upload', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('CaseFileUploadTest');
-    s3Mock = mockClient(S3Client);
-    s3Mock.resolves({
-      UploadId: UPLOAD_ID,
-    });
 
     fileUploader =
       (await createUser(
@@ -79,11 +75,16 @@ describe('Test case file upload', () => {
   });
 
   beforeEach(() => {
+    s3Mock = mockClient(S3Client);
+    s3Mock.resolves({
+      UploadId: UPLOAD_ID,
+    });
+
     EVENT.headers['userUlid'] = fileUploader.ulid;
   });
 
   it('should successfully complete a file upload', async () => {
-    const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate(caseToUploadTo);
+    const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate();
     await completeCaseFileUploadAndValidate(caseFile.ulid);
   });
 
@@ -119,6 +120,24 @@ describe('Test case file upload', () => {
     const inactiveCase = (await createCase('inactive', 'inactive', 'INACTIVE')).ulid ?? fail();
     await expect(callInitiateCaseFileUpload(inactiveCase)).rejects.toThrow(
       "Can't upload a file to case in INACTIVE state"
+    );
+  });
+
+  it('should throw an exception when case-file is PENDING', async () => {
+    const pendingFileName = 'pendingFile';
+    await initiateCaseFileUploadAndValidate(caseToUploadTo, pendingFileName);
+    await expect(callInitiateCaseFileUpload(caseToUploadTo, pendingFileName)).rejects.toThrow(
+      `${FILE_PATH}${pendingFileName} is currently being uploaded. Check again in 60 minutes`
+    );
+  });
+
+  it('should throw an exception when case-file exists', async () => {
+    const activeFileName = 'activeFile';
+    const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate(caseToUploadTo, activeFileName);
+    await completeCaseFileUploadAndValidate(caseFile.ulid, caseToUploadTo, activeFileName);
+
+    await expect(callInitiateCaseFileUpload(caseToUploadTo, activeFileName)).rejects.toThrow(
+      `${FILE_PATH}${activeFileName} already exists in the DB`
     );
   });
 
@@ -163,10 +182,10 @@ describe('Test case file upload', () => {
 
     // allowed fileSizeMb
     expect(
-      await callInitiateCaseFileUpload(caseToUploadTo, FILE_NAME, FILE_PATH, CONTENT_TYPE, 4_999_999)
+      await callInitiateCaseFileUpload(caseToUploadTo, 'huge file', FILE_PATH, CONTENT_TYPE, 4_999_999)
     ).toBeDefined();
     expect(
-      await callInitiateCaseFileUpload(caseToUploadTo, FILE_NAME, FILE_PATH, CONTENT_TYPE, 1)
+      await callInitiateCaseFileUpload(caseToUploadTo, 'tiny file', FILE_PATH, CONTENT_TYPE, 1)
     ).toBeDefined();
   });
 

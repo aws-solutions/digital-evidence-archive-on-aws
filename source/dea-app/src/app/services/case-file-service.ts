@@ -39,12 +39,6 @@ export const completeCaseFileUpload = async (
   repositoryProvider = defaultProvider,
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ): Promise<DeaCaseFile> => {
-  // todo: check if case-file exists and that it is pending
-  // todo: need to see who is completing upload. should be same as user that initiated upload
-  // todo: check if case exists
-  // todo: check case-user has permissions
-  // todo: clear ttl and update case-file status as completed
-
   await completeUploadForCaseFile(deaCaseFile, datasetsProvider);
   return await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider);
 };
