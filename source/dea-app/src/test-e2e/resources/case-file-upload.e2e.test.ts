@@ -4,7 +4,12 @@
  */
 
 import { fail } from 'assert';
-import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  DeleteObjectCommand,
+  PutObjectLegalHoldCommand,
+  ObjectLockLegalHoldStatus,
+} from '@aws-sdk/client-s3';
 import { Credentials } from 'aws4-axios';
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
@@ -53,7 +58,13 @@ describe('Test case file upload', () => {
     await cognitoHelper.cleanup();
 
     for (const s3Object of s3ObjectsToDelete) {
-      // todo: need to add legal hold logic to datasets and here
+      await s3Client.send(
+        new PutObjectLegalHoldCommand({
+          Bucket: testEnv.datasetsBucketName,
+          Key: s3Object.key,
+          LegalHold: { Status: ObjectLockLegalHoldStatus.OFF },
+        })
+      );
       await s3Client.send(
         new DeleteObjectCommand({
           Bucket: testEnv.datasetsBucketName,

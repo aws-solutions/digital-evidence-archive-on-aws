@@ -4,6 +4,7 @@
  */
 
 import { fail } from 'assert';
+import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import Joi from 'joi';
 import { createCases } from '../../../app/resources/create-cases';
 import { getCaseUsersForUser } from '../../../app/services/case-user-service';
@@ -173,6 +174,46 @@ describe('create cases resource', () => {
       `"ulid" is not allowed`
     );
   });
+
+  it('should create ACTIVE case when no status given', async () => {
+    const name = 'ACaseWithNoStatus';
+    const description = 'should create in active status';
+
+    const event = Object.assign(
+      {},
+      {
+        ...dummyEvent,
+        body: JSON.stringify({
+          name,
+          description,
+        }),
+      }
+    );
+    event.headers['userUlid'] = user.ulid;
+    const response = await createCases(event, dummyContext, repositoryProvider);
+    await validateAndReturnCase(name, description, 'ACTIVE', response);
+  });
+
+  it('should create INACTIVE case when requested', async () => {
+    const name = 'InactiveCase';
+    const description = 'should create in inactive status';
+    const status = 'INACTIVE';
+
+    const event = Object.assign(
+      {},
+      {
+        ...dummyEvent,
+        body: JSON.stringify({
+          name,
+          description,
+          status,
+        }),
+      }
+    );
+    event.headers['userUlid'] = user.ulid;
+    const response = await createCases(event, dummyContext, repositoryProvider);
+    await validateAndReturnCase(name, description, status, response);
+  });
 });
 
 async function createAndValidateCase(name: string, description: string, userUlid?: string): Promise<string> {
@@ -191,7 +232,16 @@ async function createAndValidateCase(name: string, description: string, userUlid
   );
   event.headers['userUlid'] = userUlid;
   const response = await createCases(event, dummyContext, repositoryProvider);
+  const newCase = await validateAndReturnCase(name, description, status, response);
+  return newCase.ulid ?? fail();
+}
 
+async function validateAndReturnCase(
+  name: string,
+  description: string,
+  status: string,
+  response: APIGatewayProxyStructuredResultV2
+): Promise<DeaCase> {
   expect(response.statusCode).toEqual(200);
 
   if (!response.body) {
@@ -205,5 +255,5 @@ async function createAndValidateCase(name: string, description: string, userUlid
   expect(newCase.status).toEqual(status);
   expect(newCase.description).toEqual(description);
 
-  return newCase.ulid ?? fail();
+  return newCase;
 }
