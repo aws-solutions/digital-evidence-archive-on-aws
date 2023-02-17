@@ -4,6 +4,7 @@
  */
 
 import Joi from 'joi';
+import { CaseFileStatus } from '../case-file-status';
 import { CaseStatus } from '../case-status';
 
 export const allButDisallowed = new RegExp('^[^\\<>/]+$');
@@ -35,5 +36,7 @@ export const contentType = Joi.string().pattern(htmlSafeCharsRegex);
 export const caseStatus = Joi.string().valid(...Object.keys(CaseStatus));
 
 export const idToken = Joi.string().regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/);
+
+export const caseFileStatus = Joi.string().valid(...Object.keys(CaseFileStatus));
 
 export const safeDescription = Joi.string().pattern(allButDisallowed).max(200).min(3).optional();

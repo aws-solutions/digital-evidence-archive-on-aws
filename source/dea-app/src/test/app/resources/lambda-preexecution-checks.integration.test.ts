@@ -97,7 +97,12 @@ describe('lambda pre-execution checks', () => {
     delete event2.headers['idToken'];
 
     // Check only user is in the db:
-    const users: Paged<DeaUser> = await listUsers(/*limit=*/ 100, /*next=*/ undefined, repositoryProvider);
+    const users: Paged<DeaUser> = await listUsers(
+      /*limit=*/ 100,
+      /*next=*/ undefined,
+      /*nameBeginsWith=*/ undefined,
+      repositoryProvider
+    );
     expect(users.length).toBe(1);
     expect(users[0].tokenId).toStrictEqual(tokenId);
     expect(users[0].ulid).toStrictEqual(user2?.ulid);

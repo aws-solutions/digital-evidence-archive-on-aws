@@ -38,9 +38,10 @@ export const getUserUsingTokenId = async (
 export const getUsers = async (
   limit = 30,
   nextToken?: object,
+  nameBeginsWith?: string,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ): Promise<Paged<DeaUser>> => {
-  return UserPersistence.listUsers(limit, nextToken, repositoryProvider);
+  return UserPersistence.listUsers(limit, nextToken, nameBeginsWith, repositoryProvider);
 };

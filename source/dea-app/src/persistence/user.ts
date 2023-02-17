@@ -51,6 +51,7 @@ export const getUserByTokenId = async (
 export const listUsers = async (
   limit = 30,
   nextToken?: object,
+  nameBeginsWith = '',
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider: UserModelRepositoryProvider = { UserModel: UserModel }
@@ -59,7 +60,7 @@ export const listUsers = async (
     {
       GSI1PK: 'USER#',
       GSI1SK: {
-        begins_with: 'USER#',
+        begins_with: `USER#${nameBeginsWith.toLowerCase()}`,
       },
     },
     {

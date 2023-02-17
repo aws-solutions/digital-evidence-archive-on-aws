@@ -4,6 +4,7 @@
  */
 
 import { CaseAction } from '../../models/case-action';
+import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { allButDisallowed, ulidRegex, filePathSafeCharsRegex } from '../../models/validation/joi-common';
 
@@ -70,8 +71,11 @@ export const DeaSchema = {
       fileName: { type: String, required: true, validate: allButDisallowed },
       filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // whole s3 prefix within case dataset. ex: /meal/lunch/
       caseUlid: { type: String, validate: ulidRegex, required: true },
+      createdBy: { type: String, validate: ulidRegex, required: true },
       isFile: { type: Boolean, required: true },
       fileSizeMb: { type: Number, required: true },
+      status: { type: String, required: true, enum: Object.keys(CaseFileStatus) },
+      ttl: { ttl: true, type: Number },
       contentPath: { type: String },
       uploadId: { type: String },
       sha256Hash: { type: String },

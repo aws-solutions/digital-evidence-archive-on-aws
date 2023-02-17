@@ -283,6 +283,10 @@
       "allowedCategories": ["production"]
     },
     {
+      "name": "aws-sdk-client-mock-jest",
+      "allowedCategories": ["production"]
+    },
+    {
       "name": "aws4-axios",
       "allowedCategories": ["production"]
     },

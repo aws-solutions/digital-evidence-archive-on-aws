@@ -11,6 +11,8 @@ import {
   ListPartsCommand,
   ListPartsOutput,
   Part,
+  PutObjectLegalHoldCommand,
+  ObjectLockLegalHoldStatus,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getRequiredEnv } from '../lambda-http-helpers';
@@ -111,13 +113,20 @@ export const completeUploadForCaseFile = async (
   await datasetsProvider.s3Client.send(
     new CompleteMultipartUploadCommand({
       Bucket: datasetsProvider.bucketName,
-      Key: _getS3KeyForCaseFile(caseFile),
+      Key: s3Key,
       UploadId: caseFile.uploadId,
       MultipartUpload: { Parts: uploadedParts },
     })
   );
 
-  logger.info(`Marked upload for ${s3Key} as completed.`);
+  logger.info(`Marked upload for ${s3Key} as completed. Putting legal hold on object..`);
+  await datasetsProvider.s3Client.send(
+    new PutObjectLegalHoldCommand({
+      Bucket: datasetsProvider.bucketName,
+      Key: s3Key,
+      LegalHold: { Status: ObjectLockLegalHoldStatus.ON },
+    })
+  );
 };
 
 function _getS3KeyForCaseFile(caseFile: DeaCaseFile): string {

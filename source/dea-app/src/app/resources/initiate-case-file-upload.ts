@@ -3,14 +3,14 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import Joi from 'joi';
+import { getRequiredPayload, getUserUlid } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { DeaCaseFile } from '../../models/case-file';
 import { initiateCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
-import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseFileService from '../services/case-file-service';
+import { validateInitiateUploadRequirements } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
 export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
@@ -25,15 +25,18 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
   logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
   logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
 
-  if (!event.body) {
-    throw new ValidationError('Initiate case file upload payload missing.');
-  }
+  const requestCaseFile: DeaCaseFile = getRequiredPayload(
+    event,
+    'Initiate case file upload',
+    initiateCaseFileUploadRequestSchema
+  );
 
-  const deaCaseFile: DeaCaseFile = JSON.parse(event.body);
-  Joi.assert(deaCaseFile, initiateCaseFileUploadRequestSchema);
+  const userUlid = getUserUlid(event);
+  await validateInitiateUploadRequirements(requestCaseFile, userUlid, repositoryProvider);
 
   const initiateUploadResponse = await CaseFileService.initiateCaseFileUpload(
-    deaCaseFile,
+    requestCaseFile,
+    userUlid,
     repositoryProvider,
     datasetsProvider
   );

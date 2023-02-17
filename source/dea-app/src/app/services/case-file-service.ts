@@ -4,36 +4,118 @@
  */
 
 import { DeaCaseFile } from '../../models/case-file';
+import { CaseFileStatus } from '../../models/case-file-status';
+import { CaseStatus } from '../../models/case-status';
 import * as CaseFilePersistence from '../../persistence/case-file';
-import { defaultProvider } from '../../persistence/schema/entities';
+import { getCaseFileByFileLocation, getCaseFileByUlid } from '../../persistence/case-file';
+import { defaultProvider, ModelRepositoryProvider } from '../../persistence/schema/entities';
 import {
   generatePresignedUrlsForCaseFile,
   completeUploadForCaseFile,
   defaultDatasetsProvider,
   DatasetsProvider,
 } from '../../storage/datasets';
+import { ForbiddenError } from '../exceptions/forbidden-exception';
+import { NotFoundError } from '../exceptions/not-found-exception';
+import { ValidationError } from '../exceptions/validation-exception';
+
+import { getCase } from './case-service';
+import { getUser } from './user-service';
 
 export const initiateCaseFileUpload = async (
   deaCaseFile: DeaCaseFile,
+  userUlid: string,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ): Promise<DeaCaseFile> => {
-  // todo: need to see who is initiating upload. add that info to ddb
-  // todo: check if case exists
-  // todo: check case-user has permissions
-  // todo: check if file already exists
-  // todo: need to add a status to indicate if file has been uploaded or is pending
-  // todo: need to add a ttl to clear out incomplete case-files
   const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
     deaCaseFile,
+    userUlid,
     repositoryProvider
   );
 
   await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider);
   return caseFile;
 };
+
+export const validateInitiateUploadRequirements = async (
+  caseFile: DeaCaseFile,
+  userUlid: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<void> => {
+  await validateUploadRequirements(caseFile, userUlid, repositoryProvider);
+
+  const existingCaseFile = await getCaseFileByFileLocation(
+    caseFile.caseUlid,
+    caseFile.filePath,
+    caseFile.fileName,
+    repositoryProvider
+  );
+
+  if (existingCaseFile) {
+    // todo: the error experience of this scenario can be improved upon based on UX/customer feedback
+    // todo: add more protection to prevent creation of 2 files with same filePath+fileName
+    if (existingCaseFile.status == CaseFileStatus.PENDING) {
+      throw new ValidationError(
+        `${existingCaseFile.filePath}${existingCaseFile.fileName} is currently being uploaded. Check again in 60 minutes`
+      );
+    }
+    throw new ValidationError(
+      `${existingCaseFile.filePath}${existingCaseFile.fileName} already exists in the DB`
+    );
+  }
+};
+
+export const validateCompleteCaseFileRequirements = async (
+  caseFile: DeaCaseFile,
+  userUlid: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<void> => {
+  await validateUploadRequirements(caseFile, userUlid, repositoryProvider);
+  // we know based on request validation that the ulid isn't null, so safe to cast to string
+  const existingCaseFile = await getCaseFileByUlid(
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    caseFile.ulid as string,
+    caseFile.caseUlid,
+    repositoryProvider
+  );
+  if (!existingCaseFile) {
+    throw new NotFoundError(`Could not find file: ${caseFile.ulid} in the DB`);
+  }
+
+  if (existingCaseFile.status != CaseFileStatus.PENDING) {
+    throw new ValidationError(`Can't complete upload for a file in ${existingCaseFile.status} state`);
+  }
+
+  if (existingCaseFile.createdBy !== userUlid) {
+    throw new ForbiddenError('Mismatch in user creating and completing file upload');
+  }
+};
+
+async function validateUploadRequirements(
+  caseFile: DeaCaseFile,
+  userUlid: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<void> {
+  const user = await getUser(userUlid, repositoryProvider);
+  if (!user) {
+    // Note: before every lambda checks are run to add first time
+    // federated users to the db. If the caller is not in the db
+    // a server error has occurred
+    throw new Error('Could not find case-file uploader as a user in the DB');
+  }
+
+  const deaCase = await getCase(caseFile.caseUlid, repositoryProvider);
+  if (!deaCase) {
+    throw new NotFoundError(`Could not find case: ${caseFile.caseUlid} in the DB`);
+  }
+
+  if (deaCase.status != CaseStatus.ACTIVE) {
+    throw new ValidationError(`Can't upload a file to case in ${deaCase.status} state`);
+  }
+}
 
 export const completeCaseFileUpload = async (
   deaCaseFile: DeaCaseFile,
@@ -42,12 +124,6 @@ export const completeCaseFileUpload = async (
   repositoryProvider = defaultProvider,
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ): Promise<DeaCaseFile> => {
-  // todo: check if case-file exists and that it is pending
-  // todo: need to see who is completing upload. should be same as user that initiated upload
-  // todo: check if case exists
-  // todo: check case-user has permissions
-  // todo: clear ttl and update case-file status as completed
-
   await completeUploadForCaseFile(deaCaseFile, datasetsProvider);
   return await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider);
 };
