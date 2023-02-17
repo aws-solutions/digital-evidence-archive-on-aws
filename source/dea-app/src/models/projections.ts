@@ -7,6 +7,7 @@ import { DeaCase } from '../models/case';
 import { DeaCaseFile } from '../models/case-file';
 import { CaseType, CaseUserType, UserType, CaseFileType } from '../persistence/schema/entities';
 import { CaseAction } from './case-action';
+import { CaseFileStatus } from './case-file-status';
 import { CaseStatus } from './case-status';
 import { CaseUser } from './case-user';
 import { DeaUser } from './user';
@@ -62,8 +63,11 @@ export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFile =>
     uploadId: caseFileEntity.uploadId,
     sha256Hash: caseFileEntity.sha256Hash,
     contentPath: caseFileEntity.contentPath,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    status: caseFileEntity.status as CaseFileStatus,
     created: caseFileEntity.created,
     updated: caseFileEntity.updated,
     isFile: caseFileEntity.isFile,
+    ttl: caseFileEntity.ttl,
   };
 };

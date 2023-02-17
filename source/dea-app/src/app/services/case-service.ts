@@ -21,9 +21,10 @@ export const createCases = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ): Promise<DeaCase> => {
+  const status = deaCase.status ?? CaseStatus.ACTIVE;
   const currentCase: DeaCase = {
     ...deaCase,
-    status: CaseStatus.ACTIVE,
+    status,
     objectCount: 0,
   };
 

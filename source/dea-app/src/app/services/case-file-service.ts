@@ -22,8 +22,6 @@ export const initiateCaseFileUpload = async (
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ): Promise<DeaCaseFile> => {
   // todo: check if file already exists
-  // todo: need to add a status to indicate if file has been uploaded or is pending
-  // todo: need to add a ttl to clear out incomplete case-files
   const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
     deaCaseFile,
     userUlid,

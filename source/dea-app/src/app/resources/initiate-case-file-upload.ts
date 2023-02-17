@@ -33,6 +33,9 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
     throw new ValidationError('Initiate case file upload payload missing.');
   }
 
+  const deaCaseFile: DeaCaseFile = JSON.parse(event.body);
+  Joi.assert(deaCaseFile, initiateCaseFileUploadRequestSchema);
+
   const userUlid = getUserUlid(event);
   const user = await getUser(userUlid, repositoryProvider);
   if (!user) {
@@ -41,9 +44,6 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
     // a server error has occured
     throw new Error('Could not find case-file uploader as a user in the DB');
   }
-
-  const deaCaseFile: DeaCaseFile = JSON.parse(event.body);
-  Joi.assert(deaCaseFile, initiateCaseFileUploadRequestSchema);
 
   const deaCase = await getCase(deaCaseFile.caseUlid, repositoryProvider);
   if (!deaCase) {

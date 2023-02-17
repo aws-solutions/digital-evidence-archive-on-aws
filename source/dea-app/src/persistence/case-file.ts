@@ -4,8 +4,11 @@
  */
 
 import { DeaCaseFile } from '../models/case-file';
+import { CaseFileStatus } from '../models/case-file-status';
 import { caseFileFromEntity } from '../models/projections';
 import { CaseFileModelRepositoryProvider, CaseFileModel } from './schema/entities';
+
+const SECONDS_IN_AN_HOUR = 60 * 60;
 
 export const initiateCaseFileUpload = async (
   deaCaseFile: DeaCaseFile,
@@ -20,6 +23,8 @@ export const initiateCaseFileUpload = async (
     ...deaCaseFile,
     isFile: true,
     createdBy: userUlid,
+    status: CaseFileStatus.PENDING,
+    ttl: Math.round(Date.now() / 1000) + SECONDS_IN_AN_HOUR,
   });
   return caseFileFromEntity(newEntity);
 };
@@ -34,6 +39,8 @@ export const completeCaseFileUpload = async (
 ): Promise<DeaCaseFile> => {
   const newEntity = await repositoryProvider.CaseFileModel.update({
     ...deaCaseFile,
+    status: CaseFileStatus.ACTIVE,
+    ttl: null,
   });
   return caseFileFromEntity(newEntity);
 };
