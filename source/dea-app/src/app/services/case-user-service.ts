@@ -50,6 +50,31 @@ export const createCaseUserMembershipFromDTO = async (
   return await createCaseUserMembership(caseUser, repositoryProvider);
 };
 
+export const updateCaseUserMembershipFromDTO = async (
+  caseUserDTO: CaseUserDTO,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider = defaultProvider
+): Promise<CaseUser> => {
+  const existingMembership = await CaseUserPersistence.getCaseUser(
+    { caseUlid: caseUserDTO.caseUlid, userUlid: caseUserDTO.userUlid },
+    repositoryProvider
+  );
+  if (!existingMembership) {
+    throw new NotFoundError('Requested Case-User Membership not found');
+  }
+
+  const membershipForUpdate = Object.assign(
+    {},
+    {
+      ...existingMembership,
+      actions: caseUserDTO.actions,
+    }
+  );
+
+  return CaseUserPersistence.updateCaseUser(membershipForUpdate, repositoryProvider);
+};
+
 export const createCaseUserMembership = async (
   caseUser: CaseUser,
   /* the default case is handled in e2e tests */
