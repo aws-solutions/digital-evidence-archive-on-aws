@@ -3,6 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import {
+  CognitoIdentityClient,
+  GetCredentialsForIdentityCommand,
+  GetIdCommand,
+} from '@aws-sdk/client-cognito-identity';
 import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import axios from 'axios';
 import { getRequiredEnv } from '../../lambda-http-helpers';
@@ -10,26 +15,32 @@ import { getRequiredEnv } from '../../lambda-http-helpers';
 const stage = getRequiredEnv('STAGE', 'chewbacca');
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
 
-export const getCognitoSsmParams = async (): Promise<[string, string, string]> => {
+export const getCognitoSsmParams = async (): Promise<[string, string, string, string, string]> => {
   const ssmClient = new SSMClient({ region });
 
   const cognitoDomainPath = `/dea/${region}/${stage}-userpool-cognito-domain-param`;
   const clientIdPath = `/dea/${region}/${stage}-userpool-client-id-param`;
   const callbackUrlPath = `/dea/${region}/${stage}-client-callback-url-param`;
+  const identityPoolIdPath = `/dea/${region}/${stage}-identity-pool-id-param`;
+  const userPoolIdPath = `/dea/${region}/${stage}-userpool-id-param`;
 
   const response = await ssmClient.send(
     new GetParametersCommand({
-      Names: [cognitoDomainPath, clientIdPath, callbackUrlPath],
+      Names: [cognitoDomainPath, clientIdPath, callbackUrlPath, identityPoolIdPath, userPoolIdPath],
     })
   );
 
   if (!response.Parameters) {
-    throw new Error(`No parameters found for: ${cognitoDomainPath}, ${clientIdPath}, ${callbackUrlPath}`);
+    throw new Error(
+      `No parameters found for: ${cognitoDomainPath}, ${clientIdPath}, ${callbackUrlPath}, ${identityPoolIdPath}, ${userPoolIdPath}`
+    );
   }
 
   let cognitoDomainUrl;
   let clientId;
   let callbackUrl;
+  let identityPoolId;
+  let userPoolId;
 
   response.Parameters.forEach((param) => {
     switch (param.Name) {
@@ -42,16 +53,53 @@ export const getCognitoSsmParams = async (): Promise<[string, string, string]> =
       case callbackUrlPath:
         callbackUrl = param.Value;
         break;
+      case identityPoolIdPath:
+        identityPoolId = param.Value;
+        break;
+      case userPoolIdPath:
+        userPoolId = param.Value;
+        break;
     }
   });
 
-  if (cognitoDomainUrl && clientId && callbackUrl) {
-    return [cognitoDomainUrl, clientId, callbackUrl];
+  if (cognitoDomainUrl && clientId && callbackUrl && identityPoolId && userPoolId) {
+    return [cognitoDomainUrl, clientId, callbackUrl, identityPoolId, userPoolId];
   } else {
     throw new Error(
-      `Unable to grab the parameters in SSM needed for token verification: ${cognitoDomainUrl}, ${clientId}, ${callbackUrl}`
+      `Unable to grab the parameters in SSM needed for token verification: ${cognitoDomainUrl}, ${clientId}, ${callbackUrl}, ${identityPoolId}`
     );
   }
+};
+
+export const getCredentialsByToken = async (idToken: string) => {
+  const [, , , identityPoolId, userPoolId] = await getCognitoSsmParams();
+
+  // Set up the Cognito Identity client
+  const cognitoIdentityClient = new CognitoIdentityClient({
+    region: region,
+  });
+
+  // Set up the request parameters
+  const getIdCommand = new GetIdCommand({
+    IdentityPoolId: identityPoolId,
+    Logins: {
+      [`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: idToken,
+    },
+  });
+
+  // Call the GetIdCommand to obtain the Cognito identity ID for the user
+  const { IdentityId } = await cognitoIdentityClient.send(getIdCommand);
+  // Set up the request parameters for the GetCredentialsForIdentityCommand
+  const getCredentialsCommand = new GetCredentialsForIdentityCommand({
+    IdentityId,
+    Logins: {
+      [`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: idToken,
+    },
+  });
+
+  // Call the GetCredentialsForIdentityCommand to obtain temporary AWS credentials for the user
+  const { Credentials } = await cognitoIdentityClient.send(getCredentialsCommand);
+  return Credentials;
 };
 
 export const exchangeAuthorizationCode = async (authorizationCode: string): Promise<string> => {

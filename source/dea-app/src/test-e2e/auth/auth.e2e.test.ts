@@ -9,6 +9,8 @@ import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPI } from '../resources/test-helpers';
 
+let idToken: string;
+
 describe('API authentication', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
@@ -99,15 +101,33 @@ describe('API authentication', () => {
     // 3. Exchange auth code for id token
     const url = `${deaApiUrl}auth/getToken/${authCode}`;
     const response = await client.post(url);
+    idToken = response.data;
     expect(response.status).toEqual(200);
   }, 20000);
 
-  it('should fail with dummy token', async () => {
+  it('should fail with dummy auth code', async () => {
     const client = axios.create();
     const authCode = 'ABCDEFGHIJKL123';
 
     const url = `${deaApiUrl}auth/getToken/${authCode}`;
     await expect(client.post(url)).rejects.toThrow(AxiosError);
+  });
+
+  it('should exchange id Token for credentials', async () => {
+    const client = axios.create();
+
+    // 3. Exchange id token for credentials
+    const url = `${deaApiUrl}auth/getCredentials/${idToken}`;
+    const response = await client.get(url);
+    expect(response.status).toEqual(200);
+  });
+
+  it('should fail with dummy idToken', async () => {
+    const client = axios.create();
+    const idToken = 'ABCDEFGHIJKL123';
+
+    const url = `${deaApiUrl}auth/getCredentials/${idToken}`;
+    await expect(client.get(url)).rejects.toThrow(AxiosError);
   });
 
   it('should log successful and unsuccessful logins/api invocations', () => {
