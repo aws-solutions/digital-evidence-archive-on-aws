@@ -46,7 +46,8 @@ export const validateEndpointACLs = (
   requiredActions: ReadonlyArray<CaseAction>,
   endpoint: string,
   method: DeaHttpMethod,
-  data?: string
+  data?: string,
+  createCompanionMemberships = false
 ) => {
   describe(testSuiteName, () => {
     let testHarness: ACLTestHarness;
@@ -61,11 +62,15 @@ export const validateEndpointACLs = (
         data = data.replace('{rand}', randomSuffix());
       }
 
-      // for delete we need to create target resources
-      if (method === 'DELETE') {
+      if (createCompanionMemberships) {
+        const membershipData = JSON.stringify({
+          userUlid: '{companion}',
+          caseUlid: testHarness.targetCase.ulid,
+          actions: [],
+        });
         for (let i = 0; i <= 4; ++i) {
-          const postEndpoint = targetUrl.slice(0, targetUrl.lastIndexOf('/'));
-          const postData = data?.replace('{companion}', testHarness.companionIds[i]);
+          const postEndpoint = `${deaApiUrl}cases/${testHarness.targetCase.ulid}/userMemberships`;
+          const postData = membershipData?.replace('{companion}', testHarness.companionIds[i]);
 
           const cr = await callDeaAPIWithCreds(
             postEndpoint,

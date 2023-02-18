@@ -33,6 +33,10 @@
         },
         {
           "path": "/cases/{caseId}/userMemberships{userId}",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships{userId}",
           "method": "DELETE"
         },
         {

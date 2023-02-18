@@ -21,6 +21,7 @@ import { getUsers } from './app/resources/get-users';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
 import { sayBye } from './app/resources/say-bye';
 import { sayHello } from './app/resources/say-hello';
+import { updateCaseMembership } from './app/resources/update-case-membership';
 import { updateCases } from './app/resources/update-cases';
 import { verifyCaseACLs } from './app/resources/verify-case-acls';
 import { getCaseUser } from './app/services/case-user-service';
@@ -47,6 +48,7 @@ export {
   getRequiredPathParam,
   getUsers,
   getUserUlid,
+  updateCaseMembership,
   verifyCaseACLs,
   CaseAction,
   DeaCase,
