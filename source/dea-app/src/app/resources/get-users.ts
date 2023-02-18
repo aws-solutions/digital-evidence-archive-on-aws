@@ -3,7 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { logger } from '../../logger';
 import { defaultProvider } from '../../persistence/schema/entities';
 import * as UserService from '../services/user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -16,8 +15,6 @@ export const getUsers: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
   let limit: number | undefined;
   let next: string | undefined;
   let nameBeginsWith: string | undefined;

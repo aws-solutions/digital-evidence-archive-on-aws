@@ -67,7 +67,7 @@ export const getUserUlid = (event: APIGatewayProxyEventV2): string => {
   }
 
   // runLambdaPreChecks should have added the userUlid, this is server error
-  logger.error('User Ulid missing from event');
+  logger.error('User Ulid missing from event', {});
   throw new Error('userUlid was not present in the event header');
 };
 

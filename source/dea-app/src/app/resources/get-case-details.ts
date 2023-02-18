@@ -4,7 +4,6 @@
  */
 
 import { getRequiredPathParam } from '../../lambda-http-helpers';
-import { logger } from '../../logger';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import * as CaseService from '../services/case-service';
@@ -17,9 +16,6 @@ export const getCase: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
-
   const caseId = getRequiredPathParam(event, 'caseId');
 
   const retreivedCase = await CaseService.getCase(caseId, repositoryProvider);
