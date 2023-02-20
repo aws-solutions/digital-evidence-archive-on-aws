@@ -21,6 +21,8 @@ export const createDeaHandler = (
 ): DEAGatewayProxyHandler => {
   const wrappedHandler: DEAGatewayProxyHandler = async (event, context) => {
     try {
+      logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
+      logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
       // Before we run the handler, run the pre-execution checks
       // which include adding first time federated users to the db
       // so they can be invited to cases later, and session management

@@ -4,7 +4,6 @@
  */
 
 import { getUserUlid } from '../../lambda-http-helpers';
-import { logger } from '../../logger';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { listCasesForUser } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -17,8 +16,6 @@ export const getMyCases: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
   let limit: number | undefined;
   let next: string | undefined;
   if (event.queryStringParameters) {

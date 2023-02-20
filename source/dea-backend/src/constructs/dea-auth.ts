@@ -217,6 +217,7 @@ export class DeaAuthConstruct extends Construct {
       poolClient.userPoolClientId,
       cognitoDomainUrl,
       callbackUrl,
+      idPool.ref,
       region
     );
   }
@@ -358,6 +359,7 @@ export class DeaAuthConstruct extends Construct {
     userPoolClientId: string,
     cognitoDomain: string,
     callbackUrl: string,
+    identityPoolId: string,
     region: string
   ) {
     const stage = deaConfig.stage();
@@ -381,6 +383,14 @@ export class DeaAuthConstruct extends Construct {
       parameterName: `/dea/${region}/${stage}-userpool-cognito-domain-param`,
       stringValue: cognitoDomain,
       description: 'stores the user pool cognito domain for use in token verification on the backend',
+      tier: ParameterTier.STANDARD,
+      allowedPattern: '.*',
+    });
+
+    new StringParameter(this, 'identity-pool-id-ssm-param', {
+      parameterName: `/dea/${region}/${stage}-identity-pool-id-param`,
+      stringValue: identityPoolId,
+      description: 'stores the identity pool id for use in user verification on the backend',
       tier: ParameterTier.STANDARD,
       allowedPattern: '.*',
     });

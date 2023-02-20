@@ -3,10 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { ForbiddenError, NotFoundError, ValidationError } from '@aws/dea-app';
+import { dummyContext, dummyEvent, ForbiddenError, NotFoundError, ValidationError } from '@aws/dea-app';
 import { APIGatewayProxyEventV2, Context } from 'aws-lambda';
 import Joi from 'joi';
-import { mock } from 'ts-mockito';
 import { createDeaHandler, NO_ACL } from '../../handlers/create-dea-handler';
 
 describe('exception handlers', () => {
@@ -24,9 +23,7 @@ describe('exception handlers', () => {
       preExecutionChecks
     );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
     expect(actual).toEqual({
       statusCode: 403,
       body: 'Forbidden',
@@ -42,10 +39,7 @@ describe('exception handlers', () => {
       preExecutionChecks
     );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
 
     expect(actual).toEqual({
       statusCode: 400,
@@ -62,9 +56,7 @@ describe('exception handlers', () => {
       preExecutionChecks
     );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
     expect(actual).toEqual({
       statusCode: 404,
       body: 'something was not found',
@@ -82,9 +74,7 @@ describe('exception handlers', () => {
       preExecutionChecks
     );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
     expect(actual).toEqual({
       statusCode: 400,
       body: 'no joi here',
@@ -100,9 +90,7 @@ describe('exception handlers', () => {
       preExecutionChecks
     );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
     expect(actual).toEqual({
       statusCode: 500,
       body: 'An error occurred',
@@ -123,9 +111,7 @@ describe('exception handlers', () => {
       preExecutionChecks
     );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
 
     expect(actual).toEqual({
       statusCode: 400,
@@ -142,9 +128,7 @@ describe('exception handlers', () => {
       preExecutionChecks
     );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
     expect(actual).toEqual({
       statusCode: 500,
       body: 'Server Error',

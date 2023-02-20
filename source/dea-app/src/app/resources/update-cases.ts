@@ -4,7 +4,6 @@
  */
 
 import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
-import { logger } from '../../logger';
 import { DeaCase } from '../../models/case';
 import { updateCaseSchema } from '../../models/validation/case';
 import { defaultProvider } from '../../persistence/schema/entities';
@@ -19,9 +18,6 @@ export const updateCases: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
-
   const caseId = getRequiredPathParam(event, 'caseId');
 
   const deaCase: DeaCase = getRequiredPayload(event, 'Update cases', updateCaseSchema);

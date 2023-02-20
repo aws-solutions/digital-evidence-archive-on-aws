@@ -75,6 +75,13 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       authMethod: AuthorizationType.NONE,
     },
     {
+      path: '/auth/getCredentials/{idToken}',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-credentials-handler.ts',
+      // TODO: Implement custom authorizer for UI trying to access credentials
+      authMethod: AuthorizationType.NONE,
+    },
+    {
       path: '/hi',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/say-hello-handler.ts',

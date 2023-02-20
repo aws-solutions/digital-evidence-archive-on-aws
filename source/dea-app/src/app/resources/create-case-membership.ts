@@ -4,7 +4,6 @@
  */
 
 import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
-import { logger } from '../../logger';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { caseUserSchema } from '../../models/validation/case-user';
 import { defaultProvider } from '../../persistence/schema/entities';
@@ -19,9 +18,6 @@ export const createCaseMembership: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
-
   const caseId = getRequiredPathParam(event, 'caseId');
 
   const caseUser: CaseUserDTO = getRequiredPayload(event, 'CaseUser', caseUserSchema);
