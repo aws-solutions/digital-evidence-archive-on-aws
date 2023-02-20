@@ -3,11 +3,13 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { aws4Interceptor, Credentials } from 'aws4-axios';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPI } from '../resources/test-helpers';
+import { callDeaAPI, validateStatus } from '../resources/test-helpers';
+
+let idToken: string;
 
 describe('API authentication', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
@@ -56,9 +58,6 @@ describe('API authentication', () => {
     const url = `${deaApiUrl}hi`;
 
     await expect(client.get(url)).rejects.toThrow('Request failed with status code 400');
-    // const response = await client.get(url);
-
-    // expect(response.status).toEqual(400);
   });
 
   it('should disallow API calls not explicitly allowed by their IAM role', async () => {
@@ -93,21 +92,47 @@ describe('API authentication', () => {
     await cognitoHelper.createUser(authCodeUser, 'AuthTestGroup', firstName, lastName);
 
     // 2. Get Auth Code
-    const [cognitoDomain, , callbackUrl] = await getCognitoSsmParams();
-    const authCode = await cognitoHelper.getAuthorizationCode(cognitoDomain, callbackUrl, testUser);
+    const cognitoParams = await getCognitoSsmParams();
+    const authCode = await cognitoHelper.getAuthorizationCode(
+      cognitoParams.cognitoDomainUrl,
+      cognitoParams.callbackUrl,
+      testUser
+    );
 
     // 3. Exchange auth code for id token
     const url = `${deaApiUrl}auth/getToken/${authCode}`;
     const response = await client.post(url);
+    idToken = response.data;
     expect(response.status).toEqual(200);
   }, 20000);
 
-  it('should fail with dummy token', async () => {
+  it('should fail with dummy auth code', async () => {
     const client = axios.create();
     const authCode = 'ABCDEFGHIJKL123';
 
     const url = `${deaApiUrl}auth/getToken/${authCode}`;
-    await expect(client.post(url)).rejects.toThrow(AxiosError);
+    const response = await client.get(url, { validateStatus });
+    expect(response.status).toEqual(403);
+    expect(response.statusText).toEqual('Forbidden');
+  });
+
+  it('should exchange id Token for credentials', async () => {
+    const client = axios.create();
+
+    // 3. Exchange id token for credentials
+    const url = `${deaApiUrl}auth/getCredentials/${idToken}`;
+    const response = await client.get(url);
+    expect(response.status).toEqual(200);
+  });
+
+  it('should fail with dummy idToken', async () => {
+    const client = axios.create();
+    const idToken = 'ABCDEFGHIJKL123';
+
+    const url = `${deaApiUrl}auth/getCredentials/${idToken}`;
+    const response = await client.get(url, { validateStatus });
+    expect(response.status).toEqual(500);
+    expect(response.statusText).toEqual('Internal Server Error');
   });
 
   it('should log successful and unsuccessful logins/api invocations', () => {

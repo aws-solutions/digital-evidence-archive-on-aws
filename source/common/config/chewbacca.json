@@ -44,6 +44,10 @@
           "method": "POST"
         },
         {
+          "path": "/auth/getCredentials/{idToken}",
+          "method": "GET"
+        },
+        {
           "path": "/users",
           "method": "GET"
         },
@@ -92,6 +96,10 @@
         {
           "path": "/auth/getToken/{authCode}",
           "method": "POST"
+        },
+        {
+          "path": "/auth/getCredentials/{idToken}",
+          "method": "GET"
         }
       ]
     },
@@ -115,6 +123,10 @@
         {
           "path": "/auth/getToken/{authCode}",
           "method": "POST"
+        },
+        {
+          "path": "/auth/getCredentials/{idToken}",
+          "method": "GET"
         }
       ]
     },
@@ -138,6 +150,10 @@
         {
           "path": "/auth/getToken/{authCode}",
           "method": "POST"
+        },
+        {
+          "path": "/auth/getCredentials/{idToken}",
+          "method": "GET"
         }
       ]
     },
