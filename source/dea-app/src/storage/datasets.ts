@@ -118,7 +118,6 @@ export const completeUploadForCaseFile = async (
       MultipartUpload: { Parts: uploadedParts },
     })
   );
-
   caseFile.versionId = uploadResponse.VersionId;
 
   logger.info('Marked upload as completed. Putting legal hold on object..', { s3Key });
