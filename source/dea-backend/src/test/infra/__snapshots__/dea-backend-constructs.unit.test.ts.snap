@@ -1566,7 +1566,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaRestApiConstructdeaapiDeploymentC27C6CB128f006463808a48883fdb6335cf69282": Object {
+    "DeaRestApiConstructdeaapiDeploymentC27C6CB184d6c3b7479f9792d6269db2ea6e6e4a": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaapiauthgetCredentialsidTokenGETF30F6BC2",
         "DeaRestApiConstructdeaapiauthgetCredentialsidTokenOPTIONSA66044D9",
@@ -1641,7 +1641,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB128f006463808a48883fdb6335cf69282",
+          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB184d6c3b7479f9792d6269db2ea6e6e4a",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -4308,6 +4308,9 @@ Object {
         "HttpMethod": "GET",
         "Integration": Object {
           "IntegrationHttpMethod": "POST",
+          "RequestParameters": Object {
+            "integration.request.querystring.nameBeginsWith": "method.request.querystring.nameBeginsWith",
+          },
           "Type": "AWS_PROXY",
           "Uri": Object {
             "Fn::Join": Array [
@@ -4332,6 +4335,9 @@ Object {
               ],
             ],
           },
+        },
+        "RequestParameters": Object {
+          "method.request.querystring.nameBeginsWith": false,
         },
         "ResourceId": Object {
           "Ref": "DeaRestApiConstructdeaapiusers95152658",
