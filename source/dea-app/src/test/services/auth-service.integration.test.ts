@@ -8,6 +8,7 @@ import {
   getCognitoSsmParams,
   CognitoSsmParams,
   getCredentialsByToken,
+  decodeTokenForUsername,
 } from '../../app/services/auth-service';
 import CognitoHelper from '../../test-e2e/helpers/cognito-helper';
 
@@ -42,6 +43,20 @@ describe('cognito helpers integration test', () => {
     // Assert if no id token fectched in exchangeAuthorizationCode
     expect(idToken).toBeTruthy();
   }, 20000);
+
+  it('successfully decodes id token for user name', async () => {
+    const userName = decodeTokenForUsername(idToken);
+    expect(userName).toEqual(testUser);
+  });
+
+  it('should throw an error if given dummy id token', async () => {
+    try {
+      decodeTokenForUsername('dummyIdToken');
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      expect((error as Error).message).toStrictEqual('Invalid Token');
+    }
+  });
 
   it('should throw an error if the authorization code is not valid', async () => {
     const dummyAuthCode = 'DUMMY_AUTH_CODE';

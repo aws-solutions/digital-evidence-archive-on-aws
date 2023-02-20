@@ -423,6 +423,10 @@
       "allowedCategories": ["production", "prototypes"]
     },
     {
+      "name": "jsonwebtoken",
+      "allowedCategories": ["production"]
+    },
+    {
       "name": "jwt-decode",
       "allowedCategories": ["production"]
     },

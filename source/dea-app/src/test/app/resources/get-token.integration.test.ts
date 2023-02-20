@@ -5,6 +5,7 @@
 import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { getToken } from '../../../app/resources/get-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
+import { UserTokenName } from '../../../models/user-token-name';
 
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { dummyContext, dummyEvent } from '../../integration-objects';
@@ -46,11 +47,15 @@ describe('get-token', () => {
     );
 
     const response = await getToken(event, dummyContext);
-    expect(response.statusCode).toEqual(200);
 
     if (!response.body) {
       fail();
     }
+
+    const userTokenName: UserTokenName = JSON.parse(response.body);
+
+    expect(response.statusCode).toEqual(200);
+    expect(userTokenName.username).toEqual(testUser);
   }, 20000);
 
   it('should throw an error if the authorization code is not valid', async () => {
