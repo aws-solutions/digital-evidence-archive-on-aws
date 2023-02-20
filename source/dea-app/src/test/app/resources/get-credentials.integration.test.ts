@@ -2,6 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+import { NotAuthorizedException } from '@aws-sdk/client-cognito-identity';
 import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { getCredentials } from '../../../app/resources/get-credentials';
 import { getToken } from '../../../app/resources/get-token';
@@ -79,7 +80,7 @@ describe('get-credentials', () => {
       }
     );
 
-    await expect(getCredentials(event, dummyContext)).rejects.toThrow(ValidationError);
+    await expect(getCredentials(event, dummyContext)).rejects.toThrow(NotAuthorizedException);
   });
 
   it('should throw an error if the path param is missing', async () => {
