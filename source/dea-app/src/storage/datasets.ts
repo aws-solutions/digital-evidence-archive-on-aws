@@ -13,6 +13,7 @@ import {
   Part,
   PutObjectLegalHoldCommand,
   ObjectLockLegalHoldStatus,
+  GetObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getRequiredEnv } from '../lambda-http-helpers';
@@ -25,12 +26,14 @@ export interface DatasetsProvider {
   s3Client: S3Client;
   bucketName: string;
   chunkSizeMB: number;
+  presignedCommandExpirySeconds: number;
 }
 
 export const defaultDatasetsProvider = {
   s3Client: new S3Client({ region }),
   bucketName: getRequiredEnv('DATASETS_BUCKET_NAME', 'DATASETS_BUCKET_NAME is not set in your lambda!'),
   chunkSizeMB: 500,
+  presignedCommandExpirySeconds: 3600,
 };
 
 export const generatePresignedUrlsForCaseFile = async (
@@ -61,13 +64,7 @@ export const generatePresignedUrlsForCaseFile = async (
   logger.info('Generating presigned URLs.', { fileParts, s3Key });
   const presignedUrlPromises = [];
   for (let i = 0; i < fileParts; i++) {
-    presignedUrlPromises[i] = _getPresignedUrlPromise(
-      datasetsProvider.bucketName,
-      s3Key,
-      uploadId,
-      i + 1,
-      datasetsProvider.s3Client
-    );
+    presignedUrlPromises[i] = _getUploadPresignedUrlPromise(s3Key, uploadId, i + 1, datasetsProvider);
   }
   await Promise.all(presignedUrlPromises).then((presignedUrls) => {
     caseFile.presignedUrls = presignedUrls;
@@ -113,7 +110,7 @@ export const completeUploadForCaseFile = async (
     s3Key,
   });
 
-  await datasetsProvider.s3Client.send(
+  const uploadResponse = await datasetsProvider.s3Client.send(
     new CompleteMultipartUploadCommand({
       Bucket: datasetsProvider.bucketName,
       Key: s3Key,
@@ -121,6 +118,8 @@ export const completeUploadForCaseFile = async (
       MultipartUpload: { Parts: uploadedParts },
     })
   );
+
+  caseFile.versionId = uploadResponse.VersionId;
 
   logger.info('Marked upload as completed. Putting legal hold on object..', { s3Key });
   await datasetsProvider.s3Client.send(
@@ -132,22 +131,40 @@ export const completeUploadForCaseFile = async (
   );
 };
 
+export const getPresignedUrlForDownload = async (
+  caseFile: DeaCaseFile,
+  datasetsProvider: DatasetsProvider
+): Promise<string> => {
+  const s3Key = _getS3KeyForCaseFile(caseFile);
+
+  logger.info('Creating presigned URL for caseFile.', caseFile);
+  const getObjectCommand = new GetObjectCommand({
+    Bucket: datasetsProvider.bucketName,
+    Key: s3Key,
+    VersionId: caseFile.versionId,
+  });
+  return getSignedUrl(datasetsProvider.s3Client, getObjectCommand, {
+    expiresIn: datasetsProvider.presignedCommandExpirySeconds,
+  });
+};
+
 function _getS3KeyForCaseFile(caseFile: DeaCaseFile): string {
   return `${caseFile.caseUlid}/${caseFile.ulid}`;
 }
 
-async function _getPresignedUrlPromise(
-  bucket: string,
+async function _getUploadPresignedUrlPromise(
   s3Key: string,
   uploadId: string,
   partNumber: number,
-  s3Client: S3Client
+  datasetsProvider: DatasetsProvider
 ): Promise<string> {
   const uploadPartCommand = new UploadPartCommand({
-    Bucket: bucket,
+    Bucket: datasetsProvider.bucketName,
     Key: s3Key,
     UploadId: uploadId,
     PartNumber: partNumber,
   });
-  return getSignedUrl(s3Client, uploadPartCommand, { expiresIn: 3600 });
+  return getSignedUrl(datasetsProvider.s3Client, uploadPartCommand, {
+    expiresIn: datasetsProvider.presignedCommandExpirySeconds,
+  });
 }

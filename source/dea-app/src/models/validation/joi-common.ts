@@ -19,7 +19,7 @@ export const htmlSafeCharsRegex = new RegExp('^[^&"\'<>]*$');
 
 export const ulidRegex = new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$');
 
-export const uploadId = Joi.string().pattern(htmlSafeCharsRegex);
+export const s3Identifier = Joi.string().pattern(htmlSafeCharsRegex);
 
 export const joiUlid = Joi.string().pattern(ulidRegex);
 

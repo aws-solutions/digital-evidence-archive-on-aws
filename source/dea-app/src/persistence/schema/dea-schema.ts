@@ -76,8 +76,8 @@ export const DeaSchema = {
       fileSizeMb: { type: Number, required: true },
       status: { type: String, required: true, enum: Object.keys(CaseFileStatus) },
       ttl: { ttl: true, type: Number },
-      contentPath: { type: String },
       uploadId: { type: String },
+      versionId: { type: String },
       sha256Hash: { type: String },
       contentType: { type: String },
 

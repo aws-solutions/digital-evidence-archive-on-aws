@@ -40,6 +40,7 @@ const FILE_NAME = 'tuna.jpeg';
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
 const FILE_PATH = '/food/sushi/';
 const UPLOAD_ID = '123456';
+const VERSION_ID = '543210';
 const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
 const FILE_SIZE_MB = 50;
 const CONTENT_TYPE = 'image/jpeg';
@@ -47,6 +48,7 @@ const DATASETS_PROVIDER = {
   s3Client: new S3Client({ region: 'us-east-1' }),
   bucketName: 'testBucket',
   chunkSizeMB: 500,
+  presignedCommandExpirySeconds: 3600,
 };
 
 const EVENT = dummyEvent;
@@ -78,6 +80,7 @@ describe('Test case file upload', () => {
     s3Mock = mockClient(S3Client);
     s3Mock.resolves({
       UploadId: UPLOAD_ID,
+      VersionId: VERSION_ID,
     });
 
     EVENT.headers['userUlid'] = fileUploader.ulid;
@@ -259,7 +262,7 @@ describe('Test case file upload', () => {
     ).rejects.toThrow();
     await expect(callCompleteCaseFileUpload('', caseToUploadTo, FILE_NAME, CONTENT_TYPE)).rejects.toThrow();
 
-    // validate uploadId
+    // validate s3Identifier
     await expect(
       callCompleteCaseFileUpload(FILE_ULID, caseToUploadTo, FILE_NAME, CONTENT_TYPE, '&&')
     ).rejects.toThrow();
@@ -317,7 +320,7 @@ async function initiateCaseFileUploadAndValidate(
     caseUlid,
     filePath,
     CaseFileStatus.PENDING,
-    true
+    false
   );
 
   expect(s3Mock).toHaveReceivedCommandTimes(CreateMultipartUploadCommand, 1);
@@ -370,7 +373,7 @@ async function completeCaseFileUploadAndValidate(
     caseUlid,
     filePath,
     CaseFileStatus.ACTIVE,
-    false
+    true
   );
 
   expect(s3Mock).toHaveReceivedCommandTimes(ListPartsCommand, 1);
@@ -429,7 +432,7 @@ async function validateApiResponse(
   caseUlid: string,
   filePath: string,
   status: string,
-  ttlExists: boolean
+  validateUploadComplete: boolean
 ): Promise<DeaCaseFile> {
   expect(response.statusCode).toEqual(200);
 
@@ -444,13 +447,14 @@ async function validateApiResponse(
   expect(deaCaseFile.createdBy).toEqual(fileUploader.ulid);
   expect(deaCaseFile.status).toEqual(status);
 
-  if (ttlExists) {
+  if (validateUploadComplete) {
     const epochSecondsNow = Math.round(Date.now() / 1000);
     // check that ttl is between 55 - 65 minutes from now
     expect(deaCaseFile.ttl).toBeGreaterThan(epochSecondsNow + 60 * 55);
     expect(deaCaseFile.ttl).toBeLessThan(epochSecondsNow + 60 * 65);
   } else {
     expect(deaCaseFile.ttl).toBeUndefined();
+    expect(deaCaseFile.versionId).toEqual(VERSION_ID);
   }
 
   return deaCaseFile;

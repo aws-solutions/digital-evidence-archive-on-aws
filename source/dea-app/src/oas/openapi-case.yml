@@ -344,7 +344,7 @@ paths:
                 $ref: '#/components/schemas/CaseUploadResponse'
     get:
       summary: list files by directory
-      description: List files within a case in a parent directory or case root
+      description: List files within a case in given file path or case root
       tags:
         - cases
       parameters:
@@ -354,7 +354,7 @@ paths:
             type: string
           required: true
         - in: query
-          name: parentDir
+          name: filePath
           schema:
             type: string
         - in: query
@@ -586,7 +586,7 @@ components:
           type: string
         ulid:
           type: string
-        uploadId:
+        s3Identifier:
           type: string
         isFile:
           type: boolean
@@ -601,7 +601,7 @@ components:
       properties:
         caseId:
           type: string
-        uploadId:
+        s3Identifier:
           type: string
         presignedUrls:
           type: array
