@@ -91,7 +91,7 @@ describe('CaseMembership E2E', () => {
     );
     expect(inviteResponse.status).toEqual(200);
 
-    // confirm invitee has access
+    // confirm invitee has view access
     const accessResponse = await callDeaAPIWithCreds(
       `${deaApiUrl}cases/${targetCase.ulid}`,
       'GET',
@@ -100,11 +100,70 @@ describe('CaseMembership E2E', () => {
     );
     expect(accessResponse.status).toEqual(200);
 
-    // TODO confirm invitee cannot update
+    // confirm invitee cannot update the case (no update permission)
+    const updatedDeaCase = {
+      ulid: targetCase.ulid,
+      name: `The Quary${suffix}-Updated`,
+      description: 'Updated Description',
+    };
+    const updateAttempt = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${targetCase.ulid}`,
+      'PUT',
+      inviteeToken,
+      inviteeCreds,
+      updatedDeaCase
+    );
+    expect(updateAttempt.status).toEqual(404);
 
-    // TODO update membership with case update permissions
+    // in addition to the 404 above, confirm the case is unchanged
+    const caseAfterFailedUpdate = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${targetCase.ulid}`,
+      'GET',
+      inviteeToken,
+      inviteeCreds
+    );
+    expect(caseAfterFailedUpdate.status).toEqual(200);
+    const unchangedCase: DeaCase = caseAfterFailedUpdate.data;
+    expect(unchangedCase.description).toBeFalsy();
+    expect(unchangedCase.name.includes('Updated')).toBeFalsy();
 
-    // TODO confirm update
+    // Now update the invitee's membership, granting Update action
+    const updatedMembership: CaseUserDTO = {
+      userUlid: inviteeUlid,
+      caseUlid: targetCase.ulid!,
+      actions: [CaseAction.VIEW_CASE_DETAILS, CaseAction.UPDATE_CASE_DETAILS],
+    };
+
+    const grantUpdateAccess = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${inviteeUlid}`,
+      'PUT',
+      ownerToken,
+      ownerCreds,
+      updatedMembership
+    );
+    expect(grantUpdateAccess.status).toEqual(200);
+
+    // Confirm invitee can now update the case
+    const updateReattempt = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${targetCase.ulid}`,
+      'PUT',
+      inviteeToken,
+      inviteeCreds,
+      updatedDeaCase
+    );
+    expect(updateReattempt.status).toEqual(200);
+
+    // In addition to the 200 above, confirm changes were persisted
+    const caseAfterUpdate = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${targetCase.ulid}`,
+      'GET',
+      inviteeToken,
+      inviteeCreds
+    );
+    expect(caseAfterUpdate.status).toEqual(200);
+    const changedCase: DeaCase = caseAfterUpdate.data;
+    expect(changedCase.description).toEqual('Updated Description');
+    expect(changedCase.name.includes('Updated')).toBeTruthy();
 
     // Delete the membership
     const dismissResponse = await callDeaAPIWithCreds(
@@ -123,7 +182,7 @@ describe('CaseMembership E2E', () => {
       inviteeCreds
     );
     expect(removedAccessResponse.status).toEqual(404);
-  }, 20000);
+  }, 40000);
 
   describe('POST', () => {
     it('should give an error when payload is missing', async () => {
@@ -186,6 +245,86 @@ describe('CaseMembership E2E', () => {
       );
       expect(inviteResponse.status).toEqual(404);
       expect(inviteResponse.data).toEqual('Resource not found');
+    });
+  });
+
+  describe('PUT', () => {
+    it('should produce an error when payload is missing', async () => {
+      const inviteResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${inviteeUlid}`,
+        'PUT',
+        ownerToken,
+        ownerCreds
+      );
+      expect(inviteResponse.status).toEqual(400);
+      expect(inviteResponse.data).toEqual('CaseUser payload missing.');
+    });
+
+    it('should produce an error when the payload does not match expected schema', async () => {
+      const newMembership = {
+        userUlid: inviteeUlid,
+        caseUlid: targetCase.ulid!,
+      };
+      const inviteResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${inviteeUlid}`,
+        'PUT',
+        ownerToken,
+        ownerCreds,
+        newMembership
+      );
+      expect(inviteResponse.status).toEqual(400);
+      expect(inviteResponse.data).toEqual('"actions" is required');
+    });
+
+    it('should give an error when case path and resource ids do not match', async () => {
+      const newMembership: CaseUserDTO = {
+        userUlid: inviteeUlid,
+        caseUlid: bogusUlid,
+        actions: [CaseAction.VIEW_CASE_DETAILS],
+      };
+      const inviteResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${inviteeUlid}`,
+        'PUT',
+        ownerToken,
+        ownerCreds,
+        newMembership
+      );
+      expect(inviteResponse.status).toEqual(400);
+      expect(inviteResponse.data).toEqual('Requested Case id does not match resource');
+    });
+
+    it('should give an error when user path and resource ids do not match', async () => {
+      const newMembership: CaseUserDTO = {
+        userUlid: bogusUlid,
+        caseUlid: targetCase.ulid!,
+        actions: [CaseAction.VIEW_CASE_DETAILS],
+      };
+      const inviteResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${inviteeUlid}`,
+        'PUT',
+        ownerToken,
+        ownerCreds,
+        newMembership
+      );
+      expect(inviteResponse.status).toEqual(400);
+      expect(inviteResponse.data).toEqual('Requested User id does not match resource');
+    });
+
+    it('should give an error when the membership does not exist', async () => {
+      const newMembership: CaseUserDTO = {
+        userUlid: bogusUlid,
+        caseUlid: targetCase.ulid!,
+        actions: [CaseAction.VIEW_CASE_DETAILS],
+      };
+      const inviteResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${bogusUlid}`,
+        'PUT',
+        ownerToken,
+        ownerCreds,
+        newMembership
+      );
+      expect(inviteResponse.status).toEqual(404);
+      expect(inviteResponse.data).toEqual('Requested Case-User Membership not found');
     });
   });
 

@@ -2,7 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-import { aws4Interceptor } from 'aws4-axios';
+import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
 import CognitoHelper from '../helpers/cognito-helper';
@@ -17,10 +17,12 @@ describe('API authentication', () => {
   const testUser = 'authE2ETestUser';
   const deaApiUrl = testEnv.apiUrlOutput;
   const region = testEnv.awsRegion;
+  let creds: Credentials;
 
   beforeAll(async () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', 'Auth', 'Tester');
+    [creds] = await cognitoHelper.getCredentialsForUser(testUser);
   });
 
   afterAll(async () => {
@@ -43,8 +45,6 @@ describe('API authentication', () => {
   });
 
   it('should disallow calls without id token in the header', async () => {
-    const [creds] = await cognitoHelper.getCredentialsForUser(testUser);
-
     const client = axios.create();
     const interceptor = aws4Interceptor(
       {

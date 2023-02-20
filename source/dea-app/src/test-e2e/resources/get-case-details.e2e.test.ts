@@ -4,6 +4,7 @@
  */
 
 import { fail } from 'assert';
+import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
 import { DeaCase } from '../../models/case';
 import { CaseStatus } from '../../models/case-status';
@@ -17,10 +18,13 @@ describe('get case api', () => {
 
   const testUser = 'getCaseE2ETestUser';
   const deaApiUrl = testEnv.apiUrlOutput;
+  let testUserCreds: Credentials;
+  let testUserToken: string;
 
   beforeAll(async () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'GetCaseTestGroup', 'GetCase', 'TestUser');
+    [testUserCreds, testUserToken] = await cognitoHelper.getCredentialsForUser(testUser);
   });
 
   afterAll(async () => {
@@ -28,8 +32,6 @@ describe('get case api', () => {
   });
 
   it('should get a created case', async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
-
     // Create Case
     const caseName = 'caseWithDetails';
     const createdCase = await createCaseSuccess(
@@ -39,16 +41,16 @@ describe('get case api', () => {
         status: CaseStatus.ACTIVE,
         description: 'this is a description',
       },
-      idToken,
-      creds
+      testUserToken,
+      testUserCreds
     );
 
     // Now call Get and Check response is what we created
     const getResponse = await callDeaAPIWithCreds(
       `${deaApiUrl}cases/${createdCase.ulid}`,
       'GET',
-      idToken,
-      creds
+      testUserToken,
+      testUserCreds
     );
 
     expect(getResponse.status).toEqual(200);
@@ -57,15 +59,13 @@ describe('get case api', () => {
 
     expect(fetchedCase).toEqual(createdCase);
 
-    await deleteCase(deaApiUrl ?? fail(), fetchedCase.ulid ?? fail(), idToken, creds);
+    await deleteCase(deaApiUrl ?? fail(), fetchedCase.ulid ?? fail(), testUserToken, testUserCreds);
   }, 30000);
 
   it('should throw an error when the case is not found', async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
-
     const url = `${deaApiUrl}cases`;
     const caseId = '123bogus';
-    const response = await callDeaAPIWithCreds(`${url}/${caseId}`, 'GET', idToken, creds);
+    const response = await callDeaAPIWithCreds(`${url}/${caseId}`, 'GET', testUserToken, testUserCreds);
 
     expect(response.status).toEqual(404);
   });
