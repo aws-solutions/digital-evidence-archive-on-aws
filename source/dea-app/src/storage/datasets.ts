@@ -38,7 +38,7 @@ export const generatePresignedUrlsForCaseFile = async (
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ): Promise<void> => {
   const s3Key = _getS3KeyForCaseFile(caseFile);
-  logger.info(`Initiating multipart upload for ${s3Key}`);
+  logger.info('Initiating multipart upload.', { s3Key });
   const response = await datasetsProvider.s3Client.send(
     new CreateMultipartUploadCommand({
       Bucket: datasetsProvider.bucketName,
@@ -58,7 +58,7 @@ export const generatePresignedUrlsForCaseFile = async (
   // https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html
   const fileParts = Math.ceil(caseFile.fileSizeMb / datasetsProvider.chunkSizeMB);
 
-  logger.info(`Generating ${fileParts} number of presigned URLs for ${s3Key}`);
+  logger.info('Generating presigned URLs.', { fileParts, s3Key });
   const presignedUrlPromises = [];
   for (let i = 0; i < fileParts; i++) {
     presignedUrlPromises[i] = _getPresignedUrlPromise(
@@ -73,7 +73,7 @@ export const generatePresignedUrlsForCaseFile = async (
     caseFile.presignedUrls = presignedUrls;
   });
 
-  logger.info(`Generated presigned URLs for ${s3Key}`);
+  logger.info('Generated presigned URLs.', { s3Key });
   caseFile.uploadId = uploadId;
 };
 
@@ -85,7 +85,7 @@ export const completeUploadForCaseFile = async (
   let listPartsResponse: ListPartsOutput;
   let partNumberMarker;
   const s3Key = _getS3KeyForCaseFile(caseFile);
-  logger.info(`Collecting upload parts for ${s3Key}`);
+  logger.info('Collecting upload parts.', { s3Key });
 
   /* eslint-disable no-await-in-loop */
   do {
@@ -108,7 +108,10 @@ export const completeUploadForCaseFile = async (
     partNumberMarker = listPartsResponse.NextPartNumberMarker;
   } while (listPartsResponse.IsTruncated);
 
-  logger.info(`Collected ${uploadedParts.length} parts for ${s3Key}. Marking upload as completed.`);
+  logger.info('Collected all parts. Marking upload as completed.', {
+    collectedParts: uploadedParts.length,
+    s3Key,
+  });
 
   await datasetsProvider.s3Client.send(
     new CompleteMultipartUploadCommand({
@@ -119,7 +122,7 @@ export const completeUploadForCaseFile = async (
     })
   );
 
-  logger.info(`Marked upload for ${s3Key} as completed. Putting legal hold on object..`);
+  logger.info('Marked upload as completed. Putting legal hold on object..', { s3Key });
   await datasetsProvider.s3Client.send(
     new PutObjectLegalHoldCommand({
       Bucket: datasetsProvider.bucketName,

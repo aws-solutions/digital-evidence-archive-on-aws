@@ -4,7 +4,6 @@
  */
 
 import { getRequiredPayload, getUserUlid } from '../../lambda-http-helpers';
-import { logger } from '../../logger';
 import { DeaCase } from '../../models/case';
 import { createCaseSchema } from '../../models/validation/case';
 import { defaultProvider } from '../../persistence/schema/entities';
@@ -19,9 +18,6 @@ export const createCases: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
-
   const userUlid = getUserUlid(event);
   const user = await getUser(userUlid, repositoryProvider);
   if (!user) {

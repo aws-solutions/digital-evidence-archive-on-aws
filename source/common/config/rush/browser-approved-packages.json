@@ -123,10 +123,6 @@
       "allowedCategories": ["production"]
     },
     {
-      "name": "@aws/workbench-core-logging",
-      "allowedCategories": ["production"]
-    },
-    {
       "name": "@awsui/collection-hooks",
       "allowedCategories": ["production", "prototypes"]
     },

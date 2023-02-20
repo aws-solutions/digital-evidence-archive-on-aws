@@ -4,7 +4,6 @@
  */
 
 import { getRequiredPathParam } from '../../lambda-http-helpers';
-import { logger } from '../../logger';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { deleteCaseUser } from '../services/case-user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -16,9 +15,6 @@ export const deleteCaseMembership: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
-
   const caseId = getRequiredPathParam(event, 'caseId');
   const userId = getRequiredPathParam(event, 'userId');
 

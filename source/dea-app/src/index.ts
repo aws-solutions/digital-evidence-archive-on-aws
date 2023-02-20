@@ -29,6 +29,7 @@ import { getCaseUser } from './app/services/case-user-service';
 import { getRequiredPathParam, getUserUlid } from './lambda-http-helpers';
 import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
+import { dummyContext, dummyEvent } from './test/integration-objects';
 
 export {
   sayBye,
@@ -62,4 +63,6 @@ export {
   NOT_FOUND_ERROR_NAME,
   ValidationError,
   VALIDATION_ERROR_NAME,
+  dummyEvent,
+  dummyContext,
 };
