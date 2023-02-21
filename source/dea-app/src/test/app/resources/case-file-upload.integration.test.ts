@@ -447,7 +447,7 @@ async function validateApiResponse(
   expect(deaCaseFile.createdBy).toEqual(fileUploader.ulid);
   expect(deaCaseFile.status).toEqual(status);
 
-  if (validateUploadComplete) {
+  if (!validateUploadComplete) {
     const epochSecondsNow = Math.round(Date.now() / 1000);
     // check that ttl is between 55 - 65 minutes from now
     expect(deaCaseFile.ttl).toBeGreaterThan(epochSecondsNow + 60 * 55);
