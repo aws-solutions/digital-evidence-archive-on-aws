@@ -1290,6 +1290,11 @@ Object {
     "DeaApiGatewaydeaapi822A9228": Object {
       "Properties": Object {
         "Description": "Backend API",
+        "EndpointConfiguration": Object {
+          "Types": Array [
+            "REGIONAL",
+          ],
+        },
         "Name": "dea-api",
       },
       "Type": "AWS::ApiGateway::RestApi",
@@ -1364,7 +1369,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E776295666c9d5280123d3bcf1043dcd9a2af8": Object {
+    "DeaApiGatewaydeaapiDeployment99E77629a92b6c1427a02441f7ce14b6b7f8d058": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiauthgetCredentialsidTokenGETAB2AA9B5",
         "DeaApiGatewaydeaapiauthgetCredentialsidTokenOPTIONSC67E30C8",
@@ -1445,7 +1450,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E776295666c9d5280123d3bcf1043dcd9a2af8",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E77629a92b6c1427a02441f7ce14b6b7f8d058",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",

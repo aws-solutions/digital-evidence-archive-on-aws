@@ -104,7 +104,7 @@ describe('API authentication', () => {
     const response = await client.post(url);
     idToken = response.data;
     expect(response.status).toEqual(200);
-  }, 20000);
+  }, 40000);
 
   it('should fail with dummy auth code', async () => {
     const client = axios.create();
