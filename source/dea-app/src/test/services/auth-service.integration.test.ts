@@ -50,12 +50,7 @@ describe('cognito helpers integration test', () => {
   });
 
   it('should throw an error if given dummy id token', async () => {
-    try {
-      decodeTokenForUsername('dummyIdToken');
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      expect((error as Error).message).toStrictEqual('Invalid Token');
-    }
+    expect(() => decodeTokenForUsername('dummyIdToken')).toThrow('Invalid Token');
   });
 
   it('should throw an error if the authorization code is not valid', async () => {
