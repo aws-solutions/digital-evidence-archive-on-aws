@@ -9,6 +9,7 @@ import {
   AccessLogFormat,
   AuthorizationType,
   Cors,
+  EndpointType,
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
@@ -60,6 +61,9 @@ export class DeaRestApiConstruct extends Construct {
 
     this.deaRestApi = new RestApi(this, `dea-api`, {
       description: 'Backend API',
+      endpointConfiguration: {
+        types: [EndpointType.REGIONAL],
+      },
       deployOptions: {
         stageName: STAGE,
         accessLogDestination: new LogGroupLogDestination(accessLogGroup),
