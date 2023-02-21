@@ -20,7 +20,7 @@ import { getRequiredEnv } from '../lambda-http-helpers';
 import { logger } from '../logger';
 import { DeaCaseFile } from '../models/case-file';
 
-const region = process.env.AWS_REGION ?? 'us-east-1';
+const region = process.env.AWS_REGION;
 
 export interface DatasetsProvider {
   s3Client: S3Client;
@@ -38,7 +38,7 @@ export const defaultDatasetsProvider = {
 
 export const generatePresignedUrlsForCaseFile = async (
   caseFile: DeaCaseFile,
-  datasetsProvider: DatasetsProvider = defaultDatasetsProvider
+  datasetsProvider: DatasetsProvider
 ): Promise<void> => {
   const s3Key = _getS3KeyForCaseFile(caseFile);
   logger.info('Initiating multipart upload.', { s3Key });
@@ -76,7 +76,7 @@ export const generatePresignedUrlsForCaseFile = async (
 
 export const completeUploadForCaseFile = async (
   caseFile: DeaCaseFile,
-  datasetsProvider: DatasetsProvider = defaultDatasetsProvider
+  datasetsProvider: DatasetsProvider
 ): Promise<void> => {
   let uploadedParts: Part[] = [];
   let listPartsResponse: ListPartsOutput;

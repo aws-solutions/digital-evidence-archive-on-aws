@@ -4,9 +4,11 @@
  */
 
 import { getRequiredPathParam } from '../../lambda-http-helpers';
+import { CaseFileStatus } from '../../models/case-file-status';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider, getPresignedUrlForDownload } from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
+import { ValidationError } from '../exceptions/validation-exception';
 import { getCaseFile } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
@@ -24,10 +26,13 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
 
   const retrievedCaseFile = await getCaseFile(caseId, fileId, repositoryProvider);
   if (!retrievedCaseFile) {
-    throw new NotFoundError(`CaseFile: ${fileId} not found in Case: ${caseId}`);
+    throw new NotFoundError(`Could not find file: ${fileId} in the DB`);
+  }
+  if (retrievedCaseFile.status !== CaseFileStatus.ACTIVE) {
+    throw new ValidationError(`Can't download a file in ${retrievedCaseFile.status} state`);
   }
 
-  const downloadUrl = getPresignedUrlForDownload(retrievedCaseFile, datasetsProvider);
+  const downloadUrl = await getPresignedUrlForDownload(retrievedCaseFile, datasetsProvider);
 
   return {
     statusCode: 200,

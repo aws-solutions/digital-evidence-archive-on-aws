@@ -19,6 +19,7 @@ import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { createCases } from '../../../app/resources/create-cases';
+import { downloadCaseFile } from '../../../app/resources/download-case-file';
 import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
 import { DeaCase } from '../../../models/case';
 import { DeaCaseFile } from '../../../models/case-file';
@@ -55,7 +56,7 @@ const EVENT = dummyEvent;
 
 jest.setTimeout(20000);
 
-describe('Test case file upload', () => {
+describe('Test case file upload and download', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('CaseFileUploadTest');
 
@@ -86,9 +87,10 @@ describe('Test case file upload', () => {
     EVENT.headers['userUlid'] = fileUploader.ulid;
   });
 
-  it('should successfully complete a file upload', async () => {
+  it('should successfully complete a file upload and download', async () => {
     const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate();
     await completeCaseFileUploadAndValidate(caseFile.ulid);
+    await downloadCaseFileAndValidate(caseFile.ulid);
   });
 
   it('should throw a validation exception when no payload is provided', async () => {
@@ -98,6 +100,36 @@ describe('Test case file upload', () => {
     await expect(
       completeCaseFileUpload(EVENT, dummyContext, repositoryProvider, DATASETS_PROVIDER)
     ).rejects.toThrow('Complete case file upload payload missing.');
+  });
+
+  it('download should throw a validation exception when case-id path param missing', async () => {
+    const event = Object.assign(
+      {},
+      {
+        ...EVENT,
+        pathParameters: {
+          fileId: FILE_ULID,
+        },
+      }
+    );
+    await expect(
+      downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+    ).rejects.toThrow(`Required path param 'caseId' is missing.`);
+  });
+
+  it('download should throw a validation exception when file-id path param missing', async () => {
+    const event = Object.assign(
+      {},
+      {
+        ...EVENT,
+        pathParameters: {
+          caseId: FILE_ULID,
+        },
+      }
+    );
+    await expect(
+      downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+    ).rejects.toThrow(`Required path param 'fileId' is missing.`);
   });
 
   it('should throw an exception when user does not exist in DB', async () => {
@@ -162,6 +194,12 @@ describe('Test case file upload', () => {
     );
   });
 
+  it("download should throw an exception when case-file doesn't exist", async () => {
+    await expect(callDownloadCaseFile(FILE_ULID)).rejects.toThrow(
+      `Could not find file: ${FILE_ULID} in the DB`
+    );
+  });
+
   it("complete upload should throw an exception when case-file isn't pending", async () => {
     const activeFileName = 'completeActiveFile';
     const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate(caseToUploadTo, activeFileName);
@@ -169,6 +207,15 @@ describe('Test case file upload', () => {
 
     await expect(callCompleteCaseFileUpload(caseFile.ulid, caseToUploadTo, activeFileName)).rejects.toThrow(
       `Can't complete upload for a file in ${CaseFileStatus.ACTIVE} state`
+    );
+  });
+
+  it("download should throw an exception when case-file isn't active", async () => {
+    const pendingFileName = 'downloadPendingFile';
+    const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate(caseToUploadTo, pendingFileName);
+
+    await expect(callDownloadCaseFile(caseFile.ulid)).rejects.toThrow(
+      `Can't download a file in ${CaseFileStatus.PENDING} state`
     );
   });
 
@@ -424,6 +471,39 @@ async function callCompleteCaseFileUpload(
     }
   );
   return completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
+}
+
+async function downloadCaseFileAndValidate(
+  fileId: string = FILE_ULID,
+  caseId: string = caseToUploadTo
+): Promise<string> {
+  const response = await callDownloadCaseFile(fileId, caseId);
+
+  expect(response.statusCode).toEqual(200);
+  if (!response.body) {
+    fail();
+  }
+
+  const presignedUrl = JSON.parse(response.body).downloadUrl ?? fail();
+  expect(presignedUrl).toContain(`https://s3.us-east-1.amazonaws.com/${DATASETS_PROVIDER.bucketName}`);
+  return presignedUrl;
+}
+
+async function callDownloadCaseFile(
+  fileId: string = FILE_ULID,
+  caseId: string = caseToUploadTo
+): Promise<APIGatewayProxyStructuredResultV2> {
+  const event = Object.assign(
+    {},
+    {
+      ...EVENT,
+      pathParameters: {
+        caseId,
+        fileId,
+      },
+    }
+  );
+  return downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
 }
 
 async function validateApiResponse(
