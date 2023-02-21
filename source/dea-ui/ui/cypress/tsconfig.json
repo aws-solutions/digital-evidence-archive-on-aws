@@ -1,13 +1,11 @@
 {
-    "compilerOptions": {
-      "target": "es5",
-      "lib": ["es5", "dom"],
-      "types": ["jest", "cypress", "node"],
-      "isolatedModules": false,
-    },
-    "include": ["**/*.ts", "e2e/pages/dashboard.cy.tsx"],
-    "files": ["../cypress.config.ts"],
-    "exclude": [
-        "../cypress.config.ts"
-    ]
-  }
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["es2022", "dom"],
+    "types": ["jest", "cypress", "node"],
+    "isolatedModules": false
+  },
+  "include": ["**/*.ts", "e2e/pages/dashboard.cy.tsx"],
+  "files": ["../cypress.config.ts"],
+  "exclude": ["../cypress.config.ts"]
+}

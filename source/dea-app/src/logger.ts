@@ -22,16 +22,16 @@ export const logLevel = (): LogLevel => {
 };
 
 export const logger = {
-  debug: (msg: string, obj: object) => {
+  debug: (msg: string, obj?: object) => {
     console.debug(`${msg}`, obj);
   },
-  error: (msg: string, obj: object) => {
+  error: (msg: string, obj?: object) => {
     console.error(`${msg}`, obj);
   },
-  info: (msg: string, obj: object) => {
+  info: (msg: string, obj?: object) => {
     console.info(`${msg}`, obj);
   },
-  warn: (msg: string, obj: object) => {
+  warn: (msg: string, obj?: object) => {
     console.warn(`${msg}`, obj);
   },
 };
