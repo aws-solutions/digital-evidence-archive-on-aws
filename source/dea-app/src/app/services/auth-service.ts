@@ -150,12 +150,8 @@ export const decodeTokenForUsername = (idToken: string) => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const payload = decodedToken.payload as DecodedToken;
     const username = payload['cognito:username'];
-    if (typeof username === 'string') {
-      return username;
-    } else {
-      return new Error('Invalid Token');
-    }
+    return username;
   } else {
-    return new Error('Invalid Token');
+    throw new Error('Invalid Token');
   }
 };
