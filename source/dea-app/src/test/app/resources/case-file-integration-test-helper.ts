@@ -5,18 +5,8 @@
 
 import 'aws-sdk-client-mock-jest';
 import { fail } from 'assert';
-import {
-  S3Client,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-  CreateMultipartUploadCommand,
-  CompleteMultipartUploadCommand,
-  ListPartsCommand,
-  PutObjectLegalHoldCommand,
-  ObjectLockLegalHoldStatus,
-} from '@aws-sdk/client-s3';
+import { S3Client } from '@aws-sdk/client-s3';
 import { APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2 } from 'aws-lambda';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { createCases } from '../../../app/resources/create-cases';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
@@ -25,6 +15,7 @@ import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-fil
 import { DeaCase } from '../../../models/case';
 import { DeaCaseFile } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
+import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
@@ -89,7 +80,7 @@ export const callCompleteCaseFileUpload = async (
   filePath: string = FILE_PATH,
   uploadId: string = UPLOAD_ID,
   sha256Hash: string = SHA256_HASH
-): Promise<APIGatewayProxyStructuredResultV2> => {
+): Promise<DeaCaseFile> => {
   const event = Object.assign(
     {},
     {
@@ -116,7 +107,7 @@ export const callDownloadCaseFile = async (
   repositoryProvider: ModelRepositoryProvider,
   fileId: string,
   caseId: string
-): Promise<APIGatewayProxyStructuredResultV2> => {
+): Promise<string> => {
   const event = Object.assign(
     {},
     {
@@ -131,7 +122,7 @@ export const callDownloadCaseFile = async (
   await checkApiSucceeded(response);
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return JSON.parse(response.body as string);
+  return JSON.parse(response.body as string).downloadUrl ?? fail();
 };
 
 export const callCreateCase = async (
@@ -139,7 +130,7 @@ export const callCreateCase = async (
   repositoryProvider: ModelRepositoryProvider,
   name: string = CASE_NAME,
   description: string = CASE_DESCRIPTION,
-  status = 'ACTIVE'
+  status = CaseStatus.ACTIVE
 ): Promise<DeaCase> => {
   const event = Object.assign(
     {},
