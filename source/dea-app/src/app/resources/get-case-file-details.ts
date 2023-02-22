@@ -21,7 +21,7 @@ export const getCaseFileDetails: DEAGatewayProxyHandler = async (
 
   const retrievedCaseFile = await getCaseFile(caseId, fileId, repositoryProvider);
   if (!retrievedCaseFile) {
-    throw new NotFoundError(`CaseFile: ${fileId} not found in Case: ${caseId}`);
+    throw new NotFoundError(`Could not find file: ${fileId} in the DB`);
   }
 
   return {
