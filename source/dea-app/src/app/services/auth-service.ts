@@ -10,7 +10,6 @@ import {
 } from '@aws-sdk/client-cognito-identity';
 import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import axios from 'axios';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { getRequiredEnv } from '../../lambda-http-helpers';
 
 const stage = getRequiredEnv('STAGE', 'chewbacca');
@@ -22,10 +21,6 @@ export interface CognitoSsmParams {
   callbackUrl: string;
   identityPoolId: string;
   userPoolId: string;
-}
-
-interface DecodedToken extends JwtPayload {
-  'cognito:username'?: string;
 }
 
 export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
@@ -141,17 +136,4 @@ export const exchangeAuthorizationCode = async (authorizationCode: string): Prom
   });
 
   return response.data.id_token;
-};
-
-export const decodeTokenForUsername = (idToken: string) => {
-  const decodedToken = jwt.decode(idToken, { complete: true });
-
-  if (decodedToken !== null) {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const payload = decodedToken.payload as DecodedToken;
-    const username = payload['cognito:username'];
-    return username;
-  } else {
-    throw new Error('Invalid Token');
-  }
 };
