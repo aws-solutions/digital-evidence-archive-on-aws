@@ -21,6 +21,8 @@ export type DEAPreLambdaExecutionChecks = (
 export const runPreExecutionChecks = async (
   event: LambdaEvent,
   context: LambdaContext,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
   // add first time federated users to the database
