@@ -79,7 +79,7 @@
       "precedence": 1,
       "endpoints": [
         {
-          "path": "/hi",
+          "path": "/cases/my-cases",
           "method": "GET"
         }
       ]
@@ -90,11 +90,7 @@
       "precedence": 100,
       "endpoints": [
         {
-          "path": "/hi",
-          "method": "GET"
-        },
-        {
-          "path": "/bye",
+          "path": "/cases/my-cases",
           "method": "GET"
         },
         {

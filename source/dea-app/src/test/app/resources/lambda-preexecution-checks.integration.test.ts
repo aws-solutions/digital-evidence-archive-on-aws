@@ -4,14 +4,16 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
+import { NotFoundError } from '../../../app/exceptions/not-found-exception';
 import { runPreExecutionChecks } from '../../../app/resources/dea-lambda-utils';
+import { IdentityType } from '../../../app/services/audit-service';
 import { getTokenPayload } from '../../../cognito-token-helpers';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { getUserByTokenId, listUsers } from '../../../persistence/user';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { testEnv } from '../../../test-e2e/helpers/settings';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, dummyEvent, getDummyAuditEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -46,11 +48,15 @@ describe('lambda pre-execution checks', () => {
     );
     event.headers['idToken'] = idToken;
 
+    const auditEvent = getDummyAuditEvent();
+
     // Check user with token is NOT in DB (e.g. first-time federation)
     expect(await getUserByTokenId(tokenId, repositoryProvider)).toBeUndefined();
 
     // run the pre-checks
-    await runPreExecutionChecks(event, dummyContext, repositoryProvider);
+    await runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider);
+
+    expect(auditEvent.actorIdentity.idType).toEqual(IdentityType.FULL_USER_ID);
 
     // user should have been added to the DB
     const user = await getUserByTokenId(tokenId, repositoryProvider);
@@ -81,7 +87,9 @@ describe('lambda pre-execution checks', () => {
       }
     );
     event2.headers['idToken'] = idToken2;
-    await runPreExecutionChecks(event2, dummyContext, repositoryProvider);
+
+    const auditEvent2 = getDummyAuditEvent();
+    await runPreExecutionChecks(event2, dummyContext, auditEvent2, repositoryProvider);
 
     const user2 = await getUserByTokenId(tokenId2, repositoryProvider);
     expect(user2).toBeDefined();
@@ -107,6 +115,24 @@ describe('lambda pre-execution checks', () => {
     expect(users[0].tokenId).toStrictEqual(tokenId);
     expect(users[0].ulid).toStrictEqual(user2?.ulid);
   }, 10000);
+
+  it('should throw if no cognitoId is included in the request', async () => {
+    const event = Object.assign(
+      {},
+      {
+        ...dummyEvent,
+      }
+    );
+
+    event.requestContext.identity.cognitoIdentityId = null;
+
+    const auditEvent = getDummyAuditEvent();
+
+    // run the pre-checks
+    await expect(runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider)).rejects.toThrow(
+      NotFoundError
+    );
+  });
 
   it('should log successful and unsuccessful logins/api invocations', () => {
     /* TODO */
