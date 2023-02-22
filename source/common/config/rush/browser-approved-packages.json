@@ -35,6 +35,10 @@
       "allowedCategories": ["production", "prototypes"]
     },
     {
+      "name": "@aws-sdk/client-cloudwatch-logs",
+      "allowedCategories": ["production"]
+    },
+    {
       "name": "@aws-sdk/client-cognito-identity",
       "allowedCategories": ["production"]
     },
@@ -120,6 +124,10 @@
     },
     {
       "name": "@aws/dea-ui-infrastructure",
+      "allowedCategories": ["production"]
+    },
+    {
+      "name": "@aws/workbench-core-audit",
       "allowedCategories": ["production"]
     },
     {

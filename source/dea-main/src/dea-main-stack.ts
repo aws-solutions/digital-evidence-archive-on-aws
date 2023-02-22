@@ -6,6 +6,7 @@
 /* eslint-disable no-new */
 import {
   createCfnOutput,
+  DeaAuditTrail,
   DeaAuthConstruct,
   DeaBackendConstruct,
   deaConfig,
@@ -45,6 +46,11 @@ export class DeaMainStack extends cdk.Stack {
 
     const region = this.region;
     const accountId = this.account;
+
+    const auditTrail = new DeaAuditTrail(this, 'DeaAudit', {
+      kmsKey,
+    });
+
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
       deaTableArn: backendConstruct.deaTable.tableArn,
       deaTableName: backendConstruct.deaTable.tableName,
@@ -53,6 +59,11 @@ export class DeaMainStack extends cdk.Stack {
       kmsKey,
       region,
       accountId,
+      lambdaEnv: {
+        AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
+        TABLE_NAME: backendConstruct.deaTable.tableName,
+        DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
+      },
     });
 
     new DeaAuthConstruct(this, 'DeaAuth', {

@@ -6,7 +6,7 @@ Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest 
 
 | Statements                                                                               | Branches                                                                             | Functions                                                                              | Lines                                                                          |
 | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| ![Statements](https://img.shields.io/badge/statements-96.78%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-87.61%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-92.23%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-96.82%25-brightgreen.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-96.69%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-87.29%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-92.45%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-96.72%25-brightgreen.svg?style=flat) |
 
 
 ## Project Setup
@@ -40,6 +40,32 @@ rush cupdate
 
 ```
 git defender --setup
+```
+
+## CDK Policy Customization
+By default, the policies that CDK boostraps with are too permissive, so we recommend customizing the cdkCFExecutionPolicy. This is done using a policy document, ([cdkCFExecutionPolicy.json](.github/cdkCFExecutionPolicy.json))
+First, create the customized policy, via the aws cli:
+```
+aws iam create-policy \
+  --policy-name cdkCFExecutionPolicy \
+  --policy-document file://../../.github/cdkCFExecutionPolicy.json
+```
+Then boostrap your account, specifying the custom policy:
+```
+ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+cdk bootstrap aws://$ACCOUNT_ID/$AWS_REGION \
+  --cloudformation-execution-policies "arn:aws:iam::$ACCOUNT_ID:policy/cdkCFExecutionPolicy"
+```
+At this point your CDK deployments will use the customized policy!
+If you need to update the policy, simply modify the JSON file, and create a policy version, setting it as the default 
+> :warning: There is a limit to the number of policy versions.
+> Prior to creating a new version, you may need to list, and delete an existing version
+```
+ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+aws iam create-policy-version \
+  --policy-arn arn:aws:iam::$ACCOUNT_ID:policy/cdkCFExecutionPolicy \
+  --policy-document file://../../.github/cdkCFExecutionPolicy.json \
+  --set-as-default
 ```
 
 ## Local Environment Setup

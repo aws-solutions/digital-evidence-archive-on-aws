@@ -5,6 +5,7 @@
 
 import path from 'path';
 import { RemovalPolicy } from 'aws-cdk-lib';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import convict from 'convict';
 // https://www.npmjs.com/package/convict
 
@@ -151,6 +152,7 @@ interface DEAConfig {
   isTestStack(): boolean;
   userGroups(): DEAUserPoolGroupDefinition[];
   retainPolicy(): RemovalPolicy;
+  retentionDays(): RetentionDays;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -164,6 +166,7 @@ export const deaConfig: DEAConfig = {
   isTestStack: () => convictConfig.get('testStack'),
   userGroups: () => convictConfig.get('userGroups'),
   retainPolicy: () => (convictConfig.get('testStack') ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN),
+  retentionDays: () => (convictConfig.get('testStack') ? RetentionDays.TWO_WEEKS : RetentionDays.INFINITE),
 };
 
 export const loadConfig = (stage: string): void => {
