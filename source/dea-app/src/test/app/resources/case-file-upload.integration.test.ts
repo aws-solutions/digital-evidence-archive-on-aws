@@ -15,7 +15,7 @@ import {
   PutObjectLegalHoldCommand,
   ObjectLockLegalHoldStatus,
 } from '@aws-sdk/client-s3';
-import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import { APIGatewayProxyResult } from 'aws-lambda';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { createCases } from '../../../app/resources/create-cases';
@@ -338,7 +338,7 @@ async function callInitiateCaseFileUpload(
   filePath: string = FILE_PATH,
   contentType: string = CONTENT_TYPE,
   fileSizeMb: number = FILE_SIZE_MB
-): Promise<APIGatewayProxyStructuredResultV2> {
+): Promise<APIGatewayProxyResult> {
   const event = Object.assign(
     {},
     {
@@ -405,7 +405,7 @@ async function callCompleteCaseFileUpload(
   filePath: string = FILE_PATH,
   uploadId: string = UPLOAD_ID,
   sha256Hash: string = SHA256_HASH
-): Promise<APIGatewayProxyStructuredResultV2> {
+): Promise<APIGatewayProxyResult> {
   const event = Object.assign(
     {},
     {
@@ -424,7 +424,7 @@ async function callCompleteCaseFileUpload(
 }
 
 async function validateApiResponse(
-  response: APIGatewayProxyStructuredResultV2,
+  response: APIGatewayProxyResult,
   fileName: string,
   caseUlid: string,
   filePath: string,

@@ -4,14 +4,14 @@
  */
 
 import { NOT_FOUND_ERROR_NAME, VALIDATION_ERROR_NAME, FORBIDDEN_ERROR_NAME } from '@aws/dea-app';
-import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import { APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
 import { logger } from '../logger';
 
 // If you have a new error case that you want to support, create a new Class that extends Error
 // and add a handler here that responds with an appropriate status code.
 
-export type ExceptionHandler = (error: Error) => Promise<APIGatewayProxyStructuredResultV2>;
+export type ExceptionHandler = (error: Error) => Promise<APIGatewayProxyResult>;
 
 const notFoundHandler: ExceptionHandler = async (error) => {
   return {
