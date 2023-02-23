@@ -120,7 +120,7 @@ describe('update cases resource', () => {
         pathParameters: {
           caseId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
         },
-        body: undefined,
+        body: null,
       }
     );
 

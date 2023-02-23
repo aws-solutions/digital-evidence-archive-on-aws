@@ -4,13 +4,13 @@
  */
 
 import { dummyContext, dummyEvent, ForbiddenError, NotFoundError, ValidationError } from '@aws/dea-app';
-import { APIGatewayProxyEventV2, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import Joi from 'joi';
 import { createDeaHandler, NO_ACL } from '../../handlers/create-dea-handler';
 
 describe('exception handlers', () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const preExecutionChecks = async (event: APIGatewayProxyEventV2, context: Context) => {
+  const preExecutionChecks = async (event: APIGatewayProxyEvent, context: Context) => {
     return;
   };
 

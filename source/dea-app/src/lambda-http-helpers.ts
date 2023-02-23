@@ -3,12 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import Joi from 'joi';
 import { ValidationError } from './app/exceptions/validation-exception';
 import { logger } from './logger';
 
-export const getRequiredPathParam = (event: APIGatewayProxyEventV2, paramName: string): string => {
+export const getRequiredPathParam = (event: APIGatewayProxyEvent, paramName: string): string => {
   if (event.pathParameters) {
     const value = event.pathParameters[paramName];
     if (value) {
@@ -17,14 +17,14 @@ export const getRequiredPathParam = (event: APIGatewayProxyEventV2, paramName: s
   }
 
   logger.error('Required path param missing', {
-    rawPath: event.rawPath,
+    rawPath: event.path,
     pathParams: JSON.stringify(event.pathParameters),
   });
   throw new ValidationError(`Required path param '${paramName}' is missing.`);
 };
 
 export function getRequiredPayload<T>(
-  event: APIGatewayProxyEventV2,
+  event: APIGatewayProxyEvent,
   typeName: string,
   validationSchema: Joi.ObjectSchema
 ): T {
@@ -37,7 +37,7 @@ export function getRequiredPayload<T>(
   return payload;
 }
 
-export const getRequiredHeader = (event: APIGatewayProxyEventV2, headerName: string): string => {
+export const getRequiredHeader = (event: APIGatewayProxyEvent, headerName: string): string => {
   let value = event.headers[headerName];
   if (value) {
     return value;
@@ -54,13 +54,13 @@ export const getRequiredHeader = (event: APIGatewayProxyEventV2, headerName: str
   }
 
   logger.error(`Required header missing: ${headerName}`, {
-    rawPath: event.rawPath,
+    rawPath: event.path,
     headers: JSON.stringify(event.headers),
   });
   throw new ValidationError(`Required header '${headerName}' is missing.`);
 };
 
-export const getUserUlid = (event: APIGatewayProxyEventV2): string => {
+export const getUserUlid = (event: APIGatewayProxyEvent): string => {
   const maybeUserUlid = event.headers['userUlid'];
   if (maybeUserUlid) {
     return maybeUserUlid;
