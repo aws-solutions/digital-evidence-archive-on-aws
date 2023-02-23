@@ -128,10 +128,10 @@ describe('Test initiate case file upload', () => {
   it('Initiate upload should throw an exception when case-file exists', async () => {
     const activeFileName = 'initiateActiveFile';
     const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate(caseToUploadTo, activeFileName);
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     await callCompleteCaseFileUpload(
       EVENT,
       repositoryProvider,
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       caseFile.ulid as string,
       caseToUploadTo,
       activeFileName
@@ -261,9 +261,9 @@ describe('Test initiate case file upload', () => {
 
 async function initiateCaseFileUploadAndValidate(caseUlid: string, fileName: string): Promise<DeaCaseFile> {
   const deaCaseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseUlid, fileName);
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   await validateCaseFile(
     deaCaseFile,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     deaCaseFile.ulid as string,
     caseUlid,
     fileUploader.ulid,

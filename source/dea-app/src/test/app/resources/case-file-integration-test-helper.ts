@@ -12,6 +12,7 @@ import { createCases } from '../../../app/resources/create-cases';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
 import { getCaseFileDetails } from '../../../app/resources/get-case-file-details';
 import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
+import { listCaseFiles } from '../../../app/resources/list-case-files';
 import { DeaCase } from '../../../models/case';
 import { DeaCaseFile } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
@@ -168,6 +169,27 @@ export const callGetCaseFileDetails = async (
     }
   );
   const response = await getCaseFileDetails(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
+  await checkApiSucceeded(response);
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return JSON.parse(response.body as string);
+};
+
+export const callListCaseFiles = async (
+  baseEvent: APIGatewayProxyEventV2,
+  repositoryProvider: ModelRepositoryProvider,
+  caseId: string
+): Promise<DeaCaseFile> => {
+  const event = Object.assign(
+    {},
+    {
+      ...baseEvent,
+      pathParameters: {
+        caseId,
+      },
+    }
+  );
+  const response = await listCaseFiles(event, dummyContext, repositoryProvider);
   await checkApiSucceeded(response);
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

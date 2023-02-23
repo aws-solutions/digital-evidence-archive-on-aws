@@ -5,7 +5,9 @@
 
 import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { defaultProvider } from '../../persistence/schema/entities';
+import { NotFoundError } from '../exceptions/not-found-exception';
 import { listCaseFilesByFilePath } from '../services/case-file-service';
+import { getCase } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { getNextToken } from './get-next-token';
 
@@ -30,7 +32,11 @@ export const listCaseFiles: DEAGatewayProxyHandler = async (
   }
 
   const caseId = getRequiredPathParam(event, 'caseId');
-  // todo: make sure case exists
+
+  const deaCase = await getCase(caseId, repositoryProvider);
+  if (!deaCase) {
+    throw new NotFoundError(`Could not find case: ${caseId} in the DB`);
+  }
 
   let nextToken: object | undefined = undefined;
   if (next) {
