@@ -3,7 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getRequiredPathParam } from '../../lambda-http-helpers';
+import Joi from 'joi';
+import { getPaginationParameters, getRequiredPathParam } from '../../lambda-http-helpers';
+import { joiUlid, filePath as filePathRegex } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { listCaseFilesByFilePath } from '../services/case-file-service';
@@ -18,39 +20,28 @@ export const listCaseFiles: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  let limit: number | undefined;
-  let next: string | undefined;
   let filePath = '/';
   if (event.queryStringParameters) {
-    if (event.queryStringParameters['limit']) {
-      limit = parseInt(event.queryStringParameters['limit']);
-    }
-    next = event.queryStringParameters['next'];
     if (event.queryStringParameters['filePath']) {
       filePath = event.queryStringParameters['filePath'];
+      Joi.assert(filePath, filePathRegex);
     }
   }
+  const paginationParams = getPaginationParameters(event);
 
-  const caseId = getRequiredPathParam(event, 'caseId');
-
+  const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const deaCase = await getCase(caseId, repositoryProvider);
   if (!deaCase) {
     throw new NotFoundError(`Could not find case: ${caseId} in the DB`);
   }
 
-  let nextToken: object | undefined = undefined;
-  if (next) {
-    nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
-  }
-
   const pageOfCaseFiles = await listCaseFilesByFilePath(
     caseId,
     filePath,
-    limit,
+    paginationParams.limit,
     repositoryProvider,
-    nextToken
+    paginationParams.nextToken
   );
-
   return {
     statusCode: 200,
     body: JSON.stringify({

@@ -8,6 +8,7 @@ import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { getRequiredPathParam, getUserUlid } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { CaseAction } from '../../models/case-action';
+import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider, ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { getCaseUser } from '../services/case-user-service';
@@ -64,5 +65,5 @@ const userForbidden = (
 };
 
 const getRequiredCaseIdFromPath = (event: APIGatewayProxyEventV2): string => {
-  return getRequiredPathParam(event, 'caseId');
+  return getRequiredPathParam(event, 'caseId', joiUlid);
 };

@@ -6,6 +6,7 @@
 import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { caseUserSchema } from '../../models/validation/case-user';
+import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import { updateCaseUserMembershipFromDTO } from '../services/case-user-service';
@@ -18,8 +19,8 @@ export const updateCaseMembership: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  const caseId = getRequiredPathParam(event, 'caseId');
-  const userId = getRequiredPathParam(event, 'userId');
+  const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
+  const userId = getRequiredPathParam(event, 'userId', joiUlid);
 
   const caseUser: CaseUserDTO = getRequiredPayload(event, 'CaseUser', caseUserSchema);
 

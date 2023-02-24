@@ -9,25 +9,24 @@ import { S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client
 
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { getCaseFileDetails } from '../../../app/resources/get-case-file-details';
-import { DeaCaseFile } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { dummyContext, dummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
-  callCompleteCaseFileUpload,
   callCreateCase,
   callCreateUser,
-  callGetCaseFileDetails,
   callInitiateCaseFileUpload,
+  callListCaseFiles,
+  ResponseCaseFilePage,
   validateCaseFile,
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
 let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 let fileDescriber: DeaUser;
-let caseToDescribe = '';
+let caseToList = '';
 
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
 const UPLOAD_ID = '123456';
@@ -36,14 +35,14 @@ const EVENT = dummyEvent;
 
 jest.setTimeout(20000);
 
-describe('Test get case file details', () => {
+describe('Test list case files', () => {
   beforeAll(async () => {
-    repositoryProvider = await getTestRepositoryProvider('GetCaseFileDetailsTest');
+    repositoryProvider = await getTestRepositoryProvider('ListCaseFilesTest');
 
     fileDescriber = await callCreateUser(repositoryProvider);
     EVENT.headers['userUlid'] = fileDescriber.ulid;
 
-    caseToDescribe = (await callCreateCase(EVENT, repositoryProvider)).ulid ?? fail();
+    caseToList = (await callCreateCase(EVENT, repositoryProvider)).ulid ?? fail();
   });
 
   afterAll(async () => {
@@ -58,19 +57,88 @@ describe('Test get case file details', () => {
     });
   });
 
-  it('Get-file-details should successfully get file details', async () => {
-    let caseFile: DeaCaseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToDescribe);
+  it('List case-files should successfully get case-files', async () => {
+    const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToList);
+    const caseFileList: ResponseCaseFilePage = await callListCaseFiles(EVENT, repositoryProvider, caseToList);
+    expect(caseFileList.cases.length).toEqual(1);
+    expect(caseFileList.next).toBeUndefined();
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const fileId = caseFile.ulid as string;
-    caseFile = await callGetCaseFileDetails(EVENT, repositoryProvider, fileId, caseToDescribe);
-    await validateCaseFile(caseFile, fileId, caseToDescribe, fileDescriber.ulid, CaseFileStatus.PENDING);
-
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDescribe);
-    caseFile = await callGetCaseFileDetails(EVENT, repositoryProvider, fileId, caseToDescribe);
-    await validateCaseFile(caseFile, fileId, caseToDescribe, fileDescriber.ulid, CaseFileStatus.ACTIVE);
+    await validateCaseFile(caseFileList.cases[0], caseFile.ulid as string, caseToList, fileDescriber.ulid);
   });
 
-  it('Get-file-details should throw a validation exception when case-id path param missing', async () => {
+  it('List case-files should successfully get case-files with pagination', async () => {
+    const filePath = '/';
+    const caseFile1 = await callInitiateCaseFileUpload(
+      EVENT,
+      repositoryProvider,
+      caseToList,
+      'file1',
+      filePath
+    );
+    const caseFile2 = await callInitiateCaseFileUpload(
+      EVENT,
+      repositoryProvider,
+      caseToList,
+      'file2',
+      filePath
+    );
+    const caseFileList1: ResponseCaseFilePage = await callListCaseFiles(
+      EVENT,
+      repositoryProvider,
+      caseToList,
+      '1',
+      filePath
+    );
+    expect(caseFileList1.cases.length).toEqual(1);
+    expect(caseFileList1.next).toBeDefined();
+
+    const caseFileList2: ResponseCaseFilePage = await callListCaseFiles(
+      EVENT,
+      repositoryProvider,
+      caseToList,
+      '30',
+      filePath,
+      caseFileList1.next
+    );
+    expect(caseFileList2.cases.length).toEqual(1);
+    expect(caseFileList2.next).toBeUndefined();
+
+    // OK to assume that casefile1 is returned before casefile2 because GSI sorts by filename
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    await validateCaseFile(
+      caseFileList1.cases[0],
+      caseFile1.ulid as string,
+      caseToList,
+      fileDescriber.ulid,
+      CaseFileStatus.PENDING,
+      'file1',
+      filePath
+    );
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    await validateCaseFile(
+      caseFileList2.cases[0],
+      caseFile2.ulid as string,
+      caseToList,
+      fileDescriber.ulid,
+      CaseFileStatus.PENDING,
+      'file2',
+      filePath
+    );
+  });
+
+  it('List case-files should successfully get case-files with no results', async () => {
+    const caseFileList: ResponseCaseFilePage = await callListCaseFiles(
+      EVENT,
+      repositoryProvider,
+      caseToList,
+      '30',
+      '/noresult/'
+    );
+    expect(caseFileList.cases.length).toEqual(0);
+    expect(caseFileList.next).toBeUndefined();
+  });
+
+  it('List case-files should throw a validation exception when case-id path param missing', async () => {
     const event = Object.assign(
       {},
       {
@@ -85,24 +153,10 @@ describe('Test get case file details', () => {
     );
   });
 
-  it('Get-file-details should throw a validation exception when file-id path param missing', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...EVENT,
-        pathParameters: {
-          caseId: FILE_ULID,
-        },
-      }
+  it('List case-files should throw an exception when case does not exist in DB', async () => {
+    // use a bogus ULID
+    await expect(callListCaseFiles(EVENT, repositoryProvider, FILE_ULID)).rejects.toThrow(
+      `Could not find case: ${FILE_ULID} in the DB`
     );
-    await expect(getCaseFileDetails(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      `Required path param 'fileId' is missing.`
-    );
-  });
-
-  it("Get-file-details should throw an exception when case-file doesn't exist", async () => {
-    await expect(
-      callGetCaseFileDetails(EVENT, repositoryProvider, FILE_ULID, caseToDescribe)
-    ).rejects.toThrow(`Could not find file: ${FILE_ULID} in the DB`);
   });
 });

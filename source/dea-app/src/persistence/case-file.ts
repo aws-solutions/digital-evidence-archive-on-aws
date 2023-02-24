@@ -98,8 +98,7 @@ export const listCaseFilesByFilePath = async (
   const caseFiles: Paged<DeaCaseFile> = caseFileEntities
     .map((entity) => caseFileFromEntity(entity))
     .filter(isDefined);
-  caseFiles.count = caseFileEntities.count;
+  caseFiles.count = caseFileEntities.length;
   caseFiles.next = caseFileEntities.next;
-
   return caseFiles;
 };

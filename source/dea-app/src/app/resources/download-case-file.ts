@@ -5,6 +5,7 @@
 
 import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { CaseFileStatus } from '../../models/case-file-status';
+import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider, getPresignedUrlForDownload } from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
@@ -21,8 +22,8 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   datasetsProvider = defaultDatasetsProvider
 ) => {
-  const caseId = getRequiredPathParam(event, 'caseId');
-  const fileId = getRequiredPathParam(event, 'fileId');
+  const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
+  const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
 
   const retrievedCaseFile = await getCaseFile(caseId, fileId, repositoryProvider);
   if (!retrievedCaseFile) {

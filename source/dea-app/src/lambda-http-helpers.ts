@@ -7,11 +7,40 @@ import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import Joi from 'joi';
 import { ValidationError } from './app/exceptions/validation-exception';
 import { logger } from './logger';
+import { base64String, paginationLimit } from './models/validation/joi-common';
 
-export const getRequiredPathParam = (event: APIGatewayProxyEventV2, paramName: string): string => {
+export interface PaginationParams {
+  limit: number | undefined;
+  nextToken: object | undefined;
+}
+
+export const getPaginationParameters = (event: APIGatewayProxyEventV2): PaginationParams => {
+  let limit: number | undefined;
+  let next: string | undefined;
+  let nextToken: object | undefined = undefined;
+  if (event.queryStringParameters) {
+    if (event.queryStringParameters['limit']) {
+      limit = parseInt(event.queryStringParameters['limit']);
+      Joi.assert(limit, paginationLimit);
+    }
+    if (event.queryStringParameters['next']) {
+      next = event.queryStringParameters['next'];
+      Joi.assert(next, base64String);
+      nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
+    }
+  }
+  return { limit, nextToken };
+};
+
+export const getRequiredPathParam = (
+  event: APIGatewayProxyEventV2,
+  paramName: string,
+  validationSchema: Joi.StringSchema
+): string => {
   if (event.pathParameters) {
     const value = event.pathParameters[paramName];
     if (value) {
+      Joi.assert(value, validationSchema);
       return value;
     }
   }

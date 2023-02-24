@@ -22,6 +22,11 @@ import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { dummyContext } from '../../integration-objects';
 
+export type ResponseCaseFilePage = {
+  cases: DeaCaseFile[];
+  next: string | undefined;
+};
+
 const TOKEN_ID = 'CaseFile';
 const FIRST_NAME = 'CASE';
 const LAST_NAME = 'FILE';
@@ -178,8 +183,11 @@ export const callGetCaseFileDetails = async (
 export const callListCaseFiles = async (
   baseEvent: APIGatewayProxyEventV2,
   repositoryProvider: ModelRepositoryProvider,
-  caseId: string
-): Promise<DeaCaseFile> => {
+  caseId: string,
+  limit = '30',
+  filePath: string = FILE_PATH,
+  next?: string
+): Promise<ResponseCaseFilePage> => {
   const event = Object.assign(
     {},
     {
@@ -187,11 +195,15 @@ export const callListCaseFiles = async (
       pathParameters: {
         caseId,
       },
+      queryStringParameters: {
+        limit,
+        filePath,
+        next,
+      },
     }
   );
   const response = await listCaseFiles(event, dummyContext, repositoryProvider);
   await checkApiSucceeded(response);
-
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return JSON.parse(response.body as string);
 };
