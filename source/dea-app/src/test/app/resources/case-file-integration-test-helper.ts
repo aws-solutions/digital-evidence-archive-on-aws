@@ -6,7 +6,7 @@
 import 'aws-sdk-client-mock-jest';
 import { fail } from 'assert';
 import { S3Client } from '@aws-sdk/client-s3';
-import { APIGatewayProxyStructuredResultV2, APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyStructuredResultV2, APIGatewayProxyEvent } from 'aws-lambda';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { createCases } from '../../../app/resources/create-cases';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
@@ -49,7 +49,7 @@ const DATASETS_PROVIDER = {
 jest.setTimeout(20000);
 
 export const callInitiateCaseFileUpload = async (
-  baseEvent: APIGatewayProxyEventV2,
+  baseEvent: APIGatewayProxyEvent,
   repositoryProvider: ModelRepositoryProvider,
   caseUlid: string,
   fileName: string = FILE_NAME,
@@ -78,7 +78,7 @@ export const callInitiateCaseFileUpload = async (
 };
 
 export const callCompleteCaseFileUpload = async (
-  baseEvent: APIGatewayProxyEventV2,
+  baseEvent: APIGatewayProxyEvent,
   repositoryProvider: ModelRepositoryProvider,
   ulid: string,
   caseUlid: string,
@@ -109,7 +109,7 @@ export const callCompleteCaseFileUpload = async (
 };
 
 export const callDownloadCaseFile = async (
-  baseEvent: APIGatewayProxyEventV2,
+  baseEvent: APIGatewayProxyEvent,
   repositoryProvider: ModelRepositoryProvider,
   fileId: string,
   caseId: string
@@ -132,7 +132,7 @@ export const callDownloadCaseFile = async (
 };
 
 export const callCreateCase = async (
-  baseEvent: APIGatewayProxyEventV2,
+  baseEvent: APIGatewayProxyEvent,
   repositoryProvider: ModelRepositoryProvider,
   name: string = CASE_NAME,
   description: string = CASE_DESCRIPTION,
@@ -158,7 +158,7 @@ export const callCreateCase = async (
 };
 
 export const callGetCaseFileDetails = async (
-  baseEvent: APIGatewayProxyEventV2,
+  baseEvent: APIGatewayProxyEvent,
   repositoryProvider: ModelRepositoryProvider,
   fileId: string,
   caseId: string
@@ -181,7 +181,7 @@ export const callGetCaseFileDetails = async (
 };
 
 export const callListCaseFiles = async (
-  baseEvent: APIGatewayProxyEventV2,
+  baseEvent: APIGatewayProxyEvent,
   repositoryProvider: ModelRepositoryProvider,
   caseId: string,
   limit = '30',

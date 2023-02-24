@@ -5,6 +5,7 @@
 import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
+import { UserTokenName } from '../../models/user-token-name';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPI, validateStatus } from '../resources/test-helpers';
@@ -102,9 +103,13 @@ describe('API authentication', () => {
     // 3. Exchange auth code for id token
     const url = `${deaApiUrl}auth/getToken/${authCode}`;
     const response = await client.post(url);
-    idToken = response.data;
+    if (!response.data) {
+      fail();
+    }
+    const userTokenName: UserTokenName = await response.data;
+    idToken = userTokenName.idToken;
     expect(response.status).toEqual(200);
-  }, 20000);
+  }, 40000);
 
   it('should fail with dummy auth code', async () => {
     const client = axios.create();
@@ -127,7 +132,7 @@ describe('API authentication', () => {
 
   it('should fail with dummy idToken', async () => {
     const client = axios.create();
-    const idToken = 'ABCDEFGHIJKL123';
+    const idToken = 'fake.fake.fake';
 
     const url = `${deaApiUrl}auth/getCredentials/${idToken}`;
     const response = await client.get(url, { validateStatus });

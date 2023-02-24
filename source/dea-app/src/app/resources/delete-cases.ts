@@ -22,5 +22,6 @@ export const deleteCase: DEAGatewayProxyHandler = async (
 
   return {
     statusCode: 204,
+    body: '',
   };
 };

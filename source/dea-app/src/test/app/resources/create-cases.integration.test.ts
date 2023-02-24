@@ -4,7 +4,7 @@
  */
 
 import { fail } from 'assert';
-import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import { APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
 import { createCases } from '../../../app/resources/create-cases';
 import { getCaseUsersForUser } from '../../../app/services/case-user-service';
@@ -142,7 +142,7 @@ describe('create cases resource', () => {
       {},
       {
         ...dummyEvent,
-        body: undefined,
+        body: null,
       }
     );
     event.headers['userUlid'] = user.ulid;
@@ -240,7 +240,7 @@ async function validateAndReturnCase(
   name: string,
   description: string,
   status: string,
-  response: APIGatewayProxyStructuredResultV2
+  response: APIGatewayProxyResult
 ): Promise<DeaCase> {
   expect(response.statusCode).toEqual(200);
 

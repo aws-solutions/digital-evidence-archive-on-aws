@@ -7,6 +7,7 @@ import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { getCredentials } from '../../../app/resources/get-credentials';
 import { getToken } from '../../../app/resources/get-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
+import { UserTokenName } from '../../../models/user-token-name';
 
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { dummyContext, dummyEvent } from '../../integration-objects';
@@ -47,14 +48,17 @@ describe('get-credentials', () => {
       }
     );
 
-    const idToken = await getToken(event, dummyContext);
-
+    const tokenResponse = await getToken(event, dummyContext);
+    if (!tokenResponse.body) {
+      fail();
+    }
+    const userTokenName: UserTokenName = JSON.parse(tokenResponse.body);
     const credentialsEvent = Object.assign(
       {},
       {
         ...dummyEvent,
         pathParameters: {
-          idToken: idToken.body?.replace(/"/g, ''),
+          idToken: userTokenName.idToken,
         },
       }
     );

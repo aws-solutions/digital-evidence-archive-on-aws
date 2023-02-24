@@ -9,6 +9,7 @@ import {
   AccessLogFormat,
   AuthorizationType,
   Cors,
+  EndpointType,
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
@@ -24,6 +25,9 @@ import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway
 import { deaApiRouteConfig } from '../resources/dea-route-config';
 import { createCfnOutput } from './construct-support';
 
+interface LambdaEnvironment {
+  [key: string]: string;
+}
 interface DeaRestApiProps {
   deaTableArn: string;
   deaTableName: string;
@@ -32,6 +36,7 @@ interface DeaRestApiProps {
   kmsKey: Key;
   region: string;
   accountId: string;
+  lambdaEnv: LambdaEnvironment;
 }
 
 export class DeaRestApiConstruct extends Construct {
@@ -60,6 +65,9 @@ export class DeaRestApiConstruct extends Construct {
 
     this.deaRestApi = new RestApi(this, `dea-api`, {
       description: 'Backend API',
+      endpointConfiguration: {
+        types: [EndpointType.REGIONAL],
+      },
       deployOptions: {
         stageName: STAGE,
         accessLogDestination: new LogGroupLogDestination(accessLogGroup),
@@ -90,14 +98,10 @@ export class DeaRestApiConstruct extends Construct {
       },
     });
 
-    this._configureApiGateway(props.deaDatasetsBucketName, deaApiRouteConfig, props.deaTableName);
+    this._configureApiGateway(deaApiRouteConfig, props.lambdaEnv);
   }
 
-  private _configureApiGateway(
-    datasetsBucketName: string,
-    routeConfig: ApiGatewayRouteConfig,
-    deaTableName: string
-  ): void {
+  private _configureApiGateway(routeConfig: ApiGatewayRouteConfig, lambdaEnv: LambdaEnvironment): void {
     const plan = this.deaRestApi.addUsagePlan('DEA Usage Plan', {
       name: 'dea-usage-plan',
       throttle: {
@@ -116,17 +120,11 @@ export class DeaRestApiConstruct extends Construct {
     });
 
     routeConfig.routes.forEach((route) =>
-      this._addMethod(this.deaRestApi, route, this.lambdaBaseRole, deaTableName, datasetsBucketName)
+      this._addMethod(this.deaRestApi, route, this.lambdaBaseRole, lambdaEnv)
     );
   }
 
-  private _addMethod(
-    api: RestApi,
-    route: ApiGatewayRoute,
-    role: Role,
-    tableName: string,
-    datasetsBucketName: string
-  ): void {
+  private _addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, lambdaEnv: LambdaEnvironment): void {
     const urlParts = route.path.split('/').filter((str) => str);
     let parent = api.root;
     urlParts.forEach((part, index) => {
@@ -136,13 +134,7 @@ export class DeaRestApiConstruct extends Construct {
       }
 
       if (index === urlParts.length - 1) {
-        const lambda = this._createLambda(
-          `${route.httpMethod}_${part}`,
-          role,
-          route.pathToSource,
-          tableName,
-          datasetsBucketName
-        );
+        const lambda = this._createLambda(`${route.httpMethod}_${part}`, role, route.pathToSource, lambdaEnv);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let queryParams: any = {};
@@ -188,8 +180,7 @@ export class DeaRestApiConstruct extends Construct {
     id: string,
     role: Role,
     pathToSource: string,
-    tableName: string,
-    datasetsBucketName: string
+    lambdaEnv: LambdaEnvironment
   ): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
       memorySize: 512,
@@ -201,9 +192,8 @@ export class DeaRestApiConstruct extends Construct {
       depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
       environment: {
         NODE_OPTIONS: '--enable-source-maps',
-        TABLE_NAME: tableName,
-        DATASETS_BUCKET_NAME: datasetsBucketName,
         STAGE: deaConfig.stage(),
+        ...lambdaEnv,
       },
       bundling: {
         externalModules: ['aws-sdk'],

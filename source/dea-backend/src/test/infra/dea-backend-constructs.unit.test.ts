@@ -9,6 +9,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import 'source-map-support/register';
 import { convictConfig } from '../../config';
+import { DeaAuditTrail } from '../../constructs/dea-audit-trail';
 import { DeaAuthConstruct } from '../../constructs/dea-auth';
 import { DeaBackendConstruct } from '../../constructs/dea-backend-stack';
 import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
@@ -44,6 +45,9 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       accessLogsPrefixes: ['dea-ui-access-log'],
     });
+    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
+      kmsKey: key,
+    });
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
@@ -52,6 +56,11 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       region: stack.region,
       accountId: stack.account,
+      lambdaEnv: {
+        AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
+        TABLE_NAME: backend.deaTable.tableName,
+        DATASETS_BUCKET_NAME: backend.datasetsBucket.bucketName,
+      },
     });
 
     // Prepare the stack for assertions.
@@ -102,6 +111,9 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       accessLogsPrefixes: ['dea-ui-access-log'],
     });
+    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
+      kmsKey: key,
+    });
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
@@ -110,6 +122,11 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       region: stack.region,
       accountId: stack.account,
+      lambdaEnv: {
+        AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
+        TABLE_NAME: backend.deaTable.tableName,
+        DATASETS_BUCKET_NAME: backend.datasetsBucket.bucketName,
+      },
     });
 
     const apiEndpointArns = new Map([

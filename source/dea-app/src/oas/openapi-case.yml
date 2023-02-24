@@ -586,7 +586,7 @@ components:
           type: string
         ulid:
           type: string
-        s3Identifier:
+        uploadId:
           type: string
         isFile:
           type: boolean
@@ -601,7 +601,9 @@ components:
       properties:
         caseId:
           type: string
-        s3Identifier:
+        uploadId:
+          type: string
+        versionId:
           type: string
         presignedUrls:
           type: array
