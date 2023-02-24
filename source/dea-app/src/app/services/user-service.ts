@@ -4,12 +4,12 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
-import { DeaUser } from '../../models/user';
+import { DeaUser, DeaUserInput } from '../../models/user';
 import { defaultProvider } from '../../persistence/schema/entities';
 import * as UserPersistence from '../../persistence/user';
 
 export const createUser = async (
-  user: DeaUser,
+  user: DeaUserInput,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider

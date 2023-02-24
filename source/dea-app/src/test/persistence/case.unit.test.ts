@@ -4,7 +4,7 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
-import { DeaCase } from '../../models/case';
+import { DeaCase, DeaCaseInput } from '../../models/case';
 import { OWNER_ACTIONS } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
 import { DeaUser } from '../../models/user';
@@ -40,11 +40,8 @@ describe('case persistence', () => {
         repositoryProvider
       )) ?? fail();
     testCase =
-      (await createCase(
-        { name: 'TheCase', status: CaseStatus.ACTIVE, description: 'TheDescription' },
-        caseOwner,
-        repositoryProvider
-      )) ?? fail();
+      (await createCase({ name: 'TheCase', description: 'TheDescription' }, caseOwner, repositoryProvider)) ??
+      fail();
     caseUlid = testCase.ulid ?? fail();
 
     //list endpoints
@@ -121,11 +118,9 @@ describe('case persistence', () => {
   });
 
   it('should throw an exception when invalid characters are used', async () => {
-    const currentTestCase: DeaCase = {
+    const currentTestCase: DeaCaseInput = {
       name: '<case></case>',
-      status: CaseStatus.ACTIVE,
       description: 'In a PD far far away',
-      objectCount: 0,
     };
 
     await expect(createCase(currentTestCase, caseOwner, repositoryProvider)).rejects.toThrow(
@@ -134,11 +129,9 @@ describe('case persistence', () => {
   });
 
   it('should create a case, get and update it', async () => {
-    const currentTestCase: DeaCase = {
+    const currentTestCase: DeaCaseInput = {
       name: 'Case Wars',
-      status: CaseStatus.ACTIVE,
       description: 'In a PD far far away',
-      objectCount: 0,
     };
 
     const createdCase = await createCase(currentTestCase, caseOwner, repositoryProvider);
@@ -149,6 +142,7 @@ describe('case persistence', () => {
       ulid: createdCase?.ulid,
       created: createdCase?.created,
       updated: createdCase?.updated,
+      status: CaseStatus.ACTIVE,
       ...currentTestCase,
     };
     expect(readCase).toEqual(caseCheck);
@@ -174,32 +168,21 @@ describe('case persistence', () => {
   });
 
   async function createListData(): Promise<void> {
-    listCase1 =
-      (await createCase(
-        { name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE },
-        caseOwner,
-        repositoryProvider
-      )) ?? fail();
+    listCase1 = (await createCase({ name: '2001: A Case Odyssey' }, caseOwner, repositoryProvider)) ?? fail();
     listCase1Ulid = listCase1.ulid ?? fail();
     listCase1Created = listCase1.created ?? fail();
     listCase1Updated = listCase1.updated ?? fail();
     listCase2 =
-      (await createCase(
-        { name: 'Between a rock and a hard case', status: CaseStatus.ACTIVE },
-        caseOwner,
-        repositoryProvider
-      )) ?? fail();
+      (await createCase({ name: 'Between a rock and a hard case' }, caseOwner, repositoryProvider)) ?? fail();
     listCase2Ulid = listCase2.ulid ?? fail();
     listCase2Created = listCase2.created ?? fail();
     listCase2Updated = listCase2.updated ?? fail();
   }
 
   it('should create a case, get and delete it', async () => {
-    const currentTestCase: DeaCase = {
+    const currentTestCase: DeaCaseInput = {
       name: 'CaseMcCaseface',
-      status: CaseStatus.ACTIVE,
       description: 'some days some nights',
-      objectCount: 0,
     };
 
     const createdCase = await createCase(currentTestCase, caseOwner, repositoryProvider);
@@ -210,6 +193,7 @@ describe('case persistence', () => {
       ulid: createdCase?.ulid,
       created: createdCase?.created,
       updated: createdCase?.updated,
+      status: CaseStatus.ACTIVE,
       ...currentTestCase,
     };
     expect(readCase).toEqual(caseCheck);
@@ -220,22 +204,5 @@ describe('case persistence', () => {
     const nullCase = await getCase(createdCase?.ulid ?? fail(), undefined, repositoryProvider);
 
     expect(nullCase).toBeFalsy();
-  });
-
-  it('cannot create if the owner is missing a ulid', async () => {
-    const currentTestCase: DeaCase = {
-      name: 'CaseMcCaseface',
-      status: CaseStatus.ACTIVE,
-      description: 'some days some nights',
-      objectCount: 0,
-    };
-
-    await expect(
-      createCase(
-        currentTestCase,
-        { ulid: undefined, tokenId: '', firstName: '', lastName: '' },
-        repositoryProvider
-      )
-    ).rejects.toThrow();
   });
 });

@@ -4,6 +4,7 @@
  */
 
 import { getRequiredPathParam } from '../../lambda-http-helpers';
+import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { deleteCaseUser } from '../services/case-user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -15,8 +16,8 @@ export const deleteCaseMembership: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  const caseId = getRequiredPathParam(event, 'caseId');
-  const userId = getRequiredPathParam(event, 'userId');
+  const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
+  const userId = getRequiredPathParam(event, 'userId', joiUlid);
 
   const caseUserResult = await deleteCaseUser(userId, caseId, repositoryProvider);
   return {

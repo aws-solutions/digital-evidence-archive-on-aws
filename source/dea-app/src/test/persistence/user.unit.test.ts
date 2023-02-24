@@ -4,7 +4,7 @@
  */
 
 import { Paged, Table } from 'dynamodb-onetable';
-import { DeaUser } from '../../models/user';
+import { DeaUser, DeaUserInput } from '../../models/user';
 import { UserModelRepositoryProvider } from '../../persistence/schema/entities';
 import { createUser, deleteUser, getUser, listUsers, updateUser } from '../../persistence/user';
 import { initLocalDb } from './local-db-table';
@@ -26,34 +26,30 @@ describe('user persistence', () => {
     const lastName = 'Zissou';
     const tokenId = 'stevezissou';
 
-    const expectedUser: DeaUser = {
+    const expectedUser: DeaUserInput = {
       tokenId,
       firstName,
       lastName,
     };
 
     const createdUser = await createUser(expectedUser, modelProvider);
-    if (!createdUser || !createdUser.ulid) {
-      fail();
-    } else {
-      expect(createdUser).toEqual({
-        ...expectedUser,
-        ulid: createdUser.ulid,
-        created: createdUser.created,
-        updated: createdUser.updated,
-      });
+    expect(createdUser).toEqual({
+      ...expectedUser,
+      ulid: createdUser.ulid,
+      created: createdUser.created,
+      updated: createdUser.updated,
+    });
 
-      const deaUser = await getUser(createdUser.ulid, modelProvider);
+    const deaUser = await getUser(createdUser.ulid, modelProvider);
 
-      expect(deaUser).toEqual({
-        ...expectedUser,
-        ulid: createdUser.ulid,
-        created: createdUser.created,
-        updated: createdUser.updated,
-      });
+    expect(deaUser).toEqual({
+      ...expectedUser,
+      ulid: createdUser.ulid,
+      created: createdUser.created,
+      updated: createdUser.updated,
+    });
 
-      await deleteAndVerifyUser(createdUser.ulid, modelProvider);
-    }
+    await deleteAndVerifyUser(createdUser.ulid, modelProvider);
   });
 
   it('should return undefined if a user is not found', async () => {
@@ -80,10 +76,6 @@ describe('user persistence', () => {
       },
       modelProvider
     );
-
-    if (!user1 || !user2 || !user1.ulid || !user2.ulid) {
-      fail();
-    }
 
     const expectedUsers: Paged<DeaUser> = [
       {
@@ -124,17 +116,13 @@ describe('user persistence', () => {
     const updatedFirstName = 'Rip';
     const updatedLastName = 'Van Winkle';
 
-    const deaUser: DeaUser = {
+    const deaUser: DeaUserInput = {
       tokenId,
       firstName,
       lastName,
     };
 
     const createdUser = await createUser(deaUser, modelProvider);
-    if (!createdUser || !createdUser.ulid) {
-      //truthy expectation doesn't update createdUser type
-      fail();
-    }
     expect(createdUser).toEqual({
       ...deaUser,
       ulid: createdUser.ulid,

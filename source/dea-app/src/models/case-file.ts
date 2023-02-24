@@ -16,10 +16,10 @@ export interface DeaCaseFile {
   readonly ulid?: string; // ulid will not exist before case-file is persisted
   readonly contentType?: string;
   readonly sha256Hash?: string;
-  readonly contentPath?: string;
   uploadId?: string;
   presignedUrls?: ReadonlyArray<string>;
   ttl?: number;
+  versionId?: string;
   readonly created?: Date;
   readonly updated?: Date;
 }

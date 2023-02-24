@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { getPaginationParameters } from '../../lambda-http-helpers';
 import { defaultProvider } from '../../persistence/schema/entities';
 import * as UserService from '../services/user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -15,23 +16,18 @@ export const getUsers: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  let limit: number | undefined;
-  let next: string | undefined;
   let nameBeginsWith: string | undefined;
   if (event.queryStringParameters) {
-    if (event.queryStringParameters['limit']) {
-      limit = parseInt(event.queryStringParameters['limit']);
-    }
-    next = event.queryStringParameters['next'];
     nameBeginsWith = event.queryStringParameters['nameBeginsWith'];
   }
 
-  let nextToken: object | undefined = undefined;
-  if (next) {
-    nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
-  }
-
-  const pageOfUsers = await UserService.getUsers(limit, nextToken, nameBeginsWith, repositoryProvider);
+  const paginationParams = getPaginationParameters(event);
+  const pageOfUsers = await UserService.getUsers(
+    paginationParams.limit,
+    paginationParams.nextToken,
+    nameBeginsWith,
+    repositoryProvider
+  );
 
   return {
     statusCode: 200,

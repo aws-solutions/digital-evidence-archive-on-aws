@@ -3,7 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { fail } from 'assert';
 import { NotFoundError } from '../../../app/exceptions/not-found-exception';
 import { verifyCaseACLs } from '../../../app/resources/verify-case-acls';
 import { createCases } from '../../../app/services/case-service';
@@ -11,7 +10,6 @@ import { createCaseUserMembership } from '../../../app/services/case-user-servic
 import { createUser } from '../../../app/services/user-service';
 import { DeaCase } from '../../../models/case';
 import { CaseAction } from '../../../models/case-action';
-import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { dummyEvent } from '../../integration-objects';
@@ -75,27 +73,10 @@ describe('verify case ACLs', () => {
     theCase = await createCases(
       {
         name: 'theCase',
-        status: CaseStatus.ACTIVE,
       },
       owner,
       repositoryProvider
     );
-
-    if (!theCase.ulid) {
-      fail();
-    }
-    if (!userWithAllACLs.ulid) {
-      fail();
-    }
-    if (!userWithNoMembership.ulid) {
-      fail();
-    }
-    if (!userWithMembershipNoAcls.ulid) {
-      fail();
-    }
-    if (!userWithMembershipPartialAcls.ulid) {
-      fail();
-    }
 
     await createCaseUserMembership(
       {

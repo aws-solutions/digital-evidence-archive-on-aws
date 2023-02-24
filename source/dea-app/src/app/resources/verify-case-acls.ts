@@ -4,16 +4,17 @@
  */
 
 import { defineAbility } from '@casl/ability';
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import { getRequiredPathParam, getUserUlid } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { CaseAction } from '../../models/case-action';
+import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider, ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { getCaseUser } from '../services/case-user-service';
 
 export type VerifyCaseACLsSignature = (
-  event: APIGatewayProxyEventV2,
+  event: APIGatewayProxyEvent,
   requiredActions: ReadonlyArray<CaseAction>,
   repositoryProvider?: ModelRepositoryProvider
 ) => Promise<void>;
@@ -53,16 +54,16 @@ export const verifyCaseACLs: VerifyCaseACLsSignature = async (
 };
 
 const userForbidden = (
-  event: APIGatewayProxyEventV2,
+  event: APIGatewayProxyEvent,
   caseUserIds: {
     readonly caseUlid: string;
     readonly userUlid: string;
   }
 ) => {
-  logger.warn(`Forbidden: ${event.rawPath}`, { user: caseUserIds.userUlid, case: caseUserIds.caseUlid });
+  logger.warn(`Forbidden: ${event.path}`, { user: caseUserIds.userUlid, case: caseUserIds.caseUlid });
   throw new NotFoundError('Resource not found');
 };
 
-const getRequiredCaseIdFromPath = (event: APIGatewayProxyEventV2): string => {
-  return getRequiredPathParam(event, 'caseId');
+const getRequiredCaseIdFromPath = (event: APIGatewayProxyEvent): string => {
+  return getRequiredPathParam(event, 'caseId', joiUlid);
 };

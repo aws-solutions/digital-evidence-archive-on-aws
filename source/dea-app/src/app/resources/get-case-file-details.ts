@@ -6,10 +6,11 @@
 import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
-import * as CaseService from '../services/case-service';
+import { NotFoundError } from '../exceptions/not-found-exception';
+import { getCaseFile } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
-export const deleteCase: DEAGatewayProxyHandler = async (
+export const getCaseFileDetails: DEAGatewayProxyHandler = async (
   event,
   context,
   /* the default case is handled in e2e tests */
@@ -17,11 +18,15 @@ export const deleteCase: DEAGatewayProxyHandler = async (
   repositoryProvider = defaultProvider
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
+  const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
 
-  await CaseService.deleteCase(caseId, repositoryProvider);
+  const retrievedCaseFile = await getCaseFile(caseId, fileId, repositoryProvider);
+  if (!retrievedCaseFile) {
+    throw new NotFoundError(`Could not find file: ${fileId} in the DB`);
+  }
 
   return {
-    statusCode: 204,
-    body: '',
+    statusCode: 200,
+    body: JSON.stringify(retrievedCaseFile),
   };
 };

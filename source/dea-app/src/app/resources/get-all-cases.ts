@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { getPaginationParameters } from '../../lambda-http-helpers';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { listAllCases } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -15,21 +16,13 @@ export const getAllCases: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  let limit: number | undefined;
-  let next: string | undefined;
-  if (event.queryStringParameters) {
-    if (event.queryStringParameters['limit']) {
-      limit = parseInt(event.queryStringParameters['limit']);
-    }
-    next = event.queryStringParameters['next'];
-  }
+  const paginationParams = getPaginationParameters(event);
 
-  let nextToken: object | undefined = undefined;
-  if (next) {
-    nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
-  }
-
-  const pageOfCases = await listAllCases(limit, nextToken, repositoryProvider);
+  const pageOfCases = await listAllCases(
+    paginationParams.limit,
+    paginationParams.nextToken,
+    repositoryProvider
+  );
 
   return {
     statusCode: 200,

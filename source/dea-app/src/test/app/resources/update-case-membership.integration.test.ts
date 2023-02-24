@@ -8,11 +8,10 @@ import { updateCaseMembership } from '../../../app/resources/update-case-members
 import * as CaseService from '../../../app/services/case-service';
 import { createCaseUserMembership, getCaseUser } from '../../../app/services/case-user-service';
 import * as UserService from '../../../app/services/user-service';
-import { DeaCase } from '../../../models/case';
+import { DeaCaseInput } from '../../../models/case';
 import { CaseAction } from '../../../models/case-action';
-import { CaseStatus } from '../../../models/case-status';
 import { CaseUser } from '../../../models/case-user';
-import { DeaUser } from '../../../models/user';
+import { DeaUser, DeaUserInput } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
@@ -37,23 +36,18 @@ describe('delete case membership resource', () => {
         repositoryProvider
       )) ?? fail();
 
-    const deaCase: DeaCase = {
+    const deaCase: DeaCaseInput = {
       name: 'CaseForMembershipTest',
-      status: CaseStatus.ACTIVE,
     };
     const newCase = await CaseService.createCases(deaCase, caseOwner, repositoryProvider);
 
     // user to be invited
-    const deaUser: DeaUser = {
+    const deaUser: DeaUserInput = {
       tokenId: 'arthurmorgan',
       firstName: 'Arthur',
       lastName: 'Morgan',
     };
     const user = await UserService.createUser(deaUser, repositoryProvider);
-
-    if (!newCase.ulid || !user.ulid) {
-      fail();
-    }
 
     await createCaseUserMembership(
       {
@@ -198,7 +192,7 @@ describe('delete case membership resource', () => {
       {
         ...dummyEvent,
         pathParameters: {
-          caseId: 'boguscase',
+          caseId: bogusUlid,
         },
       }
     );
@@ -212,7 +206,7 @@ describe('delete case membership resource', () => {
       {
         ...dummyEvent,
         pathParameters: {
-          userId: 'boguscase',
+          userId: bogusUlid,
         },
       }
     );

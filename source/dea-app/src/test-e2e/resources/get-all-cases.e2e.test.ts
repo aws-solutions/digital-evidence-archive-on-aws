@@ -5,7 +5,6 @@
 
 import Joi from 'joi';
 import { DeaCase } from '../../models/case';
-import { CaseStatus } from '../../models/case-status';
 import { caseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -42,7 +41,6 @@ describe('get all cases api', () => {
           deaApiUrl,
           {
             name: caseName,
-            status: CaseStatus.ACTIVE,
             description: 'some case description',
           },
           idToken,

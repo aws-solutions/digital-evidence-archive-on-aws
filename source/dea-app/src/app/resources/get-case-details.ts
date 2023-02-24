@@ -4,6 +4,7 @@
  */
 
 import { getRequiredPathParam } from '../../lambda-http-helpers';
+import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import * as CaseService from '../services/case-service';
@@ -16,7 +17,7 @@ export const getCase: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  const caseId = getRequiredPathParam(event, 'caseId');
+  const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
 
   const retreivedCase = await CaseService.getCase(caseId, repositoryProvider);
   if (!retreivedCase) {

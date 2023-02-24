@@ -43,6 +43,8 @@ export const validateBackendConstruct = (template: Template): void => {
     },
   });
 
+  template.resourceCountIs('AWS::ApiGatewayV2::Integration', 0);
+
   // validate datasets S3 bucket properties
   template.hasResourceProperties('AWS::S3::Bucket', {
     VersioningConfiguration: Match.objectLike({

@@ -4,12 +4,18 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
-import { DeaCase } from '../models/case';
+import { DeaCase, DeaCaseInput } from '../models/case';
 import { OWNER_ACTIONS } from '../models/case-action';
+import { CaseStatus } from '../models/case-status';
 import { caseFromEntity } from '../models/projections';
 import { DeaUser } from '../models/user';
 import { isDefined } from './persistence-helpers';
-import { CaseModel, CaseModelRepositoryProvider, defaultProvider, ModelRepositoryProvider } from './schema/entities';
+import {
+  CaseModel,
+  CaseModelRepositoryProvider,
+  defaultProvider,
+  ModelRepositoryProvider,
+} from './schema/entities';
 
 export const getCase = async (
   ulid: string,
@@ -64,32 +70,35 @@ export const listCases = async (
 };
 
 export const createCase = async (
-  deaCase: DeaCase,
+  deaCase: DeaCaseInput,
   owner: DeaUser,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider: ModelRepositoryProvider = defaultProvider
 ): Promise<DeaCase> => {
-  if (!owner.ulid) {
-    throw new Error("Require user ulid for case creation");
-  }
-
   const transaction = {};
-  const caseEntity = await repositoryProvider.CaseModel.create({
-    ...deaCase,
-    lowerCaseName: deaCase.name.toLowerCase(),
-  }, {transaction});
-  await repositoryProvider.CaseUserModel.create({
-    userUlid: owner.ulid,
-    caseUlid: caseEntity.ulid,
-    actions: OWNER_ACTIONS,
-    caseName: caseEntity.name,
-    userFirstName: owner.firstName,
-    userLastName: owner.lastName,
-    userFirstNameLower: owner.firstName.toLowerCase(),
-    userLastNameLower: owner.lastName.toLowerCase(),
-    lowerCaseName: caseEntity.lowerCaseName,
-  }, {transaction});
+  const caseEntity = await repositoryProvider.CaseModel.create(
+    {
+      ...deaCase,
+      status: CaseStatus.ACTIVE,
+      lowerCaseName: deaCase.name.toLowerCase(),
+    },
+    { transaction }
+  );
+  await repositoryProvider.CaseUserModel.create(
+    {
+      userUlid: owner.ulid,
+      caseUlid: caseEntity.ulid,
+      actions: OWNER_ACTIONS,
+      caseName: caseEntity.name,
+      userFirstName: owner.firstName,
+      userLastName: owner.lastName,
+      userFirstNameLower: owner.firstName.toLowerCase(),
+      userLastNameLower: owner.lastName.toLowerCase(),
+      lowerCaseName: caseEntity.lowerCaseName,
+    },
+    { transaction }
+  );
   await repositoryProvider.table.transact('write', transaction);
 
   return caseFromEntity(caseEntity);

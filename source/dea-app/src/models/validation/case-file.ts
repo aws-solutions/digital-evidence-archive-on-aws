@@ -4,7 +4,15 @@
  */
 
 import Joi from 'joi';
-import { joiUlid, fileName, filePath, contentType, sha256Hash, uploadId, caseFileStatus } from './joi-common';
+import {
+  joiUlid,
+  fileName,
+  filePath,
+  contentType,
+  sha256Hash,
+  s3Identifier,
+  caseFileStatus,
+} from './joi-common';
 
 export const initiateCaseFileUploadRequestSchema = Joi.object({
   caseUlid: joiUlid,
@@ -16,16 +24,21 @@ export const initiateCaseFileUploadRequestSchema = Joi.object({
 
 export const completeCaseFileUploadRequestSchema = Joi.object({
   caseUlid: joiUlid,
-  uploadId: uploadId,
+  uploadId: s3Identifier,
   ulid: joiUlid,
   fileName: fileName,
   filePath: filePath,
   sha256Hash: sha256Hash,
 });
 
+export const downloadCaseFileResponseSchema = Joi.object({
+  downloadUrl: Joi.string().uri(),
+});
+
 export const caseFileResponseSchema = Joi.object({
   caseUlid: joiUlid,
-  uploadId: uploadId,
+  uploadId: s3Identifier,
+  versionId: s3Identifier,
   ulid: joiUlid,
   fileName: fileName,
   filePath: filePath,

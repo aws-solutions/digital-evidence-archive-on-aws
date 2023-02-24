@@ -62,7 +62,7 @@ export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFile =>
     fileSizeMb: caseFileEntity.fileSizeMb,
     uploadId: caseFileEntity.uploadId,
     sha256Hash: caseFileEntity.sha256Hash,
-    contentPath: caseFileEntity.contentPath,
+    versionId: caseFileEntity.versionId,
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     status: caseFileEntity.status as CaseFileStatus,
     created: caseFileEntity.created,
