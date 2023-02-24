@@ -66,6 +66,10 @@
         {
           "path": "/cases/{caseId}/files/{fileId}",
           "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/contents",
+          "method": "GET"
         }
       ]
     },

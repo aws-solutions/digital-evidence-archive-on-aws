@@ -6,7 +6,7 @@
 import 'aws-sdk-client-mock-jest';
 import { fail } from 'assert';
 import { S3Client } from '@aws-sdk/client-s3';
-import { APIGatewayProxyStructuredResultV2, APIGatewayProxyEvent } from 'aws-lambda';
+import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { createCases } from '../../../app/resources/create-cases';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
@@ -224,7 +224,7 @@ export const callCreateUser = async (
   );
 };
 
-async function checkApiSucceeded(response: APIGatewayProxyStructuredResultV2): Promise<void> {
+async function checkApiSucceeded(response: APIGatewayProxyResult): Promise<void> {
   expect(response.statusCode).toEqual(200);
 
   if (!response.body) {

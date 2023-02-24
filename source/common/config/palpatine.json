@@ -7,6 +7,10 @@
       "endpoints": [
         {
           "path": "/cases",
+          "method": "GET"
+        },
+        {
+          "path": "/cases",
           "method": "POST"
         },
         {
@@ -26,15 +30,43 @@
           "method": "POST"
         },
         {
+          "path": "/cases/{caseId}/userMemberships{userId}",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships{userId}",
+          "method": "DELETE"
+        },
+        {
+          "path": "/auth/getToken/{authCode}",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/getCredentials/{idToken}",
+          "method": "GET"
+        },
+        {
           "path": "/users",
           "method": "GET"
         },
         {
-          "path": "/cases/all-cases",
+          "path": "/cases/{caseId}/files",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/files",
           "method": "GET"
         },
         {
-          "path": "/cases/my-cases",
+          "path": "/cases/{caseId}/files/{fileId}",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/contents",
           "method": "GET"
         }
       ]
