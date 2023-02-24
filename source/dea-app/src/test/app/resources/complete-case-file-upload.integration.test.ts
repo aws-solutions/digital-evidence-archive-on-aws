@@ -71,6 +71,12 @@ describe('Test complete case file upload', () => {
     s3Mock.resolves({
       UploadId: UPLOAD_ID,
       VersionId: VERSION_ID,
+      Parts: [
+        {
+          ETag: 'I am an etag',
+          PartNumber: 99,
+        },
+      ],
     });
 
     EVENT.headers['userUlid'] = fileUploader.ulid;

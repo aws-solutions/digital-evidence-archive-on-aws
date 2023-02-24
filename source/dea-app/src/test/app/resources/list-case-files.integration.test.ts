@@ -104,9 +104,9 @@ describe('Test list case files', () => {
     expect(caseFileList2.next).toBeUndefined();
 
     // OK to assume that casefile1 is returned before casefile2 because GSI sorts by filename
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     await validateCaseFile(
       caseFileList1.cases[0],
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       caseFile1.ulid as string,
       caseToList,
       fileDescriber.ulid,
@@ -114,9 +114,10 @@ describe('Test list case files', () => {
       'file1',
       filePath
     );
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+
     await validateCaseFile(
       caseFileList2.cases[0],
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       caseFile2.ulid as string,
       caseToList,
       fileDescriber.ulid,
