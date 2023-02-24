@@ -36,12 +36,10 @@ let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 let fileUploader: DeaUser;
 let caseToUploadTo = '';
 
-const FILE_NAME = 'tuna.jpeg';
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
 const CASE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY0';
 const UPLOAD_ID = '123456';
 const VERSION_ID = '543210';
-const CONTENT_TYPE = 'image/jpeg';
 const DATASETS_PROVIDER = {
   s3Client: new S3Client({ region: 'us-east-1' }),
   bucketName: 'testBucket',
@@ -176,109 +174,18 @@ describe('Test complete case file upload', () => {
     await expect(callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, 'ABCD')).rejects.toThrow();
     await expect(callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, '')).rejects.toThrow();
 
-    // validate fileName
-    await expect(
-      callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, caseToUploadTo, '')
-    ).rejects.toThrow();
-    await expect(
-      callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, caseToUploadTo, '/food/ramen.jpg')
-    ).rejects.toThrow();
-    await expect(
-      callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, caseToUploadTo, 'hello\0')
-    ).rejects.toThrow();
-
-    // validate filePath
-    await expect(
-      callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, caseToUploadTo, FILE_NAME, 'foo')
-    ).rejects.toThrow();
-    await expect(
-      callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, caseToUploadTo, FILE_NAME, '')
-    ).rejects.toThrow();
-    await expect(
-      callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, caseToUploadTo, FILE_NAME, 'foo\\')
-    ).rejects.toThrow();
-    await expect(
-      callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, caseToUploadTo, FILE_NAME, 'foo&&')
-    ).rejects.toThrow();
-
     // validate ulid
     await expect(
-      callCompleteCaseFileUpload(EVENT, repositoryProvider, 'ABCD', caseToUploadTo, FILE_NAME, CONTENT_TYPE)
+      callCompleteCaseFileUpload(EVENT, repositoryProvider, 'ABCD', caseToUploadTo)
     ).rejects.toThrow();
-    await expect(
-      callCompleteCaseFileUpload(EVENT, repositoryProvider, '', caseToUploadTo, FILE_NAME, CONTENT_TYPE)
-    ).rejects.toThrow();
-
-    // validate upload id
-    await expect(
-      callCompleteCaseFileUpload(
-        EVENT,
-        repositoryProvider,
-        FILE_ULID,
-        caseToUploadTo,
-        FILE_NAME,
-        CONTENT_TYPE,
-        '&&'
-      )
-    ).rejects.toThrow();
-    await expect(
-      callCompleteCaseFileUpload(
-        EVENT,
-        repositoryProvider,
-        FILE_ULID,
-        caseToUploadTo,
-        FILE_NAME,
-        CONTENT_TYPE,
-        '"foo"'
-      )
-    ).rejects.toThrow();
-    await expect(
-      callCompleteCaseFileUpload(
-        EVENT,
-        repositoryProvider,
-        FILE_ULID,
-        caseToUploadTo,
-        FILE_NAME,
-        CONTENT_TYPE,
-        "'foo'"
-      )
-    ).rejects.toThrow();
-    await expect(
-      callCompleteCaseFileUpload(
-        EVENT,
-        repositoryProvider,
-        FILE_ULID,
-        caseToUploadTo,
-        FILE_NAME,
-        CONTENT_TYPE,
-        '<food>'
-      )
-    ).rejects.toThrow();
+    await expect(callCompleteCaseFileUpload(EVENT, repositoryProvider, '', caseToUploadTo)).rejects.toThrow();
 
     // validate sha256Hash
     await expect(
-      callCompleteCaseFileUpload(
-        EVENT,
-        repositoryProvider,
-        FILE_ULID,
-        caseToUploadTo,
-        FILE_NAME,
-        CONTENT_TYPE,
-        UPLOAD_ID,
-        ''
-      )
+      callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, caseToUploadTo, '')
     ).rejects.toThrow(); // empty hash
     await expect(
-      callCompleteCaseFileUpload(
-        EVENT,
-        repositoryProvider,
-        FILE_ULID,
-        caseToUploadTo,
-        FILE_NAME,
-        CONTENT_TYPE,
-        UPLOAD_ID,
-        'sha'
-      )
+      callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, caseToUploadTo, 'sha')
     ).rejects.toThrow(); // short hash
     await expect(
       callCompleteCaseFileUpload(
@@ -286,9 +193,6 @@ describe('Test complete case file upload', () => {
         repositoryProvider,
         FILE_ULID,
         caseToUploadTo,
-        FILE_NAME,
-        CONTENT_TYPE,
-        UPLOAD_ID,
         '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFFFF02EBE0'
       )
     ).rejects.toThrow(); // long hash
@@ -298,9 +202,6 @@ describe('Test complete case file upload', () => {
         repositoryProvider,
         FILE_ULID,
         caseToUploadTo,
-        FILE_NAME,
-        CONTENT_TYPE,
-        UPLOAD_ID,
         '&30A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B'
       )
     ).rejects.toThrow(); // illegal character
@@ -312,7 +213,7 @@ async function completeCaseFileUploadAndValidate(
   caseUlid: string,
   fileName: string
 ): Promise<DeaCaseFile> {
-  const deaCaseFile = await callCompleteCaseFileUpload(EVENT, repositoryProvider, ulid, caseUlid, fileName);
+  const deaCaseFile = await callCompleteCaseFileUpload(EVENT, repositoryProvider, ulid, caseUlid);
   await validateCaseFile(deaCaseFile, ulid, caseUlid, fileUploader.ulid, CaseFileStatus.ACTIVE, fileName);
 
   expect(s3Mock).toHaveReceivedCommandTimes(ListPartsCommand, 1);

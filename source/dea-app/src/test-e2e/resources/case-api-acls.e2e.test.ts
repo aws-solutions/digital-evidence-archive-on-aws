@@ -61,6 +61,30 @@ const putCaseUserArgs: argsType = [
   true,
 ];
 
+const initiateUploadCaseFileArgs: argsType = [
+  'initiateUploadCaseFile',
+  [CaseAction.UPLOAD],
+  `cases/${CASE_ID}/files`,
+  'POST',
+  JSON.stringify({
+    caseUlid: CASE_ID,
+    fileName: RANDOM_STRING,
+    filePath: `/${RANDOM_STRING}/`,
+    contentType: 'application/octet-stream',
+    fileSizeMb: 1,
+  }),
+  true,
+];
+
+const listCaseFilesArgs: argsType = [
+  'listCaseFiles',
+  [CaseAction.VIEW_FILES],
+  `cases/${CASE_ID}/files`,
+  'GET',
+  undefined,
+  true,
+];
+
 describe('Case API ACL enforcement', () => {
   describe.each([
     getCaseDetailsArgs,
@@ -68,5 +92,7 @@ describe('Case API ACL enforcement', () => {
     inviteToCasesArgs,
     deleteMembershipArgs,
     putCaseUserArgs,
+    initiateUploadCaseFileArgs,
+    listCaseFilesArgs,
   ])('%s', validateEndpointACLs);
 });

@@ -133,8 +133,7 @@ describe('Test initiate case file upload', () => {
       repositoryProvider,
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       caseFile.ulid as string,
-      caseToUploadTo,
-      activeFileName
+      caseToUploadTo
     );
 
     await expect(

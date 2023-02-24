@@ -57,10 +57,6 @@ export const validateEndpointACLs = (
       testHarness = await initializeACLE2ETest('caseDetailACL', requiredActions);
       targetUrl = `${deaApiUrl}${endpoint}`;
       targetUrl = targetUrl.replace('{caseId}', testHarness.targetCase.ulid!);
-      if (data) {
-        data = data.replace('{caseId}', testHarness.targetCase.ulid!);
-        data = data.replace('{rand}', randomSuffix());
-      }
 
       if (createCompanionMemberships) {
         const membershipData = JSON.stringify({
@@ -84,6 +80,13 @@ export const validateEndpointACLs = (
       }
     }, 30000);
 
+    beforeEach(async () => {
+      if (data) {
+        data = data.replace('{caseId}', testHarness.targetCase.ulid!);
+        data = data.replace('{rand}', randomSuffix());
+      }
+    });
+
     afterAll(async () => {
       await cleanupTestHarness(testHarness);
     });
@@ -96,6 +99,9 @@ export const validateEndpointACLs = (
         testHarness.owner.creds,
         data?.replace('{companion}', testHarness.companionIds[0])
       );
+      if (response.status > 300) {
+        console.log(response);
+      }
       expect(response.status).toBeGreaterThanOrEqual(200);
       expect(response.status).toBeLessThan(300);
     });
@@ -108,6 +114,9 @@ export const validateEndpointACLs = (
         testHarness.userWithRequiredActions.creds,
         data?.replace('{companion}', testHarness.companionIds[1])
       );
+      if (response.status > 300) {
+        console.log(response);
+      }
       expect(response.status).toBeGreaterThanOrEqual(200);
       expect(response.status).toBeLessThan(300);
     });

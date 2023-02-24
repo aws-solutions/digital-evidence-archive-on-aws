@@ -6,10 +6,13 @@
 import { randomBytes } from 'crypto';
 import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
+import sha256 from 'crypto-js/sha256';
 import Joi from 'joi';
 import { DeaCase } from '../../models/case';
+import { DeaCaseFile } from '../../models/case-file';
 import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
+import { caseFileResponseSchema } from '../../models/validation/case-file';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 
@@ -18,6 +21,7 @@ export const validateStatus = () => true;
 
 export type DeaHttpMethod = 'PUT' | 'POST' | 'GET' | 'DELETE';
 
+const CONTENT_TYPE = 'application/octet-stream';
 export const bogusUlid = 'SVPERCA11FRAG111ST1CETCETC';
 
 export const randomSuffix = (length = 10) => {
@@ -135,4 +139,86 @@ export const getSpecificUserByFirstName = async (
   }
 
   return user;
+};
+
+export const initiateCaseFileUploadSuccess = async (
+  deaApiUrl: string,
+  idToken: string,
+  creds: Credentials,
+  caseUlid: string,
+  fileName: string,
+  filePath: string,
+  fileSizeMb: number,
+  contentType: string = CONTENT_TYPE
+): Promise<DeaCaseFile> => {
+  const initiateUploadResponse = await callDeaAPIWithCreds(
+    `${deaApiUrl}cases/${caseUlid}/files`,
+    'POST',
+    idToken,
+    creds,
+    {
+      caseUlid: caseUlid,
+      fileName: fileName,
+      filePath: filePath,
+      contentType: contentType,
+      fileSizeMb: fileSizeMb,
+    }
+  );
+
+  expect(initiateUploadResponse.status).toEqual(200);
+  const initiatedCaseFile: DeaCaseFile = await initiateUploadResponse.data;
+  Joi.assert(initiatedCaseFile, caseFileResponseSchema);
+  return initiatedCaseFile;
+};
+
+export const uploadContentToS3 = async (
+  presignedUrls: readonly string[],
+  fileContent: string
+): Promise<void> => {
+  const uploadResponses: Promise<Response>[] = [];
+
+  const httpClient = axios.create({
+    headers: {
+      'Content-Type': CONTENT_TYPE,
+    },
+  });
+
+  presignedUrls.forEach((url, index) => {
+    uploadResponses[index] = httpClient.put(url, fileContent, { validateStatus });
+  });
+
+  await Promise.all(uploadResponses).then((responses) => {
+    responses.forEach((response) => {
+      expect(response.status).toEqual(200);
+    });
+  });
+};
+
+export const completeCaseFileUploadSuccess = async (
+  deaApiUrl: string,
+  idToken: string,
+  creds: Credentials,
+  caseUlid: string,
+  fileUlid: string,
+  fileContent: string
+): Promise<DeaCaseFile> => {
+  const completeUploadResponse = await callDeaAPIWithCreds(
+    `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}`,
+    'PUT',
+    idToken,
+    creds,
+    {
+      caseUlid: caseUlid,
+      ulid: fileUlid,
+      sha256Hash: sha256(fileContent).toString(),
+    }
+  );
+
+  if (completeUploadResponse.status !== 200) {
+    console.log(completeUploadResponse);
+  }
+  expect(completeUploadResponse.status).toEqual(200);
+  const uploadedCaseFile: DeaCaseFile = await completeUploadResponse.data;
+  Joi.assert(uploadedCaseFile, caseFileResponseSchema);
+  return uploadedCaseFile;
 };
