@@ -4,7 +4,6 @@
  */
 
 import { fail } from 'assert';
-import { CaseStatus } from '../../models/case-status';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPI, callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
@@ -39,7 +38,6 @@ describe('create cases api', () => {
       deaApiUrl,
       {
         name: caseName,
-        status: CaseStatus.ACTIVE,
         description: 'this is a description',
       },
       idToken,
@@ -63,7 +61,6 @@ describe('create cases api', () => {
       deaApiUrl,
       {
         name: caseName,
-        status: CaseStatus.ACTIVE,
         description: 'any description',
       },
       idToken,

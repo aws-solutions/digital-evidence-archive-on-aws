@@ -7,7 +7,6 @@ import { fail } from 'assert';
 import { getAllCases } from '../../../app/resources/get-all-cases';
 import { createUser } from '../../../app/services/user-service';
 import { DeaCase } from '../../../models/case';
-import { CaseStatus } from '../../../models/case-status';
 import { createCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { dummyContext, dummyEvent } from '../../integration-objects';
@@ -52,7 +51,6 @@ describe('get all cases resource', () => {
       (await createCase(
         {
           name: 'getMyCases-1a',
-          status: CaseStatus.ACTIVE,
         },
         user1,
         repositoryProvider
@@ -62,7 +60,6 @@ describe('get all cases resource', () => {
       (await createCase(
         {
           name: 'getMyCases-2a',
-          status: CaseStatus.ACTIVE,
         },
         user2,
         repositoryProvider
@@ -72,7 +69,6 @@ describe('get all cases resource', () => {
       (await createCase(
         {
           name: 'getMyCases-3a',
-          status: CaseStatus.ACTIVE,
         },
         user1,
         repositoryProvider

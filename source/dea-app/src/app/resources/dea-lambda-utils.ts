@@ -8,7 +8,6 @@ import { getDeaUserFromToken, getTokenPayload } from '../../cognito-token-helper
 import { getRequiredHeader } from '../../lambda-http-helpers';
 import { DeaUser } from '../../models/user';
 import { defaultProvider } from '../../persistence/schema/entities';
-import { ValidationError } from '../exceptions/validation-exception';
 import * as UserService from '../services/user-service';
 import { LambdaContext, LambdaEvent, LambdaRepositoryProvider } from './dea-gateway-proxy-handler';
 
@@ -68,9 +67,6 @@ const addUserToDatabase = async (
   const deaUser = await getDeaUserFromToken(payload);
 
   const deaUserResult = await UserService.createUser(deaUser, repositoryProvider);
-  if (!deaUserResult.ulid) {
-    throw new ValidationError('Unable to add newly federated user to the database');
-  }
 
   return deaUserResult.ulid;
 };

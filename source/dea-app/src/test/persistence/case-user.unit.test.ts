@@ -6,7 +6,6 @@
 import { Paged } from 'dynamodb-onetable';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
-import { CaseStatus } from '../../models/case-status';
 import { CaseUser } from '../../models/case-user';
 import { DeaUser } from '../../models/user';
 import { createCase } from '../../persistence/case';
@@ -56,9 +55,7 @@ describe('caseUser persistence', () => {
         },
         repositoryProvider
       )) ?? fail();
-    testCase =
-      (await createCase({ name: 'TheCase', status: CaseStatus.ACTIVE }, caseOwner, repositoryProvider)) ??
-      fail();
+    testCase = (await createCase({ name: 'TheCase' }, caseOwner, repositoryProvider)) ?? fail();
     caseUlid = testCase.ulid ?? fail();
 
     //list endpoints
@@ -193,19 +190,10 @@ describe('caseUser persistence', () => {
         repositoryProvider
       )) ?? fail();
     listUser2Ulid = listUser2.ulid ?? fail();
-    listCase1 =
-      (await createCase(
-        { name: '2001: A Case Odyssey', status: CaseStatus.ACTIVE },
-        caseOwner,
-        repositoryProvider
-      )) ?? fail();
+    listCase1 = (await createCase({ name: '2001: A Case Odyssey' }, caseOwner, repositoryProvider)) ?? fail();
     listCase1Ulid = listCase1.ulid ?? fail();
     listCase2 =
-      (await createCase(
-        { name: 'Between a rock and a hard case', status: CaseStatus.ACTIVE },
-        caseOwner,
-        repositoryProvider
-      )) ?? fail();
+      (await createCase({ name: 'Between a rock and a hard case' }, caseOwner, repositoryProvider)) ?? fail();
     listCase2Ulid = listCase2.ulid ?? fail();
 
     listCaseUser1_1 = await createCaseUser(

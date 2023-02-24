@@ -4,10 +4,16 @@
  */
 
 export interface DeaUser {
-    readonly ulid?: string;
-    readonly tokenId: string;
-    readonly firstName: string;
-    readonly lastName: string;
-    readonly created?: Date;
-    readonly updated?: Date;
+  readonly ulid: string;
+  readonly tokenId: string;
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly created?: Date;
+  readonly updated?: Date;
+}
+
+export interface DeaUserInput {
+  readonly tokenId: string;
+  readonly firstName: string;
+  readonly lastName: string;
 }

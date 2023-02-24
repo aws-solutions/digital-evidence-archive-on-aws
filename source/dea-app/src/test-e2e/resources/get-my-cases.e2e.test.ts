@@ -8,7 +8,6 @@ import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
-import { CaseStatus } from '../../models/case-status';
 import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
@@ -55,7 +54,6 @@ describe('get my cases api', () => {
           deaApiUrl,
           {
             name: caseName,
-            status: CaseStatus.ACTIVE,
             description: 'some case description',
           },
           idToken,
@@ -74,7 +72,6 @@ describe('get my cases api', () => {
       deaApiUrl,
       {
         name: invitedCaseName,
-        status: CaseStatus.ACTIVE,
         description: 'case created by other user, which user will be invited to',
       },
       idToken2,
