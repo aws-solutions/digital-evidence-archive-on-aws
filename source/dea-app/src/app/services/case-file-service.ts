@@ -3,16 +3,16 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { Paged } from 'dynamodb-onetable';
 import { DeaCaseFile } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import * as CaseFilePersistence from '../../persistence/case-file';
 import { getCaseFileByFileLocation, getCaseFileByUlid } from '../../persistence/case-file';
-import { defaultProvider, ModelRepositoryProvider } from '../../persistence/schema/entities';
+import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import {
   generatePresignedUrlsForCaseFile,
   completeUploadForCaseFile,
-  defaultDatasetsProvider,
   DatasetsProvider,
 } from '../../storage/datasets';
 import { ForbiddenError } from '../exceptions/forbidden-exception';
@@ -25,10 +25,8 @@ import { getUser } from './user-service';
 export const initiateCaseFileUpload = async (
   deaCaseFile: DeaCaseFile,
   userUlid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider,
-  datasetsProvider: DatasetsProvider = defaultDatasetsProvider
+  repositoryProvider: ModelRepositoryProvider,
+  datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFile> => {
   const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
     deaCaseFile,
@@ -119,11 +117,27 @@ async function validateUploadRequirements(
 
 export const completeCaseFileUpload = async (
   deaCaseFile: DeaCaseFile,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider,
-  datasetsProvider: DatasetsProvider = defaultDatasetsProvider
+  repositoryProvider: ModelRepositoryProvider,
+  datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFile> => {
   await completeUploadForCaseFile(deaCaseFile, datasetsProvider);
   return await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider);
+};
+
+export const listCaseFilesByFilePath = async (
+  caseId: string,
+  filePath: string,
+  limit = 30,
+  repositoryProvider: ModelRepositoryProvider,
+  nextToken?: object
+): Promise<Paged<DeaCaseFile>> => {
+  return CaseFilePersistence.listCaseFilesByFilePath(caseId, filePath, limit, repositoryProvider, nextToken);
+};
+
+export const getCaseFile = async (
+  caseId: string,
+  ulid: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCaseFile | undefined> => {
+  return CaseFilePersistence.getCaseFileByUlid(ulid, caseId, repositoryProvider);
 };

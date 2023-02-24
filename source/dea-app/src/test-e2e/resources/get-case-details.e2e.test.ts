@@ -64,7 +64,7 @@ describe('get case api', () => {
 
   it('should throw an error when the case is not found', async () => {
     const url = `${deaApiUrl}cases`;
-    const caseId = '123bogus';
+    const caseId = 'FAKEEFGHHJKKMNNPQRSTTVWXY9';
     const response = await callDeaAPIWithCreds(`${url}/${caseId}`, 'GET', testUserToken, testUserCreds);
 
     expect(response.status).toEqual(404);

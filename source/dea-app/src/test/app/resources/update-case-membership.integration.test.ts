@@ -198,7 +198,7 @@ describe('delete case membership resource', () => {
       {
         ...dummyEvent,
         pathParameters: {
-          caseId: 'boguscase',
+          caseId: bogusUlid,
         },
       }
     );
@@ -212,7 +212,7 @@ describe('delete case membership resource', () => {
       {
         ...dummyEvent,
         pathParameters: {
-          userId: 'boguscase',
+          userId: bogusUlid,
         },
       }
     );

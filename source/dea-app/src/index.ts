@@ -13,13 +13,16 @@ import { DEAGatewayProxyHandler } from './app/resources/dea-gateway-proxy-handle
 import { DEAPreLambdaExecutionChecks, runPreExecutionChecks } from './app/resources/dea-lambda-utils';
 import { deleteCaseMembership } from './app/resources/delete-case-membership';
 import { deleteCase } from './app/resources/delete-cases';
+import { downloadCaseFile } from './app/resources/download-case-file';
 import { getAllCases } from './app/resources/get-all-cases';
 import { getCase } from './app/resources/get-case-details';
+import { getCaseFileDetails } from './app/resources/get-case-file-details';
 import { getCredentials } from './app/resources/get-credentials';
 import { getMyCases } from './app/resources/get-my-cases';
 import { getToken } from './app/resources/get-token';
 import { getUsers } from './app/resources/get-users';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
+import { listCaseFiles } from './app/resources/list-case-files';
 import { sayBye } from './app/resources/say-bye';
 import { sayHello } from './app/resources/say-hello';
 import { updateCaseMembership } from './app/resources/update-case-membership';
@@ -41,8 +44,11 @@ export {
   getAllCases,
   getMyCases,
   getCase,
+  getCaseFileDetails,
+  listCaseFiles,
   initiateCaseFileUpload,
   completeCaseFileUpload,
+  downloadCaseFile,
   runPreExecutionChecks,
   updateCases,
   createCaseMembership,

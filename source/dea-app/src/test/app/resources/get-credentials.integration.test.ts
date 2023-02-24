@@ -79,7 +79,7 @@ describe('get-credentials', () => {
       {
         ...dummyEvent,
         pathParameters: {
-          idToken: 'DUMMYIDTOKEN',
+          idToken: 'fake.fake.fake',
         },
       }
     );

@@ -6,6 +6,7 @@
 import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
 import { DeaCase } from '../../models/case';
 import { updateCaseSchema } from '../../models/validation/case';
+import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
@@ -18,7 +19,7 @@ export const updateCases: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  const caseId = getRequiredPathParam(event, 'caseId');
+  const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
 
   const deaCase: DeaCase = getRequiredPayload(event, 'Update cases', updateCaseSchema);
 

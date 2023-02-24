@@ -4,9 +4,11 @@
  */
 
 import { fail } from 'assert';
+import Joi from 'joi';
 import { getUsers } from '../../../app/resources/get-users';
 import { createUser } from '../../../app/services/user-service';
 import { DeaUser } from '../../../models/user';
+import { userResponseSchema } from '../../../models/validation/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { dummyContext, dummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
@@ -64,7 +66,7 @@ describe('get users resource', () => {
     const casesPage: ResponseUserPage = JSON.parse(response.body);
     expect(casesPage.users.length).toEqual(1);
     expect(casesPage.next).toBeTruthy();
-
+    Joi.assert(casesPage.users[0], userResponseSchema);
     const event2 = Object.assign(
       {},
       {

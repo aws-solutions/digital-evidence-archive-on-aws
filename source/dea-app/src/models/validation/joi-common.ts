@@ -19,7 +19,7 @@ export const htmlSafeCharsRegex = new RegExp('^[^&"\'<>]*$');
 
 export const ulidRegex = new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$');
 
-export const uploadId = Joi.string().pattern(htmlSafeCharsRegex);
+export const s3Identifier = Joi.string().pattern(htmlSafeCharsRegex);
 
 export const joiUlid = Joi.string().pattern(ulidRegex);
 
@@ -40,3 +40,10 @@ export const idToken = Joi.string().regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Z
 export const caseFileStatus = Joi.string().valid(...Object.keys(CaseFileStatus));
 
 export const safeDescription = Joi.string().pattern(allButDisallowed).max(200).min(3).optional();
+
+export const paginationLimit = Joi.number().min(1).max(100).optional();
+
+export const base64String = Joi.string().base64().required();
+
+// https://github.com/odomojuli/RegExAPI
+export const authCode = Joi.string().regex(/^[A-Za-z0-9-_]+$/);

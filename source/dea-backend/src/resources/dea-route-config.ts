@@ -61,9 +61,24 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/initiate-case-file-upload-handler.ts',
     },
     {
+      path: '/cases/{caseId}/files',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/list-case-files-handler.ts',
+    },
+    {
       path: '/cases/{caseId}/files/{fileId}',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/complete-case-file-upload-handler.ts',
+    },
+    {
+      path: '/cases/{caseId}/files/{fileId}',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-case-file-detail-handler.ts',
+    },
+    {
+      path: '/cases/{caseId}/files/{fileId}/contents',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/download-case-file-handler.ts',
     },
     {
       path: '/auth/getToken/{authCode}',

@@ -132,7 +132,7 @@ describe('API authentication', () => {
 
   it('should fail with dummy idToken', async () => {
     const client = axios.create();
-    const idToken = 'ABCDEFGHIJKL123';
+    const idToken = 'fake.fake.fake';
 
     const url = `${deaApiUrl}auth/getCredentials/${idToken}`;
     const response = await client.get(url, { validateStatus });
