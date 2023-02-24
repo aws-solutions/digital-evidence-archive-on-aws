@@ -47,7 +47,7 @@ describe('Test case file download', () => {
 
     fileUploader = await callCreateUser(repositoryProvider);
     EVENT.headers['userUlid'] = fileUploader.ulid;
-    caseToDownloadFrom = (await callCreateCase(EVENT, repositoryProvider)).ulid ?? fail();
+    caseToDownloadFrom = (await callCreateCase(fileUploader, repositoryProvider)).ulid ?? fail();
   });
 
   afterAll(async () => {

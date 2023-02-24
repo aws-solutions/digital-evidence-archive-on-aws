@@ -57,7 +57,7 @@ describe('Test initiate case file upload', () => {
 
     fileUploader = await callCreateUser(repositoryProvider);
     EVENT.headers['userUlid'] = fileUploader.ulid;
-    caseToUploadTo = (await callCreateCase(EVENT, repositoryProvider)).ulid ?? fail();
+    caseToUploadTo = (await callCreateCase(fileUploader, repositoryProvider)).ulid ?? fail();
   });
 
   afterAll(async () => {
@@ -108,8 +108,8 @@ describe('Test initiate case file upload', () => {
 
   it('Initiate upload should throw an exception when case is inactive', async () => {
     const inactiveCaseUlid =
-      (await callCreateCase(EVENT, repositoryProvider, 'inactive', 'inactive', CaseStatus.INACTIVE)).ulid ??
-      fail();
+      (await callCreateCase(fileUploader, repositoryProvider, 'inactive', 'inactive', CaseStatus.INACTIVE))
+        .ulid ?? fail();
     await expect(callInitiateCaseFileUpload(EVENT, repositoryProvider, inactiveCaseUlid)).rejects.toThrow(
       "Can't upload a file to case in INACTIVE state"
     );

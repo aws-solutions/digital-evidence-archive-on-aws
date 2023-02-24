@@ -7,7 +7,6 @@ import { fail } from 'assert';
 import { getMyCases } from '../../../app/resources/get-my-cases';
 import { DeaCase } from '../../../models/case';
 import { CaseAction } from '../../../models/case-action';
-import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
 import { createCase } from '../../../persistence/case';
 import { createCaseUser } from '../../../persistence/case-user';
@@ -54,7 +53,6 @@ describe('getMyCases', () => {
       (await createCase(
         {
           name: 'getMyCases-1',
-          status: CaseStatus.ACTIVE,
         },
         caseOwner,
         repositoryProvider
@@ -64,7 +62,6 @@ describe('getMyCases', () => {
       (await createCase(
         {
           name: 'getMyCases-2',
-          status: CaseStatus.ACTIVE,
         },
         caseOwner,
         repositoryProvider
@@ -74,7 +71,6 @@ describe('getMyCases', () => {
       (await createCase(
         {
           name: 'getMyCases-3',
-          status: CaseStatus.ACTIVE,
         },
         caseOwner,
         repositoryProvider
@@ -164,7 +160,6 @@ describe('getMyCases', () => {
         (await createCase(
           {
             name: `getMyCases-a${i}`,
-            status: CaseStatus.ACTIVE,
           },
           caseOwner,
           repositoryProvider
@@ -242,7 +237,6 @@ describe('getMyCases', () => {
       (await createCase(
         {
           name: 'getMyCases-1c',
-          status: CaseStatus.ACTIVE,
         },
         caseOwner,
         repositoryProvider

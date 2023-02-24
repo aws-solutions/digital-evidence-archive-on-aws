@@ -7,8 +7,7 @@ import { fail } from 'assert';
 import { OneTableError } from 'dynamodb-onetable';
 import Joi from 'joi';
 import { updateCases } from '../../../app/resources/update-cases';
-import { DeaCase } from '../../../models/case';
-import { CaseStatus } from '../../../models/case-status';
+import { DeaCase, DeaCaseInput } from '../../../models/case';
 import { DeaUser } from '../../../models/user';
 import { caseResponseSchema } from '../../../models/validation/case';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
@@ -43,9 +42,8 @@ describe('update cases resource', () => {
   it('should successfully update a case description and name', async () => {
     const updatedDescription = 'An Updated Description';
     const updatedName = 'AnUpdatedCase';
-    const theCase: DeaCase = {
+    const theCase: DeaCaseInput = {
       name: 'ACaseForUpdating',
-      status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
@@ -149,9 +147,8 @@ describe('update cases resource', () => {
   });
 
   it('should not allow update of status', async () => {
-    const theCase: DeaCase = {
+    const theCase: DeaCaseInput = {
       name: 'CaseStatusCheck',
-      status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
@@ -178,9 +175,8 @@ describe('update cases resource', () => {
   });
 
   it('should not allow update of objectCount', async () => {
-    const theCase: DeaCase = {
+    const theCase: DeaCaseInput = {
       name: 'CaseCountCheck',
-      status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
@@ -227,14 +223,12 @@ describe('update cases resource', () => {
   });
 
   it('should error when updating to a name in use', async () => {
-    const theCase1: DeaCase = {
+    const theCase1: DeaCaseInput = {
       name: 'TheFirstCase',
-      status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
-    const theCase2: DeaCase = {
+    const theCase2: DeaCaseInput = {
       name: 'TheSecondCase',
-      status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
     const createdCase1 = await createCase(theCase1, caseOwner, repositoryProvider);
@@ -262,14 +256,12 @@ describe('update cases resource', () => {
 
   it('should update succesfully to a name that was previously, but is no longer in use', async () => {
     const aNewNameForCase1 = 'TheFirstCaseButMore';
-    const theCase1: DeaCase = {
+    const theCase1: DeaCaseInput = {
       name: 'TheFirstCaseA',
-      status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
-    const theCase2: DeaCase = {
+    const theCase2: DeaCaseInput = {
       name: 'TheSecondCaseB',
-      status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
     const createdCase1 = await createCase(theCase1, caseOwner, repositoryProvider);

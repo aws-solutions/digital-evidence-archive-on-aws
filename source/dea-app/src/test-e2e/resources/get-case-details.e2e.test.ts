@@ -7,7 +7,6 @@ import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
 import { DeaCase } from '../../models/case';
-import { CaseStatus } from '../../models/case-status';
 import { caseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -38,7 +37,6 @@ describe('get case api', () => {
       deaApiUrl,
       {
         name: caseName,
-        status: CaseStatus.ACTIVE,
         description: 'this is a description',
       },
       testUserToken,

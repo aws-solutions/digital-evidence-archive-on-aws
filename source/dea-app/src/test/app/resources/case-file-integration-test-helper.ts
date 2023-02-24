@@ -3,16 +3,16 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import 'aws-sdk-client-mock-jest';
 import { fail } from 'assert';
 import { S3Client } from '@aws-sdk/client-s3';
-import { APIGatewayProxyStructuredResultV2, APIGatewayProxyEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
+import 'aws-sdk-client-mock-jest';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
-import { createCases } from '../../../app/resources/create-cases';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
 import { getCaseFileDetails } from '../../../app/resources/get-case-file-details';
 import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
 import { listCaseFiles } from '../../../app/resources/list-case-files';
+import * as CaseService from '../../../app/services/case-service';
 import { DeaCase } from '../../../models/case';
 import { DeaCaseFile } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
@@ -132,29 +132,24 @@ export const callDownloadCaseFile = async (
 };
 
 export const callCreateCase = async (
-  baseEvent: APIGatewayProxyEvent,
+  owner: DeaUser,
   repositoryProvider: ModelRepositoryProvider,
   name: string = CASE_NAME,
   description: string = CASE_DESCRIPTION,
   status = CaseStatus.ACTIVE
 ): Promise<DeaCase> => {
-  const event = Object.assign(
-    {},
-    {
-      ...baseEvent,
-      body: JSON.stringify({
-        name,
-        status,
-        description,
-      }),
-    }
-  );
-
-  const response = await createCases(event, dummyContext, repositoryProvider);
-  await checkApiSucceeded(response);
-
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return JSON.parse(response.body as string);
+  const theCase = await CaseService.createCases({ name, description }, owner, repositoryProvider);
+  if (status == CaseStatus.INACTIVE) {
+    const updatedCase = Object.assign(
+      {},
+      {
+        ...theCase,
+        status: CaseStatus.INACTIVE,
+      }
+    );
+    return await CaseService.updateCases(updatedCase, repositoryProvider);
+  }
+  return theCase;
 };
 
 export const callGetCaseFileDetails = async (

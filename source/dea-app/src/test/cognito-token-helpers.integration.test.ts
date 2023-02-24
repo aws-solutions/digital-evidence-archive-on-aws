@@ -55,7 +55,7 @@ describe('cognito helpers integration test', () => {
     await expect(getTokenPayload(modifiedToken, region)).rejects.toThrow('Unable to verify id token: ');
   });
 
-  it('should decode and return a DeaUser from the token', async () => {
+  it('should decode and return a DeaUserInput from the token', async () => {
     const token = await cognitoHelper.getIdTokenForUser(testUser);
     const tokenPayload = await getTokenPayload(token, region);
 
