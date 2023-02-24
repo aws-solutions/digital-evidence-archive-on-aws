@@ -17,5 +17,8 @@ export const getCredentials: DEAGatewayProxyHandler = async (event, context) => 
   return {
     statusCode: 200,
     body: JSON.stringify(response),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
   };
 };

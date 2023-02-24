@@ -16,5 +16,8 @@ export const getToken: DEAGatewayProxyHandler = async (event) => {
   return {
     statusCode: 200,
     body: JSON.stringify(getTokenResult),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
   };
 };

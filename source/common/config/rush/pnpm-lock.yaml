@@ -371,6 +371,7 @@ importers:
       '@types/uuid': ^8.3.4
       aws-cdk: ~2.63.0
       aws-cdk-lib: ~2.63.0
+      aws4-axios: ~2.4.9
       axios: ^0.27.1
       babel-jest: 27.5.1
       concurrently: ^7.0.0
@@ -416,6 +417,7 @@ importers:
       '@cloudscape-design/design-tokens': 3.0.6
       '@cloudscape-design/global-styles': 1.0.1
       '@cloudscape-design/jest-preset': 2.0.2_d6c039cc84ab9b3a855216d8dcc78ff2
+      aws4-axios: 2.4.9_axios@0.27.2
       axios: 0.27.2
       date-fns: 2.29.3
       i18next: 21.10.0
@@ -4887,7 +4889,6 @@ packages:
     resolution: {integrity: sha512-x0f96eBPrCCJzJxdPbUvDFRva4yPpINJzTuXXpmS2j9qLUpF2nyGzvXPlRziuGbCsPukwY4JfuO+8xwsoZLzGw==}
     dependencies:
       '@types/node': 14.18.36
-    dev: true
 
   /@types/babel__core/7.1.20:
     resolution: {integrity: sha512-PVb6Bg2QuscZ30FvOU7z4guG6c926D9YRvOxEaelzndpMsvP+YM74Q/dAFASpg2l6+XLalxSGxcq/lrgYWZtyQ==}
@@ -5850,11 +5851,9 @@ packages:
       axios: 0.27.2
     transitivePeerDependencies:
       - aws-crt
-    dev: true
 
   /aws4/1.12.0:
     resolution: {integrity: sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==}
-    dev: true
 
   /axe-core/4.5.1:
     resolution: {integrity: sha512-1exVbW0X1O/HSr/WMwnaweyqcWOgZgLiVxdLG34pvSQk4NlYQr9OUy0JLwuhFfuVNQzzqgH57eYzkFBCb3bIsQ==}
