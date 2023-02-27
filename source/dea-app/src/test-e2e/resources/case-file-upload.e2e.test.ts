@@ -93,10 +93,19 @@ describe('Test case file upload', () => {
 
     const presignedUrls = initiatedCaseFile.presignedUrls ?? [];
     const fileUlid = initiatedCaseFile.ulid ?? fail();
+    const uploadId = initiatedCaseFile.uploadId ?? fail();
 
     await uploadContentToS3(presignedUrls, FILE_CONTENT);
 
-    await completeCaseFileUploadSuccess(DEA_API_URL, idToken, creds, caseUlid, fileUlid, FILE_CONTENT);
+    await completeCaseFileUploadSuccess(
+      DEA_API_URL,
+      idToken,
+      creds,
+      caseUlid,
+      fileUlid,
+      uploadId,
+      FILE_CONTENT
+    );
 
     s3ObjectsToDelete.push({ key: `${caseUlid}/${fileUlid}` });
 

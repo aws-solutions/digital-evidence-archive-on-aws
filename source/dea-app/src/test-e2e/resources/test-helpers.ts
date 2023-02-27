@@ -200,6 +200,7 @@ export const completeCaseFileUploadSuccess = async (
   creds: Credentials,
   caseUlid: string,
   fileUlid: string,
+  uploadId: string,
   fileContent: string
 ): Promise<DeaCaseFile> => {
   const completeUploadResponse = await callDeaAPIWithCreds(
@@ -211,6 +212,7 @@ export const completeCaseFileUploadSuccess = async (
       caseUlid: caseUlid,
       ulid: fileUlid,
       sha256Hash: sha256(fileContent).toString(),
+      uploadId: uploadId,
     }
   );
 
