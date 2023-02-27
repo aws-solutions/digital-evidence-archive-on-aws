@@ -145,7 +145,7 @@ export const initiateCaseFileUploadSuccess = async (
   deaApiUrl: string,
   idToken: string,
   creds: Credentials,
-  caseUlid: string,
+  caseUlid: string | undefined,
   fileName: string,
   filePath: string,
   fileSizeMb: number,
@@ -157,11 +157,11 @@ export const initiateCaseFileUploadSuccess = async (
     idToken,
     creds,
     {
-      caseUlid: caseUlid,
-      fileName: fileName,
-      filePath: filePath,
-      contentType: contentType,
-      fileSizeMb: fileSizeMb,
+      caseUlid,
+      fileName,
+      filePath,
+      contentType,
+      fileSizeMb,
     }
   );
 
@@ -198,21 +198,21 @@ export const completeCaseFileUploadSuccess = async (
   deaApiUrl: string,
   idToken: string,
   creds: Credentials,
-  caseUlid: string,
-  fileUlid: string,
-  uploadId: string,
+  caseUlid: string | undefined,
+  ulid: string | undefined,
+  uploadId: string | undefined,
   fileContent: string
 ): Promise<DeaCaseFile> => {
   const completeUploadResponse = await callDeaAPIWithCreds(
-    `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}`,
+    `${deaApiUrl}cases/${caseUlid}/files/${ulid}`,
     'PUT',
     idToken,
     creds,
     {
-      caseUlid: caseUlid,
-      ulid: fileUlid,
+      caseUlid,
+      ulid,
       sha256Hash: sha256(fileContent).toString(),
-      uploadId: uploadId,
+      uploadId,
     }
   );
 

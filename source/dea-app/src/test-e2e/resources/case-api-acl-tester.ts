@@ -7,6 +7,7 @@
 import { Credentials } from 'aws4-axios';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
+import { DeaCaseFile } from '../../models/case-file';
 import { CaseStatus } from '../../models/case-status';
 import { DeaUser } from '../../models/user';
 import { isDefined } from '../../persistence/persistence-helpers';
@@ -14,10 +15,13 @@ import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
   callDeaAPIWithCreds,
+  completeCaseFileUploadSuccess,
   createCaseSuccess,
   DeaHttpMethod,
   deleteCase,
+  initiateCaseFileUploadSuccess,
   randomSuffix,
+  uploadContentToS3,
 } from './test-helpers';
 
 export interface ACLTestHarness {
@@ -28,6 +32,8 @@ export interface ACLTestHarness {
   userWithNoMembership: ACLTestUser;
   companionIds: string[];
   targetCase: DeaCase;
+  ownerCaseFile?: DeaCaseFile;
+  userCaseFile?: DeaCaseFile;
 }
 
 export interface ACLTestUser {
@@ -47,7 +53,10 @@ export const validateEndpointACLs = (
   endpoint: string,
   method: DeaHttpMethod,
   data?: string,
-  createCompanionMemberships = false
+  createCompanionMemberships = false,
+  testRequiresOwnerCaseFile = false,
+  testRequiresUserCaseFile = false,
+  testRequiresDownload = false
 ) => {
   describe(testSuiteName, () => {
     let testHarness: ACLTestHarness;
@@ -78,6 +87,45 @@ export const validateEndpointACLs = (
           expect(cr.status).toEqual(200);
         }
       }
+
+      if (testRequiresOwnerCaseFile) {
+        testHarness.ownerCaseFile = await initiateCaseFileUploadSuccess(
+          deaApiUrl,
+          testHarness.owner.idToken,
+          testHarness.owner.creds,
+          testHarness.targetCase.ulid,
+          `${randomSuffix()}`,
+          `/`,
+          1
+        );
+
+        await uploadContentToS3(testHarness.ownerCaseFile.presignedUrls ?? fail(), 'hello world');
+        if (testRequiresDownload) {
+          await completeCaseFileUploadSuccess(
+            deaApiUrl,
+            testHarness.owner.idToken,
+            testHarness.owner.creds,
+            testHarness.targetCase.ulid,
+            testHarness.ownerCaseFile.ulid,
+            testHarness.ownerCaseFile.uploadId,
+            'hello world'
+          );
+        }
+      }
+
+      if (testRequiresUserCaseFile) {
+        // this block is needed because complete-upload can only be called by user who initiated upload
+        testHarness.userCaseFile = await initiateCaseFileUploadSuccess(
+          deaApiUrl,
+          testHarness.userWithRequiredActions.idToken,
+          testHarness.userWithRequiredActions.creds,
+          testHarness.targetCase.ulid,
+          `${randomSuffix()}`,
+          '/',
+          1
+        );
+        await uploadContentToS3(testHarness.userCaseFile.presignedUrls ?? fail(), 'hello world');
+      }
     }, 30000);
 
     beforeEach(async () => {
@@ -92,13 +140,24 @@ export const validateEndpointACLs = (
     });
 
     it('should allow access to the owner', async () => {
+      let ownerUrl = targetUrl;
+      let ownerData = data;
+      if (testHarness.ownerCaseFile) {
+        ownerUrl = ownerUrl.replace('{fileId}', testHarness.ownerCaseFile.ulid!);
+        if (ownerData) {
+          ownerData = ownerData.replace('{fileId}', testHarness.ownerCaseFile.ulid!);
+          ownerData = ownerData.replace('{uploadId}', testHarness.ownerCaseFile.uploadId!);
+        }
+      }
+
       const response = await callDeaAPIWithCreds(
-        targetUrl.replace('{companion}', testHarness.companionIds[0]),
+        ownerUrl.replace('{companion}', testHarness.companionIds[0]),
         method,
         testHarness.owner.idToken,
         testHarness.owner.creds,
-        data?.replace('{companion}', testHarness.companionIds[0])
+        ownerData?.replace('{companion}', testHarness.companionIds[0])
       );
+
       if (response.status > 300) {
         console.log(response);
       }
@@ -107,12 +166,30 @@ export const validateEndpointACLs = (
     });
 
     it('should allow access to a user with all required actions', async () => {
+      let userUrl = targetUrl;
+      let userData = data;
+      let caseFileToUse: DeaCaseFile | undefined;
+
+      if (testRequiresUserCaseFile) {
+        caseFileToUse = testHarness.userCaseFile;
+      } else {
+        caseFileToUse = testHarness.ownerCaseFile;
+      }
+
+      if (caseFileToUse) {
+        userUrl = userUrl.replace('{fileId}', caseFileToUse.ulid!);
+        if (userData) {
+          userData = userData.replace('{fileId}', caseFileToUse.ulid!);
+          userData = userData.replace('{uploadId}', caseFileToUse.uploadId!);
+        }
+      }
+
       const response = await callDeaAPIWithCreds(
-        targetUrl.replace('{companion}', testHarness.companionIds[1]),
+        userUrl.replace('{companion}', testHarness.companionIds[1]),
         method,
         testHarness.userWithRequiredActions.idToken,
         testHarness.userWithRequiredActions.creds,
-        data?.replace('{companion}', testHarness.companionIds[1])
+        userData?.replace('{companion}', testHarness.companionIds[1])
       );
       if (response.status > 300) {
         console.log(response);
@@ -122,8 +199,13 @@ export const validateEndpointACLs = (
     });
 
     it('should deny access to a user with all except the required actions', async () => {
+      let invertedPermsUrl = targetUrl;
+      if (testHarness.ownerCaseFile) {
+        invertedPermsUrl = invertedPermsUrl.replace('{fileId}', testHarness.ownerCaseFile.ulid!);
+      }
+
       const response = await callDeaAPIWithCreds(
-        targetUrl.replace('{companion}', testHarness.companionIds[2]),
+        invertedPermsUrl.replace('{companion}', testHarness.companionIds[2]),
         method,
         testHarness.userWithAllButRequiredActions.idToken,
         testHarness.userWithAllButRequiredActions.creds,
@@ -133,8 +215,13 @@ export const validateEndpointACLs = (
     });
 
     it('should deny access to a user with no actions', async () => {
+      let noPermsUrl = targetUrl;
+      if (testHarness.ownerCaseFile) {
+        noPermsUrl = noPermsUrl.replace('{fileId}', testHarness.ownerCaseFile.ulid!);
+      }
+
       const response = await callDeaAPIWithCreds(
-        targetUrl.replace('{companion}', testHarness.companionIds[3]),
+        noPermsUrl.replace('{companion}', testHarness.companionIds[3]),
         method,
         testHarness.userWithNoActions.idToken,
         testHarness.userWithNoActions.creds,
@@ -144,8 +231,13 @@ export const validateEndpointACLs = (
     });
 
     it('should deny access to a user with no membership', async () => {
+      let noMembershipUrl = targetUrl;
+      if (testHarness.ownerCaseFile) {
+        noMembershipUrl = noMembershipUrl.replace('{fileId}', testHarness.ownerCaseFile.ulid!);
+      }
+
       const response = await callDeaAPIWithCreds(
-        targetUrl.replace('{companion}', testHarness.companionIds[4]),
+        noMembershipUrl.replace('{companion}', testHarness.companionIds[4]),
         method,
         testHarness.userWithNoMembership.idToken,
         testHarness.userWithNoMembership.creds,

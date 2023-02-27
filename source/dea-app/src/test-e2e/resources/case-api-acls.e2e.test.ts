@@ -7,9 +7,21 @@ import { CaseAction } from '../../models/case-action';
 import { validateEndpointACLs } from './case-api-acl-tester';
 import { DeaHttpMethod } from './test-helpers';
 
-type argsType = [string, CaseAction[], string, DeaHttpMethod, string?, boolean?];
+type argsType = [
+  string,
+  CaseAction[],
+  string,
+  DeaHttpMethod,
+  string?,
+  boolean?,
+  boolean?,
+  boolean?,
+  boolean?
+];
 const COMPANION_ID = '{companion}';
 const CASE_ID = '{caseId}';
+const FILE_ID = '{fileId}';
+const UPLOAD_ID = '{uploadId}';
 const RANDOM_STRING = '{rand}';
 
 const getCaseDetailsArgs: argsType = [
@@ -60,7 +72,6 @@ const putCaseUserArgs: argsType = [
   }),
   true,
 ];
-
 const initiateUploadCaseFileArgs: argsType = [
   'initiateUploadCaseFile',
   [CaseAction.UPLOAD],
@@ -73,15 +84,48 @@ const initiateUploadCaseFileArgs: argsType = [
     contentType: 'application/octet-stream',
     fileSizeMb: 1,
   }),
-  true,
+  false,
 ];
-
 const listCaseFilesArgs: argsType = [
   'listCaseFiles',
   [CaseAction.VIEW_FILES],
   `cases/${CASE_ID}/files`,
   'GET',
   undefined,
+  false,
+];
+const getCaseFileDetailsArgs: argsType = [
+  'getCaseFileDetails',
+  [CaseAction.VIEW_FILES],
+  `cases/${CASE_ID}/files/${FILE_ID}`,
+  'GET',
+  undefined,
+  false,
+  true,
+];
+const completeCaseFileUploadArgs: argsType = [
+  'completeCaseFileUpload',
+  [CaseAction.UPLOAD],
+  `cases/${CASE_ID}/files/${FILE_ID}`,
+  'PUT',
+  JSON.stringify({
+    caseUlid: CASE_ID,
+    ulid: FILE_ID,
+    uploadId: UPLOAD_ID,
+  }),
+  false,
+  true,
+  true,
+];
+const downloadCaseFileArgs: argsType = [
+  'downloadCaseFileDetails',
+  [CaseAction.DOWNLOAD],
+  `cases/${CASE_ID}/files/${FILE_ID}/contents`,
+  'GET',
+  undefined,
+  false,
+  true,
+  false,
   true,
 ];
 
@@ -94,5 +138,8 @@ describe('Case API ACL enforcement', () => {
     putCaseUserArgs,
     initiateUploadCaseFileArgs,
     listCaseFilesArgs,
+    completeCaseFileUploadArgs,
+    getCaseFileDetailsArgs,
+    downloadCaseFileArgs,
   ])('%s', validateEndpointACLs);
 });

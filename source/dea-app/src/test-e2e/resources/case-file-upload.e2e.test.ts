@@ -91,7 +91,7 @@ describe('Test case file upload', () => {
       FILE_SIZE_MB
     );
 
-    const presignedUrls = initiatedCaseFile.presignedUrls ?? [];
+    const presignedUrls = initiatedCaseFile.presignedUrls ?? fail();
     const fileUlid = initiatedCaseFile.ulid ?? fail();
     const uploadId = initiatedCaseFile.uploadId ?? fail();
 
