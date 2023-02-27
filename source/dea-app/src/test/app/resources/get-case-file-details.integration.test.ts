@@ -43,7 +43,7 @@ describe('Test get case file details', () => {
     fileDescriber = await callCreateUser(repositoryProvider);
     EVENT.headers['userUlid'] = fileDescriber.ulid;
 
-    caseToDescribe = (await callCreateCase(EVENT, repositoryProvider)).ulid ?? fail();
+    caseToDescribe = (await callCreateCase(fileDescriber, repositoryProvider)).ulid ?? fail();
   });
 
   afterAll(async () => {

@@ -4,8 +4,7 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
-import { DeaCase } from '../../models/case';
-import { CaseStatus } from '../../models/case-status';
+import { DeaCase, DeaCaseInput } from '../../models/case';
 import { caseFromEntity } from '../../models/projections';
 import { DeaUser } from '../../models/user';
 import * as CasePersistence from '../../persistence/case';
@@ -15,20 +14,13 @@ import { CaseType, defaultProvider } from '../../persistence/schema/entities';
 import * as CaseUserService from './case-user-service';
 
 export const createCases = async (
-  deaCase: DeaCase,
+  deaCase: DeaCaseInput,
   owner: DeaUser,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ): Promise<DeaCase> => {
-  const status = deaCase.status ?? CaseStatus.ACTIVE;
-  const currentCase: DeaCase = {
-    ...deaCase,
-    status,
-    objectCount: 0,
-  };
-
-  const createdCase = await CasePersistence.createCase(currentCase, owner, repositoryProvider);
+  const createdCase = await CasePersistence.createCase(deaCase, owner, repositoryProvider);
 
   return createdCase;
 };

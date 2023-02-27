@@ -8,7 +8,7 @@ import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 import Joi from 'joi';
-import { DeaCase } from '../../models/case';
+import { DeaCase, DeaCaseInput } from '../../models/case';
 import { DeaCaseFile } from '../../models/case-file';
 import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
@@ -41,15 +41,11 @@ export async function deleteCase(
 
 export async function createCaseSuccess(
   baseUrl: string,
-  deaCase: DeaCase,
+  deaCase: DeaCaseInput,
   idToken: string,
   creds: Credentials
 ): Promise<DeaCase> {
-  const response = await callDeaAPIWithCreds(`${baseUrl}cases`, 'POST', idToken, creds, {
-    name: deaCase.name,
-    status: deaCase.status,
-    description: deaCase.description,
-  });
+  const response = await callDeaAPIWithCreds(`${baseUrl}cases`, 'POST', idToken, creds, deaCase);
 
   if (response.status !== 200) {
     console.log(response.data);

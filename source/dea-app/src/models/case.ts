@@ -6,11 +6,16 @@
 import { CaseStatus } from './case-status';
 
 export interface DeaCase {
-  readonly ulid?: string;
+  readonly ulid: string;
   readonly name: string;
   readonly status: CaseStatus;
   readonly description?: string;
   readonly objectCount?: number;
   readonly created?: Date;
   readonly updated?: Date;
+}
+
+export interface DeaCaseInput {
+  readonly name: string;
+  readonly description?: string;
 }

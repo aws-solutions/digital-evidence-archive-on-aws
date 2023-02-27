@@ -5,7 +5,7 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { userFromEntity } from '../models/projections';
-import { DeaUser } from '../models/user';
+import { DeaUser, DeaUserInput } from '../models/user';
 import { isDefined } from './persistence-helpers';
 import { UserModel, UserModelRepositoryProvider } from './schema/entities';
 
@@ -80,7 +80,7 @@ export const listUsers = async (
 };
 
 export const createUser = async (
-  deaUser: DeaUser,
+  deaUser: DeaUserInput,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider: UserModelRepositoryProvider = {

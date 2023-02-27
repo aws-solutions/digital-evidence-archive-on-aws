@@ -42,7 +42,7 @@ describe('Test list case files', () => {
     fileDescriber = await callCreateUser(repositoryProvider);
     EVENT.headers['userUlid'] = fileDescriber.ulid;
 
-    caseToList = (await callCreateCase(EVENT, repositoryProvider)).ulid ?? fail();
+    caseToList = (await callCreateCase(fileDescriber, repositoryProvider)).ulid ?? fail();
   });
 
   afterAll(async () => {

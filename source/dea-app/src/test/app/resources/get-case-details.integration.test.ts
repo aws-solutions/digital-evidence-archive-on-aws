@@ -9,7 +9,7 @@ import { NotFoundError } from '../../../app/exceptions/not-found-exception';
 import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { getCase } from '../../../app/resources/get-case-details';
 import { createUser } from '../../../app/services/user-service';
-import { DeaCase } from '../../../models/case';
+import { DeaCase, DeaCaseInput } from '../../../models/case';
 import { CaseStatus } from '../../../models/case-status';
 import { caseResponseSchema } from '../../../models/validation/case';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
@@ -39,9 +39,8 @@ describe('get case details resource', () => {
       repositoryProvider
     );
 
-    const theCase: DeaCase = {
+    const theCase: DeaCaseInput = {
       name: 'ACaseForRetrieving',
-      status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
     const createdCase = await createCase(theCase, user, repositoryProvider);
@@ -69,7 +68,7 @@ describe('get case details resource', () => {
     Joi.assert(retrievedCase, caseResponseSchema);
     expect(retrievedCase.ulid).toEqual(createdCase.ulid);
     expect(retrievedCase.name).toEqual(theCase.name);
-    expect(retrievedCase.status).toEqual(theCase.status);
+    expect(retrievedCase.status).toEqual(CaseStatus.ACTIVE);
     expect(retrievedCase.description).toEqual(theCase.description);
   });
 

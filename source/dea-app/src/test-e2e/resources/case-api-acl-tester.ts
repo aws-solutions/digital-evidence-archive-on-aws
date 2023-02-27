@@ -8,7 +8,6 @@ import { Credentials } from 'aws4-axios';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
 import { DeaCaseFile } from '../../models/case-file';
-import { CaseStatus } from '../../models/case-status';
 import { DeaUser } from '../../models/user';
 import { isDefined } from '../../persistence/persistence-helpers';
 import CognitoHelper from '../helpers/cognito-helper';
@@ -313,7 +312,6 @@ const initializeACLE2ETest = async (
     deaApiUrl,
     {
       name: `targetCase_${testSuiteName}`,
-      status: CaseStatus.ACTIVE,
       description: 'this is a description',
     },
     ownerToken,

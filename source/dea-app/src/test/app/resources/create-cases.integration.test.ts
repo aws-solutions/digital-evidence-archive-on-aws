@@ -193,27 +193,6 @@ describe('create cases resource', () => {
     const response = await createCases(event, dummyContext, repositoryProvider);
     await validateAndReturnCase(name, description, 'ACTIVE', response);
   });
-
-  it('should create INACTIVE case when requested', async () => {
-    const name = 'InactiveCase';
-    const description = 'should create in inactive status';
-    const status = 'INACTIVE';
-
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        body: JSON.stringify({
-          name,
-          description,
-          status,
-        }),
-      }
-    );
-    event.headers['userUlid'] = user.ulid;
-    const response = await createCases(event, dummyContext, repositoryProvider);
-    await validateAndReturnCase(name, description, status, response);
-  });
 });
 
 async function createAndValidateCase(name: string, description: string, userUlid?: string): Promise<string> {

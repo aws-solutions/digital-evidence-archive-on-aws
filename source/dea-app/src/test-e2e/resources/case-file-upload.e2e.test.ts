@@ -5,15 +5,14 @@
 
 import { fail } from 'assert';
 import {
-  S3Client,
   DeleteObjectCommand,
-  PutObjectLegalHoldCommand,
   ObjectLockLegalHoldStatus,
+  PutObjectLegalHoldCommand,
+  S3Client,
 } from '@aws-sdk/client-s3';
 import { Credentials } from 'aws4-axios';
 import { DeaCase } from '../../models/case';
 import { DeaCaseFile } from '../../models/case-file';
-import { CaseStatus } from '../../models/case-status';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
@@ -119,7 +118,6 @@ async function createCase(idToken: string, creds: Credentials): Promise<DeaCase>
     DEA_API_URL,
     {
       name: caseName,
-      status: CaseStatus.ACTIVE,
       description: 'this is a description',
     },
     idToken,
