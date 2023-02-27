@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
 import { getCredentials, getToken } from '../../api/auth';

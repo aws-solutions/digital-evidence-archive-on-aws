@@ -64,7 +64,7 @@ describe('DeaMainStack', () => {
 
     //handlers + authorizer
     template.resourceCountIs('AWS::S3::Bucket', 2);
-    template.resourceCountIs('AWS::ApiGateway::Method', 2);
+    template.resourceCountIs('AWS::ApiGateway::Method', 3);
     template.resourceCountIs('AWS::Lambda::Function', 2);
 
     addSnapshotSerializers();
