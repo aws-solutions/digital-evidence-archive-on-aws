@@ -65,6 +65,10 @@ export const validateEndpointACLs = (
       testHarness = await initializeACLE2ETest('caseDetailACL', requiredActions);
       targetUrl = `${deaApiUrl}${endpoint}`;
       targetUrl = targetUrl.replace('{caseId}', testHarness.targetCase.ulid!);
+      if (data) {
+        data = data.replace('{caseId}', testHarness.targetCase.ulid!);
+        data = data.replace('{rand}', randomSuffix());
+      }
 
       if (createCompanionMemberships) {
         const membershipData = JSON.stringify({
@@ -126,13 +130,6 @@ export const validateEndpointACLs = (
         await uploadContentToS3(testHarness.userCaseFile.presignedUrls ?? fail(), 'hello world');
       }
     }, 30000);
-
-    beforeEach(async () => {
-      if (data) {
-        data = data.replace('{caseId}', testHarness.targetCase.ulid!);
-        data = data.replace('{rand}', randomSuffix());
-      }
-    });
 
     afterAll(async () => {
       await cleanupTestHarness(testHarness);
