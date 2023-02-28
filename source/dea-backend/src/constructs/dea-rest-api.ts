@@ -266,6 +266,7 @@ export class DeaRestApiConstruct extends Construct {
           's3:ListMultipartUploadParts',
           's3:PutObject',
           's3:GetObject',
+          's3:GetObjectVersion',
           's3:GetObjectLegalHold',
           's3:PutObjectLegalHold',
         ],

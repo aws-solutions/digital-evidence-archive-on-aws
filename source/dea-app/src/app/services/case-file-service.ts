@@ -127,6 +127,8 @@ export const completeCaseFileUpload = async (
 export const listCaseFilesByFilePath = async (
   caseId: string,
   filePath: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   limit = 30,
   repositoryProvider: ModelRepositoryProvider,
   nextToken?: object

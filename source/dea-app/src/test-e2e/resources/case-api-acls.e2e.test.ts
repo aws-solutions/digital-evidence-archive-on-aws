@@ -80,7 +80,7 @@ const initiateUploadCaseFileArgs: argsType = [
   JSON.stringify({
     caseUlid: CASE_ID,
     fileName: RANDOM_STRING,
-    filePath: `/${RANDOM_STRING}/`,
+    filePath: `/`,
     contentType: 'application/octet-stream',
     fileSizeMb: 1,
   }),

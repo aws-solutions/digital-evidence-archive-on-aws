@@ -73,7 +73,7 @@ export class DeaMainStack extends cdk.Stack {
 
     kmsKey.addToResourcePolicy(
       new PolicyStatement({
-        actions: ['kms:Decrypt', 'kms:Encrypt'],
+        actions: ['kms:Decrypt', 'kms:Encrypt', 'kms:GenerateDataKey'],
         principals: [new ServicePrincipal(`lambda.${this.region}.amazonaws.com`)],
         resources: [deaApi.lambdaBaseRole.roleArn],
         sid: 'main-key-share-statement',

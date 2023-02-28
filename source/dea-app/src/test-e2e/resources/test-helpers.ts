@@ -4,6 +4,13 @@
  */
 
 import { randomBytes } from 'crypto';
+import {
+  AbortMultipartUploadCommand,
+  DeleteObjectCommand,
+  ObjectLockLegalHoldStatus,
+  PutObjectLegalHoldCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
@@ -13,8 +20,11 @@ import { DeaCaseFile } from '../../models/case-file';
 import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
 import { caseFileResponseSchema } from '../../models/validation/case-file';
+import { ResponseCaseFilePage } from '../../test/app/resources/case-file-integration-test-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
+
+const s3Client = new S3Client({ region: testEnv.awsRegion });
 
 // we don't want axios throwing an exception on non 200 codes
 export const validateStatus = () => true;
@@ -172,6 +182,60 @@ export const initiateCaseFileUploadSuccess = async (
   return initiatedCaseFile;
 };
 
+export const listCaseFilesSuccess = async (
+  deaApiUrl: string,
+  idToken: string,
+  creds: Credentials,
+  caseUlid: string | undefined,
+  filePath: string
+): Promise<ResponseCaseFilePage> => {
+  const response = await callDeaAPIWithCreds(
+    `${deaApiUrl}cases/${caseUlid}/files?filePath=${filePath}`,
+    'GET',
+    idToken,
+    creds
+  );
+
+  expect(response.status).toEqual(200);
+  return response.data;
+};
+
+export const describeCaseFileDetailsSuccess = async (
+  deaApiUrl: string,
+  idToken: string,
+  creds: Credentials,
+  caseUlid: string | undefined,
+  fileUlid: string | undefined
+): Promise<DeaCaseFile> => {
+  const response = await callDeaAPIWithCreds(
+    `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}`,
+    'GET',
+    idToken,
+    creds
+  );
+
+  expect(response.status).toEqual(200);
+  return response.data;
+};
+
+export const getCaseFileDownloadUrl = async (
+  deaApiUrl: string,
+  idToken: string,
+  creds: Credentials,
+  caseUlid: string | undefined,
+  fileUlid: string | undefined
+): Promise<string> => {
+  const response = await callDeaAPIWithCreds(
+    `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}/contents`,
+    'GET',
+    idToken,
+    creds
+  );
+
+  expect(response.status).toEqual(200);
+  return response.data.downloadUrl;
+};
+
 export const uploadContentToS3 = async (
   presignedUrls: readonly string[],
   fileContent: string
@@ -193,6 +257,21 @@ export const uploadContentToS3 = async (
       expect(response.status).toEqual(200);
     });
   });
+};
+
+export const downloadContentFromS3 = async (
+  presignedUrl: string,
+  contentType: string = CONTENT_TYPE
+): Promise<string> => {
+  const httpClient = axios.create({
+    headers: {
+      'Content-Type': contentType,
+    },
+  });
+
+  const response = await httpClient.get(presignedUrl, { validateStatus });
+  expect(response.status).toEqual(200);
+  return response.data;
 };
 
 export const completeCaseFileUploadSuccess = async (
@@ -224,4 +303,37 @@ export const completeCaseFileUploadSuccess = async (
   const uploadedCaseFile: DeaCaseFile = await completeUploadResponse.data;
   Joi.assert(uploadedCaseFile, caseFileResponseSchema);
   return uploadedCaseFile;
+};
+
+export const s3Cleanup = async (s3ObjectsToDelete: s3Object[]): Promise<void> => {
+  for (const object of s3ObjectsToDelete) {
+    try {
+      await s3Client.send(
+        new PutObjectLegalHoldCommand({
+          Bucket: testEnv.datasetsBucketName,
+          Key: object.key,
+          LegalHold: { Status: ObjectLockLegalHoldStatus.OFF },
+        })
+      );
+      await s3Client.send(
+        new DeleteObjectCommand({
+          Key: object.key,
+          Bucket: testEnv.datasetsBucketName,
+        })
+      );
+    } catch (e) {
+      console.log('[INFO] Could not delete object. Perhaps it does not exist', e);
+    }
+    try {
+      await s3Client.send(
+        new AbortMultipartUploadCommand({
+          Key: object.key,
+          Bucket: testEnv.datasetsBucketName,
+          UploadId: object.uploadId,
+        })
+      );
+    } catch (e) {
+      console.log('[INFO] Could not delete multipart upload. Perhaps the upload completed', e);
+    }
+  }
 };
