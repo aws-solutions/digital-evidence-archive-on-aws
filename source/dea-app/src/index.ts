@@ -23,20 +23,19 @@ import { getToken } from './app/resources/get-token';
 import { getUsers } from './app/resources/get-users';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
 import { listCaseFiles } from './app/resources/list-case-files';
-import { sayBye } from './app/resources/say-bye';
-import { sayHello } from './app/resources/say-hello';
 import { updateCaseMembership } from './app/resources/update-case-membership';
 import { updateCases } from './app/resources/update-cases';
 import { verifyCaseACLs } from './app/resources/verify-case-acls';
+import { auditService } from './app/services/audit-service';
 import { getCaseUser } from './app/services/case-user-service';
 import { getRequiredPathParam, getUserUlid } from './lambda-http-helpers';
 import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
-import { dummyContext, dummyEvent } from './test/integration-objects';
+import { dummyContext, dummyEvent, getDummyEvent } from './test/integration-objects';
+import { getTestAuditService } from './test/services/test-audit-service-provider';
 
 export {
-  sayBye,
-  sayHello,
+  auditService,
   getToken,
   getCredentials,
   createCases,
@@ -59,6 +58,8 @@ export {
   getUserUlid,
   updateCaseMembership,
   verifyCaseACLs,
+  getTestAuditService,
+  getDummyEvent,
   CaseAction,
   DeaCase,
   DEAGatewayProxyHandler,

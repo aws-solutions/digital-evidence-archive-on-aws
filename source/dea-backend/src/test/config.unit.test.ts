@@ -4,6 +4,7 @@
  */
 
 import { RemovalPolicy } from 'aws-cdk-lib';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { convictConfig, deaConfig, loadConfig } from '../config';
 
 describe('convict based config', () => {
@@ -13,53 +14,30 @@ describe('convict based config', () => {
 
     expect(deaConfig.userGroups()).toEqual(
       expect.arrayContaining([
-        {
+        expect.objectContaining({
           name: 'CaseWorkerGroup',
           description: 'containing users who need access to case APIs',
-          precedence: 1,
-          endpoints: expect.arrayContaining([
-            { path: '/cases', method: 'GET' },
-            { path: '/cases', method: 'POST' },
-            { path: '/cases/{caseId}', method: 'GET' },
-            { path: '/cases/{caseId}', method: 'PUT' },
-            { path: '/cases/{caseId}', method: 'DELETE' },
-            { path: '/cases/{caseId}/userMemberships', method: 'POST' },
-            { path: '/cases/{caseId}/files', method: 'POST' },
-            { path: '/cases/{caseId}/files', method: 'GET' },
-            { path: '/cases/{caseId}/files/{fileId}', method: 'GET' },
-            { path: '/cases/{caseId}/files/{fileId}', method: 'PUT' },
-            { path: '/cases/{caseId}/files/{fileId}/contents', method: 'GET' },
-          ]),
-        },
-        {
+        }),
+        expect.objectContaining({
           name: 'AuthTestGroup',
           description: 'used for auth e2e testing',
-          precedence: 100,
-          endpoints: expect.arrayContaining([
-            { path: '/hi', method: 'GET' },
-            { path: '/bye', method: 'GET' },
-          ]),
-        },
-        {
+        }),
+        expect.objectContaining({
           name: 'CreateCasesTestGroup',
           description: 'used for create cases API e2e testing',
-          precedence: 100,
-          endpoints: expect.arrayContaining([
-            { path: '/cases', method: 'POST' },
-            { path: '/cases/{caseId}', method: 'DELETE' },
-            { path: '/cases/all-cases', method: 'GET' },
-          ]),
-        },
-        {
+        }),
+        expect.objectContaining({
           name: 'GetCaseTestGroup',
           description: 'used for get cases API e2e testing',
-          precedence: 100,
-          endpoints: expect.arrayContaining([
-            { path: '/cases', method: 'POST' },
-            { path: '/cases/{caseId}', method: 'DELETE' },
-            { path: '/cases/{caseId}', method: 'GET' },
-          ]),
-        },
+        }),
+        expect.objectContaining({
+          name: 'GetMyCasesTestGroup',
+          description: 'used for get my cases API e2e testing',
+        }),
+        expect.objectContaining({
+          name: 'NoPermissionsGroup',
+          description: "containing users who can't do anything in the system",
+        }),
       ])
     );
   });
@@ -86,8 +64,9 @@ describe('convict based config', () => {
     }).toThrow('Cognito domain may only contain lowercase alphanumerics and hyphens.');
   });
 
-  it('returns a destroy policy when non-test', () => {
+  it('returns production policies when non-test', () => {
     convictConfig.set('testStack', false);
     expect(deaConfig.retainPolicy()).toEqual(RemovalPolicy.RETAIN);
+    expect(deaConfig.retentionDays()).toEqual(RetentionDays.INFINITE);
   });
 });

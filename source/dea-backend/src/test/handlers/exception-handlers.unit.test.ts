@@ -3,12 +3,36 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { dummyContext, dummyEvent, ForbiddenError, NotFoundError, ValidationError } from '@aws/dea-app';
+import {
+  dummyContext,
+  dummyEvent,
+  ForbiddenError,
+  getTestAuditService,
+  NotFoundError,
+  ValidationError,
+} from '@aws/dea-app';
+import { TestAuditService } from '@aws/dea-app/lib/test/services/test-audit-service-provider';
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import Joi from 'joi';
 import { createDeaHandler, NO_ACL } from '../../handlers/create-dea-handler';
 
 describe('exception handlers', () => {
+  const OLD_ENV = process.env;
+  let testAuditService: TestAuditService;
+
+  beforeAll(() => {
+    testAuditService = getTestAuditService();
+  });
+
+  beforeEach(() => {
+    jest.resetModules();
+    process.env = { ...OLD_ENV };
+    process.env.AUDIT_LOG_GROUP_NAME = 'TESTGROUP';
+  });
+
+  afterAll(() => {
+    process.env = OLD_ENV;
+  });
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const preExecutionChecks = async (event: APIGatewayProxyEvent, context: Context) => {
     return;
@@ -20,7 +44,8 @@ describe('exception handlers', () => {
         throw new ForbiddenError('you shall not pass');
       },
       NO_ACL,
-      preExecutionChecks
+      preExecutionChecks,
+      testAuditService.service
     );
 
     const actual = await sut(dummyEvent, dummyContext);
@@ -36,7 +61,8 @@ describe('exception handlers', () => {
         throw new ValidationError('custom validation failed');
       },
       NO_ACL,
-      preExecutionChecks
+      preExecutionChecks,
+      testAuditService.service
     );
 
     const actual = await sut(dummyEvent, dummyContext);
@@ -53,7 +79,8 @@ describe('exception handlers', () => {
         throw new NotFoundError('something was not found');
       },
       NO_ACL,
-      preExecutionChecks
+      preExecutionChecks,
+      testAuditService.service
     );
 
     const actual = await sut(dummyEvent, dummyContext);
@@ -71,7 +98,8 @@ describe('exception handlers', () => {
         throw err;
       },
       NO_ACL,
-      preExecutionChecks
+      preExecutionChecks,
+      testAuditService.service
     );
 
     const actual = await sut(dummyEvent, dummyContext);
@@ -87,7 +115,8 @@ describe('exception handlers', () => {
         throw new Error('some unexpected error');
       },
       NO_ACL,
-      preExecutionChecks
+      preExecutionChecks,
+      testAuditService.service
     );
 
     const actual = await sut(dummyEvent, dummyContext);
@@ -108,7 +137,8 @@ describe('exception handlers', () => {
         return { statusCode: 200, body: '' };
       },
       NO_ACL,
-      preExecutionChecks
+      preExecutionChecks,
+      testAuditService.service
     );
 
     const actual = await sut(dummyEvent, dummyContext);
@@ -125,7 +155,8 @@ describe('exception handlers', () => {
         throw 'ItInTheOcean';
       },
       NO_ACL,
-      preExecutionChecks
+      preExecutionChecks,
+      testAuditService.service
     );
 
     const actual = await sut(dummyEvent, dummyContext);

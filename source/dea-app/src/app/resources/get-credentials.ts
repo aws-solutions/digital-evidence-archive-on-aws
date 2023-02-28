@@ -3,15 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { getRequiredPathParam } from '../../lambda-http-helpers';
-import { logger } from '../../logger';
 import { idToken } from '../../models/validation/joi-common';
 import { getCredentialsByToken } from '../services/auth-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 
-export const getCredentials: DEAGatewayProxyHandler = async (event, context) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
-
+export const getCredentials: DEAGatewayProxyHandler = async (event) => {
   const idTokenString = getRequiredPathParam(event, 'idToken', idToken);
   const response = await getCredentialsByToken(idTokenString);
 

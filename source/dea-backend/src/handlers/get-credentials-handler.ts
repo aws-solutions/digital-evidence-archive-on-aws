@@ -6,8 +6,7 @@
 import { getCredentials } from '@aws/dea-app';
 import { createDeaHandler, NO_ACL } from './create-dea-handler';
 
-const noOpPreExecution = () => {
+const noOpPreExecution = async () => {
   /* do nothing */
-  return Promise.resolve();
 };
 export const handler = createDeaHandler(getCredentials, NO_ACL, noOpPreExecution);

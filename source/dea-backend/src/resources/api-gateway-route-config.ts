@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
 import { AuthorizationType } from 'aws-cdk-lib/aws-apigateway';
 
 export interface ApiGatewayRouteConfig {
@@ -11,6 +12,7 @@ export interface ApiGatewayRouteConfig {
 }
 
 export interface ApiGatewayRoute {
+  readonly eventName: AuditEventType;
   readonly path: string;
   readonly pathToSource: string;
   readonly httpMethod: ApiGatewayMethod;

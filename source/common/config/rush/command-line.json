@@ -208,6 +208,14 @@
       "allowWarningsInSuccessfulBuild": true
     },
     {
+      "name": "test:noe2e",
+      "commandKind": "bulk",
+      "summary": "Used to only perform unit and integration tests on the packages",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
+    },
+    {
       "name": "e2e:only",
       "commandKind": "bulk",
       "summary": "Used to perform e2e tests only on the packages",

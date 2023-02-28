@@ -30,16 +30,16 @@ describe('API authentication', () => {
   });
 
   it('should allow successful calls to the api for authenticated users', async () => {
-    const url = `${deaApiUrl}hi`;
+    const url = `${deaApiUrl}cases/my-cases`;
     const response = await callDeaAPI(testUser, url, cognitoHelper, 'GET');
 
     expect(response.status).toBe(200);
-    expect(response.data).toBe('Hello DEA!');
+    expect(response.data).toHaveProperty('cases');
   }, 40000);
 
   it('should disallow calls without credentials', async () => {
     const client = axios.create();
-    const url = `${deaApiUrl}hi`;
+    const url = `${deaApiUrl}cases/my-cases`;
 
     await expect(client.get(url)).rejects.toThrow('Request failed with status code 403');
   });
@@ -55,7 +55,7 @@ describe('API authentication', () => {
     );
     client.interceptors.request.use(interceptor);
 
-    const url = `${deaApiUrl}hi`;
+    const url = `${deaApiUrl}cases/my-cases`;
 
     await expect(client.get(url)).rejects.toThrow('Request failed with status code 400');
   });
@@ -76,7 +76,7 @@ describe('API authentication', () => {
     await cognitoHelper.createUser(firstTimeFederatedUser, 'AuthTestGroup', firstName, lastName);
 
     // 3. call hi
-    const url = `${deaApiUrl}hi`;
+    const url = `${deaApiUrl}cases/my-cases`;
     const response = await callDeaAPI(firstTimeFederatedUser, url, cognitoHelper, 'GET');
 
     expect(response.status).toEqual(200);

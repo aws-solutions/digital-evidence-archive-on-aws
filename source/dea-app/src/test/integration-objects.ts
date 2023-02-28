@@ -4,6 +4,13 @@
  */
 
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
+import {
+  AuditEventResult,
+  AuditEventSource,
+  AuditEventType,
+  CJISAuditEventBody,
+  IdentityType,
+} from '../app/services/audit-service';
 
 export const dummyEvent: APIGatewayProxyEvent = {
   resource: '/cases/{caseId}',
@@ -111,4 +118,36 @@ export const dummyContext: Context = {
   succeed: () => {
     /* do nothing */
   },
+};
+
+const dummyAuditEvent: CJISAuditEventBody = {
+  dateTime: new Date().toISOString(),
+  requestPath: '/',
+  sourceComponent: AuditEventSource.API_GATEWAY,
+  eventType: AuditEventType.CREATE_CASE,
+  actorIdentity: {
+    idType: IdentityType.COGNITO_ID,
+    sourceIp: '0.0.0.0',
+    id: 'us-east-1:1-2-3-4',
+  },
+  result: AuditEventResult.FAILURE,
+};
+
+export const getDummyEvent = (addedData?: object): APIGatewayProxyEvent => {
+  return Object.assign(
+    {},
+    {
+      ...dummyEvent,
+      ...addedData,
+    }
+  );
+};
+
+export const getDummyAuditEvent = (): CJISAuditEventBody => {
+  return Object.assign(
+    {},
+    {
+      ...dummyAuditEvent,
+    }
+  );
 };
