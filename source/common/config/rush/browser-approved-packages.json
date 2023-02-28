@@ -299,6 +299,10 @@
       "allowedCategories": ["production", "prototypes"]
     },
     {
+      "name": "axios-mock-adapter",
+      "allowedCategories": ["production"]
+    },
+    {
       "name": "babel-jest",
       "allowedCategories": ["production", "prototypes"]
     },
@@ -429,6 +433,10 @@
     {
       "name": "js-yaml",
       "allowedCategories": ["production", "prototypes"]
+    },
+    {
+      "name": "jsonwebtoken",
+      "allowedCategories": ["production"]
     },
     {
       "name": "jwt-decode",

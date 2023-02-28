@@ -18,7 +18,6 @@ const fetchData = async (options: AxiosRequestConfig): Promise<any> => {
   const secretAccessKey = localStorage.getItem('secretAccessKey');
   const sessionToken = localStorage.getItem('sessionToken');
   const idToken = localStorage.getItem('idToken');
-  const client = axios.create();
 
   options.headers = {
     ...options.headers,
@@ -26,6 +25,7 @@ const fetchData = async (options: AxiosRequestConfig): Promise<any> => {
   };
 
   if (idToken && accessKeyId && secretAccessKey && sessionToken) {
+    const client = axios.create();
     // create credentials
     const credentials: Credentials = {
       accessKeyId,
@@ -38,7 +38,6 @@ const fetchData = async (options: AxiosRequestConfig): Promise<any> => {
       idToken: idToken,
     };
 
-    console.log('making interceptor');
     const interceptor = aws4Interceptor(
       {
         service: 'execute-api',
@@ -47,15 +46,22 @@ const fetchData = async (options: AxiosRequestConfig): Promise<any> => {
     );
 
     client.interceptors.request.use(interceptor);
+    const { data } = await client.request(options).catch((error: Error) => {
+      console.log(error);
+      // TODO: call logger to capture exception
+      throw new Error('there was an error while trying to retrieve data');
+    });
+
+    return data;
+  } else {
+    const { data } = await axios(options).catch(function (error: Error) {
+      console.log(error);
+      // TODO: call logger to capture exception
+      throw new Error('there was an error while trying to retrieve data');
+    });
+
+    return data;
   }
-
-  const { data } = await client.request(options).catch((error: Error) => {
-    console.log(error);
-    // TODO: call logger to capture exception
-    throw new Error('there was an error while trying to retrieve data');
-  });
-
-  return data;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
