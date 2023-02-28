@@ -3,84 +3,100 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
 import { AuthorizationType } from 'aws-cdk-lib/aws-apigateway';
 import { ApiGatewayMethod, ApiGatewayRouteConfig } from './api-gateway-route-config';
 
 export const deaApiRouteConfig: ApiGatewayRouteConfig = {
   routes: [
     {
+      eventName: AuditEventType.GET_MY_CASES,
       path: '/cases/my-cases',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-my-cases-handler.ts',
       pagination: true,
     },
     {
+      eventName: AuditEventType.GET_ALL_CASES,
       path: '/cases/all-cases',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-all-cases-handler.ts',
       pagination: true,
     },
     {
+      eventName: AuditEventType.CREATE_CASE,
       path: '/cases',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/create-cases-handler.ts',
     },
     {
+      eventName: AuditEventType.GET_CASE_DETAILS,
       path: '/cases/{caseId}',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-case-detail-handler.ts',
     },
     {
+      eventName: AuditEventType.UPDATE_CASE_DETAILS,
       path: '/cases/{caseId}',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/update-cases-handler.ts',
     },
     {
+      eventName: AuditEventType.DELETE_CASE,
       path: '/cases/{caseId}',
       httpMethod: ApiGatewayMethod.DELETE,
       pathToSource: '../../src/handlers/delete-case-handler.ts',
     },
     {
+      eventName: AuditEventType.INVITE_USER_TO_CASE,
       path: '/cases/{caseId}/userMemberships',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/create-case-user-handler.ts',
     },
     {
+      eventName: AuditEventType.REMOVE_USER_FROM_CASE,
       path: '/cases/{caseId}/userMemberships/{userId}',
       httpMethod: ApiGatewayMethod.DELETE,
       pathToSource: '../../src/handlers/delete-case-user-handler.ts',
     },
     {
+      eventName: AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE,
       path: '/cases/{caseId}/userMemberships/{userId}',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/update-case-user-handler.ts',
     },
     {
+      eventName: AuditEventType.INITIATE_CASE_FILE_UPLOAD,
       path: '/cases/{caseId}/files',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/initiate-case-file-upload-handler.ts',
     },
     {
+      eventName: AuditEventType.GET_CASE_FILES,
       path: '/cases/{caseId}/files',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/list-case-files-handler.ts',
     },
     {
+      eventName: AuditEventType.COMPLETE_CASE_FILE_UPLOAD,
       path: '/cases/{caseId}/files/{fileId}',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/complete-case-file-upload-handler.ts',
     },
     {
+      eventName: AuditEventType.GET_CASE_FILE_DETAIL,
       path: '/cases/{caseId}/files/{fileId}',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-case-file-detail-handler.ts',
     },
     {
+      eventName: AuditEventType.DOWNLOAD_CASE_FILE,
       path: '/cases/{caseId}/files/{fileId}/contents',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/download-case-file-handler.ts',
     },
     {
+      eventName: AuditEventType.GET_AUTH_TOKEN,
       path: '/auth/getToken/{authCode}',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/get-token-handler.ts',
@@ -90,6 +106,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       authMethod: AuthorizationType.NONE,
     },
     {
+      eventName: AuditEventType.EXCHANGE_TOKEN_FOR_CREDS,
       path: '/auth/getCredentials/{idToken}',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-credentials-handler.ts',
@@ -97,20 +114,11 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       authMethod: AuthorizationType.NONE,
     },
     {
-      path: '/hi',
-      httpMethod: ApiGatewayMethod.GET,
-      pathToSource: '../../src/handlers/say-hello-handler.ts',
-    },
-    {
+      eventName: AuditEventType.GET_ALL_USERS,
       path: '/users',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-users-handler.ts',
       queryParams: ['nameBeginsWith'],
-    },
-    {
-      path: '/bye',
-      httpMethod: ApiGatewayMethod.GET,
-      pathToSource: '../../src/handlers/say-bye-handler.ts',
     },
   ],
   allowedOrigins: JSON.parse(process.env.ALLOWED_ORIGINS || '[]'),

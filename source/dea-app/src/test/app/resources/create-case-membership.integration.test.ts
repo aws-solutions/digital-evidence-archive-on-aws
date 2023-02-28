@@ -18,7 +18,7 @@ import { caseUserResponseSchema } from '../../../models/validation/case-user';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, dummyEvent, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -57,20 +57,16 @@ describe('create case membership resource', () => {
     };
     const user = await UserService.createUser(deaUser, repositoryProvider);
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: newCase.ulid,
-        },
-        body: JSON.stringify({
-          userUlid: user.ulid,
-          caseUlid: newCase.ulid,
-          actions: [CaseAction.VIEW_CASE_DETAILS],
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: newCase.ulid,
+      },
+      body: JSON.stringify({
+        userUlid: user.ulid,
+        caseUlid: newCase.ulid,
+        actions: [CaseAction.VIEW_CASE_DETAILS],
+      }),
+    });
 
     const response = await createCaseMembership(event, dummyContext, repositoryProvider);
 

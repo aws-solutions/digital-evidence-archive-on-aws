@@ -14,6 +14,7 @@ import Metadata from '@aws/workbench-core-audit/lib/metadata';
 import Writer from '@aws/workbench-core-audit/lib/plugins/writer';
 import { now } from 'lodash';
 import { getRequiredEnv } from '../../lambda-http-helpers';
+import { CJISAuditEventBody } from '../services/audit-service';
 
 const lambdaName = getRequiredEnv('AWS_LAMBDA_FUNCTION_NAME', 'NO_LAMBDA_NAME_FOUND');
 
@@ -23,6 +24,18 @@ export default class DeaAuditWriter implements Writer {
 
   public constructor(private cloudwatchClient: CloudWatchLogsClient) {
     this._logStreamName = `${lambdaName}-${new Date().toISOString()}`.replaceAll(':', '');
+  }
+
+  public async prepare(metadata: Metadata, auditEntry: AuditEntry): Promise<void> {
+    // making an assertion here as we'll always be passing CJISAuditEventBody for metadata
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const entry = metadata as CJISAuditEventBody;
+    auditEntry.actorIdentity = entry.actorIdentity;
+    auditEntry.dateTime = entry.dateTime;
+    auditEntry.eventType = entry.eventType;
+    auditEntry.requestPath = entry.requestPath;
+    auditEntry.result = entry.result;
+    auditEntry.sourceComponent = entry.sourceComponent;
   }
 
   public async write(metadata: Metadata, auditEntry: AuditEntry): Promise<void> {
@@ -42,6 +55,6 @@ export default class DeaAuditWriter implements Writer {
       logEvents: [{ timestamp: now(), message: JSON.stringify(auditEntry) }],
     });
 
-    void this.cloudwatchClient.send(putLogsCommand);
+    await this.cloudwatchClient.send(putLogsCommand);
   }
 }
