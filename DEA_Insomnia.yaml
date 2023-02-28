@@ -1,11 +1,11 @@
 _type: export
 __export_format: 4
-__export_date: 2023-02-10T16:47:22.504Z
+__export_date: 2023-02-24T20:21:55.669Z
 __export_source: insomnia.desktop.app:v2022.7.5
 resources:
   - _id: req_81229d095f1f49648d950ea140d9d79e
     parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
-    modified: 1676047581372
+    modified: 1677185777682
     created: 1675974209968
     url: "{{ _.deaApiUrl }}cases/someulid"
     name: DELETE case
@@ -182,6 +182,102 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
+  - _id: req_598f3fbb3e534a51a231e581b682991b
+    parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
+    modified: 1677269890008
+    created: 1677186545752
+    url: "{{deaApiUrl}}cases/someulid/files"
+    name: GET list-case-files
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - id: pair_7e05d836487844049fefbcaf3e24db5c
+        name: idToken
+        value: "{{ _.idToken }}"
+        description: ""
+    authentication:
+      type: iam
+      disabled: false
+      accessKeyId: "{{accessKeyId}}"
+      secretAccessKey: "{{ _.secretAccessKey }}"
+      sessionToken: "{{ _.sessionToken }}"
+      region: "{{region}}"
+      service: execute-api
+    metaSortKey: -1670027945266.625
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_3a656c84d1bd4a7fb5075931789f9aec
+    parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
+    modified: 1677269903599
+    created: 1677186652542
+    url: "{{deaApiUrl}}cases/someulid/files/someulid"
+    name: GET case-file-description
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - id: pair_7e05d836487844049fefbcaf3e24db5c
+        name: idToken
+        value: "{{ _.idToken }}"
+        description: ""
+    authentication:
+      type: iam
+      disabled: false
+      accessKeyId: "{{accessKeyId}}"
+      secretAccessKey: "{{ _.secretAccessKey }}"
+      sessionToken: "{{ _.sessionToken }}"
+      region: "{{region}}"
+      service: execute-api
+    metaSortKey: -1670027945265.0625
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_8095869ce4324ed4bd9758ff39da6f6d
+    parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
+    modified: 1677269914271
+    created: 1677186717770
+    url: "{{deaApiUrl}}cases/someulid/files/someulid/contents"
+    name: GET case-file download
+    description: ""
+    method: GET
+    body: {}
+    parameters: []
+    headers:
+      - id: pair_7e05d836487844049fefbcaf3e24db5c
+        name: idToken
+        value: "{{ _.idToken }}"
+        description: ""
+    authentication:
+      type: iam
+      disabled: false
+      accessKeyId: "{{accessKeyId}}"
+      secretAccessKey: "{{ _.secretAccessKey }}"
+      sessionToken: "{{ _.sessionToken }}"
+      region: "{{region}}"
+      service: execute-api
+    metaSortKey: -1670027945264.2812
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
   - _id: req_78817ad754664b81929b6bdacd786e1c
     parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
     modified: 1676047604505
@@ -216,7 +312,7 @@ resources:
     _type: request
   - _id: req_679f55f4a1744dd498253b2b2efb47a1
     parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
-    modified: 1676047428186
+    modified: 1677269959831
     created: 1670367835546
     url: "{{ _.deaApiUrl }}cases"
     name: POST cases
@@ -248,6 +344,93 @@ resources:
       region: "{{region}}"
       service: execute-api
     metaSortKey: -1670027945226
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_fd5ea1a24cc14d54a3ccdd54485e25e1
+    parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
+    modified: 1677269976324
+    created: 1677185795081
+    url: "{{ _.deaApiUrl }}cases/someulid/files"
+    name: POST initiate casefile upload
+    description: ""
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"caseUlid": "",
+        	"fileName": "",
+        	"filePath": "/",
+        	"contentType": "",
+        	"fileSizeMb": 1
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+        id: pair_0f9f123ac68a452caf8f33620b44a8eb
+      - id: pair_a3e62d55254f4fe6a7d1979c449d18c3
+        name: idToken
+        value: "{{ _.idToken }}"
+        description: ""
+    authentication:
+      type: iam
+      disabled: false
+      accessKeyId: "{{ _.accessKeyId }}"
+      secretAccessKey: "{{ _.secretAccessKey }}"
+      sessionToken: "{{ _.sessionToken }}"
+      region: "{{region}}"
+      service: execute-api
+    metaSortKey: -1670027945201
+    isPrivate: false
+    settingStoreCookies: true
+    settingSendCookies: true
+    settingDisableRenderRequestBody: false
+    settingEncodeUrl: true
+    settingRebuildPath: true
+    settingFollowRedirects: global
+    _type: request
+  - _id: req_3c720b6c25804ccaae1756978633b4e6
+    parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
+    modified: 1677270060185
+    created: 1677269751873
+    url: "{{ _.deaApiUrl }}cases/someulid/files/someulid"
+    name: PUT complete casefile upload
+    description: ""
+    method: PUT
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"caseUlid": "",
+        	"ulid": "",
+        	"uploadId": "",
+        	"sha256Hash": ""
+        }
+    parameters: []
+    headers:
+      - name: Content-Type
+        value: application/json
+        id: pair_0f9f123ac68a452caf8f33620b44a8eb
+      - id: pair_a3e62d55254f4fe6a7d1979c449d18c3
+        name: idToken
+        value: "{{ _.idToken }}"
+        description: ""
+    authentication:
+      type: iam
+      disabled: false
+      accessKeyId: "{{ _.accessKeyId }}"
+      secretAccessKey: "{{ _.secretAccessKey }}"
+      sessionToken: "{{ _.sessionToken }}"
+      region: "{{region}}"
+      service: execute-api
+    metaSortKey: -1670027945188.5
     isPrivate: false
     settingStoreCookies: true
     settingSendCookies: true
@@ -345,7 +528,7 @@ resources:
     _type: unit_test_suite
   - _id: env_62483f0ccdf849268138b201241303d9
     parentId: env_f15ef37f63e9fb404b9fde7714e47ea04e644223
-    modified: 1676047235989
+    modified: 1677269653374
     created: 1676047143162
     name: DEA Env
     data:

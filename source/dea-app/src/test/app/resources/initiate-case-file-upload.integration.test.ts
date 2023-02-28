@@ -49,7 +49,7 @@ const DATASETS_PROVIDER = {
 
 const EVENT = dummyEvent;
 
-jest.setTimeout(20000);
+jest.setTimeout(30000);
 
 describe('Test initiate case file upload', () => {
   beforeAll(async () => {
@@ -133,8 +133,7 @@ describe('Test initiate case file upload', () => {
       repositoryProvider,
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       caseFile.ulid as string,
-      caseToUploadTo,
-      activeFileName
+      caseToUploadTo
     );
 
     await expect(

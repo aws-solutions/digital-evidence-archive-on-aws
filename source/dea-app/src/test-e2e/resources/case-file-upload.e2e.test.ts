@@ -11,28 +11,25 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Credentials } from 'aws4-axios';
-import axios from 'axios';
-import sha256 from 'crypto-js/sha256';
-import Joi from 'joi';
 import { DeaCase } from '../../models/case';
 import { DeaCaseFile } from '../../models/case-file';
-import { caseFileResponseSchema } from '../../models/validation/case-file';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPIWithCreds, createCaseSuccess, deleteCase, validateStatus } from './test-helpers';
+import {
+  completeCaseFileUploadSuccess,
+  createCaseSuccess,
+  deleteCase,
+  initiateCaseFileUploadSuccess,
+  s3Object,
+  uploadContentToS3,
+} from './test-helpers';
 
-const CONTENT_TYPE = 'application/octet-stream';
-const FILE_NAME = 'fileName';
 const FILE_PATH = '/food/sushi/';
 const FILE_CONTENT = 'hello world';
 const TEST_USER = 'caseFileUploadTestUser';
 const FILE_SIZE_MB = 50;
 const DEA_API_URL = testEnv.apiUrlOutput;
 const s3Client = new S3Client({ region: testEnv.awsRegion });
-
-interface s3Object {
-  key: string;
-}
 
 describe('Test case file upload', () => {
   const cognitoHelper = new CognitoHelper();
@@ -80,19 +77,32 @@ describe('Test case file upload', () => {
     const caseUlid = createdCase.ulid ?? fail();
     caseIdsToDelete.push(caseUlid);
 
-    const initiatedCaseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate(idToken, creds, caseUlid);
-    const presignedUrls = initiatedCaseFile.presignedUrls ?? [];
+    const initiatedCaseFile: DeaCaseFile = await initiateCaseFileUploadSuccess(
+      DEA_API_URL,
+      idToken,
+      creds,
+      caseUlid,
+      'positiveTest',
+      FILE_PATH,
+      FILE_SIZE_MB
+    );
+
+    const presignedUrls = initiatedCaseFile.presignedUrls ?? fail();
     const fileUlid = initiatedCaseFile.ulid ?? fail();
+    const uploadId = initiatedCaseFile.uploadId ?? fail();
 
-    const presignedUploadResponses = uploadFile(presignedUrls);
+    await uploadContentToS3(presignedUrls, FILE_CONTENT);
 
-    await Promise.all(presignedUploadResponses).then((responses) => {
-      responses.forEach((response) => {
-        expect(response.status).toEqual(200);
-      });
-    });
+    await completeCaseFileUploadSuccess(
+      DEA_API_URL,
+      idToken,
+      creds,
+      caseUlid,
+      fileUlid,
+      uploadId,
+      FILE_CONTENT
+    );
 
-    await completeCaseFileUploadAndValidate(idToken, creds, createdCase, initiatedCaseFile);
     s3ObjectsToDelete.push({ key: `${caseUlid}/${fileUlid}` });
 
     // todo: add validation of uploaded file and sha256 hash when file download is implemented
@@ -110,81 +120,4 @@ async function createCase(idToken: string, creds: Credentials): Promise<DeaCase>
     idToken,
     creds
   );
-}
-
-async function initiateCaseFileUploadAndValidate(
-  idToken: string,
-  creds: Credentials,
-  caseUlid: string,
-  fileName: string = FILE_NAME,
-  filePath: string = FILE_PATH,
-  contentType: string = CONTENT_TYPE,
-  fileSizeMb: number = FILE_SIZE_MB
-): Promise<DeaCaseFile> {
-  const initiateUploadResponse = await callDeaAPIWithCreds(
-    `${DEA_API_URL}cases/${caseUlid}/files`,
-    'POST',
-    idToken,
-    creds,
-    {
-      caseUlid: caseUlid,
-      fileName: fileName,
-      filePath: filePath,
-      contentType: contentType,
-      fileSizeMb: fileSizeMb,
-    }
-  );
-
-  expect(initiateUploadResponse.status).toEqual(200);
-  const initiatedCaseFile: DeaCaseFile = await initiateUploadResponse.data;
-  Joi.assert(initiatedCaseFile, caseFileResponseSchema);
-  return initiatedCaseFile;
-}
-
-function uploadFile(
-  presignedUrls: readonly string[],
-  fileContent: string = FILE_CONTENT
-): Promise<Response>[] {
-  const uploadResponses: Promise<Response>[] = [];
-
-  const httpClient = axios.create({
-    headers: {
-      'Content-Type': CONTENT_TYPE,
-    },
-  });
-
-  presignedUrls.forEach((url, index) => {
-    uploadResponses[index] = httpClient.put(url, fileContent, { validateStatus });
-  });
-
-  return uploadResponses;
-}
-
-async function completeCaseFileUploadAndValidate(
-  idToken: string,
-  creds: Credentials,
-  deaCase: DeaCase,
-  caseFile: DeaCaseFile,
-  fileName: string = FILE_NAME,
-  filePath: string = FILE_PATH,
-  fileContent: string = FILE_CONTENT
-): Promise<void> {
-  const completeUploadResponse = await callDeaAPIWithCreds(
-    `${DEA_API_URL}cases/${deaCase.ulid}/files/${caseFile.ulid}`,
-    'PUT',
-    idToken,
-    creds,
-    {
-      caseUlid: deaCase.ulid,
-      ulid: caseFile.ulid,
-      uploadId: caseFile.uploadId,
-      fileName: fileName,
-      filePath: filePath,
-      sha256Hash: sha256(fileContent).toString(),
-    }
-  );
-
-  expect(completeUploadResponse.status).toEqual(200);
-  const uploadedCaseFile: DeaCaseFile = await completeUploadResponse.data;
-  Joi.assert(uploadedCaseFile, caseFileResponseSchema);
 }

@@ -4,19 +4,31 @@
  */
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import {
+  DeleteObjectCommand,
+  ObjectLockLegalHoldStatus,
+  PutObjectLegalHoldCommand,
+  AbortMultipartUploadCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { Credentials } from 'aws4-axios';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
+import { DeaCaseFile } from '../../models/case-file';
 import { DeaUser } from '../../models/user';
 import { isDefined } from '../../persistence/persistence-helpers';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
   callDeaAPIWithCreds,
+  completeCaseFileUploadSuccess,
   createCaseSuccess,
   DeaHttpMethod,
   deleteCase,
+  initiateCaseFileUploadSuccess,
   randomSuffix,
+  s3Object,
+  uploadContentToS3,
 } from './test-helpers';
 
 export interface ACLTestHarness {
@@ -27,6 +39,8 @@ export interface ACLTestHarness {
   userWithNoMembership: ACLTestUser;
   companionIds: string[];
   targetCase: DeaCase;
+  ownerCaseFile?: DeaCaseFile;
+  userCaseFile?: DeaCaseFile;
 }
 
 export interface ACLTestUser {
@@ -36,9 +50,16 @@ export interface ACLTestUser {
   userName: string;
 }
 
+interface ApiParameters {
+  data?: string;
+  url: string;
+}
+
 const cognitoHelper = new CognitoHelper();
 
 const deaApiUrl = testEnv.apiUrlOutput;
+
+const s3Client = new S3Client({ region: testEnv.awsRegion });
 
 export const validateEndpointACLs = (
   testSuiteName: string,
@@ -46,20 +67,27 @@ export const validateEndpointACLs = (
   endpoint: string,
   method: DeaHttpMethod,
   data?: string,
-  createCompanionMemberships = false
+  createCompanionMemberships = false,
+  testRequiresOwnerCaseFile = false,
+  testRequiresUserCaseFile = false,
+  testRequiresDownload = false
 ) => {
   describe(testSuiteName, () => {
     let testHarness: ACLTestHarness;
     let targetUrl: string;
+    const s3ObjectsToDelete: s3Object[] = [];
+
+    beforeEach(async () => {
+      if (data) {
+        data = data.replace('{caseId}', testHarness.targetCase.ulid!);
+        data = data.replace('{rand}', randomSuffix());
+      }
+    });
 
     beforeAll(async () => {
       testHarness = await initializeACLE2ETest('caseDetailACL', requiredActions);
       targetUrl = `${deaApiUrl}${endpoint}`;
       targetUrl = targetUrl.replace('{caseId}', testHarness.targetCase.ulid!);
-      if (data) {
-        data = data.replace('{caseId}', testHarness.targetCase.ulid!);
-        data = data.replace('{rand}', randomSuffix());
-      }
 
       if (createCompanionMemberships) {
         const membershipData = JSON.stringify({
@@ -81,65 +109,122 @@ export const validateEndpointACLs = (
           expect(cr.status).toEqual(200);
         }
       }
+
+      if (testRequiresOwnerCaseFile) {
+        testHarness.ownerCaseFile = await setupCaseFile(
+          testHarness.owner,
+          testHarness.targetCase.ulid,
+          s3ObjectsToDelete,
+          testRequiresDownload
+        );
+      }
+
+      if (testRequiresUserCaseFile) {
+        // this block is needed because complete-upload can only be called by user who initiated upload
+        testHarness.userCaseFile = await setupCaseFile(
+          testHarness.userWithRequiredActions,
+          testHarness.targetCase.ulid,
+          s3ObjectsToDelete,
+          false
+        );
+      }
     }, 30000);
 
     afterAll(async () => {
       await cleanupTestHarness(testHarness);
-    });
+      await s3Cleanup(s3ObjectsToDelete);
+    }, 30000);
 
     it('should allow access to the owner', async () => {
+      const apiParams = getUpdatedDataAndUrl(
+        data,
+        targetUrl,
+        testHarness.targetCase.ulid,
+        testHarness.ownerCaseFile
+      );
       const response = await callDeaAPIWithCreds(
-        targetUrl.replace('{companion}', testHarness.companionIds[0]),
+        apiParams.url.replace('{companion}', testHarness.companionIds[0]),
         method,
         testHarness.owner.idToken,
         testHarness.owner.creds,
-        data?.replace('{companion}', testHarness.companionIds[0])
+        apiParams.data?.replace('{companion}', testHarness.companionIds[0])
       );
+
+      if (response.status > 300) {
+        console.log(response);
+      }
       expect(response.status).toBeGreaterThanOrEqual(200);
       expect(response.status).toBeLessThan(300);
     });
 
     it('should allow access to a user with all required actions', async () => {
+      const caseFileToUse = testRequiresUserCaseFile ? testHarness.userCaseFile : testHarness.ownerCaseFile;
+      const apiParams = getUpdatedDataAndUrl(data, targetUrl, testHarness.targetCase.ulid, caseFileToUse);
+
       const response = await callDeaAPIWithCreds(
-        targetUrl.replace('{companion}', testHarness.companionIds[1]),
+        apiParams.url.replace('{companion}', testHarness.companionIds[1]),
         method,
         testHarness.userWithRequiredActions.idToken,
         testHarness.userWithRequiredActions.creds,
-        data?.replace('{companion}', testHarness.companionIds[1])
+        apiParams.data?.replace('{companion}', testHarness.companionIds[1])
       );
+      if (response.status > 300) {
+        console.log(response);
+      }
       expect(response.status).toBeGreaterThanOrEqual(200);
       expect(response.status).toBeLessThan(300);
     });
 
     it('should deny access to a user with all except the required actions', async () => {
+      const apiParams = getUpdatedDataAndUrl(
+        data,
+        targetUrl,
+        testHarness.targetCase.ulid,
+        testHarness.ownerCaseFile
+      );
+
       const response = await callDeaAPIWithCreds(
-        targetUrl.replace('{companion}', testHarness.companionIds[2]),
+        apiParams.url.replace('{companion}', testHarness.companionIds[2]),
         method,
         testHarness.userWithAllButRequiredActions.idToken,
         testHarness.userWithAllButRequiredActions.creds,
-        data?.replace('{companion}', testHarness.companionIds[2])
+        apiParams.data?.replace('{companion}', testHarness.companionIds[2])
       );
       expect(response.status).toEqual(404);
     });
 
     it('should deny access to a user with no actions', async () => {
+      const apiParams = getUpdatedDataAndUrl(
+        data,
+        targetUrl,
+        testHarness.targetCase.ulid,
+        testHarness.ownerCaseFile
+      );
+
       const response = await callDeaAPIWithCreds(
-        targetUrl.replace('{companion}', testHarness.companionIds[3]),
+        apiParams.url.replace('{companion}', testHarness.companionIds[3]),
         method,
         testHarness.userWithNoActions.idToken,
         testHarness.userWithNoActions.creds,
-        data?.replace('{companion}', testHarness.companionIds[3])
+        apiParams.data?.replace('{companion}', testHarness.companionIds[3])
       );
       expect(response.status).toEqual(404);
     });
 
     it('should deny access to a user with no membership', async () => {
+      const apiParams = getUpdatedDataAndUrl(
+        data,
+        targetUrl,
+        testHarness.targetCase.ulid,
+        testHarness.ownerCaseFile
+      );
+
       const response = await callDeaAPIWithCreds(
-        targetUrl.replace('{companion}', testHarness.companionIds[4]),
+        apiParams.url.replace('{companion}', testHarness.companionIds[4]),
         method,
         testHarness.userWithNoMembership.idToken,
         testHarness.userWithNoMembership.creds,
-        data?.replace('{companion}', testHarness.companionIds[4])
+        apiParams.data?.replace('{companion}', testHarness.companionIds[4])
       );
       expect(response.status).toEqual(404);
     });
@@ -311,4 +396,96 @@ function getACLTestUser(
     idToken,
     userName,
   };
+}
+
+const setupCaseFile = async (
+  testUser: ACLTestUser,
+  caseUlid: string,
+  s3ObjectsToDelete: s3Object[],
+  testRequiresDownload: boolean
+): Promise<DeaCaseFile> => {
+  let caseFile = await initiateCaseFileUploadSuccess(
+    deaApiUrl,
+    testUser.idToken,
+    testUser.creds,
+    caseUlid,
+    `${randomSuffix()}`,
+    `/`,
+    1
+  );
+  s3ObjectsToDelete.push({
+    key: `${caseFile.caseUlid}/${caseFile.ulid}`,
+    uploadId: caseFile.uploadId,
+  });
+
+  await uploadContentToS3(caseFile.presignedUrls ?? fail(), 'hello world');
+  if (testRequiresDownload) {
+    caseFile = await completeCaseFileUploadSuccess(
+      deaApiUrl,
+      testUser.idToken,
+      testUser.creds,
+      caseUlid,
+      caseFile.ulid,
+      caseFile.uploadId,
+      'hello world'
+    );
+  }
+  return caseFile;
+};
+
+function getUpdatedDataAndUrl(
+  baseData: string | undefined,
+  baseUrl: string,
+  caseUlid: string,
+  caseFile?: DeaCaseFile
+): ApiParameters {
+  let url = baseUrl;
+  let data = baseData;
+
+  if (data) {
+    data = data.replace('{caseId}', caseUlid);
+    data = data.replace('{rand}', randomSuffix());
+    if (caseFile) {
+      data = data.replace('{fileId}', caseFile.ulid!);
+      data = data.replace('{uploadId}', caseFile.uploadId!);
+    }
+  }
+
+  if (caseFile) {
+    url = url.replace('{fileId}', caseFile.ulid!);
+  }
+  return { url, data };
+}
+
+async function s3Cleanup(s3ObjectsToDelete: s3Object[]): Promise<void> {
+  for (const object of s3ObjectsToDelete) {
+    try {
+      await s3Client.send(
+        new PutObjectLegalHoldCommand({
+          Bucket: testEnv.datasetsBucketName,
+          Key: object.key,
+          LegalHold: { Status: ObjectLockLegalHoldStatus.OFF },
+        })
+      );
+      await s3Client.send(
+        new DeleteObjectCommand({
+          Key: object.key,
+          Bucket: testEnv.datasetsBucketName,
+        })
+      );
+    } catch (e) {
+      console.log('[INFO] Could not delete object. Perhaps it does not exist', e);
+    }
+    try {
+      await s3Client.send(
+        new AbortMultipartUploadCommand({
+          Key: object.key,
+          Bucket: testEnv.datasetsBucketName,
+          UploadId: object.uploadId,
+        })
+      );
+    } catch (e) {
+      console.log('[INFO] Could not delete multipart upload. Perhaps the upload completed', e);
+    }
+  }
 }

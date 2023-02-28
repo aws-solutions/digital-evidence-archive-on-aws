@@ -24,11 +24,9 @@ export const initiateCaseFileUploadRequestSchema = Joi.object({
 
 export const completeCaseFileUploadRequestSchema = Joi.object({
   caseUlid: joiUlid,
-  uploadId: s3Identifier,
   ulid: joiUlid,
-  fileName: fileName,
-  filePath: filePath,
   sha256Hash: sha256Hash,
+  uploadId: s3Identifier,
 });
 
 export const downloadCaseFileResponseSchema = Joi.object({

@@ -74,7 +74,7 @@ describe('Test case file download', () => {
     );
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const fileId = caseFile.ulid as string;
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom, fileName);
+    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
     await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
   });
 
@@ -132,7 +132,6 @@ describe('Test case file download', () => {
 
 async function downloadCaseFileAndValidate(fileId: string, caseId: string): Promise<string> {
   const presignedUrl = await callDownloadCaseFile(EVENT, repositoryProvider, fileId, caseId);
-
   expect(presignedUrl).toContain(`https://s3.us-east-1.amazonaws.com/${DATASETS_PROVIDER.bucketName}`);
   return presignedUrl;
 }

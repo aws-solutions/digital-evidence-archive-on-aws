@@ -5,8 +5,7 @@
 
 import { fail } from 'assert';
 import { S3Client } from '@aws-sdk/client-s3';
-import { APIGatewayProxyEvent, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
-import 'aws-sdk-client-mock-jest';
+import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
 import { getCaseFileDetails } from '../../../app/resources/get-case-file-details';
@@ -35,7 +34,6 @@ const CASE_DESCRIPTION = 'Yummy';
 const FILE_NAME = 'tuna.jpeg';
 const USER_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY0';
 const FILE_PATH = '/food/sushi/';
-const UPLOAD_ID = '123456';
 const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
 const FILE_SIZE_MB = 50;
 const CONTENT_TYPE = 'image/jpeg';
@@ -82,9 +80,6 @@ export const callCompleteCaseFileUpload = async (
   repositoryProvider: ModelRepositoryProvider,
   ulid: string,
   caseUlid: string,
-  fileName: string = FILE_NAME,
-  filePath: string = FILE_PATH,
-  uploadId: string = UPLOAD_ID,
   sha256Hash: string = SHA256_HASH
 ): Promise<DeaCaseFile> => {
   const event = Object.assign(
@@ -93,9 +88,6 @@ export const callCompleteCaseFileUpload = async (
       ...baseEvent,
       body: JSON.stringify({
         caseUlid,
-        fileName,
-        filePath,
-        uploadId,
         sha256Hash,
         ulid,
       }),
@@ -219,7 +211,7 @@ export const callCreateUser = async (
   );
 };
 
-async function checkApiSucceeded(response: APIGatewayProxyStructuredResultV2): Promise<void> {
+async function checkApiSucceeded(response: APIGatewayProxyResult): Promise<void> {
   expect(response.statusCode).toEqual(200);
 
   if (!response.body) {
