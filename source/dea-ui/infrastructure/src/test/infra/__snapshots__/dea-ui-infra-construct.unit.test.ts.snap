@@ -587,11 +587,13 @@ Object {
       },
       "Type": "AWS::ApiGateway::RestApi",
     },
-    "testApiDeployment3727A0B9fad01d0f612a090752eb1a8cd3905bfc": Object {
+    "testApiDeployment3727A0B97d77d8fa6b383dcfb0fdee3242162845": Object {
       "DependsOn": Array [
         "testApiuiproxyGET92230E90",
         "testApiuiproxyDDF9EC1E",
         "testApiuiGET8FD5D6F5",
+        "testApiuiloginGET86824034",
+        "testApiuilogin54AC376B",
         "testApiui1F041DD2",
       ],
       "Properties": Object {
@@ -608,7 +610,7 @@ Object {
       ],
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "testApiDeployment3727A0B9fad01d0f612a090752eb1a8cd3905bfc",
+          "Ref": "testApiDeployment3727A0B97d77d8fa6b383dcfb0fdee3242162845",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",
@@ -700,6 +702,93 @@ Object {
         },
         "ResourceId": Object {
           "Ref": "testApiui1F041DD2",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuilogin54AC376B": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "login",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuiloginGET86824034": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackartifactbucketFFC87A37",
+                },
+                "/login.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Type": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuilogin54AC376B",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",
