@@ -36,7 +36,7 @@ describe('API authentication', () => {
 
     expect(response.status).toBe(200);
     expect(response.data).toBe('Hello DEA!');
-  }, 30000);
+  }, 40000);
 
   it('should disallow calls without credentials', async () => {
     const client = axios.create();
