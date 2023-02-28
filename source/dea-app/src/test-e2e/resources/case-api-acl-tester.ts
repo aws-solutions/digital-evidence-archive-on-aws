@@ -4,13 +4,6 @@
  */
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  DeleteObjectCommand,
-  ObjectLockLegalHoldStatus,
-  PutObjectLegalHoldCommand,
-  AbortMultipartUploadCommand,
-  S3Client,
-} from '@aws-sdk/client-s3';
 import { Credentials } from 'aws4-axios';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
@@ -27,6 +20,7 @@ import {
   deleteCase,
   initiateCaseFileUploadSuccess,
   randomSuffix,
+  s3Cleanup,
   s3Object,
   uploadContentToS3,
 } from './test-helpers';
@@ -59,8 +53,6 @@ const cognitoHelper = new CognitoHelper();
 
 const deaApiUrl = testEnv.apiUrlOutput;
 
-const s3Client = new S3Client({ region: testEnv.awsRegion });
-
 export const validateEndpointACLs = (
   testSuiteName: string,
   requiredActions: ReadonlyArray<CaseAction>,
@@ -76,13 +68,6 @@ export const validateEndpointACLs = (
     let testHarness: ACLTestHarness;
     let targetUrl: string;
     const s3ObjectsToDelete: s3Object[] = [];
-
-    beforeEach(async () => {
-      if (data) {
-        data = data.replace('{caseId}', testHarness.targetCase.ulid!);
-        data = data.replace('{rand}', randomSuffix());
-      }
-    });
 
     beforeAll(async () => {
       testHarness = await initializeACLE2ETest('caseDetailACL', requiredActions);
@@ -455,37 +440,4 @@ function getUpdatedDataAndUrl(
     url = url.replace('{fileId}', caseFile.ulid!);
   }
   return { url, data };
-}
-
-async function s3Cleanup(s3ObjectsToDelete: s3Object[]): Promise<void> {
-  for (const object of s3ObjectsToDelete) {
-    try {
-      await s3Client.send(
-        new PutObjectLegalHoldCommand({
-          Bucket: testEnv.datasetsBucketName,
-          Key: object.key,
-          LegalHold: { Status: ObjectLockLegalHoldStatus.OFF },
-        })
-      );
-      await s3Client.send(
-        new DeleteObjectCommand({
-          Key: object.key,
-          Bucket: testEnv.datasetsBucketName,
-        })
-      );
-    } catch (e) {
-      console.log('[INFO] Could not delete object. Perhaps it does not exist', e);
-    }
-    try {
-      await s3Client.send(
-        new AbortMultipartUploadCommand({
-          Key: object.key,
-          Bucket: testEnv.datasetsBucketName,
-          UploadId: object.uploadId,
-        })
-      );
-    } catch (e) {
-      console.log('[INFO] Could not delete multipart upload. Perhaps the upload completed', e);
-    }
-  }
 }
