@@ -6,7 +6,6 @@
 import type { AppProps } from 'next/app';
 import Header from '../components/Header';
 import { AuthenticationProvider } from '../context/AuthenticationContext';
-import { NotificationsProvider } from '../context/NotificationContext';
 import { SettingsProvider } from '../context/SettingsContext';
 import '@cloudscape-design/global-styles/index.css';
 
@@ -14,13 +13,11 @@ import '@cloudscape-design/global-styles/index.css';
 function App({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <SettingsProvider>
-      <NotificationsProvider>
-        <AuthenticationProvider>
-          <Header />
-          <Component {...pageProps} />
-          <footer id="footer"></footer>
-        </AuthenticationProvider>
-      </NotificationsProvider>
+      <AuthenticationProvider>
+        <Header />
+        <Component {...pageProps} />
+        <footer id="footer"></footer>
+      </AuthenticationProvider>
     </SettingsProvider>
   );
 }
