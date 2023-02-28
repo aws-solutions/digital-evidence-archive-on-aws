@@ -3,10 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Tabs } from '@cloudscape-design/components';
+import { Container, Tabs } from '@cloudscape-design/components';
 import * as React from 'react';
 import { caseDetailLabels } from '../../common/labels';
-import AuditLogTable from './AuditLogTable';
 import CaseFilesTable from './CaseFilesTable';
 import ManageAccessForm from './ManageAccessForm';
 
@@ -21,10 +20,9 @@ function CaseDetailsTabs(): JSX.Element {
           content: <CaseFilesTable></CaseFilesTable>,
         },
         {
-          
           label: caseDetailLabels.auditLogLabel,
           id: 'auditLog',
-          content: <AuditLogTable></AuditLogTable>,
+          content: <Container>Audit Log Download</Container>,
         },
         {
           label: caseDetailLabels.manageAccessLabel,
