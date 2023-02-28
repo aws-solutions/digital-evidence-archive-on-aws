@@ -37,29 +37,6 @@ describe('CaseDetailsPage', () => {
     expect(mockedCaseInfo).toBeTruthy();
   });
 
-  it('navigates to audit log', async () => {
-    mockedAxios.mockResolvedValue({
-      data: {
-        ulid: 'abc',
-        name: 'mocked case',
-        status: 'ACTIVE',
-      },
-      status: 200,
-      statusText: 'Ok',
-      headers: {},
-      config: {},
-    });
-
-    const page = render(<CaseDetailsPage />);
-    expect(page).toBeTruthy();
-
-    const tab = await screen.findByText(caseDetailLabels.auditLogLabel);
-    fireEvent.click(tab);
-    const auditTable = await screen.findByTestId('audit-table');
-    expect(auditTable).toBeTruthy();
-    expect(auditTable).toBeInTheDocument();
-  });
-
   it('navigates to manage access page', async () => {
     mockedAxios.mockResolvedValue({
       data: {

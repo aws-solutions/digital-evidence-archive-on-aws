@@ -45,4 +45,19 @@ describe('LoginPage', () => {
     expect(page).toBeTruthy();
     expect(loginLabel).toBeTruthy();
   });
+
+  it('Should not attempt to get creds if authCode not available', async () => {
+    const mockRouter = {
+      query: {},
+      push: jest.fn(),
+    };
+    const useRouterSpy = jest.spyOn(require('next/router'), 'useRouter');
+    useRouterSpy.mockReturnValue(mockRouter);
+
+    const page = render(<LoginPage />);
+    expect(page).toBeTruthy();
+
+    // Check that the page does not redirect
+    expect(mockRouter.push).not.toHaveBeenCalled();
+  });
 });
