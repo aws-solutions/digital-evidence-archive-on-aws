@@ -13,7 +13,7 @@ import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { getUserByTokenId, listUsers } from '../../../persistence/user';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { testEnv } from '../../../test-e2e/helpers/settings';
-import { dummyContext, dummyEvent, getDummyAuditEvent } from '../../integration-objects';
+import { dummyContext, getDummyAuditEvent, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -40,12 +40,7 @@ describe('lambda pre-execution checks', () => {
     const idToken = await cognitoHelper.getIdTokenForUser(testUser);
 
     const tokenId = (await getTokenPayload(idToken, region)).sub;
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-      }
-    );
+    const event = getDummyEvent();
     event.headers['idToken'] = idToken;
 
     const auditEvent = getDummyAuditEvent();
@@ -80,12 +75,7 @@ describe('lambda pre-execution checks', () => {
     const tokenId2 = (await getTokenPayload(idToken, region)).sub;
     expect(tokenId2).toStrictEqual(tokenId);
 
-    const event2 = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-      }
-    );
+    const event2 = getDummyEvent();
     event2.headers['idToken'] = idToken2;
 
     const auditEvent2 = getDummyAuditEvent();
@@ -117,12 +107,7 @@ describe('lambda pre-execution checks', () => {
   }, 10000);
 
   it('should throw if no cognitoId is included in the request', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-      }
-    );
+    const event = getDummyEvent();
 
     event.requestContext.identity.cognitoIdentityId = null;
 

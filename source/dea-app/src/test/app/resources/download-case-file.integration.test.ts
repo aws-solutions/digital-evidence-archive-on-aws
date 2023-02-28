@@ -12,7 +12,7 @@ import { DeaCaseFile } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
   callCompleteCaseFileUpload,
@@ -37,7 +37,7 @@ const DATASETS_PROVIDER = {
   presignedCommandExpirySeconds: 3600,
 };
 
-const EVENT = dummyEvent;
+const EVENT = getDummyEvent();
 
 jest.setTimeout(20000);
 

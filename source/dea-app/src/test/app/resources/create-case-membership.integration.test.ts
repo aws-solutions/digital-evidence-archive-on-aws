@@ -18,7 +18,7 @@ import { caseUserResponseSchema } from '../../../models/validation/case-user';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, dummyEvent, getDummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -88,22 +88,18 @@ describe('create case membership resource', () => {
   });
 
   it('should error if the path param is not provided', async () => {
-    await expect(createCaseMembership(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createCaseMembership(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(
       ValidationError
     );
   });
 
   it('should error if no payload is provided', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
-        },
-        body: null,
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+      },
+      body: null,
+    });
 
     await expect(createCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
       'CaseUser payload missing.'
@@ -114,20 +110,16 @@ describe('create case membership resource', () => {
     const ulid1 = '01ARZ3NDEKTSV4RRFFQ69G5FAV';
     const ulid2 = '02ARZ3NDEKTSV4RRFFQ69G5FAV';
     const ulid3 = '03ARZ3NDEKTSV4RRFFQ69G5FAV';
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: ulid1,
-        },
-        body: JSON.stringify({
-          userUlid: ulid3,
-          caseUlid: ulid2,
-          actions: [CaseAction.VIEW_CASE_DETAILS],
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: ulid1,
+      },
+      body: JSON.stringify({
+        userUlid: ulid3,
+        caseUlid: ulid2,
+        actions: [CaseAction.VIEW_CASE_DETAILS],
+      }),
+    });
 
     await expect(createCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
       'Requested Case Ulid does not match resource'
@@ -143,20 +135,16 @@ describe('create case membership resource', () => {
     const user = await UserService.createUser(deaUser, repositoryProvider);
 
     const bogusUlid = '02ARZ3NDEKTSV4RRFFQ69G5FDV';
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: bogusUlid,
-        },
-        body: JSON.stringify({
-          userUlid: user.ulid,
-          caseUlid: bogusUlid,
-          actions: [CaseAction.VIEW_CASE_DETAILS],
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: bogusUlid,
+      },
+      body: JSON.stringify({
+        userUlid: user.ulid,
+        caseUlid: bogusUlid,
+        actions: [CaseAction.VIEW_CASE_DETAILS],
+      }),
+    });
 
     await expect(createCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
       NotFoundError
@@ -180,20 +168,16 @@ describe('create case membership resource', () => {
     const newCase = await CaseService.createCases(deaCase, user, repositoryProvider);
 
     const bogusUlid = '02ARZ3NDEKTSV4RRFFQ69G5FAV';
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: newCase.ulid,
-        },
-        body: JSON.stringify({
-          userUlid: bogusUlid,
-          caseUlid: newCase.ulid,
-          actions: [CaseAction.VIEW_CASE_DETAILS],
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: newCase.ulid,
+      },
+      body: JSON.stringify({
+        userUlid: bogusUlid,
+        caseUlid: newCase.ulid,
+        actions: [CaseAction.VIEW_CASE_DETAILS],
+      }),
+    });
 
     await expect(createCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
       NotFoundError

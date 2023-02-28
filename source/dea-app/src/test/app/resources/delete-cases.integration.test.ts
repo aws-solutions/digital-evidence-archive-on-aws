@@ -13,7 +13,7 @@ import { CaseAction } from '../../../models/case-action';
 import { createCase } from '../../../persistence/case';
 import { listCaseUsersByCase } from '../../../persistence/case-user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -28,15 +28,11 @@ describe('delete cases resource', () => {
   });
 
   it('should respond with success if the target entity does not exist', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+      },
+    });
 
     const response = await deleteCase(event, dummyContext, repositoryProvider);
 
@@ -59,15 +55,11 @@ describe('delete cases resource', () => {
     };
     const createdCase = await createCase(theCase, user, repositoryProvider);
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: createdCase.ulid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: createdCase.ulid,
+      },
+    });
 
     const response = await deleteCase(event, dummyContext, repositoryProvider);
 
@@ -121,15 +113,11 @@ describe('delete cases resource', () => {
     const usersOnCase = await listCaseUsersByCase(createdCase.ulid, 30, undefined, repositoryProvider);
     expect(usersOnCase.length).toEqual(29);
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: createdCase.ulid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: createdCase.ulid,
+      },
+    });
 
     const response = await deleteCase(event, dummyContext, repositoryProvider);
 
@@ -149,6 +137,8 @@ describe('delete cases resource', () => {
   }, 30000);
 
   it('should error if the path param is not provided', async () => {
-    await expect(deleteCase(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(ValidationError);
+    await expect(deleteCase(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(
+      ValidationError
+    );
   });
 });

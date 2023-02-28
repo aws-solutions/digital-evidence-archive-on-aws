@@ -9,7 +9,7 @@ import { getToken } from '../../../app/resources/get-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
 
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 
 let cognitoParams: CognitoSsmParams;
 
@@ -37,27 +37,19 @@ describe('get-credentials', () => {
       testUser
     );
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          authCode: authCode,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        authCode: authCode,
+      },
+    });
 
     const idToken = await getToken(event, dummyContext);
 
-    const credentialsEvent = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          idToken: idToken.body?.replace(/"/g, ''),
-        },
-      }
-    );
+    const credentialsEvent = getDummyEvent({
+      pathParameters: {
+        idToken: idToken.body?.replace(/"/g, ''),
+      },
+    });
 
     const response = await getCredentials(credentialsEvent, dummyContext);
     if (!response.body) {
@@ -70,20 +62,16 @@ describe('get-credentials', () => {
   }, 20000);
 
   it('should throw an error if the id token is not valid', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          idToken: 'fake.fake.fake',
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        idToken: 'fake.fake.fake',
+      },
+    });
 
     await expect(getCredentials(event, dummyContext)).rejects.toThrow(NotAuthorizedException);
   });
 
   it('should throw an error if the path param is missing', async () => {
-    await expect(getCredentials(dummyEvent, dummyContext)).rejects.toThrow(ValidationError);
+    await expect(getCredentials(getDummyEvent(), dummyContext)).rejects.toThrow(ValidationError);
   });
 });

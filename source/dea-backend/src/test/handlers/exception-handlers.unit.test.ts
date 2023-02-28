@@ -5,7 +5,7 @@
 
 import {
   dummyContext,
-  dummyEvent,
+  getDummyEvent,
   ForbiddenError,
   getTestAuditService,
   NotFoundError,
@@ -19,9 +19,11 @@ import { createDeaHandler, NO_ACL } from '../../handlers/create-dea-handler';
 describe('exception handlers', () => {
   const OLD_ENV = process.env;
   let testAuditService: TestAuditService;
+  let dummyEvent: APIGatewayProxyEvent;
 
   beforeAll(() => {
     testAuditService = getTestAuditService();
+    dummyEvent = getDummyEvent();
   });
 
   beforeEach(() => {

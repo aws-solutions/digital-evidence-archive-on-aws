@@ -10,7 +10,7 @@ import { createUser } from '../../../app/services/user-service';
 import { DeaUser } from '../../../models/user';
 import { userResponseSchema } from '../../../models/validation/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -48,15 +48,11 @@ describe('get users resource', () => {
       repositoryProvider
     );
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        queryStringParameters: {
-          limit: '1',
-        },
-      }
-    );
+    const event = getDummyEvent({
+      queryStringParameters: {
+        limit: '1',
+      },
+    });
     const response = await getUsers(event, dummyContext, repositoryProvider);
 
     if (!response.body) {
@@ -67,15 +63,11 @@ describe('get users resource', () => {
     expect(casesPage.users.length).toEqual(1);
     expect(casesPage.next).toBeTruthy();
     Joi.assert(casesPage.users[0], userResponseSchema);
-    const event2 = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        queryStringParameters: {
-          next: casesPage.next,
-        },
-      }
-    );
+    const event2 = getDummyEvent({
+      queryStringParameters: {
+        next: casesPage.next,
+      },
+    });
     const response2 = await getUsers(event2, dummyContext, repositoryProvider);
     if (!response2.body) {
       fail();
@@ -117,15 +109,11 @@ describe('get users resource', () => {
       repositoryProvider
     );
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        queryStringParameters: {
-          nameBeginsWith: 'APRIL',
-        },
-      }
-    );
+    const event = getDummyEvent({
+      queryStringParameters: {
+        nameBeginsWith: 'APRIL',
+      },
+    });
     const response = await getUsers(event, dummyContext, repositoryProvider);
 
     if (!response.body) {
