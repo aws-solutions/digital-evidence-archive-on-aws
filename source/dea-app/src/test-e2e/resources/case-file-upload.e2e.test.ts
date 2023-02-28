@@ -20,6 +20,7 @@ import {
   createCaseSuccess,
   deleteCase,
   initiateCaseFileUploadSuccess,
+  s3Object,
   uploadContentToS3,
 } from './test-helpers';
 
@@ -29,10 +30,6 @@ const TEST_USER = 'caseFileUploadTestUser';
 const FILE_SIZE_MB = 50;
 const DEA_API_URL = testEnv.apiUrlOutput;
 const s3Client = new S3Client({ region: testEnv.awsRegion });
-
-interface s3Object {
-  key: string;
-}
 
 describe('Test case file upload', () => {
   const cognitoHelper = new CognitoHelper();

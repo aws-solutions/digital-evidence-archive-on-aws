@@ -28,6 +28,11 @@ export const randomSuffix = (length = 10) => {
   return randomBytes(10).toString('hex').substring(0, length);
 };
 
+export interface s3Object {
+  key: string;
+  uploadId?: string;
+}
+
 export async function deleteCase(
   baseUrl: string,
   caseUlid: string,

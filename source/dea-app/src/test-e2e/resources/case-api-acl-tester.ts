@@ -4,6 +4,13 @@
  */
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import {
+  DeleteObjectCommand,
+  ObjectLockLegalHoldStatus,
+  PutObjectLegalHoldCommand,
+  AbortMultipartUploadCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { Credentials } from 'aws4-axios';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
@@ -20,6 +27,7 @@ import {
   deleteCase,
   initiateCaseFileUploadSuccess,
   randomSuffix,
+  s3Object,
   uploadContentToS3,
 } from './test-helpers';
 
@@ -46,6 +54,8 @@ const cognitoHelper = new CognitoHelper();
 
 const deaApiUrl = testEnv.apiUrlOutput;
 
+const s3Client = new S3Client({ region: testEnv.awsRegion });
+
 export const validateEndpointACLs = (
   testSuiteName: string,
   requiredActions: ReadonlyArray<CaseAction>,
@@ -60,15 +70,19 @@ export const validateEndpointACLs = (
   describe(testSuiteName, () => {
     let testHarness: ACLTestHarness;
     let targetUrl: string;
+    const s3ObjectsToDelete: s3Object[] = [];
+
+    beforeEach(async () => {
+      if (data) {
+        data = data.replace('{caseId}', testHarness.targetCase.ulid!);
+        data = data.replace('{rand}', randomSuffix());
+      }
+    });
 
     beforeAll(async () => {
       testHarness = await initializeACLE2ETest('caseDetailACL', requiredActions);
       targetUrl = `${deaApiUrl}${endpoint}`;
       targetUrl = targetUrl.replace('{caseId}', testHarness.targetCase.ulid!);
-      if (data) {
-        data = data.replace('{caseId}', testHarness.targetCase.ulid!);
-        data = data.replace('{rand}', randomSuffix());
-      }
 
       if (createCompanionMemberships) {
         const membershipData = JSON.stringify({
@@ -92,48 +106,29 @@ export const validateEndpointACLs = (
       }
 
       if (testRequiresOwnerCaseFile) {
-        testHarness.ownerCaseFile = await initiateCaseFileUploadSuccess(
-          deaApiUrl,
-          testHarness.owner.idToken,
-          testHarness.owner.creds,
+        testHarness.ownerCaseFile = await setupCaseFile(
+          testHarness.owner,
           testHarness.targetCase.ulid,
-          `${randomSuffix()}`,
-          `/`,
-          1
+          s3ObjectsToDelete,
+          testRequiresDownload
         );
-
-        await uploadContentToS3(testHarness.ownerCaseFile.presignedUrls ?? fail(), 'hello world');
-        if (testRequiresDownload) {
-          await completeCaseFileUploadSuccess(
-            deaApiUrl,
-            testHarness.owner.idToken,
-            testHarness.owner.creds,
-            testHarness.targetCase.ulid,
-            testHarness.ownerCaseFile.ulid,
-            testHarness.ownerCaseFile.uploadId,
-            'hello world'
-          );
-        }
       }
 
       if (testRequiresUserCaseFile) {
         // this block is needed because complete-upload can only be called by user who initiated upload
-        testHarness.userCaseFile = await initiateCaseFileUploadSuccess(
-          deaApiUrl,
-          testHarness.userWithRequiredActions.idToken,
-          testHarness.userWithRequiredActions.creds,
+        testHarness.userCaseFile = await setupCaseFile(
+          testHarness.userWithRequiredActions,
           testHarness.targetCase.ulid,
-          `${randomSuffix()}`,
-          '/',
-          1
+          s3ObjectsToDelete,
+          false
         );
-        await uploadContentToS3(testHarness.userCaseFile.presignedUrls ?? fail(), 'hello world');
       }
     }, 30000);
 
     afterAll(async () => {
       await cleanupTestHarness(testHarness);
-    });
+      await s3Cleanup(s3ObjectsToDelete);
+    }, 30000);
 
     it('should allow access to the owner', async () => {
       let ownerUrl = targetUrl;
@@ -409,4 +404,72 @@ function getACLTestUser(
     idToken,
     userName,
   };
+}
+
+const setupCaseFile = async (
+  testUser: ACLTestUser,
+  caseUlid: string,
+  s3ObjectsToDelete: s3Object[],
+  testRequiresDownload: boolean
+): Promise<DeaCaseFile> => {
+  let caseFile = await initiateCaseFileUploadSuccess(
+    deaApiUrl,
+    testUser.idToken,
+    testUser.creds,
+    caseUlid,
+    `${randomSuffix()}`,
+    `/`,
+    1
+  );
+  s3ObjectsToDelete.push({
+    key: `${caseFile.caseUlid}/${caseFile.ulid}`,
+    uploadId: caseFile.uploadId,
+  });
+
+  await uploadContentToS3(caseFile.presignedUrls ?? fail(), 'hello world');
+  if (testRequiresDownload) {
+    caseFile = await completeCaseFileUploadSuccess(
+      deaApiUrl,
+      testUser.idToken,
+      testUser.creds,
+      caseUlid,
+      caseFile.ulid,
+      caseFile.uploadId,
+      'hello world'
+    );
+  }
+  return caseFile;
+};
+
+async function s3Cleanup(s3ObjectsToDelete: s3Object[]): Promise<void> {
+  for (const object of s3ObjectsToDelete) {
+    try {
+      await s3Client.send(
+        new PutObjectLegalHoldCommand({
+          Bucket: testEnv.datasetsBucketName,
+          Key: object.key,
+          LegalHold: { Status: ObjectLockLegalHoldStatus.OFF },
+        })
+      );
+      await s3Client.send(
+        new DeleteObjectCommand({
+          Key: object.key,
+          Bucket: testEnv.datasetsBucketName,
+        })
+      );
+    } catch (e) {
+      console.log('[INFO] Could not delete object. Perhaps it does not exist', e);
+    }
+    try {
+      await s3Client.send(
+        new AbortMultipartUploadCommand({
+          Key: object.key,
+          Bucket: testEnv.datasetsBucketName,
+          UploadId: object.uploadId,
+        })
+      );
+    } catch (e) {
+      console.log('[INFO] Could not delete multipart upload. Perhaps the upload completed', e);
+    }
+  }
 }
