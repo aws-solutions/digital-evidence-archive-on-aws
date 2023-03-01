@@ -124,17 +124,25 @@ export const getCredentialsByToken = async (idToken: string) => {
   return Credentials;
 };
 
-export const exchangeAuthorizationCode = async (authorizationCode: string): Promise<string> => {
+export const exchangeAuthorizationCode = async (
+  authorizationCode: string,
+  origin?: string
+): Promise<string> => {
   const cognitoParams = await getCognitoSsmParams();
   const axiosInstance = axios.create({
     baseURL: cognitoParams.cognitoDomainUrl,
   });
 
+  let callbackUrl = cognitoParams.callbackUrl;
+  if (origin) {
+    callbackUrl = `${origin}/${stage}/ui/login`;
+  }
+
   const data = new URLSearchParams();
   data.append('grant_type', 'authorization_code');
   data.append('client_id', cognitoParams.clientId);
   data.append('code', authorizationCode);
-  data.append('redirect_uri', cognitoParams.callbackUrl);
+  data.append('redirect_uri', callbackUrl);
 
   // make a request using the Axios instance
   const response = await axiosInstance.post('/oauth2/token', data, {

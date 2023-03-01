@@ -5,8 +5,8 @@
 import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios, { AxiosRequestConfig } from 'axios';
 
-let urlBase = '';
-if (typeof window !== 'undefined') {
+let urlBase = process.env.NEXT_PUBLIC_DEA_API_URL;
+if (typeof window !== 'undefined' && !urlBase) {
   urlBase = `https://${window.location.hostname}`;
 }
 

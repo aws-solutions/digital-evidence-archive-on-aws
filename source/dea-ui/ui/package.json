@@ -16,8 +16,8 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
-    "build": "next build && next export --silent",
-    "build-only": "next build",
+    "build": "./setEnv.sh && next build && next export --silent",
+    "build-only": "./setEnv.sh && next build",
     "build:test": "rushx build && rushx test && rushx make-badges",
     "check-license-header": "license-check-and-add check -f license-add-config.json",
     "cypress": "cypress open",
