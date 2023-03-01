@@ -4,7 +4,7 @@
  */
 
 import { getRequiredEnv, getRequiredHeader } from '../lambda-http-helpers';
-import { dummyEvent } from './integration-objects';
+import { getDummyEvent } from './integration-objects';
 
 describe('lambda http helper edge cases', () => {
   describe('getRequiredEnv', () => {
@@ -17,28 +17,20 @@ describe('lambda http helper edge cases', () => {
 
   describe('getRequiredHeader', () => {
     it('considers lower case values', () => {
-      const event = Object.assign(
-        {},
-        {
-          ...dummyEvent,
-          headers: {
-            alowercasevalue: 'somevalue',
-          },
-        }
-      );
+      const event = getDummyEvent({
+        headers: {
+          alowercasevalue: 'somevalue',
+        },
+      });
       const foundVal = getRequiredHeader(event, 'ALOWERCASEVALUE');
 
       expect(foundVal).toEqual('somevalue');
     });
 
     it('throws when a value is not found', () => {
-      const event = Object.assign(
-        {},
-        {
-          ...dummyEvent,
-          headers: {},
-        }
-      );
+      const event = getDummyEvent({
+        headers: {},
+      });
       expect(() => getRequiredHeader(event, 'idToken')).toThrow(`Required header 'idToken' is missing.`);
     });
   });

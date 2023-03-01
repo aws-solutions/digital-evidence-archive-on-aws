@@ -31,7 +31,7 @@ import { getCaseUser } from './app/services/case-user-service';
 import { getRequiredPathParam, getUserUlid } from './lambda-http-helpers';
 import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
-import { dummyContext, dummyEvent, getDummyEvent } from './test/integration-objects';
+import { dummyContext, getDummyEvent } from './test/integration-objects';
 import { getTestAuditService } from './test/services/test-audit-service-provider';
 
 export {
@@ -70,6 +70,5 @@ export {
   NOT_FOUND_ERROR_NAME,
   ValidationError,
   VALIDATION_ERROR_NAME,
-  dummyEvent,
   dummyContext,
 };

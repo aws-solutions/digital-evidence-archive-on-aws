@@ -12,7 +12,7 @@ import { DeaCase } from '../../../models/case';
 import { CaseAction } from '../../../models/case-action';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyEvent } from '../../integration-objects';
+import { getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -121,52 +121,40 @@ describe('verify case ACLs', () => {
 
   it('should not throw if a user has all required acls', async () => {
     // GIVEN a user with membership and all acls
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: theCase.ulid,
-        },
-        headers: {
-          userUlid: userWithAllACLs.ulid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: theCase.ulid,
+      },
+      headers: {
+        userUlid: userWithAllACLs.ulid,
+      },
+    });
 
     // WHEN verifying ACLs, THEN sut doesn't throw
     await verifyCaseACLs(event, requiredActions, repositoryProvider);
 
     //try with the owner
-    const event2 = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: theCase.ulid,
-        },
-        headers: {
-          userUlid: owner.ulid,
-        },
-      }
-    );
+    const event2 = getDummyEvent({
+      pathParameters: {
+        caseId: theCase.ulid,
+      },
+      headers: {
+        userUlid: owner.ulid,
+      },
+    });
     await verifyCaseACLs(event2, requiredActions, repositoryProvider);
   });
 
   it('should not throw if there are no defined ACLs', async () => {
     // GIVEN a user
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: theCase.ulid,
-        },
-        headers: {
-          userUlid: userWithNoMembership.ulid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: theCase.ulid,
+      },
+      headers: {
+        userUlid: userWithNoMembership.ulid,
+      },
+    });
 
     // WHEN no ACLs are specified, THEN sut doesn't throw
     await verifyCaseACLs(event, []);
@@ -174,18 +162,14 @@ describe('verify case ACLs', () => {
 
   it('should throw if a user has no membership', async () => {
     // GIVEN a user with no membership
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: theCase.ulid,
-        },
-        headers: {
-          userUlid: userWithNoMembership.ulid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: theCase.ulid,
+      },
+      headers: {
+        userUlid: userWithNoMembership.ulid,
+      },
+    });
 
     // WHEN verifying ACLs, THEN sut throws forbidden error
     await expect(verifyCaseACLs(event, requiredActions, repositoryProvider)).rejects.toThrow(NotFoundError);
@@ -193,18 +177,14 @@ describe('verify case ACLs', () => {
 
   it('should throw if a user has no required acls', async () => {
     // GIVEN a user with membership but no ACLs
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: theCase.ulid,
-        },
-        headers: {
-          userUlid: userWithMembershipNoAcls.ulid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: theCase.ulid,
+      },
+      headers: {
+        userUlid: userWithMembershipNoAcls.ulid,
+      },
+    });
 
     // WHEN verifying ACLs, THEN sut throws forbidden error
     await expect(verifyCaseACLs(event, requiredActions, repositoryProvider)).rejects.toThrow(NotFoundError);
@@ -212,18 +192,14 @@ describe('verify case ACLs', () => {
 
   it('should throw if a user has partial required acls', async () => {
     // GIVEN a user with membership but partial ACLs
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: theCase.ulid,
-        },
-        headers: {
-          userUlid: userWithMembershipPartialAcls.ulid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: theCase.ulid,
+      },
+      headers: {
+        userUlid: userWithMembershipPartialAcls.ulid,
+      },
+    });
 
     // WHEN verifying ACLs, THEN sut throws forbidden error
     await expect(verifyCaseACLs(event, requiredActions, repositoryProvider)).rejects.toThrow(NotFoundError);

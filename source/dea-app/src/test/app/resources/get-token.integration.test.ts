@@ -7,7 +7,7 @@ import { getToken } from '../../../app/resources/get-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
 
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 
 let cognitoParams: CognitoSsmParams;
 
@@ -35,15 +35,11 @@ describe('get-token', () => {
       testUser
     );
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          authCode: authCode,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        authCode: authCode,
+      },
+    });
 
     const response = await getToken(event, dummyContext);
     expect(response.statusCode).toEqual(200);
@@ -54,20 +50,16 @@ describe('get-token', () => {
   }, 20000);
 
   it('should throw an error if the authorization code is not valid', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          authCode: 'DUMMYAUTHCODE',
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        authCode: 'DUMMYAUTHCODE',
+      },
+    });
 
     await expect(getToken(event, dummyContext)).rejects.toThrow('Request failed with status code 400');
   });
 
   it('should throw an error if the path param is missing', async () => {
-    await expect(getToken(dummyEvent, dummyContext)).rejects.toThrow(ValidationError);
+    await expect(getToken(getDummyEvent(), dummyContext)).rejects.toThrow(ValidationError);
   });
 });

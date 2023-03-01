@@ -14,7 +14,7 @@ import { DeaUser, DeaUserInput } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -65,16 +65,12 @@ describe('delete case membership resource', () => {
       repositoryProvider
     );
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: newCase.ulid,
-          userId: user.ulid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: newCase.ulid,
+        userId: user.ulid,
+      },
+    });
 
     // membership exists before delete
     expect(
@@ -91,44 +87,32 @@ describe('delete case membership resource', () => {
   });
 
   it('should make no alert for removing a membership that does not exist', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: bogusUlid,
-          userId: bogusUlid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: bogusUlid,
+        userId: bogusUlid,
+      },
+    });
 
     const response = await deleteCaseMembership(event, dummyContext, repositoryProvider);
     expect(response.statusCode).toEqual(204);
   });
 
   it('should error if path params are missing', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: bogusUlid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: bogusUlid,
+      },
+    });
 
     await expect(deleteCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
       ValidationError
     );
-    const event2 = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          userId: bogusUlid,
-        },
-      }
-    );
+    const event2 = getDummyEvent({
+      pathParameters: {
+        userId: bogusUlid,
+      },
+    });
 
     await expect(deleteCaseMembership(event2, dummyContext, repositoryProvider)).rejects.toThrow(
       ValidationError

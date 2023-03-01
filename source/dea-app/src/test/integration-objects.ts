@@ -4,6 +4,7 @@
  */
 
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
+import _ from 'lodash';
 import {
   AuditEventResult,
   AuditEventSource,
@@ -12,7 +13,7 @@ import {
   IdentityType,
 } from '../app/services/audit-service';
 
-export const dummyEvent: APIGatewayProxyEvent = {
+const dummyEvent: APIGatewayProxyEvent = {
   resource: '/cases/{caseId}',
   path: '/cases/01GSX40H73JQ9Q2T2EERPYWN6C',
   httpMethod: 'GET',
@@ -133,21 +134,15 @@ const dummyAuditEvent: CJISAuditEventBody = {
   result: AuditEventResult.FAILURE,
 };
 
-export const getDummyEvent = (addedData?: object): APIGatewayProxyEvent => {
-  return Object.assign(
-    {},
-    {
-      ...dummyEvent,
-      ...addedData,
-    }
-  );
+export const getDummyEvent = (addedData: object = {}): APIGatewayProxyEvent => {
+  return _.cloneDeep({
+    ...dummyEvent,
+    ...addedData,
+  });
 };
 
 export const getDummyAuditEvent = (): CJISAuditEventBody => {
-  return Object.assign(
-    {},
-    {
-      ...dummyAuditEvent,
-    }
-  );
+  return _.cloneDeep({
+    ...dummyAuditEvent,
+  });
 };

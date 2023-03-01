@@ -14,7 +14,7 @@ import { jsonParseWithDates } from '../../../models/validation/json-parse-with-d
 import { createCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -48,20 +48,16 @@ describe('update cases resource', () => {
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: createdCase.ulid,
-        },
-        body: JSON.stringify({
-          ulid: createdCase.ulid,
-          name: updatedName,
-          description: updatedDescription,
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: createdCase.ulid,
+      },
+      body: JSON.stringify({
+        ulid: createdCase.ulid,
+        name: updatedName,
+        description: updatedDescription,
+      }),
+    });
 
     const response = await updateCases(event, dummyContext, repositoryProvider);
 
@@ -90,20 +86,16 @@ describe('update cases resource', () => {
   it('should error if path and payload do not match', async () => {
     const ulid1 = '01ARZ3NDEKTSV4RRFFQ69G5FAV';
     const ulid2 = '02ARZ3NDEKTSV4RRFFQ69G5FAV';
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: ulid1,
-        },
-        body: JSON.stringify({
-          ulid: ulid2,
-          name: 'ThisWillNotWork',
-          description: 'these are words',
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: ulid1,
+      },
+      body: JSON.stringify({
+        ulid: ulid2,
+        name: 'ThisWillNotWork',
+        description: 'these are words',
+      }),
+    });
 
     await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
       'Requested Case Ulid does not match resource'
@@ -111,16 +103,12 @@ describe('update cases resource', () => {
   });
 
   it('should error if no payload is provided', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
-        },
-        body: null,
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+      },
+      body: null,
+    });
 
     await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
       'Update cases payload missing.'
@@ -129,17 +117,13 @@ describe('update cases resource', () => {
 
   it('should error if a path parameter specifying caseId is not found', async () => {
     const ulid = '02ARZ3NDEKTSV4RRFFQ69G5FAV';
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        body: JSON.stringify({
-          ulid: ulid,
-          name: 'ThisWillNotWork',
-          description: 'these are words',
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      body: JSON.stringify({
+        ulid: ulid,
+        name: 'ThisWillNotWork',
+        description: 'these are words',
+      }),
+    });
 
     await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
       "Required path param 'caseId' is missing."
@@ -153,21 +137,17 @@ describe('update cases resource', () => {
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: createdCase.ulid,
-        },
-        body: JSON.stringify({
-          ulid: createdCase.ulid,
-          name: 'CaseStatusCheck',
-          status: createdCase.status,
-          description: 'description',
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: createdCase.ulid,
+      },
+      body: JSON.stringify({
+        ulid: createdCase.ulid,
+        name: 'CaseStatusCheck',
+        status: createdCase.status,
+        description: 'description',
+      }),
+    });
 
     await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
       '"status" is not allowed'
@@ -181,21 +161,17 @@ describe('update cases resource', () => {
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: createdCase.ulid,
-        },
-        body: JSON.stringify({
-          ulid: createdCase.ulid,
-          name: 'CaseCountCheck',
-          objectCount: 5,
-          description: 'description',
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: createdCase.ulid,
+      },
+      body: JSON.stringify({
+        ulid: createdCase.ulid,
+        name: 'CaseCountCheck',
+        objectCount: 5,
+        description: 'description',
+      }),
+    });
 
     await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
       '"objectCount" is not allowed'
@@ -204,20 +180,16 @@ describe('update cases resource', () => {
 
   it('should error when updating a non-existant record', async () => {
     const ulid = '02ARZ3NDEKTSV4RRFFQ69G5FAV';
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: ulid,
-        },
-        body: JSON.stringify({
-          ulid: ulid,
-          name: 'ThisWillNotWork',
-          description: 'these are words',
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: ulid,
+      },
+      body: JSON.stringify({
+        ulid: ulid,
+        name: 'ThisWillNotWork',
+        description: 'these are words',
+      }),
+    });
 
     await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(OneTableError);
   });
@@ -234,20 +206,16 @@ describe('update cases resource', () => {
     const createdCase1 = await createCase(theCase1, caseOwner, repositoryProvider);
     const createdCase2 = await createCase(theCase2, caseOwner, repositoryProvider);
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: createdCase1.ulid,
-        },
-        body: JSON.stringify({
-          ulid: createdCase1.ulid,
-          name: createdCase2.name,
-          description: 'whatevs',
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: createdCase1.ulid,
+      },
+      body: JSON.stringify({
+        ulid: createdCase1.ulid,
+        name: createdCase2.name,
+        description: 'whatevs',
+      }),
+    });
 
     await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
       'Cannot update unique attributes "name" for "Case". An item of the same name already exists.'
@@ -267,20 +235,16 @@ describe('update cases resource', () => {
     const createdCase1 = await createCase(theCase1, caseOwner, repositoryProvider);
     const createdCase2 = await createCase(theCase2, caseOwner, repositoryProvider);
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: createdCase1.ulid,
-        },
-        body: JSON.stringify({
-          ulid: createdCase1.ulid,
-          name: aNewNameForCase1,
-          description: 'whatevs',
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: createdCase1.ulid,
+      },
+      body: JSON.stringify({
+        ulid: createdCase1.ulid,
+        name: aNewNameForCase1,
+        description: 'whatevs',
+      }),
+    });
 
     const response = await updateCases(event, dummyContext, repositoryProvider);
 
@@ -293,20 +257,16 @@ describe('update cases resource', () => {
     const updatedCase1: DeaCase = jsonParseWithDates(response.body);
     expect(updatedCase1.name).toEqual(aNewNameForCase1);
 
-    const event2 = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: createdCase2.ulid,
-        },
-        body: JSON.stringify({
-          ulid: createdCase2.ulid,
-          name: theCase1.name,
-          description: 'whatevs',
-        }),
-      }
-    );
+    const event2 = getDummyEvent({
+      pathParameters: {
+        caseId: createdCase2.ulid,
+      },
+      body: JSON.stringify({
+        ulid: createdCase2.ulid,
+        name: theCase1.name,
+        description: 'whatevs',
+      }),
+    });
 
     const response2 = await updateCases(event2, dummyContext, repositoryProvider);
 

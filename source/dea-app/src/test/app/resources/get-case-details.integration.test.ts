@@ -15,7 +15,7 @@ import { caseResponseSchema } from '../../../models/validation/case';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { createCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -45,15 +45,11 @@ describe('get case details resource', () => {
     };
     const createdCase = await createCase(theCase, user, repositoryProvider);
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: createdCase.ulid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: createdCase.ulid,
+      },
+    });
 
     const response = await getCase(event, dummyContext, repositoryProvider);
 
@@ -74,20 +70,16 @@ describe('get case details resource', () => {
 
   it('should throw an error if the requested case does not exist', async () => {
     const ulid = '02ARZ3NDEKTSV4RRFFQ69G5FAV';
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: ulid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: ulid,
+      },
+    });
 
     await expect(getCase(event, dummyContext, repositoryProvider)).rejects.toThrow(NotFoundError);
   });
 
   it('should throw an error if the path param is missing', async () => {
-    await expect(getCase(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(ValidationError);
+    await expect(getCase(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(ValidationError);
   });
 });
