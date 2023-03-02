@@ -18,6 +18,7 @@ import { getAllCases } from './app/resources/get-all-cases';
 import { getCase } from './app/resources/get-case-details';
 import { getCaseFileDetails } from './app/resources/get-case-file-details';
 import { getCredentials } from './app/resources/get-credentials';
+import { getLoginUrl } from './app/resources/get-login-url';
 import { getMyCases } from './app/resources/get-my-cases';
 import { getToken } from './app/resources/get-token';
 import { getUsers } from './app/resources/get-users';
@@ -37,6 +38,7 @@ import { getTestAuditService } from './test/services/test-audit-service-provider
 export {
   auditService,
   getToken,
+  getLoginUrl,
   getCredentials,
   createCases,
   deleteCase,

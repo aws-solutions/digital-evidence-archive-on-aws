@@ -82,6 +82,19 @@ describe('API authentication', () => {
     expect(response.status).toEqual(200);
   });
 
+  it('should fetch the login url', async () => {
+    const client = axios.create();
+
+    // get SSM parameters to compare
+    const cognitoParams = await getCognitoSsmParams();
+    const expectedUrl = `${cognitoParams.cognitoDomainUrl}/login?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
+
+    // fetch url
+    const url = `${deaApiUrl}auth/getLoginUrl`;
+    const response = await client.post(url);
+    expect(response.data).toEqual(expectedUrl);
+  });
+
   it('should ask for an authorization code and exchange for id token', async () => {
     const client = axios.create();
 

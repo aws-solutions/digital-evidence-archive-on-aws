@@ -85,6 +85,14 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
   }
 };
 
+export const getLoginHostedUiUrl = async () => {
+  const cognitoParams = await getCognitoSsmParams();
+
+  const loginUrl = `${cognitoParams.cognitoDomainUrl}/login?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
+
+  return loginUrl;
+};
+
 export const getCredentialsByToken = async (idToken: string) => {
   const cognitoParams = await getCognitoSsmParams();
 
