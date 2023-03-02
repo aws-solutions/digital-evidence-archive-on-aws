@@ -91,7 +91,7 @@ describe('API authentication', () => {
 
     // fetch url
     const url = `${deaApiUrl}auth/getLoginUrl`;
-    const response = await client.post(url);
+    const response = await client.get(url);
     expect(response.data).toEqual(expectedUrl);
   });
 
