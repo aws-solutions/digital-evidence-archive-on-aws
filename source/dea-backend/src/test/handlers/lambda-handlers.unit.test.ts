@@ -13,6 +13,7 @@ import * as GetAllCasesHandler from '../../handlers/get-all-cases-handler';
 import * as GetCaseDetailHandler from '../../handlers/get-case-detail-handler';
 import * as GetCaseFileDetailHandler from '../../handlers/get-case-file-detail-handler';
 import * as GetCredentialsHandler from '../../handlers/get-credentials-handler';
+import * as GetUrlHandler from '../../handlers/get-login-url-handler';
 import * as GetMyCasesHandler from '../../handlers/get-my-cases-handler';
 import * as GetTokenHandler from '../../handlers/get-token-handler';
 import * as GetUsersHandler from '../../handlers/get-users-handler';
@@ -30,6 +31,7 @@ describe('lambda handlers', () => {
       DeleteCasesHandler.handler,
       DownloadCaseFileHandler.handler,
       GetAllCasesHandler.handler,
+      GetUrlHandler.handler,
       GetCaseDetailHandler.handler,
       GetCaseFileDetailHandler.handler,
       GetMyCasesHandler.handler,
