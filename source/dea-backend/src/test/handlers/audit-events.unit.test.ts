@@ -218,4 +218,34 @@ describe('dea lambda audits', () => {
     }
     expect(sentInput.logEvents[0].message).toContain(`"idType":"TokenRequestor"`);
   });
+
+  it('should construct LOGIN_URL_REQUESTOR identity', async () => {
+    const testAuditService = getTestAuditService();
+    const sut = createDeaHandler(
+      async () => {
+        return {
+          statusCode: 200,
+          body: ':D',
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    const theEvent = getDummyEvent();
+    theEvent.requestContext.identity.cognitoIdentityId = null;
+    theEvent.resource = '/auth/getLoginUrl';
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: ':D', statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).toContain(`"idType":"LoginUrlRequestor"`);
+  });
 });

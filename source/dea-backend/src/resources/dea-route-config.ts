@@ -106,6 +106,14 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       authMethod: AuthorizationType.NONE,
     },
     {
+      eventName: AuditEventType.GET_LOGIN_URL,
+      path: '/auth/getLoginUrl',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-login-url-handler.ts',
+      // TODO: Implement custom authorizer for UI trying to access credentials
+      authMethod: AuthorizationType.NONE,
+    },
+    {
       eventName: AuditEventType.EXCHANGE_TOKEN_FOR_CREDS,
       path: '/auth/getCredentials/{idToken}',
       httpMethod: ApiGatewayMethod.GET,

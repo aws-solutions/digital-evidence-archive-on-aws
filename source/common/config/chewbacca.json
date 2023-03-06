@@ -44,6 +44,10 @@
           "method": "POST"
         },
         {
+          "path": "/auth/getLoginUrl",
+          "method": "GET"
+        },
+        {
           "path": "/auth/getCredentials/{idToken}",
           "method": "GET"
         },
@@ -100,6 +104,10 @@
         {
           "path": "/auth/getCredentials/{idToken}",
           "method": "GET"
+        },
+        {
+          "path": "/auth/getLoginUrl",
+          "method": "GET"
         }
       ]
     },
@@ -127,6 +135,10 @@
         {
           "path": "/auth/getCredentials/{idToken}",
           "method": "GET"
+        },
+        {
+          "path": "/auth/getLoginUrl",
+          "method": "GET"
         }
       ]
     },
@@ -153,6 +165,10 @@
         },
         {
           "path": "/auth/getCredentials/{idToken}",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/getLoginUrl",
           "method": "GET"
         }
       ]

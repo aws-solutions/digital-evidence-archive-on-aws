@@ -8,6 +8,7 @@ import {
   getCognitoSsmParams,
   CognitoSsmParams,
   getCredentialsByToken,
+  getLoginHostedUiUrl,
 } from '../../app/services/auth-service';
 import CognitoHelper from '../../test-e2e/helpers/cognito-helper';
 
@@ -29,6 +30,14 @@ describe('cognito helpers integration test', () => {
 
   afterAll(async () => {
     await cognitoHelper.cleanup();
+  });
+
+  it('should return the correct login URL', async () => {
+    const loginUrl = await getLoginHostedUiUrl();
+
+    expect(loginUrl).toEqual(
+      `${cognitoParams.cognitoDomainUrl}/login?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`
+    );
   });
 
   it('successfully get id token using auth code', async () => {
