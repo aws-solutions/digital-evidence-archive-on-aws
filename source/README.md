@@ -14,6 +14,7 @@
 To install for the first time, run the following commands:
 
 ```
+npm install -g @microsoft/rush
 rush cupdate
 rush build
 ```
