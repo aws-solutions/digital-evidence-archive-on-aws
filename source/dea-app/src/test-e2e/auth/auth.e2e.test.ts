@@ -7,7 +7,7 @@ import axios from 'axios';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPI, randomSuffix, validateStatus } from '../resources/test-helpers';
+import { callDeaAPI, callDeaAPIWithCreds, randomSuffix, validateStatus } from '../resources/test-helpers';
 
 describe('API authentication', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
@@ -136,6 +136,22 @@ describe('API authentication', () => {
     expect(response.status).toEqual(500);
     expect(response.statusText).toEqual('Internal Server Error');
   });
+
+  it('should fail when the id token has been modified', async () => {
+    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
+
+    // modify id token to make it invalid
+    const replacementIndex = idToken.length / 2;
+    const replacementChar = idToken.charAt(replacementIndex) === 'A' ? 'B' : 'A';
+    const modifiedToken =
+      idToken.substring(0, replacementIndex) + replacementChar + idToken.substring(replacementIndex + 1);
+
+    // Now call DEA with modified token and make sure it fails
+    const url = `${deaApiUrl}cases/my-cases`;
+    const response = await callDeaAPIWithCreds(url, 'GET', modifiedToken, creds);
+    expect(response.status).toEqual(400);
+    expect(response.statusText).toEqual('Bad Request');
+  }, 40000);
 
   it('should log successful and unsuccessful logins/api invocations', () => {
     /* TODO */
