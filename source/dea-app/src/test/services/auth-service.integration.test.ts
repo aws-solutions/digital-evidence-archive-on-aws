@@ -11,20 +11,23 @@ import {
   getLoginHostedUiUrl,
 } from '../../app/services/auth-service';
 import CognitoHelper from '../../test-e2e/helpers/cognito-helper';
+import { randomSuffix } from '../../test-e2e/resources/test-helpers';
 
 let cognitoParams: CognitoSsmParams;
-let idToken: string;
 
-describe('cognito helpers integration test', () => {
+describe('auth service', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
-  const testUser = 'authServiceIntegrationTestUser';
+  const suffix = randomSuffix(5);
+  const testUser = `authServiceIntegrationTestUser${suffix}`;
+  const testUser2 = `authServiceIntegrationTestUser2${suffix}`;
   const firstName = 'authServiceHelper';
   const lastName = 'TestUser';
 
   beforeAll(async () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
+    await cognitoHelper.createUser(testUser2, 'AuthTestGroup', firstName, lastName);
     cognitoParams = await getCognitoSsmParams();
   });
 
@@ -46,7 +49,28 @@ describe('cognito helpers integration test', () => {
       cognitoParams.callbackUrl,
       testUser
     );
-    idToken = await exchangeAuthorizationCode(authCode);
+    const idToken = await exchangeAuthorizationCode(authCode);
+
+    // Assert if no id token fectched in exchangeAuthorizationCode
+    expect(idToken).toBeTruthy();
+
+    const credentials = await getCredentialsByToken(idToken);
+
+    expect(credentials).toHaveProperty('AccessKeyId');
+    expect(credentials).toHaveProperty('SecretKey');
+    expect(credentials).toHaveProperty('SessionToken');
+  }, 20000);
+
+  it('successfully get id token using auth code with an origin', async () => {
+    const authCode = await cognitoHelper.getAuthorizationCode(
+      cognitoParams.cognitoDomainUrl,
+      cognitoParams.callbackUrl,
+      testUser2
+    );
+    let origin = cognitoParams.callbackUrl.substring(0, cognitoParams.callbackUrl.lastIndexOf('/')); //remove /login
+    origin = origin.substring(0, origin.lastIndexOf('/')); //remove /ui
+    origin = origin.substring(0, origin.lastIndexOf('/')); //remove stage
+    const idToken = await exchangeAuthorizationCode(authCode, origin);
 
     // Assert if no id token fectched in exchangeAuthorizationCode
     expect(idToken).toBeTruthy();
@@ -57,14 +81,6 @@ describe('cognito helpers integration test', () => {
     await expect(exchangeAuthorizationCode(dummyAuthCode)).rejects.toThrow(
       'Request failed with status code 400'
     );
-  });
-
-  it('should succesfully fetch IAM credentials', async () => {
-    const credentials = await getCredentialsByToken(idToken);
-
-    expect(credentials).toHaveProperty('AccessKeyId');
-    expect(credentials).toHaveProperty('SecretKey');
-    expect(credentials).toHaveProperty('SessionToken');
   });
 
   it('should throw an error if the id token is not valid', async () => {

@@ -1918,7 +1918,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaRestApiConstructdeaapiDeploymentC27C6CB14b2fb6a9d1f589810bab000ea436fd39": Object {
+    "DeaRestApiConstructdeaapiDeploymentC27C6CB11d1fb130547a2a32243fabc18542426a": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaapiauthgetCredentialsidTokenGETF30F6BC2",
         "DeaRestApiConstructdeaapiauthgetCredentialsidTokenOPTIONSA66044D9",
@@ -1995,7 +1995,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB14b2fb6a9d1f589810bab000ea436fd39",
+          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB11d1fb130547a2a32243fabc18542426a",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -2013,7 +2013,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -2072,7 +2072,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -2125,7 +2125,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -2296,7 +2296,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -2467,7 +2467,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -2520,7 +2520,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -2573,7 +2573,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -2747,7 +2747,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -3044,7 +3044,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -3333,7 +3333,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -3622,7 +3622,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -3911,7 +3911,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -4200,7 +4200,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -4253,7 +4253,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -4542,7 +4542,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -4839,7 +4839,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },
@@ -5019,7 +5019,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'*'",
               },

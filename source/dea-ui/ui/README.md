@@ -11,28 +11,23 @@ This is a prototype app and you should expect to modify the source code to refle
 | ![Statements](https://img.shields.io/badge/statements-91.12%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-85.71%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-85.71%25-yellow.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-91.98%25-brightgreen.svg?style=flat) |
 
 
-## Deploying the UI
-
-Run the following command
-
-```sh
-rushx deploy-ui
-```
-
 ## Deploying code changes
 
-Navigate to dea-main and follow instructions in README
+Navigate to dea-main and follow instructions in [README](../../README.md)
 
 ## Running locally
 
 First, run the development server:
 
 ```sh
-yarn dev
+rushx dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. You'll need to navigate further to /{stage}/ui, e.g. [http://localhost:3000/chewbacca/ui](http://localhost:3000/chewbacca/ui)
 
+The UI running locally will be configured to point to your deployed backend via the DEA_API_URL environment variable, which will be copied into a generated [.env.local](.env.local) for use by Nextjs.
+
+You will need to visit the Cognito Hosted UI to authenticate your instance, for finding the URL you need you can run [getLoginUrls](./scripts/getLoginUrls.sh), oce you login with a cognito user ([Test User Generation for API requests](../../README.md)) you will be redirected to the UI which will now have credentials.
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

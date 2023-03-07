@@ -70,7 +70,7 @@ export const validateEndpointACLs = (
     const s3ObjectsToDelete: s3Object[] = [];
 
     beforeAll(async () => {
-      testHarness = await initializeACLE2ETest('caseDetailACL', requiredActions);
+      testHarness = await initializeACLE2ETest(testSuiteName, requiredActions);
       targetUrl = `${deaApiUrl}${endpoint}`;
       targetUrl = targetUrl.replace('{caseId}', testHarness.targetCase.ulid!);
 
@@ -280,7 +280,7 @@ const initializeACLE2ETest = async (
   const createdCase = await createCaseSuccess(
     deaApiUrl,
     {
-      name: `targetCase_${testSuiteName}`,
+      name: `${prefix}_targetCase_${testSuiteName}`,
       description: 'this is a description',
     },
     ownerToken,

@@ -297,6 +297,12 @@ export class DeaAuthConstruct extends Construct {
       },
     });
 
+    const callbackUrls = [callbackUrl];
+    if (deaConfig.isTestStack()) {
+      // test stacks add localhost as a callback url for UI redirect during local development
+      callbackUrls.push(`http://localhost:3000/${deaConfig.stage()}/ui/login`);
+    }
+
     const poolClient = userPool.addClient('dea-app-client', {
       accessTokenValidity: accessTokenValidity,
       // use Server-side authentication workflow
@@ -309,7 +315,7 @@ export class DeaAuthConstruct extends Construct {
       idTokenValidity: idTokenValidity,
 
       oAuth: {
-        callbackUrls: [callbackUrl],
+        callbackUrls,
         flows: {
           authorizationCodeGrant: true,
         },

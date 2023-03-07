@@ -88,7 +88,15 @@ export class DeaRestApiConstruct extends Construct {
         ),
       },
       defaultCorsPreflightOptions: {
-        allowHeaders: ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'CSRF-Token'],
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+          'CSRF-Token',
+          'idToken',
+          'x-amz-security-token',
+        ],
         allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         allowCredentials: true,
         allowOrigins: Cors.ALL_ORIGINS,
