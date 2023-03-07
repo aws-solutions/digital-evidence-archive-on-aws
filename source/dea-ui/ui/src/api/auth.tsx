@@ -25,7 +25,7 @@ const getCredentials = async (idToken: string) => {
 
 const getLoginUrl = async () => {
   try {
-    const response = await httpApiGet(`/${STAGE}/auth/getLoginUrl`, {});
+    const response = await httpApiGet(`auth/getLoginUrl`, {});
     return response;
   } catch (error) {
     console.error(error);

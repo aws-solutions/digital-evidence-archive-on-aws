@@ -106,7 +106,7 @@ describe('API authentication', () => {
     );
 
     // 3. Exchange auth code for id token
-    const url = `${deaApiUrl}auth/getToken/${authCode}?bogus=bogus`;
+    const url = `${deaApiUrl}auth/getToken/${authCode}`;
     const response = await client.post(url, undefined, { validateStatus });
     const idToken = response.data;
     expect(response.status).toEqual(200);
