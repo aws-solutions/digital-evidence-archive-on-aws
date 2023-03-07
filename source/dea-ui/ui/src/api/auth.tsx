@@ -5,11 +5,9 @@
 
 import { httpApiGet, httpApiPost } from '../helpers/apiHelper';
 
-const STAGE = process.env.STAGE ?? 'chewbacca';
-
 const getToken = async (authCode: string) => {
   try {
-    const response = await httpApiPost(`/${STAGE}/auth/getToken/${authCode}/`, { authCode });
+    const response = await httpApiPost(`auth/getToken/${authCode}/`, { authCode });
     return response;
   } catch (error) {
     console.error(error);
@@ -18,7 +16,7 @@ const getToken = async (authCode: string) => {
 
 const getCredentials = async (idToken: string) => {
   try {
-    const response = await httpApiGet(`/${STAGE}/auth/getCredentials/${idToken}`, {});
+    const response = await httpApiGet(`auth/getCredentials/${idToken}`, {});
     return response;
   } catch (error) {
     console.error(error);
@@ -27,7 +25,7 @@ const getCredentials = async (idToken: string) => {
 
 const getLoginUrl = async () => {
   try {
-    const response = await httpApiGet(`/${STAGE}/auth/getLoginUrl`, {});
+    const response = await httpApiGet(`auth/getLoginUrl`, {});
     return response;
   } catch (error) {
     console.error(error);

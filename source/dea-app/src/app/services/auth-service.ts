@@ -11,6 +11,7 @@ import {
 import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import axios from 'axios';
 import { getRequiredEnv } from '../../lambda-http-helpers';
+import { logger } from '../../logger';
 
 const stage = getRequiredEnv('STAGE', 'chewbacca');
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
@@ -124,24 +125,40 @@ export const getCredentialsByToken = async (idToken: string) => {
   return Credentials;
 };
 
-export const exchangeAuthorizationCode = async (authorizationCode: string): Promise<string> => {
+export const exchangeAuthorizationCode = async (
+  authorizationCode: string,
+  origin?: string
+): Promise<string> => {
   const cognitoParams = await getCognitoSsmParams();
   const axiosInstance = axios.create({
     baseURL: cognitoParams.cognitoDomainUrl,
   });
 
+  let callbackUrl = cognitoParams.callbackUrl;
+  if (origin) {
+    callbackUrl = `${origin}/${stage}/ui/login`;
+  }
+
   const data = new URLSearchParams();
   data.append('grant_type', 'authorization_code');
   data.append('client_id', cognitoParams.clientId);
   data.append('code', authorizationCode);
-  data.append('redirect_uri', cognitoParams.callbackUrl);
+  data.append('redirect_uri', callbackUrl);
 
   // make a request using the Axios instance
   const response = await axiosInstance.post('/oauth2/token', data, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
+    validateStatus: () => true,
   });
+
+  if (response.status !== 200) {
+    logger.error(
+      `Unable to exchange authorization code: ${response.statusText} : ${JSON.stringify(response.data)}`
+    );
+    throw new Error(`Request failed with status code ${response.status}`);
+  }
 
   return response.data.id_token;
 };
