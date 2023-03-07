@@ -1,3 +1,8 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import jwt from 'jwt-decode';
 import { useRouter } from 'next/router';
 import { createContext, useContext, Context, useState, useEffect } from 'react';
