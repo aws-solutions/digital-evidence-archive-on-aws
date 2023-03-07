@@ -91,6 +91,7 @@ export const headerLabels = {
   overflowMenuBackIconAriaLabel: 'Back',
   overflowMenuDismissIconAriaLabel: 'Close menu',
   signout: 'Sign out',
+  notLoggedIn: ' - Not Logged In',
 };
 
 export const caseListLabels = {

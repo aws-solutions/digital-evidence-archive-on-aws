@@ -25,4 +25,13 @@ const getCredentials = async (idToken: string) => {
   }
 };
 
-export { getToken, getCredentials };
+const getLoginUrl = async () => {
+  try {
+    const response = await httpApiGet(`/${STAGE}/auth/getLoginUrl`, {});
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export { getToken, getCredentials, getLoginUrl };
