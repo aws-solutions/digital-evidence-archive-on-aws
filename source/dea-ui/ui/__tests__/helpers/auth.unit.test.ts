@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import axios from 'axios';
-import { getCredentials, getToken } from '../../src/api/auth';
+import { getCredentials, getToken, getLoginUrl } from '../../src/api/auth';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.MockedFunction<typeof axios>;
@@ -36,5 +36,18 @@ describe('auth helper', () => {
 
     const credentials = await getCredentials('123456');
     expect(credentials).toEqual(expectedData);
+  });
+
+  it('should return login Url', async () => {
+    // id token mock
+    mockedAxios.mockResolvedValue({
+      data: 'dummyloginurl.com',
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+    const loginUrl = await getLoginUrl();
+    expect(loginUrl).toEqual('dummyloginurl.com');
   });
 });

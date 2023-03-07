@@ -11,7 +11,7 @@ import { useSettings } from '../context/SettingsContext';
 
 export default function Header(): JSX.Element {
   const { settings } = useSettings();
-  const { signOut } = useAuthentication();
+  const { user, signOut, isLoggedIn } = useAuthentication();
 
   const profileActions = [{ id: 'signout', text: headerLabels.signout }];
   return (
@@ -22,12 +22,12 @@ export default function Header(): JSX.Element {
       i18nStrings={headerLabels}
       identity={{
         href: `/${settings.stage}/ui`,
-        title: settings.name,
+        title: isLoggedIn ? settings.name : `${settings.name}${headerLabels.notLoggedIn}`,
       }}
       utilities={[
         {
           type: 'menu-dropdown',
-          text: `Sherlock Holmes`,
+          text: user.username,
           items: profileActions,
           onItemClick: async () => signOut(),
         },
