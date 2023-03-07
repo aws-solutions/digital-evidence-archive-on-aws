@@ -25,7 +25,6 @@
     "cypress:headless": "cypress run",
     "cypress:test": "start-server-and-test start http-get://localhost:3000/${STAGE}/ui cypress:headless",
     "depcheck": "depcheck",
-    "deploy-ui": "bash ./scripts/deploy.sh",
     "dev": "next dev",
     "e2e:only": "jest --ci --coverage '.*/*e2e.test.*'",
     "export": "next build && next export",
