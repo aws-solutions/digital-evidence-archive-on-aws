@@ -11,6 +11,7 @@ import {
 import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import axios from 'axios';
 import { getRequiredEnv } from '../../lambda-http-helpers';
+import { logger } from '../../logger';
 
 const stage = getRequiredEnv('STAGE', 'chewbacca');
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
@@ -149,7 +150,15 @@ export const exchangeAuthorizationCode = async (
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
+    validateStatus: () => true,
   });
+
+  if (response.status !== 200) {
+    logger.error(
+      `Unable to exchange authorization code: ${response.statusText} : ${JSON.stringify(response.data)}`
+    );
+    throw new Error(`Request failed with status code ${response.status}`);
+  }
 
   return response.data.id_token;
 };
