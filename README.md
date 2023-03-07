@@ -13,13 +13,13 @@ Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest 
 
 1. Sign in to GitHub
 
-2. Fork the repository https://github.com/aws-solutions/digital-investigations-on-aws. Underneath the page header, on the upper right, the fork button is second from the right. Choose your account as the owner and uncheck the copy only main branch.
+2. Fork the repository https://github.com/aws-solutions/digital-evidence-archive-on-aws. Underneath the page header, on the upper right, the fork button is second from the right. Choose your account as the owner and uncheck the copy only main branch.
 
 3. Clone the forked repo, inputting your username, then your ACCESS token from step 1 as the password
 
 ```
 WORKSPACE_NAME=<e.g. DEADev>
-git clone git@github.com:aws-solutions/digital-investigations-on-aws.git $WORKSPACE_NAME
+git clone git@github.com:aws-solutions/digital-evidence-archive-on-aws.git $WORKSPACE_NAME
 cd ./$WORKSPACE_NAME
 ```
 
@@ -29,17 +29,33 @@ cd ./$WORKSPACE_NAME
 git checkout -b $BRANCH_NAME
 ```
 
-5. Run Rush Install
+5. Install Rush 
+
+
+```
+npm install -g @microsoft/rush
+```
+
+6. Run Rush Install
 
 ```
 cd ./source
 rush cupdate
 ```
 
-6. Setup Git Defender
+7. Setup Git Defender
 
 ```
 git defender --setup
+```
+
+8. Install DEA
+
+```
+cd ./dea-main
+rushx cdk bootstrap aws://{aws id}/{region}
+rushx cdk deploy
+
 ```
 
 ## CDK Policy Customization

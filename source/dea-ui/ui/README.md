@@ -10,26 +10,18 @@ This is a prototype app and you should expect to modify the source code to refle
 | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
 | ![Statements](https://img.shields.io/badge/statements-92.83%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-82.22%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-85.82%25-yellow.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-94.07%25-brightgreen.svg?style=flat) |
 
-## Creating a stage file
-
-First, you will need to create a stage file. An example stage file (demo.yaml) can be found under dea-ui/ui/src/config. Create a stage file for your deployment with the stage name of your choice. Supply the stage name and region short name of your choice along with the aws region where you will deploy the UI (this will need to the same region where the DEA backend is deployed).
 
 ## Deploying the UI
 
-One you have created your stage file run
+Run the following command
 
 ```sh
-STAGE=<stagename> rushx deploy-ui
+rushx deploy-ui
 ```
 
 ## Deploying code changes
 
-To deploy code changes without running the entire deployment script navigate to the infrastructure directory and run the deploy command directly:
-
-```sh
-cd infrastructure
-STAGE=<stagename> rushx cdk deploy
-```
+Navigate to dea-main and follow instructions in README
 
 ## Running locally
 
