@@ -35,6 +35,13 @@ jobs:
         run: node common/scripts/install-run-rush.js viperlight-scan
       - name: Install
         uses: ./.github/actions/baseAction
+      - name: pnpm audit
+        run: |
+          cd common/config/rush
+          pnpm audit
+      - name: license check
+        run: |
+          node common/scripts/install-run-rush.js license-checker
       - name: Secrets Scan
         run: |
           node common/scripts/install-run-rush.js git-secrets-scan
