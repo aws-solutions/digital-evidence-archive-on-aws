@@ -7,16 +7,11 @@ import { loginUrlRegex } from '../../models/validation/joi-common';
 import { getLoginHostedUiUrl } from '../services/auth-service';
 
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 
 export const getLoginUrl: DEAGatewayProxyHandler = async () => {
   const loginUrl = await getLoginHostedUiUrl();
 
   Joi.assert(loginUrl, loginUrlRegex);
-  return {
-    statusCode: 200,
-    body: JSON.stringify(loginUrl),
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
-  };
+  return responseOk(loginUrl);
 };

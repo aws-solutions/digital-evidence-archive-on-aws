@@ -7,6 +7,7 @@ import { getPaginationParameters } from '../../lambda-http-helpers';
 import { defaultProvider } from '../../persistence/schema/entities';
 import * as UserService from '../services/user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 import { getNextToken } from './get-next-token';
 
 export const getUsers: DEAGatewayProxyHandler = async (
@@ -29,14 +30,11 @@ export const getUsers: DEAGatewayProxyHandler = async (
     repositoryProvider
   );
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      //intentionally unused tokenId - this removes it during the map operation
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      users: pageOfUsers.map(({ tokenId, ...user }) => user),
-      total: pageOfUsers.count,
-      next: getNextToken(pageOfUsers.next),
-    }),
-  };
+  return responseOk({
+    //intentionally unused tokenId - this removes it during the map operation
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    users: pageOfUsers.map(({ tokenId, ...user }) => user),
+    total: pageOfUsers.count,
+    next: getNextToken(pageOfUsers.next),
+  });
 };

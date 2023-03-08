@@ -4,6 +4,7 @@
  */
 
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
+import { APIGatewayProxyResult } from 'aws-lambda';
 import { getDeaUserFromToken, getTokenPayload } from '../../cognito-token-helpers';
 import { getRequiredHeader } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
@@ -93,6 +94,26 @@ const addUserToDatabase = async (
   const deaUserResult = await UserService.createUser(deaUser, repositoryProvider);
 
   return deaUserResult;
+};
+
+export const responseOk = (body: unknown): APIGatewayProxyResult => {
+  return {
+    statusCode: 200,
+    body: JSON.stringify(body),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
+  };
+};
+
+export const responseNoContent = (): APIGatewayProxyResult => {
+  return {
+    statusCode: 204,
+    body: '',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
+  };
 };
 
 // Session Management Checks Helper Functions

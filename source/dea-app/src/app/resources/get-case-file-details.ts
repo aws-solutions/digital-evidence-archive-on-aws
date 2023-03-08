@@ -9,6 +9,7 @@ import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { getCaseFile } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 
 export const getCaseFileDetails: DEAGatewayProxyHandler = async (
   event,
@@ -25,8 +26,5 @@ export const getCaseFileDetails: DEAGatewayProxyHandler = async (
     throw new NotFoundError(`Could not find file: ${fileId} in the DB`);
   }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(retrievedCaseFile),
-  };
+  return responseOk(retrievedCaseFile);
 };

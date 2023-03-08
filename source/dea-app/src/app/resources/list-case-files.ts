@@ -11,6 +11,7 @@ import { NotFoundError } from '../exceptions/not-found-exception';
 import { listCaseFilesByFilePath } from '../services/case-file-service';
 import { getCase } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 import { getNextToken } from './get-next-token';
 
 export const listCaseFiles: DEAGatewayProxyHandler = async (
@@ -42,12 +43,10 @@ export const listCaseFiles: DEAGatewayProxyHandler = async (
     repositoryProvider,
     paginationParams.nextToken
   );
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      cases: pageOfCaseFiles,
-      total: pageOfCaseFiles.count,
-      next: getNextToken(pageOfCaseFiles.next),
-    }),
-  };
+
+  return responseOk({
+    cases: pageOfCaseFiles,
+    total: pageOfCaseFiles.count,
+    next: getNextToken(pageOfCaseFiles.next),
+  });
 };

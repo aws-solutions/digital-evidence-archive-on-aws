@@ -6,16 +6,11 @@ import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { idToken } from '../../models/validation/joi-common';
 import { getCredentialsByToken } from '../services/auth-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 
 export const getCredentials: DEAGatewayProxyHandler = async (event) => {
   const idTokenString = getRequiredPathParam(event, 'idToken', idToken);
   const response = await getCredentialsByToken(idTokenString);
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(response),
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
-  };
+  return responseOk(response);
 };
