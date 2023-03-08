@@ -95,9 +95,10 @@ export const headerLabels = {
 };
 
 export const caseListLabels = {
-  loading: 'loading cases',
+  loading: 'Loading cases',
   noCasesLabel: 'No cases',
-  noDisplayLabel: 'No cases to display.',
+  noCasesMatchLabel: 'No cases matched',
+  noDisplayLabel: 'No cases to display',
   createNewCaseLabel: 'Create new case',
   searchCasesLabel: 'Search by case name',
   casesLabel: 'Cases',
@@ -108,7 +109,7 @@ export const filesListLabels = {
   caseFilesLabel: 'Case Files',
   loading: 'Loading files',
   noFilesLabel: 'No files',
-  noDisplayLabel: 'No files to dsiplay.',
+  noDisplayLabel: 'No files to dsiplay',
   uploadFileLabel: 'Upload a file',
   searchLabel: 'Search by file name',
   filterDescription: 'All folders/files associated with this case.',

@@ -20,8 +20,8 @@ function CaseTable(): JSX.Element {
   // Property and date filter collections
   const { items, filteredItemsCount, propertyFilterProps } = useCollection(cases, {
     filtering: {
-      empty: TableEmptyDisplay(caseListLabels.noCasesLabel),
-      noMatch: TableNoMatchDisplay(caseListLabels.noCasesLabel),
+      empty: TableEmptyDisplay(caseListLabels.noCasesLabel, caseListLabels.noDisplayLabel),
+      noMatch: TableNoMatchDisplay(caseListLabels.noCasesMatchLabel),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       filteringFunction: (item: any, filteringText): any => {
         const filteringTextLowerCase = filteringText.toLowerCase();
@@ -38,8 +38,8 @@ function CaseTable(): JSX.Element {
     },
     propertyFiltering: {
       filteringProperties: filteringProperties,
-      empty: TableEmptyDisplay(caseListLabels.noCasesLabel),
-      noMatch: TableNoMatchDisplay(caseListLabels.noCasesLabel),
+      empty: TableEmptyDisplay(caseListLabels.noCasesLabel, caseListLabels.noDisplayLabel),
+      noMatch: TableNoMatchDisplay(caseListLabels.noCasesMatchLabel),
     },
     sorting: {},
     selection: {},
@@ -58,7 +58,7 @@ function CaseTable(): JSX.Element {
       items={items}
       loadingText={caseListLabels.loading}
       resizableColumns={true}
-      empty={TableEmptyDisplay(caseListLabels.noCasesLabel)}
+      empty={TableEmptyDisplay(caseListLabels.noCasesLabel, caseListLabels.noDisplayLabel)}
       header={
         <TableHeader
           data-testid="case-table-header"
