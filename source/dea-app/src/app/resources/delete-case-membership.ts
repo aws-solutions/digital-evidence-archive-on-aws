@@ -8,6 +8,7 @@ import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { deleteCaseUser } from '../services/case-user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseNoContent } from './dea-lambda-utils';
 
 export const deleteCaseMembership: DEAGatewayProxyHandler = async (
   event,
@@ -19,9 +20,6 @@ export const deleteCaseMembership: DEAGatewayProxyHandler = async (
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const userId = getRequiredPathParam(event, 'userId', joiUlid);
 
-  const caseUserResult = await deleteCaseUser(userId, caseId, repositoryProvider);
-  return {
-    statusCode: 204,
-    body: JSON.stringify(caseUserResult),
-  };
+  await deleteCaseUser(userId, caseId, repositoryProvider);
+  return responseNoContent();
 };

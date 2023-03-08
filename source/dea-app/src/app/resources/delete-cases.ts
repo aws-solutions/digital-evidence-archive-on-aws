@@ -8,6 +8,7 @@ import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import * as CaseService from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseNoContent } from './dea-lambda-utils';
 
 export const deleteCase: DEAGatewayProxyHandler = async (
   event,
@@ -20,8 +21,5 @@ export const deleteCase: DEAGatewayProxyHandler = async (
 
   await CaseService.deleteCase(caseId, repositoryProvider);
 
-  return {
-    statusCode: 204,
-    body: '',
-  };
+  return responseNoContent();
 };

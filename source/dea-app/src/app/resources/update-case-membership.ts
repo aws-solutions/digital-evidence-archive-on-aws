@@ -11,6 +11,7 @@ import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import { updateCaseUserMembershipFromDTO } from '../services/case-user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 
 export const updateCaseMembership: DEAGatewayProxyHandler = async (
   event,
@@ -33,8 +34,6 @@ export const updateCaseMembership: DEAGatewayProxyHandler = async (
   }
 
   const caseUserResult = await updateCaseUserMembershipFromDTO(caseUser, repositoryProvider);
-  return {
-    statusCode: 200,
-    body: JSON.stringify(caseUserResult),
-  };
+
+  return responseOk(caseUserResult);
 };

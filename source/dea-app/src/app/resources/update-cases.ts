@@ -11,6 +11,7 @@ import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 
 export const updateCases: DEAGatewayProxyHandler = async (
   event,
@@ -28,8 +29,6 @@ export const updateCases: DEAGatewayProxyHandler = async (
   }
 
   const caseUpdateResult = await CaseService.updateCases(deaCase, repositoryProvider);
-  return {
-    statusCode: 200,
-    body: JSON.stringify(caseUpdateResult),
-  };
+
+  return responseOk(caseUpdateResult);
 };

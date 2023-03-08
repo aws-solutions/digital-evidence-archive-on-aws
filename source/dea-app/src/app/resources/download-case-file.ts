@@ -12,6 +12,7 @@ import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getCaseFile } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 
 export const downloadCaseFile: DEAGatewayProxyHandler = async (
   event,
@@ -35,10 +36,5 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
 
   const downloadUrl = await getPresignedUrlForDownload(retrievedCaseFile, datasetsProvider);
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      downloadUrl,
-    }),
-  };
+  return responseOk({ downloadUrl });
 };
