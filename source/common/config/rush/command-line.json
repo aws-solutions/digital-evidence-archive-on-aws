@@ -262,13 +262,6 @@
       "incremental": true
     },
     {
-      "name": "depcheck",
-      "commandKind": "bulk",
-      "summary": "Check unused dependecies and devDependencies",
-      "safeForSimultaneousRushProcesses": true,
-      "enableParallelism": true
-    },
-    {
       "name": "license-checker",
       "commandKind": "bulk",
       "summary": "Run license checker on dependencies",
