@@ -81,7 +81,7 @@ function CaseTable(): JSX.Element {
           header: commonTableLabels.caseNameHeader,
           cell: (e) => (
             <Link
-              href={`/${e.ulid}`}
+              href={`cases/${e.ulid}`}
               onFollow={(e) => {
                 e.preventDefault();
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises

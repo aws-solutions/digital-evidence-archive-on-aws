@@ -9,7 +9,7 @@ import { commonLabels } from '../../common/labels';
 import CaseDetailsTabs from './CaseDetailsTabs';
 
 interface CaseDetailsBodyProps {
-  readonly caseId: string | string;
+  readonly caseId: string;
 }
 
 function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
@@ -47,7 +47,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
             </div>
           </ColumnLayout>
         </Container>
-        <CaseDetailsTabs></CaseDetailsTabs>
+        <CaseDetailsTabs caseId={props.caseId}></CaseDetailsTabs>
       </ContentLayout>
     );
   }

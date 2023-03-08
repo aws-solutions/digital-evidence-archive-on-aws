@@ -12,10 +12,17 @@ import {
   Header,
   SpaceBetween,
 } from '@cloudscape-design/components';
+import { useRouter } from 'next/router';
 import * as React from 'react';
-import { commonTableLabels, filesListLabels, commonLabels } from '../../common/labels';
+import { commonTableLabels, filesListLabels, commonLabels, caseListLabels } from '../../common/labels';
 
-function CaseFilesTable(): JSX.Element {
+interface CaseFilesTableProps {
+  readonly caseId: string;
+}
+
+function CaseFilesTable(props: CaseFilesTableProps): JSX.Element {
+  const router = useRouter();
+
   // Property and date filter collections
   const items = [
     {
@@ -31,6 +38,11 @@ function CaseFilesTable(): JSX.Element {
       fileType: 'xml',
     },
   ];
+
+  function uploadFileHandler() {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    router.push(`/cases/${props.caseId}/upload-file`);
+  }
 
   return (
     <Table
@@ -88,7 +100,9 @@ function CaseFilesTable(): JSX.Element {
           description={filesListLabels.filterDescription}
           actions={
             <SpaceBetween direction="horizontal" size="xs">
-              <Button>{commonLabels.uploadButton}</Button>
+              <Button data-testid="upload-file-button" onClick={uploadFileHandler}>
+                {commonLabels.uploadButton}
+              </Button>
               <Button variant="primary">{commonLabels.downloadButton}</Button>
             </SpaceBetween>
           }

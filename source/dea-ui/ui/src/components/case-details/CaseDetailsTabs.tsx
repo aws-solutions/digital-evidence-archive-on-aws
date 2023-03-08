@@ -9,7 +9,11 @@ import { caseDetailLabels } from '../../common/labels';
 import CaseFilesTable from './CaseFilesTable';
 import ManageAccessForm from './ManageAccessForm';
 
-function CaseDetailsTabs(): JSX.Element {
+interface CaseDetailsTabProps {
+  readonly caseId: string;
+}
+
+function CaseDetailsTabs(props: CaseDetailsTabProps): JSX.Element {
   return (
     <Tabs
       data-testid="case-details-tabs"
@@ -17,7 +21,7 @@ function CaseDetailsTabs(): JSX.Element {
         {
           label: caseDetailLabels.caseFilesLabel,
           id: 'caseFiles',
-          content: <CaseFilesTable></CaseFilesTable>,
+          content: <CaseFilesTable caseId={props.caseId}></CaseFilesTable>,
         },
         {
           label: caseDetailLabels.manageAccessLabel,
