@@ -30,15 +30,20 @@ describe('get-token', () => {
   });
 
   it('successfully get id token using auth code', async () => {
+    const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
+
     const authCode = await cognitoHelper.getAuthorizationCode(
       cognitoParams.cognitoDomainUrl,
-      cognitoParams.callbackUrl,
+      authTestUrl,
       testUser
     );
 
     const event = getDummyEvent({
       pathParameters: {
         authCode: authCode,
+      },
+      headers: {
+        'callback-override': authTestUrl,
       },
     });
 
