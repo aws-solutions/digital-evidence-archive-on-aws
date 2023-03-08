@@ -86,7 +86,7 @@ describe('API authentication', () => {
 
     // get SSM parameters to compare
     const cognitoParams = await getCognitoSsmParams();
-    const expectedUrl = `${cognitoParams.cognitoDomainUrl}/login?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
+    const expectedUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
 
     // fetch url
     const url = `${deaApiUrl}auth/getLoginUrl`;

@@ -39,7 +39,7 @@ describe('auth service', () => {
     const loginUrl = await getLoginHostedUiUrl();
 
     expect(loginUrl).toEqual(
-      `${cognitoParams.cognitoDomainUrl}/login?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`
+      `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`
     );
   });
 
