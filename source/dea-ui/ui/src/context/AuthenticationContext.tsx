@@ -34,7 +34,7 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
   useEffect(() => {
     const checkLogin = async () => {
       // Check if the current route is `/login`
-      if (router.pathname === '/login') {
+      if (router.pathname === '/login' || router.pathname === '/auth-test') {
         return;
       }
 

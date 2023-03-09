@@ -308,6 +308,9 @@ export class DeaAuthConstruct extends Construct {
     if (deaConfig.isTestStack()) {
       // test stacks add localhost as a callback url for UI redirect during local development
       callbackUrls.push(`http://localhost:3000/${deaConfig.stage()}/ui/login`);
+
+      const authTestUrl = callbackUrl.replace('/login', '/auth-test');
+      callbackUrls.push(authTestUrl);
     }
 
     const poolClient = userPool.addClient('dea-app-client', {
