@@ -5,10 +5,13 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Credentials } from 'aws4-axios';
+import Joi from 'joi';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
+import { CaseUser } from '../../models/case-user';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
+import { caseUserResponseSchema } from '../../models/validation/case-user';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
@@ -29,6 +32,7 @@ describe('CaseMembership E2E', () => {
   const deaApiUrl = testEnv.apiUrlOutput;
   let targetCase: DeaCase;
   let inviteeUlid: string;
+  let ownerUlid: string;
 
   const caseIdsToDelete: string[] = [];
 
@@ -47,6 +51,9 @@ describe('CaseMembership E2E', () => {
     // initialize the invitee into the DB
     [inviteeCreds, inviteeToken] = await cognitoHelper.getCredentialsForUser(testInvitee);
     await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', inviteeToken, inviteeCreds);
+
+    // get owner ulid
+    ownerUlid = (await getSpecificUserByFirstName(deaApiUrl, testOwner, ownerToken, ownerCreds)).ulid!;
 
     // get invitee ulid
     inviteeUlid = (await getSpecificUserByFirstName(deaApiUrl, testInvitee, ownerToken, ownerCreds)).ulid!;
@@ -90,6 +97,21 @@ describe('CaseMembership E2E', () => {
       newMembership
     );
     expect(inviteResponse.status).toEqual(200);
+
+    // confirm owner and invitee are returned in the membership list.
+    const membershipListResponse = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+      'GET',
+      ownerToken,
+      ownerCreds
+    );
+    expect(membershipListResponse.status).toEqual(200);
+
+    const fetchedCases: CaseUser[] = await membershipListResponse.data.caseUsers;
+    expect(fetchedCases.length).toBe(2);
+    fetchedCases.forEach((fetchedCase) => Joi.assert(fetchedCase, caseUserResponseSchema));
+    expect(fetchedCases.find((caseuser) => caseuser.userUlid === ownerUlid)).toBeDefined();
+    expect(fetchedCases.find((caseuser) => caseuser.userUlid === inviteeUlid)).toBeDefined();
 
     // confirm invitee has view access
     const accessResponse = await callDeaAPIWithCreds(
@@ -183,6 +205,19 @@ describe('CaseMembership E2E', () => {
     );
     expect(removedAccessResponse.status).toEqual(404);
   }, 40000);
+
+  describe('GET', () => {
+    it('should give an error when the case does not exist', async () => {
+      const membershipListResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${bogusUlid}/userMemberships`,
+        'GET',
+        ownerToken,
+        ownerCreds
+      );
+      expect(membershipListResponse.status).toEqual(404);
+      expect(membershipListResponse.data).toEqual('Resource not found');
+    });
+  });
 
   describe('POST', () => {
     it('should give an error when payload is missing', async () => {

@@ -28,6 +28,10 @@
         },
         {
           "path": "/cases/{caseId}/userMemberships",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships",
           "method": "POST"
         },
         {

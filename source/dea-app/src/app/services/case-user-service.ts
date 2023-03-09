@@ -148,3 +148,14 @@ export const deleteCaseUser = async (
 ): Promise<void> => {
   await CaseUserPersistence.deleteCaseUser({ userUlid, caseUlid }, repositoryProvider);
 };
+
+export const getCaseUsersForCase = async (
+  caseUlid: string,
+  limit = 30,
+  nextToken?: object,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider = defaultProvider
+): Promise<Paged<CaseUser>> => {
+  return CaseUserPersistence.listCaseUsersByCase(caseUlid, limit, nextToken, repositoryProvider);
+};
