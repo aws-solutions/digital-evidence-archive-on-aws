@@ -64,7 +64,12 @@ export const DeaSchema = {
       GSI1SK: { type: String, value: 'FILE#${fileName}#', required: true },
 
       // Get specific file or folder by full path
-      GSI2PK: { type: String, value: 'CASE#${caseUlid}#${filePath}${fileName}#', required: true },
+      GSI2PK: {
+        type: String,
+        value: 'CASE#${caseUlid}#${filePath}${fileName}#',
+        required: true,
+        unique: true,
+      },
       GSI2SK: { type: String, value: 'FILE#${isFile}#', required: true },
 
       ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
