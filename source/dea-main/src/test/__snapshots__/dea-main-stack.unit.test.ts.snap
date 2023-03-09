@@ -1594,7 +1594,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E776291154449a76066842aaec5822744e1299": Object {
+    "DeaApiGatewaydeaapiDeployment99E776295b1c68b5cfa478491311095799c7320a": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiauthgetCredentialsidTokenGETAB2AA9B5",
         "DeaApiGatewaydeaapiauthgetCredentialsidTokenOPTIONSC67E30C8",
@@ -1651,12 +1651,6 @@ Object {
         "DeaApiGatewaydeaapiuiauthtestGET744C7E45",
         "DeaApiGatewaydeaapiuiauthtestOPTIONSD475105E",
         "DeaApiGatewaydeaapiuiauthtest0A8A5523",
-        "DeaApiGatewaydeaapiuicasedetailGETD21EB4EB",
-        "DeaApiGatewaydeaapiuicasedetailOPTIONSC371556A",
-        "DeaApiGatewaydeaapiuicasedetail096431E3",
-        "DeaApiGatewaydeaapiuicreatecasesGET6E1F559E",
-        "DeaApiGatewaydeaapiuicreatecasesOPTIONS4DF4B902",
-        "DeaApiGatewaydeaapiuicreatecases51731CAC",
         "DeaApiGatewaydeaapiuiGET4360368B",
         "DeaApiGatewaydeaapiuiloginGETF8B1569E",
         "DeaApiGatewaydeaapiuiloginOPTIONS72139AA0",
@@ -1690,7 +1684,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E776291154449a76066842aaec5822744e1299",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E776295b1c68b5cfa478491311095799c7320a",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
@@ -4946,262 +4940,6 @@ Object {
         ],
         "ResourceId": Object {
           "Ref": "DeaApiGatewaydeaapiuiauthtest0A8A5523",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaApiGatewaydeaapi822A9228",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaApiGatewaydeaapiuicasedetail096431E3": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Ref": "DeaApiGatewaydeaapiui838E08AB",
-        },
-        "PathPart": "case-detail",
-        "RestApiId": Object {
-          "Ref": "DeaApiGatewaydeaapi822A9228",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaApiGatewaydeaapiuicasedetailGETD21EB4EB": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "GET",
-        "Integration": Object {
-          "ContentHandling": "CONVERT_TO_TEXT",
-          "Credentials": Object {
-            "Fn::GetAtt": Array [
-              "DeaUiStackrole3432A944",
-              "Arn",
-            ],
-          },
-          "IntegrationHttpMethod": "GET",
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Content-Type": "integration.response.header.Content-Type",
-              },
-              "StatusCode": "200",
-            },
-          ],
-          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
-          "RequestParameters": Object {
-            "integration.request.header.Accept": "method.request.header.Accept",
-            "integration.request.header.Content-Type": "method.request.header.Content-Type",
-            "integration.request.path.proxy": "method.request.path.proxy",
-          },
-          "Type": "AWS",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":s3:path/",
-                Object {
-                  "Ref": "DeaUiStackartifactbucketFFC87A37",
-                },
-                "/case-detail.html",
-              ],
-            ],
-          },
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseModels": Object {
-              "application/json": "Empty",
-            },
-            "ResponseParameters": Object {
-              "method.response.header.Content-Length": true,
-              "method.response.header.Content-Type": true,
-            },
-            "StatusCode": "200",
-          },
-        ],
-        "RequestParameters": Object {
-          "method.request.header.Accept": true,
-          "method.request.header.Content-Type": true,
-          "method.request.path.proxy": true,
-        },
-        "ResourceId": Object {
-          "Ref": "DeaApiGatewaydeaapiuicasedetail096431E3",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaApiGatewaydeaapi822A9228",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaApiGatewaydeaapiuicasedetailOPTIONSC371556A": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaApiGatewaydeaapiuicasedetail096431E3",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaApiGatewaydeaapi822A9228",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaApiGatewaydeaapiuicreatecases51731CAC": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Ref": "DeaApiGatewaydeaapiui838E08AB",
-        },
-        "PathPart": "create-cases",
-        "RestApiId": Object {
-          "Ref": "DeaApiGatewaydeaapi822A9228",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaApiGatewaydeaapiuicreatecasesGET6E1F559E": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "GET",
-        "Integration": Object {
-          "ContentHandling": "CONVERT_TO_TEXT",
-          "Credentials": Object {
-            "Fn::GetAtt": Array [
-              "DeaUiStackrole3432A944",
-              "Arn",
-            ],
-          },
-          "IntegrationHttpMethod": "GET",
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Content-Type": "integration.response.header.Content-Type",
-              },
-              "StatusCode": "200",
-            },
-          ],
-          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
-          "RequestParameters": Object {
-            "integration.request.header.Accept": "method.request.header.Accept",
-            "integration.request.header.Content-Type": "method.request.header.Content-Type",
-            "integration.request.path.proxy": "method.request.path.proxy",
-          },
-          "Type": "AWS",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":s3:path/",
-                Object {
-                  "Ref": "DeaUiStackartifactbucketFFC87A37",
-                },
-                "/create-cases.html",
-              ],
-            ],
-          },
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseModels": Object {
-              "application/json": "Empty",
-            },
-            "ResponseParameters": Object {
-              "method.response.header.Content-Length": true,
-              "method.response.header.Content-Type": true,
-            },
-            "StatusCode": "200",
-          },
-        ],
-        "RequestParameters": Object {
-          "method.request.header.Accept": true,
-          "method.request.header.Content-Type": true,
-          "method.request.path.proxy": true,
-        },
-        "ResourceId": Object {
-          "Ref": "DeaApiGatewaydeaapiuicreatecases51731CAC",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaApiGatewaydeaapi822A9228",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaApiGatewaydeaapiuicreatecasesOPTIONS4DF4B902": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaApiGatewaydeaapiuicreatecases51731CAC",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",

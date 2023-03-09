@@ -73,18 +73,11 @@ export class DeaUiConstruct extends Construct {
     const loginS3Integration = this._getS3Integration('login.html', bucket, executeRole);
     loginResource.addMethod('GET', loginS3Integration, this._getMethodOptions());
 
-    // /case-detail
-    const caseDetailResource = uiResource.addResource('case-detail');
-    const caseDetailS3Integration = this._getS3Integration('case-detail.html', bucket, executeRole);
-    caseDetailResource.addMethod('GET', caseDetailS3Integration, this._getMethodOptions());
-
-    // /create-cases
-    const createCasesResource = uiResource.addResource('create-cases');
-    const createCasesS3Integration = this._getS3Integration('create-cases.html', bucket, executeRole);
-    createCasesResource.addMethod('GET', createCasesS3Integration, this._getMethodOptions());
-
-    // /auth-test page
+    // GET to /auth-test
+    // Add a new resource to the ui for login page
     const authTestResource = uiResource.addResource('auth-test');
+
+    // Add a GET method to the "login" resource with an S3 integration
     const authTestIntegration = this._getS3Integration('auth-test.html', bucket, executeRole);
     authTestResource.addMethod('GET', authTestIntegration, this._getMethodOptions());
 
