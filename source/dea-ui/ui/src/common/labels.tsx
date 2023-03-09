@@ -109,10 +109,19 @@ export const filesListLabels = {
   caseFilesLabel: 'Case Files',
   loading: 'Loading files',
   noFilesLabel: 'No files',
-  noDisplayLabel: 'No files to dsiplay',
+  noDisplayLabel: 'No files to display',
   uploadFileLabel: 'Upload a file',
   searchLabel: 'Search by file name',
   filterDescription: 'All folders/files associated with this case.',
+};
+
+export const fileOperationsLabels = {
+  caseFilesLabel: 'Case Files',
+  uploadFileLabel: 'Upload a file',
+  uploadFileDescription: 'Upload a file into the case',
+  selectFileLabel: 'Select a file',
+  selectFileDescription: 'Select a file to upload',
+  selectFileSubtext: 'File size limit 5TB. Maximum upload duration 60 minutes.',
 };
 
 export const caseDetailLabels = {

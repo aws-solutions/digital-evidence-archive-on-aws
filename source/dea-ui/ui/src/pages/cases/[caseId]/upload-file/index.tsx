@@ -5,21 +5,25 @@
 
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import { commonLabels } from '../../../../common/labels';
 import BaseLayout from '../../../../components/BaseLayout';
-import CreateCaseBody from '../../../../components/create-case/CreateCaseBody';
+import UploadFileBody from '../../../../components/upload-file/UploadFileBody';
 
 export interface IHomeProps {
   locale: string;
 }
 
 const Home: NextPage = () => {
+  const router = useRouter();
+  const { caseId } = router.query;
+  if (!caseId || typeof caseId !== 'string') {
+    return <h1>{commonLabels.notFoundLabel}</h1>;
+  }
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: 'Digital Evidence Archive',
-      href: '#',
-    },
-    {
-      text: 'Login',
       href: '#',
     },
   ];
@@ -27,7 +31,7 @@ const Home: NextPage = () => {
   return (
     <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
       <Box margin={{ bottom: 'l' }}>
-        <CreateCaseBody />
+        <UploadFileBody caseId={caseId} />
       </Box>
     </BaseLayout>
   );
