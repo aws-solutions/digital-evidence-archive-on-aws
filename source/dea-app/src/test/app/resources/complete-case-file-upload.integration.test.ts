@@ -3,19 +3,20 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import 'aws-sdk-client-mock-jest';
 import { fail } from 'assert';
 import {
+  CompleteMultipartUploadCommand,
+  ListPartsCommand,
+  ObjectLockLegalHoldStatus,
+  PutObjectLegalHoldCommand,
   S3Client,
   ServiceInputTypes,
   ServiceOutputTypes,
-  CompleteMultipartUploadCommand,
-  ListPartsCommand,
-  PutObjectLegalHoldCommand,
-  ObjectLockLegalHoldStatus,
 } from '@aws-sdk/client-s3';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
+import { listCaseFilesByFilePath } from '../../../app/services/case-file-service';
 import { DeaCaseFile } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { CaseStatus } from '../../../models/case-status';
@@ -91,6 +92,33 @@ describe('Test complete case file upload', () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const fileId = caseFile.ulid as string;
     await completeCaseFileUploadAndValidate(fileId, caseToUploadTo, fileName);
+  });
+
+  it('should successfully complete a file upload and create no duplicate path entries', async () => {
+    const fileName = 'file1.png';
+    const fileName2 = 'file2.png';
+    const caseFile: DeaCaseFile = await callInitiateCaseFileUpload(
+      EVENT,
+      repositoryProvider,
+      caseToUploadTo,
+      fileName
+    );
+    const caseFile2: DeaCaseFile = await callInitiateCaseFileUpload(
+      EVENT,
+      repositoryProvider,
+      caseToUploadTo,
+      fileName2
+    );
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const fileId = caseFile.ulid as string;
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const fileId2 = caseFile2.ulid as string;
+    await completeCaseFileUploadAndValidate(fileId, caseToUploadTo, fileName);
+    await completeCaseFileUploadAndValidate(fileId2, caseToUploadTo, fileName2, 2);
+
+    const result = await listCaseFilesByFilePath(caseToUploadTo, '/', undefined, repositoryProvider);
+    expect(result.length).toEqual(1);
+    expect(result[0].fileName).toEqual('food');
   });
 
   it('Complete upload should throw a validation exception when no payload is provided', async () => {
@@ -211,13 +239,14 @@ describe('Test complete case file upload', () => {
 async function completeCaseFileUploadAndValidate(
   ulid: string,
   caseUlid: string,
-  fileName: string
+  fileName: string,
+  callCount = 1
 ): Promise<DeaCaseFile> {
   const deaCaseFile = await callCompleteCaseFileUpload(EVENT, repositoryProvider, ulid, caseUlid);
   await validateCaseFile(deaCaseFile, ulid, caseUlid, fileUploader.ulid, CaseFileStatus.ACTIVE, fileName);
 
-  expect(s3Mock).toHaveReceivedCommandTimes(ListPartsCommand, 1);
-  expect(s3Mock).toHaveReceivedCommandTimes(CompleteMultipartUploadCommand, 1);
+  expect(s3Mock).toHaveReceivedCommandTimes(ListPartsCommand, callCount);
+  expect(s3Mock).toHaveReceivedCommandTimes(CompleteMultipartUploadCommand, callCount);
 
   expect(s3Mock).toHaveReceivedCommandWith(ListPartsCommand, {
     Bucket: DATASETS_PROVIDER.bucketName,
@@ -231,7 +260,7 @@ async function completeCaseFileUploadAndValidate(
     UploadId: deaCaseFile.uploadId,
   });
 
-  expect(s3Mock).toHaveReceivedCommandTimes(PutObjectLegalHoldCommand, 1);
+  expect(s3Mock).toHaveReceivedCommandTimes(PutObjectLegalHoldCommand, callCount);
   expect(s3Mock).toHaveReceivedCommandWith(PutObjectLegalHoldCommand, {
     Bucket: DATASETS_PROVIDER.bucketName,
     Key: `${caseUlid}/${deaCaseFile.ulid}`,
