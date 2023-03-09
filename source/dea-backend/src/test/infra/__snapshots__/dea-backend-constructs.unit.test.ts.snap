@@ -1977,11 +1977,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-<<<<<<< HEAD
-    "DeaRestApiConstructdeaapiDeploymentC27C6CB14b2fb6a9d1f589810bab000ea436fd39": Object {
-=======
     "DeaRestApiConstructdeaapiDeploymentC27C6CB178a28d4f59328e70fbb9ccf2a0ebee1f": Object {
->>>>>>> 05c174d (refactor: update role mapping on the id pool to look at custom attribute on token called DEARole)
       "DependsOn": Array [
         "DeaRestApiConstructdeaapiauthgetCredentialsidTokenGETF30F6BC2",
         "DeaRestApiConstructdeaapiauthgetCredentialsidTokenOPTIONSA66044D9",
@@ -2059,7 +2055,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB14b2fb6a9d1f589810bab000ea436fd39",
+          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB178a28d4f59328e70fbb9ccf2a0ebee1f",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
