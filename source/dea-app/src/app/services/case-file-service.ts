@@ -4,7 +4,12 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
-import { DeaCaseFile } from '../../models/case-file';
+import {
+  CompleteCaseFileUploadDTO,
+  DeaCaseFile,
+  InitiateCaseFileUploadDTO,
+  UploadDTO,
+} from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import * as CaseFilePersistence from '../../persistence/case-file';
@@ -23,13 +28,13 @@ import { getCase } from './case-service';
 import { getUser } from './user-service';
 
 export const initiateCaseFileUpload = async (
-  deaCaseFile: DeaCaseFile,
+  uploadDTO: InitiateCaseFileUploadDTO,
   userUlid: string,
   repositoryProvider: ModelRepositoryProvider,
   datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFile> => {
   const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
-    deaCaseFile,
+    uploadDTO,
     userUlid,
     repositoryProvider
   );
@@ -39,16 +44,16 @@ export const initiateCaseFileUpload = async (
 };
 
 export const validateInitiateUploadRequirements = async (
-  caseFile: DeaCaseFile,
+  initiateUploadDTO: InitiateCaseFileUploadDTO,
   userUlid: string,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<void> => {
-  await validateUploadRequirements(caseFile, userUlid, repositoryProvider);
+  await validateUploadRequirements(initiateUploadDTO, userUlid, repositoryProvider);
 
   const existingCaseFile = await getCaseFileByFileLocation(
-    caseFile.caseUlid,
-    caseFile.filePath,
-    caseFile.fileName,
+    initiateUploadDTO.caseUlid,
+    initiateUploadDTO.filePath,
+    initiateUploadDTO.fileName,
     repositoryProvider
   );
 
@@ -67,20 +72,18 @@ export const validateInitiateUploadRequirements = async (
 };
 
 export const validateCompleteCaseFileRequirements = async (
-  caseFile: DeaCaseFile,
+  completeCaseFileUploadDTO: CompleteCaseFileUploadDTO,
   userUlid: string,
   repositoryProvider: ModelRepositoryProvider
-): Promise<void> => {
-  await validateUploadRequirements(caseFile, userUlid, repositoryProvider);
-  // we know based on request validation that the ulid isn't null, so safe to cast to string
+): Promise<DeaCaseFile> => {
+  await validateUploadRequirements(completeCaseFileUploadDTO, userUlid, repositoryProvider);
   const existingCaseFile = await getCaseFileByUlid(
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    caseFile.ulid as string,
-    caseFile.caseUlid,
+    completeCaseFileUploadDTO.ulid,
+    completeCaseFileUploadDTO.caseUlid,
     repositoryProvider
   );
   if (!existingCaseFile) {
-    throw new NotFoundError(`Could not find file: ${caseFile.ulid} in the DB`);
+    throw new NotFoundError(`Could not find file: ${completeCaseFileUploadDTO.ulid} in the DB`);
   }
 
   if (existingCaseFile.status != CaseFileStatus.PENDING) {
@@ -90,10 +93,12 @@ export const validateCompleteCaseFileRequirements = async (
   if (existingCaseFile.createdBy !== userUlid) {
     throw new ForbiddenError('Mismatch in user creating and completing file upload');
   }
+
+  return existingCaseFile;
 };
 
 async function validateUploadRequirements(
-  caseFile: DeaCaseFile,
+  caseFileUploadRequest: UploadDTO,
   userUlid: string,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<void> {
@@ -105,9 +110,9 @@ async function validateUploadRequirements(
     throw new Error('Could not find case-file uploader as a user in the DB');
   }
 
-  const deaCase = await getCase(caseFile.caseUlid, repositoryProvider);
+  const deaCase = await getCase(caseFileUploadRequest.caseUlid, repositoryProvider);
   if (!deaCase) {
-    throw new NotFoundError(`Could not find case: ${caseFile.caseUlid} in the DB`);
+    throw new NotFoundError(`Could not find case: ${caseFileUploadRequest.caseUlid} in the DB`);
   }
 
   if (deaCase.status != CaseStatus.ACTIVE) {

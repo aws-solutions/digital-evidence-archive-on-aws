@@ -4,7 +4,8 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
-import { DeaCaseFile } from '../models/case-file';
+import { logger } from '../logger';
+import { DeaCaseFile, InitiateCaseFileUploadDTO } from '../models/case-file';
 import { CaseFileStatus } from '../models/case-file-status';
 import { caseFileFromEntity } from '../models/projections';
 import { isDefined } from './persistence-helpers';
@@ -13,7 +14,7 @@ import { ModelRepositoryProvider } from './schema/entities';
 const SECONDS_IN_AN_HOUR = 60 * 60;
 
 export const initiateCaseFileUpload = async (
-  deaCaseFile: DeaCaseFile,
+  deaCaseFile: InitiateCaseFileUploadDTO,
   userUlid: string,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFile> => {
@@ -36,7 +37,44 @@ export const completeCaseFileUpload = async (
     status: CaseFileStatus.ACTIVE,
     ttl: null,
   });
+
+  await createCaseFilePaths(deaCaseFile, repositoryProvider);
+
   return caseFileFromEntity(newEntity);
+};
+
+const createCaseFilePaths = async (deaCaseFile: DeaCaseFile, repositoryProvider: ModelRepositoryProvider) => {
+  const noTrailingSlashPath = deaCaseFile.filePath.substring(0, deaCaseFile.filePath.length - 1);
+  if (noTrailingSlashPath.length > 0) {
+    const nextFileName = noTrailingSlashPath.substring(
+      noTrailingSlashPath.lastIndexOf('/') + 1,
+      noTrailingSlashPath.length
+    );
+    const nextPath = noTrailingSlashPath.substring(0, noTrailingSlashPath.lastIndexOf('/') + 1);
+    // write next
+    const newFileObj = Object.assign(
+      {},
+      {
+        ...deaCaseFile,
+        fileName: nextFileName,
+        filePath: nextPath,
+        ulid: undefined,
+      }
+    );
+
+    // if the path already exists, all parents will also exist, we can exit
+    // only recurse if the path doesn't alredy exist
+    try {
+      await repositoryProvider.CaseFileModel.create({
+        ...newFileObj,
+        status: CaseFileStatus.ACTIVE,
+        isFile: false,
+      });
+      await createCaseFilePaths(newFileObj, repositoryProvider);
+    } catch (error) {
+      logger.debug(`Path ${newFileObj.filePath}/${newFileObj.fileName} already exists, moving on...`);
+    }
+  }
 };
 
 export const getCaseFileByUlid = async (
