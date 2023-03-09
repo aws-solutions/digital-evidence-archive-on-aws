@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { useGetCaseById } from '../../src/api/cases';
 import { commonLabels } from '../../src/common/labels';
-import CaseDetailsPage from '../../src/pages/[caseId]';
+import CaseDetailsPage from '../../src/pages/case-detail';
 
 let query: { caseId: string | undefined } = { caseId: '100' };
 jest.mock('next/router', () => ({

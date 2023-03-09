@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import axios from 'axios';
 import { caseDetailLabels } from '../../src/common/labels';
-import CaseDetailsPage from '../../src/pages/[caseId]';
+import CaseDetailsPage from '../../src/pages/case-detail';
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import { fail } from 'assert';
 
