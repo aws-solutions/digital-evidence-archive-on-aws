@@ -41,7 +41,7 @@ describe('Test case file APIs', () => {
 
   beforeAll(async () => {
     // Create user in test group
-    await cognitoHelper.createUser(TEST_USER, 'CaseWorkerGroup', 'CaseFile', 'Uploader');
+    await cognitoHelper.createUser(TEST_USER, 'CaseWorker', 'CaseFile', 'Uploader');
   });
 
   afterAll(async () => {

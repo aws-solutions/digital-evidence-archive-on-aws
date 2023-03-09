@@ -39,8 +39,8 @@ describe('CaseMembership E2E', () => {
 
   beforeAll(async () => {
     // Create user in test group
-    await cognitoHelper.createUser(testOwner, 'CaseWorkerGroup', testOwner, 'TestUser');
-    await cognitoHelper.createUser(testInvitee, 'CaseWorkerGroup', testInvitee, 'TestUser');
+    await cognitoHelper.createUser(testOwner, 'CaseWorker', testOwner, 'TestUser');
+    await cognitoHelper.createUser(testInvitee, 'CaseWorker', testInvitee, 'TestUser');
 
     [ownerCreds, ownerToken] = await cognitoHelper.getCredentialsForUser(testOwner);
 

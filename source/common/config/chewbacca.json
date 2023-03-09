@@ -1,11 +1,10 @@
 {
   "stage": "chewbacca",
   "testStack": true,
-  "userGroups": [
+  "deaRoleTypes": [
     {
-      "name": "CaseWorkerGroup",
-      "description": "containing users who need access to case APIs",
-      "precedence": 1,
+      "name": "CaseWorker",
+      "description": "users who need access to case APIs",
       "endpoints": [
         {
           "path": "/cases",
@@ -79,8 +78,7 @@
     },
     {
       "name": "NoPermissionsGroup",
-      "description": "containing users who can't do anything in the system",
-      "precedence": 1,
+      "description": "users who can't do anything in the system",
       "endpoints": [
         {
           "path": "/cases/my-cases",
@@ -91,7 +89,6 @@
     {
       "name": "AuthTestGroup",
       "description": "used for auth e2e testing",
-      "precedence": 100,
       "endpoints": [
         {
           "path": "/cases/my-cases",
@@ -114,7 +111,6 @@
     {
       "name": "CreateCasesTestGroup",
       "description": "used for create cases API e2e testing",
-      "precedence": 100,
       "endpoints": [
         {
           "path": "/cases",
@@ -145,7 +141,6 @@
     {
       "name": "GetCaseTestGroup",
       "description": "used for get cases API e2e testing",
-      "precedence": 100,
       "endpoints": [
         {
           "path": "/cases",
@@ -176,7 +171,6 @@
     {
       "name": "GetMyCasesTestGroup",
       "description": "used for get my cases API e2e testing",
-      "precedence": 100,
       "endpoints": [
         {
           "path": "/cases",
