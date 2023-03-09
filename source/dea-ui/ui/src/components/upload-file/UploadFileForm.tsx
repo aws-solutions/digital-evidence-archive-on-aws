@@ -4,7 +4,6 @@
  */
 
 import { DeaCaseFile } from '@aws/dea-app';
-import { validateStatus } from '@aws/dea-app/src/test-e2e/resources/test-helpers';
 import { Form, SpaceBetween, Button, Header, Container, FormField } from '@cloudscape-design/components';
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
