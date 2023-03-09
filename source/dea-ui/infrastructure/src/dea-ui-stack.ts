@@ -57,26 +57,34 @@ export class DeaUiConstruct extends Construct {
 
     bucket.grantReadWrite(executeRole);
 
+    this._routeHandler(props, bucket, executeRole);
+  }
+
+  private _routeHandler(props: IUiStackProps, bucket: Bucket, executeRole: Role) {
     // Integrate API with S3 bucket
+
+    // /ui - homepage
     const uiResource = props.restApi.root.addResource('ui');
     const rootS3Integration = this._getS3Integration('index.html', bucket, executeRole);
-
-    // GET to the root
     uiResource.addMethod('GET', rootS3Integration, this._getMethodOptions());
 
-    // GET to /Login
-    // Add a new resource to the ui for login page
+    // /Login
     const loginResource = uiResource.addResource('login');
-
-    // Add a GET method to the "login" resource with an S3 integration
     const loginS3Integration = this._getS3Integration('login.html', bucket, executeRole);
     loginResource.addMethod('GET', loginS3Integration, this._getMethodOptions());
 
-    // GET to /auth-test
-    // Add a new resource to the ui for login page
-    const authTestResource = uiResource.addResource('auth-test');
+    // /case-detail
+    const caseDetailResource = uiResource.addResource('case-detail');
+    const caseDetailS3Integration = this._getS3Integration('case-detail.html', bucket, executeRole);
+    caseDetailResource.addMethod('GET', caseDetailS3Integration, this._getMethodOptions());
 
-    // Add a GET method to the "login" resource with an S3 integration
+    // /create-cases
+    const createCasesResource = uiResource.addResource('create-cases');
+    const createCasesS3Integration = this._getS3Integration('create-cases.html', bucket, executeRole);
+    createCasesResource.addMethod('GET', createCasesS3Integration, this._getMethodOptions());
+
+    // /auth-test page
+    const authTestResource = uiResource.addResource('auth-test');
     const authTestIntegration = this._getS3Integration('auth-test.html', bucket, executeRole);
     authTestResource.addMethod('GET', authTestIntegration, this._getMethodOptions());
 
