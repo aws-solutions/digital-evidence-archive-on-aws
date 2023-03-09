@@ -14,8 +14,8 @@ const push = jest.fn();
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     query: {},
-    push
-  }))
+    push,
+  })),
 }));
 
 describe('Dashboard', () => {
@@ -32,8 +32,8 @@ describe('Dashboard', () => {
             ulid: 'def',
             name: 'case2',
             status: 'ACTIVE',
-          }
-        ]
+          },
+        ],
       },
       status: 200,
       statusText: 'Ok',
@@ -50,8 +50,7 @@ describe('Dashboard', () => {
   it('navigates to create a new case', async () => {
     mockedAxios.mockResolvedValue({
       data: {
-        cases: [
-        ]
+        cases: [],
       },
       status: 200,
       statusText: 'Ok',
@@ -59,12 +58,12 @@ describe('Dashboard', () => {
       config: {},
     });
     render(<Home />);
-    
+
     const createCaseButton = await screen.findByText(caseListLabels.createNewCaseLabel);
     fireEvent.click(createCaseButton);
     expect(push).toHaveBeenCalledWith('/create-cases');
   });
-  
+
   it('navigates to create case details', async () => {
     mockedAxios.mockResolvedValue({
       data: {
@@ -73,8 +72,8 @@ describe('Dashboard', () => {
             ulid: 'abc',
             name: 'mocked case',
             status: 'ACTIVE',
-          }
-        ]
+          },
+        ],
       },
       status: 200,
       statusText: 'Ok',
@@ -82,7 +81,7 @@ describe('Dashboard', () => {
       config: {},
     });
     render(<Home />);
-    
+
     const table = await screen.findByTestId('case-table');
     const link = wrapper(table).findLink();
 
@@ -90,7 +89,7 @@ describe('Dashboard', () => {
       fail();
     }
     link.click();
-    
-    expect(push).toHaveBeenCalledWith('/abc');
+
+    expect(push).toHaveBeenCalledWith('/case-detail?caseId=abc');
   });
 });
