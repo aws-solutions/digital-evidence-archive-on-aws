@@ -10,6 +10,7 @@ import { defaultProvider } from '../../persistence/schema/entities';
 import * as CaseService from '../services/case-service';
 import { getUser } from '../services/user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 
 export const createCases: DEAGatewayProxyHandler = async (
   event,
@@ -31,11 +32,5 @@ export const createCases: DEAGatewayProxyHandler = async (
 
   const updateBody = await CaseService.createCases(deaCase, user, repositoryProvider);
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(updateBody),
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
-  };
+  return responseOk(updateBody);
 };

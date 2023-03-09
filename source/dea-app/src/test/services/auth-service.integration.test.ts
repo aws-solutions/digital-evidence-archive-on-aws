@@ -39,17 +39,19 @@ describe('auth service', () => {
     const loginUrl = await getLoginHostedUiUrl();
 
     expect(loginUrl).toEqual(
-      `${cognitoParams.cognitoDomainUrl}/login?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`
+      `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`
     );
   });
 
   it('successfully get id token using auth code', async () => {
+    const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
+
     const authCode = await cognitoHelper.getAuthorizationCode(
       cognitoParams.cognitoDomainUrl,
-      cognitoParams.callbackUrl,
+      authTestUrl,
       testUser
     );
-    const idToken = await exchangeAuthorizationCode(authCode);
+    const idToken = await exchangeAuthorizationCode(authCode, undefined, authTestUrl);
 
     // Assert if no id token fectched in exchangeAuthorizationCode
     expect(idToken).toBeTruthy();
@@ -61,16 +63,15 @@ describe('auth service', () => {
     expect(credentials).toHaveProperty('SessionToken');
   }, 20000);
 
-  it('successfully get id token using auth code with an origin', async () => {
+  it('successfully get id token using auth code with an callback override', async () => {
+    const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
+
     const authCode = await cognitoHelper.getAuthorizationCode(
       cognitoParams.cognitoDomainUrl,
-      cognitoParams.callbackUrl,
+      authTestUrl,
       testUser2
     );
-    let origin = cognitoParams.callbackUrl.substring(0, cognitoParams.callbackUrl.lastIndexOf('/')); //remove /login
-    origin = origin.substring(0, origin.lastIndexOf('/')); //remove /ui
-    origin = origin.substring(0, origin.lastIndexOf('/')); //remove stage
-    const idToken = await exchangeAuthorizationCode(authCode, origin);
+    const idToken = await exchangeAuthorizationCode(authCode, undefined, authTestUrl);
 
     // Assert if no id token fectched in exchangeAuthorizationCode
     expect(idToken).toBeTruthy();

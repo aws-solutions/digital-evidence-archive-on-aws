@@ -89,9 +89,9 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
 export const getLoginHostedUiUrl = async () => {
   const cognitoParams = await getCognitoSsmParams();
 
-  const loginUrl = `${cognitoParams.cognitoDomainUrl}/login?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
+  const oauth2AuthorizeEndpointUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
 
-  return loginUrl;
+  return oauth2AuthorizeEndpointUrl;
 };
 
 export const getCredentialsByToken = async (idToken: string) => {
@@ -127,7 +127,8 @@ export const getCredentialsByToken = async (idToken: string) => {
 
 export const exchangeAuthorizationCode = async (
   authorizationCode: string,
-  origin?: string
+  origin?: string,
+  callbackOverride?: string
 ): Promise<string> => {
   const cognitoParams = await getCognitoSsmParams();
   const axiosInstance = axios.create({
@@ -137,6 +138,9 @@ export const exchangeAuthorizationCode = async (
   let callbackUrl = cognitoParams.callbackUrl;
   if (origin) {
     callbackUrl = `${origin}/${stage}/ui/login`;
+  }
+  if (callbackOverride) {
+    callbackUrl = callbackOverride;
   }
 
   const data = new URLSearchParams();

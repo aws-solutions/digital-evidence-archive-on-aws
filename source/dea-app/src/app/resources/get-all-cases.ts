@@ -7,6 +7,7 @@ import { getPaginationParameters } from '../../lambda-http-helpers';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { listAllCases } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 import { getNextToken } from './get-next-token';
 
 export const getAllCases: DEAGatewayProxyHandler = async (
@@ -24,15 +25,9 @@ export const getAllCases: DEAGatewayProxyHandler = async (
     repositoryProvider
   );
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      cases: pageOfCases,
-      total: pageOfCases.count,
-      next: getNextToken(pageOfCases.next),
-    }),
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
-  };
+  return responseOk({
+    cases: pageOfCases,
+    total: pageOfCases.count,
+    next: getNextToken(pageOfCases.next),
+  });
 };

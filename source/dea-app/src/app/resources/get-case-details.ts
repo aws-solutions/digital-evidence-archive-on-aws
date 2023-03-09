@@ -9,6 +9,7 @@ import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import * as CaseService from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 
 export const getCase: DEAGatewayProxyHandler = async (
   event,
@@ -24,11 +25,5 @@ export const getCase: DEAGatewayProxyHandler = async (
     throw new NotFoundError(`Case with ulid ${caseId} not found.`);
   }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(retreivedCase),
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
-  };
+  return responseOk(retreivedCase);
 };

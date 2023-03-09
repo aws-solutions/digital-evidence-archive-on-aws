@@ -11,6 +11,7 @@ import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/dataset
 import * as CaseFileService from '../services/case-file-service';
 import { validateCompleteCaseFileRequirements } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 
 export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   event,
@@ -36,11 +37,5 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
     datasetsProvider
   );
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(completeUploadResponse),
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
-  };
+  return responseOk(completeUploadResponse);
 };
