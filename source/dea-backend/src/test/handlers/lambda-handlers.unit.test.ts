@@ -12,6 +12,7 @@ import * as DownloadCaseFileHandler from '../../handlers/download-case-file-hand
 import * as GetAllCasesHandler from '../../handlers/get-all-cases-handler';
 import * as GetCaseDetailHandler from '../../handlers/get-case-detail-handler';
 import * as GetCaseFileDetailHandler from '../../handlers/get-case-file-detail-handler';
+import * as GetCaseMembershipHandler from '../../handlers/get-case-membership-handler';
 import * as GetCredentialsHandler from '../../handlers/get-credentials-handler';
 import * as GetUrlHandler from '../../handlers/get-login-url-handler';
 import * as GetMyCasesHandler from '../../handlers/get-my-cases-handler';
@@ -43,6 +44,7 @@ describe('lambda handlers', () => {
       GetTokenHandler.handler,
       GetUsersHandler.handler,
       UpdateCaseUserHandler.handler,
+      GetCaseMembershipHandler.handler,
     ];
 
     handlers.forEach((handler) => {

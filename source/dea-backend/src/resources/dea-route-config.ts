@@ -48,6 +48,12 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/delete-case-handler.ts',
     },
     {
+      eventName: AuditEventType.GET_USERS_FROM_CASE,
+      path: '/cases/{caseId}/userMemberships',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-case-membership-handler.ts',
+    },
+    {
       eventName: AuditEventType.INVITE_USER_TO_CASE,
       path: '/cases/{caseId}/userMemberships',
       httpMethod: ApiGatewayMethod.POST,
