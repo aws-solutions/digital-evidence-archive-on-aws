@@ -18,9 +18,7 @@ function UploadFilePage(props: UploadFileProps) {
       data-testid="upload-file-page"
       header={
         <SpaceBetween size="m">
-          <Header variant="h1" description={fileOperationsLabels.uploadFileDescription}>
-            {fileOperationsLabels.uploadFileLabel}
-          </Header>
+          <Header variant="h1">{fileOperationsLabels.uploadFileLabel}</Header>
         </SpaceBetween>
       }
     >

@@ -26,6 +26,16 @@ const Home: NextPage = () => {
       text: 'Digital Evidence Archive',
       href: '#',
     },
+    {
+      // todo: replace with case name
+      text: `Case ${caseId}`,
+      href: '#',
+    },
+    {
+      // todo: replace with labels
+      text: 'Upload folders/files',
+      href: '#',
+    },
   ];
 
   return (

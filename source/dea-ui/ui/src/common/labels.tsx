@@ -117,11 +117,19 @@ export const filesListLabels = {
 
 export const fileOperationsLabels = {
   caseFilesLabel: 'Case Files',
-  uploadFileLabel: 'Upload a file',
-  uploadFileDescription: 'Upload a file into the case',
-  selectFileLabel: 'Select a file',
+  uploadFileLabel: 'Upload folders/files',
+  uploadFileDescription: 'All fields are required unless otherwise indicated.',
+  uploadDetailsLabel: 'Upload details',
   selectFileDescription: 'Select a file to upload',
-  selectFileSubtext: 'File size limit 5TB. Maximum upload duration 60 minutes.',
+  evidenceTagLabel: 'Evidence tag',
+  evidenceTagDescription:
+    'Specify the type of device where the evidence is copied from such as mobile, laptop, or hard drive.',
+  evidenceDetailsLabel: 'Description',
+  evidenceDetailsDescription:
+    'Enter a brief description of the evidence being uploaded. Max character limit 250.',
+  uploadReasonLabel: 'Reason for uploading evidence - optional',
+  uploadReasonDescription: 'Specify why you are accessing the case files.',
+  selectFileSubtext: 'All file types accepted. 5TB max file size.',
 };
 
 export const caseDetailLabels = {

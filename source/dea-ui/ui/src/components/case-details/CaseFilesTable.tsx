@@ -14,7 +14,7 @@ import {
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
-import { commonTableLabels, filesListLabels, commonLabels, caseListLabels } from '../../common/labels';
+import { commonTableLabels, filesListLabels, commonLabels } from '../../common/labels';
 
 interface CaseFilesTableProps {
   readonly caseId: string;

@@ -4,7 +4,7 @@
  */
 
 import { DeaCaseFile } from '@aws/dea-app';
-import { httpApiPost } from '../helpers/apiHelper';
+import { httpApiPost, httpApiPut } from '../helpers/apiHelper';
 import { InitiateUploadForm, CompleteUploadForm } from '../models/CaseFiles';
 
 const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFile> => {
@@ -13,7 +13,7 @@ const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFile
 };
 
 const completeUpload = async (apiInput: CompleteUploadForm): Promise<DeaCaseFile> => {
-  const response = await httpApiPost(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}`, { ...apiInput });
+  const response = await httpApiPut(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}`, { ...apiInput });
   return response;
 };
 

@@ -32,6 +32,7 @@ import { getCaseUser } from './app/services/case-user-service';
 import { getRequiredPathParam, getUserUlid } from './lambda-http-helpers';
 import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
+import { DeaCaseFile } from './models/case-file';
 import { dummyContext, getDummyEvent } from './test/integration-objects';
 import { getTestAuditService } from './test/services/test-audit-service-provider';
 
@@ -64,6 +65,7 @@ export {
   getDummyEvent,
   CaseAction,
   DeaCase,
+  DeaCaseFile,
   DEAGatewayProxyHandler,
   DEAPreLambdaExecutionChecks,
   ForbiddenError,
