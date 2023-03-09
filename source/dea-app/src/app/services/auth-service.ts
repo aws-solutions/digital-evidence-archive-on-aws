@@ -127,7 +127,8 @@ export const getCredentialsByToken = async (idToken: string) => {
 
 export const exchangeAuthorizationCode = async (
   authorizationCode: string,
-  origin?: string
+  origin?: string,
+  callbackOverride?: string
 ): Promise<string> => {
   const cognitoParams = await getCognitoSsmParams();
   const axiosInstance = axios.create({
@@ -137,6 +138,9 @@ export const exchangeAuthorizationCode = async (
   let callbackUrl = cognitoParams.callbackUrl;
   if (origin) {
     callbackUrl = `${origin}/${stage}/ui/login`;
+  }
+  if (callbackOverride) {
+    callbackUrl = callbackOverride;
   }
 
   const data = new URLSearchParams();

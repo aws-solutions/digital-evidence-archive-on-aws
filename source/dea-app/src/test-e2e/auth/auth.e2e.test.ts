@@ -99,21 +99,26 @@ describe('API authentication', () => {
 
     // 2. Get Auth Code
     const cognitoParams = await getCognitoSsmParams();
+
+    // Get test auth code page
+    const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
+
     const authCode = await cognitoHelper.getAuthorizationCode(
       cognitoParams.cognitoDomainUrl,
-      cognitoParams.callbackUrl,
+      authTestUrl,
       testUser
     );
 
     // 3. Exchange auth code for id token
     const url = `${deaApiUrl}auth/getToken/${authCode}`;
-    const response = await client.post(url, undefined, { validateStatus });
+    const headers = { 'callback-override': authTestUrl };
+    const response = await client.post(url, undefined, { headers, validateStatus });
     expect(response.status).toEqual(200);
     const idToken = response.data;
 
     // 3. Exchange id token for credentials
-    const tokenUrl = `${deaApiUrl}auth/getCredentials/${idToken}`;
-    const credsResponse = await client.get(tokenUrl, { validateStatus });
+    const credentialsUrl = `${deaApiUrl}auth/getCredentials/${idToken}`;
+    const credsResponse = await client.get(credentialsUrl, { validateStatus });
     expect(credsResponse.status).toEqual(200);
   }, 40000);
 
