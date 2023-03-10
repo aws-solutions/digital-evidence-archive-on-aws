@@ -1,9 +1,8 @@
 {
-  "userGroups": [
+  "deaRoleTypes": [
     {
-      "name": "CaseWorkerGroup",
-      "description": "containing users who need access to case APIs",
-      "precedence": 1,
+      "name": "CaseWorker",
+      "description": "users who need access to case APIs",
       "endpoints": [
         {
           "path": "/cases",

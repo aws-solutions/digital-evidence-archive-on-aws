@@ -9,7 +9,6 @@ import {
   GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
 import {
-  AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
   AdminDeleteUserCommand,
   AdminGetUserCommand,
@@ -55,7 +54,7 @@ export default class CognitoHelper {
 
   public async createUser(
     userName: string,
-    groupName: string,
+    deaRole: string,
     firstName: string,
     lastName: string
   ): Promise<void> {
@@ -76,6 +75,10 @@ export default class CognitoHelper {
               Name: 'family_name',
               Value: lastName,
             },
+            {
+              Name: 'custom:DEARole',
+              Value: deaRole,
+            },
           ],
         })
       );
@@ -95,20 +98,6 @@ export default class CognitoHelper {
       }
     } catch (error) {
       console.log('Failed to create user ' + error);
-      return;
-    }
-
-    // 3. Add to Cognito Group
-    try {
-      await this._userPoolProvider.send(
-        new AdminAddUserToGroupCommand({
-          Username: userName,
-          UserPoolId: this._userPoolId,
-          GroupName: groupName,
-        })
-      );
-    } catch (error) {
-      console.log('Failed to add to Cognito group ' + error);
       return;
     }
   }
