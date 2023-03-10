@@ -5998,23 +5998,6 @@ Object {
       },
       "Type": "AWS::S3::BucketPolicy",
     },
-    "DeaAuthAuthTestGroup72A5E3A7": Object {
-      "Properties": Object {
-        "Description": "Group used for auth e2e testing",
-        "GroupName": "AuthTestGroup",
-        "Precedence": 100,
-        "RoleArn": Object {
-          "Fn::GetAtt": Array [
-            "DeaAuthAuthTestGroupRole23D2E7FA",
-            "Arn",
-          ],
-        },
-        "UserPoolId": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
-        },
-      },
-      "Type": "AWS::Cognito::UserPoolGroup",
-    },
     "DeaAuthAuthTestGroupRole23D2E7FA": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -6177,24 +6160,7 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DeaAuthCaseWorkerGroupE79505D6": Object {
-      "Properties": Object {
-        "Description": "Group containing users who need access to case APIs",
-        "GroupName": "CaseWorkerGroup",
-        "Precedence": 1,
-        "RoleArn": Object {
-          "Fn::GetAtt": Array [
-            "DeaAuthCaseWorkerGroupRole388C20D0",
-            "Arn",
-          ],
-        },
-        "UserPoolId": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
-        },
-      },
-      "Type": "AWS::Cognito::UserPoolGroup",
-    },
-    "DeaAuthCaseWorkerGroupRole388C20D0": Object {
+    "DeaAuthCaseWorkerRole14C530E5": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -6218,11 +6184,11 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Description": "Role containing users who need access to case APIs",
+        "Description": "Role users who need access to case APIs",
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeaAuthCaseWorkerGroupRolePolicy37058665": Object {
+    "DeaAuthCaseWorkerRolePolicy755235A6": Object {
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -6655,31 +6621,14 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "DeaAuthCaseWorkerGroupRolePolicy37058665",
+        "PolicyName": "DeaAuthCaseWorkerRolePolicy755235A6",
         "Roles": Array [
           Object {
-            "Ref": "DeaAuthCaseWorkerGroupRole388C20D0",
+            "Ref": "DeaAuthCaseWorkerRole14C530E5",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthCreateCasesTestGroup7CEF506E": Object {
-      "Properties": Object {
-        "Description": "Group used for create cases API e2e testing",
-        "GroupName": "CreateCasesTestGroup",
-        "Precedence": 100,
-        "RoleArn": Object {
-          "Fn::GetAtt": Array [
-            "DeaAuthCreateCasesTestGroupRoleB1D8969D",
-            "Arn",
-          ],
-        },
-        "UserPoolId": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
-        },
-      },
-      "Type": "AWS::Cognito::UserPoolGroup",
     },
     "DeaAuthCreateCasesTestGroupRoleB1D8969D": Object {
       "Properties": Object {
@@ -6962,6 +6911,11 @@ Object {
             "Name": "given_name",
             "Required": true,
           },
+          Object {
+            "AttributeDataType": "String",
+            "Mutable": true,
+            "Name": "DEARole",
+          },
         ],
         "SmsVerificationMessage": "The verification code to your new account is {####}",
         "VerificationMessageTemplate": Object {
@@ -7058,7 +7012,7 @@ Object {
           "ALLOW_REFRESH_TOKEN_AUTH",
         ],
         "GenerateSecret": false,
-        "IdTokenValidity": 720,
+        "IdTokenValidity": 60,
         "PreventUserExistenceErrors": "ENABLED",
         "RefreshTokenValidity": 720,
         "SupportedIdentityProviders": Array [
@@ -7074,23 +7028,6 @@ Object {
         },
       },
       "Type": "AWS::Cognito::UserPoolClient",
-    },
-    "DeaAuthGetCaseTestGroup01C4525C": Object {
-      "Properties": Object {
-        "Description": "Group used for get cases API e2e testing",
-        "GroupName": "GetCaseTestGroup",
-        "Precedence": 100,
-        "RoleArn": Object {
-          "Fn::GetAtt": Array [
-            "DeaAuthGetCaseTestGroupRoleF15B4661",
-            "Arn",
-          ],
-        },
-        "UserPoolId": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
-        },
-      },
-      "Type": "AWS::Cognito::UserPoolGroup",
     },
     "DeaAuthGetCaseTestGroupRoleF15B4661": Object {
       "Properties": Object {
@@ -7309,23 +7246,6 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthGetMyCasesTestGroup2D16B15A": Object {
-      "Properties": Object {
-        "Description": "Group used for get my cases API e2e testing",
-        "GroupName": "GetMyCasesTestGroup",
-        "Precedence": 100,
-        "RoleArn": Object {
-          "Fn::GetAtt": Array [
-            "DeaAuthGetMyCasesTestGroupRoleBDF3089F",
-            "Arn",
-          ],
-        },
-        "UserPoolId": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
-        },
-      },
-      "Type": "AWS::Cognito::UserPoolGroup",
     },
     "DeaAuthGetMyCasesTestGroupRoleBDF3089F": Object {
       "Properties": Object {
@@ -7625,19 +7545,19 @@ Object {
             "RulesConfiguration": Object {
               "Rules": Array [
                 Object {
-                  "Claim": "cognito:groups",
-                  "MatchType": "Contains",
+                  "Claim": "custom:DEARole",
+                  "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
-                      "DeaAuthCaseWorkerGroupRole388C20D0",
+                      "DeaAuthCaseWorkerRole14C530E5",
                       "Arn",
                     ],
                   },
-                  "Value": "CaseWorkerGroup",
+                  "Value": "CaseWorker",
                 },
                 Object {
-                  "Claim": "cognito:groups",
-                  "MatchType": "Contains",
+                  "Claim": "custom:DEARole",
+                  "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
                       "DeaAuthNoPermissionsGroupRole1E0F8CCF",
@@ -7647,8 +7567,8 @@ Object {
                   "Value": "NoPermissionsGroup",
                 },
                 Object {
-                  "Claim": "cognito:groups",
-                  "MatchType": "Contains",
+                  "Claim": "custom:DEARole",
+                  "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
                       "DeaAuthAuthTestGroupRole23D2E7FA",
@@ -7658,8 +7578,8 @@ Object {
                   "Value": "AuthTestGroup",
                 },
                 Object {
-                  "Claim": "cognito:groups",
-                  "MatchType": "Contains",
+                  "Claim": "custom:DEARole",
+                  "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
                       "DeaAuthCreateCasesTestGroupRoleB1D8969D",
@@ -7669,8 +7589,8 @@ Object {
                   "Value": "CreateCasesTestGroup",
                 },
                 Object {
-                  "Claim": "cognito:groups",
-                  "MatchType": "Contains",
+                  "Claim": "custom:DEARole",
+                  "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
                       "DeaAuthGetCaseTestGroupRoleF15B4661",
@@ -7680,8 +7600,8 @@ Object {
                   "Value": "GetCaseTestGroup",
                 },
                 Object {
-                  "Claim": "cognito:groups",
-                  "MatchType": "Contains",
+                  "Claim": "custom:DEARole",
+                  "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
                       "DeaAuthGetMyCasesTestGroupRoleBDF3089F",
@@ -7692,7 +7612,7 @@ Object {
                 },
               ],
             },
-            "Type": "Token",
+            "Type": "Rules",
           },
         },
         "Roles": Object {
@@ -7711,23 +7631,6 @@ Object {
         },
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
-    },
-    "DeaAuthNoPermissionsGroupEF9BAFBD": Object {
-      "Properties": Object {
-        "Description": "Group containing users who can't do anything in the system",
-        "GroupName": "NoPermissionsGroup",
-        "Precedence": 1,
-        "RoleArn": Object {
-          "Fn::GetAtt": Array [
-            "DeaAuthNoPermissionsGroupRole1E0F8CCF",
-            "Arn",
-          ],
-        },
-        "UserPoolId": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
-        },
-      },
-      "Type": "AWS::Cognito::UserPoolGroup",
     },
     "DeaAuthNoPermissionsGroupRole1E0F8CCF": Object {
       "Properties": Object {
@@ -7753,7 +7656,7 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "Description": "Role containing users who can't do anything in the system",
+        "Description": "Role users who can't do anything in the system",
       },
       "Type": "AWS::IAM::Role",
     },

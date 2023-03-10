@@ -4,7 +4,7 @@
  */
 
 import { getRequiredPayload, getUserUlid } from '../../lambda-http-helpers';
-import { DeaCaseFile } from '../../models/case-file';
+import { CompleteCaseFileUploadDTO } from '../../models/case-file';
 import { completeCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
@@ -22,17 +22,29 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {
-  const requestCaseFile: DeaCaseFile = getRequiredPayload(
+  const requestCaseFile: CompleteCaseFileUploadDTO = getRequiredPayload(
     event,
     'Complete case file upload',
     completeCaseFileUploadRequestSchema
   );
 
   const userUlid = getUserUlid(event);
-  await validateCompleteCaseFileRequirements(requestCaseFile, userUlid, repositoryProvider);
+  const existingFile = await validateCompleteCaseFileRequirements(
+    requestCaseFile,
+    userUlid,
+    repositoryProvider
+  );
+  const patchedFile = Object.assign(
+    {},
+    {
+      ...existingFile,
+      uploadId: requestCaseFile.uploadId,
+      sha256Hash: requestCaseFile.sha256Hash,
+    }
+  );
 
   const completeUploadResponse = await CaseFileService.completeCaseFileUpload(
-    requestCaseFile,
+    patchedFile,
     repositoryProvider,
     datasetsProvider
   );

@@ -4,7 +4,7 @@
  */
 
 import { getRequiredPayload, getUserUlid } from '../../lambda-http-helpers';
-import { DeaCaseFile } from '../../models/case-file';
+import { InitiateCaseFileUploadDTO } from '../../models/case-file';
 import { initiateCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
@@ -22,7 +22,7 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {
-  const requestCaseFile: DeaCaseFile = getRequiredPayload(
+  const requestCaseFile: InitiateCaseFileUploadDTO = getRequiredPayload(
     event,
     'Initiate case file upload',
     initiateCaseFileUploadRequestSchema

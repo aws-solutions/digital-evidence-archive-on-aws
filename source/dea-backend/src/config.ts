@@ -18,15 +18,15 @@ function getSourcePath(): string {
   return `${__dirname}${backTrack}`;
 }
 
-const groupArrayFormat: convict.Format = {
-  name: 'group-array',
-  validate: function (groups, schema) {
-    if (!Array.isArray(groups)) {
+const deaRoleTypesFormat: convict.Format = {
+  name: 'dea-role-types',
+  validate: function (deaRoles, schema) {
+    if (!Array.isArray(deaRoles)) {
       throw new Error('must be of type Array');
     }
 
-    for (const group of groups) {
-      convict(schema.groups).load(group).validate();
+    for (const deaRole of deaRoles) {
+      convict(schema.deaRoles).load(deaRole).validate();
     }
   },
 };
@@ -85,29 +85,24 @@ const convictSchema = {
     format: Boolean,
     default: false,
   },
-  userGroups: {
-    doc: 'User Pool Groups config',
-    format: groupArrayFormat.name,
+  deaRoleTypes: {
+    doc: 'DEA Role Types config',
+    format: deaRoleTypesFormat.name,
     default: [],
 
-    groups: {
+    deaRoles: {
       name: {
-        doc: 'User pool group name',
+        doc: 'DEA Role Type name',
         format: String,
         default: null,
       },
       description: {
-        doc: 'User pool group description',
+        doc: 'DEA Role type description',
         format: String,
         default: null,
       },
-      precedence: {
-        doc: 'User pool group precedence',
-        format: Number,
-        default: null,
-      },
       endpoints: {
-        doc: 'Endpoints that the user group has access to',
+        doc: 'Endpoints that the users of the role have access to',
         format: endpointArrayFormat.name,
         default: [],
 
@@ -133,14 +128,13 @@ export interface DEAEndpointDefinition {
   readonly method: string;
 }
 
-export interface DEAUserPoolGroupDefinition {
+export interface DEARoleTypeDefinition {
   readonly name: string;
   readonly description: string;
-  readonly precedence: number;
   readonly endpoints: DEAEndpointDefinition[];
 }
 
-convict.addFormat(groupArrayFormat);
+convict.addFormat(deaRoleTypesFormat);
 convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
 
@@ -150,7 +144,7 @@ interface DEAConfig {
   region(): string;
   cognitoDomain(): string | undefined;
   isTestStack(): boolean;
-  userGroups(): DEAUserPoolGroupDefinition[];
+  deaRoleTypes(): DEARoleTypeDefinition[];
   retainPolicy(): RemovalPolicy;
   retentionDays(): RetentionDays;
 }
@@ -164,7 +158,7 @@ export const deaConfig: DEAConfig = {
   region: () => convictConfig.get('region'),
   cognitoDomain: () => convictConfig.get('cognito.domain'),
   isTestStack: () => convictConfig.get('testStack'),
-  userGroups: () => convictConfig.get('userGroups'),
+  deaRoleTypes: () => convictConfig.get('deaRoleTypes'),
   retainPolicy: () => (convictConfig.get('testStack') ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN),
   retentionDays: () => (convictConfig.get('testStack') ? RetentionDays.TWO_WEEKS : RetentionDays.INFINITE),
 };

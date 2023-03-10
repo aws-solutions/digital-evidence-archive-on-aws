@@ -239,12 +239,12 @@ const initializeACLE2ETest = async (
   // create the required users in cognito
   const createUserPromises: Promise<void>[] = [];
   for (const userName of testUsernames) {
-    createUserPromises.push(cognitoHelper.createUser(userName, 'CaseWorkerGroup', userName, 'Doe'));
+    createUserPromises.push(cognitoHelper.createUser(userName, 'CaseWorker', userName, 'Doe'));
     // each user under test gets a companion that they may act on
     createUserPromises.push(
       cognitoHelper.createUser(
         `${userName}${companionSuffix}`,
-        'CaseWorkerGroup',
+        'CaseWorker',
         `${userName}${companionSuffix}`,
         'Doe'
       )

@@ -5,6 +5,7 @@
 import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
+import { getTokenPayload } from '../../cognito-token-helpers';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPI, callDeaAPIWithCreds, randomSuffix, validateStatus } from '../resources/test-helpers';
@@ -26,6 +27,14 @@ describe('API authentication', () => {
   afterAll(async () => {
     await cognitoHelper.cleanup();
   });
+
+  it('should have the DEARole field in the id Token', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
+
+    const payload = await getTokenPayload(idToken, region);
+    expect(payload['custom:DEARole']).toStrictEqual('AuthTestGroup');
+  }, 40000);
 
   it('should allow successful calls to the api for authenticated users', async () => {
     const url = `${deaApiUrl}cases/my-cases`;

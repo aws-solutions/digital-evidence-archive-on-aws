@@ -20,6 +20,7 @@ import {
   getCaseFileDownloadUrl,
   initiateCaseFileUploadSuccess,
   listCaseFilesSuccess,
+  randomSuffix,
   s3Cleanup,
   s3Object,
   uploadContentToS3,
@@ -41,7 +42,7 @@ describe('Test case file APIs', () => {
 
   beforeAll(async () => {
     // Create user in test group
-    await cognitoHelper.createUser(TEST_USER, 'CaseWorkerGroup', 'CaseFile', 'Uploader');
+    await cognitoHelper.createUser(TEST_USER, 'CaseWorker', 'CaseFile', 'Uploader');
   });
 
   afterAll(async () => {
@@ -79,14 +80,28 @@ describe('Test case file APIs', () => {
       FILE_SIZE_MB
     );
 
+    const initiatedCaseFile2: DeaCaseFile = await initiateCaseFileUploadSuccess(
+      DEA_API_URL,
+      idToken,
+      creds,
+      caseUlid,
+      'colocatedPositiveTest',
+      FILE_PATH,
+      FILE_SIZE_MB
+    );
+
     const fileUlid = initiatedCaseFile.ulid ?? fail();
+    const fileUlid2 = initiatedCaseFile2.ulid ?? fail();
     s3ObjectsToDelete.push({ key: `${caseUlid}/${fileUlid}`, uploadId: initiatedCaseFile.uploadId });
+    s3ObjectsToDelete.push({ key: `${caseUlid}/${fileUlid2}`, uploadId: initiatedCaseFile2.uploadId });
     const uploadId = initiatedCaseFile.uploadId ?? fail();
+    const uploadId2 = initiatedCaseFile2.uploadId ?? fail();
     const presignedUrls = initiatedCaseFile.presignedUrls ?? fail();
+    const presignedUrls2 = initiatedCaseFile2.presignedUrls ?? fail();
 
     // verify list-case-files and describe-case-file match expected state after initiate-upload
     listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
-    expect(listCaseFilesResponse.cases.length).toEqual(1);
+    expect(listCaseFilesResponse.cases.length).toEqual(2);
     expect(listCaseFilesResponse.next).toBeUndefined();
     let describedCaseFile = await describeCaseFileDetailsSuccess(
       DEA_API_URL,
@@ -96,10 +111,13 @@ describe('Test case file APIs', () => {
       initiatedCaseFile.ulid
     );
     expect(describedCaseFile.status).toEqual(CaseFileStatus.PENDING);
-    expect(listCaseFilesResponse.cases[0]).toEqual(describedCaseFile);
+    expect(
+      listCaseFilesResponse.cases.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
+    ).toBeTruthy();
 
     // complete upload
     await uploadContentToS3(presignedUrls, FILE_CONTENT);
+    await uploadContentToS3(presignedUrls2, FILE_CONTENT);
     await completeCaseFileUploadSuccess(
       DEA_API_URL,
       idToken,
@@ -110,13 +128,33 @@ describe('Test case file APIs', () => {
       FILE_CONTENT
     );
 
+    await completeCaseFileUploadSuccess(
+      DEA_API_URL,
+      idToken,
+      creds,
+      caseUlid,
+      fileUlid2,
+      uploadId2,
+      FILE_CONTENT
+    );
+
     // verify list-case-files and describe-case-file match expected state after complete-upload
-    listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
+    listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, '/');
     expect(listCaseFilesResponse.cases.length).toEqual(1);
+    expect(listCaseFilesResponse.cases[0].fileName).toEqual('food');
+    expect(listCaseFilesResponse.cases[0].isFile).toEqual(false);
+    listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, '/food/');
+    expect(listCaseFilesResponse.cases.length).toEqual(1);
+    expect(listCaseFilesResponse.cases[0].fileName).toEqual('sushi');
+    expect(listCaseFilesResponse.cases[0].isFile).toEqual(false);
+    listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
+    expect(listCaseFilesResponse.cases.length).toEqual(2);
     expect(listCaseFilesResponse.next).toBeUndefined();
     describedCaseFile = await describeCaseFileDetailsSuccess(DEA_API_URL, idToken, creds, caseUlid, fileUlid);
     expect(describedCaseFile.status).toEqual(CaseFileStatus.ACTIVE);
-    expect(listCaseFilesResponse.cases[0]).toEqual(describedCaseFile);
+    expect(
+      listCaseFilesResponse.cases.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
+    ).toBeTruthy();
 
     // verify download-case-file works as expected
     const downloadUrl = await getCaseFileDownloadUrl(DEA_API_URL, idToken, creds, caseUlid, fileUlid);
@@ -126,8 +164,9 @@ describe('Test case file APIs', () => {
   });
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function createCase(idToken: string, creds: Credentials): Promise<DeaCase> {
-  const caseName = 'CASE with files';
+  const caseName = `CASE with files_${randomSuffix()}`;
   return await createCaseSuccess(
     DEA_API_URL,
     {

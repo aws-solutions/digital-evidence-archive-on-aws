@@ -23,3 +23,20 @@ export interface DeaCaseFile {
   readonly created?: Date;
   readonly updated?: Date;
 }
+
+export interface CompleteCaseFileUploadDTO {
+  readonly caseUlid: string;
+  readonly ulid: string;
+  readonly sha256Hash: string;
+  readonly uploadId: string;
+}
+
+export interface InitiateCaseFileUploadDTO {
+  readonly caseUlid: string;
+  readonly fileName: string;
+  readonly filePath: string;
+  readonly contentType: string;
+  readonly fileSizeMb: number;
+}
+
+export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;

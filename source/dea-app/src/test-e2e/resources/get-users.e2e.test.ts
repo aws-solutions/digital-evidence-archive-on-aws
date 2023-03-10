@@ -22,8 +22,8 @@ describe('get users api', () => {
   const deaApiUrl = testEnv.apiUrlOutput;
 
   beforeAll(async () => {
-    await cognitoHelper.createUser(testUser, 'CaseWorkerGroup', user1FirstName, 'TestUser');
-    await cognitoHelper.createUser(testUser2, 'CaseWorkerGroup', user2FirstName, 'TestUser');
+    await cognitoHelper.createUser(testUser, 'CaseWorker', user1FirstName, 'TestUser');
+    await cognitoHelper.createUser(testUser2, 'CaseWorker', user2FirstName, 'TestUser');
     await cognitoHelper.createUser(testUser_blocked, 'NoPermissionsGroup', 'NoAccessToUsers', 'TestUser');
 
     const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);

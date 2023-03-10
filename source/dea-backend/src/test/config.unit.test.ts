@@ -12,11 +12,11 @@ describe('convict based config', () => {
     expect(deaConfig.region()).toBeDefined();
     expect(deaConfig.retainPolicy()).toEqual(RemovalPolicy.DESTROY);
 
-    expect(deaConfig.userGroups()).toEqual(
+    expect(deaConfig.deaRoleTypes()).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          name: 'CaseWorkerGroup',
-          description: 'containing users who need access to case APIs',
+          name: 'CaseWorker',
+          description: 'users who need access to case APIs',
         }),
         expect.objectContaining({
           name: 'AuthTestGroup',
@@ -36,7 +36,7 @@ describe('convict based config', () => {
         }),
         expect.objectContaining({
           name: 'NoPermissionsGroup',
-          description: "containing users who can't do anything in the system",
+          description: "users who can't do anything in the system",
         }),
       ])
     );
@@ -45,7 +45,7 @@ describe('convict based config', () => {
   it('throws an error for invalid group config', () => {
     expect(() => {
       loadConfig('invalid1');
-    }).toThrow('userGroups: must be of type Array: value was "InvalidGroupConfig"');
+    }).toThrow('deaRoleTypes: must be of type Array: value was "InvalidGroupConfig"');
   });
 
   it('throws an error for invalid endpoint config', () => {
