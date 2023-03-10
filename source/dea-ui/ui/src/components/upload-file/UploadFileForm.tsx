@@ -85,7 +85,7 @@ function UploadFileForm(props: UploadFileFormProps): JSX.Element {
 
   function onCancelHandler() {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    router.push('/');
+    router.push(`/case-detail?caseId=${props.caseId}`);
   }
 
   return (
@@ -106,7 +106,7 @@ function UploadFileForm(props: UploadFileFormProps): JSX.Element {
                 description={fileOperationsLabels.evidenceTagDescription}
               >
                 <Input
-                  value={tag || ''}
+                  value={tag}
                   onChange={({ detail: { value } }) => {
                     setTag(value);
                   }}
@@ -118,7 +118,7 @@ function UploadFileForm(props: UploadFileFormProps): JSX.Element {
                 description={fileOperationsLabels.evidenceDetailsDescription}
               >
                 <Textarea
-                  value={description || ''}
+                  value={description}
                   onChange={({ detail: { value } }) => {
                     setDescription(value);
                   }}
@@ -130,7 +130,7 @@ function UploadFileForm(props: UploadFileFormProps): JSX.Element {
                 description={fileOperationsLabels.uploadReasonDescription}
               >
                 <Input
-                  value={reason || ''}
+                  value={reason}
                   onChange={({ detail: { value } }) => {
                     setReason(value);
                   }}

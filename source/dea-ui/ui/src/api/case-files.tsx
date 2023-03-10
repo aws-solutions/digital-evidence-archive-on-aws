@@ -8,13 +8,11 @@ import { httpApiPost, httpApiPut } from '../helpers/apiHelper';
 import { InitiateUploadForm, CompleteUploadForm } from '../models/CaseFiles';
 
 const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFile> => {
-  const response = await httpApiPost(`cases/${apiInput.caseUlid}/files`, { ...apiInput });
-  return response;
+  return httpApiPost(`cases/${apiInput.caseUlid}/files`, { ...apiInput });
 };
 
 const completeUpload = async (apiInput: CompleteUploadForm): Promise<DeaCaseFile> => {
-  const response = await httpApiPut(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}`, { ...apiInput });
-  return response;
+  return httpApiPut(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}`, { ...apiInput });
 };
 
 export { initiateUpload, completeUpload };

@@ -5,9 +5,9 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
-import { commonLabels } from '../../../common/labels';
-import BaseLayout from '../../../components/BaseLayout';
-import CaseDetailsBody from '../../../components/case-details/CaseDetailsBody';
+import { commonLabels } from '../../common/labels';
+import BaseLayout from '../../components/BaseLayout';
+import CaseDetailsBody from '../../components/case-details/CaseDetailsBody';
 
 export interface IHomeProps {
   locale: string;

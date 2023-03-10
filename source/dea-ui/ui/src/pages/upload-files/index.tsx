@@ -6,9 +6,9 @@
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { commonLabels } from '../../../../common/labels';
-import BaseLayout from '../../../../components/BaseLayout';
-import UploadFileBody from '../../../../components/upload-file/UploadFileBody';
+import { commonLabels } from '../../common/labels';
+import BaseLayout from '../../components/BaseLayout';
+import UploadFileBody from '../../components/upload-file/UploadFileBody';
 
 export interface IHomeProps {
   locale: string;
