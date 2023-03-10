@@ -17,6 +17,7 @@ import { downloadCaseFile } from './app/resources/download-case-file';
 import { getAllCases } from './app/resources/get-all-cases';
 import { getCase } from './app/resources/get-case-details';
 import { getCaseFileDetails } from './app/resources/get-case-file-details';
+import { getCaseMembership } from './app/resources/get-case-membership';
 import { getCredentials } from './app/resources/get-credentials';
 import { getLoginUrl } from './app/resources/get-login-url';
 import { getMyCases } from './app/resources/get-my-cases';
@@ -55,6 +56,7 @@ export {
   updateCases,
   createCaseMembership,
   deleteCaseMembership,
+  getCaseMembership,
   getCaseUser,
   getRequiredPathParam,
   getUsers,

@@ -52,6 +52,17 @@ const inviteToCasesArgs: argsType = [
     actions: [],
   }),
 ];
+const getCaseCollabsArgs: argsType = [
+  'getCaseCollaborators',
+  [CaseAction.INVITE],
+  `cases/${CASE_ID}/userMemberships`,
+  'GET',
+  undefined,
+  false,
+  false,
+  false,
+  true,
+];
 const deleteMembershipArgs: argsType = [
   'removeFromCaseACLs',
   [CaseAction.INVITE],
@@ -134,6 +145,7 @@ describe('Case API ACL enforcement', () => {
     getCaseDetailsArgs,
     putCaseDetailsArgs,
     inviteToCasesArgs,
+    getCaseCollabsArgs,
     deleteMembershipArgs,
     putCaseUserArgs,
     initiateUploadCaseFileArgs,

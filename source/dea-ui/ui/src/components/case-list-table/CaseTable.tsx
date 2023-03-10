@@ -81,11 +81,11 @@ function CaseTable(): JSX.Element {
           header: commonTableLabels.caseNameHeader,
           cell: (e) => (
             <Link
-              href={`cases/${e.ulid}`}
+              href={`${e.ulid}`}
               onFollow={(e) => {
                 e.preventDefault();
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                router.push(`${e.detail.href}`);
+                router.push(`/case-detail?caseId=${e.detail.href}`);
               }}
             >
               {e.name}
