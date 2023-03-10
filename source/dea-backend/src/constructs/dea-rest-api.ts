@@ -131,10 +131,11 @@ export class DeaRestApiConstruct extends Construct {
     });
 
     routeConfig.routes.forEach((route) => {
-      // If this is a non-Auth API, then give it full DEA Lambda permissions
-      // otherwise give the lambda limited permissions
-      const lambdaRole =
-        route.authMethod == AuthorizationType.IAM ? this.lambdaBaseRole : this.authLambdaRole;
+      // If this is a non-Auth API, then we specify the auth method (Non-IAM)
+      // and we should give the lambda limited permissions
+      // otherwise it is a DEA execution API, which needs the
+      // full set of permissions
+      const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
       this._addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv);
     });
   }

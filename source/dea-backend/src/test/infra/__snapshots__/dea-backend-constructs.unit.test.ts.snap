@@ -776,8 +776,8 @@ Object {
     },
     "DeaRestApiConstructDELETEcaseIdE0E7560F": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -824,7 +824,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -835,8 +835,8 @@ Object {
     },
     "DeaRestApiConstructDELETEuserId97F2887D": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -883,7 +883,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -894,8 +894,8 @@ Object {
     },
     "DeaRestApiConstructGETallcases490E3EC5": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -942,7 +942,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -953,8 +953,8 @@ Object {
     },
     "DeaRestApiConstructGETcaseId3B128BAD": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1001,7 +1001,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -1012,8 +1012,8 @@ Object {
     },
     "DeaRestApiConstructGETcontents7698B1E0": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1060,7 +1060,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -1071,8 +1071,8 @@ Object {
     },
     "DeaRestApiConstructGETfileIdADEC2A08": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1119,7 +1119,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -1130,8 +1130,8 @@ Object {
     },
     "DeaRestApiConstructGETfiles2EFEBB64": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1178,7 +1178,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -1307,8 +1307,8 @@ Object {
     },
     "DeaRestApiConstructGETmycasesF570E0D9": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1355,7 +1355,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -1366,8 +1366,8 @@ Object {
     },
     "DeaRestApiConstructGETuserMemberships425EF4DF": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1414,7 +1414,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -1425,8 +1425,8 @@ Object {
     },
     "DeaRestApiConstructGETusersDD8AA5AF": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1473,7 +1473,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -1543,8 +1543,8 @@ Object {
     },
     "DeaRestApiConstructPOSTcases71FC396B": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1591,7 +1591,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -1602,8 +1602,8 @@ Object {
     },
     "DeaRestApiConstructPOSTfilesD0E72419": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1650,7 +1650,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -1661,8 +1661,8 @@ Object {
     },
     "DeaRestApiConstructPOSTuserMembershipsA9A79B32": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1709,7 +1709,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -1720,8 +1720,8 @@ Object {
     },
     "DeaRestApiConstructPUTcaseId804DFA77": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1768,7 +1768,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -1779,8 +1779,8 @@ Object {
     },
     "DeaRestApiConstructPUTfileId8DA844F1": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1827,7 +1827,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
@@ -1838,8 +1838,8 @@ Object {
     },
     "DeaRestApiConstructPUTuserId248180A2": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
-        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1886,7 +1886,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
             "Arn",
           ],
         },
