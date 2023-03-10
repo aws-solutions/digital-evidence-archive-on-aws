@@ -393,8 +393,8 @@ Object {
     },
     "DeaApiGatewayDELETEcaseId8BA29E4C": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -441,7 +441,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -452,8 +452,8 @@ Object {
     },
     "DeaApiGatewayDELETEuserId62E08A5C": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -500,7 +500,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -511,8 +511,8 @@ Object {
     },
     "DeaApiGatewayGETallcasesF6A8BE63": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -559,7 +559,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -570,8 +570,8 @@ Object {
     },
     "DeaApiGatewayGETcaseIdACE0459E": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -618,7 +618,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -629,8 +629,8 @@ Object {
     },
     "DeaApiGatewayGETcontentsF4247FB2": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -677,7 +677,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -688,8 +688,8 @@ Object {
     },
     "DeaApiGatewayGETfileId8331FE8E": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -736,7 +736,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -747,8 +747,8 @@ Object {
     },
     "DeaApiGatewayGETfiles306BFDB2": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -795,7 +795,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -924,8 +924,8 @@ Object {
     },
     "DeaApiGatewayGETmycasesD3845992": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -972,7 +972,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -983,8 +983,8 @@ Object {
     },
     "DeaApiGatewayGETuserMemberships603C52A2": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1031,7 +1031,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -1042,8 +1042,8 @@ Object {
     },
     "DeaApiGatewayGETusersA9A634E3": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1090,7 +1090,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -1160,8 +1160,8 @@ Object {
     },
     "DeaApiGatewayPOSTcases1FE4F197": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1208,7 +1208,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -1219,8 +1219,8 @@ Object {
     },
     "DeaApiGatewayPOSTfiles4AD6D920": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1267,7 +1267,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -1278,8 +1278,8 @@ Object {
     },
     "DeaApiGatewayPOSTuserMembershipsF0715011": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1326,7 +1326,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -1337,8 +1337,8 @@ Object {
     },
     "DeaApiGatewayPUTcaseIdB013D384": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1385,7 +1385,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -1396,8 +1396,8 @@ Object {
     },
     "DeaApiGatewayPUTfileId4E34B7A0": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1444,7 +1444,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -1455,8 +1455,8 @@ Object {
     },
     "DeaApiGatewayPUTuserId7238D6D2": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1503,7 +1503,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
