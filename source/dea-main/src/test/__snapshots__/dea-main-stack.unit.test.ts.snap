@@ -865,8 +865,8 @@ Object {
     },
     "DeaApiGatewayGETgetLogoutUrl00F60A7C": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
-        "DeaApiGatewaydeabaselambdarole91512884",
+        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
+        "DeaApiGatewaydeaauthlambdarole4F5CC393",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -913,7 +913,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeabaselambdarole91512884",
+            "DeaApiGatewaydeaauthlambdarole4F5CC393",
             "Arn",
           ],
         },
