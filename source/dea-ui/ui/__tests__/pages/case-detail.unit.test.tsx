@@ -19,8 +19,8 @@ jest.mock('../../src/api/cases', () => ({
 describe('CaseDetailsPage', () => {
   it('renders a blank page with no caseId', async () => {
     useGetCaseById.mockImplementation(() => ({
-      caseDetail: undefined,
-      areCasesLoading: false,
+      data: undefined,
+      isLoading: false,
     }));
     const page = render(<CaseDetailsPage />);
     const anyHeader = screen.queryByRole('heading');
@@ -31,8 +31,8 @@ describe('CaseDetailsPage', () => {
 
   it('renders a loading label during fetch', () => {
     useGetCaseById.mockImplementation(() => ({
-      caseDetail: undefined,
-      areCasesLoading: true,
+      data: undefined,
+      isLoading: true,
     }));
     const page = render(<CaseDetailsPage />);
     const label = screen.getByText(commonLabels.loadingLabel);
@@ -44,8 +44,8 @@ describe('CaseDetailsPage', () => {
   it('renders a not found warning if no caseId is provided', () => {
     query = { caseId: undefined };
     useGetCaseById.mockImplementation(() => ({
-      caseDetail: undefined,
-      areCasesLoading: false,
+      data: undefined,
+      isLoading: false,
     }));
     const page = render(<CaseDetailsPage />);
     const anyHeader = screen.queryByRole('heading');
