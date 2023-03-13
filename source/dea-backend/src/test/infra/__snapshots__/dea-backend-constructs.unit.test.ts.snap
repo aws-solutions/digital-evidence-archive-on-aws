@@ -1248,8 +1248,8 @@ Object {
     },
     "DeaRestApiConstructGETgetLogoutUrlB58CD35E": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
+        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1296,7 +1296,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
             "Arn",
           ],
         },
