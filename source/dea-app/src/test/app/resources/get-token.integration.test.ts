@@ -6,6 +6,8 @@ import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { getCredentials } from '../../../app/resources/get-credentials';
 import { getToken } from '../../../app/resources/get-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
+import { Oauth2Token } from '../../../models/oauth2-token';
+import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
@@ -54,9 +56,11 @@ describe('get-token', () => {
       fail();
     }
 
+    const retrievedTokens: Oauth2Token = jsonParseWithDates(response.body);
+
     const credentialsEvent = getDummyEvent({
       pathParameters: {
-        idToken: response.body?.replace(/"/g, ''),
+        idToken: retrievedTokens.id_token,
       },
     });
 

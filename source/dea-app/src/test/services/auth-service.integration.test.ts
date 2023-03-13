@@ -51,12 +51,12 @@ describe('auth service', () => {
       authTestUrl,
       testUser
     );
-    const idToken = await exchangeAuthorizationCode(authCode, undefined, authTestUrl);
+    const { id_token } = await exchangeAuthorizationCode(authCode, undefined, authTestUrl);
 
     // Assert if no id token fectched in exchangeAuthorizationCode
-    expect(idToken).toBeTruthy();
+    expect(id_token).toBeTruthy();
 
-    const credentials = await getCredentialsByToken(idToken);
+    const credentials = await getCredentialsByToken(id_token);
 
     expect(credentials).toHaveProperty('AccessKeyId');
     expect(credentials).toHaveProperty('SecretKey');
@@ -71,10 +71,10 @@ describe('auth service', () => {
       authTestUrl,
       testUser2
     );
-    const idToken = await exchangeAuthorizationCode(authCode, undefined, authTestUrl);
+    const { id_token } = await exchangeAuthorizationCode(authCode, undefined, authTestUrl);
 
     // Assert if no id token fectched in exchangeAuthorizationCode
-    expect(idToken).toBeTruthy();
+    expect(id_token).toBeTruthy();
   }, 20000);
 
   it('should throw an error if the authorization code is not valid', async () => {
