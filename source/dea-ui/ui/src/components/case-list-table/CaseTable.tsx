@@ -15,10 +15,10 @@ import { filteringOptions, filteringProperties, searchableColumns } from './case
 
 function CaseTable(): JSX.Element {
   const router = useRouter();
-  const { cases, areCasesLoading } = useListAllCases();
+  const { data, isLoading } = useListAllCases();
 
   // Property and date filter collections
-  const { items, filteredItemsCount, propertyFilterProps } = useCollection(cases, {
+  const { items, filteredItemsCount, propertyFilterProps } = useCollection(data, {
     filtering: {
       empty: TableEmptyDisplay(caseListLabels.noCasesLabel),
       noMatch: TableNoMatchDisplay(caseListLabels.noCasesLabel),
@@ -53,7 +53,7 @@ function CaseTable(): JSX.Element {
     <Table
       data-testid="case-table"
       trackBy="ulid"
-      loading={areCasesLoading}
+      loading={isLoading}
       variant="full-page"
       items={items}
       loadingText={caseListLabels.loading}
@@ -72,7 +72,7 @@ function CaseTable(): JSX.Element {
               </Button>{' '}
             </SpaceBetween>
           }
-          totalItems={cases}
+          totalItems={data}
         />
       }
       columnDefinitions={[

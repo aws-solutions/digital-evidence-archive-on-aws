@@ -8,23 +8,23 @@ import { useGetCaseById } from '../../api/cases';
 import { commonLabels } from '../../common/labels';
 import CaseDetailsTabs from './CaseDetailsTabs';
 
-interface CaseDetailsBodyProps {
-  readonly caseId: string | string;
+export interface CaseDetailsBodyProps {
+  readonly caseId: string;
 }
 
 function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
-  const { caseDetail, areCasesLoading } = useGetCaseById(props.caseId);
-  if (areCasesLoading) {
+  const { data, isLoading } = useGetCaseById(props.caseId);
+  if (isLoading) {
     return <h1>{commonLabels.loadingLabel}</h1>;
   } else {
-    if (!caseDetail) {
+    if (!data) {
       return <h1>{commonLabels.notFoundLabel}</h1>;
     }
     return (
       <ContentLayout
         header={
           <SpaceBetween size="m">
-            <Header variant="h1">{caseDetail.name}</Header>
+            <Header variant="h1">{data.name}</Header>
           </SpaceBetween>
         }
       >
@@ -39,7 +39,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
             </div>
             <div>
               <h4>Description</h4>
-              <p>{caseDetail.description}</p>
+              <p>{data.description}</p>
             </div>
             <div>
               {' '}
@@ -47,7 +47,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
             </div>
           </ColumnLayout>
         </Container>
-        <CaseDetailsTabs></CaseDetailsTabs>
+        <CaseDetailsTabs caseId={props.caseId}></CaseDetailsTabs>
       </ContentLayout>
     );
   }
