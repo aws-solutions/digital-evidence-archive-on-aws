@@ -219,7 +219,7 @@ describe('dea lambda audits', () => {
     expect(sentInput.logEvents[0].message).toContain(`"idType":"TokenRequestor"`);
   });
 
-  it('should construct LOGIN_URL_REQUESTOR identity', async () => {
+  it('should construct AUTH_URL_REQUESTER identity', async () => {
     const testAuditService = getTestAuditService();
     const sut = createDeaHandler(
       async () => {

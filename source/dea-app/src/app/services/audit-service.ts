@@ -32,7 +32,7 @@ export enum AuditEventType {
   MODIFY_USER_PERMISSIONS_ON_CASE = 'ModifyUserCasePermissions',
   INITIATE_CASE_FILE_UPLOAD = 'InitiateCaseFileUpload',
   COMPLETE_CASE_FILE_UPLOAD = 'CompleteCaseFileUpload',
-  GET_LOGIN_URL = 'GetLoginUrl',
+  GET_AUTH_URL = 'GetAuthUrl',
   GET_AUTH_TOKEN = 'GetAuthenticationToken',
   EXCHANGE_TOKEN_FOR_CREDS = 'ExchangeAuthTokenForCredentials',
   GET_ALL_USERS = 'GetAllUsers',
@@ -49,7 +49,7 @@ export enum IdentityType {
   AUTH_CODE_REQUESTOR = 'AuthCodeRequestor',
   ID_TOKEN_REQUESTOR = 'TokenRequestor',
   UNIDENTIFIED_REQUESTOR = 'UnidentifiedRequestor',
-  LOGIN_URL_REQUESTOR = 'LoginUrlRequestor',
+  AUTH_URL_REQUESTOR = 'AuthUrlRequestor',
 }
 
 // If no identifying information is provided
@@ -87,8 +87,8 @@ export type CognitoTokenId = {
   username: string;
 };
 
-export type LoginUrlId = {
-  idType: IdentityType.LOGIN_URL_REQUESTOR;
+export type AuthUrlId = {
+  idType: IdentityType.AUTH_URL_REQUESTOR;
   sourceIp: string;
 };
 
@@ -110,7 +110,7 @@ export type ActorIdentity =
   | FullUserId
   | AuthCodeRequestor
   | TokenExchangeRequestor
-  | LoginUrlId
+  | AuthUrlId
   | UnidentifiedRequestor;
 
 /**
