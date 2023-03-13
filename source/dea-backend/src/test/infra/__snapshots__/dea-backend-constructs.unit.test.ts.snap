@@ -1189,8 +1189,8 @@ Object {
     },
     "DeaRestApiConstructGETgetLoginUrl3FEA95D9": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
+        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1237,7 +1237,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
             "Arn",
           ],
         },
@@ -1248,8 +1248,8 @@ Object {
     },
     "DeaRestApiConstructGETidToken48065721": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
+        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1296,7 +1296,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
             "Arn",
           ],
         },
@@ -1484,8 +1484,8 @@ Object {
     },
     "DeaRestApiConstructPOSTauthCode8A1B1E18": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+        "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
+        "DeaRestApiConstructdeaauthlambdarole2081E9E6",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1532,7 +1532,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "DeaRestApiConstructdeaauthlambdarole2081E9E6",
             "Arn",
           ],
         },
@@ -5228,6 +5228,80 @@ Object {
         },
       },
       "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaauthlambdarole2081E9E6": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:ssm:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/dea/",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "DeaRestApiConstructdeabaselambdarole9EA2B06B": Object {
       "Properties": Object {
