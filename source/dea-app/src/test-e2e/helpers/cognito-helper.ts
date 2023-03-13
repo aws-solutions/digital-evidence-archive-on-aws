@@ -136,19 +136,19 @@ export default class CognitoHelper {
     return result.AuthenticationResult;
   }
 
-  public async getIdTokenForUser(userName: string): Promise<string> {
+  public async getIdTokenForUser(userName: string): Promise<{ idToken: string; refreshToken: string }> {
     const result = await this.getUserPoolAuthForUser(userName);
 
-    if (!result.IdToken) {
-      throw new Error('Unable to get id token from user pool.');
+    if (!result.IdToken || !result.RefreshToken) {
+      throw new Error('Unable to get id token and refresh token from user pool.');
     }
 
-    return result.IdToken;
+    return { idToken: result.IdToken, refreshToken: result.RefreshToken };
   }
 
-  public async getCredentialsForUser(userName: string): Promise<[Credentials, string]> {
+  public async getCredentialsForUser(userName: string): Promise<[Credentials, string, string]> {
     // 1. Authenticate with User Pool, get Token
-    const idToken = await this.getIdTokenForUser(userName);
+    const { idToken, refreshToken } = await this.getIdTokenForUser(userName);
 
     // 2. Get Identity from Identity Pool
     const identityId = await this._identityPoolClient.send(
@@ -182,6 +182,7 @@ export default class CognitoHelper {
           sessionToken: creds.SessionToken,
         },
         idToken,
+        refreshToken,
       ];
     } else {
       throw new Error('Failed to get credentials from the identity pool:');
@@ -224,7 +225,7 @@ export default class CognitoHelper {
         // try to remove the user from the db
         // NOTE: it won't be there unless you called
         // lambda using creds from the the user
-        const idToken = await this.getIdTokenForUser(username);
+        const { idToken } = await this.getIdTokenForUser(username);
         const tokenId = (await getTokenPayload(idToken, this._region)).sub;
         if (repositoryProvider) {
           const dbUser = await getUserByTokenId(tokenId, repositoryProvider);

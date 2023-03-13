@@ -15,11 +15,12 @@ const createUserAndOutputCreds = async (
   userGroup: string
 ) => {
   await cognitoHelper.createUser(userName, userGroup, userFirstName, userLastName);
-  const [creds, idToken] = await cognitoHelper.getCredentialsForUser(userName);
+  const [creds, idToken, refreshToken] = await cognitoHelper.getCredentialsForUser(userName);
   console.log(`----------- IAM Credentials for ${userName} -----------`);
   console.log({
     ...creds,
     idToken,
+    refreshToken,
   });
   console.log(`----------- IAM Credentials end -----------`);
 };
