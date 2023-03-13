@@ -246,6 +246,6 @@ describe('dea lambda audits', () => {
     if (!sentInput.logEvents) {
       fail();
     }
-    expect(sentInput.logEvents[0].message).toContain(`"idType":"LoginUrlRequestor"`);
+    expect(sentInput.logEvents[0].message).toContain(`"idType":"AuthUrlRequestor"`);
   });
 });
