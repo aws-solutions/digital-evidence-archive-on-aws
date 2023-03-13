@@ -1,6 +1,6 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { fail } from 'assert';
 import axios from 'axios';
 import { caseDetailLabels } from '../../src/common/labels';
@@ -136,8 +136,22 @@ describe('CaseDetailsPage', () => {
     // the file exists as a box
     expect(fileEntry).toBeTruthy();
 
+    // const textFilter = await screen.findByTestId('files-text-filter');
+    const textFilter = tableWrapper.findTextFilter();
+    if (!textFilter) {
+      fail();
+    }
+    const textFilterInput = textFilter.findInput();
+    textFilterInput.setInputValue('food');
+
+    // after filtering, rootFile will not be visible
+    await waitFor(() => expect(screen.queryByTestId('rootFile-box')).toBeNull());
+
     // click on the folder to navigate
     fireEvent.click(folderEntry);
+
+    // clear the filter
+    textFilterInput.setInputValue('');
 
     // we should now see the new file "sushi.png"
     await screen.findByTestId('sushi.png-box');

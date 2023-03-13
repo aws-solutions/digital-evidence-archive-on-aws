@@ -40,6 +40,7 @@ interface DeaRestApiProps {
 }
 
 export class DeaRestApiConstruct extends Construct {
+  public authLambdaRole: Role;
   public lambdaBaseRole: Role;
   public deaRestApi: RestApi;
   public apiEndpointArns: Map<string, string>;
@@ -56,6 +57,8 @@ export class DeaRestApiConstruct extends Construct {
       props.region,
       props.accountId
     );
+
+    this.authLambdaRole = this._createAuthLambdaRole(props.region, props.accountId);
 
     const accessLogGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
       encryptionKey: props.kmsKey,
@@ -127,9 +130,14 @@ export class DeaRestApiConstruct extends Construct {
       value: this.deaRestApi.url,
     });
 
-    routeConfig.routes.forEach((route) =>
-      this._addMethod(this.deaRestApi, route, this.lambdaBaseRole, lambdaEnv)
-    );
+    routeConfig.routes.forEach((route) => {
+      // If this is a non-Auth API, then we specify the auth method (Non-IAM)
+      // and we should give the lambda limited permissions
+      // otherwise it is a DEA execution API, which needs the
+      // full set of permissions
+      const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
+      this._addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv);
+    });
   }
 
   private _addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, lambdaEnv: LambdaEnvironment): void {
@@ -288,6 +296,25 @@ export class DeaRestApiConstruct extends Construct {
         resources: [kmsKeyArn],
       })
     );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
+        resources: [`arn:aws:ssm:${region}:${accountId}:parameter/dea/${region}/*`],
+      })
+    );
+
+    return role;
+  }
+
+  private _createAuthLambdaRole(region: string, accountId: string): Role {
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+    const role = new Role(this, 'dea-auth-lambda-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [basicExecutionPolicy],
+    });
 
     role.addToPolicy(
       new PolicyStatement({

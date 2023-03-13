@@ -806,8 +806,8 @@ Object {
     },
     "DeaApiGatewayGETgetLoginUrl68C09232": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
-        "DeaApiGatewaydeabaselambdarole91512884",
+        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
+        "DeaApiGatewaydeaauthlambdarole4F5CC393",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -854,7 +854,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeabaselambdarole91512884",
+            "DeaApiGatewaydeaauthlambdarole4F5CC393",
             "Arn",
           ],
         },
@@ -924,8 +924,8 @@ Object {
     },
     "DeaApiGatewayGETidToken8E5E80D8": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
-        "DeaApiGatewaydeabaselambdarole91512884",
+        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
+        "DeaApiGatewaydeaauthlambdarole4F5CC393",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -972,7 +972,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeabaselambdarole91512884",
+            "DeaApiGatewaydeaauthlambdarole4F5CC393",
             "Arn",
           ],
         },
@@ -1160,8 +1160,8 @@ Object {
     },
     "DeaApiGatewayPOSTauthCode8F4A75C3": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
-        "DeaApiGatewaydeabaselambdarole91512884",
+        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
+        "DeaApiGatewaydeaauthlambdarole4F5CC393",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1208,7 +1208,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeabaselambdarole91512884",
+            "DeaApiGatewaydeaauthlambdarole4F5CC393",
             "Arn",
           ],
         },
@@ -5887,6 +5887,80 @@ Object {
         },
       },
       "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaauthlambdarole4F5CC393": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:ssm:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/dea/",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaApiGatewaydeaauthlambdarole4F5CC393",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "DeaApiGatewaydeabaselambdarole91512884": Object {
       "Properties": Object {
