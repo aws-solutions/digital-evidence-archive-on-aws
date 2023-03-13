@@ -112,7 +112,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       authMethod: AuthorizationType.NONE,
     },
     {
-      eventName: AuditEventType.GET_AUTH_URL,
+      eventName: AuditEventType.GET_LOGIN_URL,
       path: '/auth/getLoginUrl',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-login-url-handler.ts',
@@ -120,7 +120,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       authMethod: AuthorizationType.NONE,
     },
     {
-      eventName: AuditEventType.GET_AUTH_URL,
+      eventName: AuditEventType.GET_LOGOUT_URL,
       path: '/auth/getLogoutUrl',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-logout-url-handler.ts',
