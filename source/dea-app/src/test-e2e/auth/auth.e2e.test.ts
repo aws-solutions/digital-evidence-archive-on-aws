@@ -6,6 +6,7 @@ import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
 import { getTokenPayload } from '../../cognito-token-helpers';
+import { Oauth2Token } from '../../models/oauth2-token';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPI, callDeaAPIWithCreds, randomSuffix, validateStatus } from '../resources/test-helpers';
@@ -123,7 +124,8 @@ describe('API authentication', () => {
     const headers = { 'callback-override': authTestUrl };
     const response = await client.post(url, undefined, { headers, validateStatus });
     expect(response.status).toEqual(200);
-    const idToken = response.data;
+    const retrievedTokens: Oauth2Token = response.data;
+    const idToken = retrievedTokens.id_token;
 
     // 3. Exchange id token for credentials
     const credentialsUrl = `${deaApiUrl}auth/getCredentials/${idToken}`;

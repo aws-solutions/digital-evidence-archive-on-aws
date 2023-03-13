@@ -12,6 +12,7 @@ import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import axios from 'axios';
 import { getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
+import { Oauth2Token } from '../../models/oauth2-token';
 
 const stage = getRequiredEnv('STAGE', 'chewbacca');
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
@@ -137,7 +138,7 @@ export const exchangeAuthorizationCode = async (
   authorizationCode: string,
   origin?: string,
   callbackOverride?: string
-): Promise<string> => {
+): Promise<Oauth2Token> => {
   const cognitoParams = await getCognitoSsmParams();
   const axiosInstance = axios.create({
     baseURL: cognitoParams.cognitoDomainUrl,
@@ -172,5 +173,5 @@ export const exchangeAuthorizationCode = async (
     throw new Error(`Request failed with status code ${response.status}`);
   }
 
-  return response.data.id_token;
+  return response.data;
 };

@@ -72,7 +72,11 @@ const createCaseFilePaths = async (deaCaseFile: DeaCaseFile, repositoryProvider:
       });
       await createCaseFilePaths(newFileObj, repositoryProvider);
     } catch (error) {
-      logger.debug(`Path ${newFileObj.filePath}/${newFileObj.fileName} already exists, moving on...`);
+      if ('code' in error && error.code === 'UniqueError') {
+        logger.debug(`Path ${newFileObj.filePath}/${newFileObj.fileName} already exists, moving on...`);
+      } else {
+        throw error;
+      }
     }
   }
 };

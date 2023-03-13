@@ -17,7 +17,8 @@ export default function LoginPage() {
       const authCode = typeof router.query.code === 'string' ? router.query.code : '';
 
       if (authCode) {
-        idTokenRef.current = await getToken(authCode);
+        const response = await getToken(authCode);
+        idTokenRef.current = response.id_token;
         const credentials = await getCredentials(idTokenRef.current);
 
         localStorage.setItem('idToken', idTokenRef.current);

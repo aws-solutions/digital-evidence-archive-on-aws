@@ -37,7 +37,7 @@ describe('lambda pre-execution checks', () => {
   }, 10000);
 
   it('should add first time federated user to dynamo table', async () => {
-    const idToken = await cognitoHelper.getIdTokenForUser(testUser);
+    const { idToken } = await cognitoHelper.getIdTokenForUser(testUser);
 
     const tokenId = (await getTokenPayload(idToken, region)).sub;
     const event = getDummyEvent();
@@ -71,7 +71,8 @@ describe('lambda pre-execution checks', () => {
     // call again with a different token from the same user,
     // make sure not added twice (in the getByToken code, we assert only 1 exists)
 
-    const idToken2 = await cognitoHelper.getIdTokenForUser(testUser);
+    const result = await cognitoHelper.getIdTokenForUser(testUser);
+    const idToken2 = result.idToken;
     const tokenId2 = (await getTokenPayload(idToken, region)).sub;
     expect(tokenId2).toStrictEqual(tokenId);
 
