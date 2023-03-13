@@ -4,6 +4,7 @@
  */
 
 import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
+import { PropertyFilterProperty, useCollection } from '@cloudscape-design/collection-hooks';
 import {
   Box,
   BreadcrumbGroup,
@@ -18,18 +19,51 @@ import {
 import * as React from 'react';
 import { useListCaseFiles } from '../../api/cases';
 import { commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
+import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { CaseDetailsBodyProps } from './CaseDetailsBody';
 
 function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
   // Property and date filter collections
-  const [basePath, setBasePath] = React.useState('/');
-  const { data, isLoading } = useListCaseFiles(props.caseId, basePath);
+  const [filesTableState, setFilesTableState] = React.useState({
+    textFilter: '',
+    basePath: '/',
+  });
+  const { data, isLoading } = useListCaseFiles(props.caseId, filesTableState.basePath);
+
+  const filteringProperties: readonly PropertyFilterProperty[] = [
+    {
+      key: 'name',
+      operators: ['=', '!=', ':', '!:'],
+      propertyLabel: 'File Name',
+      groupValuesLabel: 'File Name Values',
+    },
+  ];
+
+  const { items, filterProps } = useCollection(data, {
+    filtering: {
+      empty: TableEmptyDisplay(filesListLabels.noFilesLabel),
+      noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
+      filteringFunction: (item, filteringText) => {
+        const filenameLowerCase: string = item.fileName.toLowerCase();
+        const filteringTextLowerCase = filteringText.toLowerCase();
+
+        return filenameLowerCase.includes(filteringTextLowerCase);
+      },
+    },
+    propertyFiltering: {
+      filteringProperties: filteringProperties,
+      empty: TableEmptyDisplay(filesListLabels.noFilesLabel),
+      noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
+    },
+    sorting: {},
+    selection: {},
+  });
 
   if (isLoading) {
     return <h1>{commonLabels.loadingLabel}</h1>;
   }
 
-  const pathParts = basePath.split('/');
+  const pathParts = filesTableState.basePath.split('/');
   const breadcrumbItems = [{ text: '/', href: '#' }];
 
   let hrefString = '#';
@@ -48,7 +82,10 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
         variant="link"
         onClick={(e: { preventDefault: () => void }) => {
           e.preventDefault();
-          setBasePath(basePath + caseFile.fileName + '/');
+          setFilesTableState((state) => ({
+            ...state,
+            basePath: filesTableState.basePath + caseFile.fileName + '/',
+          }));
         }}
       >
         {caseFile.fileName}
@@ -81,7 +118,10 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
           data-testid="file-breadcrumb"
           onClick={(event) => {
             event.preventDefault();
-            setBasePath(event.detail.href.replaceAll('#', '/'));
+            setFilesTableState((state) => ({
+              ...state,
+              basePath: event.detail.href.replaceAll('#', '/'),
+            }));
           }}
           items={breadcrumbItems}
           ariaLabel="Breadcrumbs"
@@ -151,12 +191,18 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
           sortingField: 'uploader',
         },
       ]}
-      items={data}
+      items={items}
       loadingText={filesListLabels.loading}
       resizableColumns
       selectionType="multi"
       empty={emptyConfig}
-      filter={<TextFilter filteringPlaceholder={filesListLabels.searchLabel} filteringText="" />}
+      filter={
+        <TextFilter
+          data-testid="files-text-filter"
+          {...filterProps}
+          filteringPlaceholder={filesListLabels.searchLabel}
+        />
+      }
       header={tableHeader}
       pagination={tablePagination}
     />

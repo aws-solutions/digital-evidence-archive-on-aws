@@ -6,7 +6,7 @@ Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest 
 
 | Statements                                                                               | Branches                                                                             | Functions                                                                              | Lines                                                                          |
 | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| ![Statements](https://img.shields.io/badge/statements-97.46%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-91.14%25-brightgreen.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-92.77%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-97.69%25-brightgreen.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-97.4%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-91.37%25-brightgreen.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-92.98%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-97.63%25-brightgreen.svg?style=flat) |
 
 
 ## Project Setup
