@@ -6,14 +6,11 @@
 import { Tabs } from '@cloudscape-design/components';
 import * as React from 'react';
 import { caseDetailLabels } from '../../common/labels';
+import { CaseDetailsBodyProps } from './CaseDetailsBody';
 import CaseFilesTable from './CaseFilesTable';
 import ManageAccessForm from './ManageAccessForm';
 
-interface CaseDetailsTabProps {
-  readonly caseId: string;
-}
-
-function CaseDetailsTabs(props: CaseDetailsTabProps): JSX.Element {
+function CaseDetailsTabs(props: CaseDetailsBodyProps): JSX.Element {
   return (
     <Tabs
       data-testid="case-details-tabs"
