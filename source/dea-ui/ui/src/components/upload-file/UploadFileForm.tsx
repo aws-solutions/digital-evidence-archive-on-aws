@@ -19,14 +19,11 @@ import sha256 from 'crypto-js/sha256';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useState } from 'react';
-import { initiateUpload, completeUpload } from '../../api/case-files';
-import { commonLabels, createCaseLabels, fileOperationsLabels } from '../../common/labels';
+import { initiateUpload, completeUpload } from '../../api/cases';
+import { commonLabels, fileOperationsLabels } from '../../common/labels';
+import { UploadFileProps } from './UploadFileBody';
 
-interface UploadFileFormProps {
-  readonly caseId: string;
-}
-
-function UploadFileForm(props: UploadFileFormProps): JSX.Element {
+function UploadFileForm(props: UploadFileProps): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [tag, setTag] = useState('');
   const [description, setDescription] = useState('');

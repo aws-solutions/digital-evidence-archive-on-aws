@@ -8,7 +8,7 @@ import * as React from 'react';
 import { fileOperationsLabels } from '../../common/labels';
 import UploadFileForm from './UploadFileForm';
 
-interface UploadFileProps {
+export interface UploadFileProps {
   readonly caseId: string;
 }
 

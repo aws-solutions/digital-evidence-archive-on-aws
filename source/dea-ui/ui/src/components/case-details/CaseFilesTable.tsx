@@ -43,7 +43,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
 
   const { items, filterProps } = useCollection(data, {
     filtering: {
-      empty: TableEmptyDisplay(filesListLabels.caseFilesLabel, filesListLabels.noFilesLabel),
+      empty: TableEmptyDisplay(filesListLabels.noFilesLabel, filesListLabels.noDisplayLabel),
       noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
       filteringFunction: (item, filteringText) => {
         const filenameLowerCase: string = item.fileName.toLowerCase();
@@ -54,7 +54,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
     },
     propertyFiltering: {
       filteringProperties: filteringProperties,
-      empty: TableEmptyDisplay(filesListLabels.caseFilesLabel, filesListLabels.noFilesLabel),
+      empty: TableEmptyDisplay(filesListLabels.noFilesLabel, filesListLabels.noDisplayLabel),
       noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
     },
     sorting: {},
@@ -109,7 +109,9 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       description={filesListLabels.filterDescription}
       actions={
         <SpaceBetween direction="horizontal" size="xs">
-          <Button>{commonLabels.uploadButton}</Button>
+          <Button data-testid="upload-file-button" onClick={uploadFileHandler}>
+            {commonLabels.uploadButton}
+          </Button>
           <Button variant="primary">{commonLabels.downloadButton}</Button>
         </SpaceBetween>
       }

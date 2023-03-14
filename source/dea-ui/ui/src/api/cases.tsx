@@ -6,7 +6,8 @@
 import { DeaCase } from '@aws/dea-app';
 import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
 import useSWR from 'swr';
-import { httpApiGet, httpApiPost } from '../helpers/apiHelper';
+import { httpApiGet, httpApiPost, httpApiPut } from '../helpers/apiHelper';
+import { CompleteUploadForm, InitiateUploadForm } from '../models/CaseFiles';
 import { CreateCaseForm } from '../models/Cases';
 
 export interface DeaListResult<T> {
@@ -38,4 +39,12 @@ export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DeaC
   const { data, isValidating } = useSWR(() => `cases/${id}/files?filePath=${filePath}`, httpApiGet);
   const caseFiles: DeaCaseFile[] = data?.cases ?? [];
   return { data: caseFiles, isLoading: isValidating && !data };
+};
+
+export const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFile> => {
+  return httpApiPost(`cases/${apiInput.caseUlid}/files`, { ...apiInput });
+};
+
+export const completeUpload = async (apiInput: CompleteUploadForm): Promise<DeaCaseFile> => {
+  return httpApiPut(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}`, { ...apiInput });
 };
