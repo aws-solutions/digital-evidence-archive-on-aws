@@ -33,6 +33,7 @@ export enum AuditEventType {
   INITIATE_CASE_FILE_UPLOAD = 'InitiateCaseFileUpload',
   COMPLETE_CASE_FILE_UPLOAD = 'CompleteCaseFileUpload',
   GET_LOGIN_URL = 'GetLoginUrl',
+  GET_LOGOUT_URL = 'GetLogoutUrl',
   GET_AUTH_TOKEN = 'GetAuthenticationToken',
   EXCHANGE_TOKEN_FOR_CREDS = 'ExchangeAuthTokenForCredentials',
   GET_ALL_USERS = 'GetAllUsers',
@@ -50,6 +51,7 @@ export enum IdentityType {
   ID_TOKEN_REQUESTOR = 'TokenRequestor',
   UNIDENTIFIED_REQUESTOR = 'UnidentifiedRequestor',
   LOGIN_URL_REQUESTOR = 'LoginUrlRequestor',
+  LOGOUT_URL_REQUESTOR = 'LogoutUrlRequestor',
 }
 
 // If no identifying information is provided
@@ -92,6 +94,11 @@ export type LoginUrlId = {
   sourceIp: string;
 };
 
+export type LogoutUrlId = {
+  idType: IdentityType.LOGOUT_URL_REQUESTOR;
+  sourceIp: string;
+};
+
 // The data in this identifier comes from successful creation or retrieval of a DEA user (+ data from the prior progression)
 export type FullUserId = {
   idType: IdentityType.FULL_USER_ID;
@@ -111,6 +118,7 @@ export type ActorIdentity =
   | AuthCodeRequestor
   | TokenExchangeRequestor
   | LoginUrlId
+  | LogoutUrlId
   | UnidentifiedRequestor;
 
 /**

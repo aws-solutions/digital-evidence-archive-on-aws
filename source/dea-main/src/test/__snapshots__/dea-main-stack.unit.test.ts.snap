@@ -863,6 +863,65 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayGETgetLogoutUrl00F60A7C": Object {
+      "DependsOn": Array [
+        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
+        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
     "DeaApiGatewayGETidToken8E5E80D8": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
@@ -1594,7 +1653,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E776291154449a76066842aaec5822744e1299": Object {
+    "DeaApiGatewaydeaapiDeployment99E7762906084b96600eff95971d92b9085d78dd": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiauthgetCredentialsidTokenGETAB2AA9B5",
         "DeaApiGatewaydeaapiauthgetCredentialsidTokenOPTIONSC67E30C8",
@@ -1604,6 +1663,9 @@ Object {
         "DeaApiGatewaydeaapiauthgetLoginUrlGET6431944C",
         "DeaApiGatewaydeaapiauthgetLoginUrlOPTIONS45A68225",
         "DeaApiGatewaydeaapiauthgetLoginUrlA5E913BA",
+        "DeaApiGatewaydeaapiauthgetLogoutUrlGET853AC5A2",
+        "DeaApiGatewaydeaapiauthgetLogoutUrlOPTIONSBE1CC1C1",
+        "DeaApiGatewaydeaapiauthgetLogoutUrlD9695846",
         "DeaApiGatewaydeaapiauthgetTokenauthCodeOPTIONS85FDF3E9",
         "DeaApiGatewaydeaapiauthgetTokenauthCodePOSTDBFBDBDA",
         "DeaApiGatewaydeaapiauthgetTokenauthCode850DD89D",
@@ -1690,7 +1752,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E776291154449a76066842aaec5822744e1299",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E7762906084b96600eff95971d92b9085d78dd",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
@@ -2187,6 +2249,177 @@ Object {
         ],
         "ResourceId": Object {
           "Ref": "DeaApiGatewaydeaapiauthgetLoginUrlA5E913BA",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapiauthgetLogoutUrlD9695846": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaApiGatewaydeaapiauth42A62286",
+        },
+        "PathPart": "getLogoutUrl",
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaApiGatewaydeaapiauthgetLogoutUrlGET853AC5A2": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaApiGatewayGETgetLogoutUrl00F60A7C",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapiauthgetLogoutUrlD9695846",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapiauthgetLogoutUrlGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETauthgetLogoutUrl864AC6FA": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETgetLogoutUrl00F60A7C",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaApiGatewaydeaapi822A9228",
+              },
+              "/",
+              Object {
+                "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/GET/auth/getLogoutUrl",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaApiGatewaydeaapiauthgetLogoutUrlGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETauthgetLogoutUrl1DB4112A": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETgetLogoutUrl00F60A7C",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaApiGatewaydeaapi822A9228",
+              },
+              "/test-invoke-stage/GET/auth/getLogoutUrl",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaApiGatewaydeaapiauthgetLogoutUrlOPTIONSBE1CC1C1": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapiauthgetLogoutUrlD9695846",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
