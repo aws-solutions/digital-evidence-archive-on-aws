@@ -41,12 +41,20 @@ export const runPreExecutionChecks = async (
   // Additionally we get the first and last name of the user from the id token
   const idToken = getRequiredHeader(event, 'idToken');
   const idTokenPayload = await getTokenPayload(idToken, process.env.AWS_REGION ?? 'us-east-1');
+  const deaRole = idTokenPayload['custom:DEARole'] ? String(idTokenPayload['custom:DEARole']) : undefined;
+  if (!deaRole) {
+    logger.error(
+      'PreExecution checks running without/invalid DEARole in token: ' + idTokenPayload['custom:DEARole']
+    );
+    throw new NotFoundError('Resource Not Found');
+  }
   // got token payload - progress audit identity
   auditEvent.actorIdentity = {
     idType: IdentityType.COGNITO_TOKEN,
     sourceIp: event.requestContext.identity.sourceIp,
     id: event.requestContext.identity.cognitoIdentityId,
     username: idTokenPayload['cognito:username'],
+    deaRole: deaRole,
   };
   const tokenId = idTokenPayload.sub;
   let maybeUser = await getUserFromTokenId(tokenId, repositoryProvider);

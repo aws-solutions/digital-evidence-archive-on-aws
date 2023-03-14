@@ -87,6 +87,7 @@ export type CognitoTokenId = {
   sourceIp: string;
   id: string;
   username: string;
+  deaRole: string;
 };
 
 export type LoginUrlId = {
