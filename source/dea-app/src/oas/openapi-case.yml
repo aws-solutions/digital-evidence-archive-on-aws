@@ -176,7 +176,7 @@ paths:
                       $ref: '#/components/schemas/Users'
                   next:
                     type: string
-  /cases/{caseId}/userMemberships/{userId}:
+  /cases/{caseId}/users/{userId}/memberships:
     put:
       summary: Update case user
       description: Update the details on an existing case membership
@@ -253,7 +253,7 @@ paths:
                       $ref: '#/components/schemas/Cases'
                   next:
                     type: string
-  /cases/{caseId}:
+  /cases/{caseId}/details:
     get:
       summary: Return case details by case Id
       description: Get metadata for a specific case. return not found if user doesn’t have access
@@ -294,31 +294,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Case'
-  /cases/{caseId}/status:
-    put:
-      summary: Update case status
-      tags:
-        - cases
-      parameters:
-        - in: path
-          name: caseId
-          schema:
-            type: string
-          required: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CaseStatusRequest'
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Case'
-        304:
-          description: unchanged status
   /cases/{caseId}/files:
     post:
       summary: Begin case file upload
@@ -379,7 +354,7 @@ paths:
                       $ref: '#/components/schemas/CaseFiles'
                   next:
                     type: string
-  /cases/{caseId}/files/{fileId}:
+  /cases/{caseId}/files/{fileId}/details:
     get:
       summary: File details
       description: Get details for a file within a case

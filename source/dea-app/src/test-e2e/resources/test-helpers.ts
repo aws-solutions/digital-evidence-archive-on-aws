@@ -49,7 +49,7 @@ export async function deleteCase(
   idToken: string,
   creds: Credentials
 ): Promise<void> {
-  const response = await callDeaAPIWithCreds(`${baseUrl}cases/${caseUlid}`, 'DELETE', idToken, creds);
+  const response = await callDeaAPIWithCreds(`${baseUrl}cases/${caseUlid}/details`, 'DELETE', idToken, creds);
 
   expect(response.status).toEqual(204);
 }
@@ -208,7 +208,7 @@ export const describeCaseFileDetailsSuccess = async (
   fileUlid: string | undefined
 ): Promise<DeaCaseFile> => {
   const response = await callDeaAPIWithCreds(
-    `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}`,
+    `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}/details`,
     'GET',
     idToken,
     creds
@@ -284,7 +284,7 @@ export const completeCaseFileUploadSuccess = async (
   fileContent: string
 ): Promise<DeaCaseFile> => {
   const completeUploadResponse = await callDeaAPIWithCreds(
-    `${deaApiUrl}cases/${caseUlid}/files/${ulid}`,
+    `${deaApiUrl}cases/${caseUlid}/files/${ulid}/contents`,
     'PUT',
     idToken,
     creds,

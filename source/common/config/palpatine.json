@@ -13,15 +13,15 @@
           "method": "POST"
         },
         {
-          "path": "/cases/{caseId}",
+          "path": "/cases/{caseId}/details",
           "method": "GET"
         },
         {
-          "path": "/cases/{caseId}",
+          "path": "/cases/{caseId}/details",
           "method": "PUT"
         },
         {
-          "path": "/cases/{caseId}",
+          "path": "/cases/{caseId}/details",
           "method": "DELETE"
         },
         {
@@ -29,19 +29,19 @@
           "method": "POST"
         },
         {
-          "path": "/cases/{caseId}/userMemberships{userId}",
+          "path": "/cases/{caseId}/users/{userId}/memberships",
           "method": "PUT"
         },
         {
-          "path": "/cases/{caseId}/userMemberships{userId}",
+          "path": "/cases/{caseId}/users/{userId}/memberships",
           "method": "DELETE"
         },
         {
-          "path": "/auth/getToken/{authCode}",
+          "path": "/auth/{authCode}/token",
           "method": "POST"
         },
         {
-          "path": "/auth/getCredentials/{idToken}",
+          "path": "/auth/credentials/{idToken}/exchange",
           "method": "GET"
         },
         {
@@ -57,11 +57,11 @@
           "method": "GET"
         },
         {
-          "path": "/cases/{caseId}/files/{fileId}",
+          "path": "/cases/{caseId}/files/{fileId}/contents",
           "method": "PUT"
         },
         {
-          "path": "/cases/{caseId}/files/{fileId}",
+          "path": "/cases/{caseId}/files/{fileId}/details",
           "method": "GET"
         },
         {

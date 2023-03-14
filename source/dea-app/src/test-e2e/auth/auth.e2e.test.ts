@@ -99,8 +99,8 @@ describe('API authentication', () => {
     const expectedUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
 
     // fetch url
-    const url = `${deaApiUrl}auth/getLoginUrl`;
-    const response = await client.get(url);
+    const url = `${deaApiUrl}auth/loginUrl`;
+    const response = await client.get(url, { validateStatus });
     expect(response.data).toEqual(expectedUrl);
   });
 
@@ -120,7 +120,7 @@ describe('API authentication', () => {
     );
 
     // 3. Exchange auth code for id token
-    const url = `${deaApiUrl}auth/getToken/${authCode}`;
+    const url = `${deaApiUrl}auth/${authCode}/token`;
     const headers = { 'callback-override': authTestUrl };
     const response = await client.post(url, undefined, { headers, validateStatus });
     expect(response.status).toEqual(200);
@@ -128,7 +128,7 @@ describe('API authentication', () => {
     const idToken = retrievedTokens.id_token;
 
     // 3. Exchange id token for credentials
-    const credentialsUrl = `${deaApiUrl}auth/getCredentials/${idToken}`;
+    const credentialsUrl = `${deaApiUrl}auth/credentials/${idToken}/exchange`;
     const credsResponse = await client.get(credentialsUrl, { validateStatus });
     expect(credsResponse.status).toEqual(200);
   }, 40000);
@@ -137,7 +137,7 @@ describe('API authentication', () => {
     const client = axios.create();
     const authCode = 'ABCDEFGHIJKL123';
 
-    const url = `${deaApiUrl}auth/getToken/${authCode}`;
+    const url = `${deaApiUrl}auth/${authCode}/token`;
     const response = await client.get(url, { validateStatus });
     expect(response.status).toEqual(403);
     expect(response.statusText).toEqual('Forbidden');
@@ -147,7 +147,7 @@ describe('API authentication', () => {
     const client = axios.create();
     const idToken = 'fake.fake.fake';
 
-    const url = `${deaApiUrl}auth/getCredentials/${idToken}`;
+    const url = `${deaApiUrl}auth/credentials/${idToken}/exchange`;
     const response = await client.get(url, { validateStatus });
     expect(response.status).toEqual(500);
     expect(response.statusText).toEqual('Internal Server Error');

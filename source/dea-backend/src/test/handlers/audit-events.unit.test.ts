@@ -235,7 +235,7 @@ describe('dea lambda audits', () => {
 
     const theEvent = getDummyEvent();
     theEvent.requestContext.identity.cognitoIdentityId = null;
-    theEvent.resource = '/auth/getLoginUrl';
+    theEvent.resource = '/auth/loginUrl';
 
     const response = await sut(theEvent, dummyContext);
     expect(response).toEqual({ body: ':D', statusCode: 200 });
@@ -265,7 +265,7 @@ describe('dea lambda audits', () => {
 
     const theEvent = getDummyEvent();
     theEvent.requestContext.identity.cognitoIdentityId = null;
-    theEvent.resource = '/auth/getLogoutUrl';
+    theEvent.resource = '/auth/logoutUrl';
 
     const response = await sut(theEvent, dummyContext);
     expect(response).toEqual({ body: ':D', statusCode: 200 });

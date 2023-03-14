@@ -7,7 +7,7 @@ resources:
     parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
     modified: 1677185777682
     created: 1675974209968
-    url: "{{ _.deaApiUrl }}cases/someulid"
+    url: "{{ _.deaApiUrl }}cases/someulid/details"
     name: DELETE case
     description: ""
     method: DELETE
@@ -47,7 +47,7 @@ resources:
     parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
     modified: 1676047532567
     created: 1675974318195
-    url: "{{ _.deaApiUrl }}cases/someulid"
+    url: "{{ _.deaApiUrl }}cases/someulid/details"
     name: PUT case
     description: ""
     method: GET
@@ -218,7 +218,7 @@ resources:
     parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
     modified: 1677269903599
     created: 1677186652542
-    url: "{{deaApiUrl}}cases/someulid/files/someulid"
+    url: "{{deaApiUrl}}cases/someulid/files/someulid/details"
     name: GET case-file-description
     description: ""
     method: GET
@@ -282,7 +282,7 @@ resources:
     parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
     modified: 1676047604505
     created: 1673052526957
-    url: "{{deaApiUrl}}cases/someulid"
+    url: "{{deaApiUrl}}cases/someulid/details"
     name: GET case by id
     description: ""
     method: GET
@@ -400,7 +400,7 @@ resources:
     parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
     modified: 1677270060185
     created: 1677269751873
-    url: "{{ _.deaApiUrl }}cases/someulid/files/someulid"
+    url: "{{ _.deaApiUrl }}cases/someulid/files/someulid/contents"
     name: PUT complete casefile upload
     description: ""
     method: PUT
