@@ -76,7 +76,7 @@ describe('CaseMembership E2E', () => {
   it('should CRUD CaseUsers', async () => {
     // confirm invitee doesn't have access
     const noAccessResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}`,
+      `${deaApiUrl}cases/${targetCase.ulid}/details`,
       'GET',
       inviteeToken,
       inviteeCreds
@@ -115,7 +115,7 @@ describe('CaseMembership E2E', () => {
 
     // confirm invitee has view access
     const accessResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}`,
+      `${deaApiUrl}cases/${targetCase.ulid}/details`,
       'GET',
       inviteeToken,
       inviteeCreds
@@ -129,7 +129,7 @@ describe('CaseMembership E2E', () => {
       description: 'Updated Description',
     };
     const updateAttempt = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}`,
+      `${deaApiUrl}cases/${targetCase.ulid}/details`,
       'PUT',
       inviteeToken,
       inviteeCreds,
@@ -139,7 +139,7 @@ describe('CaseMembership E2E', () => {
 
     // in addition to the 404 above, confirm the case is unchanged
     const caseAfterFailedUpdate = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}`,
+      `${deaApiUrl}cases/${targetCase.ulid}/details`,
       'GET',
       inviteeToken,
       inviteeCreds
@@ -157,7 +157,7 @@ describe('CaseMembership E2E', () => {
     };
 
     const grantUpdateAccess = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${inviteeUlid}`,
+      `${deaApiUrl}cases/${targetCase.ulid}/users/${inviteeUlid}/memberships`,
       'PUT',
       ownerToken,
       ownerCreds,
@@ -167,7 +167,7 @@ describe('CaseMembership E2E', () => {
 
     // Confirm invitee can now update the case
     const updateReattempt = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}`,
+      `${deaApiUrl}cases/${targetCase.ulid}/details`,
       'PUT',
       inviteeToken,
       inviteeCreds,
@@ -177,7 +177,7 @@ describe('CaseMembership E2E', () => {
 
     // In addition to the 200 above, confirm changes were persisted
     const caseAfterUpdate = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}`,
+      `${deaApiUrl}cases/${targetCase.ulid}/details`,
       'GET',
       inviteeToken,
       inviteeCreds
@@ -189,7 +189,7 @@ describe('CaseMembership E2E', () => {
 
     // Delete the membership
     const dismissResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${inviteeUlid}`,
+      `${deaApiUrl}cases/${targetCase.ulid}/users/${inviteeUlid}/memberships`,
       'DELETE',
       ownerToken,
       ownerCreds
@@ -198,7 +198,7 @@ describe('CaseMembership E2E', () => {
 
     // confirm invitee doesn't have access
     const removedAccessResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}`,
+      `${deaApiUrl}cases/${targetCase.ulid}/details`,
       'GET',
       inviteeToken,
       inviteeCreds
@@ -286,7 +286,7 @@ describe('CaseMembership E2E', () => {
   describe('PUT', () => {
     it('should produce an error when payload is missing', async () => {
       const inviteResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${inviteeUlid}`,
+        `${deaApiUrl}cases/${targetCase.ulid}/users/${inviteeUlid}/memberships`,
         'PUT',
         ownerToken,
         ownerCreds
@@ -301,7 +301,7 @@ describe('CaseMembership E2E', () => {
         caseUlid: targetCase.ulid!,
       };
       const inviteResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${inviteeUlid}`,
+        `${deaApiUrl}cases/${targetCase.ulid}/users/${inviteeUlid}/memberships`,
         'PUT',
         ownerToken,
         ownerCreds,
@@ -318,7 +318,7 @@ describe('CaseMembership E2E', () => {
         actions: [CaseAction.VIEW_CASE_DETAILS],
       };
       const inviteResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${inviteeUlid}`,
+        `${deaApiUrl}cases/${targetCase.ulid}/users/${inviteeUlid}/memberships`,
         'PUT',
         ownerToken,
         ownerCreds,
@@ -335,7 +335,7 @@ describe('CaseMembership E2E', () => {
         actions: [CaseAction.VIEW_CASE_DETAILS],
       };
       const inviteResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${inviteeUlid}`,
+        `${deaApiUrl}cases/${targetCase.ulid}/users/${inviteeUlid}/memberships`,
         'PUT',
         ownerToken,
         ownerCreds,
@@ -352,7 +352,7 @@ describe('CaseMembership E2E', () => {
         actions: [CaseAction.VIEW_CASE_DETAILS],
       };
       const inviteResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${bogusUlid}`,
+        `${deaApiUrl}cases/${targetCase.ulid}/users/${bogusUlid}/memberships`,
         'PUT',
         ownerToken,
         ownerCreds,
@@ -366,7 +366,7 @@ describe('CaseMembership E2E', () => {
   describe('DELETE', () => {
     it('should return success if the case user does not exist', async () => {
       const inviteResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships/${bogusUlid}`,
+        `${deaApiUrl}cases/${targetCase.ulid}/users/${bogusUlid}/memberships`,
         'DELETE',
         ownerToken,
         ownerCreds

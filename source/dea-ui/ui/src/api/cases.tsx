@@ -25,8 +25,14 @@ export const useListAllCases = (): DeaListResult<DeaCase> => {
   return { data: cases, isLoading: isValidating };
 };
 
+export const useListMyCases = (): DeaListResult<DeaCase> => {
+  const { data, isValidating } = useSWR(() => `cases/my-cases`, httpApiGet);
+  const cases: DeaCase[] = data?.cases ?? [];
+  return { data: cases, isLoading: isValidating };
+};
+
 export const useGetCaseById = (id: string): DeaSingleResult<DeaCase> => {
-  const { data, isValidating } = useSWR(() => `cases/${id}/`, httpApiGet);
+  const { data, isValidating } = useSWR(() => `cases/${id}/details`, httpApiGet);
   return { data, isLoading: isValidating };
 };
 

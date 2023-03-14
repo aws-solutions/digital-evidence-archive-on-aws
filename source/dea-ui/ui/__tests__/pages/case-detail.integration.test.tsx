@@ -91,7 +91,7 @@ describe('CaseDetailsPage', () => {
   it('renders a case details page', async () => {
     mockedAxios.mockImplementation((event) => {
       const eventObj: any = event;
-      if (eventObj.url === 'https://localhostcases/100/') {
+      if (eventObj.url === 'https://localhostcases/100/details') {
         return Promise.resolve({
           data: mockedCaseDetail,
           status: 200,

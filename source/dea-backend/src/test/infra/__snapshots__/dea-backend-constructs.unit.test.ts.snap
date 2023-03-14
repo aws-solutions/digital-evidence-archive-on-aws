@@ -774,7 +774,7 @@ Object {
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
     },
-    "DeaRestApiConstructDELETEcaseIdE0E7560F": Object {
+    "DeaRestApiConstructDELETEDeleteCase9C8CBC88": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
         "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -833,7 +833,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructDELETEuserId97F2887D": Object {
+    "DeaRestApiConstructDELETERemoveUserFromCase315FE1CE": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
         "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -892,7 +892,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructGETallcases490E3EC5": Object {
+    "DeaRestApiConstructGETDownloadCaseFile04DF0D0C": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
         "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -951,243 +951,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructGETcaseId3B128BAD": Object {
-      "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-      ],
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W58",
-              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
-            },
-            Object {
-              "id": "W92",
-              "reason": "Reserved concurrency is currently not required. Revisit in the future",
-            },
-            Object {
-              "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "[HASH REMOVED].zip",
-        },
-        "Environment": Object {
-          "Variables": Object {
-            "AUDIT_LOG_GROUP_NAME": Object {
-              "Ref": "deaAuditLogs7B75D3F1",
-            },
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "DATASETS_BUCKET_NAME": Object {
-              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-            },
-            "NODE_OPTIONS": "--enable-source-maps",
-            "STAGE": "[STAGE-REMOVED]",
-            "TABLE_NAME": Object {
-              "Ref": "DeaBackendConstructDeaTableB48721A0",
-            },
-          },
-        },
-        "Handler": "index.handler",
-        "MemorySize": 512,
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs18.x",
-        "Timeout": 30,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "DeaRestApiConstructGETcontents7698B1E0": Object {
-      "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-      ],
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W58",
-              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
-            },
-            Object {
-              "id": "W92",
-              "reason": "Reserved concurrency is currently not required. Revisit in the future",
-            },
-            Object {
-              "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "[HASH REMOVED].zip",
-        },
-        "Environment": Object {
-          "Variables": Object {
-            "AUDIT_LOG_GROUP_NAME": Object {
-              "Ref": "deaAuditLogs7B75D3F1",
-            },
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "DATASETS_BUCKET_NAME": Object {
-              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-            },
-            "NODE_OPTIONS": "--enable-source-maps",
-            "STAGE": "[STAGE-REMOVED]",
-            "TABLE_NAME": Object {
-              "Ref": "DeaBackendConstructDeaTableB48721A0",
-            },
-          },
-        },
-        "Handler": "index.handler",
-        "MemorySize": 512,
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs18.x",
-        "Timeout": 30,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "DeaRestApiConstructGETfileIdADEC2A08": Object {
-      "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-      ],
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W58",
-              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
-            },
-            Object {
-              "id": "W92",
-              "reason": "Reserved concurrency is currently not required. Revisit in the future",
-            },
-            Object {
-              "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "[HASH REMOVED].zip",
-        },
-        "Environment": Object {
-          "Variables": Object {
-            "AUDIT_LOG_GROUP_NAME": Object {
-              "Ref": "deaAuditLogs7B75D3F1",
-            },
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "DATASETS_BUCKET_NAME": Object {
-              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-            },
-            "NODE_OPTIONS": "--enable-source-maps",
-            "STAGE": "[STAGE-REMOVED]",
-            "TABLE_NAME": Object {
-              "Ref": "DeaBackendConstructDeaTableB48721A0",
-            },
-          },
-        },
-        "Handler": "index.handler",
-        "MemorySize": 512,
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs18.x",
-        "Timeout": 30,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "DeaRestApiConstructGETfiles2EFEBB64": Object {
-      "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-      ],
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W58",
-              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
-            },
-            Object {
-              "id": "W92",
-              "reason": "Reserved concurrency is currently not required. Revisit in the future",
-            },
-            Object {
-              "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "[HASH REMOVED].zip",
-        },
-        "Environment": Object {
-          "Variables": Object {
-            "AUDIT_LOG_GROUP_NAME": Object {
-              "Ref": "deaAuditLogs7B75D3F1",
-            },
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "DATASETS_BUCKET_NAME": Object {
-              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-            },
-            "NODE_OPTIONS": "--enable-source-maps",
-            "STAGE": "[STAGE-REMOVED]",
-            "TABLE_NAME": Object {
-              "Ref": "DeaBackendConstructDeaTableB48721A0",
-            },
-          },
-        },
-        "Handler": "index.handler",
-        "MemorySize": 512,
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs18.x",
-        "Timeout": 30,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "DeaRestApiConstructGETgetLoginUrl3FEA95D9": Object {
+    "DeaRestApiConstructGETExchangeAuthTokenForCredentials6E69D669": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
         "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -1246,7 +1010,302 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructGETgetLogoutUrlB58CD35E": Object {
+    "DeaRestApiConstructGETGetAllCasesD64E9594": Object {
+      "DependsOn": Array [
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendConstructDeaTableB48721A0",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaRestApiConstructGETGetAllUsers77F79D7D": Object {
+      "DependsOn": Array [
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendConstructDeaTableB48721A0",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaRestApiConstructGETGetCaseDetails37F7FEA5": Object {
+      "DependsOn": Array [
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendConstructDeaTableB48721A0",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaRestApiConstructGETGetCaseFileDetailAC2C6003": Object {
+      "DependsOn": Array [
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendConstructDeaTableB48721A0",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaRestApiConstructGETGetCaseFilesB601FAF5": Object {
+      "DependsOn": Array [
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendConstructDeaTableB48721A0",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaRestApiConstructGETGetLoginUrlA95063AD": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
         "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -1305,7 +1364,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructGETidToken48065721": Object {
+    "DeaRestApiConstructGETGetLogoutUrl77EA9407": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
         "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -1364,7 +1423,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructGETmycasesF570E0D9": Object {
+    "DeaRestApiConstructGETGetMyCasesBB9194E7": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
         "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1423,7 +1482,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructGETuserMemberships425EF4DF": Object {
+    "DeaRestApiConstructGETGetUsersFromCase05D0A5BE": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
         "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1482,7 +1541,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructGETusersDD8AA5AF": Object {
+    "DeaRestApiConstructPOSTCreateCase203FC2B5": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
         "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1541,7 +1600,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructPOSTauthCode8A1B1E18": Object {
+    "DeaRestApiConstructPOSTGetAuthenticationToken7831CF5E": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
         "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -1600,7 +1659,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructPOSTcases71FC396B": Object {
+    "DeaRestApiConstructPOSTInitiateCaseFileUpload4072CE29": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
         "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1659,7 +1718,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructPOSTfilesD0E72419": Object {
+    "DeaRestApiConstructPOSTInviteUserToCaseE52152F4": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
         "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1718,7 +1777,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructPOSTuserMembershipsA9A79B32": Object {
+    "DeaRestApiConstructPUTCompleteCaseFileUpload51639C21": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
         "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1777,7 +1836,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructPUTcaseId804DFA77": Object {
+    "DeaRestApiConstructPUTModifyUserCasePermissions3887B3D5": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
         "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1836,66 +1895,7 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaRestApiConstructPUTfileId8DA844F1": Object {
-      "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-      ],
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W58",
-              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
-            },
-            Object {
-              "id": "W92",
-              "reason": "Reserved concurrency is currently not required. Revisit in the future",
-            },
-            Object {
-              "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "[HASH REMOVED].zip",
-        },
-        "Environment": Object {
-          "Variables": Object {
-            "AUDIT_LOG_GROUP_NAME": Object {
-              "Ref": "deaAuditLogs7B75D3F1",
-            },
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "DATASETS_BUCKET_NAME": Object {
-              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-            },
-            "NODE_OPTIONS": "--enable-source-maps",
-            "STAGE": "[STAGE-REMOVED]",
-            "TABLE_NAME": Object {
-              "Ref": "DeaBackendConstructDeaTableB48721A0",
-            },
-          },
-        },
-        "Handler": "index.handler",
-        "MemorySize": 512,
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs18.x",
-        "Timeout": 30,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "DeaRestApiConstructPUTuserId248180A2": Object {
+    "DeaRestApiConstructPUTUpdateCaseDetailsCAA16781": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
         "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2036,50 +2036,60 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaRestApiConstructdeaapiDeploymentC27C6CB1bc8ca967e75064fa1cabb3d91eb4122b": Object {
+    "DeaRestApiConstructdeaapiDeploymentC27C6CB19c14345e062c8191b5ac1df8a8d19b95": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaapiauthgetCredentialsidTokenGETF30F6BC2",
-        "DeaRestApiConstructdeaapiauthgetCredentialsidTokenOPTIONSA66044D9",
-        "DeaRestApiConstructdeaapiauthgetCredentialsidToken81FDE330",
-        "DeaRestApiConstructdeaapiauthgetCredentialsOPTIONS6F2C55DF",
-        "DeaRestApiConstructdeaapiauthgetCredentials162DF0F2",
-        "DeaRestApiConstructdeaapiauthgetLoginUrlGET12D3D75B",
-        "DeaRestApiConstructdeaapiauthgetLoginUrlOPTIONS50BC7200",
-        "DeaRestApiConstructdeaapiauthgetLoginUrl3DD5B9A2",
-        "DeaRestApiConstructdeaapiauthgetLogoutUrlGET82C9D63F",
-        "DeaRestApiConstructdeaapiauthgetLogoutUrlOPTIONSC24D222C",
-        "DeaRestApiConstructdeaapiauthgetLogoutUrlEB8109B5",
-        "DeaRestApiConstructdeaapiauthgetTokenauthCodeOPTIONS7DF32090",
-        "DeaRestApiConstructdeaapiauthgetTokenauthCodePOST3DCF3F52",
-        "DeaRestApiConstructdeaapiauthgetTokenauthCode1D020E3A",
-        "DeaRestApiConstructdeaapiauthgetTokenOPTIONS914E22A0",
-        "DeaRestApiConstructdeaapiauthgetTokenF874EF26",
+        "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8",
+        "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
+        "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
+        "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
+        "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
+        "DeaRestApiConstructdeaapiauthcredentialsidTokenexchangeGETF349A14C",
+        "DeaRestApiConstructdeaapiauthcredentialsidTokenexchangeOPTIONSAF98F436",
+        "DeaRestApiConstructdeaapiauthcredentialsidTokenexchange60E243B6",
+        "DeaRestApiConstructdeaapiauthcredentialsidTokenOPTIONSC4B7B290",
+        "DeaRestApiConstructdeaapiauthcredentialsidTokenD84F85A8",
+        "DeaRestApiConstructdeaapiauthcredentialsOPTIONS3DC1232A",
+        "DeaRestApiConstructdeaapiauthcredentials42AAF7ED",
+        "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D",
+        "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0",
+        "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
+        "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
+        "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
+        "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
         "DeaRestApiConstructdeaapiauthOPTIONSF807407C",
         "DeaRestApiConstructdeaapiauthE4846931",
-        "DeaRestApiConstructdeaapicasescaseIdDELETEE13D0EAA",
+        "DeaRestApiConstructdeaapicasescaseIddetailsDELETED0F47C2D",
+        "DeaRestApiConstructdeaapicasescaseIddetailsGET0AC0D58C",
+        "DeaRestApiConstructdeaapicasescaseIddetailsOPTIONSA19CA131",
+        "DeaRestApiConstructdeaapicasescaseIddetailsPUT33A3214F",
+        "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdGET842C28D2",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIddetailsGET9D8798CC",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIddetailsOPTIONSEAFA766D",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIddetails51AD2E55",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdPUTDD763A2A",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETB7EECD96",
         "DeaRestApiConstructdeaapicasescaseIdfilesOPTIONS18C09E02",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
         "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7",
-        "DeaRestApiConstructdeaapicasescaseIdGET31A0ADCB",
         "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954",
-        "DeaRestApiConstructdeaapicasescaseIdPUTDAF01FBF",
         "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserIdDELETE5C89D30D",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserIdOPTIONS2A768A43",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserIdPUTC33F61E0",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserId13BB910A",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdOPTIONS15B78F29",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
+        "DeaRestApiConstructdeaapicasescaseIdusersOPTIONS61C453FB",
+        "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
         "DeaRestApiConstructdeaapicasesallcasesGET3D7FE7B4",
         "DeaRestApiConstructdeaapicasesallcasesOPTIONSA5C611C6",
         "DeaRestApiConstructdeaapicasesallcases5A486593",
@@ -2117,7 +2127,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB1bc8ca967e75064fa1cabb3d91eb4122b",
+          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB19c14345e062c8191b5ac1df8a8d19b95",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -2226,629 +2236,10 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiauthgetCredentials162DF0F2": Object {
+    "DeaRestApiConstructdeaapiauthauthCodeFF00F04A": Object {
       "Properties": Object {
         "ParentId": Object {
           "Ref": "DeaRestApiConstructdeaapiauthE4846931",
-        },
-        "PathPart": "getCredentials",
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapiauthgetCredentialsOPTIONS6F2C55DF": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthgetCredentials162DF0F2",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiauthgetCredentialsidToken81FDE330": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthgetCredentials162DF0F2",
-        },
-        "PathPart": "{idToken}",
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapiauthgetCredentialsidTokenGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthgetCredentialsidTokenC2CFE426": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETidToken48065721",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/auth/getCredentials/*",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapiauthgetCredentialsidTokenGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthgetCredentialsidTokenADD4B7DF": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETidToken48065721",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "/GET/auth/getCredentials/*",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapiauthgetCredentialsidTokenGETF30F6BC2": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "GET",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaRestApiConstructGETidToken48065721",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthgetCredentialsidToken81FDE330",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiauthgetCredentialsidTokenOPTIONSA66044D9": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthgetCredentialsidToken81FDE330",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiauthgetLoginUrl3DD5B9A2": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthE4846931",
-        },
-        "PathPart": "getLoginUrl",
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapiauthgetLoginUrlGET12D3D75B": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "GET",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaRestApiConstructGETgetLoginUrl3FEA95D9",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthgetLoginUrl3DD5B9A2",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiauthgetLoginUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthgetLoginUrl595F2B82": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETgetLoginUrl3FEA95D9",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/auth/getLoginUrl",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapiauthgetLoginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthgetLoginUrl663B0B08": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETgetLoginUrl3FEA95D9",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "/GET/auth/getLoginUrl",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapiauthgetLoginUrlOPTIONS50BC7200": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthgetLoginUrl3DD5B9A2",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiauthgetLogoutUrlEB8109B5": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthE4846931",
-        },
-        "PathPart": "getLogoutUrl",
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapiauthgetLogoutUrlGET82C9D63F": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "GET",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaRestApiConstructGETgetLogoutUrlB58CD35E",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthgetLogoutUrlEB8109B5",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiauthgetLogoutUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthgetLogoutUrl4626D7C0": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETgetLogoutUrlB58CD35E",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/auth/getLogoutUrl",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapiauthgetLogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthgetLogoutUrl4D806A20": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETgetLogoutUrlB58CD35E",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "/GET/auth/getLogoutUrl",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapiauthgetLogoutUrlOPTIONSC24D222C": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthgetLogoutUrlEB8109B5",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiauthgetTokenF874EF26": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthE4846931",
-        },
-        "PathPart": "getToken",
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapiauthgetTokenOPTIONS914E22A0": Object {
-      "Properties": Object {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthgetTokenF874EF26",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiauthgetTokenauthCode1D020E3A": Object {
-      "Properties": Object {
-        "ParentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthgetTokenF874EF26",
         },
         "PathPart": "{authCode}",
         "RestApiId": Object {
@@ -2857,7 +2248,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapiauthgetTokenauthCodeOPTIONS7DF32090": Object {
+    "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
@@ -2890,7 +2281,7 @@ Object {
           },
         ],
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthgetTokenauthCode1D020E3A",
+          "Ref": "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -2898,7 +2289,60 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiauthgetTokenauthCodePOST3DCF3F52": Object {
+    "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
+        },
+        "PathPart": "token",
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "POST",
@@ -2920,7 +2364,7 @@ Object {
                 ":lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaRestApiConstructPOSTauthCode8A1B1E18",
+                    "DeaRestApiConstructPOSTGetAuthenticationToken7831CF5E",
                     "Arn",
                   ],
                 },
@@ -2930,7 +2374,7 @@ Object {
           },
         },
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthgetTokenauthCode1D020E3A",
+          "Ref": "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -2938,12 +2382,12 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiauthgetTokenauthCodePOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthgetTokenauthCodeACE7580F": Object {
+    "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenA42BE3E6": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTauthCode8A1B1E18",
+            "DeaRestApiConstructPOSTGetAuthenticationToken7831CF5E",
             "Arn",
           ],
         },
@@ -2968,19 +2412,19 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapi6587DDA1",
               },
-              "/test-invoke-stage/POST/auth/getToken/*",
+              "/test-invoke-stage/POST/auth/*/token",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapiauthgetTokenauthCodePOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthgetTokenauthCode64CC0A48": Object {
+    "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenE48A5552": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTauthCode8A1B1E18",
+            "DeaRestApiConstructPOSTGetAuthenticationToken7831CF5E",
             "Arn",
           ],
         },
@@ -3009,12 +2453,631 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/POST/auth/getToken/*",
+              "/POST/auth/*/token",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapiauthcredentials42AAF7ED": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthE4846931",
+        },
+        "PathPart": "credentials",
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaRestApiConstructdeaapiauthcredentialsOPTIONS3DC1232A": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthcredentials42AAF7ED",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapiauthcredentialsidTokenD84F85A8": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthcredentials42AAF7ED",
+        },
+        "PathPart": "{idToken}",
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaRestApiConstructdeaapiauthcredentialsidTokenOPTIONSC4B7B290": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthcredentialsidTokenD84F85A8",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapiauthcredentialsidTokenexchange60E243B6": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthcredentialsidTokenD84F85A8",
+        },
+        "PathPart": "exchange",
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaRestApiConstructdeaapiauthcredentialsidTokenexchangeGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthcredentialsidTokenexchange4BABF834": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructGETExchangeAuthTokenForCredentials6E69D669",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/test-invoke-stage/GET/auth/credentials/*/exchange",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapiauthcredentialsidTokenexchangeGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthcredentialsidTokenexchangeD4321ED1": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructGETExchangeAuthTokenForCredentials6E69D669",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/GET/auth/credentials/*/exchange",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapiauthcredentialsidTokenexchangeGETF349A14C": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructGETExchangeAuthTokenForCredentials6E69D669",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthcredentialsidTokenexchange60E243B6",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapiauthcredentialsidTokenexchangeOPTIONSAF98F436": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthcredentialsidTokenexchange60E243B6",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthE4846931",
+        },
+        "PathPart": "loginUrl",
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructGETGetLoginUrlA95063AD",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl21F61114": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructGETGetLoginUrlA95063AD",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/test-invoke-stage/GET/auth/loginUrl",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructGETGetLoginUrlA95063AD",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/GET/auth/loginUrl",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthE4846931",
+        },
+        "PathPart": "logoutUrl",
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrlF8A5551B": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructGETGetLogoutUrl77EA9407",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/test-invoke-stage/GET/auth/logoutUrl",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructGETGetLogoutUrl77EA9407",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/GET/auth/logoutUrl",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructGETGetLogoutUrl77EA9407",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
     },
     "DeaRestApiConstructdeaapicasesC2FD1C2B": Object {
       "Properties": Object {
@@ -3094,7 +3157,7 @@ Object {
                 ":lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaRestApiConstructPOSTcases71FC396B",
+                    "DeaRestApiConstructPOSTCreateCase203FC2B5",
                     "Arn",
                   ],
                 },
@@ -3117,7 +3180,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTcases71FC396B",
+            "DeaRestApiConstructPOSTCreateCase203FC2B5",
             "Arn",
           ],
         },
@@ -3154,7 +3217,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTcases71FC396B",
+            "DeaRestApiConstructPOSTCreateCase203FC2B5",
             "Arn",
           ],
         },
@@ -3228,7 +3291,7 @@ Object {
                 ":lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaRestApiConstructGETallcases490E3EC5",
+                    "DeaRestApiConstructGETGetAllCasesD64E9594",
                     "Arn",
                   ],
                 },
@@ -3255,7 +3318,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETallcases490E3EC5",
+            "DeaRestApiConstructGETGetAllCasesD64E9594",
             "Arn",
           ],
         },
@@ -3292,7 +3355,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETallcases490E3EC5",
+            "DeaRestApiConstructGETGetAllCasesD64E9594",
             "Arn",
           ],
         },
@@ -3381,242 +3444,6 @@ Object {
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapicasescaseIdDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdF0BFC230": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructDELETEcaseIdE0E7560F",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/DELETE/cases/*",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseId683887F7": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructDELETEcaseIdE0E7560F",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "/DELETE/cases/*",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdDELETEE13D0EAA": Object {
-      "Properties": Object {
-        "AuthorizationType": "AWS_IAM",
-        "HttpMethod": "DELETE",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaRestApiConstructDELETEcaseIdE0E7560F",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdGET31A0ADCB": Object {
-      "Properties": Object {
-        "AuthorizationType": "AWS_IAM",
-        "HttpMethod": "GET",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaRestApiConstructGETcaseId3B128BAD",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseId9EC4CD2A": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETcaseId3B128BAD",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/*",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseId3A6CC8C8": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETcaseId3B128BAD",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "/GET/cases/*",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
@@ -3658,12 +3485,24 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseId37A77CC0": Object {
+    "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseId5919A5AE",
+        },
+        "PathPart": "details",
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails918BFC1A": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructPUTcaseId804DFA77",
+            "DeaRestApiConstructDELETEDeleteCase9C8CBC88",
             "Arn",
           ],
         },
@@ -3688,19 +3527,19 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapi6587DDA1",
               },
-              "/test-invoke-stage/PUT/cases/*",
+              "/test-invoke-stage/DELETE/cases/*/details",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasescaseIdPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseId6D37C013": Object {
+    "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails2FC44B5A": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructPUTcaseId804DFA77",
+            "DeaRestApiConstructDELETEDeleteCase9C8CBC88",
             "Arn",
           ],
         },
@@ -3729,14 +3568,213 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/PUT/cases/*",
+              "/DELETE/cases/*/details",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasescaseIdPUTDAF01FBF": Object {
+    "DeaRestApiConstructdeaapicasescaseIddetailsDELETED0F47C2D": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "DELETE",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructDELETEDeleteCase9C8CBC88",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIddetailsGET0AC0D58C": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructGETGetCaseDetails37F7FEA5",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails7EEFD469": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructGETGetCaseDetails37F7FEA5",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/test-invoke-stage/GET/cases/*/details",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails44CA90D4": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructGETGetCaseDetails37F7FEA5",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/GET/cases/*/details",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapicasescaseIddetailsOPTIONSA19CA131": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIddetailsPUT33A3214F": Object {
       "Properties": Object {
         "AuthorizationType": "AWS_IAM",
         "HttpMethod": "PUT",
@@ -3758,7 +3796,7 @@ Object {
                 ":lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaRestApiConstructPUTcaseId804DFA77",
+                    "DeaRestApiConstructPUTUpdateCaseDetailsCAA16781",
                     "Arn",
                   ],
                 },
@@ -3768,13 +3806,91 @@ Object {
           },
         },
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseId5919A5AE",
+          "Ref": "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
       },
       "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetailsD3729DE8": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructPUTUpdateCaseDetailsCAA16781",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/test-invoke-stage/PUT/cases/*/details",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetails7B2B7A41": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructPUTUpdateCaseDetailsCAA16781",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/PUT/cases/*/details",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7": Object {
       "Properties": Object {
@@ -3793,7 +3909,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETfiles2EFEBB64",
+            "DeaRestApiConstructGETGetCaseFilesB601FAF5",
             "Arn",
           ],
         },
@@ -3830,7 +3946,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETfiles2EFEBB64",
+            "DeaRestApiConstructGETGetCaseFilesB601FAF5",
             "Arn",
           ],
         },
@@ -3888,7 +4004,7 @@ Object {
                 ":lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaRestApiConstructGETfiles2EFEBB64",
+                    "DeaRestApiConstructGETGetCaseFilesB601FAF5",
                     "Arn",
                   ],
                 },
@@ -3969,7 +4085,7 @@ Object {
                 ":lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaRestApiConstructPOSTfilesD0E72419",
+                    "DeaRestApiConstructPOSTInitiateCaseFileUpload4072CE29",
                     "Arn",
                   ],
                 },
@@ -3992,7 +4108,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTfilesD0E72419",
+            "DeaRestApiConstructPOSTInitiateCaseFileUpload4072CE29",
             "Arn",
           ],
         },
@@ -4029,7 +4145,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTfilesD0E72419",
+            "DeaRestApiConstructPOSTInitiateCaseFileUpload4072CE29",
             "Arn",
           ],
         },
@@ -4077,124 +4193,6 @@ Object {
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdGET842C28D2": Object {
-      "Properties": Object {
-        "AuthorizationType": "AWS_IAM",
-        "HttpMethod": "GET",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaRestApiConstructGETfileIdADEC2A08",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdF9FD920E": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETfileIdADEC2A08",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/*/files/*",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdF45F0559": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETfileIdADEC2A08",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "/GET/cases/*/files/*",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
@@ -4227,124 +4225,6 @@ Object {
             "StatusCode": "204",
           },
         ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdE52AC54F": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPUTfileId8DA844F1",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/PUT/cases/*/files/*",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileId670DC465": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPUTfileId8DA844F1",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "/PUT/cases/*/files/*",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdPUTDD763A2A": Object {
-      "Properties": Object {
-        "AuthorizationType": "AWS_IAM",
-        "HttpMethod": "PUT",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaRestApiConstructPUTfileId8DA844F1",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
         "ResourceId": Object {
           "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
         },
@@ -4388,7 +4268,7 @@ Object {
                 ":lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaRestApiConstructGETcontents7698B1E0",
+                    "DeaRestApiConstructGETDownloadCaseFile04DF0D0C",
                     "Arn",
                   ],
                 },
@@ -4411,7 +4291,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETcontents7698B1E0",
+            "DeaRestApiConstructGETDownloadCaseFile04DF0D0C",
             "Arn",
           ],
         },
@@ -4448,7 +4328,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETcontents7698B1E0",
+            "DeaRestApiConstructGETDownloadCaseFile04DF0D0C",
             "Arn",
           ],
         },
@@ -4525,6 +4405,295 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontents638F2797": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructPUTCompleteCaseFileUpload51639C21",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/test-invoke-stage/PUT/cases/*/files/*/contents",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructPUTCompleteCaseFileUpload51639C21",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/PUT/cases/*/files/*/contents",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "PUT",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructPUTCompleteCaseFileUpload51639C21",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIddetails51AD2E55": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
+        },
+        "PathPart": "details",
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIddetailsGET9D8798CC": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructGETGetCaseFileDetailAC2C6003",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileIddetails51AD2E55",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIddetailsE200023B": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructGETGetCaseFileDetailAC2C6003",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/test-invoke-stage/GET/cases/*/files/*/details",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIddetails0DD1BE73": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructGETGetCaseFileDetailAC2C6003",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/GET/cases/*/files/*/details",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIddetailsOPTIONSEAFA766D": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileIddetails51AD2E55",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
     "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3": Object {
       "Properties": Object {
         "ParentId": Object {
@@ -4542,7 +4711,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETuserMemberships425EF4DF",
+            "DeaRestApiConstructGETGetUsersFromCase05D0A5BE",
             "Arn",
           ],
         },
@@ -4579,7 +4748,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETuserMemberships425EF4DF",
+            "DeaRestApiConstructGETGetUsersFromCase05D0A5BE",
             "Arn",
           ],
         },
@@ -4637,7 +4806,7 @@ Object {
                 ":lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaRestApiConstructGETuserMemberships425EF4DF",
+                    "DeaRestApiConstructGETGetUsersFromCase05D0A5BE",
                     "Arn",
                   ],
                 },
@@ -4718,7 +4887,7 @@ Object {
                 ":lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaRestApiConstructPOSTuserMembershipsA9A79B32",
+                    "DeaRestApiConstructPOSTInviteUserToCaseE52152F4",
                     "Arn",
                   ],
                 },
@@ -4741,7 +4910,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTuserMembershipsA9A79B32",
+            "DeaRestApiConstructPOSTInviteUserToCaseE52152F4",
             "Arn",
           ],
         },
@@ -4778,7 +4947,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTuserMembershipsA9A79B32",
+            "DeaRestApiConstructPOSTInviteUserToCaseE52152F4",
             "Arn",
           ],
         },
@@ -4814,137 +4983,19 @@ Object {
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserId13BB910A": Object {
+    "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7": Object {
       "Properties": Object {
         "ParentId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+          "Ref": "DeaRestApiConstructdeaapicasescaseId5919A5AE",
         },
-        "PathPart": "{userId}",
+        "PathPart": "users",
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserIdDELETE5C89D30D": Object {
-      "Properties": Object {
-        "AuthorizationType": "AWS_IAM",
-        "HttpMethod": "DELETE",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaRestApiConstructDELETEuserId97F2887D",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserId13BB910A",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserIdDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIduserMembershipsuserId309358C9": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructDELETEuserId97F2887D",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/DELETE/cases/*/userMemberships/*",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserIdDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIduserMembershipsuserId4DEF5A06": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructDELETEuserId97F2887D",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "/DELETE/cases/*/userMemberships/*",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserIdOPTIONS2A768A43": Object {
+    "DeaRestApiConstructdeaapicasescaseIdusersOPTIONS61C453FB": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
@@ -4977,7 +5028,7 @@ Object {
           },
         ],
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserId13BB910A",
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -4985,12 +5036,117 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserIdPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIduserMembershipsuserIdE325F9CF": Object {
+    "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
+        },
+        "PathPart": "{userId}",
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdusersuserIdOPTIONS15B78F29": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
+        },
+        "PathPart": "memberships",
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "DELETE",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructDELETERemoveUserFromCase315FE1CE",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships7FD5F1FA": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructPUTuserId248180A2",
+            "DeaRestApiConstructDELETERemoveUserFromCase315FE1CE",
             "Arn",
           ],
         },
@@ -5015,19 +5171,19 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapi6587DDA1",
               },
-              "/test-invoke-stage/PUT/cases/*/userMemberships/*",
+              "/test-invoke-stage/DELETE/cases/*/users/*/memberships",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserIdPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIduserMembershipsuserId1CD72580": Object {
+    "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships94BCD26D": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructPUTuserId248180A2",
+            "DeaRestApiConstructDELETERemoveUserFromCase315FE1CE",
             "Arn",
           ],
         },
@@ -5056,14 +5212,55 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/PUT/cases/*/userMemberships/*",
+              "/DELETE/cases/*/users/*/memberships",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserIdPUTC33F61E0": Object {
+    "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361": Object {
       "Properties": Object {
         "AuthorizationType": "AWS_IAM",
         "HttpMethod": "PUT",
@@ -5085,7 +5282,7 @@ Object {
                 ":lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaRestApiConstructPUTuserId248180A2",
+                    "DeaRestApiConstructPUTModifyUserCasePermissions3887B3D5",
                     "Arn",
                   ],
                 },
@@ -5095,13 +5292,91 @@ Object {
           },
         },
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIduserMembershipsuserId13BB910A",
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
       },
       "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships4134D8D9": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructPUTModifyUserCasePermissions3887B3D5",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/test-invoke-stage/PUT/cases/*/users/*/memberships",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships748F3883": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructPUTModifyUserCasePermissions3887B3D5",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/PUT/cases/*/users/*/memberships",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasesmycases5E6BEFAC": Object {
       "Properties": Object {
@@ -5120,7 +5395,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETmycasesF570E0D9",
+            "DeaRestApiConstructGETGetMyCasesBB9194E7",
             "Arn",
           ],
         },
@@ -5157,7 +5432,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETmycasesF570E0D9",
+            "DeaRestApiConstructGETGetMyCasesBB9194E7",
             "Arn",
           ],
         },
@@ -5219,7 +5494,7 @@ Object {
                 ":lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaRestApiConstructGETmycasesF570E0D9",
+                    "DeaRestApiConstructGETGetMyCasesBB9194E7",
                     "Arn",
                   ],
                 },
@@ -5322,7 +5597,7 @@ Object {
                 ":lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
-                    "DeaRestApiConstructGETusersDD8AA5AF",
+                    "DeaRestApiConstructGETGetAllUsers77F79D7D",
                     "Arn",
                   ],
                 },
@@ -5348,7 +5623,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETusersDD8AA5AF",
+            "DeaRestApiConstructGETGetAllUsers77F79D7D",
             "Arn",
           ],
         },
@@ -5385,7 +5660,7 @@ Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETusersDD8AA5AF",
+            "DeaRestApiConstructGETGetAllUsers77F79D7D",
             "Arn",
           ],
         },
