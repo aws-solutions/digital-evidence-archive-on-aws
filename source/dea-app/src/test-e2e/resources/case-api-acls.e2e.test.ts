@@ -108,7 +108,7 @@ const listCaseFilesArgs: argsType = [
 const getCaseFileDetailsArgs: argsType = [
   'getCaseFileDetails',
   [CaseAction.VIEW_FILES],
-  `cases/${CASE_ID}/files/${FILE_ID}/details`,
+  `cases/${CASE_ID}/files/${FILE_ID}/info`,
   'GET',
   undefined,
   false,

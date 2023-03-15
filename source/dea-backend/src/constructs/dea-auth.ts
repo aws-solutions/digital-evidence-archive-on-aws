@@ -6,7 +6,7 @@
 import { assert } from 'console';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
 import { CfnParameter, Duration } from 'aws-cdk-lib';
-import { RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { AuthorizationType, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountRecovery,
   CfnIdentityPool,
@@ -16,10 +16,18 @@ import {
   UserPoolClient,
   UserPoolDomain,
 } from 'aws-cdk-lib/aws-cognito';
-import { FederatedPrincipal, Policy, PolicyStatement, Role, WebIdentityPrincipal } from 'aws-cdk-lib/aws-iam';
+import {
+  Effect,
+  FederatedPrincipal,
+  Policy,
+  PolicyStatement,
+  Role,
+  WebIdentityPrincipal,
+} from 'aws-cdk-lib/aws-iam';
 import { ParameterTier, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
+import { deaApiRouteConfig } from '../resources/dea-route-config';
 import { createCfnOutput } from './construct-support';
 
 interface DeaAuthProps {
@@ -62,6 +70,11 @@ export class DeaAuthConstruct extends Construct {
       assumedBy: principal,
       description: description,
     });
+    const endpointstatment = new PolicyStatement({
+      actions: ['execute-api:Invoke'],
+      resources: apiEndpoints,
+    });
+    endpointstatment.effect = Effect.DENY;
     role.attachInlinePolicy(
       new Policy(this, roleName + 'Policy', {
         statements: [
@@ -113,6 +126,23 @@ export class DeaAuthConstruct extends Construct {
       const groupEndpoints = this._getEndpoints(apiEndpointArns, endpointStrings);
       this._createDEARole(roleType.name, roleType.description, deaRolesMap, groupEndpoints, principal);
     });
+
+    if (deaConfig.isTestStack()) {
+      // create roles for individual endpoint allow/deny testing
+      deaApiRouteConfig.routes.forEach((route) => {
+        if (route.authMethod != AuthorizationType.NONE) {
+          const arn = apiEndpointArns.get(`${route.path}${route.httpMethod}`);
+
+          this._createDEARole(
+            `AllowDenyTest_${route.eventName}`,
+            `${route.httpMethod}_${route.path}`,
+            deaRolesMap,
+            [arn ?? ''],
+            principal
+          );
+        }
+      });
+    }
 
     return deaRolesMap;
   }

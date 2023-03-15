@@ -7,6 +7,7 @@ import axios from 'axios';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
 import { getTokenPayload } from '../../cognito-token-helpers';
 import { Oauth2Token } from '../../models/oauth2-token';
+import { getAuthorizationCode } from '../helpers/auth-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPI, callDeaAPIWithCreds, randomSuffix, validateStatus } from '../resources/test-helpers';
@@ -113,10 +114,11 @@ describe('API authentication', () => {
     // Get test auth code page
     const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
 
-    const authCode = await cognitoHelper.getAuthorizationCode(
+    const authCode = await getAuthorizationCode(
       cognitoParams.cognitoDomainUrl,
       authTestUrl,
-      testUser
+      testUser,
+      cognitoHelper.testPassword
     );
 
     // 3. Exchange auth code for id token

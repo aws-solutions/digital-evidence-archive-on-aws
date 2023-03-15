@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getLogoutUrl } from '@aws/dea-app';
+import { getLogoutUrl } from '@aws/dea-app/lib/app/resources/get-logout-url';
 import { createDeaHandler, NO_ACL } from './create-dea-handler';
 
 const noOpPreExecution = async () => {
