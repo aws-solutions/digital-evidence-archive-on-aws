@@ -8,7 +8,14 @@ import { Aws, StackProps, Duration } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { BlockPublicAccess, Bucket, BucketEncryption, CfnBucket, LifecycleRule } from 'aws-cdk-lib/aws-s3';
+import {
+  BlockPublicAccess,
+  Bucket,
+  BucketEncryption,
+  CfnBucket,
+  LifecycleRule,
+  HttpMethods,
+} from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
@@ -136,8 +143,14 @@ export class DeaBackendConstruct extends Construct {
       versioned: true,
       serverAccessLogsBucket: accessLogBucket,
       serverAccessLogsPrefix: accessLogPrefix,
-
-      // cors: TODO: we need to add cors and bucket policy for security/compliance
+      // TODO: Tighten up CORS rules
+      cors: [
+        {
+          allowedHeaders: ['*'],
+          allowedMethods: [HttpMethods.GET, HttpMethods.PUT, HttpMethods.HEAD],
+          allowedOrigins: ['*'],
+        },
+      ],
     });
 
     const datasetsBucketNode = datasetsBucket.node.defaultChild;

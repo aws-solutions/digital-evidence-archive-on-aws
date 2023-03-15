@@ -8,7 +8,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { commonLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
-import UploadFileBody from '../../components/upload-file/UploadFileBody';
+import UploadFileBody from '../../components/upload-files/UploadFilesBody';
 
 export interface IHomeProps {
   locale: string;
@@ -16,8 +16,8 @@ export interface IHomeProps {
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const { caseId } = router.query;
-  if (!caseId || typeof caseId !== 'string') {
+  const { caseId, filePath } = router.query;
+  if (!caseId || typeof caseId !== 'string' || !filePath || typeof filePath !== 'string') {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
 
@@ -41,7 +41,7 @@ const Home: NextPage = () => {
   return (
     <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
       <Box margin={{ bottom: 'l' }}>
-        <UploadFileBody caseId={caseId} />
+        <UploadFileBody caseId={caseId} filePath={filePath} />
       </Box>
     </BaseLayout>
   );

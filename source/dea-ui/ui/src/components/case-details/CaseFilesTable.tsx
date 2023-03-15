@@ -141,7 +141,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       <Box padding={{ bottom: 's' }} variant="p" color="inherit">
         {filesListLabels.noDisplayLabel}
       </Box>
-      <Button>{filesListLabels.uploadFileLabel}</Button>
+      <Button onClick={uploadFileHandler}>{filesListLabels.uploadFileLabel}</Button>
     </Box>
   );
 
@@ -160,7 +160,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
 
   function uploadFileHandler() {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    router.push(`/cases/${props.caseId}/upload-file`);
+    router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
   }
 
   return (

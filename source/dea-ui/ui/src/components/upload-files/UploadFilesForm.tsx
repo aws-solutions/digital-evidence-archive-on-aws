@@ -21,9 +21,9 @@ import * as React from 'react';
 import { useState } from 'react';
 import { initiateUpload, completeUpload } from '../../api/cases';
 import { commonLabels, fileOperationsLabels } from '../../common/labels';
-import { UploadFileProps } from './UploadFileBody';
+import { UploadFilesProps } from './UploadFilesBody';
 
-function UploadFileForm(props: UploadFileProps): JSX.Element {
+function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [tag, setTag] = useState('');
   const [description, setDescription] = useState('');
@@ -41,8 +41,7 @@ function UploadFileForm(props: UploadFileProps): JSX.Element {
         const initiatedCaseFile: DeaCaseFile = await initiateUpload({
           caseUlid: props.caseId,
           fileName: selectedFile.name,
-          // TODO get filePath when available
-          filePath: '/',
+          filePath: props.filePath,
           fileSizeMb: Math.ceil(Math.max(selectedFile.size, 1) / 1_000_000),
           contentType,
         });
@@ -174,4 +173,4 @@ function UploadFileForm(props: UploadFileProps): JSX.Element {
   );
 }
 
-export default UploadFileForm;
+export default UploadFilesForm;

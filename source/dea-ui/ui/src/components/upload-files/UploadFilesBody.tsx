@@ -6,13 +6,14 @@
 import { SpaceBetween, ContentLayout, Header } from '@cloudscape-design/components';
 import * as React from 'react';
 import { fileOperationsLabels } from '../../common/labels';
-import UploadFileForm from './UploadFileForm';
+import UploadFilesForm from './UploadFilesForm';
 
-export interface UploadFileProps {
+export interface UploadFilesProps {
   readonly caseId: string;
+  readonly filePath: string;
 }
 
-function UploadFilePage(props: UploadFileProps) {
+function UploadFilePage(props: UploadFilesProps) {
   return (
     <ContentLayout
       data-testid="upload-file-page"
@@ -22,7 +23,7 @@ function UploadFilePage(props: UploadFileProps) {
         </SpaceBetween>
       }
     >
-      <UploadFileForm caseId={props.caseId}></UploadFileForm>
+      <UploadFilesForm {...props}></UploadFilesForm>
     </ContentLayout>
   );
 }
