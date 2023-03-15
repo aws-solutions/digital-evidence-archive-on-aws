@@ -33,7 +33,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
             <div>
               {' '}
               <h4>Creation Date</h4>
-              <p>MON 0/00/0000</p>
+              <p>{new Date(data.created).toLocaleString()}</p>
               <h4>Case Lead(s)</h4>
               <p>Sherlock Holmes</p>
             </div>

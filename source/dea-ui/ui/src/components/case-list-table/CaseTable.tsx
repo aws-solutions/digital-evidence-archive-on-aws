@@ -6,7 +6,7 @@
 import { useCollection } from '@cloudscape-design/collection-hooks';
 import { Button, Link, Pagination, PropertyFilter, SpaceBetween, Table } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
-import { useListAllCases } from '../../api/cases';
+import { useListMyCases } from '../../api/cases';
 import { caseListLabels, commonTableLabels } from '../../common/labels';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
@@ -15,7 +15,7 @@ import { filteringOptions, filteringProperties, searchableColumns } from './case
 
 function CaseTable(): JSX.Element {
   const router = useRouter();
-  const { data, isLoading } = useListAllCases();
+  const { data, isLoading } = useListMyCases();
 
   // Property and date filter collections
   const { items, filteredItemsCount, propertyFilterProps } = useCollection(data, {
@@ -114,7 +114,7 @@ function CaseTable(): JSX.Element {
         {
           id: 'creationDate',
           header: commonTableLabels.creationDateHeader,
-          cell: (e) => e.created,
+          cell: (e) => new Date(e.created).toLocaleString(),
           width: 200,
           minWidth: 165,
           sortingField: 'creationDate',
