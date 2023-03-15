@@ -75,7 +75,7 @@
           "method": "PUT"
         },
         {
-          "path": "/cases/{caseId}/files/{fileId}/details",
+          "path": "/cases/{caseId}/files/{fileId}/info",
           "method": "GET"
         },
         {

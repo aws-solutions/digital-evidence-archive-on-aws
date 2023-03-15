@@ -354,7 +354,7 @@ paths:
                       $ref: '#/components/schemas/CaseFiles'
                   next:
                     type: string
-  /cases/{caseId}/files/{fileId}/details:
+  /cases/{caseId}/files/{fileId}/info:
     get:
       summary: File details
       description: Get details for a file within a case

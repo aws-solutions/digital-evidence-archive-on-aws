@@ -20,7 +20,6 @@ import {
   MessageActionType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Credentials } from 'aws4-axios';
-import puppeteer from 'puppeteer';
 import { getTokenPayload } from '../../cognito-token-helpers';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { deleteUser, getUserByTokenId } from '../../persistence/user';
@@ -36,7 +35,7 @@ export default class CognitoHelper {
   readonly _idpUrl: string;
 
   private _usersCreated: string[] = [];
-  private _testPassword: string;
+  public testPassword: string;
 
   public constructor(globalPassword?: string) {
     this._region = testEnv.awsRegion;
@@ -49,7 +48,7 @@ export default class CognitoHelper {
     this._identityPoolClient = new CognitoIdentityClient({ region: this._region });
     this._userPoolProvider = new CognitoIdentityProviderClient({ region: this._region });
 
-    this._testPassword = globalPassword ?? generatePassword();
+    this.testPassword = globalPassword ?? generatePassword();
   }
 
   public async createUser(
@@ -87,7 +86,7 @@ export default class CognitoHelper {
 
         // 2. Change Password
         const command = new AdminSetUserPasswordCommand({
-          Password: this._testPassword,
+          Password: this.testPassword,
           Permanent: true,
           Username: userName,
           UserPoolId: this._userPoolId,
@@ -123,7 +122,7 @@ export default class CognitoHelper {
         AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
         AuthParameters: {
           USERNAME: userName,
-          PASSWORD: this._testPassword,
+          PASSWORD: this.testPassword,
         },
         ClientId: this._userPoolClientId,
       })
@@ -187,35 +186,6 @@ export default class CognitoHelper {
     } else {
       throw new Error('Failed to get credentials from the identity pool:');
     }
-  }
-
-  public async getAuthorizationCode(cognitoDomainPath: string, callbackUrl: string, username: string) {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-
-    const clientId = this._userPoolClientId;
-
-    // Step 2: Sign in to the hosted UI
-    const hostedUiUrl = `${cognitoDomainPath}/login?response_type=code&client_id=${clientId}&redirect_uri=${callbackUrl}`;
-    await page.goto(hostedUiUrl);
-    await page.type('input[id="signInFormUsername"]', username);
-    await page.type('input[id="signInFormPassword"]', this._testPassword);
-
-    await page.click('input[name="signInSubmitButton"]');
-
-    await page.waitForNavigation({
-      waitUntil: 'load',
-    });
-
-    const redirectUri = page.url();
-    const authorizationCode = redirectUri.split('code=')[1];
-
-    if (!authorizationCode) {
-      throw new Error('Could not retrieve the authorization code');
-    }
-
-    await browser.close();
-    return authorizationCode;
   }
 
   public async cleanup(repositoryProvider?: ModelRepositoryProvider): Promise<void> {

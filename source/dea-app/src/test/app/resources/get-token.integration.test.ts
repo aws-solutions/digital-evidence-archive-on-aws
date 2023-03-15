@@ -8,6 +8,7 @@ import { getToken } from '../../../app/resources/get-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
 import { Oauth2Token } from '../../../models/auth';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
+import { getAuthorizationCode } from '../../../test-e2e/helpers/auth-helper';
 
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
@@ -34,10 +35,11 @@ describe('get-token', () => {
   it('successfully get id token using auth code', async () => {
     const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
 
-    const authCode = await cognitoHelper.getAuthorizationCode(
+    const authCode = await getAuthorizationCode(
       cognitoParams.cognitoDomainUrl,
       authTestUrl,
-      testUser
+      testUser,
+      cognitoHelper.testPassword
     );
 
     const event = getDummyEvent({

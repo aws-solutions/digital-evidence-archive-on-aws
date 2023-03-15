@@ -3,7 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { NOT_FOUND_ERROR_NAME, VALIDATION_ERROR_NAME, FORBIDDEN_ERROR_NAME } from '@aws/dea-app';
+import { FORBIDDEN_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/forbidden-exception';
+import { NOT_FOUND_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/not-found-exception';
+import { VALIDATION_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/validation-exception';
 import { APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
 import { logger } from '../logger';

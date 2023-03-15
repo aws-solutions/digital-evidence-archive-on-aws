@@ -12,6 +12,7 @@ import {
   revokeRefreshToken,
 } from '../../app/services/auth-service';
 import { Oauth2Token } from '../../models/auth';
+import { getAuthorizationCode } from '../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../test-e2e/resources/test-helpers';
 
@@ -50,10 +51,11 @@ describe('auth service', () => {
   it('successfully get id token using auth code', async () => {
     const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
 
-    const authCode = await cognitoHelper.getAuthorizationCode(
+    const authCode = await getAuthorizationCode(
       cognitoParams.cognitoDomainUrl,
       authTestUrl,
-      testUser
+      testUser,
+      cognitoHelper.testPassword
     );
     const tokens: Oauth2Token = await exchangeAuthorizationCode(authCode, undefined, authTestUrl);
 
@@ -74,10 +76,11 @@ describe('auth service', () => {
   it('successfully get id token using auth code with an callback override', async () => {
     const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
 
-    const authCode = await cognitoHelper.getAuthorizationCode(
+    const authCode = await getAuthorizationCode(
       cognitoParams.cognitoDomainUrl,
       authTestUrl,
-      testUser2
+      testUser2,
+      cognitoHelper.testPassword
     );
     const { id_token } = await exchangeAuthorizationCode(authCode, undefined, authTestUrl);
 

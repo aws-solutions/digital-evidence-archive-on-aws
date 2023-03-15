@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getCredentials } from '@aws/dea-app';
+import { getCredentials } from '@aws/dea-app/lib/app/resources/get-credentials';
 import { createDeaHandler, NO_ACL } from './create-dea-handler';
 
 const noOpPreExecution = async () => {
