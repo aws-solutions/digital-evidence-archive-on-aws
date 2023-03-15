@@ -19,9 +19,11 @@ export default function LoginPage() {
       if (authCode) {
         const response = await getToken(authCode);
         idTokenRef.current = response.id_token;
+        const refreshToken = response.refresh_token;
         const credentials = await getCredentials(idTokenRef.current);
 
         localStorage.setItem('idToken', idTokenRef.current);
+        localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('accessKeyId', credentials.AccessKeyId);
         localStorage.setItem('secretAccessKey', credentials.SecretKey);
         localStorage.setItem('sessionToken', credentials.SessionToken);

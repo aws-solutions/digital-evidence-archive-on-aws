@@ -12,7 +12,7 @@ import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import axios from 'axios';
 import { getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
-import { Oauth2Token } from '../../models/oauth2-token';
+import { Oauth2Token } from '../../models/auth';
 
 const stage = getRequiredEnv('STAGE', 'chewbacca');
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
@@ -174,4 +174,31 @@ export const exchangeAuthorizationCode = async (
   }
 
   return response.data;
+};
+
+export const revokeRefreshToken = async (refreshToken: string) => {
+  const cognitoParams = await getCognitoSsmParams();
+  const axiosInstance = axios.create({
+    baseURL: cognitoParams.cognitoDomainUrl,
+  });
+
+  const data = new URLSearchParams();
+  data.append('grant_type', 'authorization_code');
+  data.append('client_id', cognitoParams.clientId);
+  data.append('token', refreshToken);
+
+  // make a request using the Axios instance
+  const response = await axiosInstance.post('/oauth2/revoke', data, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    validateStatus: () => true,
+  });
+
+  if (response.status !== 200) {
+    logger.error(`Unable to revoke refresh code: ${response.statusText}`);
+    throw new Error(`Request failed with status code ${response.status}`);
+  }
+
+  return response.status;
 };

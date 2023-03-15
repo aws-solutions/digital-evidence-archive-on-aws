@@ -6,7 +6,7 @@ import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
 import { getTokenPayload } from '../../cognito-token-helpers';
-import { Oauth2Token } from '../../models/oauth2-token';
+import { Oauth2Token, RevokeToken } from '../../models/auth';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPI, callDeaAPIWithCreds, randomSuffix, validateStatus } from '../resources/test-helpers';
@@ -167,6 +167,19 @@ describe('API authentication', () => {
     const response = await callDeaAPIWithCreds(url, 'GET', modifiedToken, creds);
     expect(response.status).toEqual(400);
     expect(response.statusText).toEqual('Bad Request');
+  }, 40000);
+
+  it('should successfully revoke refresh token', async () => {
+    const [creds, idToken, refreshToken] = await cognitoHelper.getCredentialsForUser(testUser);
+
+    const payload: RevokeToken = {
+      refreshToken: refreshToken,
+    };
+
+    const url = `${deaApiUrl}auth/revokeToken`;
+    const response = await callDeaAPIWithCreds(url, 'POST', idToken, creds, payload);
+
+    expect(response.data).toEqual(200);
   }, 40000);
 
   it('should log successful and unsuccessful logins/api invocations', () => {

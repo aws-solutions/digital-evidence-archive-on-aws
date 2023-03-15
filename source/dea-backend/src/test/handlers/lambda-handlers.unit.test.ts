@@ -21,6 +21,7 @@ import * as GetTokenHandler from '../../handlers/get-token-handler';
 import * as GetUsersHandler from '../../handlers/get-users-handler';
 import * as InitiateCaseFileUploadHandler from '../../handlers/initiate-case-file-upload-handler';
 import * as ListCaseFilesHandler from '../../handlers/list-case-files-handler';
+import * as RevokeTokenHandler from '../../handlers/revoke-token-handler';
 import * as UpdateCaseUserHandler from '../../handlers/update-case-user-handler';
 import * as UpdateCasesHandler from '../../handlers/update-cases-handler';
 
@@ -44,6 +45,7 @@ describe('lambda handlers', () => {
       DeleteCaseUserHandler.handler,
       GetCredentialsHandler.handler,
       GetTokenHandler.handler,
+      RevokeTokenHandler.handler,
       GetUsersHandler.handler,
       UpdateCaseUserHandler.handler,
       GetCaseMembershipHandler.handler,

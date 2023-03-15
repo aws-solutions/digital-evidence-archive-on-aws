@@ -2,7 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-import { Oauth2Token } from '@aws/dea-app';
+import { Oauth2Token, RevokeToken } from '@aws/dea-app/lib/models/auth';
 import { httpApiGet, httpApiPost } from '../helpers/apiHelper';
 
 const getToken = async (authCode: string): Promise<Oauth2Token> => {
@@ -33,4 +33,17 @@ const getLoginUrl = async () => {
   }
 };
 
-export { getToken, getCredentials, getLoginUrl };
+const getLogoutUrl = async () => {
+  try {
+    const response = await httpApiGet(`auth/logoutUrl`, {});
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const revokeToken = async (revokeToken: RevokeToken): Promise<void> => {
+  await httpApiPost(`auth/revokeToken`, { ...revokeToken });
+};
+
+export { getToken, getCredentials, getLoginUrl, getLogoutUrl, revokeToken };

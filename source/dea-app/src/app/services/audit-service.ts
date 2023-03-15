@@ -35,6 +35,7 @@ export enum AuditEventType {
   GET_LOGIN_URL = 'GetLoginUrl',
   GET_LOGOUT_URL = 'GetLogoutUrl',
   GET_AUTH_TOKEN = 'GetAuthenticationToken',
+  REVOKE_AUTH_TOKEN = 'RevokeAuthToken',
   EXCHANGE_TOKEN_FOR_CREDS = 'ExchangeAuthTokenForCredentials',
   GET_ALL_USERS = 'GetAllUsers',
   DOWNLOAD_CASE_FILE = 'DownloadCaseFile',
