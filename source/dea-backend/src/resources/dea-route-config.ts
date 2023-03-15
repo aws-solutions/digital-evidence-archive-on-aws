@@ -91,7 +91,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.GET_CASE_FILE_DETAIL,
-      path: '/cases/{caseId}/files/{fileId}/details',
+      path: '/cases/{caseId}/files/{fileId}/info',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-case-file-detail-handler.ts',
     },

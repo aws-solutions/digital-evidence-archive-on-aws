@@ -35,6 +35,9 @@ import { getRequiredPathParam, getUserUlid } from './lambda-http-helpers';
 import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
 import { Oauth2Token } from './models/oauth2-token';
+import CognitoHelper from './test-e2e/helpers/cognito-helper';
+import { testEnv } from './test-e2e/helpers/settings';
+import * as testHelpers from './test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from './test/integration-objects';
 import { getTestAuditService } from './test/services/test-audit-service-provider';
 
@@ -79,4 +82,7 @@ export {
   ValidationError,
   VALIDATION_ERROR_NAME,
   dummyContext,
+  testEnv,
+  testHelpers,
+  CognitoHelper,
 };

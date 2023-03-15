@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { DeaCase } from '@aws/dea-app';
+import { DeaCase } from '@aws/dea-app/lib/models/case';
 import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
 import useSWR from 'swr';
 import { httpApiGet, httpApiPost } from '../helpers/apiHelper';

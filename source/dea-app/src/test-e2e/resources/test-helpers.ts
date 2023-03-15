@@ -208,7 +208,7 @@ export const describeCaseFileDetailsSuccess = async (
   fileUlid: string | undefined
 ): Promise<DeaCaseFile> => {
   const response = await callDeaAPIWithCreds(
-    `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}/details`,
+    `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}/info`,
     'GET',
     idToken,
     creds

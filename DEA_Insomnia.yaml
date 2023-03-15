@@ -218,7 +218,7 @@ resources:
     parentId: wrk_eff9e05b8f094067a85a5360070a0c5d
     modified: 1677269903599
     created: 1677186652542
-    url: "{{deaApiUrl}}cases/someulid/files/someulid/details"
+    url: "{{deaApiUrl}}cases/someulid/files/someulid/info"
     name: GET case-file-description
     description: ""
     method: GET
