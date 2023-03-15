@@ -3,8 +3,7 @@ import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { fail } from 'assert';
 import axios from 'axios';
-import { useRouter } from 'next/router';
-import { caseListLabels, createCaseLabels } from '../../src/common/labels';
+import { caseListLabels } from '../../src/common/labels';
 import Home from '../../src/pages';
 
 jest.mock('axios');
