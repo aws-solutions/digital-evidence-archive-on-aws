@@ -3,13 +3,15 @@ import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { fail } from 'assert';
 import axios from 'axios';
-import { caseDetailLabels } from '../../src/common/labels';
+import { caseDetailLabels, commonLabels } from '../../src/common/labels';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
+const push = jest.fn();
+const CASE_ID = '100';
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: '100' },
-    push: jest.fn(),
+    query: { caseId: CASE_ID },
+    push,
   })),
 }));
 
@@ -203,5 +205,22 @@ describe('CaseDetailsPage', () => {
 
     const newVal = 'new input value';
     input.setInputValue(newVal);
+  });
+
+  it('navigates to upload files page', async () => {
+    mockedAxios.mockResolvedValue({
+      data: mockedCaseDetail,
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+
+    const page = render(<CaseDetailsPage />);
+    expect(page).toBeTruthy();
+
+    const uploadButton = await screen.findByText(commonLabels.uploadButton);
+    fireEvent.click(uploadButton);
+    expect(push).toHaveBeenCalledWith(`/upload-files?caseId=${CASE_ID}&filePath=/`);
   });
 });

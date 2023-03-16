@@ -36,11 +36,12 @@ git checkout -b $BRANCH_NAME
 npm install -g @microsoft/rush
 ```
 
-6. Run Rush Install
+6. Run Rush Install and build code
 
 ```
 cd ./source
 rush cupdate
+rush build
 ```
 
 7. Setup Git Defender
@@ -97,7 +98,7 @@ The following task are available in the [dea-app](/source/dea-app/) directory, a
 #### Create Test User
 - This will generate a test user in your deployed Cognito instance, and output to your terminal the API credentials for this user.
 > example:
-`npm run create-cognito-user -- --username=jdoe --firstname=johnny --lastname=doe --usergroup=CaseWorkerGroup --password=somepw`
+`npm run create-cognito-user -- --username=jdoe --firstname=johnny --lastname=doe --usergroup=CaseWorker --password=somepw`
 #### Get credential for a Test User
 - This will retrieve, and print to the terminal, API credentials for an existing user. 
 > example:

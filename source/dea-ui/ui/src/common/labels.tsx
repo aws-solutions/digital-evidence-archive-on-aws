@@ -57,9 +57,10 @@ export const headerLabels = {
 };
 
 export const caseListLabels = {
-  loading: 'loading cases',
+  loading: 'Loading cases',
   noCasesLabel: 'No cases',
-  noDisplayLabel: 'No cases to display.',
+  noCasesMatchLabel: 'No cases matched',
+  noDisplayLabel: 'No cases to display',
   createNewCaseLabel: 'Create new case',
   searchCasesLabel: 'Search by case name',
   casesLabel: 'Cases',
@@ -70,10 +71,27 @@ export const filesListLabels = {
   caseFilesLabel: 'Case Files',
   loading: 'Loading files',
   noFilesLabel: 'No files',
-  noDisplayLabel: 'No files to dsiplay.',
+  noDisplayLabel: 'No files to display',
   uploadFileLabel: 'Upload a file',
   searchLabel: 'Search by file name',
   filterDescription: 'All folders/files associated with this case.',
+};
+
+export const fileOperationsLabels = {
+  caseFilesLabel: 'Case Files',
+  uploadFileLabel: 'Upload folders/files',
+  uploadFileDescription: 'All fields are required unless otherwise indicated.',
+  uploadDetailsLabel: 'Upload details',
+  selectFileDescription: 'Select a file to upload',
+  evidenceTagLabel: 'Evidence tag',
+  evidenceTagDescription:
+    'Specify the type of device where the evidence is copied from such as mobile, laptop, or hard drive.',
+  evidenceDetailsLabel: 'Description',
+  evidenceDetailsDescription:
+    'Enter a brief description of the evidence being uploaded. Max character limit 250.',
+  uploadReasonLabel: 'Reason for uploading evidence - optional',
+  uploadReasonDescription: 'Specify why you are accessing the case files.',
+  selectFileSubtext: 'All file types accepted. 5TB max file size.',
 };
 
 export const caseDetailLabels = {

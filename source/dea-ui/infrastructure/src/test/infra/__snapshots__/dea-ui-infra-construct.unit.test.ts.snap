@@ -587,7 +587,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::RestApi",
     },
-    "testApiDeployment3727A0B9452057bd46e29fb98f2bbfa6aa7674f1": Object {
+    "testApiDeployment3727A0B997d8ee0d3d68fcab0d79c17f19b27b71": Object {
       "DependsOn": Array [
         "testApiuiproxyGET92230E90",
         "testApiuiproxyDDF9EC1E",
@@ -601,6 +601,8 @@ Object {
         "testApiuiloginGET86824034",
         "testApiuilogin54AC376B",
         "testApiui1F041DD2",
+        "testApiuiuploadfilesGET6DFAC286",
+        "testApiuiuploadfilesD762C518",
       ],
       "Properties": Object {
         "Description": "Backend API",
@@ -616,7 +618,7 @@ Object {
       ],
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "testApiDeployment3727A0B9452057bd46e29fb98f2bbfa6aa7674f1",
+          "Ref": "testApiDeployment3727A0B997d8ee0d3d68fcab0d79c17f19b27b71",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",
@@ -1143,6 +1145,93 @@ Object {
         },
         "ResourceId": Object {
           "Ref": "testApiuiproxyDDF9EC1E",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuiuploadfilesD762C518": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "upload-files",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuiuploadfilesGET6DFAC286": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackartifactbucketFFC87A37",
+                },
+                "/upload-files.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Type": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuiuploadfilesD762C518",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",

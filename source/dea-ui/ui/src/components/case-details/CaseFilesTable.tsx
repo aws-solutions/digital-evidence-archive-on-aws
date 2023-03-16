@@ -16,6 +16,7 @@ import {
   Table,
   TextFilter,
 } from '@cloudscape-design/components';
+import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useListCaseFiles } from '../../api/cases';
 import { commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
@@ -23,6 +24,7 @@ import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/Com
 import { CaseDetailsBodyProps } from './CaseDetailsBody';
 
 function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
+  const router = useRouter();
   // Property and date filter collections
   const [filesTableState, setFilesTableState] = React.useState({
     textFilter: '',
@@ -41,7 +43,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
 
   const { items, filterProps } = useCollection(data, {
     filtering: {
-      empty: TableEmptyDisplay(filesListLabels.noFilesLabel),
+      empty: TableEmptyDisplay(filesListLabels.noFilesLabel, filesListLabels.noDisplayLabel),
       noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
       filteringFunction: (item, filteringText) => {
         const filenameLowerCase: string = item.fileName.toLowerCase();
@@ -52,7 +54,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
     },
     propertyFiltering: {
       filteringProperties: filteringProperties,
-      empty: TableEmptyDisplay(filesListLabels.noFilesLabel),
+      empty: TableEmptyDisplay(filesListLabels.noFilesLabel, filesListLabels.noDisplayLabel),
       noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
     },
     sorting: {},
@@ -107,7 +109,9 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       description={filesListLabels.filterDescription}
       actions={
         <SpaceBetween direction="horizontal" size="xs">
-          <Button>{commonLabels.uploadButton}</Button>
+          <Button data-testid="upload-file-button" onClick={uploadFileHandler}>
+            {commonLabels.uploadButton}
+          </Button>
           <Button variant="primary">{commonLabels.downloadButton}</Button>
         </SpaceBetween>
       }
@@ -137,7 +141,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       <Box padding={{ bottom: 's' }} variant="p" color="inherit">
         {filesListLabels.noDisplayLabel}
       </Box>
-      <Button>{filesListLabels.uploadFileLabel}</Button>
+      <Button onClick={uploadFileHandler}>{filesListLabels.uploadFileLabel}</Button>
     </Box>
   );
 
@@ -153,6 +157,11 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       }}
     />
   );
+
+  function uploadFileHandler() {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
+  }
 
   return (
     <Table

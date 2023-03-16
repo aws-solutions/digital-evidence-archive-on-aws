@@ -359,6 +359,7 @@ importers:
       '@testing-library/jest-dom': 5.16.1
       '@testing-library/react': 12.1.2
       '@testing-library/user-event': ~14.4.3
+      '@types/crypto-js': ^4.1.1
       '@types/heft-jest': 1.0.2
       '@types/jest': ^27.4.1
       '@types/lodash.kebabcase': ~4.1.7
@@ -372,6 +373,7 @@ importers:
       babel-jest: 27.5.1
       concurrently: ^7.0.0
       constructs: 10.0.5
+      crypto-js: ^4.1.1
       cypress: ~12.4.1
       date-fns: ^2.28.0
       eslint: ^8.22.0
@@ -413,8 +415,10 @@ importers:
       '@cloudscape-design/design-tokens': 3.0.6
       '@cloudscape-design/global-styles': 1.0.1
       '@cloudscape-design/jest-preset': 2.0.2_c829d075ec7b4746148b5fbe1942bb8f
+      '@types/crypto-js': 4.1.1
       aws4-axios: 2.4.9_axios@0.27.2
       axios: 0.27.2
+      crypto-js: 4.1.1
       date-fns: 2.29.3
       i18next: 21.10.0
       jsonwebtoken: 9.0.0

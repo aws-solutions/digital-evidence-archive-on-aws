@@ -83,6 +83,11 @@ export class DeaUiConstruct extends Construct {
     const createCasesS3Integration = this._getS3Integration('create-cases.html', bucket, executeRole);
     createCasesResource.addMethod('GET', createCasesS3Integration, this._getMethodOptions());
 
+    // /upload-file
+    const uploadFilesResource = uiResource.addResource('upload-files');
+    const uploadFilesS3Integration = this._getS3Integration('upload-files.html', bucket, executeRole);
+    uploadFilesResource.addMethod('GET', uploadFilesS3Integration, this._getMethodOptions());
+
     // /auth-test page
     const authTestResource = uiResource.addResource('auth-test');
     const authTestIntegration = this._getS3Integration('auth-test.html', bucket, executeRole);
