@@ -17,11 +17,7 @@ const mockSignIn = () => {
   localStorage.setItem('accessKeyId', 'mock-access-key');
   localStorage.setItem('secretAccessKey', 'mock-secret-key');
   localStorage.setItem('sessionToken', 'mock-session-token');
-};
-
-// Mock sign-out function that clears the user from local storage
-const mockSignOut = () => {
-  localStorage.clear();
+  localStorage.setItem('refreshToken', 'mock-refresh-token');
 };
 
 // Mock getLoginUrl function
@@ -76,5 +72,16 @@ describe('AuthenticationProvider', () => {
 
     // Should not redirect since we're logged in
     expect(router.push).toHaveBeenCalledTimes(0);
+  });
+
+  it('returns if its /login or /auth-test', async () => {
+    const router = {
+      push: jest.fn(),
+      pathname: '/login',
+    };
+    useRouter.mockReturnValue(router);
+    // Clear local storage to simulate not being logged in
+    localStorage.clear();
+    render(<AuthenticationProvider children={false} />);
   });
 });

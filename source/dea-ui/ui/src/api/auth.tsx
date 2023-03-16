@@ -21,6 +21,7 @@ const getCredentials = async (idToken: string) => {
     return response;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 };
 
@@ -30,6 +31,7 @@ const getLoginUrl = async () => {
     return response;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 };
 
@@ -39,6 +41,7 @@ const getLogoutUrl = async () => {
     return response;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 };
 
