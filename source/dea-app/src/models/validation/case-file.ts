@@ -12,6 +12,9 @@ import {
   sha256Hash,
   s3Identifier,
   caseFileStatus,
+  safeTag,
+  safeReason,
+  safeDetails,
 } from './joi-common';
 
 export const initiateCaseFileUploadRequestSchema = Joi.object({
@@ -20,6 +23,9 @@ export const initiateCaseFileUploadRequestSchema = Joi.object({
   filePath: filePath,
   contentType: contentType,
   fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
+  tag: safeTag,
+  reason: safeReason,
+  details: safeDetails,
 });
 
 export const completeCaseFileUploadRequestSchema = Joi.object({
@@ -48,6 +54,9 @@ export const caseFileResponseSchema = Joi.object({
   presignedUrls: Joi.array().items(Joi.string().uri()),
   sha256Hash: sha256Hash,
   status: caseFileStatus,
+  tag: safeTag,
+  reason: safeReason,
+  details: safeDetails,
   created: Joi.date(),
   updated: Joi.date(),
 });

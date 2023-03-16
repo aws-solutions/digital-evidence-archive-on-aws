@@ -27,6 +27,10 @@ export const sha256Hash = Joi.string().pattern(new RegExp('^[a-fA-F0-9]{64}$'));
 
 export const safeName = Joi.string().pattern(allButDisallowed).required().min(3).max(50);
 
+export const safeTag = Joi.string().pattern(allButDisallowed).min(2).max(200);
+export const safeReason = Joi.string().pattern(allButDisallowed).min(2).max(250);
+export const safeDetails = Joi.string().pattern(allButDisallowed).min(2).max(250);
+
 export const fileName = Joi.string().pattern(filenameSafeCharsRegex).required().max(255).required();
 
 export const filePath = Joi.string().pattern(filePathSafeCharsRegex).required().min(1).required();

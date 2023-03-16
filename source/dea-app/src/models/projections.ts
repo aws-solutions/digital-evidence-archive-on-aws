@@ -69,5 +69,8 @@ export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFile =>
     updated: caseFileEntity.updated,
     isFile: caseFileEntity.isFile,
     ttl: caseFileEntity.ttl,
+    reason: caseFileEntity.reason,
+    tag: caseFileEntity.tag,
+    details: caseFileEntity.details,
   };
 };

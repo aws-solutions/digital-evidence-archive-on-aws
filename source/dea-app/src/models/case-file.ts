@@ -20,6 +20,10 @@ export interface DeaCaseFile {
   presignedUrls?: ReadonlyArray<string>;
   ttl?: number;
   versionId?: string;
+  readonly tag?: string;
+  readonly details?: string;
+  readonly reason?: string;
+
   readonly created?: Date;
   readonly updated?: Date;
 }
@@ -37,6 +41,9 @@ export interface InitiateCaseFileUploadDTO {
   readonly filePath: string;
   readonly contentType: string;
   readonly fileSizeMb: number;
+  readonly tag?: string;
+  readonly details?: string;
+  readonly reason?: string;
 }
 
 export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;
