@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import axios from 'axios';
-import { getCredentials, getToken, getLoginUrl } from '../../src/api/auth';
+import { getCredentials, getToken, getLoginUrl, getLogoutUrl, revokeToken } from '../../src/api/auth';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.MockedFunction<typeof axios>;
@@ -17,6 +17,19 @@ describe('auth helper', () => {
     });
     const dummyToken = await getToken('DUMMYAUTHCODE');
     expect(dummyToken).toEqual('123456');
+  });
+
+  it('should fail to return token', async () => {
+    mockedAxios.mockRejectedValue({
+      response: {
+        data: {},
+        status: 400,
+        statusText: 'Bad Request',
+        headers: {},
+        config: {},
+      },
+    });
+    await expect(getToken('badAuthCode')).rejects.toThrow('there was an error while trying to retrieve data');
   });
 
   it('should return credentials', async () => {
@@ -38,8 +51,22 @@ describe('auth helper', () => {
     expect(credentials).toEqual(expectedData);
   });
 
+  it('should fail to return creds', async () => {
+    mockedAxios.mockRejectedValue({
+      response: {
+        data: {},
+        status: 400,
+        statusText: 'Bad Request',
+        headers: {},
+        config: {},
+      },
+    });
+    await expect(getCredentials('badIdToken')).rejects.toThrow(
+      'there was an error while trying to retrieve data'
+    );
+  });
+
   it('should return login Url', async () => {
-    // id token mock
     mockedAxios.mockResolvedValue({
       data: 'dummyloginurl.com',
       status: 200,
@@ -49,5 +76,55 @@ describe('auth helper', () => {
     });
     const loginUrl = await getLoginUrl();
     expect(loginUrl).toEqual('dummyloginurl.com');
+  });
+
+  it('should fail to login Url', async () => {
+    mockedAxios.mockRejectedValue({
+      response: {
+        data: {},
+        status: 500,
+        statusText: 'Bad Request',
+        headers: {},
+        config: {},
+      },
+    });
+    await expect(getLoginUrl()).rejects.toThrow('there was an error while trying to retrieve data');
+  });
+
+  it('should return logout Url', async () => {
+    mockedAxios.mockResolvedValue({
+      data: 'dummylogouturl.com',
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+    const logoutUrl = await getLogoutUrl();
+    expect(logoutUrl).toEqual('dummylogouturl.com');
+  });
+
+  it('should fail to logout Url', async () => {
+    mockedAxios.mockRejectedValue({
+      response: {
+        data: {},
+        status: 400,
+        statusText: 'Bad Request',
+        headers: {},
+        config: {},
+      },
+    });
+    await expect(getLogoutUrl()).rejects.toThrow('there was an error while trying to retrieve data');
+  });
+
+  it('should revoke successfully', async () => {
+    // id token mock
+    mockedAxios.mockResolvedValue({
+      data: '123456',
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+    await expect(revokeToken('DUMMYREFRESHTOKEN')).toBeTruthy();
   });
 });

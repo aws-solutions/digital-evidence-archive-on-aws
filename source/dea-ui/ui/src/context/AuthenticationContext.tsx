@@ -3,10 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { RevokeToken } from '@aws/dea-app/lib/models/auth';
 import jwt from 'jwt-decode';
 import { useRouter } from 'next/router';
 import { createContext, useContext, Context, useState, useEffect } from 'react';
-import { getLoginUrl } from '../api/auth';
+import { getLoginUrl, getLogoutUrl, revokeToken } from '../api/auth';
 import { IUser, unknownUser } from '../models/User';
 
 export interface IAuthenticationProps {
@@ -42,8 +43,9 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
       const secretAccessKey = localStorage.getItem('secretAccessKey');
       const sessionToken = localStorage.getItem('sessionToken');
       const idToken = localStorage.getItem('idToken');
+      const refreshToken = localStorage.getItem('refreshToken');
 
-      if (accessKeyId && secretAccessKey && sessionToken && idToken) {
+      if (accessKeyId && secretAccessKey && sessionToken && idToken && refreshToken) {
         decodeTokenAndSetUser(idToken);
       } else {
         // Not logged in, redirect to login page
@@ -56,17 +58,25 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
 
   const signIn = (user: IUser): void => setUser(user);
   const signOut = async (): Promise<void> => {
-    //TODO: Implement /logout endpoint to invalidate credentials on logout
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken) {
+      const payload: RevokeToken = {
+        refreshToken: refreshToken,
+      };
+
+      await revokeToken(payload);
+    }
 
     localStorage.removeItem('accessKeyId');
     localStorage.removeItem('secretAccessKey');
     localStorage.removeItem('sessionToken');
     localStorage.removeItem('idToken');
+    localStorage.removeItem('refreshToken');
     setUser(unknownUser);
 
     // Redirect to login page
-    const loginUrl = await getLoginUrl();
-    await router.push(loginUrl);
+    const logoutUrl = await getLogoutUrl();
+    await router.push(logoutUrl);
   };
 
   function decodeTokenAndSetUser(idToken: string): void {

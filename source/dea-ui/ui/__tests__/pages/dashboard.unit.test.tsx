@@ -4,6 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { fail } from 'assert';
 import axios from 'axios';
 import { caseListLabels } from '../../src/common/labels';
+import { i18nStrings } from '../../src/components/common-components/commonDefinitions';
 import Home from '../../src/pages';
 
 jest.mock('axios');
@@ -90,5 +91,43 @@ describe('Dashboard', () => {
     link.click();
 
     expect(push).toHaveBeenCalledWith('/case-detail?caseId=abc');
+  });
+
+  it('test for table property filter ii8nStrings', () => {
+    expect(i18nStrings).toEqual({
+      filteringAriaLabel: 'your choice',
+      dismissAriaLabel: 'Dismiss',
+      filteringPlaceholder: 'Search',
+      groupValuesText: 'Values',
+      groupPropertiesText: 'Properties',
+      operatorsText: 'Operators',
+      operationAndText: 'and',
+      operationOrText: 'or',
+      operatorLessText: 'Less than',
+      operatorLessOrEqualText: 'Less than or equal',
+      operatorGreaterText: 'Greater than',
+      operatorGreaterOrEqualText: 'Greater than or equal',
+      operatorContainsText: 'Contains',
+      operatorDoesNotContainText: 'Does not contain',
+      operatorEqualsText: 'Equals',
+      operatorDoesNotEqualText: 'Does not equal',
+      editTokenHeader: 'Edit filter',
+      propertyText: 'Property',
+      operatorText: 'Operator',
+      valueText: 'Value',
+      cancelActionText: 'Cancel',
+      applyActionText: 'Apply',
+      allPropertiesLabel: 'All properties',
+      tokenLimitShowMore: 'Show more',
+      tokenLimitShowFewer: 'Show fewer',
+      clearFiltersText: 'Clear filters',
+      removeTokenButtonAriaLabel: expect.any(Function),
+      enteredTextLabel: expect.any(Function),
+    });
+  });
+
+  it('removeTokenButtonAriaLabel returns the expected string', () => {
+    const result = i18nStrings.removeTokenButtonAriaLabel();
+    expect(result).toEqual('Remove token');
   });
 });

@@ -112,6 +112,12 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       authMethod: AuthorizationType.NONE,
     },
     {
+      eventName: AuditEventType.REVOKE_AUTH_TOKEN,
+      path: '/auth/revokeToken',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/revoke-token-handler.ts',
+    },
+    {
       eventName: AuditEventType.GET_LOGIN_URL,
       path: '/auth/loginUrl',
       httpMethod: ApiGatewayMethod.GET,
