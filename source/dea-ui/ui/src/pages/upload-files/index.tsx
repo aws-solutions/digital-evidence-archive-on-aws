@@ -31,7 +31,6 @@ const Home: NextPage = () => {
       href: '#',
     },
     {
-      // todo: replace with labels
       text: 'Upload folders/files',
       href: '#',
     },
