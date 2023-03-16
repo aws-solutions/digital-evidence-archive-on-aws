@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { DeaCaseFile } from '@aws/dea-app';
+import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
 import {
   Form,
   SpaceBetween,
