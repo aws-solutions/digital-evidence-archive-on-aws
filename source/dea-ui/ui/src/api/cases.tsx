@@ -52,5 +52,5 @@ export const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaC
 };
 
 export const completeUpload = async (apiInput: CompleteUploadForm): Promise<DeaCaseFile> => {
-  return httpApiPut(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}`, { ...apiInput });
+  return httpApiPut(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}/contents`, { ...apiInput });
 };
