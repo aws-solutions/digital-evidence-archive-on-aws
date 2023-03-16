@@ -3,7 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { AppLayoutProps } from '@cloudscape-design/components';
+import { CaseAction, OWNER_ACTIONS } from '@aws/dea-app/lib/models/case-action';
+import { AppLayoutProps, SelectProps } from '@cloudscape-design/components';
 
 export const commonLabels = {
   cancelButton: 'Cancel',
@@ -17,6 +18,8 @@ export const commonLabels = {
   loginLabel: 'Logging in...',
   notFoundLabel: 'Not Found',
   noMatchesLabel: 'No matches found',
+  retryLabel: 'Retry',
+  errorLabel: 'Error fetching results',
 };
 
 export const commonTableLabels = {
@@ -97,7 +100,7 @@ export const fileOperationsLabels = {
 export const caseDetailLabels = {
   caseFilesLabel: 'Case Files',
   auditLogLabel: 'Audit Log',
-  manageAccessLabel: 'Manage case access',
+  manageAccessLabel: 'Case Members',
 };
 
 export const auditLogLabels = {
@@ -111,10 +114,25 @@ export const auditLogLabels = {
 };
 
 export const manageCaseAccessLabels = {
-  manageCaseAccessLabel: 'Manage Case Access',
+  manageCaseAccessLabel: 'Case Members',
   manageAccessDescription:
-    'Members added or remvoed will be notified by email. Their access to case details will be based on permissions set',
-  manageAccessSearchLabel: 'Search for people to invite',
+    'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
+  manageAccessSearchLabel: 'Search for people',
+  manageAccessSearchInfoHeader: "Can't find someone?",
+  manageAccessSearchInfoLabel: 'Request Access from Admin',
+  manageAccessSearchInfoDescription:
+    'reach out to your administrator and request a new user to be invited to the system.',
+  searchPlaceholder: 'Search by name or email',
+  searchAutosuggestNoMatches: 'No matches found',
+  searchAutosuggestEnteredText: (value: string) => `Use: "${value}"`,
+  searchAutosuggestLoadingText: 'Loading users',
+  searchAutosuggestFinishedText: (value: string) =>
+    value ? `End of "${value}" results` : 'End of all results',
+  manageCasePeopleAccessLabel: 'People with access',
+  manageMemberEmailLabel: 'View Email',
+  manageMemberAccessTypeLabel: 'Access Type',
+  manageMemberPermissionsLabel: 'Permission(s)',
+  manageMemberPermissionsPlaceholder: 'Choose permissions',
 };
 
 export const createCaseLabels = {
@@ -141,4 +159,57 @@ export const createCaseLabels = {
   searchPeopleDescription:
     'Members added or removed will be notified by email. Their access to the case details will be based on permissions set.',
   searchPlaceholder: 'Search by name or email',
+};
+
+export const caseActionOptions = {
+  actionOption: (caseAction: CaseAction): SelectProps.Option => {
+    switch (caseAction) {
+      case CaseAction.UPDATE_CASE_DETAILS:
+        return {
+          value: CaseAction.UPDATE_CASE_DETAILS,
+          label: 'Edit case',
+          description: 'They will be able to edit case details, such as name and description',
+        };
+      case CaseAction.UPLOAD:
+        return {
+          value: CaseAction.UPLOAD,
+          label: 'Upload files',
+          description: 'They will be able to upload files to the case',
+        };
+      case CaseAction.DOWNLOAD:
+        return {
+          value: CaseAction.DOWNLOAD,
+          label: 'Download files',
+          description: 'They will be able to download files to the case',
+        };
+      case CaseAction.VIEW_FILES:
+        return {
+          value: CaseAction.VIEW_FILES,
+          label: 'View case files',
+          description: 'They will be able to preview case files and details',
+        };
+      case CaseAction.CASE_AUDIT:
+        return {
+          value: CaseAction.CASE_AUDIT,
+          label: 'Audit case',
+          description: 'They will be able to audit the activity performed on a case',
+        };
+      case CaseAction.INVITE:
+        return {
+          value: CaseAction.INVITE,
+          label: 'Invite members',
+          description: 'They will be able to invite other members to the case',
+        };
+      default:
+        // default CaseAction.VIEW_CASE_DETAILS least privilege principle.
+        return {
+          value: CaseAction.VIEW_CASE_DETAILS,
+          label: 'View case',
+          description: 'They will be able to view case details',
+        };
+    }
+  },
+  selectableOptions: (): SelectProps.Option[] => {
+    return OWNER_ACTIONS.map((caseAction: CaseAction) => caseActionOptions.actionOption(caseAction));
+  },
 };
