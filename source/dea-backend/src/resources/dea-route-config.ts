@@ -31,19 +31,19 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.GET_CASE_DETAILS,
-      path: '/cases/{caseId}',
+      path: '/cases/{caseId}/details',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-case-detail-handler.ts',
     },
     {
       eventName: AuditEventType.UPDATE_CASE_DETAILS,
-      path: '/cases/{caseId}',
+      path: '/cases/{caseId}/details',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/update-cases-handler.ts',
     },
     {
       eventName: AuditEventType.DELETE_CASE,
-      path: '/cases/{caseId}',
+      path: '/cases/{caseId}/details',
       httpMethod: ApiGatewayMethod.DELETE,
       pathToSource: '../../src/handlers/delete-case-handler.ts',
     },
@@ -61,13 +61,13 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.REMOVE_USER_FROM_CASE,
-      path: '/cases/{caseId}/userMemberships/{userId}',
+      path: '/cases/{caseId}/users/{userId}/memberships',
       httpMethod: ApiGatewayMethod.DELETE,
       pathToSource: '../../src/handlers/delete-case-user-handler.ts',
     },
     {
       eventName: AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE,
-      path: '/cases/{caseId}/userMemberships/{userId}',
+      path: '/cases/{caseId}/users/{userId}/memberships',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/update-case-user-handler.ts',
     },
@@ -85,13 +85,13 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.COMPLETE_CASE_FILE_UPLOAD,
-      path: '/cases/{caseId}/files/{fileId}',
+      path: '/cases/{caseId}/files/{fileId}/contents',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/complete-case-file-upload-handler.ts',
     },
     {
       eventName: AuditEventType.GET_CASE_FILE_DETAIL,
-      path: '/cases/{caseId}/files/{fileId}',
+      path: '/cases/{caseId}/files/{fileId}/info',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-case-file-detail-handler.ts',
     },
@@ -103,7 +103,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.GET_AUTH_TOKEN,
-      path: '/auth/getToken/{authCode}',
+      path: '/auth/{authCode}/token',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/get-token-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access token exchange
@@ -113,15 +113,23 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.GET_LOGIN_URL,
-      path: '/auth/getLoginUrl',
+      path: '/auth/loginUrl',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-login-url-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
       authMethod: AuthorizationType.NONE,
     },
     {
+      eventName: AuditEventType.GET_LOGOUT_URL,
+      path: '/auth/logoutUrl',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-logout-url-handler.ts',
+      // TODO: Implement custom authorizer for UI trying to access credentials
+      authMethod: AuthorizationType.NONE,
+    },
+    {
       eventName: AuditEventType.EXCHANGE_TOKEN_FOR_CREDS,
-      path: '/auth/getCredentials/{idToken}',
+      path: '/auth/credentials/{idToken}/exchange',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-credentials-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials

@@ -3,7 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { CaseAction, downloadCaseFile } from '@aws/dea-app';
+import { downloadCaseFile } from '@aws/dea-app/lib/app/resources/download-case-file';
+import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { createDeaHandler } from './create-dea-handler';
 
 export const handler = createDeaHandler(downloadCaseFile, [CaseAction.DOWNLOAD]);

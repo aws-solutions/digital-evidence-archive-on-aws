@@ -3,22 +3,20 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import {
-  auditService,
-  CaseAction,
-  DEAGatewayProxyHandler,
-  runPreExecutionChecks,
-  ValidationError,
-  verifyCaseACLs,
-} from '@aws/dea-app';
+import { ValidationError } from '@aws/dea-app/lib/app/exceptions/validation-exception';
+import { DEAGatewayProxyHandler } from '@aws/dea-app/lib/app/resources/dea-gateway-proxy-handler';
+import { runPreExecutionChecks } from '@aws/dea-app/lib/app/resources/dea-lambda-utils';
+import { verifyCaseACLs } from '@aws/dea-app/lib/app/resources/verify-case-acls';
 import {
   ActorIdentity,
   AuditEventResult,
   AuditEventSource,
   AuditEventType,
+  auditService,
   CJISAuditEventBody,
   IdentityType,
 } from '@aws/dea-app/lib/app/services/audit-service';
+import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { logger } from '../logger';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
@@ -114,9 +112,16 @@ const getInitialIdentity = (event: APIGatewayProxyEvent): ActorIdentity => {
     };
   }
 
-  if (event.resource === '/auth/getLoginUrl') {
+  if (event.resource === '/auth/loginUrl') {
     return {
       idType: IdentityType.LOGIN_URL_REQUESTOR,
+      sourceIp: event.requestContext.identity.sourceIp,
+    };
+  }
+
+  if (event.resource === '/auth/logoutUrl') {
+    return {
+      idType: IdentityType.LOGOUT_URL_REQUESTOR,
       sourceIp: event.requestContext.identity.sourceIp,
     };
   }

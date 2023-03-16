@@ -150,7 +150,12 @@ export class DeaRestApiConstruct extends Construct {
       }
 
       if (index === urlParts.length - 1) {
-        const lambda = this._createLambda(`${route.httpMethod}_${part}`, role, route.pathToSource, lambdaEnv);
+        const lambda = this._createLambda(
+          `${route.httpMethod}_${route.eventName}`,
+          role,
+          route.pathToSource,
+          lambdaEnv
+        );
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let queryParams: any = {};
@@ -186,6 +191,9 @@ export class DeaRestApiConstruct extends Construct {
           authorizationType: route.authMethod ?? AuthorizationType.IAM,
         });
 
+        if (method.methodArn.endsWith('*')) {
+          throw new Error('Resource paths must not end with a wildcard.');
+        }
         this.apiEndpointArns.set(route.path + route.httpMethod, method.methodArn);
       }
       parent = resource;

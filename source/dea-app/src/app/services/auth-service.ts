@@ -95,6 +95,14 @@ export const getLoginHostedUiUrl = async () => {
   return oauth2AuthorizeEndpointUrl;
 };
 
+export const getCognitoLogoutUrl = async () => {
+  const cognitoParams = await getCognitoSsmParams();
+
+  const cognitoLogoutUrl = `${cognitoParams.cognitoDomainUrl}/logout?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
+
+  return cognitoLogoutUrl;
+};
+
 export const getCredentialsByToken = async (idToken: string) => {
   const cognitoParams = await getCognitoSsmParams();
 

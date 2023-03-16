@@ -14,8 +14,8 @@ import {
 } from '../app/services/audit-service';
 
 const dummyEvent: APIGatewayProxyEvent = {
-  resource: '/cases/{caseId}',
-  path: '/cases/01GSX40H73JQ9Q2T2EERPYWN6C',
+  resource: '/cases/{caseId}/details',
+  path: '/cases/01GSX40H73JQ9Q2T2EERPYWN6C/details',
   httpMethod: 'GET',
   headers: {
     'CloudFront-Forwarded-Proto': 'https',
@@ -63,11 +63,11 @@ const dummyEvent: APIGatewayProxyEvent = {
   stageVariables: null,
   requestContext: {
     resourceId: 'abc',
-    resourcePath: '/cases/{caseId}',
+    resourcePath: '/cases/{caseId}/details',
     httpMethod: 'GET',
     extendedRequestId: 'abc123',
     requestTime: '22/Feb/2023:17:51:21 +0000',
-    path: '/dev/cases/01GSX40H73JQ9Q2T2EERPYWN6C',
+    path: '/dev/cases/01GSX40H73JQ9Q2T2EERPYWN6C/details',
     accountId: '123456789012',
     protocol: 'HTTP/1.1',
     stage: 'dev',

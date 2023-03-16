@@ -3,7 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { CaseAction, deleteCaseMembership } from '@aws/dea-app';
+import { deleteCaseMembership } from '@aws/dea-app/lib/app/resources/delete-case-membership';
+import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { createDeaHandler } from './create-dea-handler';
 
 export const handler = createDeaHandler(deleteCaseMembership, [CaseAction.INVITE]);

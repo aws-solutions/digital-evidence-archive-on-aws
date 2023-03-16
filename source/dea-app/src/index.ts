@@ -20,6 +20,7 @@ import { getCaseFileDetails } from './app/resources/get-case-file-details';
 import { getCaseMembership } from './app/resources/get-case-membership';
 import { getCredentials } from './app/resources/get-credentials';
 import { getLoginUrl } from './app/resources/get-login-url';
+import { getLogoutUrl } from './app/resources/get-logout-url';
 import { getMyCases } from './app/resources/get-my-cases';
 import { getToken } from './app/resources/get-token';
 import { getUsers } from './app/resources/get-users';
@@ -35,6 +36,9 @@ import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
 import { DeaCaseFile } from './models/case-file';
 import { Oauth2Token } from './models/oauth2-token';
+import CognitoHelper from './test-e2e/helpers/cognito-helper';
+import { testEnv } from './test-e2e/helpers/settings';
+import * as testHelpers from './test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from './test/integration-objects';
 import { getTestAuditService } from './test/services/test-audit-service-provider';
 
@@ -42,6 +46,7 @@ export {
   auditService,
   getToken,
   getLoginUrl,
+  getLogoutUrl,
   getCredentials,
   createCases,
   deleteCase,
@@ -79,4 +84,7 @@ export {
   ValidationError,
   VALIDATION_ERROR_NAME,
   dummyContext,
+  testEnv,
+  testHelpers,
+  CognitoHelper,
 };

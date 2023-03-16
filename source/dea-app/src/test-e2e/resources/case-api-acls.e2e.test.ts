@@ -27,13 +27,13 @@ const RANDOM_STRING = '{rand}';
 const getCaseDetailsArgs: argsType = [
   'getCaseDetailsACLs',
   [CaseAction.VIEW_CASE_DETAILS],
-  `cases/${CASE_ID}`,
+  `cases/${CASE_ID}/details`,
   'GET',
 ];
 const putCaseDetailsArgs: argsType = [
   'putCaseDetailsACLs',
   [CaseAction.UPDATE_CASE_DETAILS],
-  `cases/${CASE_ID}`,
+  `cases/${CASE_ID}/details`,
   'PUT',
   JSON.stringify({
     ulid: CASE_ID,
@@ -66,7 +66,7 @@ const getCaseCollabsArgs: argsType = [
 const deleteMembershipArgs: argsType = [
   'removeFromCaseACLs',
   [CaseAction.INVITE],
-  `cases/${CASE_ID}/userMemberships/${COMPANION_ID}`,
+  `cases/${CASE_ID}/users/${COMPANION_ID}/memberships`,
   'DELETE',
   undefined,
   true,
@@ -74,7 +74,7 @@ const deleteMembershipArgs: argsType = [
 const putCaseUserArgs: argsType = [
   'putCaseUserACLs',
   [CaseAction.INVITE],
-  `cases/${CASE_ID}/userMemberships/${COMPANION_ID}`,
+  `cases/${CASE_ID}/users/${COMPANION_ID}/memberships`,
   'PUT',
   JSON.stringify({
     userUlid: COMPANION_ID,
@@ -108,7 +108,7 @@ const listCaseFilesArgs: argsType = [
 const getCaseFileDetailsArgs: argsType = [
   'getCaseFileDetails',
   [CaseAction.VIEW_FILES],
-  `cases/${CASE_ID}/files/${FILE_ID}`,
+  `cases/${CASE_ID}/files/${FILE_ID}/info`,
   'GET',
   undefined,
   false,
@@ -117,7 +117,7 @@ const getCaseFileDetailsArgs: argsType = [
 const completeCaseFileUploadArgs: argsType = [
   'completeCaseFileUpload',
   [CaseAction.UPLOAD],
-  `cases/${CASE_ID}/files/${FILE_ID}`,
+  `cases/${CASE_ID}/files/${FILE_ID}/contents`,
   'PUT',
   JSON.stringify({
     caseUlid: CASE_ID,

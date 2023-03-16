@@ -45,7 +45,7 @@ describe('get case api', () => {
 
     // Now call Get and Check response is what we created
     const getResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${createdCase.ulid}`,
+      `${deaApiUrl}cases/${createdCase.ulid}/details`,
       'GET',
       testUserToken,
       testUserCreds
@@ -63,7 +63,12 @@ describe('get case api', () => {
   it('should throw an error when the case is not found', async () => {
     const url = `${deaApiUrl}cases`;
     const caseId = 'FAKEEFGHHJKKMNNPQRSTTVWXY9';
-    const response = await callDeaAPIWithCreds(`${url}/${caseId}`, 'GET', testUserToken, testUserCreds);
+    const response = await callDeaAPIWithCreds(
+      `${url}/${caseId}/details`,
+      'GET',
+      testUserToken,
+      testUserCreds
+    );
 
     expect(response.status).toEqual(404);
   });
