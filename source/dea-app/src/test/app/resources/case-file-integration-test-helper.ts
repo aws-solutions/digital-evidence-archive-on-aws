@@ -37,6 +37,9 @@ const FILE_PATH = '/food/sushi/';
 const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
 const FILE_SIZE_MB = 50;
 const CONTENT_TYPE = 'image/jpeg';
+const REASON = 'none';
+const TAG = 'yum';
+const DETAILS = 'hungry';
 const DATASETS_PROVIDER = {
   s3Client: new S3Client({ region: 'us-east-1' }),
   bucketName: 'testBucket',
@@ -53,7 +56,10 @@ export const callInitiateCaseFileUpload = async (
   fileName: string = FILE_NAME,
   filePath: string = FILE_PATH,
   contentType: string = CONTENT_TYPE,
-  fileSizeMb: number = FILE_SIZE_MB
+  fileSizeMb: number = FILE_SIZE_MB,
+  tag: string = TAG,
+  reason: string = REASON,
+  details: string = DETAILS
 ): Promise<DeaCaseFile> => {
   const event = Object.assign(
     {},
@@ -65,6 +71,9 @@ export const callInitiateCaseFileUpload = async (
         filePath,
         contentType,
         fileSizeMb,
+        tag,
+        reason,
+        details,
       }),
     }
   );
@@ -228,7 +237,10 @@ export const validateCaseFile = async (
   expectedFileName: string = FILE_NAME,
   expectedFilePath: string = FILE_PATH,
   expectedContentType: string = CONTENT_TYPE,
-  expectedFileSizeMb: number = FILE_SIZE_MB
+  expectedFileSizeMb: number = FILE_SIZE_MB,
+  expectedTag: string = TAG,
+  expectedReason: string = REASON,
+  expectedDetails: string = DETAILS
 ): Promise<void> => {
   expect(deaCaseFile.ulid).toEqual(expectedfileId);
   expect(deaCaseFile.isFile).toEqual(true);
@@ -238,4 +250,7 @@ export const validateCaseFile = async (
   expect(deaCaseFile.filePath).toEqual(expectedFilePath);
   expect(deaCaseFile.createdBy).toEqual(expectedCreator);
   expect(deaCaseFile.fileSizeMb).toEqual(expectedFileSizeMb);
+  expect(deaCaseFile.tag).toEqual(expectedTag);
+  expect(deaCaseFile.details).toEqual(expectedDetails);
+  expect(deaCaseFile.reason).toEqual(expectedReason);
 };

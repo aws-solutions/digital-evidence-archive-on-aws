@@ -9,6 +9,9 @@ export interface InitiateUploadForm {
   filePath: string;
   contentType: string;
   fileSizeMb: number;
+  tag: string;
+  details: string;
+  reason: string;
 }
 
 export interface CompleteUploadForm {

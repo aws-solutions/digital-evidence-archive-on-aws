@@ -26,7 +26,7 @@ import { UploadFilesProps } from './UploadFilesBody';
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [tag, setTag] = useState('');
-  const [description, setDescription] = useState('');
+  const [details, setDetails] = useState('');
   const [reason, setReason] = useState('');
   const [uploadInProgress, setUploadInProgress] = useState(false);
   const router = useRouter();
@@ -42,6 +42,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           filePath: props.filePath,
           fileSizeMb: Math.ceil(Math.max(selectedFile.size, 1) / 1_000_000),
           contentType,
+          tag,
+          reason,
+          details,
         });
 
         // TODO: This needs to be configurable.
@@ -109,9 +112,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               description={fileOperationsLabels.evidenceDetailsDescription}
             >
               <Textarea
-                value={description}
+                value={details}
                 onChange={({ detail: { value } }) => {
-                  setDescription(value);
+                  setDetails(value);
                 }}
               />
             </FormField>
