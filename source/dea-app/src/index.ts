@@ -26,15 +26,16 @@ import { getToken } from './app/resources/get-token';
 import { getUsers } from './app/resources/get-users';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
 import { listCaseFiles } from './app/resources/list-case-files';
+import { revokeToken } from './app/resources/revoke-token';
 import { updateCaseMembership } from './app/resources/update-case-membership';
 import { updateCases } from './app/resources/update-cases';
 import { verifyCaseACLs } from './app/resources/verify-case-acls';
 import { auditService } from './app/services/audit-service';
 import { getCaseUser } from './app/services/case-user-service';
 import { getRequiredPathParam, getUserUlid } from './lambda-http-helpers';
+import { Oauth2Token, RevokeToken } from './models/auth';
 import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
-import { Oauth2Token } from './models/oauth2-token';
 import CognitoHelper from './test-e2e/helpers/cognito-helper';
 import { testEnv } from './test-e2e/helpers/settings';
 import * as testHelpers from './test-e2e/resources/test-helpers';
@@ -44,6 +45,7 @@ import { getTestAuditService } from './test/services/test-audit-service-provider
 export {
   auditService,
   getToken,
+  revokeToken,
   getLoginUrl,
   getLogoutUrl,
   getCredentials,
@@ -73,6 +75,7 @@ export {
   CaseAction,
   DeaCase,
   Oauth2Token,
+  RevokeToken,
   DEAGatewayProxyHandler,
   DEAPreLambdaExecutionChecks,
   ForbiddenError,

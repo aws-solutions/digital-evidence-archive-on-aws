@@ -10,3 +10,7 @@ export interface Oauth2Token {
   readonly expires_in: number;
   readonly token_type: string;
 }
+
+export interface RevokeToken {
+  readonly refreshToken: string;
+}

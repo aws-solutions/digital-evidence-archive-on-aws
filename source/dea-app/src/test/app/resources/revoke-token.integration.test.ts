@@ -3,8 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { ValidationError } from '../../../app/exceptions/validation-exception';
-import { getCredentials } from '../../../app/resources/get-credentials';
 import { getToken } from '../../../app/resources/get-token';
+import { revokeToken } from '../../../app/resources/revoke-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
 import { Oauth2Token } from '../../../models/auth';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
@@ -14,11 +14,12 @@ import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 
 let cognitoParams: CognitoSsmParams;
+let idToken: string;
 
-describe('get-token', () => {
+describe('revoke-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
-  const testUser = 'authCodeIntegrationTestUser';
+  const testUser = 'RevokeCodeIntegrationTestUser';
   const firstName = 'CognitoTokenHelper';
   const lastName = 'TestUser';
 
@@ -32,7 +33,7 @@ describe('get-token', () => {
     await cognitoHelper.cleanup();
   });
 
-  it('successfully get id token using auth code', async () => {
+  it('successfully revoke an refresh token', async () => {
     const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
 
     const authCode = await getAuthorizationCode(
@@ -60,33 +61,32 @@ describe('get-token', () => {
 
     const retrievedTokens: Oauth2Token = jsonParseWithDates(response.body);
 
-    const credentialsEvent = getDummyEvent({
-      pathParameters: {
-        idToken: retrievedTokens.id_token,
-      },
+    // Store for next test
+    idToken = retrievedTokens.id_token;
+
+    const dummyEvent = getDummyEvent({
+      body: JSON.stringify({
+        refreshToken: retrievedTokens.refresh_token,
+      }),
     });
 
-    const credsRepsonse = await getCredentials(credentialsEvent, dummyContext);
-    if (!credsRepsonse.body) {
-      fail();
-    }
-    const credentials = JSON.parse(credsRepsonse.body);
-    expect(credentials).toHaveProperty('AccessKeyId');
-    expect(credentials).toHaveProperty('SecretKey');
-    expect(credentials).toHaveProperty('SessionToken');
+    const revokeResponse = await revokeToken(dummyEvent, dummyContext);
+    expect(revokeResponse.body).toEqual('200');
   }, 20000);
 
-  it('should throw an error if the authorization code is not valid', async () => {
-    const event = getDummyEvent({
-      pathParameters: {
-        authCode: 'DUMMYAUTHCODE',
-      },
+  it('should throw an error if trying to revoke id token', async () => {
+    const dummyEvent = getDummyEvent({
+      body: JSON.stringify({
+        refreshToken: idToken,
+      }),
     });
 
-    await expect(getToken(event, dummyContext)).rejects.toThrow('Request failed with status code 400');
+    await expect(revokeToken(dummyEvent, dummyContext)).rejects.toThrow(
+      'Request failed with status code 400'
+    );
   });
 
-  it('should throw an error if the path param is missing', async () => {
-    await expect(getToken(getDummyEvent(), dummyContext)).rejects.toThrow(ValidationError);
+  it('should throw an error if the payload is missing', async () => {
+    await expect(revokeToken(getDummyEvent(), dummyContext)).rejects.toThrow(ValidationError);
   });
 });

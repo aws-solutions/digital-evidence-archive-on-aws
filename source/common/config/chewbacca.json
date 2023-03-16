@@ -47,6 +47,14 @@
           "method": "GET"
         },
         {
+          "path": "/auth/logoutUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/revokeToken",
+          "method": "POST"
+        },
+        {
           "path": "/auth/credentials/{idToken}/exchange",
           "method": "GET"
         },
@@ -109,6 +117,14 @@
         {
           "path": "/auth/loginUrl",
           "method": "GET"
+        },
+        {
+          "path": "/auth/logoutUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/revokeToken",
+          "method": "POST"
         }
       ]
     },

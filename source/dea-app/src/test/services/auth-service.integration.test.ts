@@ -9,12 +9,16 @@ import {
   CognitoSsmParams,
   getCredentialsByToken,
   getLoginHostedUiUrl,
+  revokeRefreshToken,
 } from '../../app/services/auth-service';
+import { Oauth2Token } from '../../models/auth';
 import { getAuthorizationCode } from '../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../test-e2e/resources/test-helpers';
 
 let cognitoParams: CognitoSsmParams;
+let idToken: string;
+let refreshToken: string;
 
 describe('auth service', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
@@ -53,12 +57,16 @@ describe('auth service', () => {
       testUser,
       cognitoHelper.testPassword
     );
-    const { id_token } = await exchangeAuthorizationCode(authCode, undefined, authTestUrl);
+    const tokens: Oauth2Token = await exchangeAuthorizationCode(authCode, undefined, authTestUrl);
+
+    // Store values for a later test
+    idToken = tokens.id_token;
+    refreshToken = tokens.refresh_token;
 
     // Assert if no id token fectched in exchangeAuthorizationCode
-    expect(id_token).toBeTruthy();
+    expect(idToken).toBeTruthy();
 
-    const credentials = await getCredentialsByToken(id_token);
+    const credentials = await getCredentialsByToken(idToken);
 
     expect(credentials).toHaveProperty('AccessKeyId');
     expect(credentials).toHaveProperty('SecretKey');
@@ -79,6 +87,15 @@ describe('auth service', () => {
     // Assert if no id token fectched in exchangeAuthorizationCode
     expect(id_token).toBeTruthy();
   }, 20000);
+
+  it('revoke token should fail when trying to revoke id Token', async () => {
+    await expect(revokeRefreshToken(idToken)).rejects.toThrow('Request failed with status code 400');
+  });
+
+  it('revoke token successfully when revoking Refresh Token. Should fail to fetch credentials afterwards', async () => {
+    const response = await revokeRefreshToken(refreshToken);
+    expect(response).toEqual(200);
+  });
 
   it('should throw an error if the authorization code is not valid', async () => {
     const dummyAuthCode = 'DUMMY_AUTH_CODE';
