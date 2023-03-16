@@ -48,7 +48,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
         console.log('begin presigned upload');
         console.log(initiatedCaseFile);
-        // TODO show progress bar
         const fileChunkSize = 500_000_000;
 
         const uploadPromises: Promise<Response>[] = [];
@@ -86,73 +85,71 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
   return (
     <SpaceBetween data-testid="upload-file-form-space" size="s">
-      <form onSubmit={(e) => e.preventDefault()} data-testid="upload-file-form">
-        <Form>
-          <Container
-            header={
-              <Header variant="h2" description={fileOperationsLabels.uploadFileDescription}>
-                {fileOperationsLabels.uploadDetailsLabel}
-              </Header>
-            }
-          >
-            <SpaceBetween direction="vertical" size="l">
+      <Form>
+        <Container
+          header={
+            <Header variant="h2" description={fileOperationsLabels.uploadFileDescription}>
+              {fileOperationsLabels.uploadDetailsLabel}
+            </Header>
+          }
+        >
+          <SpaceBetween direction="vertical" size="l">
+            <FormField
+              data-testid="input-tag"
+              label={fileOperationsLabels.evidenceTagLabel}
+              description={fileOperationsLabels.evidenceTagDescription}
+            >
+              <Input
+                value={tag}
+                onChange={({ detail: { value } }) => {
+                  setTag(value);
+                }}
+              />
+            </FormField>
+            <FormField
+              data-testid="input-details"
+              label={fileOperationsLabels.evidenceDetailsLabel}
+              description={fileOperationsLabels.evidenceDetailsDescription}
+            >
+              <Textarea
+                value={description}
+                onChange={({ detail: { value } }) => {
+                  setDescription(value);
+                }}
+              />
+            </FormField>
+            <FormField
+              data-testid="input-reason"
+              label={fileOperationsLabels.uploadReasonLabel}
+              description={fileOperationsLabels.uploadReasonDescription}
+            >
+              <Input
+                value={reason}
+                onChange={({ detail: { value } }) => {
+                  setReason(value);
+                }}
+              />
+            </FormField>
+            <Container>
               <FormField
-                data-testid="input-description"
-                label={fileOperationsLabels.evidenceTagLabel}
-                description={fileOperationsLabels.evidenceTagDescription}
+                label={fileOperationsLabels.selectFileDescription}
+                description={fileOperationsLabels.selectFileSubtext}
               >
-                <Input
-                  value={tag}
-                  onChange={({ detail: { value } }) => {
-                    setTag(value);
-                  }}
-                />
-              </FormField>
-              <FormField
-                data-testid="input-description"
-                label={fileOperationsLabels.evidenceDetailsLabel}
-                description={fileOperationsLabels.evidenceDetailsDescription}
-              >
-                <Textarea
-                  value={description}
-                  onChange={({ detail: { value } }) => {
-                    setDescription(value);
-                  }}
-                />
-              </FormField>
-              <FormField
-                data-testid="input-description"
-                label={fileOperationsLabels.uploadReasonLabel}
-                description={fileOperationsLabels.uploadReasonDescription}
-              >
-                <Input
-                  value={reason}
-                  onChange={({ detail: { value } }) => {
-                    setReason(value);
-                  }}
-                />
-              </FormField>
-              <Container>
-                <FormField
+                <input
+                  type="file"
                   data-testid="file-select"
-                  label={fileOperationsLabels.selectFileDescription}
-                  description={fileOperationsLabels.selectFileSubtext}
-                >
-                  <input
-                    type="file"
-                    onChange={(event) => {
-                      if (event.currentTarget && event.currentTarget.files) {
-                        setSelectedFile(event.currentTarget.files[0]);
-                        console.log(selectedFile);
-                      }
-                    }}
-                  />
-                </FormField>
-              </Container>
-            </SpaceBetween>
-          </Container>
-        </Form>
-      </form>
+                  onChange={(event) => {
+                    if (event.currentTarget && event.currentTarget.files) {
+                      setSelectedFile(event.currentTarget.files[0]);
+                      console.log(selectedFile);
+                    }
+                  }}
+                />
+              </FormField>
+            </Container>
+          </SpaceBetween>
+        </Container>
+      </Form>
 
       <SpaceBetween direction="horizontal" size="xs">
         <Button formAction="none" variant="link" data-testid="upload-file-cancel" onClick={onCancelHandler}>

@@ -638,6 +638,23 @@ Object {
             },
           ],
         },
+        "CorsConfiguration": Object {
+          "CorsRules": Array [
+            Object {
+              "AllowedHeaders": Array [
+                "*",
+              ],
+              "AllowedMethods": Array [
+                "GET",
+                "PUT",
+                "HEAD",
+              ],
+              "AllowedOrigins": Array [
+                "*",
+              ],
+            },
+          ],
+        },
         "LifecycleConfiguration": Object {
           "Rules": Array [
             Object {
