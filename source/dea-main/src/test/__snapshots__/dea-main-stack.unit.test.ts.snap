@@ -1653,7 +1653,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E77629ddb84e276c3c340529f12b17c3b933e9": Object {
+    "DeaApiGatewaydeaapiDeployment99E776295e94bfa604771d1f461d641c04597a0c": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiauthauthCodeOPTIONS8EA9BA0F",
         "DeaApiGatewaydeaapiauthauthCodeFC92ADBD",
@@ -1735,6 +1735,9 @@ Object {
         "DeaApiGatewaydeaapiuilogin44F28D1A",
         "DeaApiGatewaydeaapiuiOPTIONSF590A754",
         "DeaApiGatewaydeaapiui838E08AB",
+        "DeaApiGatewaydeaapiuiuploadfilesGET18F68E99",
+        "DeaApiGatewaydeaapiuiuploadfilesOPTIONS447589BB",
+        "DeaApiGatewaydeaapiuiuploadfilesD316EB71",
         "DeaApiGatewaydeaapiusersGETDBF3AD6C",
         "DeaApiGatewaydeaapiusersOPTIONS330C13A7",
         "DeaApiGatewaydeaapiusersCC765E55",
@@ -1762,7 +1765,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E77629ddb84e276c3c340529f12b17c3b933e9",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E776295e94bfa604771d1f461d641c04597a0c",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
@@ -5983,6 +5986,134 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
+    "DeaApiGatewaydeaapiuiuploadfilesD316EB71": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaApiGatewaydeaapiui838E08AB",
+        },
+        "PathPart": "upload-files",
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaApiGatewaydeaapiuiuploadfilesGET18F68E99": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackartifactbucketFFC87A37",
+                },
+                "/upload-files.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Type": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapiuiuploadfilesD316EB71",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapiuiuploadfilesOPTIONS447589BB": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapiuiuploadfilesD316EB71",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
     "DeaApiGatewaydeaapiusersCC765E55": Object {
       "Properties": Object {
         "ParentId": Object {
@@ -10084,6 +10215,23 @@ Object {
                 },
                 "SSEAlgorithm": "aws:kms",
               },
+            },
+          ],
+        },
+        "CorsConfiguration": Object {
+          "CorsRules": Array [
+            Object {
+              "AllowedHeaders": Array [
+                "*",
+              ],
+              "AllowedMethods": Array [
+                "GET",
+                "PUT",
+                "HEAD",
+              ],
+              "AllowedOrigins": Array [
+                "*",
+              ],
             },
           ],
         },

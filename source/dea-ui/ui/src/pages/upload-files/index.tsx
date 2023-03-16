@@ -27,7 +27,6 @@ const Home: NextPage = () => {
       href: '#',
     },
     {
-      // todo: replace with case name
       text: `Case ${caseId}`,
       href: '#',
     },

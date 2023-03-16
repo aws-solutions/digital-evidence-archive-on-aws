@@ -35,8 +35,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     if (selectedFile) {
       try {
         setUploadInProgress(true);
-        console.log('begin upload');
-        console.log(selectedFile);
         const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
         const initiatedCaseFile: DeaCaseFile = await initiateUpload({
           caseUlid: props.caseId,
@@ -46,8 +44,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           contentType,
         });
 
-        console.log('begin presigned upload');
-        console.log(initiatedCaseFile);
+        // TODO: This needs to be configurable.
+        // NOTE: UI + Backend need to have matching values
         const fileChunkSize = 500_000_000;
 
         const uploadPromises: Promise<Response>[] = [];
@@ -57,18 +55,17 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             const start = index * fileChunkSize;
             const end = (index + 1) * fileChunkSize;
             const filePart =
-              index == numberOfUrls - 1 ? selectedFile.slice(start) : selectedFile.slice(start, end);
+              index === numberOfUrls - 1 ? selectedFile.slice(start) : selectedFile.slice(start, end);
             uploadPromises[index] = fetch(url, { method: 'PUT', body: filePart });
           });
 
           await Promise.all(uploadPromises);
 
-          console.log('begin complete upload');
           await completeUpload({
             caseUlid: props.caseId,
             ulid: initiatedCaseFile.ulid,
             uploadId: initiatedCaseFile.uploadId,
-            // todo: this logic is wrong
+            // TODO: we should calculate hash in parts while uploading parts
             sha256Hash: sha256(await selectedFile.text()).toString(),
           });
         }
@@ -141,7 +138,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
                   onChange={(event) => {
                     if (event.currentTarget && event.currentTarget.files) {
                       setSelectedFile(event.currentTarget.files[0]);
-                      console.log(selectedFile);
                     }
                   }}
                 />
