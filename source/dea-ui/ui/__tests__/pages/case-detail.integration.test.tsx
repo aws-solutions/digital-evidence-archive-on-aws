@@ -1,11 +1,13 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import axios from 'axios';
 import { caseDetailLabels, commonLabels } from '../../src/common/labels';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
+const user = userEvent.setup();
 const push = jest.fn();
 const CASE_ID = '100';
 jest.mock('next/router', () => ({
@@ -87,6 +89,40 @@ const mockedCaseDetail = {
   ulid: 'abc',
   name: 'mocked case',
   status: 'ACTIVE',
+};
+
+const mockedUsers = {
+  users: [
+    {
+      ulid: '01GVHP0HP5V2A80XJZTHJH4QGD',
+      firstName: 'Albert',
+      lastName: 'York',
+      created: '2023-03-15T03:46:23.045Z',
+      updated: '2023-03-15T03:46:23.045Z',
+    },
+    {
+      ulid: '01GVHP0HP5V2A80XJZTHJH4QGE',
+      firstName: 'Bee',
+      lastName: 'Dalton',
+      created: '2023-03-14T03:46:23.045Z',
+      updated: '2023-03-14T03:46:23.045Z',
+    },
+  ],
+};
+
+const mockedCaseUsers = {
+  caseUsers: [
+    {
+      caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
+      ulid: '01GVHP0HP5V2A80XJZTHJH4QGD',
+      caseName: 'Investigation One',
+      actions: ['INVITE'],
+      userFirstName: 'Albert',
+      userLastName: 'York',
+      created: '2023-03-15T03:46:23.045Z',
+      updated: '2023-03-15T03:46:23.045Z',
+    },
+  ],
 };
 
 describe('CaseDetailsPage', () => {
@@ -174,16 +210,62 @@ describe('CaseDetailsPage', () => {
   });
 
   it('navigates to manage access page', async () => {
-    mockedAxios.mockResolvedValue({
-      data: {
-        ulid: 'abc',
-        name: 'mocked case',
-        status: 'ACTIVE',
-      },
-      status: 200,
-      statusText: 'Ok',
-      headers: {},
-      config: {},
+    const USER_ID = '01GVHP0HP5V2A80XJZTHJH4QGE';
+    mockedAxios.mockImplementation((event) => {
+      const eventObj: any = event;
+      if (eventObj.url === `https://localhostcases/${CASE_ID}/details`) {
+        return Promise.resolve({
+          data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === `https://localhostcases/${CASE_ID}/userMemberships`) {
+        if (eventObj.method === 'post') {
+          return Promise.resolve({
+            data: {},
+            status: 200,
+            statusText: 'Ok',
+            headers: {},
+            config: {},
+          });
+        }
+        return Promise.resolve({
+          data: mockedCaseUsers,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === `https://localhostcases/${CASE_ID}//users/${USER_ID}/memberships`) {
+        if (eventObj.method === 'delete') {
+          return Promise.resolve({
+            data: {},
+            status: 200,
+            statusText: 'Ok',
+            headers: {},
+            config: {},
+          });
+        }
+        // put
+        return Promise.resolve({
+          data: {},
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else {
+        // get users
+        return Promise.resolve({
+          data: mockedUsers,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      }
     });
 
     const page = render(<CaseDetailsPage />);
@@ -191,20 +273,41 @@ describe('CaseDetailsPage', () => {
 
     const tab = await screen.findByText(caseDetailLabels.manageAccessLabel);
     fireEvent.click(tab);
-    const accessInput = await screen.findByTestId('manage-access-input');
-    expect(accessInput).toBeTruthy();
-    expect(accessInput).toBeInTheDocument();
-    expect(accessInput.nodeValue).toEqual(null);
 
-    const container = await screen.findByTestId('manage-access-container');
-    const input = wrapper(container).findFormField()?.findControl()?.findInput();
+    // assert autosuggest component
+    const searchUserInput = await screen.findByTestId('user-search-input');
+    const searchUserInputWrapper = wrapper(page.container).findAutosuggest()!;
+    expect(searchUserInput).toBeTruthy();
+    searchUserInputWrapper.focus();
 
-    if (!input) {
-      fail();
+    for (let index = 0; index < mockedUsers.users.length; index++) {
+      const user = mockedUsers.users[index];
+      const optionValue = `${user.firstName} ${user.lastName}`;
+      expect(searchUserInputWrapper.findDropdown().findOptionByValue(optionValue)!.getElement()).toBeTruthy();
     }
 
-    const newVal = 'new input value';
-    input.setInputValue(newVal);
+    const textToInput = 'Albert York';
+    const searchInput = await screen.findByRole('combobox', {
+      description:
+        'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
+    });
+    await userEvent.type(searchInput, textToInput);
+    searchUserInputWrapper.selectSuggestionByValue(textToInput);
+
+    const addCaseMemberButton = screen.findByRole('button', { name: 'Add' });
+    (await addCaseMemberButton).click();
+
+    // assert multiselect component
+    const permissionsWrapper = wrapper(page.container).findMultiselect()!;
+    expect(permissionsWrapper).toBeTruthy();
+    expect(permissionsWrapper.findTokens()).toHaveLength(1);
+    permissionsWrapper.openDropdown();
+    permissionsWrapper.selectOption(1);
+
+    // assert remove button
+    const removeButton = screen.findByRole('button', { name: 'Remove' });
+    expect(removeButton).toBeTruthy();
+    (await removeButton).click();
   });
 
   it('navigates to upload files page', async () => {
