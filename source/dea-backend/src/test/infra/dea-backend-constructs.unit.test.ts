@@ -47,12 +47,14 @@ describe('DeaBackend constructs', () => {
     });
     const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
       kmsKey: key,
+      deaDatasetsBucket: backend.datasetsBucket,
     });
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
       deaDatasetsBucketName: backend.datasetsBucket.bucketName,
+      deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       kmsKey: key,
       region: stack.region,
       accountId: stack.account,
@@ -75,8 +77,8 @@ describe('DeaBackend constructs', () => {
     });
 
     //handlers
-    const expectedLambdaCount = 22;
-    const expectedMethodCount = 45;
+    const expectedLambdaCount = 24;
+    const expectedMethodCount = 50;
     template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCount);
     template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCount);
 
@@ -113,12 +115,14 @@ describe('DeaBackend constructs', () => {
     });
     const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
       kmsKey: key,
+      deaDatasetsBucket: backend.datasetsBucket,
     });
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
       deaDatasetsBucketName: backend.datasetsBucket.bucketName,
+      deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       kmsKey: key,
       region: stack.region,
       accountId: stack.account,

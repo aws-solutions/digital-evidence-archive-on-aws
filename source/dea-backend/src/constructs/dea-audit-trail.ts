@@ -8,12 +8,13 @@ import * as CloudTrail from 'aws-cdk-lib/aws-cloudtrail';
 import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
-import { BlockPublicAccess, Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
+import { BlockPublicAccess, Bucket, BucketEncryption, IBucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 
 interface DeaAuditProps extends StackProps {
   readonly kmsKey: Key;
+  readonly deaDatasetsBucket: IBucket;
 }
 
 export class DeaAuditTrail extends Construct {
@@ -26,11 +27,21 @@ export class DeaAuditTrail extends Construct {
 
     this.auditLogGroup = this._createLogGroup(scope, 'deaAuditLogs', props.kmsKey);
     this.trailLogGroup = this._createLogGroup(scope, 'deaTrailLogs', props.kmsKey);
-    this.auditTrail = this._createAuditTrail(scope, this.trailLogGroup, props.kmsKey);
+    this.auditTrail = this._createAuditTrail(
+      scope,
+      this.trailLogGroup,
+      props.kmsKey,
+      props.deaDatasetsBucket
+    );
     props.kmsKey.grantEncrypt(new ServicePrincipal('cloudtrail.amazonaws.com'));
   }
 
-  private _createAuditTrail(scope: Construct, trailLogGroup: LogGroup, kmsKey: Key) {
+  private _createAuditTrail(
+    scope: Construct,
+    trailLogGroup: LogGroup,
+    kmsKey: Key,
+    deaDatasetsBucket: IBucket
+  ) {
     const trailBucket = new Bucket(this, 'deaTrailBucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       encryption: BucketEncryption.KMS,
@@ -41,12 +52,16 @@ export class DeaAuditTrail extends Construct {
       autoDeleteObjects: deaConfig.isTestStack(),
     });
 
-    return new CloudTrail.Trail(scope, 'deaTrail', {
+    const trail = new CloudTrail.Trail(scope, 'deaTrail', {
       bucket: trailBucket,
       sendToCloudWatchLogs: true,
       cloudWatchLogGroup: trailLogGroup,
       encryptionKey: kmsKey,
     });
+
+    trail.addS3EventSelector([{ bucket: deaDatasetsBucket }]);
+    trail.logAllLambdaDataEvents();
+    return trail;
   }
 
   private _createLogGroup(scope: Construct, id: string, kmsKey: Key) {

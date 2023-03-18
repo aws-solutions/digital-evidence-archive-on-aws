@@ -16,5 +16,6 @@
   "globalTeardown": "<rootDir>/src/test/local-dynamo/teardown.ts",
   "moduleNameMapper": {
     "#node-web-compat": "./node-web-compat-node.js"
-  }
+  },
+  "testTimeout": 10000
 }

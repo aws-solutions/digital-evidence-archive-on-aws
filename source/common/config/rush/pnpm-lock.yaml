@@ -36,8 +36,8 @@ importers:
       aws-cdk-lib: ~2.63.0
       aws-jwt-verify: ^3.4.0
       aws-lambda: ^1.0.7
-      aws-sdk-client-mock: ^2.0.1
-      aws-sdk-client-mock-jest: ^2.0.1
+      aws-sdk-client-mock: ^2.1.1
+      aws-sdk-client-mock-jest: ^2.1.1
       aws4-axios: ~2.4.9
       axios: ^0.27.1
       concurrently: ^7.0.0
@@ -103,8 +103,8 @@ importers:
       '@types/uuid': 8.3.4
       aws-cdk: 2.63.0
       aws-cdk-lib: 2.63.0_constructs@10.0.5
-      aws-sdk-client-mock: 2.0.1
-      aws-sdk-client-mock-jest: 2.0.1_aws-sdk-client-mock@2.0.1
+      aws-sdk-client-mock: 2.1.1
+      aws-sdk-client-mock-jest: 2.1.1_aws-sdk-client-mock@2.1.1
       aws4-axios: 2.4.9_axios@0.27.2
       axios: 0.27.2
       concurrently: 7.5.0
@@ -5826,18 +5826,18 @@ packages:
       watchpack: 2.4.0
     dev: false
 
-  /aws-sdk-client-mock-jest/2.0.1_aws-sdk-client-mock@2.0.1:
-    resolution: {integrity: sha512-mQN3rWzk+b9+kxMAeV9fxu8+lDOFpmvBc+dgU9Sd+HkF+0Sl9O9upFRS7NudyVDcq7KF/30jsC2Dju2Q28nlIw==}
+  /aws-sdk-client-mock-jest/2.1.1_aws-sdk-client-mock@2.1.1:
+    resolution: {integrity: sha512-z1rpv2ACN1WSGU8u73sJVC0pHPuJfHyITAE88Luz6ph6w47YIkgG0G2latoSmvqJwanv1gJYFk+1VPHJdco1Ig==}
     peerDependencies:
-      aws-sdk-client-mock: 2.0.1
+      aws-sdk-client-mock: 2.1.1
     dependencies:
       '@types/jest': 28.1.8
-      aws-sdk-client-mock: 2.0.1
+      aws-sdk-client-mock: 2.1.1
       tslib: 2.4.1
     dev: true
 
-  /aws-sdk-client-mock/2.0.1:
-    resolution: {integrity: sha512-Ib/AnI8ZdoIxOBbKSs28TUwJb7FI/AYVYn48PcXx6guk5fBs4GZJJEc+Ci9aImRtVmgO6jHN/6Etz17fr6j3qw==}
+  /aws-sdk-client-mock/2.1.1:
+    resolution: {integrity: sha512-UuxXmICU4nmXTRm2BzLZdXmnyI+5NEBb5McRDkObasXVxXChvLm0Ci/PGENh4sCD+Es64SJiz70mtY48JROk0A==}
     dependencies:
       '@types/sinon': 10.0.13
       sinon: 14.0.2

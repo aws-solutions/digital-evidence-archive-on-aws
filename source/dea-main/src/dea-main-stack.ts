@@ -49,6 +49,7 @@ export class DeaMainStack extends cdk.Stack {
 
     const auditTrail = new DeaAuditTrail(this, 'DeaAudit', {
       kmsKey,
+      deaDatasetsBucket: backendConstruct.datasetsBucket,
     });
 
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
@@ -56,6 +57,7 @@ export class DeaMainStack extends cdk.Stack {
       deaTableName: backendConstruct.deaTable.tableName,
       deaDatasetsBucketArn: backendConstruct.datasetsBucket.bucketArn,
       deaDatasetsBucketName: backendConstruct.datasetsBucket.bucketName,
+      deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       kmsKey,
       region,
       accountId,

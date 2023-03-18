@@ -10,12 +10,14 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
 import { logger } from '../logger';
 
+const AWS_CLIENT_INVALID_PARAMETER_NAME = 'InvalidParameterException';
 // If you have a new error case that you want to support, create a new Class that extends Error
 // and add a handler here that responds with an appropriate status code.
 
 export type ExceptionHandler = (error: Error) => Promise<APIGatewayProxyResult>;
 
 const notFoundHandler: ExceptionHandler = async (error) => {
+  logger.error('NotFoundError', error);
   return {
     statusCode: 404,
     body: error.message,
@@ -23,6 +25,7 @@ const notFoundHandler: ExceptionHandler = async (error) => {
 };
 
 const validationErrorHandler: ExceptionHandler = async (error) => {
+  logger.error('ValidationError', error);
   return {
     statusCode: 400,
     body: error.message,
@@ -63,3 +66,4 @@ exceptionHandlers.set(VALIDATION_ERROR_NAME, validationErrorHandler);
 exceptionHandlers.set(NOT_FOUND_ERROR_NAME, notFoundHandler);
 exceptionHandlers.set(joiInstance.name, joiValidationErrorHandler);
 exceptionHandlers.set(FORBIDDEN_ERROR_NAME, forbiddenErrorHandler);
+exceptionHandlers.set(AWS_CLIENT_INVALID_PARAMETER_NAME, validationErrorHandler);

@@ -85,6 +85,14 @@
         {
           "path": "/cases/my-cases",
           "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/audit",
+          "method": "POST"
         }
       ]
     },

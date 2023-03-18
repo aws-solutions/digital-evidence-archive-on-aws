@@ -148,6 +148,18 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/get-users-handler.ts',
       queryParams: ['nameBeginsWith'],
     },
+    {
+      eventName: AuditEventType.GET_CASE_AUDIT,
+      path: '/cases/{caseId}/audit/{auditId}/csv',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-case-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.REQUEST_CASE_AUDIT,
+      path: '/cases/{caseId}/audit',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/request-case-audit-handler.ts',
+    },
   ],
   allowedOrigins: JSON.parse(process.env.ALLOWED_ORIGINS || '[]'),
 };
