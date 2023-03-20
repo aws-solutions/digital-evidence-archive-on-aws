@@ -180,15 +180,26 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
         setDownloadInProgress(true);
         const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
         //TODO: need to figure out hash validation on download
-        fetch(downloadResponse.downloadUrl, { method: 'GET' }).then((response) => {
-          response.blob().then((blob) => {
-            const fileUrl = window.URL.createObjectURL(blob);
-            let alink = document.createElement('a');
-            alink.href = fileUrl;
-            alink.download = file.fileName;
-            alink.click();
+        fetch(downloadResponse.downloadUrl, { method: 'GET' })
+          .then((response) => {
+            response
+              .blob()
+              .then((blob) => {
+                const fileUrl = window.URL.createObjectURL(blob);
+                const alink = document.createElement('a');
+                alink.href = fileUrl;
+                alink.download = file.fileName;
+                alink.click();
+              })
+              .catch((reason) => {
+                // TODO add error banner like in figma
+                console.log(reason);
+              });
+          })
+          .catch((reason) => {
+            // TODO add error banner like in figma
+            console.log(reason);
           });
-        });
       }
     } finally {
       setDownloadInProgress(false);
