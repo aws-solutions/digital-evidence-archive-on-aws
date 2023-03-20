@@ -5,11 +5,12 @@
 
 import { DeaCase } from '../models/case';
 import { DeaCaseFile } from '../models/case-file';
-import { CaseType, CaseUserType, UserType, CaseFileType } from '../persistence/schema/entities';
+import { CaseType, CaseUserType, SessionType, UserType, CaseFileType } from '../persistence/schema/entities';
 import { CaseAction } from './case-action';
 import { CaseFileStatus } from './case-file-status';
 import { CaseStatus } from './case-status';
 import { CaseUser } from './case-user';
+import { DeaSession } from './session';
 import { DeaUser } from './user';
 
 export const caseFromEntity = (caseEntity: CaseType): DeaCase => {
@@ -23,6 +24,17 @@ export const caseFromEntity = (caseEntity: CaseType): DeaCase => {
     status: caseEntity.status as CaseStatus,
     created: caseEntity.created,
     updated: caseEntity.updated,
+  };
+};
+
+export const sessionFromEntity = (sessionEntity: SessionType): DeaSession => {
+  return {
+    userUlid: sessionEntity.userUlid,
+    tokenId: sessionEntity.tokenId,
+    ttl: sessionEntity.ttl,
+    isRevoked: sessionEntity.isRevoked,
+    created: sessionEntity.created,
+    updated: sessionEntity.updated,
   };
 };
 

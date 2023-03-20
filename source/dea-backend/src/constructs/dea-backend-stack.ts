@@ -54,6 +54,7 @@ export class DeaBackendConstruct extends Construct {
       encryption: TableEncryption.CUSTOMER_MANAGED,
       encryptionKey: key,
       pointInTimeRecovery: true,
+      timeToLiveAttribute: 'ttl',
     });
 
     deaTable.addGlobalSecondaryIndex({
