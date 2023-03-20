@@ -39,7 +39,7 @@
     "test": "jest --coverage",
     "test:noe2e": "jest --ci --coverage '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": "jest --ci --coverage",
-    "unit:only": "jest --ci --coverage '.*/*unit.test.*'"
+    "unit:only": "jest --ci --coverage '.*/upload-files.unit.test.*'"
   },
   "dependencies": {
     "@aws/dea-app": "workspace:*",

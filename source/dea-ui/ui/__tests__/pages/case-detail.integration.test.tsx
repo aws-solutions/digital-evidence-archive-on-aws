@@ -17,6 +17,9 @@ jest.mock('next/router', () => ({
   })),
 }));
 
+global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
+global.window.URL.createObjectURL = jest.fn(() => {});
+
 jest.mock('axios');
 const mockedAxios = axios as jest.MockedFunction<typeof axios>;
 
@@ -325,5 +328,44 @@ describe('CaseDetailsPage', () => {
     const uploadButton = await screen.findByText(commonLabels.uploadButton);
     fireEvent.click(uploadButton);
     expect(push).toHaveBeenCalledWith(`/upload-files?caseId=${CASE_ID}&filePath=/`);
+  });
+
+  it('downloads selected files', async () => {
+    mockedAxios.mockImplementation((event) => {
+      const eventObj: any = event;
+      if (eventObj.url === 'https://localhostcases/100/details') {
+        return Promise.resolve({
+          data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else {
+        return Promise.resolve({
+          data: mockFilesRoot,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      }
+    });
+
+    const page = render(<CaseDetailsPage />);
+    expect(page).toBeTruthy();
+
+    const table = await screen.findByTestId('file-table');
+    const tableWrapper = wrapper(table);
+    expect(table).toBeTruthy();
+
+    const fileSelector = await tableWrapper.findCheckbox();
+    if (!fileSelector) {
+      fail();
+    }
+    fileSelector.click();
+
+    const downloadButton = await screen.findByText(commonLabels.downloadButton);
+    fireEvent.click(downloadButton);
   });
 });

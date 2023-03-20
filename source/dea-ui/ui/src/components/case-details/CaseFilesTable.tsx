@@ -20,7 +20,6 @@ import { useRouter } from 'next/router';
 import * as React from 'react';
 import { getPresignedUrl, useListCaseFiles } from '../../api/cases';
 import { commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
-import { downloadFile } from '../../helpers/fileHelper';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { CaseDetailsBodyProps } from './CaseDetailsBody';
 
@@ -170,6 +169,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
   async function downloadFilesHandler() {
     for (const file of selectedFiles) {
       const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
+      //TODO: need to figure out hash validation on download
       fetch(downloadResponse.downloadUrl, { method: 'GET' }).then((response) => {
         response.blob().then((blob) => {
           const fileUrl = window.URL.createObjectURL(blob);

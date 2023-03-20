@@ -1,6 +1,6 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import axios from 'axios';
@@ -75,7 +75,11 @@ describe('UploadFiles page', () => {
     wrappedReason.setInputValue('reason');
 
     const uploadButton = screen.getByText(commonLabels.uploadButton);
-    const btn = wrapper(uploadButton);
-    btn.click();
+    const uploadButtonWrapper = wrapper(uploadButton);
+    uploadButtonWrapper.click();
+
+    // upload button will be disabled while in progress and then re-enabled when done
+    await waitFor(() => expect(screen.queryByTestId('upload-file-submit')).toBeDisabled());
+    await waitFor(() => expect(screen.queryByTestId('upload-file-submit')).toBeEnabled());
   });
 });
