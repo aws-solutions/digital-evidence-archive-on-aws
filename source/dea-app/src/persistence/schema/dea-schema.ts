@@ -8,6 +8,8 @@ import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { allButDisallowed, ulidRegex, filePathSafeCharsRegex } from '../../models/validation/joi-common';
 
+const DEFAULT_TTL_TIME_ADDITION_SECONDS = 3600;
+
 export const DeaSchema = {
   format: 'onetable:1.1.0',
   version: '0.1.0',
@@ -93,6 +95,27 @@ export const DeaSchema = {
       created: { type: Date },
       updated: { type: Date },
     },
+    Session: {
+      PK: { type: String, value: 'USER#${userUlid}#', required: true },
+      SK: { type: String, value: 'SESSION#${tokenId}#', required: true },
+      userUlid: { type: String, validate: ulidRegex, required: true },
+      // the tokenId here is separate from the User tokenId.
+      // the User tokenId is the "sub" field from the id token and is
+      // used to determine whether the user is a first time federated user
+      // this tokenId is the jti of the id token and is a unique identifier
+      tokenId: { type: String, required: true },
+      ttl: {
+        ttl: true,
+        type: Number,
+        default: () => {
+          return Math.floor(Date.now() / 1000 + DEFAULT_TTL_TIME_ADDITION_SECONDS);
+        },
+        required: true,
+      },
+      isRevoked: { type: Boolean, required: true },
+      created: { type: Date },
+      updated: { type: Date },
+    },
     User: {
       PK: { type: String, value: 'USER#${ulid}#', required: true },
       SK: { type: String, value: 'USER#', required: true },
@@ -102,6 +125,9 @@ export const DeaSchema = {
       GSI2PK: { type: String, value: 'USER#${tokenId}#' },
       GSI2SK: { type: String, value: 'USER#' },
       ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
+      // The following is the sub field from the identity token for the user
+      // is guaranteed to unique per user. This field is used to determine
+      // whether or not user has already been added to the DB
       tokenId: { type: String, required: true },
       firstName: { type: String, required: true, validate: allButDisallowed },
       lastName: { type: String, required: true, validate: allButDisallowed },
@@ -115,5 +141,6 @@ export const DeaSchema = {
   params: {
     isoDates: true,
     timestamps: true,
+    ttl: true,
   },
 };

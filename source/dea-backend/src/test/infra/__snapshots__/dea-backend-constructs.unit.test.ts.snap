@@ -409,6 +409,10 @@ Object {
           "SSEEnabled": true,
           "SSEType": "KMS",
         },
+        "TimeToLiveSpecification": Object {
+          "AttributeName": "ttl",
+          "Enabled": true,
+        },
       },
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
