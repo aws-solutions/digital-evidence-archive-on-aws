@@ -18,8 +18,9 @@ import {
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
-import { useListCaseFiles } from '../../api/cases';
+import { getPresignedUrl, useListCaseFiles } from '../../api/cases';
 import { commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
+import { downloadFile } from '../../helpers/fileHelper';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { CaseDetailsBodyProps } from './CaseDetailsBody';
 
@@ -31,6 +32,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
     basePath: '/',
   });
   const { data, isLoading } = useListCaseFiles(props.caseId, filesTableState.basePath);
+  const [selectedFiles, setSelectedFiles] = React.useState<DeaCaseFile[]>([]);
 
   const filteringProperties: readonly PropertyFilterProperty[] = [
     {
@@ -109,10 +111,12 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       description={filesListLabels.filterDescription}
       actions={
         <SpaceBetween direction="horizontal" size="xs">
-          <Button data-testid="upload-file-button" onClick={uploadFileHandler}>
+          <Button data-testid="upload-file-button" onClick={uploadFilesHandler}>
             {commonLabels.uploadButton}
           </Button>
-          <Button variant="primary">{commonLabels.downloadButton}</Button>
+          <Button variant="primary" onClick={downloadFilesHandler}>
+            {commonLabels.downloadButton}
+          </Button>
         </SpaceBetween>
       }
     >
@@ -141,7 +145,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       <Box padding={{ bottom: 's' }} variant="p" color="inherit">
         {filesListLabels.noDisplayLabel}
       </Box>
-      <Button onClick={uploadFileHandler}>{filesListLabels.uploadFileLabel}</Button>
+      <Button onClick={uploadFilesHandler}>{filesListLabels.uploadFileLabel}</Button>
     </Box>
   );
 
@@ -158,14 +162,33 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
     />
   );
 
-  function uploadFileHandler() {
+  function uploadFilesHandler() {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
+  }
+
+  async function downloadFilesHandler() {
+    for (const file of selectedFiles) {
+      const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
+      fetch(downloadResponse.downloadUrl, { method: 'GET' }).then((response) => {
+        response.blob().then((blob) => {
+          const fileUrl = window.URL.createObjectURL(blob);
+          let alink = document.createElement('a');
+          alink.href = fileUrl;
+          alink.download = file.fileName;
+          alink.click();
+        });
+      });
+    }
   }
 
   return (
     <Table
       data-testid="file-table"
+      onSelectionChange={({ detail }) => {
+        setSelectedFiles(detail.selectedItems);
+      }}
+      selectedItems={selectedFiles}
       columnDefinitions={[
         {
           id: 'name',

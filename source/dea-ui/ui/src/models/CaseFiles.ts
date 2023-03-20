@@ -20,3 +20,12 @@ export interface CompleteUploadForm {
   sha256Hash?: string;
   uploadId?: string;
 }
+
+export interface DownloadFileForm {
+  caseUlid: string;
+  ulid?: string;
+}
+
+export interface DownloadFileResult {
+  downloadUrl: string;
+}

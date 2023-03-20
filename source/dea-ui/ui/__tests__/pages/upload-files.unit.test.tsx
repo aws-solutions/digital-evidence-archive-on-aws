@@ -1,10 +1,10 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import axios from 'axios';
-import { commonLabels, createCaseLabels } from '../../src/common/labels';
+import { commonLabels } from '../../src/common/labels';
 import Home from '../../src/pages/upload-files';
 
 const push = jest.fn();
@@ -33,6 +33,7 @@ mockedAxios.mockResolvedValue({
   headers: {},
   config: {},
 });
+
 describe('UploadFiles page', () => {
   it('responds to cancel', () => {
     render(<Home />);
