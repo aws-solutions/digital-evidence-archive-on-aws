@@ -53,5 +53,7 @@ export const paginationLimit = Joi.number().min(1).max(100).optional();
 
 export const base64String = Joi.string().base64().required();
 
+export const ttlJoi = Joi.number().min(1500000000).max(5000000000).required();
+
 // https://github.com/odomojuli/RegExAPI
 export const authCode = Joi.string().regex(/^[A-Za-z0-9-_]+$/);
