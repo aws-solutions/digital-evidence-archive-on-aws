@@ -367,5 +367,9 @@ describe('CaseDetailsPage', () => {
 
     const downloadButton = await screen.findByText(commonLabels.downloadButton);
     fireEvent.click(downloadButton);
+
+    // upload button will be disabled while in progress and then re-enabled when done
+    await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeDisabled());
+    await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeEnabled());
   });
 });

@@ -15,6 +15,7 @@ import {
   SpaceBetween,
   Table,
   TextFilter,
+  Spinner,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
@@ -32,6 +33,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
   });
   const { data, isLoading } = useListCaseFiles(props.caseId, filesTableState.basePath);
   const [selectedFiles, setSelectedFiles] = React.useState<DeaCaseFile[]>([]);
+  const [downloadInProgress, setDownloadInProgress] = React.useState(false);
 
   const filteringProperties: readonly PropertyFilterProperty[] = [
     {
@@ -113,8 +115,14 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
           <Button data-testid="upload-file-button" onClick={uploadFilesHandler}>
             {commonLabels.uploadButton}
           </Button>
-          <Button variant="primary" onClick={downloadFilesHandler}>
+          <Button
+            data-testid="download-file-button"
+            variant="primary"
+            onClick={downloadFilesHandler}
+            disabled={downloadInProgress}
+          >
             {commonLabels.downloadButton}
+            {downloadInProgress ? <Spinner size="big" /> : null}
           </Button>
         </SpaceBetween>
       }
@@ -167,18 +175,24 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
   }
 
   async function downloadFilesHandler() {
-    for (const file of selectedFiles) {
-      const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
-      //TODO: need to figure out hash validation on download
-      fetch(downloadResponse.downloadUrl, { method: 'GET' }).then((response) => {
-        response.blob().then((blob) => {
-          const fileUrl = window.URL.createObjectURL(blob);
-          let alink = document.createElement('a');
-          alink.href = fileUrl;
-          alink.download = file.fileName;
-          alink.click();
+    try {
+      for (const file of selectedFiles) {
+        setDownloadInProgress(true);
+        const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
+        //TODO: need to figure out hash validation on download
+        fetch(downloadResponse.downloadUrl, { method: 'GET' }).then((response) => {
+          response.blob().then((blob) => {
+            const fileUrl = window.URL.createObjectURL(blob);
+            let alink = document.createElement('a');
+            alink.href = fileUrl;
+            alink.download = file.fileName;
+            alink.click();
+          });
         });
-      });
+      }
+    } finally {
+      setDownloadInProgress(false);
+      setSelectedFiles([]);
     }
   }
 
