@@ -8,7 +8,12 @@ import { CaseUser } from '@aws/dea-app/lib/models/case-user';
 import { DeaUser } from '@aws/dea-app/lib/models/user';
 import useSWR from 'swr';
 import { httpApiDelete, httpApiGet, httpApiPost, httpApiPut } from '../helpers/apiHelper';
-import { CompleteUploadForm, InitiateUploadForm } from '../models/CaseFiles';
+import {
+  CompleteUploadForm,
+  DownloadFileForm,
+  DownloadFileResult,
+  InitiateUploadForm,
+} from '../models/CaseFiles';
 import { CreateCaseForm } from '../models/Cases';
 import { CaseUserForm } from '../models/CaseUser';
 import { DeaCaseDTO } from './models/case';
@@ -58,6 +63,10 @@ export const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaC
 
 export const completeUpload = async (apiInput: CompleteUploadForm): Promise<DeaCaseFile> => {
   return httpApiPut(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}/contents`, { ...apiInput });
+};
+
+export const getPresignedUrl = async (apiInput: DownloadFileForm): Promise<DownloadFileResult> => {
+  return httpApiGet(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}/contents`, undefined);
 };
 
 export const useGetUsers = (nameBeginsWith: string): DeaListResult<DeaUser> => {

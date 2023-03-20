@@ -1,10 +1,10 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import axios from 'axios';
-import { commonLabels, createCaseLabels } from '../../src/common/labels';
+import { commonLabels } from '../../src/common/labels';
 import Home from '../../src/pages/upload-files';
 
 const push = jest.fn();
@@ -33,6 +33,7 @@ mockedAxios.mockResolvedValue({
   headers: {},
   config: {},
 });
+
 describe('UploadFiles page', () => {
   it('responds to cancel', () => {
     render(<Home />);
@@ -74,7 +75,11 @@ describe('UploadFiles page', () => {
     wrappedReason.setInputValue('reason');
 
     const uploadButton = screen.getByText(commonLabels.uploadButton);
-    const btn = wrapper(uploadButton);
-    btn.click();
+    const uploadButtonWrapper = wrapper(uploadButton);
+    uploadButtonWrapper.click();
+
+    // upload button will be disabled while in progress and then re-enabled when done
+    await waitFor(() => expect(screen.queryByTestId('upload-file-submit')).toBeDisabled());
+    await waitFor(() => expect(screen.queryByTestId('upload-file-submit')).toBeEnabled());
   });
 });

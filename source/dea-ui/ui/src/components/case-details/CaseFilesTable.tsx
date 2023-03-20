@@ -15,10 +15,11 @@ import {
   SpaceBetween,
   Table,
   TextFilter,
+  Spinner,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
-import { useListCaseFiles } from '../../api/cases';
+import { getPresignedUrl, useListCaseFiles } from '../../api/cases';
 import { commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { CaseDetailsBodyProps } from './CaseDetailsBody';
@@ -31,6 +32,8 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
     basePath: '/',
   });
   const { data, isLoading } = useListCaseFiles(props.caseId, filesTableState.basePath);
+  const [selectedFiles, setSelectedFiles] = React.useState<DeaCaseFile[]>([]);
+  const [downloadInProgress, setDownloadInProgress] = React.useState(false);
 
   const filteringProperties: readonly PropertyFilterProperty[] = [
     {
@@ -109,10 +112,18 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       description={filesListLabels.filterDescription}
       actions={
         <SpaceBetween direction="horizontal" size="xs">
-          <Button data-testid="upload-file-button" onClick={uploadFileHandler}>
+          <Button data-testid="upload-file-button" onClick={uploadFilesHandler}>
             {commonLabels.uploadButton}
           </Button>
-          <Button variant="primary">{commonLabels.downloadButton}</Button>
+          <Button
+            data-testid="download-file-button"
+            variant="primary"
+            onClick={downloadFilesHandler}
+            disabled={downloadInProgress}
+          >
+            {commonLabels.downloadButton}
+            {downloadInProgress ? <Spinner size="big" /> : null}
+          </Button>
         </SpaceBetween>
       }
     >
@@ -141,7 +152,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       <Box padding={{ bottom: 's' }} variant="p" color="inherit">
         {filesListLabels.noDisplayLabel}
       </Box>
-      <Button onClick={uploadFileHandler}>{filesListLabels.uploadFileLabel}</Button>
+      <Button onClick={uploadFilesHandler}>{filesListLabels.uploadFileLabel}</Button>
     </Box>
   );
 
@@ -158,14 +169,51 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
     />
   );
 
-  function uploadFileHandler() {
+  function uploadFilesHandler() {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
+  }
+
+  async function downloadFilesHandler() {
+    try {
+      for (const file of selectedFiles) {
+        setDownloadInProgress(true);
+        const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
+        //TODO: need to figure out hash validation on download
+        fetch(downloadResponse.downloadUrl, { method: 'GET' })
+          .then((response) => {
+            response
+              .blob()
+              .then((blob) => {
+                const fileUrl = window.URL.createObjectURL(blob);
+                const alink = document.createElement('a');
+                alink.href = fileUrl;
+                alink.download = file.fileName;
+                alink.click();
+              })
+              .catch((reason) => {
+                // TODO add error banner like in figma
+                console.log(reason);
+              });
+          })
+          .catch((reason) => {
+            // TODO add error banner like in figma
+            console.log(reason);
+          });
+      }
+    } finally {
+      setDownloadInProgress(false);
+      setSelectedFiles([]);
+    }
   }
 
   return (
     <Table
       data-testid="file-table"
+      onSelectionChange={({ detail }) => {
+        setSelectedFiles(detail.selectedItems);
+      }}
+      selectedItems={selectedFiles}
       columnDefinitions={[
         {
           id: 'name',
