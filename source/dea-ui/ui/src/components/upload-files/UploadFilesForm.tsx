@@ -14,17 +14,25 @@ import {
   Input,
   Textarea,
   Spinner,
+  Table,
 } from '@cloudscape-design/components';
 import sha256 from 'crypto-js/sha256';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useState } from 'react';
 import { initiateUpload, completeUpload } from '../../api/cases';
-import { commonLabels, fileOperationsLabels } from '../../common/labels';
+import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
 import { UploadFilesProps } from './UploadFilesBody';
 
+interface FileUpload {
+  fileName: string;
+  status: string;
+  fileSizeMb: number;
+}
+
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles] = useState<File[]>([]);
+  const [uploadedFiles] = useState<FileUpload[]>([]);
   const [tag, setTag] = useState('');
   const [details, setDetails] = useState('');
   const [reason, setReason] = useState('');
@@ -32,15 +40,19 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const router = useRouter();
 
   async function onSubmitHandler() {
-    if (selectedFile) {
+    for (const selectedFile of selectedFiles) {
+      const fileSizeMb = Math.ceil(Math.max(selectedFile.size, 1) / 1_000_000);
+      const uploadingFile = { fileName: selectedFile.name, fileSizeMb, status: 'Uploading' };
       try {
         setUploadInProgress(true);
+        uploadedFiles.push(uploadingFile);
+
         const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
         const initiatedCaseFile: DeaCaseFile = await initiateUpload({
           caseUlid: props.caseId,
           fileName: selectedFile.name,
           filePath: props.filePath,
-          fileSizeMb: Math.ceil(Math.max(selectedFile.size, 1) / 1_000_000),
+          fileSizeMb,
           contentType,
           tag,
           reason,
@@ -71,7 +83,11 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             // TODO: we should calculate hash in parts while uploading parts
             sha256Hash: sha256(await selectedFile.text()).toString(),
           });
+          uploadingFile.status = 'Uploaded';
         }
+      } catch (e) {
+        uploadingFile.status = 'Upload failed';
+        console.log('Upload failed', e);
       } finally {
         setUploadInProgress(false);
       }
@@ -137,12 +153,14 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               >
                 <input
                   type="file"
+                  multiple
                   data-testid="file-select"
                   onChange={(event) => {
                     if (event.currentTarget && event.currentTarget.files) {
-                      setSelectedFile(event.currentTarget.files[0]);
+                      selectedFiles.push(...event.currentTarget.files);
                     }
                   }}
+                  disabled={uploadInProgress}
                 />
               </FormField>
             </Container>
@@ -165,6 +183,45 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         </Button>
         {uploadInProgress ? <Spinner size="big" /> : null}
       </SpaceBetween>
+      <Container
+        header={
+          <Header description={fileOperationsLabels.uploadStatusDescription}>
+            {fileOperationsLabels.caseFilesLabel}
+          </Header>
+        }
+      >
+        <Table
+          items={uploadedFiles}
+          columnDefinitions={[
+            {
+              id: 'name',
+              header: commonTableLabels.nameHeader,
+              cell: (e) => e.fileName,
+              width: 170,
+              minWidth: 165,
+              sortingField: 'fileName',
+            },
+            {
+              id: 'size',
+              header: commonTableLabels.fileSizeHeader,
+              cell: (e) => `${e.fileSizeMb}MB`,
+              width: 170,
+              minWidth: 165,
+              sortingField: 'fileSizeMb',
+            },
+            {
+              id: 'status',
+              header: commonTableLabels.statusHeader,
+              cell: (e) => e.status,
+              width: 170,
+              minWidth: 165,
+              maxWidth: 180,
+              sortingField: 'status',
+            },
+          ]}
+          resizableColumns
+        />
+      </Container>
     </SpaceBetween>
   );
 }

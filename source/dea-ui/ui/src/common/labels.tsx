@@ -35,6 +35,7 @@ export const commonTableLabels = {
   creationDateHeader: 'Creation date',
   statusHeader: 'Status',
   fileTypeHeader: 'File type',
+  fileSizeHeader: 'Size',
   dateUploadedHeader: 'Date uploaded',
   uploadedByHeader: 'Uploaded by',
 };
@@ -85,8 +86,9 @@ export const fileOperationsLabels = {
   caseFilesLabel: 'Case Files',
   uploadFileLabel: 'Upload folders/files',
   uploadFileDescription: 'All fields are required unless otherwise indicated.',
+  uploadStatusDescription: 'Uploaded files associated with this case.',
   uploadDetailsLabel: 'Upload details',
-  selectFileDescription: 'Select a file to upload',
+  selectFileDescription: 'Choose files/folders',
   evidenceTagLabel: 'Evidence tag',
   evidenceTagDescription:
     'Specify the type of device where the evidence is copied from such as mobile, laptop, or hard drive.',
