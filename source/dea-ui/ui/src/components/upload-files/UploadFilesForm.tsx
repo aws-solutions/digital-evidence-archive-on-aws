@@ -15,6 +15,8 @@ import {
   Textarea,
   Spinner,
   Table,
+  Box,
+  Icon,
 } from '@cloudscape-design/components';
 import sha256 from 'crypto-js/sha256';
 import { useRouter } from 'next/router';
@@ -24,15 +26,27 @@ import { initiateUpload, completeUpload } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
 import { UploadFilesProps } from './UploadFilesBody';
 
-interface FileUpload {
+interface FileUploadProgressRow {
   fileName: string;
-  status: string;
+  status: UploadStatus;
   fileSizeMb: number;
 }
 
+enum UploadStatus {
+  progress = 'Uploading',
+  complete = 'Uploaded',
+  failed = 'Upload failed',
+}
+
+interface ActiveFileUpload {
+  fileUploadProgress: FileUploadProgressRow;
+  file: File;
+  initiatedCaseFilePromise: Promise<DeaCaseFile>;
+}
+
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
-  const [selectedFiles] = useState<File[]>([]);
-  const [uploadedFiles] = useState<FileUpload[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploadedFiles] = useState<FileUploadProgressRow[]>([]);
   const [tag, setTag] = useState('');
   const [details, setDetails] = useState('');
   const [reason, setReason] = useState('');
@@ -40,56 +54,122 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const router = useRouter();
 
   async function onSubmitHandler() {
-    for (const selectedFile of selectedFiles) {
-      const fileSizeMb = Math.ceil(Math.max(selectedFile.size, 1) / 1_000_000);
-      const uploadingFile = { fileName: selectedFile.name, fileSizeMb, status: 'Uploading' };
-      try {
-        setUploadInProgress(true);
-        uploadedFiles.push(uploadingFile);
-
-        const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
-        const initiatedCaseFile: DeaCaseFile = await initiateUpload({
-          caseUlid: props.caseId,
-          fileName: selectedFile.name,
-          filePath: props.filePath,
-          fileSizeMb,
-          contentType,
-          tag,
-          reason,
-          details,
-        });
-
-        // TODO: This needs to be configurable.
-        // NOTE: UI + Backend need to have matching values
-        const fileChunkSize = 500_000_000;
-
-        const uploadPromises: Promise<Response>[] = [];
-        if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
-          const numberOfUrls = initiatedCaseFile.presignedUrls.length;
-          initiatedCaseFile.presignedUrls.forEach((url, index) => {
-            const start = index * fileChunkSize;
-            const end = (index + 1) * fileChunkSize;
-            const filePart =
-              index === numberOfUrls - 1 ? selectedFile.slice(start) : selectedFile.slice(start, end);
-            uploadPromises[index] = fetch(url, { method: 'PUT', body: filePart });
-          });
-
-          await Promise.all(uploadPromises);
-
-          await completeUpload({
+    // top level try/finally to set uploadInProgress bool state
+    try {
+      setUploadInProgress(true);
+      const activeFileUploads: ActiveFileUpload[] = [];
+      for (const selectedFile of selectedFiles) {
+        const fileSizeMb = Math.ceil(Math.max(selectedFile.size, 1) / 1_000_000);
+        const uploadingFile = { fileName: selectedFile.name, fileSizeMb, status: UploadStatus.progress };
+        // per file try/finally state to initiate uploads
+        try {
+          uploadedFiles.push(uploadingFile);
+          const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
+          const initiatedCaseFilePromise = initiateUpload({
             caseUlid: props.caseId,
-            ulid: initiatedCaseFile.ulid,
-            uploadId: initiatedCaseFile.uploadId,
-            // TODO: we should calculate hash in parts while uploading parts
-            sha256Hash: sha256(await selectedFile.text()).toString(),
+            fileName: selectedFile.name,
+            filePath: props.filePath,
+            fileSizeMb,
+            contentType,
+            tag,
+            reason,
+            details,
           });
-          uploadingFile.status = 'Uploaded';
+          activeFileUploads.push({
+            file: selectedFile,
+            fileUploadProgress: uploadingFile,
+            initiatedCaseFilePromise,
+          });
+        } catch (e) {
+          uploadingFile.status = UploadStatus.failed;
+          console.log('Upload failed', e);
         }
-      } catch (e) {
-        uploadingFile.status = 'Upload failed';
-        console.log('Upload failed', e);
-      } finally {
-        setUploadInProgress(false);
+      }
+
+      setSelectedFiles([]);
+
+      // TODO: This needs to be configurable.
+      // NOTE: UI + Backend need to have matching values
+      const fileChunkSize = 500_000_000;
+      for (const activeFileUpload of activeFileUploads) {
+        // per file try/finally state to upload to s3
+        try {
+          const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
+          const uploadPromises: Promise<Response>[] = [];
+          if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
+            const numberOfUrls = initiatedCaseFile.presignedUrls.length;
+            initiatedCaseFile.presignedUrls.forEach((url, index) => {
+              const start = index * fileChunkSize;
+              const end = (index + 1) * fileChunkSize;
+              const filePart =
+                index === numberOfUrls - 1
+                  ? activeFileUpload.file.slice(start)
+                  : activeFileUpload.file.slice(start, end);
+              uploadPromises[index] = fetch(url, { method: 'PUT', body: filePart });
+            });
+
+            await Promise.all(uploadPromises);
+
+            await completeUpload({
+              caseUlid: props.caseId,
+              ulid: initiatedCaseFile.ulid,
+              uploadId: initiatedCaseFile.uploadId,
+              // TODO: we should calculate hash in parts while uploading parts
+              sha256Hash: sha256(await activeFileUpload.file.text()).toString(),
+            });
+          }
+          activeFileUpload.fileUploadProgress.status = UploadStatus.complete;
+        } catch (e) {
+          activeFileUpload.fileUploadProgress.status = UploadStatus.failed;
+          console.log('Upload failed', e);
+        }
+      }
+    } finally {
+      setUploadInProgress(false);
+    }
+  }
+
+  function statusCell(uploadProgress: FileUploadProgressRow) {
+    switch (uploadProgress.status) {
+      case UploadStatus.progress: {
+        return (
+          <Box>
+            <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
+              <Spinner />
+              {uploadProgress.status}
+            </SpaceBetween>
+          </Box>
+        );
+      }
+      case UploadStatus.failed: {
+        return (
+          <Box>
+            <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
+              <Icon name="status-negative" variant="error" />
+              {uploadProgress.status}
+            </SpaceBetween>
+          </Box>
+        );
+      }
+      case UploadStatus.complete: {
+        return (
+          <Box>
+            <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
+              <Icon name="check" variant="success" />
+              {uploadProgress.status}
+            </SpaceBetween>
+          </Box>
+        );
+      }
+      default: {
+        return (
+          <Box>
+            <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
+              <Icon name="file" />
+              {uploadProgress.status}
+            </SpaceBetween>
+          </Box>
+        );
       }
     }
   }
@@ -181,7 +261,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         >
           {commonLabels.uploadButton}
         </Button>
-        {uploadInProgress ? <Spinner size="big" /> : null}
+        {uploadInProgress ? <Spinner size="big" variant="disabled" /> : null}
       </SpaceBetween>
       <Container
         header={
@@ -212,7 +292,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             {
               id: 'status',
               header: commonTableLabels.statusHeader,
-              cell: (e) => e.status,
+              cell: statusCell,
               width: 170,
               minWidth: 165,
               maxWidth: 180,

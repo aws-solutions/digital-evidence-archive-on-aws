@@ -88,7 +88,7 @@ export const fileOperationsLabels = {
   uploadFileDescription: 'All fields are required unless otherwise indicated.',
   uploadStatusDescription: 'Uploaded files associated with this case.',
   uploadDetailsLabel: 'Upload details',
-  selectFileDescription: 'Choose files/folders',
+  selectFileDescription: 'Choose files',
   evidenceTagLabel: 'Evidence tag',
   evidenceTagDescription:
     'Specify the type of device where the evidence is copied from such as mobile, laptop, or hard drive.',
