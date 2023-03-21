@@ -100,6 +100,8 @@ const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
     eventType: getEventType(event),
     actorIdentity: getInitialIdentity(event),
     result: AuditEventResult.FAILURE,
+    caseId: event.pathParameters?.caseId,
+    fileId: event.pathParameters?.fileId,
   };
 };
 

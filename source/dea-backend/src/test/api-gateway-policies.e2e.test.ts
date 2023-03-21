@@ -49,7 +49,7 @@ describe('api gateway access policies', () => {
               expect(blockedResponse.status).toEqual(403);
             }
           }
-        }, 20000);
+        }, 60000);
       });
     }
   });

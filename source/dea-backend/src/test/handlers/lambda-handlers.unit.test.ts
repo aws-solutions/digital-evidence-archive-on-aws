@@ -10,6 +10,7 @@ import * as DeleteCasesHandler from '../../handlers/delete-case-handler';
 import * as DeleteCaseUserHandler from '../../handlers/delete-case-user-handler';
 import * as DownloadCaseFileHandler from '../../handlers/download-case-file-handler';
 import * as GetAllCasesHandler from '../../handlers/get-all-cases-handler';
+import * as GetCaseAuditHandler from '../../handlers/get-case-audit-handler';
 import * as GetCaseDetailHandler from '../../handlers/get-case-detail-handler';
 import * as GetCaseFileDetailHandler from '../../handlers/get-case-file-detail-handler';
 import * as GetCaseMembershipHandler from '../../handlers/get-case-membership-handler';
@@ -21,6 +22,7 @@ import * as GetTokenHandler from '../../handlers/get-token-handler';
 import * as GetUsersHandler from '../../handlers/get-users-handler';
 import * as InitiateCaseFileUploadHandler from '../../handlers/initiate-case-file-upload-handler';
 import * as ListCaseFilesHandler from '../../handlers/list-case-files-handler';
+import * as StartCaseAuditHandler from '../../handlers/request-case-audit-handler';
 import * as RevokeTokenHandler from '../../handlers/revoke-token-handler';
 import * as UpdateCaseUserHandler from '../../handlers/update-case-user-handler';
 import * as UpdateCasesHandler from '../../handlers/update-cases-handler';
@@ -49,6 +51,8 @@ describe('lambda handlers', () => {
       GetUsersHandler.handler,
       UpdateCaseUserHandler.handler,
       GetCaseMembershipHandler.handler,
+      StartCaseAuditHandler.handler,
+      GetCaseAuditHandler.handler,
     ];
 
     handlers.forEach((handler) => {

@@ -23,6 +23,8 @@ export const s3Identifier = Joi.string().pattern(htmlSafeCharsRegex);
 
 export const joiUlid = Joi.string().pattern(ulidRegex);
 
+export const joiUuid = Joi.string().uuid();
+
 export const sha256Hash = Joi.string().pattern(new RegExp('^[a-fA-F0-9]{64}$'));
 
 export const safeName = Joi.string().pattern(allButDisallowed).required().min(3).max(50);

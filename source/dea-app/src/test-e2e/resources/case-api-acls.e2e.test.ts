@@ -8,18 +8,21 @@ import { validateEndpointACLs } from './case-api-acl-tester';
 import { DeaHttpMethod } from './test-helpers';
 
 type argsType = [
-  string,
-  CaseAction[],
-  string,
-  DeaHttpMethod,
-  string?,
-  boolean?,
-  boolean?,
-  boolean?,
-  boolean?
+  string /* testSuiteName */,
+  CaseAction[] /* requiredActions */,
+  string /* urlPath */,
+  DeaHttpMethod /* httpMethod */,
+  string? /* data */,
+  boolean? /* createCompanionMemberships */,
+  boolean? /* testRequiresOwnerCaseFile */,
+  boolean? /* testRequiresUserCaseFile */,
+  boolean? /* testRequiresDownload */,
+  boolean? /* testRequiresAuditId */
 ];
+
 const COMPANION_ID = '{companion}';
 const CASE_ID = '{caseId}';
+const AUDIT_ID = '{auditId}';
 const FILE_ID = '{fileId}';
 const UPLOAD_ID = '{uploadId}';
 const RANDOM_STRING = '{rand}';
@@ -139,6 +142,25 @@ const downloadCaseFileArgs: argsType = [
   false,
   true,
 ];
+const caseAuditQueryArgs: argsType = [
+  'startCaseAuditQuery',
+  [CaseAction.CASE_AUDIT],
+  `cases/${CASE_ID}/audit`,
+  'POST',
+  undefined,
+];
+const caseAuditArgs: argsType = [
+  'getCaseAudit',
+  [CaseAction.CASE_AUDIT],
+  `cases/${CASE_ID}/audit/${AUDIT_ID}/csv`,
+  'GET',
+  undefined,
+  false,
+  false,
+  false,
+  false,
+  true,
+];
 
 describe('Case API ACL enforcement', () => {
   describe.each([
@@ -153,5 +175,7 @@ describe('Case API ACL enforcement', () => {
     completeCaseFileUploadArgs,
     getCaseFileDetailsArgs,
     downloadCaseFileArgs,
+    caseAuditQueryArgs,
+    caseAuditArgs,
   ])('%s', validateEndpointACLs);
 });

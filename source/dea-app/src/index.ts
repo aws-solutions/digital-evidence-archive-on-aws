@@ -15,6 +15,7 @@ import { deleteCaseMembership } from './app/resources/delete-case-membership';
 import { deleteCase } from './app/resources/delete-cases';
 import { downloadCaseFile } from './app/resources/download-case-file';
 import { getAllCases } from './app/resources/get-all-cases';
+import { getCaseAudit } from './app/resources/get-case-audit';
 import { getCase } from './app/resources/get-case-details';
 import { getCaseFileDetails } from './app/resources/get-case-file-details';
 import { getCaseMembership } from './app/resources/get-case-membership';
@@ -27,6 +28,7 @@ import { getUsers } from './app/resources/get-users';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
 import { listCaseFiles } from './app/resources/list-case-files';
 import { revokeToken } from './app/resources/revoke-token';
+import { startCaseAudit } from './app/resources/start-case-audit';
 import { updateCaseMembership } from './app/resources/update-case-membership';
 import { updateCases } from './app/resources/update-cases';
 import { verifyCaseACLs } from './app/resources/verify-case-acls';
@@ -66,6 +68,8 @@ export {
   deleteCaseMembership,
   getCaseMembership,
   getCaseUser,
+  startCaseAudit,
+  getCaseAudit,
   getRequiredPathParam,
   getUsers,
   getUserUlid,

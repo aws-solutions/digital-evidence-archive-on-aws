@@ -35,6 +35,7 @@ export interface ACLTestHarness {
   targetCase: DeaCase;
   ownerCaseFile?: DeaCaseFile;
   userCaseFile?: DeaCaseFile;
+  auditId?: string;
 }
 
 export interface ACLTestUser {
@@ -62,7 +63,8 @@ export const validateEndpointACLs = (
   createCompanionMemberships = false,
   testRequiresOwnerCaseFile = false,
   testRequiresUserCaseFile = false,
-  testRequiresDownload = false
+  testRequiresDownload = false,
+  testRequiresAuditId = false
 ) => {
   describe(testSuiteName, () => {
     let testHarness: ACLTestHarness;
@@ -71,8 +73,18 @@ export const validateEndpointACLs = (
 
     beforeAll(async () => {
       testHarness = await initializeACLE2ETest(testSuiteName, requiredActions);
+
+      if (testRequiresAuditId) {
+        testHarness.auditId = await setupCaseAuditId(
+          testHarness.targetCase.ulid,
+          testHarness.owner.idToken,
+          testHarness.owner.creds
+        );
+      }
+
       targetUrl = `${deaApiUrl}${endpoint}`;
       targetUrl = targetUrl.replace('{caseId}', testHarness.targetCase.ulid!);
+      targetUrl = targetUrl.replace('{auditId}', testHarness.auditId!);
 
       if (createCompanionMemberships) {
         const membershipData = JSON.stringify({
@@ -416,6 +428,13 @@ const setupCaseFile = async (
     );
   }
   return caseFile;
+};
+
+const setupCaseAuditId = async (caseUlid: string, idToken: string, creds: Credentials): Promise<string> => {
+  const response = await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/audit`, 'POST', idToken, creds);
+
+  expect(response.status).toEqual(200);
+  return response.data.auditId;
 };
 
 function getUpdatedDataAndUrl(
