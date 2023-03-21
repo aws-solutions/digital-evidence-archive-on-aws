@@ -8,6 +8,7 @@ import { DeaUser } from '@aws/dea-app/lib/models/user';
 import { Container, Header } from '@cloudscape-design/components';
 import { addCaseMember, removeCaseMember, updateCaseMember, useGetCaseMembers } from '../../api/cases';
 import { manageCaseAccessLabels } from '../../common/labels';
+import { useNotifications } from '../../context/NotificationsContext';
 import ManageAccessList from './ManageAccessList';
 import ManageAccessSearchUserForm from './ManageAccessSearchUserForm';
 
@@ -17,10 +18,15 @@ export interface ManageAccessFormProps {
 
 function ManageAccessForm(props: ManageAccessFormProps): JSX.Element {
   const { data: caseMembers, mutate } = useGetCaseMembers(props.caseId);
+  const { pushNotification } = useNotifications();
 
   async function addCaseMemberHandler(user: DeaUser) {
+    const givenName = `${user.firstName} ${user.lastName}`;
     try {
       await addCaseMember({ caseUlid: props.caseId, userUlid: user.ulid, actions: [] });
+      pushNotification('success', manageCaseAccessLabels.addCaseMemberSuccessMessage(givenName));
+    } catch {
+      pushNotification('error', manageCaseAccessLabels.addCaseMemberFailMessage(givenName));
     } finally {
       mutate();
     }
@@ -39,8 +45,12 @@ function ManageAccessForm(props: ManageAccessFormProps): JSX.Element {
   }
 
   async function removeCaseMemberHandler(caseMember: CaseUser) {
+    const givenName = `${caseMember.userFirstName} ${caseMember.userLastName}`;
     try {
       await removeCaseMember(caseMember);
+      pushNotification('success', manageCaseAccessLabels.removeCaseMemberSuccessMessage(givenName));
+    } catch {
+      pushNotification('error', manageCaseAccessLabels.removeCaseMemberFailMessage(givenName));
     } finally {
       mutate();
     }

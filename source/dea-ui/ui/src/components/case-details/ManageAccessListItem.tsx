@@ -21,8 +21,8 @@ import styles from '../../styles/ManageAccessListItem.module.scss';
 
 export interface ManageAccessListItemProps {
   readonly caseMember: CaseUser;
-  readonly onRemoveMember: (user: CaseUser) => void;
-  readonly onUpdateMember: (user: CaseUser) => void;
+  readonly onRemoveMember: (user: CaseUser) => Promise<void>;
+  readonly onUpdateMember: (user: CaseUser) => Promise<void>;
 }
 
 function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
@@ -30,7 +30,7 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
   const [selectedOptions, setSelectedOptions] = useState<ReadonlyArray<SelectProps.Option>>(
     caseMember.actions.map((action) => caseActionOptions.actionOption(action))
   );
-
+  const [isRemoving, setIsRemoving] = useState(false);
   async function onPermissionsChangeHandler(event: {
     detail: MultiselectProps.MultiselectChangeDetail;
   }): Promise<void> {
@@ -39,7 +39,16 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
     const actions = [
       ...event.detail.selectedOptions.map((option: MultiselectProps.Option) => option.value),
     ] as CaseAction[];
-    onUpdateMember({ ...caseMember, actions });
+    await onUpdateMember({ ...caseMember, actions });
+  }
+
+  async function removeCaseMemberHandler() {
+    try {
+      setIsRemoving(true);
+      await onRemoveMember(caseMember);
+    } finally {
+      setIsRemoving(false);
+    }
   }
 
   return (
@@ -58,11 +67,14 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
             options={caseActionOptions.selectableOptions()}
             placeholder={manageCaseAccessLabels.manageMemberPermissionsPlaceholder}
             tokenLimit={1}
+            disabled={isRemoving}
           />
         </FormField>
       </ColumnLayout>
       <div className={styles['button-container']}>
-        <Button onClick={() => onRemoveMember(caseMember)}>{commonLabels.removeButton}</Button>
+        <Button onClick={removeCaseMemberHandler} disabled={isRemoving}>
+          {commonLabels.removeButton}
+        </Button>
       </div>
     </Grid>
   );
