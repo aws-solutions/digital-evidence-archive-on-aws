@@ -33,6 +33,7 @@ interface DeaRestApiProps {
   deaTableName: string;
   deaDatasetsBucketArn: string;
   deaDatasetsBucketName: string;
+  deaAuditLogArn: string;
   kmsKey: Key;
   region: string;
   accountId: string;
@@ -55,7 +56,8 @@ export class DeaRestApiConstruct extends Construct {
       props.deaTableArn,
       props.deaDatasetsBucketArn,
       props.region,
-      props.accountId
+      props.accountId,
+      props.deaAuditLogArn
     );
 
     this.authLambdaRole = this._createAuthLambdaRole(props.region, props.accountId);
@@ -258,7 +260,8 @@ export class DeaRestApiConstruct extends Construct {
     tableArn: string,
     datasetsBucketArn: string,
     region: string,
-    accountId: string
+    accountId: string,
+    auditLogArn: string
   ): Role {
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
@@ -295,6 +298,20 @@ export class DeaRestApiConstruct extends Construct {
           's3:PutObjectLegalHold',
         ],
         resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['logs:StartQuery'],
+        resources: [auditLogArn],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['logs:GetQueryResults'],
+        resources: ['*'],
       })
     );
 

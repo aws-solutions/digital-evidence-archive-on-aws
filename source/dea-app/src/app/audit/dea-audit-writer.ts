@@ -14,9 +14,11 @@ import Metadata from '@aws/workbench-core-audit/lib/metadata';
 import Writer from '@aws/workbench-core-audit/lib/plugins/writer';
 import { now } from 'lodash';
 import { getRequiredEnv } from '../../lambda-http-helpers';
+import { logger } from '../../logger';
 import { CJISAuditEventBody } from '../services/audit-service';
 
 const lambdaName = getRequiredEnv('AWS_LAMBDA_FUNCTION_NAME', 'NO_LAMBDA_NAME_FOUND');
+const auditLogGroup = getRequiredEnv('AUDIT_LOG_GROUP_NAME', 'NO_AUDIT_LOG_GROUP');
 
 export default class DeaAuditWriter implements Writer {
   private _isLogStreamReady: Promise<CreateLogGroupCommandOutput> | undefined;
@@ -24,6 +26,13 @@ export default class DeaAuditWriter implements Writer {
 
   public constructor(private cloudwatchClient: CloudWatchLogsClient) {
     this._logStreamName = `${lambdaName}-${new Date().toISOString()}`.replaceAll(':', '');
+    if (auditLogGroup !== 'NO_AUDIT_LOG_GROUP') {
+      const createLogStreamCommand = new CreateLogStreamCommand({
+        logGroupName: auditLogGroup,
+        logStreamName: this._logStreamName,
+      });
+      this._isLogStreamReady = this.cloudwatchClient.send(createLogStreamCommand);
+    }
   }
 
   public async prepare(metadata: Metadata, auditEntry: AuditEntry): Promise<void> {
@@ -36,18 +45,12 @@ export default class DeaAuditWriter implements Writer {
     auditEntry.requestPath = entry.requestPath;
     auditEntry.result = entry.result;
     auditEntry.sourceComponent = entry.sourceComponent;
+    auditEntry.fileHash = entry.fileHash;
+    auditEntry.caseId = entry.caseId;
+    auditEntry.fileId = entry.fileId;
   }
 
   public async write(metadata: Metadata, auditEntry: AuditEntry): Promise<void> {
-    const auditLogGroup = getRequiredEnv('AUDIT_LOG_GROUP_NAME');
-    // ensure logstream was created
-    if (!this._isLogStreamReady) {
-      const createLogStreamCommand = new CreateLogStreamCommand({
-        logGroupName: auditLogGroup,
-        logStreamName: this._logStreamName,
-      });
-      this._isLogStreamReady = this.cloudwatchClient.send(createLogStreamCommand);
-    }
     await this._isLogStreamReady;
     const putLogsCommand = new PutLogEventsCommand({
       logGroupName: auditLogGroup,
@@ -55,6 +58,10 @@ export default class DeaAuditWriter implements Writer {
       logEvents: [{ timestamp: now(), message: JSON.stringify(auditEntry) }],
     });
 
-    await this.cloudwatchClient.send(putLogsCommand);
+    const putResponse = await this.cloudwatchClient.send(putLogsCommand);
+    if (putResponse.rejectedLogEventsInfo || putResponse.$metadata.httpStatusCode !== 200) {
+      logger.error('PutLogEvents Failure', { putResponse });
+      throw new Error();
+    }
   }
 }

@@ -3,8 +3,15 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import {
+  CloudWatchLogsClient,
+  GetQueryResultsCommand,
+  QueryStatus,
+  StartQueryCommand,
+} from '@aws-sdk/client-cloudwatch-logs';
 import AuditPlugin from '@aws/workbench-core-audit/lib/auditPlugin';
 import AuditService from '@aws/workbench-core-audit/lib/auditService';
+import { getRequiredEnv } from '../../lambda-http-helpers';
 import { deaAuditPlugin } from '../audit/dea-audit-plugin';
 
 export enum AuditEventResult {
@@ -41,6 +48,8 @@ export enum AuditEventType {
   DOWNLOAD_CASE_FILE = 'DownloadCaseFile',
   GET_CASE_FILES = 'GetCaseFiles',
   GET_CASE_FILE_DETAIL = 'GetCaseFileDetail',
+  GET_CASE_AUDIT = 'GetCaseAudit',
+  REQUEST_CASE_AUDIT = 'RequestCaseAudit',
   UNKNOWN = 'UnknownEvent',
 }
 
@@ -110,6 +119,7 @@ export type FullUserId = {
   firstName: string;
   lastName: string;
   userUlid: string;
+  deaRole: string;
 };
 
 // We support different progressions of identifier, anticipating that we may encounter an error along the authentication process
@@ -139,7 +149,17 @@ export type CJISAuditEventBody = {
   actorIdentity: ActorIdentity;
   result: AuditEventResult;
   fileHash?: string;
+  caseId?: string;
+  fileId?: string;
 };
+
+const queryFields =
+  'dateTime, requestPath, sourceComponent, eventType, actorIdentity.idType, actorIdentity.id, actorIdentity.sourceIp, actorIdentity.username, actorIdentity.firstName, actorIdentity.lastName, actorIdentity.userUlid, actorIdentity.deaRole, actorIdentity.authCode, actorIdentity.idToken, caseId, fileId';
+
+export interface AuditResult {
+  status: QueryStatus | string;
+  csvFormattedData: string | undefined;
+}
 
 const continueOnError = false;
 const requiredAuditValues = [
@@ -164,6 +184,58 @@ export class DeaAuditService extends AuditService {
 
   public async writeCJISCompliantEntry(event: CJISAuditEventBody) {
     return this.write(event);
+  }
+
+  public async requestAuditForCase(
+    caseId: string,
+    start: number,
+    end: number,
+    cloudwatchClient: CloudWatchLogsClient
+  ) {
+    const auditLogGroup = getRequiredEnv('AUDIT_LOG_GROUP_NAME');
+    const startQueryCmd = new StartQueryCommand({
+      logGroupName: auditLogGroup,
+      startTime: start,
+      endTime: end,
+      queryString: `filter caseId like /${caseId}/ | fields ${queryFields} | sort @timestamp desc | limit 10000`,
+    });
+    const startResponse = await cloudwatchClient.send(startQueryCmd);
+    if (!startResponse.queryId) {
+      throw new Error('Unknown error starting Cloudwatch Logs Query.');
+    }
+    return startResponse.queryId;
+  }
+
+  public async getAuditResult(queryId: string, cloudwatchClient: CloudWatchLogsClient): Promise<AuditResult> {
+    const getResultsCommand = new GetQueryResultsCommand({
+      queryId,
+    });
+
+    const getResultsResponse = await cloudwatchClient.send(getResultsCommand);
+
+    if (
+      getResultsResponse.status === QueryStatus.Complete &&
+      getResultsResponse.results &&
+      getResultsResponse.results.length > 0
+    ) {
+      const separator = ', ';
+      const newline = '\r\n';
+      const results = getResultsResponse.results;
+      let csvData = results[0].map((column) => column.field).join(separator) + newline;
+      results.forEach((row) => {
+        csvData += row.map((column) => column.value).join(separator) + newline;
+      });
+
+      return {
+        status: QueryStatus.Complete,
+        csvFormattedData: csvData,
+      };
+    } else {
+      return {
+        status: getResultsResponse.status ?? QueryStatus.Unknown,
+        csvFormattedData: undefined,
+      };
+    }
   }
 }
 

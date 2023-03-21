@@ -32,6 +32,22 @@ export const getPaginationParameters = (event: APIGatewayProxyEvent): Pagination
   return { limit, nextToken };
 };
 
+export const getQueryParam = (
+  event: APIGatewayProxyEvent,
+  paramName: string,
+  defaultValue: string,
+  validationSchema: Joi.StringSchema | Joi.NumberSchema
+): string => {
+  let paramValue = defaultValue;
+  if (event.queryStringParameters) {
+    paramValue = event.queryStringParameters[paramName] ?? defaultValue;
+  }
+
+  Joi.assert(paramValue, validationSchema);
+
+  return paramValue;
+};
+
 export const getRequiredPathParam = (
   event: APIGatewayProxyEvent,
   paramName: string,

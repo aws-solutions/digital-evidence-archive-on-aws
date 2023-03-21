@@ -54,7 +54,7 @@ export const runPreExecutionChecks = async (
     sourceIp: event.requestContext.identity.sourceIp,
     id: event.requestContext.identity.cognitoIdentityId,
     username: idTokenPayload['cognito:username'],
-    deaRole: deaRole,
+    deaRole,
   };
   const tokenId = idTokenPayload.sub;
   let maybeUser = await getUserFromTokenId(tokenId, repositoryProvider);
@@ -73,6 +73,7 @@ export const runPreExecutionChecks = async (
     firstName: maybeUser.firstName,
     lastName: maybeUser.lastName,
     userUlid: maybeUser.ulid,
+    deaRole,
   };
 
   event.headers['userUlid'] = maybeUser.ulid;
@@ -110,6 +111,17 @@ export const responseOk = (body: unknown): APIGatewayProxyResult => {
     body: JSON.stringify(body),
     headers: {
       'Access-Control-Allow-Origin': '*',
+    },
+  };
+};
+
+export const csvResponse = (csvData: string): APIGatewayProxyResult => {
+  return {
+    statusCode: 200,
+    body: csvData,
+    headers: {
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="case_audit_${new Date().toDateString()}"`,
     },
   };
 };

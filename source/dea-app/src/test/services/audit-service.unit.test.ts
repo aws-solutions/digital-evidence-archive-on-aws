@@ -9,7 +9,7 @@ import {
   PutLogEventsCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
 import BaseAuditPlugin from '@aws/workbench-core-audit/lib/plugins/baseAuditPlugin';
-import { anyOfClass, instance, mock, verify } from 'ts-mockito';
+import { anyOfClass, instance, mock, verify, when } from 'ts-mockito';
 import DeaAuditWriter from '../../app/audit/dea-audit-writer';
 import {
   AuditEventResult,
@@ -35,6 +35,9 @@ describe('audit service', () => {
 
   it('writes', async () => {
     const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    when(clientMock.send(anyOfClass(PutLogEventsCommand))).thenResolve({
+      $metadata: { httpStatusCode: 200 },
+    });
     const clientMockInstance = instance(clientMock);
     const writer = new DeaAuditWriter(clientMockInstance);
     const auditplugin = new BaseAuditPlugin(writer);
@@ -48,6 +51,57 @@ describe('audit service', () => {
       actorIdentity: { idType: IdentityType.COGNITO_ID, id: 'identifier', sourceIp: '123' },
       result: AuditEventResult.SUCCESS,
     });
+    verify(clientMock.send(anyOfClass(CreateLogStreamCommand)));
+    verify(clientMock.send(anyOfClass(PutLogEventsCommand)));
+  });
+
+  it('throws an error if logs were rejected', async () => {
+    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    when(clientMock.send(anyOfClass(PutLogEventsCommand))).thenResolve({
+      $metadata: { httpStatusCode: 200 },
+      rejectedLogEventsInfo: {
+        tooNewLogEventStartIndex: 1,
+      },
+    });
+    const clientMockInstance = instance(clientMock);
+    const writer = new DeaAuditWriter(clientMockInstance);
+    const auditplugin = new BaseAuditPlugin(writer);
+    const testAuditService = new DeaAuditService(auditplugin, true, [], []);
+
+    await expect(
+      testAuditService.writeCJISCompliantEntry({
+        dateTime: new Date().toISOString(),
+        requestPath: '/',
+        sourceComponent: AuditEventSource.API_GATEWAY,
+        eventType: AuditEventType.CREATE_CASE,
+        actorIdentity: { idType: IdentityType.COGNITO_ID, id: 'identifier', sourceIp: '123' },
+        result: AuditEventResult.SUCCESS,
+      })
+    ).rejects.toThrow(Error);
+    verify(clientMock.send(anyOfClass(CreateLogStreamCommand)));
+    verify(clientMock.send(anyOfClass(PutLogEventsCommand)));
+  });
+
+  it('throws an error if putlogs indicates an error', async () => {
+    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    when(clientMock.send(anyOfClass(PutLogEventsCommand))).thenResolve({
+      $metadata: { httpStatusCode: 400 },
+    });
+    const clientMockInstance = instance(clientMock);
+    const writer = new DeaAuditWriter(clientMockInstance);
+    const auditplugin = new BaseAuditPlugin(writer);
+    const testAuditService = new DeaAuditService(auditplugin, true, [], []);
+
+    await expect(
+      testAuditService.writeCJISCompliantEntry({
+        dateTime: new Date().toISOString(),
+        requestPath: '/',
+        sourceComponent: AuditEventSource.API_GATEWAY,
+        eventType: AuditEventType.CREATE_CASE,
+        actorIdentity: { idType: IdentityType.COGNITO_ID, id: 'identifier', sourceIp: '123' },
+        result: AuditEventResult.SUCCESS,
+      })
+    ).rejects.toThrow(Error);
     verify(clientMock.send(anyOfClass(CreateLogStreamCommand)));
     verify(clientMock.send(anyOfClass(PutLogEventsCommand)));
   });
