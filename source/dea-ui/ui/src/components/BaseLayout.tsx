@@ -11,6 +11,7 @@ import * as React from 'react';
 import { layoutLabels } from '../common/labels';
 import Navigation from '../components/Navigation';
 import { useSettings } from '../context/SettingsContext';
+import { Notifications } from './common-components/Notifications';
 
 export interface LayoutProps {
   navigationHide?: boolean;
@@ -49,6 +50,7 @@ export default function BaseLayout({
           // eslint-disable-next-line security/detect-non-literal-fs-filename
           setNavigationOpen(detail.open);
         }}
+        notifications={<Notifications />}
       />
     </>
   );

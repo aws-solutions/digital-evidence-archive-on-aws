@@ -1,10 +1,11 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import axios from 'axios';
 import { caseDetailLabels, commonLabels } from '../../src/common/labels';
+import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
 const user = userEvent.setup();
@@ -271,7 +272,11 @@ describe('CaseDetailsPage', () => {
       }
     });
 
-    const page = render(<CaseDetailsPage />);
+    const page = render(
+      <NotificationsProvider>
+        <CaseDetailsPage />
+      </NotificationsProvider>
+    );
     expect(page).toBeTruthy();
 
     const tab = await screen.findByText(caseDetailLabels.manageAccessLabel);
@@ -297,8 +302,10 @@ describe('CaseDetailsPage', () => {
     await userEvent.type(searchInput, textToInput);
     searchUserInputWrapper.selectSuggestionByValue(textToInput);
 
-    const addCaseMemberButton = screen.findByRole('button', { name: 'Add' });
-    (await addCaseMemberButton).click();
+    const addCaseMemberButton = await screen.findByRole('button', { name: 'Add' });
+    await act(async () => {
+      addCaseMemberButton.click();
+    });
 
     // assert multiselect component
     const permissionsWrapper = wrapper(page.container).findMultiselect()!;
@@ -308,9 +315,16 @@ describe('CaseDetailsPage', () => {
     permissionsWrapper.selectOption(1);
 
     // assert remove button
-    const removeButton = screen.findByRole('button', { name: 'Remove' });
+    const removeButton = await screen.findByRole('button', { name: 'Remove' });
     expect(removeButton).toBeTruthy();
-    (await removeButton).click();
+    await act(async () => {
+      removeButton.click();
+    });
+
+    //assert notifications
+    const notificationsWrapper = wrapper(page.container).findFlashbar()!;
+    expect(notificationsWrapper).toBeTruthy();
+    notificationsWrapper.findItems()[0].findDismissButton()!.click();
   });
 
   it('navigates to upload files page', async () => {

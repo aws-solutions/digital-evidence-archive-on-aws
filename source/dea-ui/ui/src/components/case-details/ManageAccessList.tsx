@@ -10,8 +10,8 @@ import ManageAccessListItem from './ManageAccessListItem';
 
 export interface ManageAccessListProps {
   readonly caseMembers: CaseUser[];
-  readonly onRemoveMember: (user: CaseUser) => void;
-  readonly onUpdateMember: (user: CaseUser) => void;
+  readonly onRemoveMember: (user: CaseUser) => Promise<void>;
+  readonly onUpdateMember: (user: CaseUser) => Promise<void>;
 }
 
 function ManageAccessList(props: ManageAccessListProps): JSX.Element {

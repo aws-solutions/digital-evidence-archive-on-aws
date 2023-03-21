@@ -20,6 +20,7 @@ export const commonLabels = {
   noMatchesLabel: 'No matches found',
   retryLabel: 'Retry',
   errorLabel: 'Error fetching results',
+  dismissMessageLabel: 'Dismiss message',
 };
 
 export const commonTableLabels = {
@@ -133,6 +134,10 @@ export const manageCaseAccessLabels = {
   manageMemberAccessTypeLabel: 'Access Type',
   manageMemberPermissionsLabel: 'Permission(s)',
   manageMemberPermissionsPlaceholder: 'Choose permissions',
+  addCaseMemberSuccessMessage: (user: string) => `${user} has been invited to the case successfully.`,
+  addCaseMemberFailMessage: (user: string) => `${user} has not been invited to the case.`,
+  removeCaseMemberSuccessMessage: (user: string) => `${user} has been removed successfully.`,
+  removeCaseMemberFailMessage: (user: string) => `${user} has not been removed.`,
 };
 
 export const createCaseLabels = {
