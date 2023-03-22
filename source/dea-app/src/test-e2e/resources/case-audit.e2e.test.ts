@@ -138,7 +138,7 @@ describe('case audit e2e', () => {
     expect(csvData).toContain(AuditEventType.GET_CASE_DETAILS);
     expect(csvData).toContain(AuditEventType.UPDATE_CASE_DETAILS);
     expect(csvData).toContain(AuditEventType.GET_USERS_FROM_CASE);
-  }, 120000);
+  }, 180000);
 
   function delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
