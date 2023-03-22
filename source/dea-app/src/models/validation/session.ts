@@ -8,9 +8,9 @@ import { joiUlid, jti, ttlJoi } from './joi-common';
 
 export const sessionResponseSchema = Joi.object({
   userUlid: joiUlid,
-  tokenId: jti,
   ttl: ttlJoi,
   isRevoked: Joi.boolean(),
   created: Joi.date(),
   updated: Joi.date(),
+  tokenId: jti,
 });
