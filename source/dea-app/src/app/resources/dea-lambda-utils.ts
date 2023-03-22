@@ -142,6 +142,7 @@ export const csvResponse = (csvData: string): APIGatewayProxyResult => {
     headers: {
       'Content-Type': 'text/csv',
       'Content-Disposition': `attachment; filename="case_audit_${new Date().toDateString()}"`,
+      'Access-Control-Allow-Origin': '*',
     },
   };
 };

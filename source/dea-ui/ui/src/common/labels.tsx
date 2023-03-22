@@ -21,6 +21,8 @@ export const commonLabels = {
   retryLabel: 'Retry',
   errorLabel: 'Error fetching results',
   dismissMessageLabel: 'Dismiss message',
+  description: 'Description',
+  creationDate: 'Creation Date',
 };
 
 export const commonTableLabels = {
@@ -107,13 +109,14 @@ export const caseDetailLabels = {
 };
 
 export const auditLogLabels = {
-  downloadCSVLabel: 'Download CSV',
-  caseAuditLogLabel: 'Case audit log',
+  downloadCSVLabel: 'Download Case Audit Log CSV',
+  caseAuditLogLabel: 'Audit Log',
   descriptionLabel:
     'This tabel records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file',
   emptyAuditLabel: 'No audit',
   noDisplayAuditLabel: 'No audit to display.',
   loadingLabel: 'loading audit log',
+  errorLabel: 'Error downloading case audit. Audit query is empty or encountered an error or cancellation.',
 };
 
 export const manageCaseAccessLabels = {

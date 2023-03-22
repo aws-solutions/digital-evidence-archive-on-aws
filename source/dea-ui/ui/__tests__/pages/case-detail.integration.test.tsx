@@ -4,7 +4,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import axios from 'axios';
-import { caseDetailLabels, commonLabels } from '../../src/common/labels';
+import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
@@ -128,6 +128,13 @@ const mockedCaseUsers = {
     },
   ],
 };
+
+let csvCall = -1;
+let failingCall = -1;
+
+const csvResult = [{ status: 'Running' }, { status: 'Running' }, 'csvresults'];
+
+const failingCsvResult = [{ status: 'Running' }, { status: 'Running' }, { status: 'Cancelled' }];
 
 describe('CaseDetailsPage', () => {
   it('renders a case details page', async () => {
@@ -385,5 +392,114 @@ describe('CaseDetailsPage', () => {
     // upload button will be disabled while in progress and then re-enabled when done
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeDisabled());
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeEnabled());
+  });
+
+  it('downloads a case audit', async () => {
+    mockedAxios.mockImplementation((event) => {
+      const eventObj: any = event;
+      if (eventObj.url === 'https://localhostcases/100/details') {
+        return Promise.resolve({
+          data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === 'https://localhostcases/abc/audit') {
+        return Promise.resolve({
+          data: { auditId: '11111111-1111-1111-1111-111111111111' },
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (
+        eventObj.url === 'https://localhostcases/abc/audit/11111111-1111-1111-1111-111111111111/csv'
+      ) {
+        return Promise.resolve({
+          data: csvResult[++csvCall],
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else {
+        return Promise.resolve({
+          data: mockFilesRoot,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      }
+    });
+
+    const page = render(<CaseDetailsPage />);
+    expect(page).toBeTruthy();
+
+    const downloadCsvButton = await screen.findByText(auditLogLabels.downloadCSVLabel);
+    fireEvent.click(downloadCsvButton);
+
+    // upload button will be disabled while in progress and then re-enabled when done
+    await waitFor(() => expect(screen.queryByTestId('download-case-audit-csv-button')).toBeDisabled());
+    await waitFor(() => expect(screen.queryByTestId('download-case-audit-csv-button')).toBeEnabled(), {
+      timeout: 4000,
+    });
+  });
+
+  it('recovers from a from a csv download failure', async () => {
+    mockedAxios.mockImplementation((event) => {
+      const eventObj: any = event;
+      if (eventObj.url === 'https://localhostcases/100/details') {
+        return Promise.resolve({
+          data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === 'https://localhostcases/abc/audit') {
+        return Promise.resolve({
+          data: { auditId: '11111111-1111-1111-1111-111111111111' },
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (
+        eventObj.url === 'https://localhostcases/abc/audit/11111111-1111-1111-1111-111111111111/csv'
+      ) {
+        return Promise.resolve({
+          data: failingCsvResult[++failingCall],
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else {
+        return Promise.resolve({
+          data: mockFilesRoot,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      }
+    });
+
+    const page = render(<CaseDetailsPage />);
+    expect(page).toBeTruthy();
+
+    const downloadCsvButton = await screen.findByText(auditLogLabels.downloadCSVLabel);
+    fireEvent.click(downloadCsvButton);
+
+    // upload button will be disabled while in progress and then re-enabled when done
+    await waitFor(() => expect(screen.queryByTestId('download-case-audit-csv-button')).toBeDisabled());
+    await waitFor(() => expect(screen.queryByTestId('download-case-audit-csv-button')).toBeEnabled(), {
+      timeout: 4000,
+    });
+    // error notification is visible
+    const notificationsWrapper = wrapper(page.container).findFlashbar()!;
+    expect(notificationsWrapper).toBeTruthy();
   });
 });
