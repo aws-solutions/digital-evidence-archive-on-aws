@@ -5,11 +5,14 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { NotFoundError } from '../../../app/exceptions/not-found-exception';
+import { ReauthenticationError } from '../../../app/exceptions/reauthentication-exception';
 import { runPreExecutionChecks } from '../../../app/resources/dea-lambda-utils';
 import { IdentityType } from '../../../app/services/audit-service';
+import { shouldSessionBeConsideredInactive } from '../../../app/services/session-service';
 import { getTokenPayload } from '../../../cognito-token-helpers';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
+import { listSessionsForUser, updateSession } from '../../../persistence/session';
 import { getUserByTokenId, listUsers } from '../../../persistence/user';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { testEnv } from '../../../test-e2e/helpers/settings';
@@ -63,10 +66,19 @@ describe('lambda pre-execution checks', () => {
     expect(event.headers['userUlid']).toBeDefined();
     expect(event.headers['userUlid']).toStrictEqual(user?.ulid);
 
-    // clear the event headers so they are not present for the
-    // next set of checks for an existing user
-    delete event.headers['userUlid'];
-    delete event.headers['idToken'];
+    // Mark session revoked (mimic logout)
+    // so we can test same user different idtoken
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const sessions = await listSessionsForUser(user!.ulid, repositoryProvider);
+    expect(sessions.length).toEqual(1);
+    const session = sessions[0];
+    await updateSession(
+      {
+        ...session,
+        isRevoked: true,
+      },
+      repositoryProvider
+    );
 
     // call again with a different token from the same user,
     // make sure not added twice (in the getByToken code, we assert only 1 exists)
@@ -90,10 +102,6 @@ describe('lambda pre-execution checks', () => {
     // check that the event contains the ulid from the new user
     expect(event2.headers['userUlid']).toBeDefined();
     expect(event2.headers['userUlid']).toStrictEqual(user2?.ulid);
-
-    // clear the event headers so they do not show up in other tests
-    delete event2.headers['userUlid'];
-    delete event2.headers['idToken'];
 
     // Check only user is in the db:
     const users: Paged<DeaUser> = await listUsers(
@@ -120,16 +128,146 @@ describe('lambda pre-execution checks', () => {
     );
   });
 
-  it('should log successful and unsuccessful logins/api invocations', () => {
-    /* TODO */
+  it('should succeed if session meets requirements', async () => {
+    // Create user
+    const user = 'SuccessSession';
+    await cognitoHelper.createUser(user, 'AuthTestGroup', 'Success', 'Session');
+    const { idToken } = await cognitoHelper.getIdTokenForUser(user);
+
+    // Call API expect success, adds session to db
+    const userUlid = await callPreChecks(idToken);
+    const sessions = await listSessionsForUser(userUlid, repositoryProvider);
+    expect(sessions.length).toEqual(1);
+    const session1 = sessions[0];
+
+    // Call API again with same creds, expect success
+    await callPreChecks(idToken);
+    const sessions2 = await listSessionsForUser(userUlid, repositoryProvider);
+    expect(sessions2.length).toEqual(1);
+    const session2 = sessions2[0];
+    expect(session2.updated).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(session2.updated!.getTime()).toBeGreaterThan(session1.updated!.getTime());
+    expect(session2.created).toBeDefined();
+    expect(session2.created).toStrictEqual(session1.created);
   });
 
-  it('should disallow concurrent active session', () => {
-    /* TODO */
-    // check after first session has been invalidated, you cannot use the credentials again
+  it('should require reauthentication if your session is revoked', async () => {
+    // Create user
+    const user = 'RevokedSession';
+    await cognitoHelper.createUser(user, 'AuthTestGroup', 'Revoked', 'Session');
+    const { idToken } = await cognitoHelper.getIdTokenForUser(user);
+
+    // Call API, adds session to db
+    const userUlid = await callPreChecks(idToken);
+    const sessions = await listSessionsForUser(userUlid, repositoryProvider);
+    expect(sessions.length).toEqual(1);
+    const session1 = sessions[0];
+
+    // Mark session as revoked (mock the logout process)
+    await updateSession(
+      {
+        ...session1,
+        isRevoked: true,
+      },
+      repositoryProvider
+    );
+
+    // Call API again, expect failure
+    await expect(callPreChecks(idToken)).rejects.toThrow(ReauthenticationError);
+
+    // Create new session, call API, should succeed
+    const newIdToken = (await cognitoHelper.getIdTokenForUser(user)).idToken;
+    await callPreChecks(newIdToken);
   });
 
-  it('should require reauthentication about 30 minutes of inactivity', () => {
-    /* TODO */
+  it('should require reauthentication if your session is expired', async () => {
+    // Create user
+    const user = 'ExpiredSession';
+    await cognitoHelper.createUser(user, 'AuthTestGroup', 'Expired', 'Session');
+    const { idToken } = await cognitoHelper.getIdTokenForUser(user);
+
+    // Call API, adds session to db
+    const userUlid = await callPreChecks(idToken);
+    const sessions = await listSessionsForUser(userUlid, repositoryProvider);
+    expect(sessions.length).toEqual(1);
+    const session1 = sessions[0];
+
+    // Change session ttl (mocks the session expiring)
+    await updateSession(
+      {
+        ...session1,
+        ttl: Date.now() / 1000 - 5, // expired 5 seconds ago
+      },
+      repositoryProvider
+    );
+
+    // Call API again, expect failure
+    await expect(callPreChecks(idToken)).rejects.toThrow(ReauthenticationError);
+
+    // Create new session, call API, should succeed
+    const newIdToken = (await cognitoHelper.getIdTokenForUser(user)).idToken;
+    await callPreChecks(newIdToken);
+  });
+
+  it('should require reauthentication if your session was last active 30+ minutes ago', async () => {
+    // Create user
+    const user = 'InactiveSession';
+    await cognitoHelper.createUser(user, 'AuthTestGroup', 'Inactive', 'Session');
+    const { idToken } = await cognitoHelper.getIdTokenForUser(user);
+
+    // Call API, adds session to db
+    const userUlid = await callPreChecks(idToken);
+    const sessions = await listSessionsForUser(userUlid, repositoryProvider);
+    expect(sessions.length).toEqual(1);
+    const session = sessions[0];
+
+    // We cannot mock time without the SSM SDK also breaking, so we
+    // will just test the shouldSessionBeConsideredInactive
+    jest.useFakeTimers();
+    // Mock session timeout by forcing Date.now() to adding 30+ minutes to the value
+    jest.setSystemTime(Date.now() + 18000001);
+    expect(shouldSessionBeConsideredInactive(session)).toBeTruthy();
+    jest.useRealTimers();
+  });
+
+  it('should block access if there are multiple active sessions for a user.', async () => {
+    // Create user
+    const user = 'ConcurrentSession';
+    await cognitoHelper.createUser(user, 'AuthTestGroup', 'Concurrent', 'Session');
+    const { idToken } = await cognitoHelper.getIdTokenForUser(user);
+
+    // Call API, adds session to db
+    const userUlid = await callPreChecks(idToken);
+    const sessions = await listSessionsForUser(userUlid, repositoryProvider);
+    expect(sessions.length).toEqual(1);
+    const session = sessions[0];
+
+    // Create another session, call API (see that it is blocked)
+    const newIdToken = (await cognitoHelper.getIdTokenForUser(user)).idToken;
+    await expect(callPreChecks(newIdToken)).rejects.toThrow(ReauthenticationError);
+
+    // Mimic Logout on original session by marking session revoked
+    await updateSession(
+      {
+        ...session,
+        isRevoked: true,
+      },
+      repositoryProvider
+    );
+
+    // Call API with second session, expect success
+    await callPreChecks(newIdToken);
   });
 });
+
+const callPreChecks = async (idToken: string): Promise<string> => {
+  const event = getDummyEvent();
+  event.headers['idToken'] = idToken;
+  const auditEvent = getDummyAuditEvent();
+
+  // Call API expect success
+  await runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return event.headers['userUlid']!;
+};

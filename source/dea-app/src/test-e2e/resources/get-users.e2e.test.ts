@@ -2,7 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-
+import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
 import { DeaUser } from '../../models/user';
 import { userResponseSchema } from '../../models/validation/user';
@@ -21,13 +21,22 @@ describe('get users api', () => {
   const testUser_blocked = 'notGranted_getUsersE2EUser';
   const deaApiUrl = testEnv.apiUrlOutput;
 
+  let creds: Credentials;
+  let idToken: string;
+  let creds2: Credentials;
+  let idToken2: string;
+
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'CaseWorker', user1FirstName, 'TestUser');
     await cognitoHelper.createUser(testUser2, 'CaseWorker', user2FirstName, 'TestUser');
     await cognitoHelper.createUser(testUser_blocked, 'NoPermissionsGroup', 'NoAccessToUsers', 'TestUser');
 
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
-    const [creds2, idToken2] = await cognitoHelper.getCredentialsForUser(testUser2);
+    const credentials = await cognitoHelper.getCredentialsForUser(testUser);
+    creds = credentials[0];
+    idToken = credentials[1];
+    const credentials2 = await cognitoHelper.getCredentialsForUser(testUser2);
+    creds2 = credentials2[0];
+    idToken2 = credentials2[1];
     // Call an api to add this user to the DB
     await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', idToken, creds);
     await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', idToken2, creds2);
@@ -38,8 +47,6 @@ describe('get users api', () => {
   }, 30000);
 
   it('should get all users', async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
-
     const response = await callDeaAPIWithCreds(
       `${deaApiUrl}users?nameBeginsWith=${user1FirstName}`,
       'GET',
@@ -57,9 +64,9 @@ describe('get users api', () => {
   }, 20000);
 
   it('should block unauthorized users', async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser_blocked);
+    const [creds2, idToken2] = await cognitoHelper.getCredentialsForUser(testUser_blocked);
 
-    const response = await callDeaAPIWithCreds(`${deaApiUrl}users`, 'GET', idToken, creds);
+    const response = await callDeaAPIWithCreds(`${deaApiUrl}users`, 'GET', idToken2, creds2);
 
     expect(response.status).toEqual(403);
   }, 20000);

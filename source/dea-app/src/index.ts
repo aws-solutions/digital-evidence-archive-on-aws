@@ -5,6 +5,10 @@
 
 import { ForbiddenError, FORBIDDEN_ERROR_NAME } from './app/exceptions/forbidden-exception';
 import { NotFoundError, NOT_FOUND_ERROR_NAME } from './app/exceptions/not-found-exception';
+import {
+  ReauthenticationError,
+  REAUTHENTICATION_ERROR_NAME,
+} from './app/exceptions/reauthentication-exception';
 import { ValidationError, VALIDATION_ERROR_NAME } from './app/exceptions/validation-exception';
 import { completeCaseFileUpload } from './app/resources/complete-case-file-upload';
 import { createCaseMembership } from './app/resources/create-case-membership';
@@ -88,6 +92,8 @@ export {
   FORBIDDEN_ERROR_NAME,
   NotFoundError,
   NOT_FOUND_ERROR_NAME,
+  ReauthenticationError,
+  REAUTHENTICATION_ERROR_NAME,
   ValidationError,
   VALIDATION_ERROR_NAME,
   dummyContext,

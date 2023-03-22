@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
 import { DeaCase } from '../../models/case';
 import { caseResponseSchema } from '../../models/validation/case';
@@ -18,12 +19,17 @@ describe('get all cases api', () => {
 
   const caseIdsToDelete: string[] = [];
 
+  let creds: Credentials;
+  let idToken: string;
+
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'CreateCasesTestGroup', 'GetAllCases', 'TestUser');
+    const credentials = await cognitoHelper.getCredentialsForUser(testUser);
+    creds = credentials[0];
+    idToken = credentials[1];
   });
 
   afterAll(async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
     for (const caseId of caseIdsToDelete) {
       await deleteCase(deaApiUrl, caseId, idToken, creds);
     }
@@ -31,8 +37,6 @@ describe('get all cases api', () => {
   }, 30000);
 
   it('should get all cases', async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
-
     const caseNames = ['getAllCases-Case1', 'getAllCases-Case2', 'getAllCases-Case3', 'getAllCases-Case4'];
     const createdCases: DeaCase[] = [];
     for (const caseName of caseNames) {

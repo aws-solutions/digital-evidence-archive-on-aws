@@ -201,4 +201,46 @@ describe('session persistence', () => {
     expect(sessions.length).toEqual(numSessions);
     expect(sessions.filter((session) => session.userUlid == testUserUlid).length).toBe(numSessions);
   });
+
+  it('should update a session even if the update is empty', async () => {
+    // Create user
+    const tokenId = 'EMPTY_UPDATE_TEST';
+    const testUserUlid = (
+      await createUser(
+        {
+          tokenId: 'emptyupdate',
+          firstName: 'Empty',
+          lastName: 'Update',
+        },
+        repositoryProvider
+      )
+    ).ulid;
+
+    // Create session for user
+    const session = await createSession(
+      {
+        userUlid: testUserUlid,
+        tokenId,
+      },
+      repositoryProvider
+    );
+
+    // Update Session
+    await updateSession(
+      {
+        ...session,
+      },
+      repositoryProvider
+    );
+
+    // Check that updated session is returned, and the updated time field changed
+    const updatedSessions = await listSessionsForUser(testUserUlid, repositoryProvider);
+    expect(updatedSessions.length).toEqual(1);
+    const updatedSession = updatedSessions[0];
+    expect(updatedSession.created).toBeDefined();
+    expect(updatedSession.created).toEqual(session.created);
+    expect(updatedSession.updated).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(updatedSession.updated!.getTime()).toBeGreaterThan(session.updated!.getTime());
+  });
 });

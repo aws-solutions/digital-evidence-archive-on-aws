@@ -40,14 +40,18 @@ describe('Test case file APIs', () => {
 
   jest.setTimeout(30000);
 
+  let creds: Credentials;
+  let idToken: string;
+
   beforeAll(async () => {
     // Create user in test group
     await cognitoHelper.createUser(TEST_USER, 'CaseWorker', 'CaseFile', 'Uploader');
+    const credentials = await cognitoHelper.getCredentialsForUser(TEST_USER);
+    creds = credentials[0];
+    idToken = credentials[1];
   });
 
   afterAll(async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(TEST_USER);
-
     for (const caseId of caseIdsToDelete) {
       await deleteCase(DEA_API_URL, caseId, idToken, creds);
     }
@@ -58,8 +62,6 @@ describe('Test case file APIs', () => {
   });
 
   it('Upload a case file', async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(TEST_USER);
-
     const createdCase = await createCase(idToken, creds);
     const caseUlid = createdCase.ulid ?? fail();
     caseIdsToDelete.push(caseUlid);

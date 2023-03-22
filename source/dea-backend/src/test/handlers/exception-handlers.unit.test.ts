@@ -9,6 +9,7 @@ import {
   ForbiddenError,
   getTestAuditService,
   NotFoundError,
+  ReauthenticationError,
   ValidationError,
 } from '@aws/dea-app';
 import { TestAuditService } from '@aws/dea-app/lib/test/services/test-audit-service-provider';
@@ -89,6 +90,23 @@ describe('exception handlers', () => {
     expect(actual).toEqual({
       statusCode: 404,
       body: 'something was not found',
+    });
+  });
+
+  it('should handle Reauthentication errors', async () => {
+    const sut = createDeaHandler(
+      async () => {
+        throw new ReauthenticationError('Go back to start and do not collect 200 dollars.');
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    const actual = await sut(dummyEvent, dummyContext);
+    expect(actual).toEqual({
+      statusCode: 412,
+      body: 'Reauthenticate',
     });
   });
 
