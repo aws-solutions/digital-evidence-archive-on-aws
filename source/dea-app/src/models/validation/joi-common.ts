@@ -19,6 +19,8 @@ export const htmlSafeCharsRegex = new RegExp('^[^&"\'<>]*$');
 
 export const ulidRegex = new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$');
 
+export const jtiRegex = new RegExp('^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$');
+
 export const s3Identifier = Joi.string().pattern(htmlSafeCharsRegex);
 
 export const joiUlid = Joi.string().pattern(ulidRegex);
@@ -56,6 +58,8 @@ export const paginationLimit = Joi.number().min(1).max(100).optional();
 export const base64String = Joi.string().base64().required();
 
 export const ttlJoi = Joi.number().min(1500000000).max(5000000000).required();
+
+export const jti = Joi.string().pattern(jtiRegex).required();
 
 // https://github.com/odomojuli/RegExAPI
 export const authCode = Joi.string().regex(/^[A-Za-z0-9-_]+$/);
