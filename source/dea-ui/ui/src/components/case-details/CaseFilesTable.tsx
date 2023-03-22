@@ -170,8 +170,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
   );
 
   function uploadFilesHandler() {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
+    void router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
   }
 
   async function downloadFilesHandler() {

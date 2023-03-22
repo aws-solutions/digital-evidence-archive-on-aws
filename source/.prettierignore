@@ -98,3 +98,5 @@ lib
 *.yml
 *.tools
 **/temp*
+# Prettier is failing when typing a generic method (e.g. someMethod<type>)
+**/cases.tsx

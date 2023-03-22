@@ -10,10 +10,7 @@ if (typeof window !== 'undefined' && !urlBase) {
   urlBase = `https://${window.location.hostname}`;
 }
 
-// TODO: Use generics instead of using any for methods here
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fetchData = async (options: AxiosRequestConfig): Promise<any> => {
+const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
   const accessKeyId = localStorage.getItem('accessKeyId');
   const secretAccessKey = localStorage.getItem('secretAccessKey');
   const sessionToken = localStorage.getItem('sessionToken');
@@ -64,8 +61,7 @@ const fetchData = async (options: AxiosRequestConfig): Promise<any> => {
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpApiGet = async (urlPath: string, params: any): Promise<any> => {
+const httpApiGet = async <T>(urlPath: string, params: unknown): Promise<T> => {
   const options = {
     method: 'GET',
     url: `${urlBase}${urlPath}`,
@@ -74,8 +70,7 @@ const httpApiGet = async (urlPath: string, params: any): Promise<any> => {
   return await fetchData(options);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpApiPost = async (urlPath: string, params: any): Promise<any> => {
+const httpApiPost = async <T>(urlPath: string, params: unknown): Promise<T> => {
   const options = {
     method: 'POST',
     url: `${urlBase}${urlPath}`,
@@ -84,8 +79,7 @@ const httpApiPost = async (urlPath: string, params: any): Promise<any> => {
   return await fetchData(options);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpApiPut = async (urlPath: string, params: any): Promise<any> => {
+const httpApiPut = async <T>(urlPath: string, params: unknown): Promise<T> => {
   const options = {
     method: 'PUT',
     url: `${urlBase}${urlPath}`,
@@ -94,8 +88,7 @@ const httpApiPut = async (urlPath: string, params: any): Promise<any> => {
   return await fetchData(options);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpApiDelete = async (urlPath: string, params: any): Promise<any> => {
+const httpApiDelete = async <T>(urlPath: string, params: unknown): Promise<T> => {
   const options = {
     method: 'DELETE',
     url: `${urlBase}${urlPath}`,
