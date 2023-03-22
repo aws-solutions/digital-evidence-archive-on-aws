@@ -133,7 +133,7 @@ describe('API authentication', () => {
     const credentialsUrl = `${deaApiUrl}auth/credentials/${idToken}/exchange`;
     const credsResponse = await client.get(credentialsUrl, { validateStatus });
     expect(credsResponse.status).toEqual(200);
-  }, 40000);
+  }, 60000);
 
   it('should fail with dummy auth code', async () => {
     const client = axios.create();

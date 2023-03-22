@@ -72,7 +72,7 @@ describe('revoke-token', () => {
 
     const revokeResponse = await revokeToken(dummyEvent, dummyContext);
     expect(revokeResponse.body).toEqual('200');
-  }, 20000);
+  }, 40000);
 
   it('should throw an error if trying to revoke id token', async () => {
     const dummyEvent = getDummyEvent({
@@ -84,9 +84,9 @@ describe('revoke-token', () => {
     await expect(revokeToken(dummyEvent, dummyContext)).rejects.toThrow(
       'Request failed with status code 400'
     );
-  });
+  }, 40000);
 
   it('should throw an error if the payload is missing', async () => {
     await expect(revokeToken(getDummyEvent(), dummyContext)).rejects.toThrow(ValidationError);
-  });
+  }, 40000);
 });

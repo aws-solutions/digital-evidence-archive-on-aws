@@ -46,7 +46,7 @@ describe('auth service', () => {
     expect(loginUrl).toEqual(
       `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`
     );
-  });
+  }, 40000);
 
   it('successfully get id token using auth code', async () => {
     const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
@@ -71,7 +71,7 @@ describe('auth service', () => {
     expect(credentials).toHaveProperty('AccessKeyId');
     expect(credentials).toHaveProperty('SecretKey');
     expect(credentials).toHaveProperty('SessionToken');
-  }, 20000);
+  }, 40000);
 
   it('successfully get id token using auth code with an callback override', async () => {
     const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
@@ -86,28 +86,28 @@ describe('auth service', () => {
 
     // Assert if no id token fectched in exchangeAuthorizationCode
     expect(id_token).toBeTruthy();
-  }, 20000);
+  }, 40000);
 
   it('revoke token should fail when trying to revoke id Token', async () => {
     await expect(revokeRefreshToken(idToken)).rejects.toThrow('Request failed with status code 400');
-  });
+  }, 40000);
 
   it('revoke token successfully when revoking Refresh Token. Should fail to fetch credentials afterwards', async () => {
     const response = await revokeRefreshToken(refreshToken);
     expect(response).toEqual(200);
-  });
+  }, 40000);
 
   it('should throw an error if the authorization code is not valid', async () => {
     const dummyAuthCode = 'DUMMY_AUTH_CODE';
     await expect(exchangeAuthorizationCode(dummyAuthCode)).rejects.toThrow(
       'Request failed with status code 400'
     );
-  });
+  }, 40000);
 
   it('should throw an error if the id token is not valid', async () => {
     const dummyIdToken = 'DUMMY_ID_TOKEN';
     await expect(exchangeAuthorizationCode(dummyIdToken)).rejects.toThrow(
       'Request failed with status code 400'
     );
-  });
+  }, 40000);
 });
