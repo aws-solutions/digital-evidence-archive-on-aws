@@ -24,10 +24,6 @@ export const listSessionsForUser = async (
     },
   });
 
-  if (!sessionEntities) {
-    return [];
-  }
-
   const sessions: Paged<DeaSession> = sessionEntities
     .map((entity) => sessionFromEntity(entity))
     .filter(isDefined);

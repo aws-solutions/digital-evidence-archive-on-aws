@@ -25,13 +25,23 @@ describe('get my cases api', () => {
   const user2FirstName = `Other${randomSuffix()}`;
   const deaApiUrl = testEnv.apiUrlOutput;
 
+  let creds: Credentials;
+  let idToken: string;
+  let creds2: Credentials;
+  let idToken2: string;
+
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'GetMyCasesTestGroup', user1FirstName, 'TestUser');
+    const credentials = await cognitoHelper.getCredentialsForUser(testUser);
+    creds = credentials[0];
+    idToken = credentials[1];
+    await cognitoHelper.createUser(otherTestUser, 'GetMyCasesTestGroup', user2FirstName, 'TestUser');
+    const credentials2 = await cognitoHelper.getCredentialsForUser(otherTestUser);
+    creds2 = credentials2[0];
+    idToken2 = credentials2[1];
   });
 
   afterAll(async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
-    const [creds2, idToken2] = await cognitoHelper.getCredentialsForUser(otherTestUser);
     // clean up any cases leftover during a failure
     await deleteCases(user1CaseIds, deaApiUrl, idToken, creds);
     await deleteCases(user2CaseIds, deaApiUrl, idToken2, creds2);
@@ -42,8 +52,6 @@ describe('get my cases api', () => {
     // Create two cases owned by the user
     // then a case owned by another user who invites our user to it
     // Check that all 3 are returned for GetMyCases
-
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
     // Create 2 Cases owned by the user
     const caseNames = ['getMyCases-OwnedCase1', 'getMyCases-OwnedCase2'];
@@ -64,9 +72,6 @@ describe('get my cases api', () => {
     createdCases.forEach((createdCase) => user1CaseIds.push(createdCase.ulid ?? fail()));
 
     // Create cases owned by another user, then invite the test user to it
-    await cognitoHelper.createUser(otherTestUser, 'GetMyCasesTestGroup', user2FirstName, 'TestUser');
-    const [creds2, idToken2] = await cognitoHelper.getCredentialsForUser(otherTestUser);
-
     const invitedCaseName = 'getMyCases-InvitedCase';
     const invitedCase: DeaCase = await createCaseSuccess(
       deaApiUrl,

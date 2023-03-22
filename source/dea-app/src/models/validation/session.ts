@@ -4,13 +4,13 @@
  */
 
 import Joi from 'joi';
-import { joiUlid, ttlJoi } from './joi-common';
+import { joiUlid, jti, ttlJoi } from './joi-common';
 
 export const sessionResponseSchema = Joi.object({
   userUlid: joiUlid,
-  // TODO TokenId
   ttl: ttlJoi,
   isRevoked: Joi.boolean(),
   created: Joi.date(),
   updated: Joi.date(),
+  tokenId: jti,
 });

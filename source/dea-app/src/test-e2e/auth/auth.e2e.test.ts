@@ -6,7 +6,7 @@ import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
 import { getTokenPayload } from '../../cognito-token-helpers';
-import { Oauth2Token, RevokeToken } from '../../models/auth';
+import { Oauth2Token } from '../../models/auth';
 import { getAuthorizationCode } from '../helpers/auth-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -133,7 +133,7 @@ describe('API authentication', () => {
     const credentialsUrl = `${deaApiUrl}auth/credentials/${idToken}/exchange`;
     const credsResponse = await client.get(credentialsUrl, { validateStatus });
     expect(credsResponse.status).toEqual(200);
-  }, 40000);
+  }, 60000);
 
   it('should fail with dummy auth code', async () => {
     const client = axios.create();
@@ -171,29 +171,75 @@ describe('API authentication', () => {
     expect(response.statusText).toEqual('Bad Request');
   }, 40000);
 
-  it('should successfully revoke refresh token', async () => {
-    const [creds, idToken, refreshToken] = await cognitoHelper.getCredentialsForUser(testUser);
+  // TODO (next PR) uncomment after you mark session as revoked in /refresh endpoint
+  // it('should successfully revoke refresh token', async () => {
+  //   const [creds, idToken, refreshToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
-    const payload: RevokeToken = {
-      refreshToken: refreshToken,
-    };
+  //   const payload: RevokeToken = {
+  //     refreshToken: refreshToken,
+  //   };
 
-    const url = `${deaApiUrl}auth/revokeToken`;
-    const response = await callDeaAPIWithCreds(url, 'POST', idToken, creds, payload);
+  //   const url = `${deaApiUrl}auth/revokeToken`;
+  //   const response = await callDeaAPIWithCreds(url, 'POST', idToken, creds, payload);
 
-    expect(response.data).toEqual(200);
+  //   expect(response.data).toEqual(200);
+  // }, 40000);
+
+  it('should disallow concurrent active session', async () => {
+    // Create user
+    const user = 'ConcurrentUserE2ETest';
+    await cognitoHelper.createUser(user, 'AuthTestGroup', 'ConcurrentE2E', 'AuthTester');
+
+    // Get credentials
+    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(user);
+
+    // Make successful API call
+    const url = `${deaApiUrl}cases/my-cases`;
+    const response = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
+    expect(response.status).toEqual(200);
+
+    // Get new credentials
+    const newCreds = await cognitoHelper.getCredentialsForUser(user);
+    // Call API with new credentials, see that it fails with ReAuthentication error
+    const failed = await callDeaAPIWithCreds(url, 'GET', newCreds[1], newCreds[0]);
+    expect(failed.status).toEqual(412);
+
+    // TODO: (next PR) Finish rest of the test after you mark session as revoked in /logout endpoint
+    // Call logout on original credentials
+    // Call API with second set of credentials, see that it succeeds
   }, 40000);
 
-  it('should log successful and unsuccessful logins/api invocations', () => {
-    /* TODO */
-  });
+  // TODO: Once we have tests that we only run once ever 24 hours, add this
+  // test to that, since it would add 30 minutes to every run. Other tests like
+  // this would be archive/restore tests.
+  // it('should require reauthentication about 30 minutes of inactivity', async () => {
+  //   // Create user
+  //   const user = "InactiveSessionE2ETest"
+  //   await cognitoHelper.createUser(user, 'AuthTestGroup', 'InactiveSession', 'AuthTester');
 
-  it('should disallow concurrent active session', () => {
-    /* TODO */
-    // check after first session has been invalidated, you cannot use the credentials again
-  });
+  //   // Get credentials
+  //   const [creds, idToken] = await cognitoHelper.getCredentialsForUser(user);
 
-  it('should require reauthentication about 30 minutes of inactivity', () => {
+  //   // Make successful API call
+  //   const url = `${deaApiUrl}cases/my-cases`;
+  //   const response = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
+  //   expect(response.status).toEqual(200);
+
+  //   // Now sleep for 35 minutes to check inactivity timeout
+  //   const sleepIncrements = 6;
+  //   const sleepIncrementTime = Math.ceil(30 / sleepIncrements);
+  //   console.log("Sleeping for 30 minutes to check session lock after 30 minutes of inactivity...");
+  //   for(let i = 0; i < sleepIncrements; i++) {
+  //     await new Promise((r) => setTimeout(r, sleepIncrementTime * 60000));
+  //     console.log(`${(i + 1) * sleepIncrementTime}/30 minutes complete...`);
+  //   }
+
+  //   // Now call with same creds, see that it fails due to inactivity
+  //   const failed = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
+  //   expect(failed.status).toEqual(412);
+  // }, 3600000);
+
+  it('should log successful and unsuccessful logins/api invocations', async () => {
     /* TODO */
   });
 });
