@@ -142,6 +142,7 @@ export const getPresignedUrlForDownload = async (
     Key: s3Key,
     VersionId: caseFile.versionId,
     ResponseContentType: caseFile.contentType,
+    ResponseContentDisposition: `attachment; filename="${caseFile.fileName}"`,
   });
   return getSignedUrl(datasetsProvider.s3Client, getObjectCommand, {
     expiresIn: datasetsProvider.presignedCommandExpirySeconds,
