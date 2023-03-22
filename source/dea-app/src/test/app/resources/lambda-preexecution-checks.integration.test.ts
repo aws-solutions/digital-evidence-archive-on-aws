@@ -32,12 +32,12 @@ describe('lambda pre-execution checks', () => {
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
     repositoryProvider = await getTestRepositoryProvider('lambdaPreExecutionChecksTest');
-  }, 10000);
+  }, 40000);
 
   afterAll(async () => {
     await cognitoHelper.cleanup(repositoryProvider);
     await repositoryProvider.table.deleteTable('DeleteTableForever');
-  }, 10000);
+  }, 40000);
 
   it('should add first time federated user to dynamo table', async () => {
     const { idToken } = await cognitoHelper.getIdTokenForUser(testUser);
@@ -113,7 +113,7 @@ describe('lambda pre-execution checks', () => {
     expect(users.length).toBe(1);
     expect(users[0].tokenId).toStrictEqual(tokenId);
     expect(users[0].ulid).toStrictEqual(user2?.ulid);
-  }, 10000);
+  }, 40000);
 
   it('should throw if no cognitoId is included in the request', async () => {
     const event = getDummyEvent();
@@ -126,7 +126,7 @@ describe('lambda pre-execution checks', () => {
     await expect(runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider)).rejects.toThrow(
       NotFoundError
     );
-  });
+  }, 40000);
 
   it('should succeed if session meets requirements', async () => {
     // Create user
@@ -150,7 +150,7 @@ describe('lambda pre-execution checks', () => {
     expect(session2.updated!.getTime()).toBeGreaterThan(session1.updated!.getTime());
     expect(session2.created).toBeDefined();
     expect(session2.created).toStrictEqual(session1.created);
-  });
+  }, 40000);
 
   it('should require reauthentication if your session is revoked', async () => {
     // Create user
@@ -179,7 +179,7 @@ describe('lambda pre-execution checks', () => {
     // Create new session, call API, should succeed
     const newIdToken = (await cognitoHelper.getIdTokenForUser(user)).idToken;
     await callPreChecks(newIdToken);
-  });
+  }, 40000);
 
   it('should require reauthentication if your session is expired', async () => {
     // Create user
@@ -208,7 +208,7 @@ describe('lambda pre-execution checks', () => {
     // Create new session, call API, should succeed
     const newIdToken = (await cognitoHelper.getIdTokenForUser(user)).idToken;
     await callPreChecks(newIdToken);
-  });
+  }, 40000);
 
   it('should require reauthentication if your session was last active 30+ minutes ago', async () => {
     // Create user
@@ -229,7 +229,7 @@ describe('lambda pre-execution checks', () => {
     jest.setSystemTime(Date.now() + 18000001);
     expect(shouldSessionBeConsideredInactive(session)).toBeTruthy();
     jest.useRealTimers();
-  });
+  }, 40000);
 
   it('should block access if there are multiple active sessions for a user.', async () => {
     // Create user
@@ -258,7 +258,7 @@ describe('lambda pre-execution checks', () => {
 
     // Call API with second session, expect success
     await callPreChecks(newIdToken);
-  });
+  }, 40000);
 });
 
 const callPreChecks = async (idToken: string): Promise<string> => {
