@@ -5,6 +5,7 @@
 
 import { FORBIDDEN_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/forbidden-exception';
 import { NOT_FOUND_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/not-found-exception';
+import { REAUTHENTICATION_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/reauthentication-exception';
 import { VALIDATION_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/validation-exception';
 import { APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
@@ -50,6 +51,14 @@ const forbiddenErrorHandler: ExceptionHandler = async (error) => {
   };
 };
 
+const reauthenticationErrorHandler: ExceptionHandler = async (error) => {
+  logger.error('Reauthenticate', { message: error.message });
+  return {
+    statusCode: 412,
+    body: 'Reauthenticate',
+  };
+};
+
 const defaultErrorHandler: ExceptionHandler = async () => {
   return {
     statusCode: 500,
@@ -67,3 +76,4 @@ exceptionHandlers.set(NOT_FOUND_ERROR_NAME, notFoundHandler);
 exceptionHandlers.set(joiInstance.name, joiValidationErrorHandler);
 exceptionHandlers.set(FORBIDDEN_ERROR_NAME, forbiddenErrorHandler);
 exceptionHandlers.set(AWS_CLIENT_INVALID_PARAMETER_NAME, validationErrorHandler);
+exceptionHandlers.set(REAUTHENTICATION_ERROR_NAME, reauthenticationErrorHandler);

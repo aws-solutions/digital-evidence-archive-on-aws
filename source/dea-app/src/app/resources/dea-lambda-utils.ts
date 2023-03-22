@@ -11,7 +11,9 @@ import { logger } from '../../logger';
 import { DeaUser } from '../../models/user';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
+import { ReauthenticationError } from '../exceptions/reauthentication-exception';
 import { CJISAuditEventBody, IdentityType } from '../services/audit-service';
+import * as SessionService from '../services/session-service';
 import * as UserService from '../services/user-service';
 import { LambdaContext, LambdaEvent, LambdaRepositoryProvider } from './dea-gateway-proxy-handler';
 
@@ -65,6 +67,7 @@ export const runPreExecutionChecks = async (
     maybeUser = await addUserToDatabase(idTokenPayload, repositoryProvider);
   }
   // progress audit identity
+  const userUlid = maybeUser.ulid;
   auditEvent.actorIdentity = {
     idType: IdentityType.FULL_USER_ID,
     sourceIp: event.requestContext.identity.sourceIp,
@@ -72,15 +75,32 @@ export const runPreExecutionChecks = async (
     username: idTokenPayload['cognito:username'],
     firstName: maybeUser.firstName,
     lastName: maybeUser.lastName,
-    userUlid: maybeUser.ulid,
+    userUlid,
     deaRole,
   };
 
-  event.headers['userUlid'] = maybeUser.ulid;
+  event.headers['userUlid'] = userUlid;
 
-  // TODO: verify the session management requirements here
+  // Verify the session management requirements here
   // E.g. no concurrent sessions and session lock after 30 minutes
   // of inactivity
+  const sessionCheckResponse = await SessionService.isCurrentSessionValid(
+    userUlid,
+    idTokenPayload,
+    repositoryProvider
+  );
+  if (typeof sessionCheckResponse === 'string') {
+    logger.error(sessionCheckResponse);
+    throw new ReauthenticationError(sessionCheckResponse);
+  } else {
+    if (sessionCheckResponse) {
+      logger.info('User ' + userUlid + ' passed session requirements');
+    } else {
+      const errString = 'Something went wrong during session requirements check';
+      logger.error(errString);
+      throw new ReauthenticationError(errString);
+    }
+  }
 };
 
 // ------------------- HELPER FUNCTIONS -------------------
@@ -135,7 +155,3 @@ export const responseNoContent = (): APIGatewayProxyResult => {
     },
   };
 };
-
-// Session Management Checks Helper Functions
-
-// TODO: Add these
