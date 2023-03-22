@@ -745,6 +745,65 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayGETGetCaseActions00B0B2FE": Object {
+      "DependsOn": Array [
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewaydeabaselambdarole91512884",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
     "DeaApiGatewayGETGetCaseAudit536E35D4": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -1830,7 +1889,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E776297c3277e30a1502c6e5cd308c53009b07": Object {
+    "DeaApiGatewaydeaapiDeployment99E7762905e14f5ca7c48076303101a231317bdb": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiauthauthCodeOPTIONS8EA9BA0F",
         "DeaApiGatewaydeaapiauthauthCodeFC92ADBD",
@@ -1855,6 +1914,9 @@ Object {
         "DeaApiGatewaydeaapiauthrevokeTokenOPTIONS2D8639A5",
         "DeaApiGatewaydeaapiauthrevokeTokenPOSTE5A8C6B9",
         "DeaApiGatewaydeaapiauthrevokeTokenE3DB92E3",
+        "DeaApiGatewaydeaapicasescaseIdactionsGET6EB75B66",
+        "DeaApiGatewaydeaapicasescaseIdactionsOPTIONS2140F793",
+        "DeaApiGatewaydeaapicasescaseIdactionsAB55E158",
         "DeaApiGatewaydeaapicasescaseIdauditauditIdcsvGETF934A5FF",
         "DeaApiGatewaydeaapicasescaseIdauditauditIdcsvOPTIONSF0C8820E",
         "DeaApiGatewaydeaapicasescaseIdauditauditIdcsv59A5449B",
@@ -1953,7 +2015,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E776297c3277e30a1502c6e5cd308c53009b07",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E7762905e14f5ca7c48076303101a231317bdb",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
@@ -3475,6 +3537,177 @@ Object {
         ],
         "ResourceId": Object {
           "Ref": "DeaApiGatewaydeaapicasescaseId3D754C88",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapicasescaseIdactionsAB55E158": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaApiGatewaydeaapicasescaseId3D754C88",
+        },
+        "PathPart": "actions",
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaApiGatewaydeaapicasescaseIdactionsGET6EB75B66": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaApiGatewayGETGetCaseActions00B0B2FE",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapicasescaseIdactionsAB55E158",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapicasescaseIdactionsGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdactions2A8255E4": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetCaseActions00B0B2FE",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaApiGatewaydeaapi822A9228",
+              },
+              "/",
+              Object {
+                "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/GET/cases/*/actions",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaApiGatewaydeaapicasescaseIdactionsGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdactions88198B7F": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetCaseActions00B0B2FE",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaApiGatewaydeaapi822A9228",
+              },
+              "/test-invoke-stage/GET/cases/*/actions",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaApiGatewaydeaapicasescaseIdactionsOPTIONS2140F793": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,idToken,x-amz-security-token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapicasescaseIdactionsAB55E158",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
@@ -7480,1450 +7713,6 @@ Object {
       },
       "Type": "AWS::S3::BucketPolicy",
     },
-    "DeaAuthAllowDenyTestCompleteCaseFileUploadRole8AE13990": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role PUT_/cases/{caseId}/files/{fileId}/contents",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestCompleteCaseFileUploadRolePolicy835E25F8": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/PUT/cases/*/files/*/contents",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestCompleteCaseFileUploadRolePolicy835E25F8",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestCompleteCaseFileUploadRole8AE13990",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestCreateCaseRoleF01FFE55": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role POST_/cases",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestCreateCaseRolePolicy89E62718": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/POST/cases",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestCreateCaseRolePolicy89E62718",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestCreateCaseRoleF01FFE55",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestDeleteCaseRoleBAF1B9D5": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role DELETE_/cases/{caseId}/details",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestDeleteCaseRolePolicy07A79EC8": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/DELETE/cases/*/details",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestDeleteCaseRolePolicy07A79EC8",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestDeleteCaseRoleBAF1B9D5",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestDownloadCaseFileRole55A3A9D6": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role GET_/cases/{caseId}/files/{fileId}/contents",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestDownloadCaseFileRolePolicy61DF8AC5": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/GET/cases/*/files/*/contents",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestDownloadCaseFileRolePolicy61DF8AC5",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestDownloadCaseFileRole55A3A9D6",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestGetAllCasesRole4BE93388": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role GET_/cases/all-cases",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestGetAllCasesRolePolicy783449F2": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/GET/cases/all-cases",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestGetAllCasesRolePolicy783449F2",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestGetAllCasesRole4BE93388",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestGetAllUsersRoleCCB4B128": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role GET_/users",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestGetAllUsersRolePolicy3D312F87": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/GET/users",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestGetAllUsersRolePolicy3D312F87",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestGetAllUsersRoleCCB4B128",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestGetCaseAuditRole42A748EB": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role GET_/cases/{caseId}/audit/{auditId}/csv",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestGetCaseAuditRolePolicyEEFCE236": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/GET/cases/*/audit/*/csv",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestGetCaseAuditRolePolicyEEFCE236",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestGetCaseAuditRole42A748EB",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestGetCaseDetailsRole776FE5A3": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role GET_/cases/{caseId}/details",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestGetCaseDetailsRolePolicy4C978454": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/GET/cases/*/details",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestGetCaseDetailsRolePolicy4C978454",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestGetCaseDetailsRole776FE5A3",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestGetCaseFileDetailRoleAF53915D": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role GET_/cases/{caseId}/files/{fileId}/info",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestGetCaseFileDetailRolePolicyFF7C3115": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/GET/cases/*/files/*/info",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestGetCaseFileDetailRolePolicyFF7C3115",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestGetCaseFileDetailRoleAF53915D",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestGetCaseFilesRole4C5427E2": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role GET_/cases/{caseId}/files",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestGetCaseFilesRolePolicy95D4AD05": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/GET/cases/*/files",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestGetCaseFilesRolePolicy95D4AD05",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestGetCaseFilesRole4C5427E2",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestGetMyCasesRole5EC38B75": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role GET_/cases/my-cases",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestGetMyCasesRolePolicyA6CB2164": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/GET/cases/my-cases",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestGetMyCasesRolePolicyA6CB2164",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestGetMyCasesRole5EC38B75",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestGetUsersFromCaseRole0644C0AD": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role GET_/cases/{caseId}/userMemberships",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestGetUsersFromCaseRolePolicy2E6717B3": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/GET/cases/*/userMemberships",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestGetUsersFromCaseRolePolicy2E6717B3",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestGetUsersFromCaseRole0644C0AD",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestInitiateCaseFileUploadRoleCB92630A": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role POST_/cases/{caseId}/files",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestInitiateCaseFileUploadRolePolicyECFDFEFE": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/POST/cases/*/files",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestInitiateCaseFileUploadRolePolicyECFDFEFE",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestInitiateCaseFileUploadRoleCB92630A",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestInviteUserToCaseRoleBB1D6B42": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role POST_/cases/{caseId}/userMemberships",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestInviteUserToCaseRolePolicy21CE8E36": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/POST/cases/*/userMemberships",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestInviteUserToCaseRolePolicy21CE8E36",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestInviteUserToCaseRoleBB1D6B42",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestModifyUserCasePermissionsRoleFAAFE725": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role PUT_/cases/{caseId}/users/{userId}/memberships",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestModifyUserCasePermissionsRolePolicy9F0E77A9": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/PUT/cases/*/users/*/memberships",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestModifyUserCasePermissionsRolePolicy9F0E77A9",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestModifyUserCasePermissionsRoleFAAFE725",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestRemoveUserFromCaseRoleC77969B0": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role DELETE_/cases/{caseId}/users/{userId}/memberships",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestRemoveUserFromCaseRolePolicyADF764BE": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/DELETE/cases/*/users/*/memberships",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestRemoveUserFromCaseRolePolicyADF764BE",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestRemoveUserFromCaseRoleC77969B0",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestRequestCaseAuditRole1633C812": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role POST_/cases/{caseId}/audit",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestRequestCaseAuditRolePolicy053F38FA": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/POST/cases/*/audit",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestRequestCaseAuditRolePolicy053F38FA",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestRequestCaseAuditRole1633C812",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestRevokeAuthTokenRole8AB36F3C": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role POST_/auth/revokeToken",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestRevokeAuthTokenRolePolicy3B0954A2": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/POST/auth/revokeToken",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestRevokeAuthTokenRolePolicy3B0954A2",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestRevokeAuthTokenRole8AB36F3C",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthAllowDenyTestUpdateCaseDetailsRoleFB886B54": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRoleWithWebIdentity",
-              "Condition": Object {
-                "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
-                },
-                "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Description": "Role PUT_/cases/{caseId}/details",
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuthAllowDenyTestUpdateCaseDetailsRolePolicyDBB65C1B": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "execute-api:Invoke",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapi822A9228",
-                    },
-                    "/",
-                    Object {
-                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                    "/PUT/cases/*/details",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthAllowDenyTestUpdateCaseDetailsRolePolicyDBB65C1B",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuthAllowDenyTestUpdateCaseDetailsRoleFB886B54",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "DeaAuthAuthTestGroupRole23D2E7FA": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -9259,6 +8048,34 @@ Object {
                         "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
                       },
                       "/DELETE/cases/*/details",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                      },
+                      "/GET/cases/*/actions",
                     ],
                   ],
                 },
@@ -10703,215 +9520,6 @@ Object {
                     ],
                   },
                   "Value": "GetMyCasesTestGroup",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestGetMyCasesRole5EC38B75",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_GetMyCases",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestGetAllCasesRole4BE93388",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_GetAllCases",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestCreateCaseRoleF01FFE55",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_CreateCase",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestGetCaseDetailsRole776FE5A3",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_GetCaseDetails",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestUpdateCaseDetailsRoleFB886B54",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_UpdateCaseDetails",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestDeleteCaseRoleBAF1B9D5",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_DeleteCase",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestGetUsersFromCaseRole0644C0AD",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_GetUsersFromCase",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestInviteUserToCaseRoleBB1D6B42",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_InviteUserToCase",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestRemoveUserFromCaseRoleC77969B0",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_RemoveUserFromCase",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestModifyUserCasePermissionsRoleFAAFE725",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_ModifyUserCasePermissions",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestInitiateCaseFileUploadRoleCB92630A",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_InitiateCaseFileUpload",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestGetCaseFilesRole4C5427E2",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_GetCaseFiles",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestCompleteCaseFileUploadRole8AE13990",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_CompleteCaseFileUpload",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestGetCaseFileDetailRoleAF53915D",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_GetCaseFileDetail",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestDownloadCaseFileRole55A3A9D6",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_DownloadCaseFile",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestRevokeAuthTokenRole8AB36F3C",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_RevokeAuthToken",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestGetAllUsersRoleCCB4B128",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_GetAllUsers",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestGetCaseAuditRole42A748EB",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_GetCaseAudit",
-                },
-                Object {
-                  "Claim": "custom:DEARole",
-                  "MatchType": "Equals",
-                  "RoleARN": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuthAllowDenyTestRequestCaseAuditRole1633C812",
-                      "Arn",
-                    ],
-                  },
-                  "Value": "AllowDenyTest_RequestCaseAudit",
                 },
               ],
             },

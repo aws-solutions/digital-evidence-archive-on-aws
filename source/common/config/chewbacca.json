@@ -23,6 +23,10 @@
           "method": "DELETE"
         },
         {
+          "path": "/cases/{caseId}/actions",
+          "method": "GET"
+        },
+        {
           "path": "/cases/{caseId}/userMemberships",
           "method": "GET"
         },
