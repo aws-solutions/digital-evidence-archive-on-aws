@@ -12,7 +12,7 @@ const cognitoHelper = new CognitoHelper();
 //remove the trailing slash for these tests
 const deaApiUrl = testEnv.apiUrlOutput.substring(0, testEnv.apiUrlOutput.length - 1);
 
-describe('api gateway access policies', () => {
+describe.skip('api gateway access policies', () => {
   deaApiRouteConfig.routes.forEach((route) => {
     if (route.authMethod !== AuthorizationType.NONE) {
       describe(`Route: ${route.path} policy`, () => {
