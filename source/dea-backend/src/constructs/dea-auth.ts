@@ -6,7 +6,7 @@
 import { assert } from 'console';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
 import { CfnParameter, Duration } from 'aws-cdk-lib';
-import { AuthorizationType, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { RestApi } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountRecovery,
   CfnIdentityPool,
@@ -27,7 +27,6 @@ import {
 import { ParameterTier, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
-import { deaApiRouteConfig } from '../resources/dea-route-config';
 import { createCfnOutput } from './construct-support';
 
 interface DeaAuthProps {
@@ -127,6 +126,8 @@ export class DeaAuthConstruct extends Construct {
       this._createDEARole(roleType.name, roleType.description, deaRolesMap, groupEndpoints, principal);
     });
 
+    /* 
+     * Commented out to avoid cdk the deployment failure due the max quota limit of 25 rules for RBAC reached.
     if (deaConfig.isTestStack()) {
       // create roles for individual endpoint allow/deny testing
       deaApiRouteConfig.routes.forEach((route) => {
@@ -143,6 +144,7 @@ export class DeaAuthConstruct extends Construct {
         }
       });
     }
+    */
 
     return deaRolesMap;
   }
