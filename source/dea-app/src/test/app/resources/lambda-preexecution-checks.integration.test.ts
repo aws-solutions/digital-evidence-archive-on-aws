@@ -3,7 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
 import { Paged } from 'dynamodb-onetable';
+import Joi from 'joi';
 import { NotFoundError } from '../../../app/exceptions/not-found-exception';
 import { ReauthenticationError } from '../../../app/exceptions/reauthentication-exception';
 import { runPreExecutionChecks } from '../../../app/resources/dea-lambda-utils';
@@ -11,6 +16,7 @@ import { IdentityType } from '../../../app/services/audit-service';
 import { shouldSessionBeConsideredInactive } from '../../../app/services/session-service';
 import { getTokenPayload } from '../../../cognito-token-helpers';
 import { DeaUser } from '../../../models/user';
+import { sessionResponseSchema } from '../../../models/validation/session';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { listSessionsForUser, updateSession } from '../../../persistence/session';
 import { getUserByTokenId, listUsers } from '../../../persistence/user';
@@ -139,6 +145,7 @@ describe('lambda pre-execution checks', () => {
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
     const session1 = sessions[0];
+    Joi.assert(session1, sessionResponseSchema);
 
     // Call API again with same creds, expect success
     await callPreChecks(idToken);
