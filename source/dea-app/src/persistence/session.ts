@@ -7,15 +7,11 @@ import { Paged } from 'dynamodb-onetable';
 import { sessionFromEntity } from '../models/projections';
 import { DeaSession, DeaSessionInput } from '../models/session';
 import { isDefined } from './persistence-helpers';
-import { SessionModel, SessionModelRepositoryProvider } from './schema/entities';
+import { SessionModelRepositoryProvider } from './schema/entities';
 
 export const listSessionsForUser = async (
   userUlid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: SessionModelRepositoryProvider = {
-    SessionModel: SessionModel,
-  }
+  repositoryProvider: SessionModelRepositoryProvider
 ): Promise<Paged<DeaSession>> => {
   const sessionEntities = await repositoryProvider.SessionModel.find({
     PK: `USER#${userUlid}#`,
@@ -37,11 +33,7 @@ export const listSessionsForUser = async (
 
 export const createSession = async (
   deaSession: DeaSessionInput,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: SessionModelRepositoryProvider = {
-    SessionModel: SessionModel,
-  }
+  repositoryProvider: SessionModelRepositoryProvider
 ): Promise<DeaSession> => {
   const newEntity = await repositoryProvider.SessionModel.create({
     ...deaSession,
@@ -53,11 +45,7 @@ export const createSession = async (
 
 export const updateSession = async (
   deaSession: DeaSession,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: SessionModelRepositoryProvider = {
-    SessionModel: SessionModel,
-  }
+  repositoryProvider: SessionModelRepositoryProvider
 ): Promise<DeaSession> => {
   const newEntity = await repositoryProvider.SessionModel.update({
     ...deaSession,

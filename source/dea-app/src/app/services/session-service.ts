@@ -5,25 +5,21 @@
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { Paged } from 'dynamodb-onetable';
 import { DeaSession, DeaSessionInput } from '../../models/session';
-import { defaultProvider } from '../../persistence/schema/entities';
+import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import * as SessionPersistence from '../../persistence/session';
 
 const INACTIVITY_TIMEOUT_IN_MS = 1800000;
 
 const createSession = async (
   session: DeaSessionInput,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaSession> => {
   return await SessionPersistence.createSession(session, repositoryProvider);
 };
 
 const getSessionsForUser = async (
   userUlid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<Paged<DeaSession>> => {
   return await SessionPersistence.listSessionsForUser(userUlid, repositoryProvider);
 };
@@ -42,9 +38,7 @@ const getSessionsForUser = async (
 export const isCurrentSessionValid = async (
   userUlid: string,
   idToken: CognitoIdTokenPayload,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<boolean | string> => {
   const sessions = await getSessionsForUser(userUlid, repositoryProvider);
   // We use the origin_jti from the token as a unique identitfier
@@ -115,9 +109,7 @@ export const isCurrentSessionValid = async (
 // inactive for 30 minutes they have to reauthenticate
 export const updateLastActiveTimeForSession = async (
   session: DeaSession,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ) => {
   await SessionPersistence.updateSession(session, repositoryProvider);
 };

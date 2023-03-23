@@ -8,7 +8,7 @@ import { CaseUser } from '../../models/case-user';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { getCase } from '../../persistence/case';
 import * as CaseUserPersistence from '../../persistence/case-user';
-import { defaultProvider } from '../../persistence/schema/entities';
+import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getUser } from '../../persistence/user';
 import { NotFoundError } from '../exceptions/not-found-exception';
 
@@ -17,18 +17,14 @@ export const getCaseUser = async (
     readonly caseUlid: string;
     readonly userUlid: string;
   },
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<CaseUser | undefined> => {
   return CaseUserPersistence.getCaseUser(caseUserIds, repositoryProvider);
 };
 
 export const createCaseUserMembershipFromDTO = async (
   caseUserDto: CaseUserDTO,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<CaseUser> => {
   const user = await getUser(caseUserDto.userUlid, repositoryProvider);
   if (!user) {
@@ -52,9 +48,7 @@ export const createCaseUserMembershipFromDTO = async (
 
 export const updateCaseUserMembershipFromDTO = async (
   caseUserDTO: CaseUserDTO,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<CaseUser> => {
   const existingMembership = await CaseUserPersistence.getCaseUser(
     { caseUlid: caseUserDTO.caseUlid, userUlid: caseUserDTO.userUlid },
@@ -77,9 +71,7 @@ export const updateCaseUserMembershipFromDTO = async (
 
 export const createCaseUserMembership = async (
   caseUser: CaseUser,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<CaseUser> => {
   return await CaseUserPersistence.createCaseUser(caseUser, repositoryProvider);
 };
@@ -87,19 +79,15 @@ export const createCaseUserMembership = async (
 export const getCaseUsersForUser = async (
   userUlid: string,
   limit = 30,
-  nextToken?: object,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  nextToken: object | undefined,
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<Paged<CaseUser>> => {
   return CaseUserPersistence.listCaseUsersByUser(userUlid, limit, nextToken, repositoryProvider);
 };
 
 export const deleteCaseUsersForCase = async (
   caseUlid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ) => {
   let batch = {};
   const caseUsers = await CaseUserPersistence.listCaseUsersByCase(
@@ -142,9 +130,7 @@ export const deleteCaseUsersForCase = async (
 export const deleteCaseUser = async (
   userUlid: string,
   caseUlid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<void> => {
   await CaseUserPersistence.deleteCaseUser({ userUlid, caseUlid }, repositoryProvider);
 };
@@ -152,10 +138,8 @@ export const deleteCaseUser = async (
 export const getCaseUsersForCase = async (
   caseUlid: string,
   limit = 30,
-  nextToken?: object,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  nextToken: object | undefined,
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<Paged<CaseUser>> => {
   return CaseUserPersistence.listCaseUsersByCase(caseUlid, limit, nextToken, repositoryProvider);
 };
