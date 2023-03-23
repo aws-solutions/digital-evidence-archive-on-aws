@@ -98,6 +98,16 @@ describe('CaseMembership E2E', () => {
     );
     expect(inviteResponse.status).toEqual(200);
 
+    //confirm duplicate invites throw 400 - Bad Request
+    const duplicateInviteResponse = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+      'POST',
+      ownerToken,
+      ownerCreds,
+      newMembership
+    );
+    expect(duplicateInviteResponse.status).toEqual(400);
+
     // confirm owner and invitee are returned in the membership list.
     const membershipListResponse = await callDeaAPIWithCreds(
       `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,

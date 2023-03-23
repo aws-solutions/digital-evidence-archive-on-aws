@@ -23,7 +23,7 @@ function ManageAccessList(props: ManageAccessListProps): JSX.Element {
       <ColumnLayout borders="horizontal" columns={1} key="something">
         {caseMembers.map((caseMember) => (
           <ManageAccessListItem
-            key={caseMember.userUlid}
+            key={`${caseMember.caseUlid}-${caseMember.userUlid}`}
             caseMember={caseMember}
             onUpdateMember={(member: CaseUser) => onUpdateMember(member)}
             onRemoveMember={(member: CaseUser) => onRemoveMember(member)}

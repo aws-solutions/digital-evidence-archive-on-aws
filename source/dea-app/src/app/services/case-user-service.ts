@@ -11,6 +11,7 @@ import * as CaseUserPersistence from '../../persistence/case-user';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getUser } from '../../persistence/user';
 import { NotFoundError } from '../exceptions/not-found-exception';
+import { ValidationError } from '../exceptions/validation-exception';
 
 export const getCaseUser = async (
   caseUserIds: {
@@ -36,14 +37,21 @@ export const createCaseUserMembershipFromDTO = async (
     throw new NotFoundError(`Case with ulid ${caseUserDto.caseUlid} not found.`);
   }
 
-  const caseUser: CaseUser = {
-    ...caseUserDto,
-    userFirstName: user.firstName,
-    userLastName: user.lastName,
-    caseName: deaCase.name,
-  };
-
-  return await createCaseUserMembership(caseUser, repositoryProvider);
+  try {
+    const caseUser: CaseUser = {
+      ...caseUserDto,
+      userFirstName: user.firstName,
+      userLastName: user.lastName,
+      caseName: deaCase.name,
+    };
+    return await createCaseUserMembership(caseUser, repositoryProvider);
+  } catch (error) {
+    // if ConditionalCheckFailedException  implies  <caseUlid,userUlid> already exists.
+    if (typeof error === 'object' && error['code'] === 'ConditionalCheckFailedException') {
+      throw new ValidationError('Requested Case-User Membership found');
+    }
+    throw error;
+  }
 };
 
 export const updateCaseUserMembershipFromDTO = async (
