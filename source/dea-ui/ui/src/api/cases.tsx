@@ -141,6 +141,11 @@ export const retrieveCaseAuditResult = async (caseId: string, auditId: string): 
   return await httpApiGet(`cases/${caseId}/audit/${auditId}/csv`, undefined);
 }
 
-function delay(ms: number) {
+export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export const useGetCaseActions = (id: string): DeaSingleResult<CaseUser | undefined> => {
+  const { data, isValidating } = useSWR(() => `cases/${id}/actions`, httpApiGet<CaseUser>);
+  return { data, isLoading: isValidating };
+};

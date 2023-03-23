@@ -4,6 +4,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import axios from 'axios';
+import { delay } from '../../src/api/cases';
 import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
@@ -96,6 +97,25 @@ const mockedCaseDetail = {
   status: 'ACTIVE',
 };
 
+const mockedCaseActions = {
+  caseUlid: '01GW7HY47X74PSW7QNHZX7EE0H',
+  userUlid: '01GW5N0SKHSXDBMFBKMDB82TAQ',
+  userFirstName: 'John',
+  userLastName: 'Doe',
+  caseName: 'Investigation One',
+  actions: [
+    'VIEW_CASE_DETAILS',
+    'UPDATE_CASE_DETAILS',
+    'UPLOAD',
+    'DOWNLOAD',
+    'VIEW_FILES',
+    'CASE_AUDIT',
+    'INVITE',
+  ],
+  created: '2023-03-23T15:38:26.955Z',
+  updated: '2023-03-23T15:38:26.955Z',
+};
+
 const mockedUsers = {
   users: [
     {
@@ -144,6 +164,14 @@ describe('CaseDetailsPage', () => {
       if (eventObj.url === 'https://localhostcases/100/details') {
         return Promise.resolve({
           data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+        return Promise.resolve({
+          data: mockedCaseActions,
           status: 200,
           statusText: 'Ok',
           headers: {},
@@ -228,6 +256,14 @@ describe('CaseDetailsPage', () => {
       if (eventObj.url === `https://localhostcases/${CASE_ID}/details`) {
         return Promise.resolve({
           data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+        return Promise.resolve({
+          data: mockedCaseActions,
           status: 200,
           statusText: 'Ok',
           headers: {},
@@ -331,19 +367,32 @@ describe('CaseDetailsPage', () => {
 
     //assert notifications
     const notificationsWrapper = wrapper(page.container).findFlashbar()!;
-    expect(notificationsWrapper).toBeTruthy();
     notificationsWrapper.findItems()[0].findDismissButton()!.click();
+    await delay(100);
+    expect(notificationsWrapper).toBeTruthy();
   });
 
   it('navigates to upload files page', async () => {
-    mockedAxios.mockResolvedValue({
-      data: mockedCaseDetail,
-      status: 200,
-      statusText: 'Ok',
-      headers: {},
-      config: {},
+    mockedAxios.mockImplementation((event) => {
+      const eventObj: any = event;
+      if (eventObj.url === 'https://localhostcases/100/actions') {
+        return Promise.resolve({
+          data: mockedCaseActions,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else {
+        return Promise.resolve({
+          data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      }
     });
-
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
@@ -353,7 +402,7 @@ describe('CaseDetailsPage', () => {
   });
 
   it('downloads selected files', async () => {
-    mockedAxios.mockImplementation((event) => {
+    mockedAxios.mockImplementation(async (event) => {
       const eventObj: any = event;
       if (eventObj.url === 'https://localhostcases/100/details') {
         return Promise.resolve({
@@ -363,7 +412,16 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
+      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+        return Promise.resolve({
+          data: mockedCaseActions,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
       } else {
+        await delay(100);
         return Promise.resolve({
           data: mockFilesRoot,
           status: 200,
@@ -401,6 +459,14 @@ describe('CaseDetailsPage', () => {
       if (eventObj.url === 'https://localhostcases/100/details') {
         return Promise.resolve({
           data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+        return Promise.resolve({
+          data: mockedCaseActions,
           status: 200,
           statusText: 'Ok',
           headers: {},
@@ -454,6 +520,14 @@ describe('CaseDetailsPage', () => {
       if (eventObj.url === 'https://localhostcases/100/details') {
         return Promise.resolve({
           data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+        return Promise.resolve({
+          data: mockedCaseActions,
           status: 200,
           statusText: 'Ok',
           headers: {},
