@@ -4,15 +4,14 @@
  */
 
 import {
-  Form,
-  SpaceBetween,
   Button,
-  Header,
   Container,
-  Input,
+  Form,
   FormField,
+  Header,
+  Input,
+  SpaceBetween,
   Textarea,
-  RadioGroup,
   TextContent,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
@@ -21,10 +20,8 @@ import { useState } from 'react';
 import { createCase } from '../../api/cases';
 import { commonLabels, createCaseLabels } from '../../common/labels';
 import { CreateCaseForm } from '../../models/Cases';
-import CreateCaseShareCaseForm from './CreateCaseShareCaseForm';
 
 function CreateCasesForm(): JSX.Element {
-  const [caseStatusValue, setCaseStatusValue] = React.useState('active');
   const [, setIsSubmitLoading] = useState(false);
   const router = useRouter();
   const [formData, setFormData] = useState<CreateCaseForm>({ name: '' });
@@ -35,14 +32,12 @@ function CreateCasesForm(): JSX.Element {
       await createCase(formData);
     } finally {
       setIsSubmitLoading(false);
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      router.push('/');
+      void router.push('/');
     }
   }
 
   function onCancelHandler() {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    router.push('/');
+    void router.push('/');
   }
 
   return (
@@ -80,32 +75,10 @@ function CreateCasesForm(): JSX.Element {
                   }}
                 />
               </FormField>
-              <TextContent>
-                <p>
-                  <strong>{createCaseLabels.caseStatusLabel}</strong>
-                </p>
-              </TextContent>
-              <RadioGroup
-                onChange={({ detail }) => setCaseStatusValue(detail.value)}
-                value={caseStatusValue}
-                items={[
-                  {
-                    value: 'active',
-                    label: `${createCaseLabels.activeLabel}`,
-                    description: `${createCaseLabels.activeCaseDescription}`,
-                  },
-                  {
-                    value: 'archive',
-                    label: `${createCaseLabels.archivedLabel}`,
-                    description: `${createCaseLabels.archivedCaseDescription}`,
-                  },
-                ]}
-              />
             </SpaceBetween>
           </Container>
         </Form>
       </form>
-      <CreateCaseShareCaseForm></CreateCaseShareCaseForm>
       <SpaceBetween direction="horizontal" size="xs">
         <Button formAction="none" variant="link" data-testid="create-case-cancel" onClick={onCancelHandler}>
           {commonLabels.cancelButton}

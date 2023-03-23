@@ -96,14 +96,6 @@ function CaseTable(): JSX.Element {
           sortingField: 'name',
         },
         {
-          id: 'caseLead',
-          header: commonTableLabels.caseLeadHeader,
-          cell: () => 'Sherlock Holmes',
-          width: 300,
-          minWidth: 190,
-          sortingField: 'caseLead',
-        },
-        {
           id: 'objectCount',
           header: commonTableLabels.objectCounterHeader,
           cell: (e) => e.objectCount,

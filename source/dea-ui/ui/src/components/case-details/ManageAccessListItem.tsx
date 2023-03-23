@@ -52,7 +52,10 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
   }
 
   return (
-    <Grid gridDefinition={[{ colspan: { default: 12, xs: 10 } }, { colspan: { default: 12, xs: 2 } }]}>
+    <Grid
+      key={caseMember.userUlid}
+      gridDefinition={[{ colspan: { default: 12, xs: 10 } }, { colspan: { default: 12, xs: 2 } }]}
+    >
       <ColumnLayout columns={2}>
         <FormField label={`${caseMember.userFirstName} ${caseMember.userLastName}`}>
           <TextContent>
