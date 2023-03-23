@@ -20,6 +20,7 @@ jest.mock('next/router', () => ({
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
 global.window.URL.createObjectURL = jest.fn(() => {});
+HTMLAnchorElement.prototype.click = jest.fn();
 
 jest.mock('axios');
 const mockedAxios = axios as jest.MockedFunction<typeof axios>;

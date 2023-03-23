@@ -20,7 +20,7 @@ function ManageAccessList(props: ManageAccessListProps): JSX.Element {
   return (
     <SpaceBetween size="s">
       <Header variant="h3">{manageCaseAccessLabels.manageCasePeopleAccessLabel}</Header>
-      <ColumnLayout borders="horizontal" columns={1}>
+      <ColumnLayout borders="horizontal" columns={1} key="something">
         {caseMembers.map((caseMember) => (
           <ManageAccessListItem
             key={caseMember.userUlid}

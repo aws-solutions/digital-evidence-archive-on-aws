@@ -35,6 +35,7 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
   function pushNotification(type: FlashbarProps.Type, content: string): void {
     setNotifications([...notifications, { id: uuidv4(), type, content }]);
   }
+
   function dismissNotification(id: string): void {
     setNotifications((notifications) => notifications.filter((notifications) => notifications.id !== id));
   }
