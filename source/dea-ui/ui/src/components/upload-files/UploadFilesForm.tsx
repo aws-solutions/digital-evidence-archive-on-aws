@@ -18,7 +18,6 @@ import {
   Box,
   Icon,
 } from '@cloudscape-design/components';
-import sha256 from 'crypto-js/sha256';
 import cryptoJS from 'crypto-js';
 import { useRouter } from 'next/router';
 import * as React from 'react';
