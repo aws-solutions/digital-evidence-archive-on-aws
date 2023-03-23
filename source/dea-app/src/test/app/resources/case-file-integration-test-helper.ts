@@ -36,14 +36,14 @@ const USER_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY0';
 const FILE_PATH = '/food/sushi/';
 const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
 const FILE_SIZE_MB = 50;
+const CHUNK_SIZE_BYTES = 500_000_000;
 const CONTENT_TYPE = 'image/jpeg';
 const REASON = 'none';
 const TAG = 'yum';
 const DETAILS = 'hungry';
-const DATASETS_PROVIDER = {
+export const DATASETS_PROVIDER = {
   s3Client: new S3Client({ region: 'us-east-1' }),
   bucketName: 'testBucket',
-  chunkSizeMB: 500,
   presignedCommandExpirySeconds: 3600,
 };
 
@@ -53,13 +53,14 @@ export const callInitiateCaseFileUpload = async (
   baseEvent: APIGatewayProxyEvent,
   repositoryProvider: ModelRepositoryProvider,
   caseUlid: string,
-  fileName: string = FILE_NAME,
-  filePath: string = FILE_PATH,
-  contentType: string = CONTENT_TYPE,
-  fileSizeMb: number = FILE_SIZE_MB,
-  tag: string = TAG,
-  reason: string = REASON,
-  details: string = DETAILS
+  fileName = FILE_NAME,
+  filePath = FILE_PATH,
+  contentType = CONTENT_TYPE,
+  fileSizeMb = FILE_SIZE_MB,
+  tag = TAG,
+  reason = REASON,
+  details = DETAILS,
+  chunkSizeBytes = CHUNK_SIZE_BYTES
 ): Promise<DeaCaseFile> => {
   const event = Object.assign(
     {},
@@ -74,6 +75,7 @@ export const callInitiateCaseFileUpload = async (
         tag,
         reason,
         details,
+        chunkSizeBytes,
       }),
     }
   );

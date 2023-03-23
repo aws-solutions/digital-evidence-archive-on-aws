@@ -7,6 +7,9 @@ import Joi from 'joi';
 import { CaseFileStatus } from '../case-file-status';
 import { CaseStatus } from '../case-status';
 
+export const ONE_MB = 1024 * 1024;
+export const ONE_TB = 1024 * 1024 * 1024 * 1024;
+
 export const allButDisallowed = new RegExp('^[^\\<>/]+$');
 
 export const filenameSafeCharsRegex = new RegExp('^[^/\\0]+$');
@@ -63,3 +66,11 @@ export const jti = Joi.string().pattern(jtiRegex).required();
 
 // https://github.com/odomojuli/RegExAPI
 export const authCode = Joi.string().regex(/^[A-Za-z0-9-_]+$/);
+
+export const safeFileSize = Joi.number()
+  .greater(0)
+  .less((5 * ONE_TB) / ONE_MB); // 0-5TB is the range supported by S3
+
+export const safeChunkSize = Joi.number()
+  .greater(5 * ONE_MB)
+  .less(500 * ONE_MB); // 5MB is minimum size supported by S3
