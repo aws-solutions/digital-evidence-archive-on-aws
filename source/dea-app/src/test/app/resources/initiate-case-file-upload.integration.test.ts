@@ -254,7 +254,14 @@ describe('Test initiate case file upload', () => {
 });
 
 async function initiateCaseFileUploadAndValidate(caseUlid: string, fileName: string): Promise<DeaCaseFile> {
-  const deaCaseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseUlid, fileName);
+  const chunkSizeMb = 500;
+  const deaCaseFile = await callInitiateCaseFileUpload(
+    EVENT,
+    repositoryProvider,
+    caseUlid,
+    fileName,
+    chunkSizeMb
+  );
   await validateCaseFile(
     deaCaseFile,
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -264,6 +271,9 @@ async function initiateCaseFileUploadAndValidate(caseUlid: string, fileName: str
     CaseFileStatus.PENDING,
     fileName
   );
+
+  // initiate-case-file should return chunkSizeMb in its response
+  expect(deaCaseFile.chunkSizeMb).toEqual(chunkSizeMb);
 
   expect(s3Mock).toHaveReceivedCommandTimes(CreateMultipartUploadCommand, 1);
   expect(s3Mock).toHaveReceivedCommandWith(CreateMultipartUploadCommand, {

@@ -54,13 +54,13 @@ export const callInitiateCaseFileUpload = async (
   repositoryProvider: ModelRepositoryProvider,
   caseUlid: string,
   fileName = FILE_NAME,
+  chunkSizeMb = CHUNK_SIZE_MB,
   filePath = FILE_PATH,
   contentType = CONTENT_TYPE,
   fileSizeMb = FILE_SIZE_MB,
   tag = TAG,
   reason = REASON,
-  details = DETAILS,
-  chunkSizeMb = CHUNK_SIZE_MB
+  details = DETAILS
 ): Promise<DeaCaseFile> => {
   const event = Object.assign(
     {},

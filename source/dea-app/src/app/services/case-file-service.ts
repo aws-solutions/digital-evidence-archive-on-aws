@@ -40,7 +40,7 @@ export const initiateCaseFileUpload = async (
   );
 
   await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider, uploadDTO.chunkSizeMb);
-  return caseFile;
+  return { ...caseFile, chunkSizeMb: uploadDTO.chunkSizeMb };
 };
 
 export const validateInitiateUploadRequirements = async (
