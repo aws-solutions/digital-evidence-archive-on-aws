@@ -14,12 +14,6 @@ export const filteringProperties: readonly PropertyFilterProperty[] = [
     groupValuesLabel: 'Case Name Values',
   },
   {
-    key: 'caseLead',
-    operators: ['=', '!=', ':', '!:'],
-    propertyLabel: 'Case Lead',
-    groupValuesLabel: 'Case Lead Values',
-  },
-  {
     key: 'created',
     operators: ['<', '<=', '>', '>=', ':'],
     propertyLabel: 'Creation Date',

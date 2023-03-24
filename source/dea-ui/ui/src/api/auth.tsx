@@ -5,9 +5,15 @@
 import { Oauth2Token, RevokeToken } from '@aws/dea-app/lib/models/auth';
 import { httpApiGet, httpApiPost } from '../helpers/apiHelper';
 
+export interface Credentials {
+  AccessKeyId: string;
+  SecretKey: string;
+  SessionToken: string;
+}
+
 const getToken = async (authCode: string): Promise<Oauth2Token> => {
   try {
-    const response = await httpApiPost(`auth/${authCode}/token`, { authCode });
+    const response: Oauth2Token = await httpApiPost(`auth/${authCode}/token`, { authCode });
     return response;
   } catch (error) {
     console.error(error);
@@ -17,7 +23,7 @@ const getToken = async (authCode: string): Promise<Oauth2Token> => {
 
 const getCredentials = async (idToken: string) => {
   try {
-    const response = await httpApiGet(`auth/credentials/${idToken}/exchange`, {});
+    const response: Credentials = await httpApiGet(`auth/credentials/${idToken}/exchange`, {});
     return response;
   } catch (error) {
     console.error(error);
@@ -27,7 +33,7 @@ const getCredentials = async (idToken: string) => {
 
 const getLoginUrl = async () => {
   try {
-    const response = await httpApiGet(`auth/loginUrl`, {});
+    const response: string = await httpApiGet(`auth/loginUrl`, {});
     return response;
   } catch (error) {
     console.error(error);
@@ -37,7 +43,7 @@ const getLoginUrl = async () => {
 
 const getLogoutUrl = async () => {
   try {
-    const response = await httpApiGet(`auth/logoutUrl`, {});
+    const response: string = await httpApiGet(`auth/logoutUrl`, {});
     return response;
   } catch (error) {
     console.error(error);

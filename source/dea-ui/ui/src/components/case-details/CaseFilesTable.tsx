@@ -99,7 +99,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       <Box padding={{ left: 'm' }} data-testid={`${caseFile.fileName}-box`}>
         <SpaceBetween direction="horizontal" size="xs" key={caseFile.fileName}>
           <Icon name="file" />
-          {caseFile.fileName}
+          <span>{caseFile.fileName}</span>
         </SpaceBetween>
       </Box>
     );
@@ -128,7 +128,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       }
     >
       <SpaceBetween direction="horizontal" size="xs">
-        {filesListLabels.caseFilesLabel}
+        <span>{filesListLabels.caseFilesLabel}</span>
         <BreadcrumbGroup
           data-testid="file-breadcrumb"
           onClick={(event) => {
@@ -170,8 +170,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
   );
 
   function uploadFilesHandler() {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
+    void router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
   }
 
   async function downloadFilesHandler() {

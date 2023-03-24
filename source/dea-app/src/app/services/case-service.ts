@@ -10,15 +10,13 @@ import { DeaUser } from '../../models/user';
 import * as CasePersistence from '../../persistence/case';
 import * as CaseUserPersistence from '../../persistence/case-user';
 import { isDefined } from '../../persistence/persistence-helpers';
-import { CaseType, defaultProvider } from '../../persistence/schema/entities';
+import { CaseType, ModelRepositoryProvider } from '../../persistence/schema/entities';
 import * as CaseUserService from './case-user-service';
 
 export const createCases = async (
   deaCase: DeaCaseInput,
   owner: DeaUser,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCase> => {
   const createdCase = await CasePersistence.createCase(deaCase, owner, repositoryProvider);
 
@@ -27,10 +25,8 @@ export const createCases = async (
 
 export const listAllCases = async (
   limit = 30,
-  nextToken?: object,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  nextToken: object | undefined,
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<Paged<DeaCase>> => {
   return CasePersistence.listCases(limit, nextToken, repositoryProvider);
 };
@@ -38,10 +34,8 @@ export const listAllCases = async (
 export const listCasesForUser = async (
   userUlid: string,
   limit = 30,
-  nextToken?: object,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  nextToken: object | undefined,
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<Paged<DeaCase>> => {
   // Get all memberships for the user
   const caseMemberships = await CaseUserPersistence.listCaseUsersByUser(
@@ -90,27 +84,21 @@ export const listCasesForUser = async (
 
 export const getCase = async (
   caseUlid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCase | undefined> => {
   return await CasePersistence.getCase(caseUlid, undefined, repositoryProvider);
 };
 
 export const updateCases = async (
   deaCase: DeaCase,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCase> => {
   return await CasePersistence.updateCase(deaCase, repositoryProvider);
 };
 
 export const deleteCase = async (
   caseUlid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<void> => {
   await CasePersistence.deleteCase(caseUlid, repositoryProvider);
   await CaseUserService.deleteCaseUsersForCase(caseUlid, repositoryProvider);

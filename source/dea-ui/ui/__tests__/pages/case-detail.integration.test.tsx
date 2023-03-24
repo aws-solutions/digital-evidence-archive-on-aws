@@ -4,7 +4,8 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import axios from 'axios';
-import { caseDetailLabels, commonLabels } from '../../src/common/labels';
+import { delay } from '../../src/api/cases';
+import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
@@ -20,6 +21,7 @@ jest.mock('next/router', () => ({
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
 global.window.URL.createObjectURL = jest.fn(() => {});
+HTMLAnchorElement.prototype.click = jest.fn();
 
 jest.mock('axios');
 const mockedAxios = axios as jest.MockedFunction<typeof axios>;
@@ -95,6 +97,25 @@ const mockedCaseDetail = {
   status: 'ACTIVE',
 };
 
+const mockedCaseActions = {
+  caseUlid: '01GW7HY47X74PSW7QNHZX7EE0H',
+  userUlid: '01GW5N0SKHSXDBMFBKMDB82TAQ',
+  userFirstName: 'John',
+  userLastName: 'Doe',
+  caseName: 'Investigation One',
+  actions: [
+    'VIEW_CASE_DETAILS',
+    'UPDATE_CASE_DETAILS',
+    'UPLOAD',
+    'DOWNLOAD',
+    'VIEW_FILES',
+    'CASE_AUDIT',
+    'INVITE',
+  ],
+  created: '2023-03-23T15:38:26.955Z',
+  updated: '2023-03-23T15:38:26.955Z',
+};
+
 const mockedUsers = {
   users: [
     {
@@ -129,6 +150,13 @@ const mockedCaseUsers = {
   ],
 };
 
+let csvCall = -1;
+let failingCall = -1;
+
+const csvResult = [{ status: 'Running' }, { status: 'Running' }, 'csvresults'];
+
+const failingCsvResult = [{ status: 'Running' }, { status: 'Running' }, { status: 'Cancelled' }];
+
 describe('CaseDetailsPage', () => {
   it('renders a case details page', async () => {
     mockedAxios.mockImplementation((event) => {
@@ -136,6 +164,14 @@ describe('CaseDetailsPage', () => {
       if (eventObj.url === 'https://localhostcases/100/details') {
         return Promise.resolve({
           data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+        return Promise.resolve({
+          data: mockedCaseActions,
           status: 200,
           statusText: 'Ok',
           headers: {},
@@ -220,6 +256,14 @@ describe('CaseDetailsPage', () => {
       if (eventObj.url === `https://localhostcases/${CASE_ID}/details`) {
         return Promise.resolve({
           data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+        return Promise.resolve({
+          data: mockedCaseActions,
           status: 200,
           statusText: 'Ok',
           headers: {},
@@ -323,19 +367,32 @@ describe('CaseDetailsPage', () => {
 
     //assert notifications
     const notificationsWrapper = wrapper(page.container).findFlashbar()!;
-    expect(notificationsWrapper).toBeTruthy();
     notificationsWrapper.findItems()[0].findDismissButton()!.click();
+    await delay(100);
+    expect(notificationsWrapper).toBeTruthy();
   });
 
   it('navigates to upload files page', async () => {
-    mockedAxios.mockResolvedValue({
-      data: mockedCaseDetail,
-      status: 200,
-      statusText: 'Ok',
-      headers: {},
-      config: {},
+    mockedAxios.mockImplementation((event) => {
+      const eventObj: any = event;
+      if (eventObj.url === 'https://localhostcases/100/actions') {
+        return Promise.resolve({
+          data: mockedCaseActions,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else {
+        return Promise.resolve({
+          data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      }
     });
-
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
@@ -345,7 +402,7 @@ describe('CaseDetailsPage', () => {
   });
 
   it('downloads selected files', async () => {
-    mockedAxios.mockImplementation((event) => {
+    mockedAxios.mockImplementation(async (event) => {
       const eventObj: any = event;
       if (eventObj.url === 'https://localhostcases/100/details') {
         return Promise.resolve({
@@ -355,7 +412,16 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
+      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+        return Promise.resolve({
+          data: mockedCaseActions,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
       } else {
+        await delay(100);
         return Promise.resolve({
           data: mockFilesRoot,
           status: 200,
@@ -385,5 +451,130 @@ describe('CaseDetailsPage', () => {
     // upload button will be disabled while in progress and then re-enabled when done
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeDisabled());
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeEnabled());
+  });
+
+  it('downloads a case audit', async () => {
+    mockedAxios.mockImplementation((event) => {
+      const eventObj: any = event;
+      if (eventObj.url === 'https://localhostcases/100/details') {
+        return Promise.resolve({
+          data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+        return Promise.resolve({
+          data: mockedCaseActions,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === 'https://localhostcases/abc/audit') {
+        return Promise.resolve({
+          data: { auditId: '11111111-1111-1111-1111-111111111111' },
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (
+        eventObj.url === 'https://localhostcases/abc/audit/11111111-1111-1111-1111-111111111111/csv'
+      ) {
+        return Promise.resolve({
+          data: csvResult[++csvCall],
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else {
+        return Promise.resolve({
+          data: mockFilesRoot,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      }
+    });
+
+    const page = render(<CaseDetailsPage />);
+    expect(page).toBeTruthy();
+
+    const downloadCsvButton = await screen.findByText(auditLogLabels.downloadCSVLabel);
+    fireEvent.click(downloadCsvButton);
+
+    // upload button will be disabled while in progress and then re-enabled when done
+    await waitFor(() => expect(screen.queryByTestId('download-case-audit-csv-button')).toBeDisabled());
+    await waitFor(() => expect(screen.queryByTestId('download-case-audit-csv-button')).toBeEnabled(), {
+      timeout: 4000,
+    });
+  });
+
+  it('recovers from a from a csv download failure', async () => {
+    mockedAxios.mockImplementation((event) => {
+      const eventObj: any = event;
+      if (eventObj.url === 'https://localhostcases/100/details') {
+        return Promise.resolve({
+          data: mockedCaseDetail,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+        return Promise.resolve({
+          data: mockedCaseActions,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (eventObj.url === 'https://localhostcases/abc/audit') {
+        return Promise.resolve({
+          data: { auditId: '11111111-1111-1111-1111-111111111111' },
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else if (
+        eventObj.url === 'https://localhostcases/abc/audit/11111111-1111-1111-1111-111111111111/csv'
+      ) {
+        return Promise.resolve({
+          data: failingCsvResult[++failingCall],
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else {
+        return Promise.resolve({
+          data: mockFilesRoot,
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      }
+    });
+
+    const page = render(<CaseDetailsPage />);
+    expect(page).toBeTruthy();
+
+    const downloadCsvButton = await screen.findByText(auditLogLabels.downloadCSVLabel);
+    fireEvent.click(downloadCsvButton);
+
+    // upload button will be disabled while in progress and then re-enabled when done
+    await waitFor(() => expect(screen.queryByTestId('download-case-audit-csv-button')).toBeDisabled());
+    await waitFor(() => expect(screen.queryByTestId('download-case-audit-csv-button')).toBeEnabled(), {
+      timeout: 4000,
+    });
+    // error notification is visible
+    const notificationsWrapper = wrapper(page.container).findFlashbar()!;
+    expect(notificationsWrapper).toBeTruthy();
   });
 });

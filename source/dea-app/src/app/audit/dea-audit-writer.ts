@@ -17,7 +17,10 @@ import { getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { CJISAuditEventBody } from '../services/audit-service';
 
+// defaults are provided to handle local testing where these will not be set
+// the lambda name is used to name the logstream
 const lambdaName = getRequiredEnv('AWS_LAMBDA_FUNCTION_NAME', 'NO_LAMBDA_NAME_FOUND');
+// the audit log group we will write to
 const auditLogGroup = getRequiredEnv('AUDIT_LOG_GROUP_NAME', 'NO_AUDIT_LOG_GROUP');
 
 export default class DeaAuditWriter implements Writer {
