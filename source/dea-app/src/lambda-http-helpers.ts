@@ -116,6 +116,17 @@ export const getUserUlid = (event: APIGatewayProxyEvent): string => {
   throw new Error('userUlid was not present in the event header');
 };
 
+export const getTokenId = (event: APIGatewayProxyEvent): string => {
+  const maybeTokenId = event.headers['tokenJti'];
+  if (maybeTokenId) {
+    return maybeTokenId;
+  }
+
+  // runLambdaPreChecks should have added the tokenJti, this is server error
+  logger.error('Token Jti missing from event', {});
+  throw new Error('Token Jti was not present in the event header');
+};
+
 export const getRequiredEnv = (envName: string, defaultValue?: string): string => {
   const value = process.env[envName] ?? defaultValue;
   if (!value) {

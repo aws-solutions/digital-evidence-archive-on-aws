@@ -58,8 +58,8 @@ export const runPreExecutionChecks = async (
     username: idTokenPayload['cognito:username'],
     deaRole,
   };
-  const tokenId = idTokenPayload.sub;
-  let maybeUser = await getUserFromTokenId(tokenId, repositoryProvider);
+  const tokenSub = idTokenPayload.sub;
+  let maybeUser = await getUserFromTokenId(tokenSub, repositoryProvider);
   if (!maybeUser) {
     // Create the user in the database and store the new user's ulid
     // into the event, so lambda execution code does not need to
@@ -81,12 +81,23 @@ export const runPreExecutionChecks = async (
 
   event.headers['userUlid'] = userUlid;
 
+  // We use the origin_jti from the token as a unique identitfier
+  // for the token to distinguish between sessions for a user
+  const tokenId = idTokenPayload.origin_jti;
+  // This origin jti will be used for refresh/revoke endpoints
+  // to invalidate the current session. For refresh this will
+  // allow the new session to meet session reqs without waiting for
+  // the first to expire. For revoke, this blocks further
+  // access to the system with the id token, since it will
+  // not meet sessions reqs if it is revoked
+  event.headers['tokenJti'] = tokenId;
+
   // Verify the session management requirements here
   // E.g. no concurrent sessions and session lock after 30 minutes
   // of inactivity
   const sessionCheckResponse = await SessionService.isCurrentSessionValid(
     userUlid,
-    idTokenPayload,
+    tokenId,
     repositoryProvider
   );
   if (typeof sessionCheckResponse === 'string') {
