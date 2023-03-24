@@ -15,7 +15,7 @@ import {
   SelectProps,
   TextContent,
 } from '@cloudscape-design/components';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { caseActionOptions, commonLabels, manageCaseAccessLabels } from '../../common/labels';
 import styles from '../../styles/ManageAccessListItem.module.scss';
 
@@ -23,14 +23,21 @@ export interface ManageAccessListItemProps {
   readonly caseMember: CaseUser;
   readonly onRemoveMember: (user: CaseUser) => Promise<void>;
   readonly onUpdateMember: (user: CaseUser) => Promise<void>;
+  readonly activeUser: CaseUser;
 }
 
 function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
-  const { caseMember, onRemoveMember, onUpdateMember } = props;
+  const { caseMember, onRemoveMember, onUpdateMember, activeUser } = props;
   const [selectedOptions, setSelectedOptions] = useState<ReadonlyArray<SelectProps.Option>>(
     caseMember.actions.map((action) => caseActionOptions.actionOption(action))
   );
   const [isRemoving, setIsRemoving] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  useMemo(() => {
+    const entryBelongsToActiveUser = caseMember.userUlid === activeUser?.userUlid;
+    setIsDisabled(isRemoving || entryBelongsToActiveUser);
+  }, [caseMember, activeUser, isRemoving]);
+
   async function onPermissionsChangeHandler(event: {
     detail: MultiselectProps.MultiselectChangeDetail;
   }): Promise<void> {
@@ -64,18 +71,23 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
         </FormField>
         <FormField label={manageCaseAccessLabels.manageMemberPermissionsLabel}>
           <Multiselect
+            data-testid={`${caseMember.userUlid}-multiselect`}
             selectedOptions={selectedOptions}
             onChange={onPermissionsChangeHandler}
             deselectAriaLabel={(e) => `Remove ${e.label}`}
             options={caseActionOptions.selectableOptions()}
             placeholder={manageCaseAccessLabels.manageMemberPermissionsPlaceholder}
             tokenLimit={1}
-            disabled={isRemoving}
+            disabled={isDisabled}
           />
         </FormField>
       </ColumnLayout>
       <div className={styles['button-container']}>
-        <Button onClick={removeCaseMemberHandler} disabled={isRemoving}>
+        <Button
+          data-testid={`${caseMember.userUlid}-remove-button`}
+          onClick={removeCaseMemberHandler}
+          disabled={isDisabled}
+        >
           {commonLabels.removeButton}
         </Button>
       </div>
