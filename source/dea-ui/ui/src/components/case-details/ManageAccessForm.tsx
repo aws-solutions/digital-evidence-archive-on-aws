@@ -14,6 +14,7 @@ import ManageAccessSearchUserForm from './ManageAccessSearchUserForm';
 
 export interface ManageAccessFormProps {
   readonly caseId: string;
+  readonly activeUser: CaseUser;
 }
 
 function ManageAccessForm(props: ManageAccessFormProps): JSX.Element {
@@ -63,6 +64,7 @@ function ManageAccessForm(props: ManageAccessFormProps): JSX.Element {
         caseMembers={caseMembers}
         onUpdateMember={(member: CaseUser) => updateCaseMemberHandler(member)}
         onRemoveMember={(member: CaseUser) => removeCaseMemberHandler(member)}
+        activeUser={props.activeUser}
       ></ManageAccessList>
     </Container>
   );

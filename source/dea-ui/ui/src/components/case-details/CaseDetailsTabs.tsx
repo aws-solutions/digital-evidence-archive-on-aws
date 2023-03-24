@@ -33,7 +33,7 @@ function CaseDetailsTabs(props: CaseDetailsBodyProps): JSX.Element {
           {
             label: caseDetailLabels.manageAccessLabel,
             id: 'caseAccess',
-            content: <ManageAccessForm caseId={props.caseId}></ManageAccessForm>,
+            content: <ManageAccessForm caseId={props.caseId} activeUser={data}></ManageAccessForm>,
           },
         ]);
       }

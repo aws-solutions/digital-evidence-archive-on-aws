@@ -12,10 +12,11 @@ export interface ManageAccessListProps {
   readonly caseMembers: CaseUser[];
   readonly onRemoveMember: (user: CaseUser) => Promise<void>;
   readonly onUpdateMember: (user: CaseUser) => Promise<void>;
+  readonly activeUser: CaseUser;
 }
 
 function ManageAccessList(props: ManageAccessListProps): JSX.Element {
-  const { caseMembers, onUpdateMember, onRemoveMember } = props;
+  const { caseMembers, onUpdateMember, onRemoveMember, activeUser } = props;
 
   return (
     <SpaceBetween size="s">
@@ -27,6 +28,7 @@ function ManageAccessList(props: ManageAccessListProps): JSX.Element {
             caseMember={caseMember}
             onUpdateMember={(member: CaseUser) => onUpdateMember(member)}
             onRemoveMember={(member: CaseUser) => onRemoveMember(member)}
+            activeUser={activeUser}
           ></ManageAccessListItem>
         ))}
       </ColumnLayout>

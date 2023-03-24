@@ -98,8 +98,8 @@ const mockedCaseDetail = {
 };
 
 const mockedCaseActions = {
-  caseUlid: '01GW7HY47X74PSW7QNHZX7EE0H',
-  userUlid: '01GW5N0SKHSXDBMFBKMDB82TAQ',
+  caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
+  userUlid: '01GVHP0HP5V2A80XJZTHJH4QGD',
   userFirstName: 'John',
   userLastName: 'Doe',
   caseName: 'Investigation One',
@@ -139,7 +139,17 @@ const mockedCaseUsers = {
   caseUsers: [
     {
       caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
-      ulid: '01GVHP0HP5V2A80XJZTHJH4QGD',
+      userUlid: '01GVHP0HP5V2A80XJZTHJH4QGE',
+      caseName: 'Investigation One',
+      actions: ['VIEW_CASE_DETAILS'],
+      userFirstName: 'Bee',
+      userLastName: 'Dalton',
+      created: '2023-03-15T03:46:23.045Z',
+      updated: '2023-03-15T03:46:23.045Z',
+    },
+    {
+      caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
+      userUlid: '01GVHP0HP5V2A80XJZTHJH4QGD',
       caseName: 'Investigation One',
       actions: ['INVITE'],
       userFirstName: 'Albert',
@@ -250,7 +260,8 @@ describe('CaseDetailsPage', () => {
   });
 
   it('navigates to manage access page', async () => {
-    const USER_ID = '01GVHP0HP5V2A80XJZTHJH4QGE';
+    const ACTIVE_USER_ID = mockedUsers.users[0].ulid;
+    const OTHER_USER_ID = mockedUsers.users[1].ulid;
     mockedAxios.mockImplementation((event) => {
       const eventObj: any = event;
       if (eventObj.url === `https://localhostcases/${CASE_ID}/details`) {
@@ -286,7 +297,7 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === `https://localhostcases/${CASE_ID}//users/${USER_ID}/memberships`) {
+      } else if (eventObj.url === `https://localhostcases/${CASE_ID}//users/${ACTIVE_USER_ID}/memberships`) {
         if (eventObj.method === 'delete') {
           return Promise.resolve({
             data: {},
@@ -338,7 +349,7 @@ describe('CaseDetailsPage', () => {
       expect(searchUserInputWrapper.findDropdown().findOptionByValue(optionValue)!.getElement()).toBeTruthy();
     }
 
-    const textToInput = 'Albert York';
+    const textToInput = 'Bee Dalton';
     const searchInput = await screen.findByRole('combobox', {
       description:
         'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
@@ -359,8 +370,9 @@ describe('CaseDetailsPage', () => {
     permissionsWrapper.selectOption(1);
 
     // assert remove button
-    const removeButton = await screen.findByRole('button', { name: 'Remove' });
-    expect(removeButton).toBeTruthy();
+    await waitFor(() => expect(screen.queryByTestId(`${ACTIVE_USER_ID}-remove-button`)).toBeDisabled());
+    const removeButton = await screen.queryByTestId(`${OTHER_USER_ID}-remove-button`);
+    expect(removeButton).toBeEnabled();
     await act(async () => {
       removeButton.click();
     });
