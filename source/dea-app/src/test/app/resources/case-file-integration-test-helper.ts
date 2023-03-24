@@ -36,7 +36,7 @@ const USER_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY0';
 const FILE_PATH = '/food/sushi/';
 const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
 const FILE_SIZE_MB = 50;
-const CHUNK_SIZE_BYTES = 500_000_000;
+const CHUNK_SIZE_MB = 500;
 const CONTENT_TYPE = 'image/jpeg';
 const REASON = 'none';
 const TAG = 'yum';
@@ -60,7 +60,7 @@ export const callInitiateCaseFileUpload = async (
   tag = TAG,
   reason = REASON,
   details = DETAILS,
-  chunkSizeMb = CHUNK_SIZE_BYTES
+  chunkSizeMb = CHUNK_SIZE_MB
 ): Promise<DeaCaseFile> => {
   const event = Object.assign(
     {},

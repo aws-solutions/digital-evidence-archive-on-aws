@@ -19,7 +19,6 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getRequiredEnv } from '../lambda-http-helpers';
 import { logger } from '../logger';
 import { DeaCaseFile } from '../models/case-file';
-import { ONE_MB } from '../models/validation/joi-common';
 
 const region = process.env.AWS_REGION;
 
@@ -56,10 +55,7 @@ export const generatePresignedUrlsForCaseFile = async (
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const uploadId = response.UploadId as string;
 
-  // using 500MB chunks so we can support a max file size of 5TB with a max of 10,000 chunks
-  // limits obtained from link below on 2/7/2023
-  // https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html
-  const fileParts = Math.max(Math.ceil(caseFile.fileSizeMb / (chunkSizeMb / ONE_MB)), 1);
+  const fileParts = Math.max(Math.ceil(caseFile.fileSizeMb / chunkSizeMb), 1);
 
   logger.info('Generating presigned URLs.', { fileParts, s3Key });
   const presignedUrlPromises = [];
