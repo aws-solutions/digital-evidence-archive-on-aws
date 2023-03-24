@@ -20,7 +20,7 @@ import {
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { getPresignedUrl, useListCaseFiles } from '../../api/cases';
-import { auditLogLabels, commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
+import { commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { CaseDetailsBodyProps } from './CaseDetailsBody';
