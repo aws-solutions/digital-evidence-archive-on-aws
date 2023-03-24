@@ -6,7 +6,7 @@ import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
 import { getTokenPayload } from '../../cognito-token-helpers';
-import { Oauth2Token } from '../../models/auth';
+import { Oauth2Token, RevokeToken } from '../../models/auth';
 import { getAuthorizationCode } from '../helpers/auth-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -171,19 +171,41 @@ describe('API authentication', () => {
     expect(response.statusText).toEqual('Bad Request');
   }, 40000);
 
-  // TODO (next PR) uncomment after you mark session as revoked in /refresh endpoint
-  // it('should successfully revoke refresh token', async () => {
-  //   const [creds, idToken, refreshToken] = await cognitoHelper.getCredentialsForUser(testUser);
+  it('should successfully revoke refresh token', async () => {
+    // Create user
+    const user = 'RevokeTokenE2ETest';
+    await cognitoHelper.createUser(user, 'AuthTestGroup', 'RevokeTokenE2E', 'AuthTester');
 
-  //   const payload: RevokeToken = {
-  //     refreshToken: refreshToken,
-  //   };
+    // Get credentials
+    const [creds, idToken, refreshToken] = await cognitoHelper.getCredentialsForUser(user);
 
-  //   const url = `${deaApiUrl}auth/revokeToken`;
-  //   const response = await callDeaAPIWithCreds(url, 'POST', idToken, creds, payload);
+    // Make api call (adds session to database)
+    const url = `${deaApiUrl}cases/my-cases`;
+    const response1 = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
+    expect(response1.status).toEqual(200);
 
-  //   expect(response.data).toEqual(200);
-  // }, 40000);
+    // revoke token
+    const payload: RevokeToken = {
+      refreshToken: refreshToken,
+    };
+    const revokeUrl = `${deaApiUrl}auth/revokeToken`;
+    const response = await callDeaAPIWithCreds(revokeUrl, 'POST', idToken, creds, payload);
+    expect(response.data).toEqual(200);
+
+    // Try to make API call with the token, it should fail
+    const response2 = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
+    expect(response2.status).toEqual(412); // Reauthentication error
+
+    // TODO: call /refresh with the revoked token, it should fail
+
+    // Get new credentials, make api call should pass immediately since old session is marked as revoked
+    const [creds1, idToken1] = await cognitoHelper.getCredentialsForUser(user);
+    const response3 = await callDeaAPIWithCreds(url, 'GET', idToken1, creds1);
+    expect(response3.status).toEqual(200);
+  }, 40000);
+
+  // TODO: Add test for /refresh endpoint here. It should check
+  // that the previous idToken can not be used in future calls
 
   it('should disallow concurrent active session', async () => {
     // Create user
@@ -191,7 +213,7 @@ describe('API authentication', () => {
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'ConcurrentE2E', 'AuthTester');
 
     // Get credentials
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(user);
+    const [creds, idToken, refreshToken] = await cognitoHelper.getCredentialsForUser(user);
 
     // Make successful API call
     const url = `${deaApiUrl}cases/my-cases`;
@@ -199,14 +221,22 @@ describe('API authentication', () => {
     expect(response.status).toEqual(200);
 
     // Get new credentials
-    const newCreds = await cognitoHelper.getCredentialsForUser(user);
+    const [creds1, idToken1] = await cognitoHelper.getCredentialsForUser(user);
     // Call API with new credentials, see that it fails with ReAuthentication error
-    const failed = await callDeaAPIWithCreds(url, 'GET', newCreds[1], newCreds[0]);
-    expect(failed.status).toEqual(412);
+    const failed = await callDeaAPIWithCreds(url, 'GET', idToken1, creds1);
+    expect(failed.status).toEqual(412); // Reauthentication error
 
-    // TODO: (next PR) Finish rest of the test after you mark session as revoked in /logout endpoint
-    // Call logout on original credentials
+    // Call /revoke on original credentials (this is called by UI during logout process)
+    const payload: RevokeToken = {
+      refreshToken: refreshToken,
+    };
+    const revokeUrl = `${deaApiUrl}auth/revokeToken`;
+    const revokeResponse = await callDeaAPIWithCreds(revokeUrl, 'POST', idToken, creds, payload);
+    expect(revokeResponse.data).toEqual(200);
+
     // Call API with second set of credentials, see that it succeeds
+    const response1 = await callDeaAPIWithCreds(url, 'GET', idToken1, creds1);
+    expect(response1.status).toEqual(200);
   }, 40000);
 
   // TODO: Once we have tests that we only run once ever 24 hours, add this

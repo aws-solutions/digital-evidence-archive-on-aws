@@ -53,3 +53,22 @@ export const updateSession = async (
 
   return sessionFromEntity(newEntity);
 };
+
+export const getSession = async (
+  userUlid: string,
+  tokenId: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider: SessionModelRepositoryProvider
+): Promise<DeaSession | undefined> => {
+  const sessionEntity = await repositoryProvider.SessionModel.get({
+    PK: `USER#${userUlid}#`,
+    SK: `SESSION#${tokenId}#`,
+  });
+
+  if (!sessionEntity) {
+    return undefined;
+  }
+
+  return sessionFromEntity(sessionEntity);
+};
