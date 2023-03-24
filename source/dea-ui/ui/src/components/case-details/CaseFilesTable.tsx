@@ -186,7 +186,9 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
           alink.href = downloadResponse.downloadUrl;
           alink.download = file.fileName;
           alink.click();
-          await sleep(1);
+          // sleep 2ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
+          // long term we should consider zipping the files in the backend and then downloading as a single file
+          await sleep(2);
         } catch (e) {
           pushNotification('error', `Failed to download ${file.fileName}`);
           console.log(`failed to download ${file.fileName}`, e);
