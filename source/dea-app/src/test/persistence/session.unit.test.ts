@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
-import { createSession, listSessionsForUser, updateSession } from '../../persistence/session';
+import { createSession, getSession, listSessionsForUser, updateSession } from '../../persistence/session';
 import { createUser } from '../../persistence/user';
 import { getTestRepositoryProvider } from './local-db-table';
 
@@ -56,7 +56,11 @@ describe('session persistence', () => {
     // session we created
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
-    const session = sessions[0];
+    // Now query for that session specifically
+    const maybeSession = await getSession(userUlid, tokenId, repositoryProvider);
+    expect(maybeSession).toBeDefined();
+    //eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const session = maybeSession!;
     expect(session.userUlid).toStrictEqual(userUlid);
     expect(session.tokenId).toStrictEqual(tokenId);
     expect(session.isRevoked).toBeFalsy();

@@ -2,8 +2,8 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { Paged } from 'dynamodb-onetable';
+import { logger } from '../../logger';
 import { DeaSession, DeaSessionInput } from '../../models/session';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import * as SessionPersistence from '../../persistence/session';
@@ -37,13 +37,12 @@ const getSessionsForUser = async (
 // and it is a valid session.
 export const isCurrentSessionValid = async (
   userUlid: string,
-  idToken: CognitoIdTokenPayload,
+  tokenId: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
   repositoryProvider: ModelRepositoryProvider
 ): Promise<boolean | string> => {
   const sessions = await getSessionsForUser(userUlid, repositoryProvider);
-  // We use the origin_jti from the token as a unique identitfier
-  // for the token to distinguish between sessions for a user
-  const tokenId = idToken.origin_jti;
 
   const activeSessions = sessions
     .filter((session) => !isSessionExpired(session))
@@ -112,6 +111,33 @@ export const updateLastActiveTimeForSession = async (
   repositoryProvider: ModelRepositoryProvider
 ) => {
   await SessionPersistence.updateSession(session, repositoryProvider);
+};
+
+// When a user logouts, or a new id token is
+// issued from the refresh token, mark previous
+// session as revoked so that new session will
+// meet session reqs (no concurrent sessions)
+export const markSessionAsRevoked = async (
+  userUlid: string,
+  tokenId: string,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  const maybeSession = await SessionPersistence.getSession(userUlid, tokenId, repositoryProvider);
+
+  if (!maybeSession) {
+    logger.info('No session to revoke for user ' + userUlid);
+  } else {
+    logger.info('Revoking session for user ' + userUlid + '...');
+    await SessionPersistence.updateSession(
+      {
+        ...maybeSession,
+        isRevoked: true,
+      },
+      repositoryProvider
+    );
+  }
 };
 
 function isSessionExpired(session: DeaSession): boolean {

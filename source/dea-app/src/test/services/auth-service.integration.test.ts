@@ -95,6 +95,8 @@ describe('auth service', () => {
   it('revoke token successfully when revoking Refresh Token. Should fail to fetch credentials afterwards', async () => {
     const response = await revokeRefreshToken(refreshToken);
     expect(response).toEqual(200);
+
+    // TODO: when refresh endpoint is complete, try to refresh and see that it fails
   }, 40000);
 
   it('should throw an error if the authorization code is not valid', async () => {

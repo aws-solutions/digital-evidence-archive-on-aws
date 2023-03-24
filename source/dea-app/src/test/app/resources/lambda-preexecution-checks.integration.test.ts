@@ -48,7 +48,8 @@ describe('lambda pre-execution checks', () => {
   it('should add first time federated user to dynamo table', async () => {
     const { idToken } = await cognitoHelper.getIdTokenForUser(testUser);
 
-    const tokenId = (await getTokenPayload(idToken, region)).sub;
+    const tokenPayload = await getTokenPayload(idToken, region);
+    const tokenId = tokenPayload.sub;
     const event = getDummyEvent();
     event.headers['idToken'] = idToken;
 
@@ -71,6 +72,8 @@ describe('lambda pre-execution checks', () => {
     // check that the event contains the ulid from the new user
     expect(event.headers['userUlid']).toBeDefined();
     expect(event.headers['userUlid']).toStrictEqual(user?.ulid);
+    expect(event.headers['tokenJti']).toBeDefined();
+    expect(event.headers['tokenJti']).toStrictEqual(tokenPayload.origin_jti);
 
     // Mark session revoked (mimic logout)
     // so we can test same user different idtoken
