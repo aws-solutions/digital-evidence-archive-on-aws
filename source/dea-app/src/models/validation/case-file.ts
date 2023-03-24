@@ -15,6 +15,8 @@ import {
   safeTag,
   safeReason,
   safeDetails,
+  safeFileSize,
+  safeChunkSize,
 } from './joi-common';
 
 export const initiateCaseFileUploadRequestSchema = Joi.object({
@@ -22,7 +24,8 @@ export const initiateCaseFileUploadRequestSchema = Joi.object({
   fileName: fileName,
   filePath: filePath,
   contentType: contentType,
-  fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
+  chunkSizeMb: safeChunkSize,
+  fileSizeMb: safeFileSize,
   tag: safeTag,
   reason: safeReason,
   details: safeDetails,
@@ -49,7 +52,8 @@ export const caseFileResponseSchema = Joi.object({
   contentType: contentType,
   createdBy: joiUlid,
   isFile: Joi.boolean(),
-  fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
+  chunkSizeMb: safeChunkSize,
+  fileSizeMb: safeFileSize,
   ttl: Joi.number().greater(0),
   presignedUrls: Joi.array().items(Joi.string().uri()),
   sha256Hash: sha256Hash,

@@ -18,7 +18,7 @@ import {
   Box,
   Icon,
 } from '@cloudscape-design/components';
-import sha256 from 'crypto-js/sha256';
+import cryptoJS from 'crypto-js';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useState } from 'react';
@@ -44,6 +44,8 @@ interface ActiveFileUpload {
   initiatedCaseFilePromise: Promise<DeaCaseFile>;
 }
 
+const ONE_MB = 1024 * 1024;
+
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadedFiles] = useState<FileUploadProgressRow[]>([]);
@@ -59,7 +61,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       setUploadInProgress(true);
       const activeFileUploads: ActiveFileUpload[] = [];
       for (const selectedFile of selectedFiles) {
-        const fileSizeMb = Math.ceil(Math.max(selectedFile.size, 1) / 1_000_000);
+        const fileSizeMb = Math.ceil(Math.max(selectedFile.size, 1) / ONE_MB);
+        // Trying to use small chunk size (50MB) to reduce memory use.
+        // However, since S3 allows a max of 10,000 parts for multipart uploads, we will increase chunk size for larger files
+        const chunkSizeMb = Math.max(selectedFile.size / 10_000 / ONE_MB, 50 * ONE_MB);
         const uploadingFile = { fileName: selectedFile.name, fileSizeMb, status: UploadStatus.progress };
         // per file try/finally state to initiate uploads
         try {
@@ -70,6 +75,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             fileName: selectedFile.name,
             filePath: props.filePath,
             fileSizeMb,
+            chunkSizeMb,
             contentType,
             tag,
             reason,
@@ -88,34 +94,38 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
       setSelectedFiles([]);
 
-      // TODO: This needs to be configurable.
-      // NOTE: UI + Backend need to have matching values
-      const fileChunkSize = 500_000_000;
       for (const activeFileUpload of activeFileUploads) {
         // per file try/finally state to upload to s3
         try {
           const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
           const uploadPromises: Promise<Response>[] = [];
+          const hash = cryptoJS.algo.SHA256.create();
           if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
             const numberOfUrls = initiatedCaseFile.presignedUrls.length;
-            initiatedCaseFile.presignedUrls.forEach((url, index) => {
-              const start = index * fileChunkSize;
-              const end = (index + 1) * fileChunkSize;
-              const filePart =
+            const chunkSizeBytes = initiatedCaseFile.chunkSizeMb
+              ? initiatedCaseFile.chunkSizeMb * ONE_MB
+              : 50 * ONE_MB;
+            for (let index = 0; index < initiatedCaseFile.presignedUrls.length; index += 1) {
+              const url = initiatedCaseFile.presignedUrls[index];
+              const start = index * chunkSizeBytes;
+              const end = (index + 1) * chunkSizeBytes;
+              const filePartPointer =
                 index === numberOfUrls - 1
                   ? activeFileUpload.file.slice(start)
                   : activeFileUpload.file.slice(start, end);
-              uploadPromises[index] = fetch(url, { method: 'PUT', body: filePart });
-            });
-
+              const loadedFilePart = await readFileSlice(filePartPointer);
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
+              hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
+              uploadPromises[index] = fetch(url, { method: 'PUT', body: loadedFilePart });
+            }
             await Promise.all(uploadPromises);
 
             await completeUpload({
               caseUlid: props.caseId,
               ulid: initiatedCaseFile.ulid,
               uploadId: initiatedCaseFile.uploadId,
-              // TODO: we should calculate hash in parts while uploading parts
-              sha256Hash: sha256(await activeFileUpload.file.text()).toString(),
+              sha256Hash: hash.finalize().toString(),
             });
           }
           activeFileUpload.fileUploadProgress.status = UploadStatus.complete;
@@ -127,6 +137,19 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     } finally {
       setUploadInProgress(false);
     }
+  }
+
+  async function readFileSlice(blob: Blob): Promise<Uint8Array> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // reader.result is of type <string | ArrayBuffer | null>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions
+        resolve(new Uint8Array(reader.result as any));
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(blob);
+    });
   }
 
   function statusCell(uploadProgress: FileUploadProgressRow) {

@@ -18,6 +18,7 @@ export interface DeaCaseFile {
   readonly sha256Hash?: string;
   uploadId?: string;
   presignedUrls?: ReadonlyArray<string>;
+  chunkSizeMb?: number;
   ttl?: number;
   versionId?: string;
   readonly tag?: string;
@@ -44,6 +45,7 @@ export interface InitiateCaseFileUploadDTO {
   readonly tag?: string;
   readonly details?: string;
   readonly reason?: string;
+  readonly chunkSizeMb: number;
 }
 
 export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;

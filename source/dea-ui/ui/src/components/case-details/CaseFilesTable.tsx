@@ -21,6 +21,7 @@ import { useRouter } from 'next/router';
 import * as React from 'react';
 import { getPresignedUrl, useListCaseFiles } from '../../api/cases';
 import { commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
+import { useNotifications } from '../../context/NotificationsContext';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { CaseDetailsBodyProps } from './CaseDetailsBody';
 
@@ -34,6 +35,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
   const { data, isLoading } = useListCaseFiles(props.caseId, filesTableState.basePath);
   const [selectedFiles, setSelectedFiles] = React.useState<DeaCaseFile[]>([]);
   const [downloadInProgress, setDownloadInProgress] = React.useState(false);
+  const { pushNotification } = useNotifications();
 
   const filteringProperties: readonly PropertyFilterProperty[] = [
     {
@@ -174,14 +176,23 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
   }
 
   async function downloadFilesHandler() {
+    const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
     try {
+      setDownloadInProgress(true);
       for (const file of selectedFiles) {
-        setDownloadInProgress(true);
-        const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
-        const alink = document.createElement('a');
-        alink.href = downloadResponse.downloadUrl;
-        alink.download = file.fileName;
-        alink.click();
+        try {
+          const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
+          const alink = document.createElement('a');
+          alink.href = downloadResponse.downloadUrl;
+          alink.download = file.fileName;
+          alink.click();
+          // sleep 2ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
+          // long term we should consider zipping the files in the backend and then downloading as a single file
+          await sleep(2);
+        } catch (e) {
+          pushNotification('error', `Failed to download ${file.fileName}`);
+          console.log(`failed to download ${file.fileName}`, e);
+        }
       }
     } finally {
       setDownloadInProgress(false);

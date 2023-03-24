@@ -25,6 +25,8 @@ import {
   callCreateCase,
   callCreateUser,
   callInitiateCaseFileUpload,
+  CHUNK_SIZE_MB,
+  DATASETS_PROVIDER,
   validateCaseFile,
 } from './case-file-integration-test-helper';
 
@@ -40,12 +42,6 @@ const FILE_PATH = '/food/sushi/';
 const UPLOAD_ID = '123456';
 const VERSION_ID = '543210';
 const CONTENT_TYPE = 'image/jpeg';
-const DATASETS_PROVIDER = {
-  s3Client: new S3Client({ region: 'us-east-1' }),
-  bucketName: 'testBucket',
-  chunkSizeMB: 500,
-  presignedCommandExpirySeconds: 3600,
-};
 
 const EVENT = getDummyEvent();
 
@@ -228,7 +224,7 @@ describe('Test initiate case file upload', () => {
         FILE_NAME,
         FILE_PATH,
         CONTENT_TYPE,
-        5_000_001
+        6_000_001
       )
     ).rejects.toThrow();
 
@@ -269,6 +265,9 @@ async function initiateCaseFileUploadAndValidate(caseUlid: string, fileName: str
     CaseFileStatus.PENDING,
     fileName
   );
+
+  // initiate-case-file should return chunkSizeMb in its response
+  expect(deaCaseFile.chunkSizeMb).toEqual(CHUNK_SIZE_MB);
 
   expect(s3Mock).toHaveReceivedCommandTimes(CreateMultipartUploadCommand, 1);
   expect(s3Mock).toHaveReceivedCommandWith(CreateMultipartUploadCommand, {

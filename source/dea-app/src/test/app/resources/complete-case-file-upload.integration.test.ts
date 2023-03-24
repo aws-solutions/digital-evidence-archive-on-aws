@@ -29,6 +29,7 @@ import {
   callCreateCase,
   callCreateUser,
   callInitiateCaseFileUpload,
+  DATASETS_PROVIDER,
   validateCaseFile,
 } from './case-file-integration-test-helper';
 
@@ -41,12 +42,6 @@ const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
 const CASE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY0';
 const UPLOAD_ID = '123456';
 const VERSION_ID = '543210';
-const DATASETS_PROVIDER = {
-  s3Client: new S3Client({ region: 'us-east-1' }),
-  bucketName: 'testBucket',
-  chunkSizeMB: 500,
-  presignedCommandExpirySeconds: 3600,
-};
 
 const EVENT = getDummyEvent();
 
