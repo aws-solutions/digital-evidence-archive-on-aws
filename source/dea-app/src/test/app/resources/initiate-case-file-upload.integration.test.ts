@@ -25,6 +25,7 @@ import {
   callCreateCase,
   callCreateUser,
   callInitiateCaseFileUpload,
+  CHUNK_SIZE_MB,
   DATASETS_PROVIDER,
   validateCaseFile,
 } from './case-file-integration-test-helper';
@@ -254,14 +255,7 @@ describe('Test initiate case file upload', () => {
 });
 
 async function initiateCaseFileUploadAndValidate(caseUlid: string, fileName: string): Promise<DeaCaseFile> {
-  const chunkSizeMb = 500;
-  const deaCaseFile = await callInitiateCaseFileUpload(
-    EVENT,
-    repositoryProvider,
-    caseUlid,
-    fileName,
-    chunkSizeMb
-  );
+  const deaCaseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseUlid, fileName);
   await validateCaseFile(
     deaCaseFile,
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -273,7 +267,7 @@ async function initiateCaseFileUploadAndValidate(caseUlid: string, fileName: str
   );
 
   // initiate-case-file should return chunkSizeMb in its response
-  expect(deaCaseFile.chunkSizeMb).toEqual(chunkSizeMb);
+  expect(deaCaseFile.chunkSizeMb).toEqual(CHUNK_SIZE_MB);
 
   expect(s3Mock).toHaveReceivedCommandTimes(CreateMultipartUploadCommand, 1);
   expect(s3Mock).toHaveReceivedCommandWith(CreateMultipartUploadCommand, {
