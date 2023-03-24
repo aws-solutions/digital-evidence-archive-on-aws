@@ -271,6 +271,14 @@
       "allowedCategories": ["production", "prototypes"]
     },
     {
+      "name": "@typescript-eslint/eslint-plugin",
+      "allowedCategories": ["production"]
+    },
+    {
+      "name": "@typescript-eslint/parser",
+      "allowedCategories": ["production"]
+    },
+    {
       "name": "aws-cdk",
       "allowedCategories": ["production", "prototypes"]
     },
@@ -424,6 +432,10 @@
     },
     {
       "name": "jest-circus",
+      "allowedCategories": ["production"]
+    },
+    {
+      "name": "jest-environment-jsdom",
       "allowedCategories": ["production"]
     },
     {

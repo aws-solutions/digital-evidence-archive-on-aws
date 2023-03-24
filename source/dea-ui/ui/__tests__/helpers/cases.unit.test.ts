@@ -11,7 +11,7 @@ import { CreateCaseForm } from '../../src/models/Cases';
 
 jest.mock('swr');
 jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('useListAllCases', () => {
   beforeEach(() => {
@@ -61,7 +61,8 @@ describe('useListAllCases', () => {
   });
 
   it('should create case', async () => {
-    mockedAxios.mockResolvedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockResolvedValue({
       data: { id: 12345, name: 'Who killed Anakin' },
       status: 200,
       statusText: 'Ok',

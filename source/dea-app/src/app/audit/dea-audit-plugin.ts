@@ -3,8 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
 import BaseAuditPlugin from '@aws/workbench-core-audit/lib/plugins/baseAuditPlugin';
+import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
 import DeaAuditWriter from './dea-audit-writer';
 
 const region = process.env.AWS_REGION ?? 'us-east-1';

@@ -26,7 +26,7 @@ jest.mock('../../src/api/auth', () => ({
 }));
 
 jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const useRouter = jest.spyOn(require('next/router'), 'useRouter');
 

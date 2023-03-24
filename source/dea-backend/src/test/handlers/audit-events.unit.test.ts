@@ -3,8 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { PutLogEventsCommand, PutLogEventsCommandInput } from '@aws-sdk/client-cloudwatch-logs';
 import { dummyContext, getDummyEvent, getTestAuditService } from '@aws/dea-app';
+import { PutLogEventsCommand, PutLogEventsCommandInput } from '@aws-sdk/client-cloudwatch-logs';
 import { anyOfClass, capture, verify } from 'ts-mockito';
 import { createDeaHandler, NO_ACL } from '../../handlers/create-dea-handler';
 

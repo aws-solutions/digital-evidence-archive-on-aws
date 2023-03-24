@@ -8,7 +8,7 @@ import { i18nStrings } from '../../src/components/common-components/commonDefini
 import Home from '../../src/pages';
 
 jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 const push = jest.fn();
 
 jest.mock('next/router', () => ({
@@ -20,7 +20,8 @@ jest.mock('next/router', () => ({
 
 describe('Dashboard', () => {
   it('renders a list of cases', async () => {
-    mockedAxios.mockResolvedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockResolvedValue({
       data: {
         cases: [
           {
@@ -48,7 +49,8 @@ describe('Dashboard', () => {
   });
 
   it('navigates to create a new case', async () => {
-    mockedAxios.mockResolvedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockResolvedValue({
       data: {
         cases: [],
       },
@@ -65,7 +67,8 @@ describe('Dashboard', () => {
   });
 
   it('navigates to create case details', async () => {
-    mockedAxios.mockResolvedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockResolvedValue({
       data: {
         cases: [
           {
