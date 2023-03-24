@@ -16,9 +16,9 @@ import * as CaseFilePersistence from '../../persistence/case-file';
 import { getCaseFileByFileLocation, getCaseFileByUlid } from '../../persistence/case-file';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import {
-  generatePresignedUrlsForCaseFile,
   completeUploadForCaseFile,
   DatasetsProvider,
+  generatePresignedUrlsForCaseFile,
 } from '../../storage/datasets';
 import { ForbiddenError } from '../exceptions/forbidden-exception';
 import { NotFoundError } from '../exceptions/not-found-exception';
@@ -133,8 +133,6 @@ export const completeCaseFileUpload = async (
 export const listCaseFilesByFilePath = async (
   caseId: string,
   filePath: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
   limit = 30,
   repositoryProvider: ModelRepositoryProvider,
   nextToken?: object

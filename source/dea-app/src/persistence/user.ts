@@ -11,11 +11,7 @@ import { UserModel, UserModelRepositoryProvider } from './schema/entities';
 
 export const getUser = async (
   ulid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: UserModelRepositoryProvider = {
-    UserModel: UserModel,
-  }
+  repositoryProvider: UserModelRepositoryProvider
 ): Promise<DeaUser | undefined> => {
   const userEntity = await repositoryProvider.UserModel.get({
     PK: `USER#${ulid}#`,
@@ -50,11 +46,9 @@ export const getUserByTokenId = async (
 
 export const listUsers = async (
   limit = 30,
-  nextToken?: object,
+  nextToken: object | undefined,
   nameBeginsWith = '',
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: UserModelRepositoryProvider = { UserModel: UserModel }
+  repositoryProvider: UserModelRepositoryProvider
 ): Promise<Paged<DeaUser>> => {
   const caseEntities = await repositoryProvider.UserModel.find(
     {
@@ -81,11 +75,7 @@ export const listUsers = async (
 
 export const createUser = async (
   deaUser: DeaUserInput,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: UserModelRepositoryProvider = {
-    UserModel: UserModel,
-  }
+  repositoryProvider: UserModelRepositoryProvider
 ): Promise<DeaUser> => {
   const newEntity = await repositoryProvider.UserModel.create({
     ...deaUser,
@@ -98,11 +88,7 @@ export const createUser = async (
 
 export const updateUser = async (
   deaUser: DeaUser,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: UserModelRepositoryProvider = {
-    UserModel: UserModel,
-  }
+  repositoryProvider: UserModelRepositoryProvider
 ): Promise<DeaUser> => {
   const newEntity = await repositoryProvider.UserModel.update({
     ...deaUser,
@@ -115,11 +101,7 @@ export const updateUser = async (
 
 export const deleteUser = async (
   ulid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: UserModelRepositoryProvider = {
-    UserModel: UserModel,
-  }
+  repositoryProvider: UserModelRepositoryProvider
 ): Promise<void> => {
   await repositoryProvider.UserModel.remove({
     PK: `USER#${ulid}#`,

@@ -6,18 +6,14 @@
 import { Paged } from 'dynamodb-onetable';
 import { CaseUser } from '../models/case-user';
 import { caseUserFromEntity } from '../models/projections';
-import { CaseUserModel, CaseUserModelRepositoryProvider } from './schema/entities';
+import { CaseUserModelRepositoryProvider } from './schema/entities';
 
 export const getCaseUser = async (
   caseUserIds: {
     readonly caseUlid: string;
     readonly userUlid: string;
   },
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: CaseUserModelRepositoryProvider = {
-    CaseUserModel: CaseUserModel,
-  }
+  repositoryProvider: CaseUserModelRepositoryProvider
 ): Promise<CaseUser | undefined> => {
   const caseUserEntity = await repositoryProvider.CaseUserModel.get({
     PK: `USER#${caseUserIds.userUlid}#`,
@@ -34,10 +30,8 @@ export const getCaseUser = async (
 export const listCaseUsersByCase = async (
   caseUlid: string,
   limit = 30,
-  nextToken?: object,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: CaseUserModelRepositoryProvider = { CaseUserModel: CaseUserModel }
+  nextToken: object | undefined,
+  repositoryProvider: CaseUserModelRepositoryProvider
 ): Promise<Paged<CaseUser>> => {
   const caseEntities = await repositoryProvider.CaseUserModel.find(
     {
@@ -63,10 +57,8 @@ export const listCaseUsersByCase = async (
 export const listCaseUsersByUser = async (
   userUlid: string,
   limit = 30,
-  nextToken?: object,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: CaseUserModelRepositoryProvider = { CaseUserModel: CaseUserModel }
+  nextToken: object | undefined,
+  repositoryProvider: CaseUserModelRepositoryProvider
 ): Promise<Paged<CaseUser>> => {
   const caseEntities = await repositoryProvider.CaseUserModel.find(
     {
@@ -91,11 +83,7 @@ export const listCaseUsersByUser = async (
 
 export const createCaseUser = async (
   caseUser: CaseUser,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: CaseUserModelRepositoryProvider = {
-    CaseUserModel: CaseUserModel,
-  }
+  repositoryProvider: CaseUserModelRepositoryProvider
 ): Promise<CaseUser> => {
   const newEntity = await repositoryProvider.CaseUserModel.create({
     ...caseUser,
@@ -109,11 +97,7 @@ export const createCaseUser = async (
 
 export const updateCaseUser = async (
   caseUser: CaseUser,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: CaseUserModelRepositoryProvider = {
-    CaseUserModel: CaseUserModel,
-  }
+  repositoryProvider: CaseUserModelRepositoryProvider
 ): Promise<CaseUser> => {
   const newEntity = await repositoryProvider.CaseUserModel.update({
     ...caseUser,
@@ -130,11 +114,7 @@ export const deleteCaseUser = async (
     readonly caseUlid: string;
     readonly userUlid: string;
   },
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: CaseUserModelRepositoryProvider = {
-    CaseUserModel: CaseUserModel,
-  },
+  repositoryProvider: CaseUserModelRepositoryProvider,
   batch: object | undefined = undefined
 ): Promise<void> => {
   await repositoryProvider.CaseUserModel.remove(

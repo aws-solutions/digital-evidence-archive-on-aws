@@ -178,44 +178,37 @@ export const caseActionOptions = {
         return {
           value: CaseAction.UPDATE_CASE_DETAILS,
           label: 'Edit case',
-          description: 'They will be able to edit case details, such as name and description',
         };
       case CaseAction.UPLOAD:
         return {
           value: CaseAction.UPLOAD,
           label: 'Upload files',
-          description: 'They will be able to upload files to the case',
         };
       case CaseAction.DOWNLOAD:
         return {
           value: CaseAction.DOWNLOAD,
           label: 'Download files',
-          description: 'They will be able to download files to the case',
         };
       case CaseAction.VIEW_FILES:
         return {
           value: CaseAction.VIEW_FILES,
           label: 'View case files',
-          description: 'They will be able to preview case files and details',
         };
       case CaseAction.CASE_AUDIT:
         return {
           value: CaseAction.CASE_AUDIT,
           label: 'Audit case',
-          description: 'They will be able to audit the activity performed on a case',
         };
       case CaseAction.INVITE:
         return {
           value: CaseAction.INVITE,
           label: 'Invite members',
-          description: 'They will be able to invite other members to the case',
         };
       default:
         // default CaseAction.VIEW_CASE_DETAILS least privilege principle.
         return {
           value: CaseAction.VIEW_CASE_DETAILS,
           label: 'View case',
-          description: 'They will be able to view case details',
         };
     }
   },

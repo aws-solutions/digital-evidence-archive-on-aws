@@ -10,21 +10,12 @@ import { CaseStatus } from '../models/case-status';
 import { caseFromEntity } from '../models/projections';
 import { DeaUser } from '../models/user';
 import { isDefined } from './persistence-helpers';
-import {
-  CaseModel,
-  CaseModelRepositoryProvider,
-  defaultProvider,
-  ModelRepositoryProvider,
-} from './schema/entities';
+import { CaseModelRepositoryProvider, ModelRepositoryProvider } from './schema/entities';
 
 export const getCase = async (
   ulid: string,
   batch: object | undefined = undefined,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: CaseModelRepositoryProvider = {
-    CaseModel: CaseModel,
-  }
+  repositoryProvider: CaseModelRepositoryProvider
 ): Promise<DeaCase | undefined> => {
   const caseEntity = await repositoryProvider.CaseModel.get(
     {
@@ -43,10 +34,8 @@ export const getCase = async (
 
 export const listCases = async (
   limit = 30,
-  nextToken?: object,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: CaseModelRepositoryProvider = { CaseModel: CaseModel }
+  nextToken: object | undefined,
+  repositoryProvider: CaseModelRepositoryProvider
 ): Promise<Paged<DeaCase>> => {
   const caseEntities = await repositoryProvider.CaseModel.find(
     {
@@ -72,9 +61,7 @@ export const listCases = async (
 export const createCase = async (
   deaCase: DeaCaseInput,
   owner: DeaUser,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: ModelRepositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCase> => {
   const transaction = {};
   const caseEntity = await repositoryProvider.CaseModel.create(
@@ -106,11 +93,7 @@ export const createCase = async (
 
 export const updateCase = async (
   deaCase: DeaCase,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: CaseModelRepositoryProvider = {
-    CaseModel: CaseModel,
-  }
+  repositoryProvider: CaseModelRepositoryProvider
 ): Promise<DeaCase> => {
   const newCase = await repositoryProvider.CaseModel.update(
     {
@@ -130,11 +113,7 @@ export const updateCase = async (
 
 export const deleteCase = async (
   caseUlid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: CaseModelRepositoryProvider = {
-    CaseModel: CaseModel,
-  }
+  repositoryProvider: CaseModelRepositoryProvider
 ): Promise<void> => {
   await repositoryProvider.CaseModel.remove({
     PK: `CASE#${caseUlid}#`,
