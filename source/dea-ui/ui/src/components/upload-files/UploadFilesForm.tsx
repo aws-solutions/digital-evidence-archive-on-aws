@@ -64,7 +64,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         const fileSizeMb = Math.ceil(Math.max(selectedFile.size, 1) / ONE_MB);
         // Trying to use small chunk size (50MB) to reduce memory use.
         // However, since S3 allows a max of 10,000 parts for multipart uploads, we will increase chunk size for larger files
-        const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
+        const chunkSizeMb = Math.max(selectedFile.size / 10_000 / ONE_MB, 50 * ONE_MB);
         const uploadingFile = { fileName: selectedFile.name, fileSizeMb, status: UploadStatus.progress };
         // per file try/finally state to initiate uploads
         try {
@@ -75,7 +75,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             fileName: selectedFile.name,
             filePath: props.filePath,
             fileSizeMb,
-            chunkSizeBytes,
+            chunkSizeMb,
             contentType,
             tag,
             reason,
@@ -102,8 +102,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           const hash = cryptoJS.algo.SHA256.create();
           if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
             const numberOfUrls = initiatedCaseFile.presignedUrls.length;
-            const chunkSizeBytes = initiatedCaseFile.chunkSizeBytes
-              ? initiatedCaseFile.chunkSizeBytes
+            const chunkSizeBytes = initiatedCaseFile.chunkSizeMb
+              ? initiatedCaseFile.chunkSizeMb * ONE_MB
               : 50 * ONE_MB;
             for (let index = 0; index < initiatedCaseFile.presignedUrls.length; index += 1) {
               const url = initiatedCaseFile.presignedUrls[index];
@@ -114,6 +114,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
                   ? activeFileUpload.file.slice(start)
                   : activeFileUpload.file.slice(start, end);
               const loadedFilePart = await readFileSlice(filePartPointer);
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
               hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
               uploadPromises[index] = fetch(url, { method: 'PUT', body: loadedFilePart });
@@ -142,6 +143,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
+        // reader.result is of type <string | ArrayBuffer | null>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions
         resolve(new Uint8Array(reader.result as any));
       };
       reader.onerror = reject;

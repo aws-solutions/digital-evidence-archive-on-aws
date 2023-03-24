@@ -38,9 +38,7 @@ export const defaultDatasetsProvider = {
 export const generatePresignedUrlsForCaseFile = async (
   caseFile: DeaCaseFile,
   datasetsProvider: DatasetsProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  chunkSizeBytes = 50 * ONE_MB
+  chunkSizeMb: number
 ): Promise<void> => {
   const s3Key = _getS3KeyForCaseFile(caseFile);
   logger.info('Initiating multipart upload.', { s3Key });
@@ -61,7 +59,7 @@ export const generatePresignedUrlsForCaseFile = async (
   // using 500MB chunks so we can support a max file size of 5TB with a max of 10,000 chunks
   // limits obtained from link below on 2/7/2023
   // https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html
-  const fileParts = Math.max(Math.ceil(caseFile.fileSizeMb / (chunkSizeBytes / ONE_MB)), 1);
+  const fileParts = Math.max(Math.ceil(caseFile.fileSizeMb / (chunkSizeMb / ONE_MB)), 1);
 
   logger.info('Generating presigned URLs.', { fileParts, s3Key });
   const presignedUrlPromises = [];

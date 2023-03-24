@@ -14,10 +14,13 @@ import { ModelRepositoryProvider } from './schema/entities';
 const SECONDS_IN_AN_HOUR = 60 * 60;
 
 export const initiateCaseFileUpload = async (
-  deaCaseFile: InitiateCaseFileUploadDTO,
+  uploadDTO: InitiateCaseFileUploadDTO,
   userUlid: string,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFile> => {
+  // strip out chunkSizeMb before saving in dynamo-db
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { chunkSizeMb, ...deaCaseFile } = uploadDTO;
   const newEntity = await repositoryProvider.CaseFileModel.create({
     ...deaCaseFile,
     isFile: true,

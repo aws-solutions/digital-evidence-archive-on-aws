@@ -60,7 +60,7 @@ export const callInitiateCaseFileUpload = async (
   tag = TAG,
   reason = REASON,
   details = DETAILS,
-  chunkSizeBytes = CHUNK_SIZE_BYTES
+  chunkSizeMb = CHUNK_SIZE_BYTES
 ): Promise<DeaCaseFile> => {
   const event = Object.assign(
     {},
@@ -75,7 +75,7 @@ export const callInitiateCaseFileUpload = async (
         tag,
         reason,
         details,
-        chunkSizeBytes,
+        chunkSizeMb,
       }),
     }
   );

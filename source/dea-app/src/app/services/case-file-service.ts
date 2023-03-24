@@ -33,14 +33,13 @@ export const initiateCaseFileUpload = async (
   repositoryProvider: ModelRepositoryProvider,
   datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFile> => {
-  const { chunkSizeBytes, ...inputDTO } = uploadDTO;
   const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
-    inputDTO,
+    uploadDTO,
     userUlid,
     repositoryProvider
   );
 
-  await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider, chunkSizeBytes);
+  await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider, uploadDTO.chunkSizeMb);
   return caseFile;
 };
 
