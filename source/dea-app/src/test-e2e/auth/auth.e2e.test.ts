@@ -6,7 +6,7 @@ import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
 import { getTokenPayload } from '../../cognito-token-helpers';
-import { Oauth2Token, RevokeToken } from '../../models/auth';
+import { Oauth2Token, RefreshToken, RevokeToken } from '../../models/auth';
 import { getAuthorizationCode } from '../helpers/auth-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -196,7 +196,13 @@ describe('API authentication', () => {
     const response2 = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
     expect(response2.status).toEqual(412); // Reauthentication error
 
-    // TODO: call /refresh with the revoked token, it should fail
+    // call /refreshToken with the revoked token, it should fail
+    const refreshPayload: RefreshToken = {
+      refreshToken: refreshToken,
+    };
+    const refreshUrl = `${deaApiUrl}auth/refreshToken`;
+    const failedRefresh = await callDeaAPIWithCreds(refreshUrl, 'POST', idToken, creds, refreshPayload);
+    expect(failedRefresh.status).toEqual(412);
 
     // Get new credentials, make api call should pass immediately since old session is marked as revoked
     const [creds1, idToken1] = await cognitoHelper.getCredentialsForUser(user);
@@ -204,8 +210,36 @@ describe('API authentication', () => {
     expect(response3.status).toEqual(200);
   }, 40000);
 
-  // TODO: Add test for /refresh endpoint here. It should check
-  // that the previous idToken can not be used in future calls
+  it('should successfully use refresh token for a new idtoken', async () => {
+    // Create user
+    const user = 'RefreshTokenE2ETest';
+    await cognitoHelper.createUser(user, 'AuthTestGroup', 'RefreshTokenE2E', 'AuthTester');
+
+    // Get credentials
+    const [creds, idToken, refreshToken] = await cognitoHelper.getCredentialsForUser(user);
+
+    // Make api call (adds session to database)
+    const url = `${deaApiUrl}cases/my-cases`;
+    const response1 = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
+    expect(response1.status).toEqual(200);
+
+    // use refresh token for new id token
+    const payload: RefreshToken = {
+      refreshToken: refreshToken,
+    };
+    const refreshUrl = `${deaApiUrl}auth/refreshToken`;
+    const refreshResponse = await callDeaAPIWithCreds(refreshUrl, 'POST', idToken, creds, payload);
+    expect(refreshResponse.status).toEqual(200);
+    const newIdToken = await refreshResponse.data.idToken;
+
+    // Try to make API call with the old token, it should fail
+    const response2 = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
+    expect(response2.status).toEqual(412); // Reauthentication error
+
+    // call API with the new token
+    const response3 = await callDeaAPIWithCreds(url, 'GET', newIdToken, creds);
+    expect(response3.status).toEqual(200);
+  }, 40000);
 
   it('should disallow concurrent active session', async () => {
     // Create user

@@ -31,6 +31,7 @@ import { getToken } from './app/resources/get-token';
 import { getUsers } from './app/resources/get-users';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
 import { listCaseFiles } from './app/resources/list-case-files';
+import { refreshToken } from './app/resources/refresh-token';
 import { revokeToken } from './app/resources/revoke-token';
 import { startCaseAudit } from './app/resources/start-case-audit';
 import { updateCaseMembership } from './app/resources/update-case-membership';
@@ -39,7 +40,7 @@ import { verifyCaseACLs } from './app/resources/verify-case-acls';
 import { auditService } from './app/services/audit-service';
 import { getCaseUser } from './app/services/case-user-service';
 import { getRequiredPathParam, getUserUlid } from './lambda-http-helpers';
-import { Oauth2Token, RevokeToken } from './models/auth';
+import { Oauth2Token, RefreshToken, RevokeToken } from './models/auth';
 import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
 import { DeaCaseFile } from './models/case-file';
@@ -52,6 +53,7 @@ import * as testHelpers from './test-e2e/resources/test-helpers';
 export {
   auditService,
   getToken,
+  refreshToken,
   revokeToken,
   getLoginUrl,
   getLogoutUrl,
@@ -85,6 +87,7 @@ export {
   DeaCase,
   DeaCaseFile,
   Oauth2Token,
+  RefreshToken,
   RevokeToken,
   DEAGatewayProxyHandler,
   DEAPreLambdaExecutionChecks,

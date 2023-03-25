@@ -11,6 +11,14 @@ export interface Oauth2Token {
   readonly token_type: string;
 }
 
+export interface RefreshToken {
+  readonly refreshToken: string;
+}
+
 export interface RevokeToken {
   readonly refreshToken: string;
+}
+
+export interface IdToken {
+  readonly idToken: string;
 }

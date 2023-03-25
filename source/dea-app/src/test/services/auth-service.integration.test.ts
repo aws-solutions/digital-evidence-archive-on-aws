@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import Joi from 'joi';
 import {
   exchangeAuthorizationCode,
   getCognitoSsmParams,
@@ -10,8 +11,10 @@ import {
   getCredentialsByToken,
   getLoginHostedUiUrl,
   revokeRefreshToken,
+  useRefreshToken,
 } from '../../app/services/auth-service';
 import { Oauth2Token } from '../../models/auth';
+import { IdTokenSchema } from '../../models/validation/auth';
 import { getAuthorizationCode } from '../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../test-e2e/resources/test-helpers';
@@ -92,12 +95,17 @@ describe('auth service', () => {
     await expect(revokeRefreshToken(idToken)).rejects.toThrow('Request failed with status code 400');
   }, 40000);
 
-  it('revoke token successfully when revoking Refresh Token. Should fail to fetch credentials afterwards', async () => {
-    const response = await revokeRefreshToken(refreshToken);
-    expect(response).toEqual(200);
+  it('successfully obtain new id token using refresh token. Revoking the token should prevent future use for the refresh token', async () => {
+    const response = await useRefreshToken(refreshToken);
+    Joi.assert(response, IdTokenSchema);
 
-    // TODO: when refresh endpoint is complete, try to refresh and see that it fails
-  }, 40000);
+    // now revoke the token
+    const revokeResponse = await revokeRefreshToken(refreshToken);
+    expect(revokeResponse).toEqual(200);
+
+    // try to use the refresh token again and it should fail
+    await expect(useRefreshToken(refreshToken)).rejects.toThrow('Request failed with status code 400');
+  }, 60000);
 
   it('should throw an error if the authorization code is not valid', async () => {
     const dummyAuthCode = 'DUMMY_AUTH_CODE';

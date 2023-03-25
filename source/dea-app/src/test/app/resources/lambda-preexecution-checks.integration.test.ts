@@ -73,7 +73,7 @@ describe('lambda pre-execution checks', () => {
     expect(event.headers['userUlid']).toBeDefined();
     expect(event.headers['userUlid']).toStrictEqual(user?.ulid);
     expect(event.headers['tokenJti']).toBeDefined();
-    expect(event.headers['tokenJti']).toStrictEqual(tokenPayload.origin_jti);
+    expect(event.headers['tokenJti']).toStrictEqual(tokenPayload.jti);
 
     // Mark session revoked (mimic logout)
     // so we can test same user different idtoken

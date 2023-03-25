@@ -4,8 +4,16 @@
  */
 
 import Joi from 'joi';
-import { refreshToken } from './joi-common';
+import { idToken, refreshToken } from './joi-common';
+
+export const RefreshTokenSchema = Joi.object({
+  refreshToken: refreshToken,
+});
 
 export const RevokeTokenSchema = Joi.object({
   refreshToken: refreshToken,
+});
+
+export const IdTokenSchema = Joi.object({
+  idToken: idToken,
 });

@@ -28,7 +28,7 @@ const getSessionsForUser = async (
 // and can continue with their API call
 // Requirements:
 // 1. There are no concurrent active sesssion for the user:
-// (we determine this by using the origin_jti on the token)
+// (we determine this by using the jti on the token)
 // 2. If the current session for the user already exisits
 // it has not been 30+ minutes since the last updated time
 // on the session

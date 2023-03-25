@@ -81,10 +81,10 @@ export const runPreExecutionChecks = async (
 
   event.headers['userUlid'] = userUlid;
 
-  // We use the origin_jti from the token as a unique identitfier
+  // We use the jti from the token as a unique identitfier
   // for the token to distinguish between sessions for a user
-  const tokenId = idTokenPayload.origin_jti;
-  // This origin jti will be used for refresh/revoke endpoints
+  const tokenId = idTokenPayload.jti;
+  // This jti will be used for refresh/revoke endpoints
   // to invalidate the current session. For refresh this will
   // allow the new session to meet session reqs without waiting for
   // the first to expire. For revoke, this blocks further

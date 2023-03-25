@@ -12,7 +12,7 @@ import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import axios from 'axios';
 import { getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
-import { Oauth2Token } from '../../models/auth';
+import { IdToken, Oauth2Token } from '../../models/auth';
 
 const stage = getRequiredEnv('STAGE', 'chewbacca');
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
@@ -174,6 +174,35 @@ export const exchangeAuthorizationCode = async (
   }
 
   return response.data;
+};
+
+export const useRefreshToken = async (refreshToken: string): Promise<IdToken> => {
+  const cognitoParams = await getCognitoSsmParams();
+  const axiosInstance = axios.create({
+    baseURL: cognitoParams.cognitoDomainUrl,
+  });
+
+  const data = new URLSearchParams();
+  data.append('grant_type', 'refresh_token');
+  data.append('client_id', cognitoParams.clientId);
+  data.append('refresh_token', refreshToken);
+
+  // make a request using the Axios instance
+  const response = await axiosInstance.post('/oauth2/token', data, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    validateStatus: () => true,
+  });
+
+  if (response.status !== 200) {
+    logger.error(`Unable to use refresh token for new id token: ${response.statusText}`);
+    throw new Error(`Request failed with status code ${response.status}`);
+  }
+
+  return {
+    idToken: response.data.id_token,
+  };
 };
 
 export const revokeRefreshToken = async (refreshToken: string) => {
