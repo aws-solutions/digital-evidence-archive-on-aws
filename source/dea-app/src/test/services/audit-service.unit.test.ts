@@ -3,12 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import BaseAuditPlugin from '@aws/workbench-core-audit/lib/plugins/baseAuditPlugin';
 import {
   CloudWatchLogsClient,
   CreateLogStreamCommand,
   PutLogEventsCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
-import BaseAuditPlugin from '@aws/workbench-core-audit/lib/plugins/baseAuditPlugin';
 import { anyOfClass, instance, mock, verify, when } from 'ts-mockito';
 import DeaAuditWriter from '../../app/audit/dea-audit-writer';
 import {

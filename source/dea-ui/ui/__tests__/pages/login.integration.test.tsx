@@ -12,7 +12,7 @@ jest.mock('next/router', () => ({
 }));
 
 jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('LoginPage', () => {
   it('renders a login page when waiting to log in', async () => {
@@ -38,7 +38,8 @@ describe('LoginPage', () => {
     ];
 
     // mock the responses using mockResolvedValueOnce
-    mockedAxios.mockResolvedValueOnce(responses[0]).mockResolvedValueOnce(responses[1]);
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockResolvedValueOnce(responses[0]).mockResolvedValueOnce(responses[1]);
 
     const page = render(<LoginPage />);
     const loginLabel = screen.getByText(commonLabels.loginLabel);

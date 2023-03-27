@@ -1,13 +1,23 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
-import axios from 'axios';
+import Axios from 'axios';
 import { delay } from '../../src/api/cases';
 import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
+
+afterEach(cleanup);
 
 const user = userEvent.setup();
 const push = jest.fn();
@@ -24,7 +34,7 @@ global.window.URL.createObjectURL = jest.fn(() => {});
 HTMLAnchorElement.prototype.click = jest.fn();
 
 jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+const mockedAxios = Axios as jest.Mocked<typeof Axios>;
 
 const mockFilesRoot = {
   cases: [
@@ -169,8 +179,8 @@ const failingCsvResult = [{ status: 'Running' }, { status: 'Running' }, { status
 
 describe('CaseDetailsPage', () => {
   it('renders a case details page', async () => {
-    mockedAxios.mockImplementation((event) => {
-      const eventObj: any = event;
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockImplementation((eventObj) => {
       if (eventObj.url === 'https://localhostcases/100/details') {
         return Promise.resolve({
           data: mockedCaseDetail,
@@ -262,8 +272,8 @@ describe('CaseDetailsPage', () => {
   it('navigates to manage access page', async () => {
     const ACTIVE_USER_ID = mockedUsers.users[0].ulid;
     const OTHER_USER_ID = mockedUsers.users[1].ulid;
-    mockedAxios.mockImplementation((event) => {
-      const eventObj: any = event;
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockImplementation((eventObj) => {
       if (eventObj.url === `https://localhostcases/${CASE_ID}/details`) {
         return Promise.resolve({
           data: mockedCaseDetail,
@@ -341,6 +351,7 @@ describe('CaseDetailsPage', () => {
     const searchUserInput = await screen.findByTestId('user-search-input');
     const searchUserInputWrapper = wrapper(page.container).findAutosuggest()!;
     expect(searchUserInput).toBeTruthy();
+
     searchUserInputWrapper.focus();
 
     for (let index = 0; index < mockedUsers.users.length; index++) {
@@ -379,14 +390,15 @@ describe('CaseDetailsPage', () => {
 
     //assert notifications
     const notificationsWrapper = wrapper(page.container).findFlashbar()!;
-    notificationsWrapper.findItems()[0].findDismissButton()!.click();
-    await delay(100);
     expect(notificationsWrapper).toBeTruthy();
+    waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(2));
+    const item = notificationsWrapper.findItems()[0];
+    item.findDismissButton()!.click();
   });
 
   it('navigates to upload files page', async () => {
-    mockedAxios.mockImplementation((event) => {
-      const eventObj: any = event;
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockImplementation((eventObj) => {
       if (eventObj.url === 'https://localhostcases/100/actions') {
         return Promise.resolve({
           data: mockedCaseActions,
@@ -408,14 +420,15 @@ describe('CaseDetailsPage', () => {
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
-    const uploadButton = await screen.findByText(commonLabels.uploadButton);
+    const uploadButton = await page.findByTestId('upload-file-button');
     fireEvent.click(uploadButton);
+
     expect(push).toHaveBeenCalledWith(`/upload-files?caseId=${CASE_ID}&filePath=/`);
   });
 
   it('downloads selected files', async () => {
-    mockedAxios.mockImplementation(async (event) => {
-      const eventObj: any = event;
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockImplementation((eventObj) => {
       if (eventObj.url === 'https://localhostcases/100/details') {
         return Promise.resolve({
           data: mockedCaseDetail,
@@ -432,8 +445,15 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
+      } else if (eventObj.url?.endsWith('contents')) {
+        return Promise.resolve({
+          data: {},
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
       } else {
-        await delay(100);
         return Promise.resolve({
           data: mockFilesRoot,
           status: 200,
@@ -445,17 +465,21 @@ describe('CaseDetailsPage', () => {
     });
 
     const page = render(<CaseDetailsPage />);
+
     expect(page).toBeTruthy();
 
     const table = await screen.findByTestId('file-table');
     const tableWrapper = wrapper(table);
     expect(table).toBeTruthy();
 
-    const fileSelector = await tableWrapper.findCheckbox();
+    const fileSelector = tableWrapper.findCheckbox();
     if (!fileSelector) {
       fail();
     }
-    fileSelector.click();
+
+    await act(async () => {
+      fileSelector.click();
+    });
 
     const downloadButton = await screen.findByText(commonLabels.downloadButton);
     fireEvent.click(downloadButton);
@@ -466,8 +490,8 @@ describe('CaseDetailsPage', () => {
   });
 
   it('downloads a case audit', async () => {
-    mockedAxios.mockImplementation((event) => {
-      const eventObj: any = event;
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockImplementation((eventObj) => {
       if (eventObj.url === 'https://localhostcases/100/details') {
         return Promise.resolve({
           data: mockedCaseDetail,
@@ -527,8 +551,8 @@ describe('CaseDetailsPage', () => {
   });
 
   it('recovers from a from a csv download failure', async () => {
-    mockedAxios.mockImplementation((event) => {
-      const eventObj: any = event;
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockImplementation((eventObj) => {
       if (eventObj.url === 'https://localhostcases/100/details') {
         return Promise.resolve({
           data: mockedCaseDetail,

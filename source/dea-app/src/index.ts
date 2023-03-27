@@ -43,11 +43,11 @@ import { Oauth2Token, RevokeToken } from './models/auth';
 import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
 import { DeaCaseFile } from './models/case-file';
+import { dummyContext, getDummyEvent } from './test/integration-objects';
+import { getTestAuditService } from './test/services/test-audit-service-provider';
 import CognitoHelper from './test-e2e/helpers/cognito-helper';
 import { testEnv } from './test-e2e/helpers/settings';
 import * as testHelpers from './test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent } from './test/integration-objects';
-import { getTestAuditService } from './test/services/test-audit-service-provider';
 
 export {
   auditService,

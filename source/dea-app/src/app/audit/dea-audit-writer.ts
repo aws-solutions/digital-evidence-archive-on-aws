@@ -3,15 +3,15 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import AuditEntry from '@aws/workbench-core-audit/lib/auditEntry';
+import Metadata from '@aws/workbench-core-audit/lib/metadata';
+import Writer from '@aws/workbench-core-audit/lib/plugins/writer';
 import {
   CloudWatchLogsClient,
   CreateLogGroupCommandOutput,
   CreateLogStreamCommand,
   PutLogEventsCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
-import AuditEntry from '@aws/workbench-core-audit/lib/auditEntry';
-import Metadata from '@aws/workbench-core-audit/lib/metadata';
-import Writer from '@aws/workbench-core-audit/lib/plugins/writer';
 import { now } from 'lodash';
 import { getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';

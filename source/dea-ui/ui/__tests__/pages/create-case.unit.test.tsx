@@ -17,11 +17,12 @@ jest.mock('next/router', () => ({
 }));
 
 jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('CreateCases page', () => {
   it('renders a case creation page', async () => {
-    mockedAxios.mockResolvedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockResolvedValue({
       data: {
         ulid: 'abc',
         name: 'mocked case',

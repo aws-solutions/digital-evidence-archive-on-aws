@@ -20,9 +20,9 @@ const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
     ...options.headers,
     authorization: 'allow',
   };
+  const client = axios.create();
 
   if (idToken && accessKeyId && secretAccessKey && sessionToken) {
-    const client = axios.create();
     // create credentials
     const credentials: Credentials = {
       accessKeyId,
@@ -34,7 +34,6 @@ const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
       ...options.headers,
       idToken: idToken,
     };
-
     const interceptor = aws4Interceptor(
       {
         service: 'execute-api',
@@ -43,22 +42,14 @@ const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
     );
 
     client.interceptors.request.use(interceptor);
-    const { data } = await client.request(options).catch((error: Error) => {
-      console.log(error);
-      // TODO: call logger to capture exception
-      throw new Error('there was an error while trying to retrieve data');
-    });
-
-    return data;
-  } else {
-    const { data } = await axios(options).catch(function (error: Error) {
-      console.log(error);
-      // TODO: call logger to capture exception
-      throw new Error('there was an error while trying to retrieve data');
-    });
-
-    return data;
   }
+  const { data } = await client.request(options).catch((error: Error) => {
+    console.log(error);
+    // TODO: call logger to capture exception
+    throw new Error('there was an error while trying to retrieve data');
+  });
+
+  return data;
 };
 
 const httpApiGet = async <T>(urlPath: string, params: unknown): Promise<T> => {

@@ -83,6 +83,7 @@ jobs:
         run: |
           node common/scripts/install-run-rush.js test:only --verbose
       - name: cdk destroy
+        continue-on-error: true
         if: always()
         run: |
           cd dea-main

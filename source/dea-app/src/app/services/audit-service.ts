@@ -3,14 +3,14 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import AuditPlugin from '@aws/workbench-core-audit/lib/auditPlugin';
+import AuditService from '@aws/workbench-core-audit/lib/auditService';
 import {
   CloudWatchLogsClient,
   GetQueryResultsCommand,
   QueryStatus,
   StartQueryCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
-import AuditPlugin from '@aws/workbench-core-audit/lib/auditPlugin';
-import AuditService from '@aws/workbench-core-audit/lib/auditService';
 import { getRequiredEnv } from '../../lambda-http-helpers';
 import { deaAuditPlugin } from '../audit/dea-audit-plugin';
 

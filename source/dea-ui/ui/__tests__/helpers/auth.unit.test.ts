@@ -3,12 +3,13 @@ import axios from 'axios';
 import { getCredentials, getToken, getLoginUrl, getLogoutUrl, revokeToken } from '../../src/api/auth';
 
 jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('auth helper', () => {
   it('should return token', async () => {
     // id token mock
-    mockedAxios.mockResolvedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockResolvedValue({
       data: '123456',
       status: 200,
       statusText: 'Ok',
@@ -20,7 +21,8 @@ describe('auth helper', () => {
   });
 
   it('should fail to return token', async () => {
-    mockedAxios.mockRejectedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockRejectedValue({
       response: {
         data: {},
         status: 400,
@@ -35,7 +37,8 @@ describe('auth helper', () => {
   it('should return credentials', async () => {
     const expectedData = { AccessKeyId: 100, SecretKey: 'secret', SessionToken: 'abc' };
     // id token mock
-    mockedAxios.mockResolvedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockResolvedValue({
       data: {
         AccessKeyId: 100,
         SecretKey: 'secret',
@@ -52,7 +55,8 @@ describe('auth helper', () => {
   });
 
   it('should fail to return creds', async () => {
-    mockedAxios.mockRejectedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockRejectedValue({
       response: {
         data: {},
         status: 400,
@@ -67,7 +71,8 @@ describe('auth helper', () => {
   });
 
   it('should return login Url', async () => {
-    mockedAxios.mockResolvedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockResolvedValue({
       data: 'dummyloginurl.com',
       status: 200,
       statusText: 'Ok',
@@ -79,7 +84,8 @@ describe('auth helper', () => {
   });
 
   it('should fail to login Url', async () => {
-    mockedAxios.mockRejectedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockRejectedValue({
       response: {
         data: {},
         status: 500,
@@ -92,7 +98,8 @@ describe('auth helper', () => {
   });
 
   it('should return logout Url', async () => {
-    mockedAxios.mockResolvedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockResolvedValue({
       data: 'dummylogouturl.com',
       status: 200,
       statusText: 'Ok',
@@ -104,7 +111,8 @@ describe('auth helper', () => {
   });
 
   it('should fail to logout Url', async () => {
-    mockedAxios.mockRejectedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockRejectedValue({
       response: {
         data: {},
         status: 400,
@@ -118,7 +126,8 @@ describe('auth helper', () => {
 
   it('should revoke successfully', async () => {
     // id token mock
-    mockedAxios.mockResolvedValue({
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockResolvedValue({
       data: '123456',
       status: 200,
       statusText: 'Ok',
