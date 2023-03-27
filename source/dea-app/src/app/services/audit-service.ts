@@ -153,6 +153,7 @@ export type CJISAuditEventBody = {
   fileHash?: string;
   caseId?: string;
   fileId?: string;
+  targetUserId?: string;
 };
 
 const queryFields =

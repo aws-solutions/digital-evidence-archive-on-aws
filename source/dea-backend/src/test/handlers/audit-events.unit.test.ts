@@ -278,4 +278,159 @@ describe('dea lambda audits', () => {
     }
     expect(sentInput.logEvents[0].message).toContain(`"idType":"LogoutUrlRequestor"`);
   });
+
+  it('should fill caseId property from the requestPath', async () => {
+    const testAuditService = getTestAuditService();
+    const sut = createDeaHandler(
+      async () => {
+        return {
+          statusCode: 200,
+          body: ':D',
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    const theEvent = getDummyEvent();
+    theEvent.pathParameters = {
+      caseId: 'abc123',
+    };
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: ':D', statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).toContain(`"caseId":"abc123"`);
+  });
+
+  it('should fill fileId property from the requestPath', async () => {
+    const testAuditService = getTestAuditService();
+    const sut = createDeaHandler(
+      async () => {
+        return {
+          statusCode: 200,
+          body: ':D',
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    const theEvent = getDummyEvent();
+    theEvent.pathParameters = {
+      fileId: 'abc123',
+    };
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: ':D', statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).toContain(`"fileId":"abc123"`);
+  });
+
+  it('should fill targetUserId property from the requestPath', async () => {
+    const testAuditService = getTestAuditService();
+    const sut = createDeaHandler(
+      async () => {
+        return {
+          statusCode: 200,
+          body: ':D',
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    const theEvent = getDummyEvent();
+    theEvent.pathParameters = {
+      userId: 'abc123',
+    };
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: ':D', statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).toContain(`"targetUserId":"abc123"`);
+  });
+
+  it('should fill targetUserId property from the body', async () => {
+    const testAuditService = getTestAuditService();
+    const sut = createDeaHandler(
+      async () => {
+        return {
+          statusCode: 200,
+          body: ':D',
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    const theEvent = getDummyEvent();
+    theEvent.resource = '/cases/{caseId}/userMemberships';
+    theEvent.httpMethod = 'POST';
+    theEvent.body = '{"userUlid": "abc123"}';
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: ':D', statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).toContain(`"targetUserId":"abc123"`);
+  });
+
+  it('should left targetUserId property undefined if the body is malformed', async () => {
+    const testAuditService = getTestAuditService();
+    const sut = createDeaHandler(
+      async () => {
+        return {
+          statusCode: 200,
+          body: ':D',
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    const theEvent = getDummyEvent();
+    theEvent.resource = '/cases/{caseId}/userMemberships';
+    theEvent.httpMethod = 'POST';
+    theEvent.body = ':D';
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: ':D', statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).not.toContain(`"targetUserId"`);
+  });
 });
