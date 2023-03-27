@@ -55,6 +55,10 @@
           "method": "GET"
         },
         {
+          "path": "/auth/refreshToken",
+          "method": "POST"
+        },
+        {
           "path": "/auth/revokeToken",
           "method": "POST"
         },
@@ -133,6 +137,10 @@
         {
           "path": "/auth/logoutUrl",
           "method": "GET"
+        },
+        {
+          "path": "/auth/refreshToken",
+          "method": "POST"
         },
         {
           "path": "/auth/revokeToken",
