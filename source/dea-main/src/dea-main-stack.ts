@@ -51,6 +51,7 @@ export class DeaMainStack extends cdk.Stack {
     const auditTrail = new DeaAuditTrail(this, 'DeaAudit', {
       kmsKey,
       deaDatasetsBucket: backendConstruct.datasetsBucket,
+      deaTableArn: backendConstruct.deaTable.tableArn,
     });
 
     const deaEventHandlers = new DeaEventHandlers(this, 'DeaEventHandlers', {

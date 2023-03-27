@@ -52,6 +52,7 @@ describe('DeaBackend constructs', () => {
     const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
+      deaTableArn: backend.deaTable.tableArn,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
@@ -127,6 +128,7 @@ describe('DeaBackend constructs', () => {
     const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
+      deaTableArn: backend.deaTable.tableArn,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
@@ -191,6 +193,7 @@ describe('DeaBackend constructs', () => {
     const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
+      deaTableArn: backend.deaTable.tableArn,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,

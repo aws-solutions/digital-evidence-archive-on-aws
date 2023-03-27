@@ -17396,46 +17396,19 @@ Object {
           Object {
             "DataResources": Array [
               Object {
-                "Type": "AWS::S3::Object",
+                "Type": "AWS::DynamoDB::Table",
                 "Values": Array [
                   Object {
-                    "Fn::Join": Array [
-                      "",
-                      Array [
-                        Object {
-                          "Fn::GetAtt": Array [
-                            "DeaBackendStackS3DatasetsBucket408FF954",
-                            "Arn",
-                          ],
-                        },
-                        "/",
-                      ],
+                    "Fn::GetAtt": Array [
+                      "DeaBackendStackDeaTableE9FE4A05",
+                      "Arn",
                     ],
                   },
                 ],
               },
             ],
-          },
-          Object {
-            "DataResources": Array [
-              Object {
-                "Type": "AWS::Lambda::Function",
-                "Values": Array [
-                  Object {
-                    "Fn::Join": Array [
-                      "",
-                      Array [
-                        "arn:",
-                        Object {
-                          "Ref": "AWS::Partition",
-                        },
-                        ":lambda",
-                      ],
-                    ],
-                  },
-                ],
-              },
-            ],
+            "IncludeManagementEvents": true,
+            "ReadWriteType": "All",
           },
         ],
         "IncludeGlobalServiceEvents": true,

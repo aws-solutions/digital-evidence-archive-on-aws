@@ -25,6 +25,7 @@ describe('start case audit', () => {
     jest.resetModules();
     process.env = { ...OLD_ENV };
     process.env.AUDIT_LOG_GROUP_NAME = 'TESTGROUP';
+    process.env.TRAIL_LOG_GROUP_NAME = 'TESTTRAILGROUP';
   });
 
   afterAll(() => {

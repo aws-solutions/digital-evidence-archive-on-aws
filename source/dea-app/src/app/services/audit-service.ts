@@ -66,6 +66,7 @@ export enum AuditEventType {
   REQUEST_USER_AUDIT = 'RequestUserAudit',
   GET_SYSTEM_AUDIT = 'GetSystemAudit',
   REQUEST_SYSTEM_AUDIT = 'RequestSystemAudit',
+  AWS_API_CALL = 'AwsApiCall',
   UNKNOWN = 'UnknownEvent',
 }
 
@@ -184,7 +185,7 @@ const queryFields = [
   'coalesce(sourceComponent, eventSource) as source',
   'coalesce(sourceIPAddress, actorIdentity.sourceIp) as sourceIp',
   'coalesce(actorIdentity.idType, userIdentity.type) as userType',
-  'coalesce(actorIdentity.username, userIdentity.userName) as username',
+  'coalesce(actorIdentity.username, userIdentity.userName, userIdentity.sessionContext.sessionIssuer.userName) as username',
   'actorIdentity.deaRole',
   'actorIdentity.userUlid',
   'actorIdentity.firstName',
@@ -197,6 +198,8 @@ const queryFields = [
   'fileId',
   'fileHash',
   'targetUserId',
+  'requestParameters.key.PK as PrimaryKey',
+  'requestParameters.key.SK as SortKey',
 ];
 
 export interface AuditResult {
@@ -238,12 +241,15 @@ export class DeaAuditService extends AuditService {
     resourceId: string,
     repositoryProvider: ModelRepositoryProvider
   ) {
-    const defaultQuery = `fields ${queryFields.join(', ')} | sort @timestamp desc | limit 10000`;
+    // sort by eventDateTime, the time when the event actually occurred, rather than timestamp, the moment when it appeared in logs
+    const defaultQuery = `fields ${queryFields.join(', ')} | sort eventDateTime desc`;
+    const queryString = filterPredicate ? `filter ${filterPredicate} | ${defaultQuery}` : defaultQuery;
     const startQueryCmd = new StartQueryCommand({
       logGroupNames,
       startTime: start,
       endTime: end,
-      queryString: filterPredicate ? `filter ${filterPredicate} | ${defaultQuery}` : defaultQuery,
+      queryString,
+      limit: 10000,
     });
     const startResponse = await cloudwatchClient.send(startQueryCmd);
     if (!startResponse.queryId) {
@@ -266,8 +272,8 @@ export class DeaAuditService extends AuditService {
     cloudwatchClient: CloudWatchLogsClient,
     repositoryProvider: ModelRepositoryProvider
   ) {
-    const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME')];
-    const filterPredicate = `caseId like /${caseId}/`;
+    const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME'), getRequiredEnv('TRAIL_LOG_GROUP_NAME')];
+    const filterPredicate = `caseId = "${caseId}" or (@message like '"PK":"CASE#${caseId}#"' and @message like '"SK":"CASE#"')`;
     return this._startAuditQuery(
       start,
       end,
@@ -289,8 +295,8 @@ export class DeaAuditService extends AuditService {
     cloudwatchClient: CloudWatchLogsClient,
     repositoryProvider: ModelRepositoryProvider
   ) {
-    const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME')];
-    const filterPredicate = `caseId like /${caseId}/ and fileId like /${fileId}/`;
+    const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME'), getRequiredEnv('TRAIL_LOG_GROUP_NAME')];
+    const filterPredicate = `(caseId = "${caseId}" and fileId = "${fileId}") or (@message like '"PK":"CASE#${caseId}#"' and @message like '"SK":"FILE#${fileId}#"'`;
     return this._startAuditQuery(
       start,
       end,

@@ -110,6 +110,7 @@ describe('case audit e2e', () => {
       Joi.assert(auditId, joiUlid);
 
       let retries = 5;
+      await delay(5000);
       let getQueryReponse = await callDeaAPIWithCreds(
         `${deaApiUrl}cases/${caseUlid}/audit/${auditId}/csv`,
         'GET',
@@ -141,18 +142,38 @@ describe('case audit e2e', () => {
         !getQueryReponse.data.status &&
         potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
         potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
-        potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE)
+        potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE) &&
+        potentialCsvData.match(/dynamodb.amazonaws.com/g)?.length === 6
       ) {
         csvData = getQueryReponse.data;
+      } else {
+        await delay(10000);
       }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const entries = parseCaseAuditCsv(csvData!)
-      .filter((entry) => entry.eventType != AuditEventType.GET_CASE_AUDIT)
-      .filter((entry) => entry.eventType != AuditEventType.REQUEST_CASE_AUDIT);
+    const entries = parseCaseAuditCsv(csvData!).filter(
+      (entry) =>
+        entry.eventType != AuditEventType.GET_CASE_AUDIT &&
+        entry.eventType != AuditEventType.REQUEST_CASE_AUDIT
+    );
 
-    expect(entries.length).toBe(4);
+    expect(entries.length).toBe(10);
+    // 1. CreateCase
+    // 2. TransactWriteItems
+    // 3. UpdateCaseDetails
+    // 4. DB Get
+    // 5. TransactWriteItems
+    // 6. DB Get
+    // 7. GetCaseDetails
+    // 8. DB Get
+    // 9. GetUsersFromCase
+    // 10. DB Get
+
+    const dbGetItems = entries.filter((entry) => entry.eventDetails === 'GetItem');
+    expect(dbGetItems).toHaveLength(4);
+    const dbTransactItems = entries.filter((entry) => entry.eventDetails === 'TransactWriteItems');
+    expect(dbTransactItems).toHaveLength(2);
 
     function verifyCaseAuditEntry(
       entry: CaseAuditEventEntry | undefined,
@@ -180,7 +201,7 @@ describe('case audit e2e', () => {
       (entry) => entry.eventType === AuditEventType.GET_USERS_FROM_CASE
     );
     verifyCaseAuditEntry(getUsersFromCaseEntry, AuditEventType.GET_USERS_FROM_CASE, testUser);
-  }, 180000);
+  }, 720000);
 
   it('should prevent retrieval by an unauthorized user', async () => {
     const caseName = `auditTestCase${randomSuffix()}`;

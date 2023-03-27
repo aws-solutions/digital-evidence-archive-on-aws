@@ -5,6 +5,7 @@
 
 import { StackProps } from 'aws-cdk-lib';
 import * as CloudTrail from 'aws-cdk-lib/aws-cloudtrail';
+import { CfnTrail, ReadWriteType } from 'aws-cdk-lib/aws-cloudtrail';
 import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
@@ -15,6 +16,7 @@ import { deaConfig } from '../config';
 interface DeaAuditProps extends StackProps {
   readonly kmsKey: Key;
   readonly deaDatasetsBucket: IBucket;
+  readonly deaTableArn: string;
 }
 
 export class DeaAuditTrail extends Construct {
@@ -31,7 +33,8 @@ export class DeaAuditTrail extends Construct {
       scope,
       this.trailLogGroup,
       props.kmsKey,
-      props.deaDatasetsBucket
+      props.deaDatasetsBucket,
+      props.deaTableArn
     );
     props.kmsKey.grantEncrypt(new ServicePrincipal('cloudtrail.amazonaws.com'));
   }
@@ -40,7 +43,8 @@ export class DeaAuditTrail extends Construct {
     scope: Construct,
     trailLogGroup: LogGroup,
     kmsKey: Key,
-    deaDatasetsBucket: IBucket
+    deaDatasetsBucket: IBucket,
+    deaTableArn: string
   ) {
     const trailBucket = new Bucket(this, 'deaTrailBucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
@@ -59,6 +63,22 @@ export class DeaAuditTrail extends Construct {
       cloudWatchLogGroup: trailLogGroup,
       encryptionKey: kmsKey,
     });
+
+    const cfnTrail = trail.node.defaultChild;
+    if (cfnTrail instanceof CfnTrail) {
+      cfnTrail.eventSelectors = [
+        {
+          includeManagementEvents: true,
+          readWriteType: ReadWriteType.ALL,
+          dataResources: [
+            {
+              type: 'AWS::DynamoDB::Table',
+              values: [deaTableArn],
+            },
+          ],
+        },
+      ];
+    }
 
     trail.addS3EventSelector([{ bucket: deaDatasetsBucket }]);
     trail.logAllLambdaDataEvents();
