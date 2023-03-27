@@ -17,6 +17,7 @@ import {
   IdentityType,
 } from '@aws/dea-app/lib/app/services/audit-service';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
+import { CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { logger } from '../logger';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
@@ -102,6 +103,7 @@ const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
     result: AuditEventResult.FAILURE,
     caseId: event.pathParameters?.caseId,
     fileId: event.pathParameters?.fileId,
+    targetUserId: getTargetUserId(event),
   };
 };
 
@@ -166,4 +168,20 @@ const getEventType = (event: APIGatewayProxyEvent): AuditEventType => {
   }
 
   return route.eventName;
+};
+
+const getTargetUserId = (event: APIGatewayProxyEvent): string | undefined => {
+  const eventType = getEventType(event);
+  if (eventType === AuditEventType.INVITE_USER_TO_CASE && event.body) {
+    try {
+      const caseUser: CaseUserDTO = JSON.parse(event.body);
+      return caseUser?.userUlid;
+    } catch {
+      // It means `JSON.parse` has thrown a SyntaxError.
+      // The target endpoint will handle appropriately the payload issues.
+      // We do nothing at this point we are trying our best to retrieve the `targetUserId` value from the body.
+      return undefined;
+    }
+  }
+  return event.pathParameters?.userId;
 };
