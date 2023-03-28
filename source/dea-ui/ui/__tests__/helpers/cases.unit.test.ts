@@ -27,7 +27,7 @@ describe('useListAllCases', () => {
         { id: 123123, name: 'Baby yoda or grogu?' },
       ],
     };
-    useSWR.mockReturnValue({ data: mockCases, isValidating: false });
+    useSWR.mockReturnValue({ data: mockCases, isLoading: false });
 
     const { data, isLoading } = useListAllCases();
     expect(data).toEqual(mockCases.cases);
@@ -41,7 +41,7 @@ describe('useListAllCases', () => {
         { id: 23456, name: 'How is Palpatine Alive' },
       ],
     };
-    useSWR.mockReturnValue({ data: mockCases, isValidating: false });
+    useSWR.mockReturnValue({ data: mockCases, isLoading: false });
 
     const { data, isLoading } = useListMyCases();
     expect(data).toEqual(mockCases.cases);
@@ -53,7 +53,7 @@ describe('useListAllCases', () => {
       id: 12345,
       name: 'Who killed Anakin',
     };
-    useSWR.mockReturnValue({ data: mockCase, isValidating: false });
+    useSWR.mockReturnValue({ data: mockCase, isLoading: false });
 
     const { data, isLoading } = useGetCaseById('12345');
     expect(data).toEqual(mockCase);
@@ -84,7 +84,7 @@ describe('useListAllCases', () => {
         { id: 23456, name: 'How is Palpatine Alive' },
       ],
     };
-    useSWR.mockReturnValue({ data: mockCases, isValidating: false });
+    useSWR.mockReturnValue({ data: mockCases, isLoading: false });
 
     const { data, isLoading } = useListCaseFiles('dummyId', '/');
     expect(data).toEqual(mockCases.cases);

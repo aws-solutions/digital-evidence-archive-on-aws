@@ -54,20 +54,20 @@ interface CaseListReponse {
 }
 
 export const useListAllCases = (): DeaListResult<DeaCaseDTO> => {
-  const { data, isValidating } = useSWR(() => `cases/all-cases`, httpApiGet<CaseListReponse> );
+  const { data, isLoading } = useSWR(() => `cases/all-cases`, httpApiGet<CaseListReponse> );
   const cases: DeaCaseDTO[] = data?.cases ?? [];
-  return { data: cases, isLoading: isValidating };
+  return { data: cases, isLoading };
 };
 
 export const useListMyCases = (): DeaListResult<DeaCaseDTO> => {
-  const { data, isValidating } = useSWR(() => `cases/my-cases`, (httpApiGet<CaseListReponse>) );
+  const { data, isLoading } = useSWR(() => `cases/my-cases`, (httpApiGet<CaseListReponse>) );
   const cases: DeaCaseDTO[] = data?.cases ?? [];
-  return { data: cases, isLoading: isValidating };
+  return { data: cases, isLoading };
 };
 
 export const useGetCaseById = (id: string): DeaSingleResult<DeaCaseDTO | undefined> => {
-  const { data, isValidating } = useSWR(() => `cases/${id}/details`, httpApiGet<DeaCaseDTO>);
-  return { data, isLoading: isValidating };
+  const { data, isLoading } = useSWR(() => `cases/${id}/details`, httpApiGet<DeaCaseDTO>);
+  return { data, isLoading };
 };
 
 export const createCase = async (createCaseForm: CreateCaseForm): Promise<void> => {
@@ -75,9 +75,9 @@ export const createCase = async (createCaseForm: CreateCaseForm): Promise<void> 
 };
 
 export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DeaCaseFile> => {
-  const { data, isValidating } = useSWR(() => `cases/${id}/files?filePath=${filePath}`, httpApiGet<{cases: DeaCaseFile[]}>);
+  const { data, isLoading } = useSWR(() => `cases/${id}/files?filePath=${filePath}`, httpApiGet<{cases: DeaCaseFile[]}>);
   const caseFiles: DeaCaseFile[] = data?.cases ?? [];
-  return { data: caseFiles, isLoading: isValidating && !data };
+  return { data: caseFiles, isLoading };
 };
 
 export const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFile> => {
@@ -93,9 +93,9 @@ export const getPresignedUrl = async (apiInput: DownloadFileForm): Promise<Downl
 };
 
 export const useGetUsers = (nameBeginsWith: string): DeaListResult<DeaUser> => {
-  const { data, isValidating } = useSWR(() => `users?nameBeginsWith=${nameBeginsWith}`, httpApiGet<{users: DeaUser[]}>);
+  const { data, isLoading } = useSWR(() => `users?nameBeginsWith=${nameBeginsWith}`, httpApiGet<{users: DeaUser[]}>);
   const users: DeaUser[] = data?.users ?? [];
-  return { data: users, isLoading: isValidating };
+  return { data: users, isLoading };
 };
 
 export const addCaseMember = async (caseUserForm: CaseUserForm): Promise<void> => {
@@ -103,9 +103,9 @@ export const addCaseMember = async (caseUserForm: CaseUserForm): Promise<void> =
 };
 
 export const useGetCaseMembers = (id: string): DeaListResult<CaseUser> => {
-  const { data, isValidating, mutate } = useSWR(() => `cases/${id}/userMemberships`, httpApiGet<{caseUsers: CaseUser[]}>);
+  const { data, isLoading, mutate } = useSWR(() => `cases/${id}/userMemberships`, httpApiGet<{caseUsers: CaseUser[]}>);
   const cases: CaseUser[] = data?.caseUsers ?? [];
-  return { data: cases, isLoading: isValidating, mutate };
+  return { data: cases, isLoading, mutate };
 };
 
 export const removeCaseMember = async (caseUser: CaseUserForm): Promise<void> => {
@@ -146,6 +146,6 @@ export function delay(ms: number) {
 }
 
 export const useGetCaseActions = (id: string): DeaSingleResult<CaseUser | undefined> => {
-  const { data, isValidating } = useSWR(() => `cases/${id}/actions`, httpApiGet<CaseUser>);
-  return { data, isLoading: isValidating };
+  const { data, isLoading } = useSWR(() => `cases/${id}/actions`, httpApiGet<CaseUser>);
+  return { data, isLoading };
 };
