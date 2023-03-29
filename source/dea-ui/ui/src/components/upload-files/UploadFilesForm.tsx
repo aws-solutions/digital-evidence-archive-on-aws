@@ -215,6 +215,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           <SpaceBetween direction="vertical" size="l">
             <FormField
               data-testid="input-tag"
+              errorText={tag ? '' : 'Tag is required.'}
               label={fileOperationsLabels.evidenceTagLabel}
               description={fileOperationsLabels.evidenceTagDescription}
             >
@@ -227,6 +228,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             </FormField>
             <FormField
               data-testid="input-details"
+              errorText={details ? '' : 'Description is required.'}
               label={fileOperationsLabels.evidenceDetailsLabel}
               description={fileOperationsLabels.evidenceDetailsDescription}
             >
@@ -239,6 +241,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             </FormField>
             <FormField
               data-testid="input-reason"
+              errorText={reason ? '' : 'Reason is required.'}
               label={fileOperationsLabels.uploadReasonLabel}
               description={fileOperationsLabels.uploadReasonDescription}
             >
@@ -280,7 +283,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           iconAlign="right"
           data-testid="upload-file-submit"
           onClick={onSubmitHandler}
-          disabled={uploadInProgress}
+          disabled={uploadInProgress || !reason || !tag || !details}
         >
           {commonLabels.uploadButton}
         </Button>
