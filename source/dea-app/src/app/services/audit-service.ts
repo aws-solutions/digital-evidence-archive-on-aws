@@ -34,6 +34,7 @@ export enum AuditEventType {
   GET_CASE_ACTIONS = 'GetCaseActions',
   UPDATE_CASE_DETAILS = 'UpdateCaseDetails',
   DELETE_CASE = 'DeleteCase',
+  CREATE_CASE_OWNER = 'CreateCaseOwner',
   GET_USERS_FROM_CASE = 'GetUsersFromCase',
   INVITE_USER_TO_CASE = 'InviteUserToCase',
   REMOVE_USER_FROM_CASE = 'RemoveUserFromCase',

@@ -4,6 +4,7 @@
  */
 
 import * as CompleteCaseFileUploadHandler from '../../handlers/complete-case-file-upload-handler';
+import * as CreateCaseOwnerHandler from '../../handlers/create-case-owner-handler';
 import * as CreateCaseUserHandler from '../../handlers/create-case-user-handler';
 import * as CreateCasesHandler from '../../handlers/create-cases-handler';
 import * as DeleteCasesHandler from '../../handlers/delete-case-handler';
@@ -34,6 +35,7 @@ describe('lambda handlers', () => {
   it('should be wrapped with the deaHandler', () => {
     const handlers = [
       CreateCasesHandler.handler,
+      CreateCaseOwnerHandler.handler,
       CreateCaseUserHandler.handler,
       CompleteCaseFileUploadHandler.handler,
       DeleteCasesHandler.handler,
