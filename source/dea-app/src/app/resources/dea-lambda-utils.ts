@@ -50,6 +50,7 @@ export const runPreExecutionChecks = async (
     );
     throw new NotFoundError('Resource Not Found');
   }
+  event.headers['deaRole'] = deaRole;
   // got token payload - progress audit identity
   auditEvent.actorIdentity = {
     idType: IdentityType.COGNITO_TOKEN,

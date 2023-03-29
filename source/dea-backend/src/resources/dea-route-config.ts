@@ -172,6 +172,12 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/request-case-audit-handler.ts',
     },
+    {
+      eventName: AuditEventType.GET_AVAILABLE_ENDPOINTS,
+      path: '/availableEndpoints',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-available-endpoints-handler.ts',
+    },
   ],
   allowedOrigins: JSON.parse(process.env.ALLOWED_ORIGINS || '[]'),
 };

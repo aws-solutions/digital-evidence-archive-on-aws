@@ -19,6 +19,7 @@ import { deleteCaseMembership } from './app/resources/delete-case-membership';
 import { deleteCase } from './app/resources/delete-cases';
 import { downloadCaseFile } from './app/resources/download-case-file';
 import { getAllCases } from './app/resources/get-all-cases';
+import { getAvailableEndpointsForUser } from './app/resources/get-available-endpoints';
 import { getCaseAudit } from './app/resources/get-case-audit';
 import { getCase } from './app/resources/get-case-details';
 import { getCaseFileDetails } from './app/resources/get-case-file-details';
@@ -83,6 +84,7 @@ export {
   verifyCaseACLs,
   getTestAuditService,
   getDummyEvent,
+  getAvailableEndpointsForUser,
   CaseAction,
   DeaCase,
   DeaCaseFile,

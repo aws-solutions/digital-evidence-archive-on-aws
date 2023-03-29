@@ -10,6 +10,7 @@ import * as DeleteCasesHandler from '../../handlers/delete-case-handler';
 import * as DeleteCaseUserHandler from '../../handlers/delete-case-user-handler';
 import * as DownloadCaseFileHandler from '../../handlers/download-case-file-handler';
 import * as GetAllCasesHandler from '../../handlers/get-all-cases-handler';
+import * as GetAvailableEndpoints from '../../handlers/get-available-endpoints-handler';
 import * as GetCaseActionsHandler from '../../handlers/get-case-actions-handler';
 import * as GetCaseAuditHandler from '../../handlers/get-case-audit-handler';
 import * as GetCaseDetailHandler from '../../handlers/get-case-detail-handler';
@@ -57,6 +58,7 @@ describe('lambda handlers', () => {
       StartCaseAuditHandler.handler,
       GetCaseAuditHandler.handler,
       GetCaseActionsHandler.handler,
+      GetAvailableEndpoints.handler,
     ];
 
     handlers.forEach((handler) => {

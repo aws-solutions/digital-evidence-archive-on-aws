@@ -52,6 +52,7 @@ export enum AuditEventType {
   GET_CASE_FILE_DETAIL = 'GetCaseFileDetail',
   GET_CASE_AUDIT = 'GetCaseAudit',
   REQUEST_CASE_AUDIT = 'RequestCaseAudit',
+  GET_AVAILABLE_ENDPOINTS = 'GetAvailableEndpoints',
   UNKNOWN = 'UnknownEvent',
 }
 
