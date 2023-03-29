@@ -4,14 +4,15 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
+import { OWNER_ACTIONS } from '../../models/case-action';
 import { CaseUser } from '../../models/case-user';
-import { CaseUserDTO } from '../../models/dtos/case-user-dto';
+import { CaseOwnerDTO, CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { getCase } from '../../persistence/case';
 import * as CaseUserPersistence from '../../persistence/case-user';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getUser } from '../../persistence/user';
 import { NotFoundError } from '../exceptions/not-found-exception';
-import { ValidationError } from '../exceptions/validation-exception';
+import { ValidationError, VALIDATION_ERROR_NAME } from '../exceptions/validation-exception';
 
 export const getCaseUser = async (
   caseUserIds: {
@@ -150,4 +151,20 @@ export const getCaseUsersForCase = async (
   repositoryProvider: ModelRepositoryProvider
 ): Promise<Paged<CaseUser>> => {
   return CaseUserPersistence.listCaseUsersByCase(caseUlid, limit, nextToken, repositoryProvider);
+};
+
+export const createCaseOwnerFromDTO = async (
+  caseOwnerDTO: CaseOwnerDTO,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<CaseUser> => {
+  const caseUserDto: CaseUserDTO = { ...caseOwnerDTO, actions: OWNER_ACTIONS };
+  try {
+    return await createCaseUserMembershipFromDTO(caseUserDto, repositoryProvider);
+  } catch (error) {
+    //if membership found then we proceed with the update.
+    if (typeof error === 'object' && error['name'] === VALIDATION_ERROR_NAME) {
+      return await updateCaseUserMembershipFromDTO(caseUserDto, repositoryProvider);
+    }
+    throw error;
+  }
 };

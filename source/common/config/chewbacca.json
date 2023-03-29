@@ -27,6 +27,10 @@
           "method": "GET"
         },
         {
+          "path": "/cases/{caseId}/owner",
+          "method": "POST"
+        },
+        {
           "path": "/cases/{caseId}/userMemberships",
           "method": "GET"
         },

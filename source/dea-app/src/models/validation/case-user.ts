@@ -27,3 +27,8 @@ export const caseUserResponseSchema = Joi.object({
   created: Joi.date(),
   updated: Joi.date(),
 });
+
+export const caseOwnerSchema = Joi.object({
+  userUlid: joiUlid,
+  caseUlid: joiUlid,
+});
