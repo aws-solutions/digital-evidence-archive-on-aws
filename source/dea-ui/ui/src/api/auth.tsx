@@ -3,7 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { Oauth2Token, RevokeToken } from '@aws/dea-app/lib/models/auth';
+import useSWR from 'swr';
 import { httpApiGet, httpApiPost } from '../helpers/apiHelper';
+import { DeaListResult } from './cases';
 
 export interface Credentials {
   AccessKeyId: string;
@@ -11,7 +13,7 @@ export interface Credentials {
   SessionToken: string;
 }
 
-const getToken = async (authCode: string): Promise<Oauth2Token> => {
+export const getToken = async (authCode: string): Promise<Oauth2Token> => {
   try {
     const response: Oauth2Token = await httpApiPost(`auth/${authCode}/token`, { authCode });
     return response;
@@ -21,7 +23,7 @@ const getToken = async (authCode: string): Promise<Oauth2Token> => {
   }
 };
 
-const getCredentials = async (idToken: string) => {
+export const getCredentials = async (idToken: string) => {
   try {
     const response: Credentials = await httpApiGet(`auth/credentials/${idToken}/exchange`, {});
     return response;
@@ -31,7 +33,7 @@ const getCredentials = async (idToken: string) => {
   }
 };
 
-const getLoginUrl = async () => {
+export const getLoginUrl = async () => {
   try {
     const response: string = await httpApiGet(`auth/loginUrl`, {});
     return response;
@@ -41,7 +43,7 @@ const getLoginUrl = async () => {
   }
 };
 
-const getLogoutUrl = async () => {
+export const getLogoutUrl = async () => {
   try {
     const response: string = await httpApiGet(`auth/logoutUrl`, {});
     return response;
@@ -51,8 +53,12 @@ const getLogoutUrl = async () => {
   }
 };
 
-const revokeToken = async (revokeToken: RevokeToken): Promise<void> => {
+export const revokeToken = async (revokeToken: RevokeToken): Promise<void> => {
   await httpApiPost(`auth/revokeToken`, { ...revokeToken });
 };
 
-export { getToken, getCredentials, getLoginUrl, getLogoutUrl, revokeToken };
+export const useAvailableEndpoints = (): DeaListResult<string> => {
+  const {data, error} = useSWR('availableEndpoints', httpApiGet<{endpoints: string[]}>);
+
+  return {data: data?.endpoints ?? [], isLoading: !data && !error};
+};
