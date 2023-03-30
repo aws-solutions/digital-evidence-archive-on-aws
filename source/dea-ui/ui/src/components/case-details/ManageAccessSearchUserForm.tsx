@@ -57,9 +57,9 @@ function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX
           <Popover
             position="bottom"
             triggerType="custom"
+            header={manageCaseAccessLabels.manageAccessSearchInfoHeader}
             content={
               <TextContent>
-                <h5>{manageCaseAccessLabels.manageAccessSearchInfoHeader}</h5>
                 <strong>{manageCaseAccessLabels.manageAccessSearchInfoLabel}</strong>
                 <p>{manageCaseAccessLabels.manageAccessSearchInfoDescription}</p>
               </TextContent>

@@ -28,6 +28,7 @@ export default function BaseLayout({
 }: LayoutProps): JSX.Element {
   const [navigationOpen, setNavigationOpen] = React.useState(false);
   const { settings } = useSettings();
+
   const appLayoutLabels: AppLayoutProps.Labels = layoutLabels;
   return (
     <>
@@ -41,7 +42,7 @@ export default function BaseLayout({
         ariaLabels={appLayoutLabels}
         navigationOpen={navigationOpen}
         navigationHide={navigationHide}
-        navigation={<Navigation activeHref={activeHref} />}
+        navigation={<Navigation initialHref={activeHref} />}
         breadcrumbs={
           <BreadcrumbGroup items={breadcrumbs} expandAriaLabel="Show path" ariaLabel="Breadcrumbs" />
         }

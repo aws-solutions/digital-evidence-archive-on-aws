@@ -71,6 +71,7 @@ export const caseListLabels = {
   createNewCaseLabel: 'Create new case',
   searchCasesLabel: 'Search by case name',
   casesLabel: 'Cases',
+  systemCasesLabel: 'All System Cases',
   casesPageDescription: 'This is a list of cases that have been shared with you.',
 };
 
