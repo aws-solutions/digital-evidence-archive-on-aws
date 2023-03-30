@@ -27,3 +27,9 @@ export const updateCaseSchema = Joi.object({
   name: safeName,
   description: safeDescription,
 });
+
+export const updateCaseStatusSchema = Joi.object({
+  name: safeName,
+  status: caseStatus,
+  deleteFiles: Joi.bool().optional().default(false),
+});

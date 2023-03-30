@@ -77,8 +77,8 @@ describe('DeaBackend constructs', () => {
     });
 
     //handlers
-    const expectedLambdaCount = 26;
-    const expectedMethodCount = 54;
+    const expectedLambdaCount = 27;
+    const expectedMethodCount = 56;
     template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCount);
     template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCount);
 

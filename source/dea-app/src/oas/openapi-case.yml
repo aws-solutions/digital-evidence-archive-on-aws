@@ -294,6 +294,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Case'
+  /cases/{caseId}/status:
+      put:
+        summary: Update case status and optionally request deletion of case files
+        tags:
+          - cases
+        parameters:
+          - in: path
+            name: caseId
+            schema:
+              type: string
+            required: true
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  deleteFiles:
+                    type: boolean
+                    default: false
+                  status:
+                    $ref: '#/components/schemas/CaseStatus'
+        responses:
+          200:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Case'
   /cases/{caseId}/files:
     post:
       summary: Begin case file upload

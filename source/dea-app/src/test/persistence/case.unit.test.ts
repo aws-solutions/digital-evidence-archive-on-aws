@@ -6,6 +6,7 @@
 import { Paged } from 'dynamodb-onetable';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { OWNER_ACTIONS } from '../../models/case-action';
+import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { DeaUser } from '../../models/user';
 import { createCase, deleteCase, getCase, listCases, updateCase } from '../../persistence/case';
@@ -86,6 +87,7 @@ describe('case persistence', () => {
         ulid: listCase1Ulid,
         name: listCase1.name,
         status: CaseStatus.ACTIVE,
+        filesStatus: CaseFileStatus.ACTIVE,
         objectCount: 0,
         created: listCase1Created,
         updated: listCase1Updated,
@@ -94,6 +96,7 @@ describe('case persistence', () => {
         ulid: listCase2Ulid,
         name: listCase2.name,
         status: CaseStatus.ACTIVE,
+        filesStatus: CaseFileStatus.ACTIVE,
         objectCount: 0,
         created: listCase2Created,
         updated: listCase2Updated,
@@ -102,6 +105,7 @@ describe('case persistence', () => {
         ulid: testCase.ulid,
         name: testCase.name,
         status: CaseStatus.ACTIVE,
+        filesStatus: CaseFileStatus.ACTIVE,
         description: 'TheDescription',
         objectCount: 0,
         created: testCase.created,
@@ -143,6 +147,7 @@ describe('case persistence', () => {
       created: createdCase?.created,
       updated: createdCase?.updated,
       status: CaseStatus.ACTIVE,
+      filesStatus: CaseFileStatus.ACTIVE,
       ...currentTestCase,
     };
     expect(readCase).toEqual(caseCheck);
@@ -152,6 +157,7 @@ describe('case persistence', () => {
       ulid: createdCase?.ulid,
       name: 'Case Wars7',
       status: CaseStatus.ACTIVE,
+      filesStatus: CaseFileStatus.ACTIVE,
       description: 'The first 6 were better',
     };
 
@@ -194,6 +200,7 @@ describe('case persistence', () => {
       created: createdCase?.created,
       updated: createdCase?.updated,
       status: CaseStatus.ACTIVE,
+      filesStatus: CaseFileStatus.ACTIVE,
       ...currentTestCase,
     };
     expect(readCase).toEqual(caseCheck);

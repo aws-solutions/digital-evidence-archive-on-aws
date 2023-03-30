@@ -5,6 +5,8 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { DeaCase, DeaCaseInput } from '../../models/case';
+import { CaseFileStatus } from '../../models/case-file-status';
+import { CaseStatus } from '../../models/case-status';
 import { caseFromEntity } from '../../models/projections';
 import { DeaUser } from '../../models/user';
 import * as CasePersistence from '../../persistence/case';
@@ -95,6 +97,26 @@ export const updateCases = async (
 ): Promise<DeaCase> => {
   return await CasePersistence.updateCase(deaCase, repositoryProvider);
 };
+
+export const updateCaseStatus = async (
+  deaCase: DeaCase,
+  newStatus: CaseStatus,
+  deleteFiles: boolean,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCase> => {
+  const filesStatus = calculateFilesStatus(deaCase, deleteFiles);
+  return await CasePersistence.updateCaseStatus(deaCase, newStatus, filesStatus, repositoryProvider);
+};
+
+function calculateFilesStatus(deaCase: DeaCase, deleteFiles: boolean): CaseFileStatus {
+  if (deaCase.filesStatus === CaseFileStatus.DELETED || deaCase.filesStatus === CaseFileStatus.DELETING) {
+    return deaCase.filesStatus;
+  }
+  if (deleteFiles) {
+    return CaseFileStatus.DELETING;
+  }
+  return CaseFileStatus.ACTIVE;
+}
 
 export const deleteCase = async (
   caseUlid: string,

@@ -30,6 +30,7 @@ export const DeaSchema = {
       status: { type: String, required: true, enum: Object.keys(CaseStatus) },
       description: { type: String, validate: allButDisallowed },
       objectCount: { type: Number },
+      filesStatus: { type: String, required: true, enum: Object.keys(CaseFileStatus) },
       //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },

@@ -35,6 +35,7 @@ import { refreshToken } from './app/resources/refresh-token';
 import { revokeToken } from './app/resources/revoke-token';
 import { startCaseAudit } from './app/resources/start-case-audit';
 import { updateCaseMembership } from './app/resources/update-case-membership';
+import { updateCaseStatus } from './app/resources/update-case-status';
 import { updateCases } from './app/resources/update-cases';
 import { verifyCaseACLs } from './app/resources/verify-case-acls';
 import { auditService } from './app/services/audit-service';
@@ -70,6 +71,7 @@ export {
   downloadCaseFile,
   runPreExecutionChecks,
   updateCases,
+  updateCaseStatus,
   createCaseMembership,
   deleteCaseMembership,
   getCaseMembership,
