@@ -80,6 +80,40 @@ const convictSchema = {
       env: 'DOMAIN_PREFIX',
     },
   },
+  idpInfo: {
+    metadataPath: {
+      doc: 'Either the URL or file path to the IDP metadata',
+      format: String,
+      default: undefined,
+    },
+    metadataPathType: {
+      doc: 'Either the URL or file path to the IDP metadata',
+      format: String,
+      default: 'FILE',
+    },
+    attributeMap: {
+      email: {
+        doc: 'name of the IDP attribute field to get the last name of the user',
+        format: String,
+        default: 'email',
+      },
+      firstName: {
+        doc: 'name of the IDP attribute field to get the last name of the user',
+        format: String,
+        default: 'firstName',
+      },
+      lastName: {
+        doc: 'name of the IDP attribute field to get the last name of the user',
+        format: String,
+        default: 'lastName',
+      },
+      deaRoleName: {
+        doc: 'name of the IDP attribute field to get the last name of the user',
+        format: String,
+        default: 'deaRoleName',
+      },
+    },
+  },
   testStack: {
     doc: 'Boolean to indicate if this is a test stack',
     format: Boolean,
@@ -123,6 +157,19 @@ const convictSchema = {
   },
 };
 
+export interface IdPAttributes {
+  readonly email: string;
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly deaRoleName: string;
+}
+
+export interface IdpMetadataInfo {
+  readonly metadataPath: string | undefined;
+  readonly metadataPathType: string;
+  readonly attributeMap: IdPAttributes;
+}
+
 export interface DEAEndpointDefinition {
   readonly path: string;
   readonly method: string;
@@ -137,6 +184,7 @@ export interface DEARoleTypeDefinition {
 convict.addFormat(deaRoleTypesFormat);
 convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
+//convict.addFormat(idpInfoFormat);
 
 interface DEAConfig {
   stage(): string;
@@ -147,6 +195,7 @@ interface DEAConfig {
   deaRoleTypes(): DEARoleTypeDefinition[];
   retainPolicy(): RemovalPolicy;
   retentionDays(): RetentionDays;
+  idpMetadata(): IdpMetadataInfo | undefined;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -161,10 +210,12 @@ export const deaConfig: DEAConfig = {
   deaRoleTypes: () => convictConfig.get('deaRoleTypes'),
   retainPolicy: () => (convictConfig.get('testStack') ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN),
   retentionDays: () => (convictConfig.get('testStack') ? RetentionDays.TWO_WEEKS : RetentionDays.INFINITE),
+  idpMetadata: () => convictConfig.get('idpInfo'),
 };
 
 export const loadConfig = (stage: string): void => {
   const sourceDir = getSourcePath();
+  console.log(`${sourceDir}/common/config/${stage}.json`);
   convictConfig.loadFile(`${sourceDir}/common/config/${stage}.json`);
   convictConfig.validate({ allowed: 'strict' });
 };

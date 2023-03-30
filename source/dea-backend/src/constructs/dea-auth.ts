@@ -4,6 +4,7 @@
  */
 
 import { assert } from 'console';
+import * as fs from 'fs';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
 import { CfnParameter, Duration } from 'aws-cdk-lib';
 import { RestApi } from 'aws-cdk-lib/aws-apigateway';
@@ -11,10 +12,13 @@ import {
   AccountRecovery,
   CfnIdentityPool,
   CfnIdentityPoolRoleAttachment,
+  ProviderAttribute,
   StringAttribute,
   UserPool,
   UserPoolClient,
   UserPoolDomain,
+  UserPoolIdentityProviderSaml,
+  UserPoolIdentityProviderSamlMetadata,
 } from 'aws-cdk-lib/aws-cognito';
 import {
   Effect,
@@ -383,6 +387,25 @@ export class DeaAuthConstruct extends Construct {
       userPoolClientName: 'dea-app-client',
     });
 
+    // If external IDP information was provided in the config,
+    // integrate it into the user pool here
+    const idpInfo = deaConfig.idpMetadata();
+    if (idpInfo && idpInfo.metadataPath) {
+      const idpSamlMetadata = this._createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
+      new UserPoolIdentityProviderSaml(this, 'AgencyIdP', {
+        metadata: idpSamlMetadata,
+        userPool: userPool,
+        attributeMapping: {
+          email: ProviderAttribute.other(idpInfo.attributeMap.email),
+          familyName: ProviderAttribute.other(idpInfo.attributeMap.lastName),
+          givenName: ProviderAttribute.other(idpInfo.attributeMap.firstName),
+          custom: {
+            DEARole: ProviderAttribute.other(idpInfo.attributeMap.deaRoleName),
+          },
+        },
+      });
+    }
+
     return [userPool, poolClient, newDomain.baseUrl()];
   }
 
@@ -455,5 +478,15 @@ export class DeaAuthConstruct extends Construct {
       tier: ParameterTier.STANDARD,
       allowedPattern: '.*',
     });
+  }
+
+  private _createIdpSAMLMetadata(path: string, pathType: string): UserPoolIdentityProviderSamlMetadata {
+    if (pathType === 'URL') {
+      return UserPoolIdentityProviderSamlMetadata.url(path);
+    }
+
+    // else its a file, read in the contents from the file
+    const fileContent = fs.readFileSync(path, 'utf-8');
+    return UserPoolIdentityProviderSamlMetadata.file(fileContent);
   }
 }
