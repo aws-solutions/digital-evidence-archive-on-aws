@@ -1,18 +1,9 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react';
+import { act, cleanup, fireEvent, getByRole, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import Axios from 'axios';
-import { delay } from '../../src/api/cases';
 import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
@@ -365,8 +356,10 @@ describe('CaseDetailsPage', () => {
       description:
         'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
     });
-    await userEvent.type(searchInput, textToInput);
-    searchUserInputWrapper.selectSuggestionByValue(textToInput);
+    await act(async () => {
+      await userEvent.type(searchInput, textToInput);
+      searchUserInputWrapper.selectSuggestionByValue(textToInput);
+    });
 
     const addCaseMemberButton = await screen.findByRole('button', { name: 'Add' });
     await act(async () => {
@@ -388,12 +381,33 @@ describe('CaseDetailsPage', () => {
       removeButton.click();
     });
 
+    // assert remove modal
+    const removeModalWrapper = wrapper(document.body).findModal()!;
+    expect(removeModalWrapper).toBeTruthy();
+    expect(removeModalWrapper.isVisible()).toBeTruthy();
+    // click on dismiss button should close the modal.
+    await act(async () => {
+      removeModalWrapper.findDismissButton().click();
+    });
+    expect(removeModalWrapper.isVisible()).toBeFalsy();
+    // asert modal submit button
+    await act(async () => {
+      removeButton.click();
+    });
+    const modalSubmitButton = await getByRole(removeModalWrapper.getElement(), 'button', { name: 'Remove' });
+    await act(async () => {
+      modalSubmitButton.click();
+    });
+    expect(removeModalWrapper.isVisible()).toBeFalsy();
+
     //assert notifications
     const notificationsWrapper = wrapper(page.container).findFlashbar()!;
     expect(notificationsWrapper).toBeTruthy();
     waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(2));
     const item = notificationsWrapper.findItems()[0];
-    item.findDismissButton()!.click();
+    await act(async () => {
+      item.findDismissButton()!.click();
+    });
   });
 
   it('navigates to upload files page', async () => {

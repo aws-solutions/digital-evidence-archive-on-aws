@@ -23,6 +23,7 @@ export const commonLabels = {
   dismissMessageLabel: 'Dismiss message',
   description: 'Description',
   creationDate: 'Creation Date',
+  closeModalAriaLabel: 'Close modal',
 };
 
 export const commonTableLabels = {
@@ -144,6 +145,9 @@ export const manageCaseAccessLabels = {
   addCaseMemberFailMessage: (user: string) => `${user} has not been invited to the case.`,
   removeCaseMemberSuccessMessage: (user: string) => `${user} has been removed successfully.`,
   removeCaseMemberFailMessage: (user: string) => `${user} has not been removed.`,
+  removeCaseMemberRequestTitle: (user: string) => `Remove ${user}?`,
+  removeCaseMemberRequestMessage:
+    'There access will be instantly removed and they will be notified by email.',
 };
 
 export const createCaseLabels = {

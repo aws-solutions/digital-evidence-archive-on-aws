@@ -18,6 +18,7 @@ import {
 import { useMemo, useState } from 'react';
 import { caseActionOptions, commonLabels, manageCaseAccessLabels } from '../../common/labels';
 import styles from '../../styles/ManageAccessListItem.module.scss';
+import { ConfirmModal } from '../common-components/ConfirmModal';
 
 export interface ManageAccessListItemProps {
   readonly caseMember: CaseUser;
@@ -31,6 +32,7 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
   const [selectedOptions, setSelectedOptions] = useState<ReadonlyArray<SelectProps.Option>>(
     caseMember.actions.map((action) => caseActionOptions.actionOption(action))
   );
+  const [isOpenRemoveModal, setIsOpenRemoveModal] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   useMemo(() => {
@@ -50,6 +52,7 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
   }
 
   async function removeCaseMemberHandler() {
+    setIsOpenRemoveModal(false);
     try {
       setIsRemoving(true);
       await onRemoveMember(caseMember);
@@ -83,9 +86,19 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
         </FormField>
       </ColumnLayout>
       <div className={styles['button-container']}>
+        <ConfirmModal
+          isOpen={isOpenRemoveModal}
+          title={manageCaseAccessLabels.removeCaseMemberRequestTitle(
+            `${caseMember.userFirstName} ${caseMember.userLastName}`
+          )}
+          message={manageCaseAccessLabels.removeCaseMemberRequestMessage}
+          confirmButtonText={commonLabels.removeButton}
+          confirmAction={removeCaseMemberHandler}
+          cancelAction={() => setIsOpenRemoveModal(false)}
+        />
         <Button
           data-testid={`${caseMember.userUlid}-remove-button`}
-          onClick={removeCaseMemberHandler}
+          onClick={() => setIsOpenRemoveModal(true)}
           disabled={isDisabled}
         >
           {commonLabels.removeButton}
