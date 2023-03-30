@@ -28,6 +28,7 @@ import { getCredentials } from './app/resources/get-credentials';
 import { getLoginUrl } from './app/resources/get-login-url';
 import { getLogoutUrl } from './app/resources/get-logout-url';
 import { getMyCases } from './app/resources/get-my-cases';
+import { getScopedCaseInformation } from './app/resources/get-scoped-case-information';
 import { getToken } from './app/resources/get-token';
 import { getUsers } from './app/resources/get-users';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
@@ -78,6 +79,7 @@ export {
   startCaseAudit,
   getCaseAudit,
   getRequiredPathParam,
+  getScopedCaseInformation,
   getUsers,
   getUserUlid,
   updateCaseMembership,
