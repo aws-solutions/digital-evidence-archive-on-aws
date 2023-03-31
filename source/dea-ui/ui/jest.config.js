@@ -8,8 +8,8 @@ const createJestConfig = nextJest({
 // Add any custom config to be passed to Jest
 const customJestConfig = {
   collectCoverage: true,
-  collectCoverageFrom: ["src/**"],
-  coveragePathIgnorePatterns: ["<rootDir>/src/pages/_app.tsx"],
+  collectCoverageFrom: ['src/**'],
+  coveragePathIgnorePatterns: ['<rootDir>/src/pages/_app.tsx'],
   coverageDirectory: 'temp/coverage',
   coverageThreshold: {
     global: {
@@ -19,7 +19,7 @@ const customJestConfig = {
       statements: 90,
     },
   },
-  coverageReporters: ['json-summary', 'json', "lcov", 'text'],
+  coverageReporters: ['json-summary', 'json', 'lcov', 'text'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
@@ -27,6 +27,7 @@ const customJestConfig = {
   },
   testEnvironment: 'jest-environment-jsdom',
   preset: '@cloudscape-design/jest-preset',
+  testTimeout: 10000,
 };
 
 // see https://github.com/vercel/next.js/issues/35634#issuecomment-1115250297

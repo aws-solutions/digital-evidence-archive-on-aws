@@ -13,20 +13,19 @@ import {
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { addCaseOwner, useGetScopedCaseInfoById } from '../../api/cases';
-import { commonLabels, manageCaseAccessLabels } from '../../common/labels';
+import { manageCaseAccessLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
 import ManageAccessSearchUserForm from '../../components/case-details/ManageAccessSearchUserForm';
 import { useNotifications } from '../../context/NotificationsContext';
 
 export default function ManageCasePage() {
   const router = useRouter();
-  const { caseId } = router.query;
+  const query = router.query;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  const caseId = query.caseId as string;
   const { pushNotification } = useNotifications();
   const { data } = useGetScopedCaseInfoById(caseId);
 
-  if (!caseId || typeof caseId !== 'string') {
-    return <h1>{commonLabels.notFoundLabel}</h1>;
-  }
   const caseIdString = caseId;
 
   async function addOwnerHandler(user: DeaUser) {
