@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import { commonLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
 import UploadFileBody from '../../components/upload-files/UploadFilesBody';
+import { useSettings } from '../../context/SettingsContext';
 
 export interface IHomeProps {
   locale: string;
@@ -16,6 +17,7 @@ export interface IHomeProps {
 
 const Home: NextPage = () => {
   const router = useRouter();
+  const { settings } = useSettings();
   const { caseId, filePath } = router.query;
   if (!caseId || typeof caseId !== 'string' || !filePath || typeof filePath !== 'string') {
     return <h1>{commonLabels.notFoundLabel}</h1>;
@@ -24,11 +26,11 @@ const Home: NextPage = () => {
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: 'Digital Evidence Archive',
-      href: '#',
+      href: `/${settings.stage}/ui`,
     },
     {
       text: `Case ${caseId}`,
-      href: '#',
+      href: `/${settings.stage}/ui/case-detail?caseId=${caseId}`,
     },
     {
       text: 'Upload folders/files',

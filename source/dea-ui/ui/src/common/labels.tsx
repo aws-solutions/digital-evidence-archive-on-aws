@@ -23,6 +23,7 @@ export const commonLabels = {
   dismissMessageLabel: 'Dismiss message',
   description: 'Description',
   creationDate: 'Creation Date',
+  requiredField: 'This is a required field.',
 };
 
 export const commonTableLabels = {
@@ -97,7 +98,7 @@ export const fileOperationsLabels = {
   evidenceDetailsLabel: 'Description',
   evidenceDetailsDescription:
     'Enter a brief description of the evidence being uploaded. Max character limit 250.',
-  uploadReasonLabel: 'Reason for uploading evidence - optional',
+  uploadReasonLabel: 'Reason for uploading evidence',
   uploadReasonDescription: 'Specify why you are accessing the case files.',
   selectFileSubtext: 'All file types accepted. 5TB max file size.',
 };

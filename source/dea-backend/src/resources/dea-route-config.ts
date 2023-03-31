@@ -128,12 +128,16 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/auth/refreshToken',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/refresh-token-handler.ts',
+      // Oath flow API
+      authMethod: AuthorizationType.NONE,
     },
     {
       eventName: AuditEventType.REVOKE_AUTH_TOKEN,
       path: '/auth/revokeToken',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/revoke-token-handler.ts',
+      // Oath flow API
+      authMethod: AuthorizationType.NONE,
     },
     {
       eventName: AuditEventType.GET_LOGIN_URL,

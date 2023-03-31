@@ -104,18 +104,12 @@ export const updateCaseStatus = async (
   deleteFiles: boolean,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCase> => {
-  const filesStatus = calculateFilesStatus(deaCase, deleteFiles);
+  const filesStatus = calculateFilesStatus(deaCase, newStatus, deleteFiles);
   return await CasePersistence.updateCaseStatus(deaCase, newStatus, filesStatus, repositoryProvider);
 };
 
-function calculateFilesStatus(deaCase: DeaCase, deleteFiles: boolean): CaseFileStatus {
-  if (deaCase.filesStatus === CaseFileStatus.DELETED || deaCase.filesStatus === CaseFileStatus.DELETING) {
-    return deaCase.filesStatus;
-  }
-  if (deleteFiles) {
-    return CaseFileStatus.DELETING;
-  }
-  return CaseFileStatus.ACTIVE;
+function calculateFilesStatus(deaCase: DeaCase, newStatus: CaseStatus, deleteFiles: boolean): CaseFileStatus {
+  return deleteFiles ? CaseFileStatus.DELETING : CaseFileStatus.ACTIVE;
 }
 
 export const deleteCase = async (

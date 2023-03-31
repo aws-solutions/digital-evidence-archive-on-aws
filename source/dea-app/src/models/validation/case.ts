@@ -4,7 +4,7 @@
  */
 
 import Joi from 'joi';
-import { caseStatus, joiUlid, safeDescription, safeName } from './joi-common';
+import { caseFileStatus, caseStatus, joiUlid, safeDescription, safeName } from './joi-common';
 
 export const createCaseSchema = Joi.object({
   name: safeName,
@@ -18,6 +18,7 @@ export const caseResponseSchema = Joi.object({
   status: caseStatus,
   description: safeDescription,
   objectCount: Joi.number(),
+  filesStatus: caseFileStatus,
   created: Joi.date(),
   updated: Joi.date(),
 });

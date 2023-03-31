@@ -36,13 +36,23 @@ export const updateCaseStatus: DEAGatewayProxyHandler = async (
     if (input.deleteFiles && input.status !== CaseStatus.INACTIVE) {
       throw new ForbiddenError('Delete files can only be requested when inactivating a case');
     }
+    if (deaCase.filesStatus === CaseFileStatus.DELETING && input.status === CaseStatus.ACTIVE) {
+      throw new ForbiddenError("Case status can't be changed to ACTIVE when its files are being deleted");
+    }
   } else {
     throw new NotFoundError(`Could not find case: ${input.name}`);
   }
 
   if (input.status === deaCase.status) {
-    if (input.deleteFiles && deaCase.filesStatus in [CaseFileStatus.DELETING, CaseFileStatus.DELETED]) {
+    if (
+      input.deleteFiles &&
+      [CaseFileStatus.DELETING, CaseFileStatus.DELETED].includes(deaCase.filesStatus)
+    ) {
       // Do nothing if requested case status matches current status and if files don't need to be deleted
+      return responseOk(deaCase);
+    }
+    if (input.status === CaseStatus.ACTIVE) {
+      // If case is active and requested status is active, then do nothing
       return responseOk(deaCase);
     }
   }
