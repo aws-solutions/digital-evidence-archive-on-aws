@@ -184,7 +184,6 @@ export interface DEARoleTypeDefinition {
 convict.addFormat(deaRoleTypesFormat);
 convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
-//convict.addFormat(idpInfoFormat);
 
 interface DEAConfig {
   stage(): string;
@@ -215,7 +214,6 @@ export const deaConfig: DEAConfig = {
 
 export const loadConfig = (stage: string): void => {
   const sourceDir = getSourcePath();
-  console.log(`${sourceDir}/common/config/${stage}.json`);
   convictConfig.loadFile(`${sourceDir}/common/config/${stage}.json`);
   convictConfig.validate({ allowed: 'strict' });
 };

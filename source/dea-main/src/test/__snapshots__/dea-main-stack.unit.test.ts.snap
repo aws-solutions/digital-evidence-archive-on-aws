@@ -8881,26 +8881,6 @@ Object {
       },
       "Type": "AWS::S3::BucketPolicy",
     },
-    "DeaAuthAgencyIdPD0E4D116": Object {
-      "Properties": Object {
-        "AttributeMapping": Object {
-          "DEARole": "DEARole",
-          "email": "email",
-          "family_name": "lastName",
-          "given_name": "firstName",
-        },
-        "ProviderDetails": Object {
-          "IDPSignout": false,
-          "MetadataURL": "https://dev-85185445.okta.com/app/exk8vqunk6y9OVqXK5d7/sso/saml/metadata",
-        },
-        "ProviderName": "DeaMainStackuthAgencyIdPF31DBE88",
-        "ProviderType": "SAML",
-        "UserPoolId": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
-        },
-      },
-      "Type": "AWS::Cognito::UserPoolIdentityProvider",
-    },
     "DeaAuthAuthTestGroupRole23D2E7FA": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -9303,6 +9283,34 @@ Object {
                         "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
                       },
                       "/GET/cases/*/actions",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                      },
+                      "/POST/cases/*/owner",
                     ],
                   ],
                 },
@@ -9835,6 +9843,34 @@ Object {
                         "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
                       },
                       "/POST/cases/*/audit",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                      },
+                      "/GET/availableEndpoints",
                     ],
                   ],
                 },
@@ -11195,6 +11231,28 @@ Object {
                   "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
+                      "DeaAuthWorkingManagerRole85E3C255",
+                      "Arn",
+                    ],
+                  },
+                  "Value": "WorkingManager",
+                },
+                Object {
+                  "Claim": "custom:DEARole",
+                  "MatchType": "Equals",
+                  "RoleARN": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaAuthEvidenceManagerRole778E476E",
+                      "Arn",
+                    ],
+                  },
+                  "Value": "EvidenceManager",
+                },
+                Object {
+                  "Claim": "custom:DEARole",
+                  "MatchType": "Equals",
+                  "RoleARN": Object {
+                    "Fn::GetAtt": Array [
                       "DeaAuthNoPermissionsGroupRole1E0F8CCF",
                       "Arn",
                     ],
@@ -11326,7 +11384,7 @@ Object {
                     Object {
                       "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
                     },
-                    "/GET/cases/my-cases",
+                    "/GET/availableEndpoints",
                   ],
                 ],
               },
