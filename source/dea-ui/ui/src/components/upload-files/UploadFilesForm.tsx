@@ -215,9 +215,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           <SpaceBetween direction="vertical" size="l">
             <FormField
               data-testid="input-tag"
-              errorText={tag ? '' : 'Tag is required.'}
               label={fileOperationsLabels.evidenceTagLabel}
               description={fileOperationsLabels.evidenceTagDescription}
+              errorText={tag ? '' : commonLabels.requiredField}
             >
               <Input
                 value={tag}
@@ -228,9 +228,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             </FormField>
             <FormField
               data-testid="input-details"
-              errorText={details ? '' : 'Description is required.'}
               label={fileOperationsLabels.evidenceDetailsLabel}
               description={fileOperationsLabels.evidenceDetailsDescription}
+              errorText={details ? '' : commonLabels.requiredField}
             >
               <Textarea
                 value={details}
@@ -241,9 +241,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             </FormField>
             <FormField
               data-testid="input-reason"
-              errorText={reason ? '' : 'Reason is required.'}
               label={fileOperationsLabels.uploadReasonLabel}
               description={fileOperationsLabels.uploadReasonDescription}
+              errorText={reason ? '' : commonLabels.requiredField}
             >
               <Input
                 value={reason}

@@ -28,6 +28,7 @@ import * as ListCaseFilesHandler from '../../handlers/list-case-files-handler';
 import * as RefreshTokenHandler from '../../handlers/refresh-token-handler';
 import * as StartCaseAuditHandler from '../../handlers/request-case-audit-handler';
 import * as RevokeTokenHandler from '../../handlers/revoke-token-handler';
+import * as UpdateCaseStatusHandler from '../../handlers/update-case-status-handler';
 import * as UpdateCaseUserHandler from '../../handlers/update-case-user-handler';
 import * as UpdateCasesHandler from '../../handlers/update-cases-handler';
 
@@ -61,6 +62,7 @@ describe('lambda handlers', () => {
       GetCaseAuditHandler.handler,
       GetCaseActionsHandler.handler,
       GetAvailableEndpoints.handler,
+      UpdateCaseStatusHandler.handler,
     ];
 
     handlers.forEach((handler) => {
