@@ -26,6 +26,7 @@ export interface CognitoSsmParams {
   callbackUrl: string;
   identityPoolId: string;
   userPoolId: string;
+  agencyIdpName?: string;
 }
 
 export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
@@ -36,16 +37,24 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
   const callbackUrlPath = `/dea/${region}/${stage}-client-callback-url-param`;
   const identityPoolIdPath = `/dea/${region}/${stage}-identity-pool-id-param`;
   const userPoolIdPath = `/dea/${region}/${stage}-userpool-id-param`;
+  const agencyIdpNamePath = `/dea/${region}/${stage}-agency-idp-name`;
 
   const response = await ssmClient.send(
     new GetParametersCommand({
-      Names: [cognitoDomainPath, clientIdPath, callbackUrlPath, identityPoolIdPath, userPoolIdPath],
+      Names: [
+        cognitoDomainPath,
+        clientIdPath,
+        callbackUrlPath,
+        identityPoolIdPath,
+        userPoolIdPath,
+        agencyIdpNamePath,
+      ],
     })
   );
 
   if (!response.Parameters) {
     throw new Error(
-      `No parameters found for: ${cognitoDomainPath}, ${clientIdPath}, ${callbackUrlPath}, ${identityPoolIdPath}, ${userPoolIdPath}`
+      `No parameters found for: ${cognitoDomainPath}, ${clientIdPath}, ${callbackUrlPath}, ${identityPoolIdPath}, ${userPoolIdPath}, ${agencyIdpNamePath}`
     );
   }
 
@@ -54,6 +63,7 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
   let callbackUrl;
   let identityPoolId;
   let userPoolId;
+  let agencyIdpName;
 
   response.Parameters.forEach((param) => {
     switch (param.Name) {
@@ -72,6 +82,9 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
       case userPoolIdPath:
         userPoolId = param.Value;
         break;
+      case agencyIdpNamePath:
+        agencyIdpName = param.Value;
+        break;
     }
   });
 
@@ -82,6 +95,7 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
       callbackUrl,
       identityPoolId,
       userPoolId,
+      agencyIdpName,
     };
   } else {
     throw new Error(
@@ -94,6 +108,10 @@ export const getLoginHostedUiUrl = async (redirectUri: string) => {
   const cognitoParams = await getCognitoSsmParams();
 
   const oauth2AuthorizeEndpointUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${redirectUri}`;
+
+  if (cognitoParams.agencyIdpName) {
+    return oauth2AuthorizeEndpointUrl + `&identity_provider=${cognitoParams.agencyIdpName}`;
+  }
 
   return oauth2AuthorizeEndpointUrl;
 };

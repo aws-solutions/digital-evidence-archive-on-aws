@@ -165,7 +165,7 @@ export class DeaAuthConstruct extends Construct {
   private _createAuthStack(apiEndpointArns: Map<string, string>, callbackUrl: string, region: string): void {
     // See Implementation Guide for how to integrate your existing
     // Identity Provider with Cognito User Pool for SSO
-    const [pool, poolClient, cognitoDomainUrl] = this._createCognitoIdP(callbackUrl);
+    const [pool, poolClient, cognitoDomainUrl] = this._createCognitoIdP(callbackUrl, region);
 
     const providerUrl = `cognito-idp.${region}.amazonaws.com/${pool.userPoolId}:${poolClient.userPoolClientId}`;
 
@@ -280,7 +280,7 @@ export class DeaAuthConstruct extends Construct {
   // For production, the Cognito will simply act as a token vendor
   // and ONLY allow federation, no native auth
   // TODO: determine if Cognito is CJIS compatible
-  private _createCognitoIdP(callbackUrl: string): [UserPool, UserPoolClient, string] {
+  private _createCognitoIdP(callbackUrl: string, region: string): [UserPool, UserPoolClient, string] {
     const tempPasswordValidity = Duration.days(1);
     // must re-authenticate in every 12 hours
     // Note when inactive for 30+ minutes, you will also have to reauthenticate
@@ -392,7 +392,7 @@ export class DeaAuthConstruct extends Construct {
     const idpInfo = deaConfig.idpMetadata();
     if (idpInfo && idpInfo.metadataPath) {
       const idpSamlMetadata = this._createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
-      new UserPoolIdentityProviderSaml(this, 'AgencyIdP', {
+      const idp = new UserPoolIdentityProviderSaml(this, 'AgencyIdP', {
         metadata: idpSamlMetadata,
         userPool: userPool,
         attributeMapping: {
@@ -403,6 +403,17 @@ export class DeaAuthConstruct extends Construct {
             DEARole: ProviderAttribute.other(idpInfo.attributeMap.deaRoleName),
           },
         },
+        name: 'AgencyIdP',
+      });
+
+      // Put the name of the IdP in SSM so the hosted UI can automaticaly redirect to the IdP Signin page
+      const stage = deaConfig.stage();
+      new StringParameter(this, 'agency-idp-name', {
+        parameterName: `/dea/${region}/${stage}-agency-idp-name`,
+        stringValue: idp.providerName,
+        description: 'stores the agency idp name for redirection during login with hosted ui',
+        tier: ParameterTier.STANDARD,
+        allowedPattern: '.*',
       });
     }
 
