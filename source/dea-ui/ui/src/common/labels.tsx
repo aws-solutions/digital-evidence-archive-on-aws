@@ -14,6 +14,7 @@ export const commonLabels = {
   addButton: 'Add',
   removeButton: 'Remove',
   downloadButton: 'Download',
+  saveButton: 'Save',
   loadingLabel: 'Loading...',
   loginLabel: 'Logging in...',
   notFoundLabel: 'Not Found',
@@ -148,6 +149,8 @@ export const manageCaseAccessLabels = {
   removeCaseMemberRequestTitle: (user: string) => `Remove ${user}?`,
   removeCaseMemberRequestMessage:
     'There access will be instantly removed and they will be notified by email.',
+  saveSuccessMessage: 'Changes have been saved successfully.',
+  saveFailMessage: 'Changes have not been saved.',
 };
 
 export const createCaseLabels = {

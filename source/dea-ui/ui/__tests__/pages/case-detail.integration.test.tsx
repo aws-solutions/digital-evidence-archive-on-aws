@@ -282,7 +282,7 @@ describe('CaseDetailsPage', () => {
           config: {},
         });
       } else if (eventObj.url === `https://localhostcases/${CASE_ID}/userMemberships`) {
-        if (eventObj.method === 'post') {
+        if (eventObj.method === 'POST') {
           return Promise.resolve({
             data: {},
             status: 200,
@@ -299,7 +299,7 @@ describe('CaseDetailsPage', () => {
           config: {},
         });
       } else if (eventObj.url === `https://localhostcases/${CASE_ID}//users/${ACTIVE_USER_ID}/memberships`) {
-        if (eventObj.method === 'delete') {
+        if (eventObj.method === 'DELETE') {
           return Promise.resolve({
             data: {},
             status: 200,
@@ -373,6 +373,13 @@ describe('CaseDetailsPage', () => {
     permissionsWrapper.openDropdown();
     permissionsWrapper.selectOption(1);
 
+    //assert save button
+    const saveButton = await screen.findByRole('button', { name: 'Save' });
+    expect(saveButton).toBeTruthy();
+    await act(async () => {
+      saveButton.click();
+    });
+
     // assert remove button
     await waitFor(() => expect(screen.queryByTestId(`${ACTIVE_USER_ID}-remove-button`)).toBeDisabled());
     const removeButton = await screen.queryByTestId(`${OTHER_USER_ID}-remove-button`);
@@ -403,7 +410,7 @@ describe('CaseDetailsPage', () => {
     //assert notifications
     const notificationsWrapper = wrapper(page.container).findFlashbar()!;
     expect(notificationsWrapper).toBeTruthy();
-    waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(2));
+    waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(3));
     const item = notificationsWrapper.findItems()[0];
     await act(async () => {
       item.findDismissButton()!.click();
