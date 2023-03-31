@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import Joi from 'Joi';
+import Joi from 'joi';
 import { getQueryParam, getRequiredEnv, getRequiredHeader, getTokenId } from '../lambda-http-helpers';
 import { getDummyEvent } from './integration-objects';
 
