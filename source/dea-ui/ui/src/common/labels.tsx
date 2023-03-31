@@ -24,6 +24,7 @@ export const commonLabels = {
   dismissMessageLabel: 'Dismiss message',
   description: 'Description',
   creationDate: 'Creation Date',
+  requiredField: 'This is a required field.',
   closeModalAriaLabel: 'Close modal',
 };
 

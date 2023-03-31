@@ -41,6 +41,12 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/update-cases-handler.ts',
     },
     {
+      eventName: AuditEventType.UPDATE_CASE_STATUS,
+      path: '/cases/{caseId}/status',
+      httpMethod: ApiGatewayMethod.PUT,
+      pathToSource: '../../src/handlers/update-case-status-handler.ts',
+    },
+    {
       eventName: AuditEventType.GET_USERS_FROM_CASE,
       path: '/cases/{caseId}/userMemberships',
       httpMethod: ApiGatewayMethod.GET,

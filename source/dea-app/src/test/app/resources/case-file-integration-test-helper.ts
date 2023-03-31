@@ -80,7 +80,7 @@ export const callInitiateCaseFileUpload = async (
     }
   );
   const response = await initiateCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
-  await checkApiSucceeded(response);
+  checkApiSucceeded(response);
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return JSON.parse(response.body as string);
@@ -106,7 +106,7 @@ export const callCompleteCaseFileUpload = async (
   );
   const response = await completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
 
-  await checkApiSucceeded(response);
+  checkApiSucceeded(response);
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return JSON.parse(response.body as string);
 };
@@ -128,7 +128,7 @@ export const callDownloadCaseFile = async (
     }
   );
   const response = await downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
-  await checkApiSucceeded(response);
+  checkApiSucceeded(response);
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return JSON.parse(response.body as string).downloadUrl ?? fail();
@@ -172,7 +172,7 @@ export const callGetCaseFileDetails = async (
     }
   );
   const response = await getCaseFileDetails(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
-  await checkApiSucceeded(response);
+  checkApiSucceeded(response);
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return JSON.parse(response.body as string);
@@ -201,7 +201,7 @@ export const callListCaseFiles = async (
     }
   );
   const response = await listCaseFiles(event, dummyContext, repositoryProvider);
-  await checkApiSucceeded(response);
+  checkApiSucceeded(response);
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return JSON.parse(response.body as string);
 };
@@ -222,13 +222,13 @@ export const callCreateUser = async (
   );
 };
 
-async function checkApiSucceeded(response: APIGatewayProxyResult): Promise<void> {
+export const checkApiSucceeded = (response: APIGatewayProxyResult) => {
   expect(response.statusCode).toEqual(200);
 
   if (!response.body) {
     fail();
   }
-}
+};
 
 export const validateCaseFile = async (
   deaCaseFile: DeaCaseFile,

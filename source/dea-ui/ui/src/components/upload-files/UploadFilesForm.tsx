@@ -64,7 +64,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         const fileSizeMb = Math.ceil(Math.max(selectedFile.size, 1) / ONE_MB);
         // Trying to use small chunk size (50MB) to reduce memory use.
         // However, since S3 allows a max of 10,000 parts for multipart uploads, we will increase chunk size for larger files
-        const chunkSizeMb = Math.max(selectedFile.size / 10_000 / ONE_MB, 50 * ONE_MB);
+        const chunkSizeMb = Math.max(selectedFile.size / 10_000 / ONE_MB, 50);
         const uploadingFile = { fileName: selectedFile.name, fileSizeMb, status: UploadStatus.progress };
         // per file try/finally state to initiate uploads
         try {
@@ -215,9 +215,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           <SpaceBetween direction="vertical" size="l">
             <FormField
               data-testid="input-tag"
-              errorText={tag ? '' : 'Tag is required.'}
               label={fileOperationsLabels.evidenceTagLabel}
               description={fileOperationsLabels.evidenceTagDescription}
+              errorText={tag ? '' : commonLabels.requiredField}
             >
               <Input
                 value={tag}
@@ -228,9 +228,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             </FormField>
             <FormField
               data-testid="input-details"
-              errorText={details ? '' : 'Description is required.'}
               label={fileOperationsLabels.evidenceDetailsLabel}
               description={fileOperationsLabels.evidenceDetailsDescription}
+              errorText={details ? '' : commonLabels.requiredField}
             >
               <Textarea
                 value={details}
@@ -241,9 +241,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             </FormField>
             <FormField
               data-testid="input-reason"
-              errorText={reason ? '' : 'Reason is required.'}
               label={fileOperationsLabels.uploadReasonLabel}
               description={fileOperationsLabels.uploadReasonDescription}
+              errorText={reason ? '' : commonLabels.requiredField}
             >
               <Input
                 value={reason}
