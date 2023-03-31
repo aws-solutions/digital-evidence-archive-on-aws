@@ -188,8 +188,6 @@ describe('update case status', () => {
       fail();
     }
 
-    console.log(updatedCase);
-    console.log(notUpdatedCase);
     // make sure case was updated first time
     expect(updatedCase.updated.getTime()).toBeGreaterThan(createdCase.updated.getTime());
 

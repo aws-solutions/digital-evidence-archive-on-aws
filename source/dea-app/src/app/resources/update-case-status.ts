@@ -12,6 +12,7 @@ import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { ForbiddenError } from '../exceptions/forbidden-exception';
 import { NotFoundError } from '../exceptions/not-found-exception';
+import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
@@ -32,15 +33,17 @@ export const updateCaseStatus: DEAGatewayProxyHandler = async (
   const deaCase = await CaseService.getCase(caseId, repositoryProvider);
 
   // TODO: add mechanism to check if this installation allows authorized users to delete files
-  if (deaCase) {
-    if (input.deleteFiles && input.status !== CaseStatus.INACTIVE) {
-      throw new ForbiddenError('Delete files can only be requested when inactivating a case');
-    }
-    if (deaCase.filesStatus === CaseFileStatus.DELETING && input.status === CaseStatus.ACTIVE) {
-      throw new ForbiddenError("Case status can't be changed to ACTIVE when its files are being deleted");
-    }
-  } else {
+
+  if (!deaCase) {
     throw new NotFoundError(`Could not find case: ${input.name}`);
+  }
+
+  if (input.deleteFiles && input.status !== CaseStatus.INACTIVE) {
+    throw new ValidationError('Delete files can only be requested when inactivating a case');
+  }
+
+  if (deaCase.filesStatus === CaseFileStatus.DELETING && input.status === CaseStatus.ACTIVE) {
+    throw new ValidationError("Case status can't be changed to ACTIVE when its files are being deleted");
   }
 
   if (input.status === deaCase.status) {
