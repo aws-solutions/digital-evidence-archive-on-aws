@@ -10,7 +10,6 @@ import { CaseStatus } from '../../models/case-status';
 import { updateCaseStatusSchema } from '../../models/validation/case';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
-import { ForbiddenError } from '../exceptions/forbidden-exception';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
