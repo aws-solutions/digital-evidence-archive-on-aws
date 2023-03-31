@@ -88,7 +88,7 @@ function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX
             onLoadItems={handleLoadItems}
             onSelect={({ detail }) => setSelected(detail.value)}
           />
-          <Button onClick={onSubmitHandler} disabled={selected !== value}>
+          <Button onClick={onSubmitHandler} disabled={!selected || selected !== value}>
             {commonLabels.addButton}
           </Button>
         </Grid>
