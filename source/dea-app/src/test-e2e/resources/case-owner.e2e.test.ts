@@ -43,7 +43,7 @@ describe('CaseOwner E2E', () => {
 
   beforeAll(async () => {
     // Create user
-    await cognitoHelper.createUser(testOwner, 'CaseWorker', testOwner, 'TestUser');
+    await cognitoHelper.createUser(testOwner, 'EvidenceManager', testOwner, 'TestUser');
     await cognitoHelper.createUser(testInvitee, 'CaseWorker', testInvitee, 'TestUser');
 
     [ownerCreds, ownerToken] = await cognitoHelper.getCredentialsForUser(testOwner);

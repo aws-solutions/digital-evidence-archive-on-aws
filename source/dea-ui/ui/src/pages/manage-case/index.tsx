@@ -3,10 +3,42 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { BreadcrumbGroupProps } from '@cloudscape-design/components';
+import { DeaUser } from '@aws/dea-app/lib/models/user';
+import {
+  BreadcrumbGroupProps,
+  Container,
+  ContentLayout,
+  Header,
+  SpaceBetween,
+} from '@cloudscape-design/components';
+import { useRouter } from 'next/router';
+import { addCaseOwner, useGetScopedCaseInfoById } from '../../api/cases';
+import { commonLabels, manageCaseAccessLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
+import ManageAccessSearchUserForm from '../../components/case-details/ManageAccessSearchUserForm';
+import { useNotifications } from '../../context/NotificationsContext';
 
 export default function ManageCasePage() {
+  const router = useRouter();
+  const { caseId } = router.query;
+  const { pushNotification } = useNotifications();
+  const { data } = useGetScopedCaseInfoById(caseId);
+
+  if (!caseId || typeof caseId !== 'string') {
+    return <h1>{commonLabels.notFoundLabel}</h1>;
+  }
+  const caseIdString = caseId;
+
+  async function addOwnerHandler(user: DeaUser) {
+    const givenName = `${user.firstName} ${user.lastName}`;
+    try {
+      await addCaseOwner({ caseUlid: caseIdString, userUlid: user.ulid });
+      pushNotification('success', manageCaseAccessLabels.addCaseOwnerSuccessMessage(givenName));
+    } catch {
+      pushNotification('error', manageCaseAccessLabels.addCaseOwnerFailMessage(givenName));
+    }
+  }
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: 'Digital Evidence Archive',
@@ -17,5 +49,19 @@ export default function ManageCasePage() {
       href: '#',
     },
   ];
-  return <BaseLayout breadcrumbs={breadcrumbs}>{'¯\\_(ツ)_/¯'}</BaseLayout>;
+  return (
+    <BaseLayout breadcrumbs={breadcrumbs}>
+      <ContentLayout
+        header={
+          <SpaceBetween size="m">
+            <Header variant="h1">{data?.name}</Header>
+          </SpaceBetween>
+        }
+      >
+        <Container header={<Header variant="h2">{manageCaseAccessLabels.assignCaseOwnersLabel}</Header>}>
+          <ManageAccessSearchUserForm onChange={addOwnerHandler}></ManageAccessSearchUserForm>
+        </Container>
+      </ContentLayout>
+    </BaseLayout>
+  );
 }

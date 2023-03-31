@@ -5,7 +5,6 @@
 
 import { CaseUser } from '@aws/dea-app/lib/models/case-user';
 import { ColumnLayout, Header, SpaceBetween } from '@cloudscape-design/components';
-import { manageCaseAccessLabels } from '../../common/labels';
 import ManageAccessListItem from './ManageAccessListItem';
 
 export interface ManageAccessListProps {
@@ -13,6 +12,7 @@ export interface ManageAccessListProps {
   readonly onRemoveMember: (user: CaseUser) => Promise<void>;
   readonly onUpdateMember: (user: CaseUser) => Promise<void>;
   readonly activeUser: CaseUser;
+  readonly headertext: string;
 }
 
 function ManageAccessList(props: ManageAccessListProps): JSX.Element {
@@ -20,7 +20,7 @@ function ManageAccessList(props: ManageAccessListProps): JSX.Element {
 
   return (
     <SpaceBetween size="s">
-      <Header variant="h3">{manageCaseAccessLabels.manageCasePeopleAccessLabel}</Header>
+      <Header variant="h3">{props.headertext}</Header>
       <ColumnLayout borders="horizontal" columns={1} key="something">
         {caseMembers.map((caseMember) => (
           <ManageAccessListItem
