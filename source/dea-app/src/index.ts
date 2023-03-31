@@ -19,6 +19,7 @@ import { deleteCaseMembership } from './app/resources/delete-case-membership';
 import { deleteCase } from './app/resources/delete-cases';
 import { downloadCaseFile } from './app/resources/download-case-file';
 import { getAllCases } from './app/resources/get-all-cases';
+import { getAvailableEndpointsForUser } from './app/resources/get-available-endpoints';
 import { getCaseAudit } from './app/resources/get-case-audit';
 import { getCase } from './app/resources/get-case-details';
 import { getCaseFileDetails } from './app/resources/get-case-file-details';
@@ -27,6 +28,7 @@ import { getCredentials } from './app/resources/get-credentials';
 import { getLoginUrl } from './app/resources/get-login-url';
 import { getLogoutUrl } from './app/resources/get-logout-url';
 import { getMyCases } from './app/resources/get-my-cases';
+import { getScopedCaseInformation } from './app/resources/get-scoped-case-information';
 import { getToken } from './app/resources/get-token';
 import { getUsers } from './app/resources/get-users';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
@@ -79,12 +81,14 @@ export {
   startCaseAudit,
   getCaseAudit,
   getRequiredPathParam,
+  getScopedCaseInformation,
   getUsers,
   getUserUlid,
   updateCaseMembership,
   verifyCaseACLs,
   getTestAuditService,
   getDummyEvent,
+  getAvailableEndpointsForUser,
   CaseAction,
   DeaCase,
   DeaCaseFile,

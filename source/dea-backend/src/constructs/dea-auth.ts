@@ -24,7 +24,7 @@ import {
   Role,
   WebIdentityPrincipal,
 } from 'aws-cdk-lib/aws-iam';
-import { ParameterTier, StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { ParameterTier, StringListParameter, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
@@ -101,7 +101,9 @@ export class DeaAuthConstruct extends Construct {
   private _createDEARoles(
     apiEndpointArns: Map<string, string>,
     userPoolId: string,
-    identityPoolId: string
+    identityPoolId: string,
+    region: string,
+    stage: string
   ): Map<string, Role> {
     // Create IAM Roles that define what APIs are allowed to be called
     // The groups we create {Auditor, CaseWorker, Admin} are just examples
@@ -124,6 +126,13 @@ export class DeaAuthConstruct extends Construct {
       const endpointStrings = roleType.endpoints.map((endpoint) => `${endpoint.path}${endpoint.method}`);
       const groupEndpoints = this._getEndpoints(apiEndpointArns, endpointStrings);
       this._createDEARole(roleType.name, roleType.description, deaRolesMap, groupEndpoints, principal);
+      new StringListParameter(this, `${roleType.name}_actions`, {
+        parameterName: `/dea/${region}/${stage}-${roleType.name}-actions`,
+        stringListValue: endpointStrings,
+        description: 'stores the available endpoints for a role',
+        tier: ParameterTier.STANDARD,
+        allowedPattern: '.*',
+      });
     });
 
     /* 
@@ -171,7 +180,13 @@ export class DeaAuthConstruct extends Construct {
     // Create the DEA IAM Roles
     // Then tell the IdPool to map the DEARole field from the id token
     // to the appropriate DEA IAM Role
-    const deaRoles: Map<string, Role> = this._createDEARoles(apiEndpointArns, pool.userPoolId, idPool.ref);
+    const deaRoles: Map<string, Role> = this._createDEARoles(
+      apiEndpointArns,
+      pool.userPoolId,
+      idPool.ref,
+      region,
+      deaConfig.stage()
+    );
     const rules: CfnIdentityPoolRoleAttachment.MappingRuleProperty[] = new Array(deaRoles.size);
     Array.from(deaRoles.entries()).forEach((entry) => {
       rules.push({

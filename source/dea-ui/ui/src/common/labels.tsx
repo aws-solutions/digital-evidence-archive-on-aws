@@ -24,6 +24,7 @@ export const commonLabels = {
   description: 'Description',
   creationDate: 'Creation Date',
   requiredField: 'This is a required field.',
+  closeModalAriaLabel: 'Close modal',
 };
 
 export const commonTableLabels = {
@@ -72,6 +73,7 @@ export const caseListLabels = {
   createNewCaseLabel: 'Create new case',
   searchCasesLabel: 'Search by case name',
   casesLabel: 'Cases',
+  systemCasesLabel: 'All System Cases',
   casesPageDescription: 'This is a list of cases that have been shared with you.',
 };
 
@@ -144,6 +146,9 @@ export const manageCaseAccessLabels = {
   addCaseMemberFailMessage: (user: string) => `${user} has not been invited to the case.`,
   removeCaseMemberSuccessMessage: (user: string) => `${user} has been removed successfully.`,
   removeCaseMemberFailMessage: (user: string) => `${user} has not been removed.`,
+  removeCaseMemberRequestTitle: (user: string) => `Remove ${user}?`,
+  removeCaseMemberRequestMessage:
+    'There access will be instantly removed and they will be notified by email.',
 };
 
 export const createCaseLabels = {

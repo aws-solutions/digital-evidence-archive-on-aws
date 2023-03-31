@@ -9,13 +9,16 @@ import {
   GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
 import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import axios from 'axios';
-import { getRequiredEnv } from '../../lambda-http-helpers';
+import { getRequiredEnv, getRequiredHeader } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { IdToken, Oauth2Token } from '../../models/auth';
 
 const stage = getRequiredEnv('STAGE', 'chewbacca');
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
+
+export type AvailableEndpointsSignature = (event: APIGatewayProxyEvent) => Promise<string[]>;
 
 export interface CognitoSsmParams {
   cognitoDomainUrl: string;
@@ -230,4 +233,19 @@ export const revokeRefreshToken = async (refreshToken: string) => {
   }
 
   return response.status;
+};
+
+export const getAvailableEndpoints: AvailableEndpointsSignature = async (event) => {
+  const deaRoleName = getRequiredHeader(event, 'deaRole');
+  const ssmClient = new SSMClient({ region });
+  const roleActionsPath = `/dea/${region}/${stage}-${deaRoleName}-actions`;
+  const response = await ssmClient.send(
+    new GetParametersCommand({
+      Names: [roleActionsPath],
+    })
+  );
+
+  const param = response.Parameters?.find((parameter) => parameter.Name === roleActionsPath);
+
+  return param?.Value?.split(',') ?? [];
 };

@@ -17,13 +17,6 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pagination: true,
     },
     {
-      eventName: AuditEventType.GET_ALL_CASES,
-      path: '/cases/all-cases',
-      httpMethod: ApiGatewayMethod.GET,
-      pathToSource: '../../src/handlers/get-all-cases-handler.ts',
-      pagination: true,
-    },
-    {
       eventName: AuditEventType.CREATE_CASE,
       path: '/cases',
       httpMethod: ApiGatewayMethod.POST,
@@ -52,12 +45,6 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/cases/{caseId}/status',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/update-case-status-handler.ts',
-    },
-    {
-      eventName: AuditEventType.DELETE_CASE,
-      path: '/cases/{caseId}/details',
-      httpMethod: ApiGatewayMethod.DELETE,
-      pathToSource: '../../src/handlers/delete-case-handler.ts',
     },
     {
       eventName: AuditEventType.GET_USERS_FROM_CASE,
@@ -181,6 +168,39 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/cases/{caseId}/audit',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/request-case-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.GET_AVAILABLE_ENDPOINTS,
+      path: '/availableEndpoints',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-available-endpoints-handler.ts',
+    },
+    // PRIVILEGED ENDPOINTS
+    {
+      // intended for evidence managers/admins to see a specific set of case details
+      eventName: AuditEventType.GET_SCOPED_CASE_INFO,
+      path: '/cases/{caseId}/scopedInformation',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-scoped-case-info-handler.ts',
+    },
+    {
+      eventName: AuditEventType.GET_ALL_CASES,
+      path: '/cases/all-cases',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-all-cases-handler.ts',
+      pagination: true,
+    },
+    {
+      eventName: AuditEventType.DELETE_CASE,
+      path: '/cases/{caseId}/details',
+      httpMethod: ApiGatewayMethod.DELETE,
+      pathToSource: '../../src/handlers/delete-case-handler.ts',
+    },
+    {
+      eventName: AuditEventType.CREATE_CASE_OWNER,
+      path: '/cases/{caseId}/owner',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/create-case-owner-handler.ts',
     },
   ],
   allowedOrigins: JSON.parse(process.env.ALLOWED_ORIGINS || '[]'),

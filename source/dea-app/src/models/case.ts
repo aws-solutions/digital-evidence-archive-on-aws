@@ -17,6 +17,11 @@ export interface DeaCase {
   readonly updated?: Date;
 }
 
+export interface ScopedDeaCase {
+  readonly ulid: string;
+  readonly name: string;
+}
+
 export interface DeaCaseInput {
   readonly name: string;
   readonly description?: string;

@@ -12,6 +12,11 @@ export const createCaseSchema = Joi.object({
   description: safeDescription,
 });
 
+export const scopedCaseResponseSchema = Joi.object({
+  ulid: joiUlid,
+  name: safeName,
+});
+
 export const caseResponseSchema = Joi.object({
   ulid: joiUlid,
   name: safeName,

@@ -12,7 +12,7 @@ import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
 import { caseResponseSchema } from '../../../models/validation/case';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
-import { createCase, updateCaseStatus as updateCaseStatusInDb, getCase } from '../../../persistence/case';
+import { createCase, updateCaseStatus as updateCaseStatusInDb } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
