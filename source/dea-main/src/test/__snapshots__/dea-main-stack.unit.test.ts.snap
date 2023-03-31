@@ -1691,8 +1691,8 @@ Object {
     },
     "DeaApiGatewayPOSTRefreshIdToken92226CFF": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1739,7 +1739,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -1809,8 +1809,8 @@ Object {
     },
     "DeaApiGatewayPOSTRevokeAuthTokenFC739416": Object {
       "DependsOn": Array [
-        "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
-        "DeaApiGatewaydeaauthlambdarole4F5CC393",
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -1857,7 +1857,7 @@ Object {
         "MemorySize": 512,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaApiGatewaydeaauthlambdarole4F5CC393",
+            "DeaApiGatewaydeabaselambdarole91512884",
             "Arn",
           ],
         },
@@ -2184,7 +2184,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E77629a91ef633e40a36d7e747ad2cfddf019e": Object {
+    "DeaApiGatewaydeaapiDeployment99E776292702cb76d4d67ec1f6fab1e438655e45": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiauthauthCodeOPTIONS8EA9BA0F",
         "DeaApiGatewaydeaapiauthauthCodeFC92ADBD",
@@ -2325,7 +2325,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E77629a91ef633e40a36d7e747ad2cfddf019e",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E776292702cb76d4d67ec1f6fab1e438655e45",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
@@ -3332,7 +3332,7 @@ Object {
     },
     "DeaApiGatewaydeaapiauthrefreshTokenPOST0744B2BB": Object {
       "Properties": Object {
-        "AuthorizationType": "NONE",
+        "AuthorizationType": "AWS_IAM",
         "HttpMethod": "POST",
         "Integration": Object {
           "IntegrationHttpMethod": "POST",
@@ -3581,7 +3581,7 @@ Object {
     },
     "DeaApiGatewaydeaapiauthrevokeTokenPOSTE5A8C6B9": Object {
       "Properties": Object {
-        "AuthorizationType": "NONE",
+        "AuthorizationType": "AWS_IAM",
         "HttpMethod": "POST",
         "Integration": Object {
           "IntegrationHttpMethod": "POST",
