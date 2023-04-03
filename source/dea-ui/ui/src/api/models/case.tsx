@@ -12,3 +12,13 @@ export interface DeaCaseDTO {
   readonly created: string;
   readonly updated: string;
 }
+
+export interface ScopedDeaCaseDTO {
+  readonly ulid: string;
+  readonly name: string;
+}
+
+export interface CaseOwnerDTO {
+  readonly userUlid: string;
+  readonly caseUlid: string;
+}

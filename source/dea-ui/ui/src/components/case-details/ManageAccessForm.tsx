@@ -90,6 +90,7 @@ function ManageAccessForm(props: ManageAccessFormProps): JSX.Element {
       <Container header={<Header variant="h2">{manageCaseAccessLabels.manageCaseAccessLabel}</Header>}>
         <ManageAccessSearchUserForm onChange={addCaseMemberHandler}></ManageAccessSearchUserForm>
         <ManageAccessList
+          headertext={manageCaseAccessLabels.manageCasePeopleAccessLabel}
           caseMembers={caseMembers}
           onUpdateMember={(member: CaseUser) => updateCaseMemberHandler(member)}
           onRemoveMember={(member: CaseUser) => removeCaseMemberHandler(member)}

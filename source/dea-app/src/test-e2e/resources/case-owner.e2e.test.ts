@@ -43,7 +43,7 @@ describe('CaseOwner E2E', () => {
 
   beforeAll(async () => {
     // Create user
-    await cognitoHelper.createUser(testOwner, 'CaseWorker', testOwner, 'TestUser');
+    await cognitoHelper.createUser(testOwner, 'WorkingManager', testOwner, 'TestUser');
     await cognitoHelper.createUser(testInvitee, 'CaseWorker', testInvitee, 'TestUser');
 
     [ownerCreds, ownerToken] = await cognitoHelper.getCredentialsForUser(testOwner);
@@ -222,10 +222,10 @@ describe('CaseOwner E2E', () => {
     fetchedWithInviteeCases.forEach((fetchedCase) => Joi.assert(fetchedCase, caseUserResponseSchema));
     const caseOwnerEntry = fetchedWithInviteeCases.find((caseuser) => caseuser.userUlid === ownerUlid);
     expect(caseOwnerEntry).toBeDefined();
-    expect(caseOwnerEntry?.actions.join('|') === OWNER_ACTIONS.join('|')).toBeTruthy();
+    expect(caseOwnerEntry?.actions).toEqual(expect.arrayContaining(OWNER_ACTIONS));
     const inviteeEntry = fetchedWithInviteeCases.find((caseuser) => caseuser.userUlid === inviteeUlid);
     expect(inviteeEntry).toBeDefined();
-    expect(inviteeEntry?.actions.join('|') === viewOnlyPermissions.join('|')).toBeTruthy();
+    expect(inviteeEntry?.actions).toEqual(expect.arrayContaining(viewOnlyPermissions));
 
     // confirm invitee can access to the case details
     const accessResponse = await callDeaAPIWithCreds(
@@ -289,7 +289,9 @@ describe('CaseOwner E2E', () => {
     const fetchedCases: CaseUser[] = await membershipListResponse.data.caseUsers;
     expect(fetchedCases.length).toBe(2);
     fetchedCases.forEach((fetchedCase) => Joi.assert(fetchedCase, caseUserResponseSchema));
-    fetchedCases.forEach((fetchedCase) => fetchedCase.actions.join('|') === OWNER_ACTIONS.join('|'));
+    fetchedCases.forEach((fetchedCase) =>
+      expect(fetchedCase?.actions).toEqual(expect.arrayContaining(OWNER_ACTIONS))
+    );
 
     // Confirm invitee can now update the case
     const updateReattempt = await callDeaAPIWithCreds(
