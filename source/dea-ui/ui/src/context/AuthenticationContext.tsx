@@ -54,6 +54,7 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
       }
     };
     checkLogin().catch((e) => console.log(e));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   const signIn = async (): Promise<void> => {
@@ -68,7 +69,7 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
       const challenge = pkceChallenge(128);
       localStorage.setItem('pkceVerifier', challenge.code_verifier);
       loginUrl += `&code_challenge=${challenge.code_challenge}&code_challenge_method=S256`;
-      window.location.assign(loginUrl);
+      await router.push(loginUrl);
     } catch (e) {
       console.log(e);
     }

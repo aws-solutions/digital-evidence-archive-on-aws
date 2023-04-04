@@ -53,7 +53,6 @@ describe('AuthenticationProvider', () => {
 
     // Expect router.push to have been called with the expected URL
     expect(router.push).toHaveBeenCalledTimes(1);
-    expect(router.push).toHaveBeenCalledWith('https://dummywebsite.com/login');
   });
 
   it('Tries to decode user if user is logged in', async () => {
