@@ -14,13 +14,13 @@ import { SettingsProvider } from '../context/SettingsContext';
 function App({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <SettingsProvider>
-      <AuthenticationProvider>
-        <NotificationsProvider>
+      <NotificationsProvider>
+        <AuthenticationProvider>
           <Header />
           <Component {...pageProps} />
           <footer id="footer"></footer>
-        </NotificationsProvider>
-      </AuthenticationProvider>
+        </AuthenticationProvider>
+      </NotificationsProvider>
     </SettingsProvider>
   );
 }

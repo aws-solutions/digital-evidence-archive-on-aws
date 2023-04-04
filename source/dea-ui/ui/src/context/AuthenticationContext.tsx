@@ -76,12 +76,15 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
   };
   const signOut = async (): Promise<void> => {
     const refreshToken = localStorage.getItem('refreshToken');
-    if (refreshToken) {
-      const payload: RevokeToken = {
-        refreshToken: refreshToken,
-      };
-
-      await revokeToken(payload);
+    try {
+      if (refreshToken) {
+        const payload: RevokeToken = {
+          refreshToken: refreshToken,
+        };
+        await revokeToken(payload);
+      }
+    } catch (e) {
+      console.log('Error revoking token, refresh token may be expired already:', e);
     }
 
     localStorage.removeItem('accessKeyId');
