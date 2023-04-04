@@ -33,7 +33,7 @@ export const getCredentials = async (idToken: string) => {
   }
 };
 
-export const getLoginUrl = async () => {
+export const getLoginUrl = async (callbackUrl: string) => {
   try {
     const response: string = await httpApiGet(`auth/loginUrl?callbackUrl=${callbackUrl}`, {});
     return response;
