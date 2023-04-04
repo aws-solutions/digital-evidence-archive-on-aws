@@ -1,7 +1,8 @@
+import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { useGetCaseById } from '../../src/api/cases';
-import { commonLabels } from '../../src/common/labels';
+import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
 let query: { caseId: string | undefined } = { caseId: '100' };
@@ -27,6 +28,14 @@ describe('CaseDetailsPage', () => {
 
     expect(anyHeader).toBeTruthy();
     expect(page).toBeTruthy();
+
+    // assert breadcrumb
+    const breadcrumbWrapper = wrapper(page.container).findBreadcrumbGroup();
+    expect(breadcrumbWrapper).toBeTruthy();
+    const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
+    expect(breadcrumbLinks.length).toEqual(2);
+    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
+    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.caseDetailsLabel);
   });
 
   it('renders a loading label during fetch', () => {

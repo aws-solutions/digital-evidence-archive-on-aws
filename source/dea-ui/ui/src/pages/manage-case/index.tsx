@@ -13,12 +13,14 @@ import {
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { addCaseOwner, useGetScopedCaseInfoById } from '../../api/cases';
-import { manageCaseAccessLabels } from '../../common/labels';
+import { breadcrumbLabels, manageCaseAccessLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
 import ManageAccessSearchUserForm from '../../components/case-details/ManageAccessSearchUserForm';
 import { useNotifications } from '../../context/NotificationsContext';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function ManageCasePage() {
+  const { settings } = useSettings();
   const router = useRouter();
   const query = router.query;
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -40,11 +42,11 @@ export default function ManageCasePage() {
 
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
-      text: 'Digital Evidence Archive',
-      href: '#',
+      text: breadcrumbLabels.homePageLabel,
+      href: `/${settings.stage}/ui`,
     },
     {
-      text: 'Login',
+      text: `${breadcrumbLabels.manageCaseLabel} ${caseId}`,
       href: '#',
     },
   ];

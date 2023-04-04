@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import axios from 'axios';
-import { commonLabels, createCaseLabels } from '../../src/common/labels';
+import { breadcrumbLabels, commonLabels, createCaseLabels } from '../../src/common/labels';
 import Home from '../../src/pages/create-cases';
 
 const push = jest.fn();
@@ -36,10 +36,20 @@ describe('CreateCases page', () => {
 
     const user = userEvent.setup();
     const page = render(<Home />);
-    const createCaseLabel = screen.getByText(createCaseLabels.createNewCaseLabel);
-
+    const headerWrapper = wrapper(page.container).findHeader();
     expect(page).toBeTruthy();
-    expect(createCaseLabel).toBeTruthy();
+    expect(headerWrapper).toBeTruthy();
+    expect(headerWrapper?.findHeadingText().getElement()).toHaveTextContent(
+      createCaseLabels.createNewCaseLabel
+    );
+
+    // assert breadcrumb
+    const breadcrumbWrapper = wrapper(page.container).findBreadcrumbGroup();
+    expect(breadcrumbWrapper).toBeTruthy();
+    const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
+    expect(breadcrumbLinks.length).toEqual(2);
+    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
+    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.createNewCaseLabel);
 
     const button = screen.getByRole('button', { name: commonLabels.createButton });
     await user.click(button);

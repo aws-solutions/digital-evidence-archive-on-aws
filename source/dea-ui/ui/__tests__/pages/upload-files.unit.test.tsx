@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import axios from 'axios';
-import { commonLabels } from '../../src/common/labels';
+import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
 import Home from '../../src/pages/upload-files';
 
 const push = jest.fn();
@@ -36,6 +36,18 @@ mockedAxios.request.mockResolvedValue({
 });
 
 describe('UploadFiles page', () => {
+  it('renders the component', () => {
+    const page = render(<Home />);
+
+    // assert breadcrumb
+    const breadcrumbWrapper = wrapper(page.container).findBreadcrumbGroup();
+    expect(breadcrumbWrapper).toBeTruthy();
+    const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
+    expect(breadcrumbLinks.length).toEqual(3);
+    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
+    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(`${breadcrumbLabels.caseLabel} ${CASE_ID}`);
+    expect(breadcrumbLinks[2].getElement()).toHaveTextContent(breadcrumbLabels.uploadFilesAndFoldersLabel);
+  });
   it('responds to cancel', () => {
     render(<Home />);
 
