@@ -103,7 +103,7 @@ describe('API authentication', () => {
     const expectedUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
 
     // fetch url
-    const url = `${deaApiUrl}auth/loginUrl`;
+    const url = `${deaApiUrl}auth/loginUrl?callbackUrl=${cognitoParams.callbackUrl}`;
     const response = await client.get(url, { validateStatus });
     expect(response.data).toEqual(expectedUrl);
   });
