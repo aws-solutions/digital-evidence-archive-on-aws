@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import Joi from 'joi';
+import { getQueryParam } from '../../lambda-http-helpers';
 import { loginUrlRegex } from '../../models/validation/joi-common';
 import { getLoginHostedUiUrl } from '../services/auth-service';
 
@@ -13,8 +14,7 @@ export const getLoginUrl: DEAGatewayProxyHandler = async (event) => {
   let callbackUrl = '';
   if (event.queryStringParameters) {
     if (event.queryStringParameters['callbackUrl']) {
-      callbackUrl = event.queryStringParameters['callbackUrl'];
-      Joi.assert(callbackUrl, Joi.string().uri());
+      callbackUrl = getQueryParam(event, 'callbackUrl', '', Joi.string().uri());
     }
   }
 
