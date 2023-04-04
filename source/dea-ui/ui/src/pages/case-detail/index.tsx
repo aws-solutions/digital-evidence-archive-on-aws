@@ -5,9 +5,10 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
-import { commonLabels } from '../../common/labels';
+import { breadcrumbLabels, commonLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
 import CaseDetailsBody from '../../components/case-details/CaseDetailsBody';
+import { useSettings } from '../../context/SettingsContext';
 
 export interface IHomeProps {
   locale: string;
@@ -15,17 +16,18 @@ export interface IHomeProps {
 
 function CaseDetailsPage() {
   const router = useRouter();
+  const { settings } = useSettings();
   const { caseId } = router.query;
   if (!caseId || typeof caseId !== 'string') {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
-      text: 'Digital Evidence Archive',
-      href: '#',
+      text: breadcrumbLabels.homePageLabel,
+      href: `/${settings.stage}/ui`,
     },
     {
-      text: 'Login',
+      text: breadcrumbLabels.caseDetailsLabel,
       href: '#',
     },
   ];

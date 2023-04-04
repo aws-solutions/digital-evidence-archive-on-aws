@@ -230,3 +230,12 @@ export const caseActionOptions = {
     return OWNER_ACTIONS.map((caseAction: CaseAction) => caseActionOptions.actionOption(caseAction));
   },
 };
+
+export const breadcrumbLabels = {
+  homePageLabel: 'Digital Evidence Archive',
+  createNewCaseLabel: 'Create New Case',
+  caseLabel: 'Case',
+  caseDetailsLabel: 'Case Details',
+  manageCaseLabel: 'Manage Case',
+  uploadFilesAndFoldersLabel: 'Upload folders/files',
+};

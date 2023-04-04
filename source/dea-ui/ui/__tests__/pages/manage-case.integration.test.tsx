@@ -1,12 +1,10 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { act, cleanup, fireEvent, getByRole, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { fail } from 'assert';
 import Axios from 'axios';
-import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
+import { breadcrumbLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
-import CaseDetailsPage from '../../src/pages/case-detail';
 import ManageCasePage from '../../src/pages/manage-case';
 
 afterEach(cleanup);
@@ -101,6 +99,16 @@ describe('Manage Case Page', () => {
       </NotificationsProvider>
     );
     expect(page).toBeDefined();
+
+    // assert breadcrumb
+    const breadcrumbWrapper = wrapper(page.container).findBreadcrumbGroup();
+    expect(breadcrumbWrapper).toBeTruthy();
+    const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
+    expect(breadcrumbLinks.length).toEqual(2);
+    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
+    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(
+      `${breadcrumbLabels.manageCaseLabel} ${CASE_ID}`
+    );
 
     // assert autosuggest component
     const searchUserInput = await screen.findByTestId('user-search-input');

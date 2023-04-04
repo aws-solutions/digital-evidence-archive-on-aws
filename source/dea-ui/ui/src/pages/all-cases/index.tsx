@@ -5,18 +5,14 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useListAllCases } from '../../api/cases';
-import { caseListLabels } from '../../common/labels';
+import { breadcrumbLabels, caseListLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
 import CaseTable from '../../components/case-list-table/CaseTable';
 
 export default function AllCasesPage() {
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
-      text: 'Digital Evidence Archive',
-      href: '#',
-    },
-    {
-      text: 'Login',
+      text: breadcrumbLabels.homePageLabel,
       href: '#',
     },
   ];

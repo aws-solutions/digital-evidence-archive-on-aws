@@ -6,7 +6,7 @@
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { commonLabels } from '../../common/labels';
+import { breadcrumbLabels, commonLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
 import UploadFileBody from '../../components/upload-files/UploadFilesBody';
 import { useSettings } from '../../context/SettingsContext';
@@ -25,15 +25,15 @@ const Home: NextPage = () => {
 
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
-      text: 'Digital Evidence Archive',
+      text: breadcrumbLabels.homePageLabel,
       href: `/${settings.stage}/ui`,
     },
     {
-      text: `Case ${caseId}`,
+      text: `${breadcrumbLabels.caseLabel} ${caseId}`,
       href: `/${settings.stage}/ui/case-detail?caseId=${caseId}`,
     },
     {
-      text: 'Upload folders/files',
+      text: breadcrumbLabels.uploadFilesAndFoldersLabel,
       href: '#',
     },
   ];
