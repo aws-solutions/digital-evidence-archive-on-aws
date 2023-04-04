@@ -400,10 +400,9 @@ export class DeaAuthConstruct extends Construct {
           familyName: ProviderAttribute.other(idpInfo.attributeMap.lastName),
           givenName: ProviderAttribute.other(idpInfo.attributeMap.firstName),
           custom: {
-            DEARole: ProviderAttribute.other(idpInfo.attributeMap.deaRoleName),
+            'custom:DEARole': ProviderAttribute.other(idpInfo.attributeMap.deaRoleName),
           },
         },
-        name: 'AgencyIdP',
       });
 
       // Put the name of the IdP in SSM so the hosted UI can automaticaly redirect to the IdP Signin page
