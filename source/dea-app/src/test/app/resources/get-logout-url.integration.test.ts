@@ -8,7 +8,7 @@ import { getCognitoLogoutUrl, getCognitoSsmParams } from '../../../app/services/
 import { getDummyEvent, dummyContext } from '../../integration-objects';
 
 let expectedUrl: string;
-describe('get-login-url', () => {
+describe('get-logout-url', () => {
   beforeAll(async () => {
     // get SSM parameters to compare
     const cognitoParams = await getCognitoSsmParams();
@@ -20,7 +20,7 @@ describe('get-login-url', () => {
     expect(logoutUrl).toEqual(expectedUrl);
   });
 
-  it('successfully get login url from get-login-url', async () => {
+  it('successfully get logout url from get-login-url', async () => {
     const response = await getLogoutUrl(getDummyEvent(), dummyContext);
     if (!response.body) {
       fail();

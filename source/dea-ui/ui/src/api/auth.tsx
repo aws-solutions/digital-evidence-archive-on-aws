@@ -11,9 +11,9 @@ export interface Credentials {
   SessionToken: string;
 }
 
-const getToken = async (authCode: string): Promise<Oauth2Token> => {
+const getToken = async (authCode: string, codeVerifier?: string): Promise<Oauth2Token> => {
   try {
-    const response: Oauth2Token = await httpApiPost(`auth/${authCode}/token`, { authCode });
+    const response: Oauth2Token = await httpApiPost(`auth/${authCode}/token`, { codeVerifier });
     return response;
   } catch (error) {
     console.error(error);
@@ -31,9 +31,9 @@ const getCredentials = async (idToken: string) => {
   }
 };
 
-const getLoginUrl = async () => {
+const getLoginUrl = async (callbackUrl: string) => {
   try {
-    const response: string = await httpApiGet(`auth/loginUrl`, {});
+    const response: string = await httpApiGet(`auth/loginUrl?callbackUrl=${callbackUrl}`, {});
     return response;
   } catch (error) {
     console.error(error);

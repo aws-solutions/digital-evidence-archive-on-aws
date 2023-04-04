@@ -17,3 +17,7 @@ export const RevokeTokenSchema = Joi.object({
 export const IdTokenSchema = Joi.object({
   idToken: idToken,
 });
+
+export const ExchangeTokenSchema = Joi.object({
+  codeVerifier: Joi.string(),
+});

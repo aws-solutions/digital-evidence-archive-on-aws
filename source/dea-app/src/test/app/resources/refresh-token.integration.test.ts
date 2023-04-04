@@ -12,7 +12,7 @@ import { Oauth2Token } from '../../../models/auth';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { getSession } from '../../../persistence/session';
-import { getAuthorizationCode } from '../../../test-e2e/helpers/auth-helper';
+import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { dummyContext, getDummyAuditEvent, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
@@ -20,6 +20,7 @@ import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 let cognitoParams: CognitoSsmParams;
 let idToken: string;
 let repositoryProvider: ModelRepositoryProvider;
+let pkceStrings: PkceStrings;
 
 describe('refresh-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
@@ -33,6 +34,7 @@ describe('refresh-token', () => {
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
     cognitoParams = await getCognitoSsmParams();
     repositoryProvider = await getTestRepositoryProvider('refreshTokenTest');
+    pkceStrings = getPkceStrings();
   });
 
   afterAll(async () => {
@@ -47,10 +49,14 @@ describe('refresh-token', () => {
       cognitoParams.cognitoDomainUrl,
       authTestUrl,
       testUser,
-      cognitoHelper.testPassword
+      cognitoHelper.testPassword,
+      pkceStrings.code_challenge
     );
 
     const event = getDummyEvent({
+      body: JSON.stringify({
+        codeVerifier: pkceStrings.code_verifier,
+      }),
       pathParameters: {
         authCode: authCode,
       },

@@ -6,6 +6,7 @@
 import { RevokeToken } from '@aws/dea-app/lib/models/auth';
 import jwt from 'jwt-decode';
 import { useRouter } from 'next/router';
+import pkceChallenge from 'pkce-challenge';
 import { createContext, useContext, Context, useState, useEffect } from 'react';
 import { getLoginUrl, getLogoutUrl, revokeToken } from '../api/auth';
 import { IUser, unknownUser } from '../models/User';
@@ -49,14 +50,29 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
         decodeTokenAndSetUser(idToken);
       } else {
         // Not logged in, redirect to login page
-        const loginUrl = await getLoginUrl();
-        await router.push(loginUrl);
+        await signIn();
       }
     };
     checkLogin().catch((e) => console.log(e));
   }, [router]);
 
-  const signIn = (user: IUser): void => setUser(user);
+  const signIn = async (): Promise<void> => {
+    try {
+      let callbackUrl = '';
+      if (typeof window !== 'undefined') {
+        callbackUrl = `${window.location}`.replace(/\/ui(.*)/, '/ui/login');
+      }
+      let loginUrl = await getLoginUrl(callbackUrl);
+
+      // Create PKCE challenge and include code challenge and code challenge method in oauth2/authorize
+      const challenge = pkceChallenge(128);
+      localStorage.setItem('pkceVerifier', challenge.code_verifier);
+      loginUrl += `&code_challenge=${challenge.code_challenge}&code_challenge_method=S256`;
+      window.location.assign(loginUrl);
+    } catch (e) {
+      console.log(e);
+    }
+  };
   const signOut = async (): Promise<void> => {
     const refreshToken = localStorage.getItem('refreshToken');
     if (refreshToken) {
@@ -72,11 +88,12 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
     localStorage.removeItem('sessionToken');
     localStorage.removeItem('idToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('pkceVerifier');
     setUser(unknownUser);
 
-    // Redirect to login page
-    const logoutUrl = await getLogoutUrl();
-    await router.push(logoutUrl);
+    // Logout of cognito session and redirect to login page
+    await getLogoutUrl();
+    await signIn();
   };
 
   function decodeTokenAndSetUser(idToken: string): void {
