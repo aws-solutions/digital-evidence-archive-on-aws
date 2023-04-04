@@ -61,6 +61,7 @@ describe('Test initiate case file upload', () => {
   });
 
   beforeEach(() => {
+    // reset mock so that each test can validate its own set of mock calls
     s3Mock = mockClient(S3Client);
     s3Mock.resolves({
       UploadId: UPLOAD_ID,

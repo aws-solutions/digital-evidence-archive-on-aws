@@ -4,7 +4,7 @@
  */
 
 import Joi from 'joi';
-import { caseFileStatus, caseStatus, joiUlid, safeDescription, safeName } from './joi-common';
+import { caseFileStatus, caseStatus, joiUlid, s3Identifier, safeDescription, safeName } from './joi-common';
 
 export const createCaseSchema = Joi.object({
   name: safeName,
@@ -24,6 +24,7 @@ export const caseResponseSchema = Joi.object({
   description: safeDescription,
   objectCount: Joi.number(),
   filesStatus: caseFileStatus,
+  s3BatchJobId: s3Identifier,
   created: Joi.date(),
   updated: Joi.date(),
 });

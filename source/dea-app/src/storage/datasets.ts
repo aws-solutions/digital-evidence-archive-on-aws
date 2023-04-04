@@ -162,10 +162,10 @@ export const startDeleteCaseFilesS3BatchJob = async (
   caseId: string,
   s3FileKeys: string[],
   datasetsProvider: DatasetsProvider
-): Promise<string> => {
+): Promise<string | undefined> => {
   if (s3FileKeys.length === 0) {
     logger.info('Not starting delete batch job because there are no files to delete');
-    return '';
+    return;
   }
   logger.info('Creating delete files batch job', { fileCount: s3FileKeys.length, caseId });
 
