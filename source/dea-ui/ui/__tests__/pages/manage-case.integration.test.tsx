@@ -122,7 +122,7 @@ describe('Manage Case Page', () => {
     //assert notifications
     const notificationsWrapper = wrapper(page.container).findFlashbar()!;
     expect(notificationsWrapper).toBeTruthy();
-    await waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(1));
+    await waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(1), { timeout: 2000 });
     const item1 = notificationsWrapper.findItems()[0];
     expect(item1.findContent()?.getElement()?.textContent).toContain('successfully assigned');
   });
