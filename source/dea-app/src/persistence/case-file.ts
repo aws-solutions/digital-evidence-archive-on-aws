@@ -46,6 +46,21 @@ export const completeCaseFileUpload = async (
   return caseFileFromEntity(newEntity);
 };
 
+export const getAllCaseFileS3Keys = async (
+  caseId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<string[]> => {
+  const items = await repositoryProvider.CaseFileModel.find(
+    {
+      PK: `CASE#${caseId}#`,
+    },
+    {
+      fields: ['ulid'],
+    }
+  );
+  return items.map((item) => `${caseId}/${item.ulid}`);
+};
+
 const createCaseFilePaths = async (deaCaseFile: DeaCaseFile, repositoryProvider: ModelRepositoryProvider) => {
   const noTrailingSlashPath = deaCaseFile.filePath.substring(0, deaCaseFile.filePath.length - 1);
   if (noTrailingSlashPath.length > 0) {

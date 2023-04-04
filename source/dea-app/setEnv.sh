@@ -6,3 +6,5 @@ export IDENTITY_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --q
 export USER_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STACKPREFIX}-userPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//') 
 export USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STACKPREFIX}-userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
 export DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STACKPREFIX}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+export DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STACKPREFIX}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+export S3_BATCH_DELETE_CASE_FILE_LAMBDA_ARN=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STACKPREFIX}-S3BatchDeleteCaseFileLambda'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')

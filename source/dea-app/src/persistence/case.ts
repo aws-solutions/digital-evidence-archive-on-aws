@@ -97,13 +97,15 @@ export const updateCaseStatus = async (
   deaCase: DeaCase,
   status: CaseStatus,
   filesStatus: CaseFileStatus,
-  repositoryProvider: CaseModelRepositoryProvider
+  repositoryProvider: CaseModelRepositoryProvider,
+  s3BatchJobId?: string
 ): Promise<DeaCase> => {
-  const newCase = await repositoryProvider.CaseModel.update(
+  const updatedCase = await repositoryProvider.CaseModel.update(
     {
       ...deaCase,
       status,
       filesStatus,
+      s3BatchJobId,
     },
     {
       // Normally, update() will return the updated item automatically,
@@ -113,7 +115,7 @@ export const updateCaseStatus = async (
       return: 'get',
     }
   );
-  return caseFromEntity(newCase);
+  return caseFromEntity(updatedCase);
 };
 
 export const updateCase = async (

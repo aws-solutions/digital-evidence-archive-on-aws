@@ -3,7 +3,10 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import 'aws-sdk-client-mock-jest';
 import { fail } from 'assert';
+import { S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import Joi from 'joi';
 import { updateCaseStatus } from '../../../app/resources/update-case-status';
 import { DeaCase, DeaCaseInput } from '../../../models/case';
@@ -17,10 +20,16 @@ import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
-import { checkApiSucceeded } from './case-file-integration-test-helper';
+import { callInitiateCaseFileUpload, checkApiSucceeded } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
 let caseOwner: DeaUser;
+
+const s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes> = mockClient(S3Client);
+s3Mock.resolves({
+  UploadId: 'haha',
+  VersionId: 'haha',
+});
 
 describe('update case status', () => {
   beforeAll(async () => {
@@ -47,6 +56,11 @@ describe('update case status', () => {
       description: 'description',
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+    const event1 = getDummyEvent();
+    event1.headers['userUlid'] = caseOwner.ulid;
+    await callInitiateCaseFileUpload(event1, repositoryProvider, createdCase.ulid, 'file1');
+    await callInitiateCaseFileUpload(event1, repositoryProvider, createdCase.ulid, 'file2');
+    await callInitiateCaseFileUpload(event1, repositoryProvider, createdCase.ulid, 'file3');
 
     const event = getDummyEvent({
       pathParameters: {

@@ -11,6 +11,7 @@ import {
   DeaBackendConstruct,
   deaConfig,
   DeaRestApiConstruct,
+  DeaEventHandlers,
 } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
@@ -52,6 +53,15 @@ export class DeaMainStack extends cdk.Stack {
       deaDatasetsBucket: backendConstruct.datasetsBucket,
     });
 
+    const deaEventHandlers = new DeaEventHandlers(this, 'DeaEventHandlers', {
+      deaTableArn: backendConstruct.deaTable.tableArn,
+      deaDatasetsBucketArn: backendConstruct.datasetsBucket.bucketArn,
+      lambdaEnv: {
+        TABLE_NAME: backendConstruct.deaTable.tableName,
+        DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
+      },
+    });
+
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
       deaTableArn: backendConstruct.deaTable.tableArn,
       deaTableName: backendConstruct.deaTable.tableName,
@@ -65,6 +75,8 @@ export class DeaMainStack extends cdk.Stack {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backendConstruct.deaTable.tableName,
         DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
+        DELETE_CASE_FILE_LAMBDA_ARN: deaEventHandlers.s3BatchDeleteCaseFileLambda.functionArn,
+        DELETE_CASE_FILE_LAMBDA_ROLE: deaEventHandlers.lambdaBaseRole.roleArn,
       },
     });
 

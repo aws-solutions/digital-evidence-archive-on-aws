@@ -24,6 +24,7 @@ export const caseFromEntity = (caseEntity: CaseType): DeaCase => {
     status: caseEntity.status as CaseStatus,
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     filesStatus: caseEntity.filesStatus as CaseFileStatus,
+    s3BatchJobId: caseEntity.s3BatchJobId,
     created: caseEntity.created,
     updated: caseEntity.updated,
   };

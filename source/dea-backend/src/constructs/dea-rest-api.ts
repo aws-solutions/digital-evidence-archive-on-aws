@@ -247,7 +247,7 @@ export class DeaRestApiConstruct extends Construct {
             id: 'W89',
             reason:
               'The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)\
-               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC',
+               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC',
           },
         ],
       });
