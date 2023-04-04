@@ -11,12 +11,7 @@ import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const getLoginUrl: DEAGatewayProxyHandler = async (event) => {
-  let callbackUrl = '';
-  if (event.queryStringParameters) {
-    if (event.queryStringParameters['callbackUrl']) {
-      callbackUrl = getQueryParam(event, 'callbackUrl', '', Joi.string().uri());
-    }
-  }
+  const callbackUrl = getQueryParam(event, 'callbackUrl', '', Joi.string().uri());
 
   const loginUrl = await getLoginHostedUiUrl(callbackUrl);
 
