@@ -22,6 +22,8 @@ export const caseFromEntity = (caseEntity: CaseType): DeaCase => {
     // status schema is defined with CaseStatus so we can safely cast here
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     status: caseEntity.status as CaseStatus,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    filesStatus: caseEntity.filesStatus as CaseFileStatus,
     created: caseEntity.created,
     updated: caseEntity.updated,
   };

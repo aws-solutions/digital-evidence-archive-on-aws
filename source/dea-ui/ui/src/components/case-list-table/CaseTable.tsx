@@ -6,16 +6,25 @@
 import { useCollection } from '@cloudscape-design/collection-hooks';
 import { Button, Link, Pagination, PropertyFilter, SpaceBetween, Table } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
-import { useListMyCases } from '../../api/cases';
+import { DeaListResult } from '../../api/cases';
+import { DeaCaseDTO } from '../../api/models/case';
 import { caseListLabels, commonTableLabels } from '../../common/labels';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
 import { filteringOptions, filteringProperties, searchableColumns } from './caseListDefinitions';
 
-function CaseTable(): JSX.Element {
+export type CaseFetcherSignature = () => DeaListResult<DeaCaseDTO>;
+export interface CaseTableProps {
+  useCaseFetcher: CaseFetcherSignature;
+  canCreate: boolean;
+  detailPage: string;
+  headerLabel: string;
+}
+
+function CaseTable(props: CaseTableProps): JSX.Element {
   const router = useRouter();
-  const { data, isLoading } = useListMyCases();
+  const { data, isLoading } = props.useCaseFetcher();
 
   // Property and date filter collections
   const { items, filteredItemsCount, propertyFilterProps } = useCollection(data, {
@@ -45,8 +54,7 @@ function CaseTable(): JSX.Element {
     selection: {},
   });
   function createNewCaseHandler() {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    router.push('/create-cases');
+    void router.push('/create-cases');
   }
 
   return (
@@ -63,13 +71,15 @@ function CaseTable(): JSX.Element {
         <TableHeader
           data-testid="case-table-header"
           variant="awsui-h1-sticky"
-          title={caseListLabels.casesLabel}
+          title={props.headerLabel}
           description={caseListLabels.casesPageDescription}
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
-              <Button data-testid="create-case-button" variant="primary" onClick={createNewCaseHandler}>
-                {caseListLabels.createNewCaseLabel}
-              </Button>{' '}
+              {props.canCreate && (
+                <Button data-testid="create-case-button" variant="primary" onClick={createNewCaseHandler}>
+                  {caseListLabels.createNewCaseLabel}
+                </Button>
+              )}
             </SpaceBetween>
           }
           totalItems={data}
@@ -84,8 +94,7 @@ function CaseTable(): JSX.Element {
               href={`${e.ulid}`}
               onFollow={(e) => {
                 e.preventDefault();
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                router.push(`/case-detail?caseId=${e.detail.href}`);
+                void router.push(`/${props.detailPage}?caseId=${e.detail.href}`);
               }}
             >
               {e.name}

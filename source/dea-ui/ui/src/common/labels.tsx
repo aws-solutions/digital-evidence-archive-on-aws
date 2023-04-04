@@ -14,6 +14,7 @@ export const commonLabels = {
   addButton: 'Add',
   removeButton: 'Remove',
   downloadButton: 'Download',
+  saveButton: 'Save',
   loadingLabel: 'Loading...',
   loginLabel: 'Logging in...',
   notFoundLabel: 'Not Found',
@@ -23,6 +24,8 @@ export const commonLabels = {
   dismissMessageLabel: 'Dismiss message',
   description: 'Description',
   creationDate: 'Creation Date',
+  requiredField: 'This is a required field.',
+  closeModalAriaLabel: 'Close modal',
 };
 
 export const commonTableLabels = {
@@ -71,6 +74,7 @@ export const caseListLabels = {
   createNewCaseLabel: 'Create new case',
   searchCasesLabel: 'Search by case name',
   casesLabel: 'Cases',
+  systemCasesLabel: 'All System Cases',
   casesPageDescription: 'This is a list of cases that have been shared with you.',
 };
 
@@ -97,7 +101,7 @@ export const fileOperationsLabels = {
   evidenceDetailsLabel: 'Description',
   evidenceDetailsDescription:
     'Enter a brief description of the evidence being uploaded. Max character limit 250.',
-  uploadReasonLabel: 'Reason for uploading evidence - optional',
+  uploadReasonLabel: 'Reason for uploading evidence',
   uploadReasonDescription: 'Specify why you are accessing the case files.',
   selectFileSubtext: 'All file types accepted. 5TB max file size.',
 };
@@ -121,6 +125,7 @@ export const auditLogLabels = {
 
 export const manageCaseAccessLabels = {
   manageCaseAccessLabel: 'Case Members',
+  assignCaseOwnersLabel: 'Assign Invite Permissions',
   manageAccessDescription:
     'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
   manageAccessSearchLabel: 'Search for people',
@@ -135,14 +140,23 @@ export const manageCaseAccessLabels = {
   searchAutosuggestFinishedText: (value: string) =>
     value ? `End of "${value}" results` : 'End of all results',
   manageCasePeopleAccessLabel: 'People with access',
+  manageOwnerAccessLabel: 'People with Invite permissions',
   manageMemberEmailLabel: 'View Email',
   manageMemberAccessTypeLabel: 'Access Type',
   manageMemberPermissionsLabel: 'Permission(s)',
   manageMemberPermissionsPlaceholder: 'Choose permissions',
   addCaseMemberSuccessMessage: (user: string) => `${user} has been invited to the case successfully.`,
   addCaseMemberFailMessage: (user: string) => `${user} has not been invited to the case.`,
+  addCaseOwnerSuccessMessage: (user: string) =>
+    `${user} was successfully assigned invite permissions on the case.`,
+  addCaseOwnerFailMessage: (user: string) => `Failed to assign ${user} invite permissions on the case.`,
   removeCaseMemberSuccessMessage: (user: string) => `${user} has been removed successfully.`,
   removeCaseMemberFailMessage: (user: string) => `${user} has not been removed.`,
+  removeCaseMemberRequestTitle: (user: string) => `Remove ${user}?`,
+  removeCaseMemberRequestMessage:
+    'There access will be instantly removed and they will be notified by email.',
+  saveSuccessMessage: 'Changes have been saved successfully.',
+  saveFailMessage: 'Changes have not been saved.',
 };
 
 export const createCaseLabels = {

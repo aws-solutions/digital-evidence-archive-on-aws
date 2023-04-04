@@ -57,9 +57,9 @@ function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX
           <Popover
             position="bottom"
             triggerType="custom"
+            header={manageCaseAccessLabels.manageAccessSearchInfoHeader}
             content={
               <TextContent>
-                <h5>{manageCaseAccessLabels.manageAccessSearchInfoHeader}</h5>
                 <strong>{manageCaseAccessLabels.manageAccessSearchInfoLabel}</strong>
                 <p>{manageCaseAccessLabels.manageAccessSearchInfoDescription}</p>
               </TextContent>
@@ -88,7 +88,7 @@ function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX
             onLoadItems={handleLoadItems}
             onSelect={({ detail }) => setSelected(detail.value)}
           />
-          <Button onClick={onSubmitHandler} disabled={selected !== value}>
+          <Button onClick={onSubmitHandler} disabled={!selected || selected !== value}>
             {commonLabels.addButton}
           </Button>
         </Grid>

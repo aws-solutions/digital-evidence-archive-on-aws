@@ -5,6 +5,8 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
+import { useListMyCases } from '../api/cases';
+import { caseListLabels } from '../common/labels';
 import BaseLayout from '../components/BaseLayout';
 import CaseTable from '../components/case-list-table/CaseTable';
 
@@ -25,8 +27,13 @@ const Home: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
-      <CaseTable></CaseTable>
+    <BaseLayout breadcrumbs={breadcrumbs}>
+      <CaseTable
+        detailPage="case-detail"
+        useCaseFetcher={useListMyCases}
+        canCreate={true}
+        headerLabel={caseListLabels.casesLabel}
+      ></CaseTable>
     </BaseLayout>
   );
 };

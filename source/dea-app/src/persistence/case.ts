@@ -6,6 +6,7 @@
 import { Paged } from 'dynamodb-onetable';
 import { DeaCase, DeaCaseInput } from '../models/case';
 import { OWNER_ACTIONS } from '../models/case-action';
+import { CaseFileStatus } from '../models/case-file-status';
 import { CaseStatus } from '../models/case-status';
 import { caseFromEntity } from '../models/projections';
 import { DeaUser } from '../models/user';
@@ -69,6 +70,7 @@ export const createCase = async (
       ...deaCase,
       status: CaseStatus.ACTIVE,
       lowerCaseName: deaCase.name.toLowerCase(),
+      filesStatus: CaseFileStatus.ACTIVE,
     },
     { transaction }
   );
@@ -89,6 +91,29 @@ export const createCase = async (
   await repositoryProvider.table.transact('write', transaction);
 
   return caseFromEntity(caseEntity);
+};
+
+export const updateCaseStatus = async (
+  deaCase: DeaCase,
+  status: CaseStatus,
+  filesStatus: CaseFileStatus,
+  repositoryProvider: CaseModelRepositoryProvider
+): Promise<DeaCase> => {
+  const newCase = await repositoryProvider.CaseModel.update(
+    {
+      ...deaCase,
+      status,
+      filesStatus,
+    },
+    {
+      // Normally, update() will return the updated item automatically,
+      //   however, it the item has unique attributes,
+      //   a transaction is used which does not return the updated item.
+      //   In this case, use {return: 'get'} to retrieve and return the updated item.
+      return: 'get',
+    }
+  );
+  return caseFromEntity(newCase);
 };
 
 export const updateCase = async (

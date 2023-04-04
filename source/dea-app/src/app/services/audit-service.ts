@@ -33,7 +33,9 @@ export enum AuditEventType {
   GET_CASE_DETAILS = 'GetCaseDetails',
   GET_CASE_ACTIONS = 'GetCaseActions',
   UPDATE_CASE_DETAILS = 'UpdateCaseDetails',
+  UPDATE_CASE_STATUS = 'UpdateCaseStatus',
   DELETE_CASE = 'DeleteCase',
+  CREATE_CASE_OWNER = 'CreateCaseOwner',
   GET_USERS_FROM_CASE = 'GetUsersFromCase',
   INVITE_USER_TO_CASE = 'InviteUserToCase',
   REMOVE_USER_FROM_CASE = 'RemoveUserFromCase',
@@ -52,6 +54,8 @@ export enum AuditEventType {
   GET_CASE_FILE_DETAIL = 'GetCaseFileDetail',
   GET_CASE_AUDIT = 'GetCaseAudit',
   REQUEST_CASE_AUDIT = 'RequestCaseAudit',
+  GET_AVAILABLE_ENDPOINTS = 'GetAvailableEndpoints',
+  GET_SCOPED_CASE_INFO = 'GetScopedCaseInformation',
   UNKNOWN = 'UnknownEvent',
 }
 

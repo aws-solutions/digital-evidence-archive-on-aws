@@ -4,12 +4,14 @@
  */
 
 import * as CompleteCaseFileUploadHandler from '../../handlers/complete-case-file-upload-handler';
+import * as CreateCaseOwnerHandler from '../../handlers/create-case-owner-handler';
 import * as CreateCaseUserHandler from '../../handlers/create-case-user-handler';
 import * as CreateCasesHandler from '../../handlers/create-cases-handler';
 import * as DeleteCasesHandler from '../../handlers/delete-case-handler';
 import * as DeleteCaseUserHandler from '../../handlers/delete-case-user-handler';
 import * as DownloadCaseFileHandler from '../../handlers/download-case-file-handler';
 import * as GetAllCasesHandler from '../../handlers/get-all-cases-handler';
+import * as GetAvailableEndpoints from '../../handlers/get-available-endpoints-handler';
 import * as GetCaseActionsHandler from '../../handlers/get-case-actions-handler';
 import * as GetCaseAuditHandler from '../../handlers/get-case-audit-handler';
 import * as GetCaseDetailHandler from '../../handlers/get-case-detail-handler';
@@ -26,6 +28,7 @@ import * as ListCaseFilesHandler from '../../handlers/list-case-files-handler';
 import * as RefreshTokenHandler from '../../handlers/refresh-token-handler';
 import * as StartCaseAuditHandler from '../../handlers/request-case-audit-handler';
 import * as RevokeTokenHandler from '../../handlers/revoke-token-handler';
+import * as UpdateCaseStatusHandler from '../../handlers/update-case-status-handler';
 import * as UpdateCaseUserHandler from '../../handlers/update-case-user-handler';
 import * as UpdateCasesHandler from '../../handlers/update-cases-handler';
 
@@ -33,6 +36,7 @@ describe('lambda handlers', () => {
   it('should be wrapped with the deaHandler', () => {
     const handlers = [
       CreateCasesHandler.handler,
+      CreateCaseOwnerHandler.handler,
       CreateCaseUserHandler.handler,
       CompleteCaseFileUploadHandler.handler,
       DeleteCasesHandler.handler,
@@ -57,6 +61,8 @@ describe('lambda handlers', () => {
       StartCaseAuditHandler.handler,
       GetCaseAuditHandler.handler,
       GetCaseActionsHandler.handler,
+      GetAvailableEndpoints.handler,
+      UpdateCaseStatusHandler.handler,
     ];
 
     handlers.forEach((handler) => {

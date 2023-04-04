@@ -5,9 +5,9 @@
 
 import Joi from 'joi';
 import {
+  CognitoSsmParams,
   exchangeAuthorizationCode,
   getCognitoSsmParams,
-  CognitoSsmParams,
   getCredentialsByToken,
   getLoginHostedUiUrl,
   revokeRefreshToken,
