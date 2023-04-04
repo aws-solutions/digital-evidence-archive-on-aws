@@ -5,21 +5,24 @@
 
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
+import { breadcrumbLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
 import CreateCaseBody from '../../components/create-case/CreateCaseBody';
+import { useSettings } from '../../context/SettingsContext';
 
 export interface IHomeProps {
   locale: string;
 }
 
 const Home: NextPage = () => {
+  const { settings } = useSettings();
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
-      text: 'Digital Evidence Archive',
-      href: '#',
+      text: breadcrumbLabels.homePageLabel,
+      href: `/${settings.stage}/ui`,
     },
     {
-      text: 'Login',
+      text: breadcrumbLabels.createNewCaseLabel,
       href: '#',
     },
   ];

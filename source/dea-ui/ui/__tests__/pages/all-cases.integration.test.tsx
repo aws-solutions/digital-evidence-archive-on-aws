@@ -1,11 +1,9 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { fail } from 'assert';
 import axios from 'axios';
-import { caseListLabels } from '../../src/common/labels';
-import { i18nStrings } from '../../src/components/common-components/commonDefinitions';
-import Home from '../../src/pages';
+import { breadcrumbLabels, caseListLabels } from '../../src/common/labels';
 import AllCasesPage from '../../src/pages/all-cases';
 
 jest.mock('axios');
@@ -75,6 +73,13 @@ describe('All Cases Dashboard', () => {
 
     const createCaseButton = screen.queryByText(caseListLabels.createNewCaseLabel);
     expect(createCaseButton).toBeNull();
+
+    // assert breadcrumb
+    const breadcrumbWrapper = wrapper(page.container).findBreadcrumbGroup();
+    expect(breadcrumbWrapper).toBeTruthy();
+    const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
+    expect(breadcrumbLinks.length).toEqual(1);
+    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
   });
 
   it('navigates to manage case details', async () => {
