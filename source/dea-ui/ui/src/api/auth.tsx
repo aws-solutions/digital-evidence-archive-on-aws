@@ -13,7 +13,7 @@ export interface Credentials {
   SessionToken: string;
 }
 
-export const getToken = async (authCode: string, codeVerifier: string): Promise<Oauth2Token> => {
+export const getToken = async (authCode: string, codeVerifier?: string): Promise<Oauth2Token> => {
   try {
     const response: Oauth2Token = await httpApiPost(`auth/${authCode}/token`, { codeVerifier });
     return response;
