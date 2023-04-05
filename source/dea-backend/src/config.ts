@@ -92,6 +92,11 @@ const convictSchema = {
       default: 'FILE',
     },
     attributeMap: {
+      username: {
+        doc: 'name of the IDP attribute field to get the logon of the user',
+        format: String,
+        default: 'username',
+      },
       email: {
         doc: 'name of the IDP attribute field to get the last name of the user',
         format: String,
@@ -158,6 +163,7 @@ const convictSchema = {
 };
 
 export interface IdPAttributes {
+  readonly username: string;
   readonly email: string;
   readonly firstName: string;
   readonly lastName: string;

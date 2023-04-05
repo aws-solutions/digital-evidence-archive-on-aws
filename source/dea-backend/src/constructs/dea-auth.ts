@@ -373,6 +373,7 @@ export class DeaAuthConstruct extends Construct {
         metadata: idpSamlMetadata,
         userPool: userPool,
         attributeMapping: {
+          preferredUsername: ProviderAttribute.other(idpInfo.attributeMap.username),
           email: ProviderAttribute.other(idpInfo.attributeMap.email),
           familyName: ProviderAttribute.other(idpInfo.attributeMap.lastName),
           givenName: ProviderAttribute.other(idpInfo.attributeMap.firstName),
