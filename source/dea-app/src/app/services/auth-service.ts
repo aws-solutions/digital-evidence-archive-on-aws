@@ -90,10 +90,10 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
   }
 };
 
-export const getLoginHostedUiUrl = async () => {
+export const getLoginHostedUiUrl = async (redirectUri: string) => {
   const cognitoParams = await getCognitoSsmParams();
 
-  const oauth2AuthorizeEndpointUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
+  const oauth2AuthorizeEndpointUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${redirectUri}`;
 
   return oauth2AuthorizeEndpointUrl;
 };
@@ -139,6 +139,7 @@ export const getCredentialsByToken = async (idToken: string) => {
 
 export const exchangeAuthorizationCode = async (
   authorizationCode: string,
+  codeVerifier: string,
   origin?: string,
   callbackOverride?: string
 ): Promise<Oauth2Token> => {
@@ -160,6 +161,10 @@ export const exchangeAuthorizationCode = async (
   data.append('client_id', cognitoParams.clientId);
   data.append('code', authorizationCode);
   data.append('redirect_uri', callbackUrl);
+
+  if (codeVerifier) {
+    data.append('code_verifier', codeVerifier);
+  }
 
   // make a request using the Axios instance
   const response = await axiosInstance.post('/oauth2/token', data, {

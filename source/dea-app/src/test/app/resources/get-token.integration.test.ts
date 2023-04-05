@@ -8,12 +8,13 @@ import { getToken } from '../../../app/resources/get-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
 import { Oauth2Token } from '../../../models/auth';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
-import { getAuthorizationCode } from '../../../test-e2e/helpers/auth-helper';
+import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../../test-e2e/helpers/auth-helper';
 
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 
 let cognitoParams: CognitoSsmParams;
+let pkceStrings: PkceStrings;
 
 describe('get-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
@@ -26,6 +27,7 @@ describe('get-token', () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
     cognitoParams = await getCognitoSsmParams();
+    pkceStrings = getPkceStrings();
   });
 
   afterAll(async () => {
@@ -39,10 +41,14 @@ describe('get-token', () => {
       cognitoParams.cognitoDomainUrl,
       authTestUrl,
       testUser,
-      cognitoHelper.testPassword
+      cognitoHelper.testPassword,
+      pkceStrings.code_challenge
     );
 
     const event = getDummyEvent({
+      body: JSON.stringify({
+        codeVerifier: pkceStrings.code_verifier,
+      }),
       pathParameters: {
         authCode: authCode,
       },
@@ -78,6 +84,9 @@ describe('get-token', () => {
 
   it('should throw an error if the authorization code is not valid', async () => {
     const event = getDummyEvent({
+      body: JSON.stringify({
+        codeVerifier: pkceStrings.code_verifier,
+      }),
       pathParameters: {
         authCode: 'DUMMYAUTHCODE',
       },

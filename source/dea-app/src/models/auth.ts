@@ -22,3 +22,7 @@ export interface RevokeToken {
 export interface IdToken {
   readonly idToken: string;
 }
+
+export interface ExchangeToken {
+  readonly codeVerifier: string;
+}

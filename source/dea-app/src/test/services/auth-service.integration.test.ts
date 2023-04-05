@@ -15,11 +15,12 @@ import {
 } from '../../app/services/auth-service';
 import { Oauth2Token } from '../../models/auth';
 import { IdTokenSchema } from '../../models/validation/auth';
-import { getAuthorizationCode } from '../../test-e2e/helpers/auth-helper';
+import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../test-e2e/resources/test-helpers';
 
 let cognitoParams: CognitoSsmParams;
+let pkceStrings: PkceStrings;
 let idToken: string;
 let refreshToken: string;
 
@@ -37,6 +38,7 @@ describe('auth service', () => {
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
     await cognitoHelper.createUser(testUser2, 'AuthTestGroup', firstName, lastName);
     cognitoParams = await getCognitoSsmParams();
+    pkceStrings = getPkceStrings();
   });
 
   afterAll(async () => {
@@ -44,7 +46,7 @@ describe('auth service', () => {
   });
 
   it('should return the correct login URL', async () => {
-    const loginUrl = await getLoginHostedUiUrl();
+    const loginUrl = await getLoginHostedUiUrl(cognitoParams.callbackUrl);
 
     expect(loginUrl).toEqual(
       `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`
@@ -58,9 +60,15 @@ describe('auth service', () => {
       cognitoParams.cognitoDomainUrl,
       authTestUrl,
       testUser,
-      cognitoHelper.testPassword
+      cognitoHelper.testPassword,
+      pkceStrings.code_challenge
     );
-    const tokens: Oauth2Token = await exchangeAuthorizationCode(authCode, undefined, authTestUrl);
+    const tokens: Oauth2Token = await exchangeAuthorizationCode(
+      authCode,
+      pkceStrings.code_verifier,
+      undefined,
+      authTestUrl
+    );
 
     // Store values for a later test
     idToken = tokens.id_token;
@@ -83,9 +91,15 @@ describe('auth service', () => {
       cognitoParams.cognitoDomainUrl,
       authTestUrl,
       testUser2,
-      cognitoHelper.testPassword
+      cognitoHelper.testPassword,
+      pkceStrings.code_challenge
     );
-    const { id_token } = await exchangeAuthorizationCode(authCode, undefined, authTestUrl);
+    const { id_token } = await exchangeAuthorizationCode(
+      authCode,
+      pkceStrings.code_verifier,
+      undefined,
+      authTestUrl
+    );
 
     // Assert if no id token fectched in exchangeAuthorizationCode
     expect(id_token).toBeTruthy();
@@ -109,14 +123,16 @@ describe('auth service', () => {
 
   it('should throw an error if the authorization code is not valid', async () => {
     const dummyAuthCode = 'DUMMY_AUTH_CODE';
-    await expect(exchangeAuthorizationCode(dummyAuthCode)).rejects.toThrow(
+    const dummyCodeVerifier = 'DUMMY_PKCE_VERIFIER';
+    await expect(exchangeAuthorizationCode(dummyAuthCode, dummyCodeVerifier)).rejects.toThrow(
       'Request failed with status code 400'
     );
   }, 40000);
 
   it('should throw an error if the id token is not valid', async () => {
     const dummyIdToken = 'DUMMY_ID_TOKEN';
-    await expect(exchangeAuthorizationCode(dummyIdToken)).rejects.toThrow(
+    const dummyCodeChallenge = 'DUMMY_CODE_CHALLENGE';
+    await expect(exchangeAuthorizationCode(dummyIdToken, dummyCodeChallenge)).rejects.toThrow(
       'Request failed with status code 400'
     );
   }, 40000);

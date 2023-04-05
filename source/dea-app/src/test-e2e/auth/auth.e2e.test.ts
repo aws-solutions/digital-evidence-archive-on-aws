@@ -7,10 +7,12 @@ import axios from 'axios';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
 import { getTokenPayload } from '../../cognito-token-helpers';
 import { Oauth2Token, RefreshToken, RevokeToken } from '../../models/auth';
-import { getAuthorizationCode } from '../helpers/auth-helper';
+import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../helpers/auth-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPI, callDeaAPIWithCreds, randomSuffix, validateStatus } from '../resources/test-helpers';
+
+let pkceStrings: PkceStrings;
 
 describe('API authentication', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
@@ -24,6 +26,7 @@ describe('API authentication', () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', 'Auth', 'Tester');
     [creds] = await cognitoHelper.getCredentialsForUser(testUser);
+    pkceStrings = getPkceStrings();
   });
 
   afterAll(async () => {
@@ -100,7 +103,7 @@ describe('API authentication', () => {
     const expectedUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
 
     // fetch url
-    const url = `${deaApiUrl}auth/loginUrl`;
+    const url = `${deaApiUrl}auth/loginUrl?callbackUrl=${cognitoParams.callbackUrl}`;
     const response = await client.get(url, { validateStatus });
     expect(response.data).toEqual(expectedUrl);
   });
@@ -118,13 +121,20 @@ describe('API authentication', () => {
       cognitoParams.cognitoDomainUrl,
       authTestUrl,
       testUser,
-      cognitoHelper.testPassword
+      cognitoHelper.testPassword,
+      pkceStrings.code_challenge
     );
 
     // 3. Exchange auth code for id token
     const url = `${deaApiUrl}auth/${authCode}/token`;
     const headers = { 'callback-override': authTestUrl };
-    const response = await client.post(url, undefined, { headers, validateStatus });
+    const response = await client.post(
+      url,
+      JSON.stringify({
+        codeVerifier: pkceStrings.code_verifier,
+      }),
+      { headers, validateStatus }
+    );
     expect(response.status).toEqual(200);
     const retrievedTokens: Oauth2Token = response.data;
     const idToken = retrievedTokens.id_token;

@@ -13,9 +13,9 @@ export interface Credentials {
   SessionToken: string;
 }
 
-export const getToken = async (authCode: string): Promise<Oauth2Token> => {
+export const getToken = async (authCode: string, codeVerifier?: string): Promise<Oauth2Token> => {
   try {
-    const response: Oauth2Token = await httpApiPost(`auth/${authCode}/token`, { authCode });
+    const response: Oauth2Token = await httpApiPost(`auth/${authCode}/token`, { codeVerifier });
     return response;
   } catch (error) {
     console.error(error);
@@ -33,9 +33,9 @@ export const getCredentials = async (idToken: string) => {
   }
 };
 
-export const getLoginUrl = async () => {
+export const getLoginUrl = async (callbackUrl: string) => {
   try {
-    const response: string = await httpApiGet(`auth/loginUrl`, {});
+    const response: string = await httpApiGet(`auth/loginUrl?callbackUrl=${callbackUrl}`, {});
     return response;
   } catch (error) {
     console.error(error);
@@ -58,7 +58,7 @@ export const revokeToken = async (revokeToken: RevokeToken): Promise<void> => {
 };
 
 export const useAvailableEndpoints = (): DeaListResult<string> => {
-  const {data, error} = useSWR('availableEndpoints', httpApiGet<{endpoints: string[]}>);
+  const { data, error } = useSWR('availableEndpoints', httpApiGet<{ endpoints: string[] }>);
 
-  return {data: data?.endpoints ?? [], isLoading: !data && !error};
+  return { data: data?.endpoints ?? [], isLoading: !data && !error };
 };

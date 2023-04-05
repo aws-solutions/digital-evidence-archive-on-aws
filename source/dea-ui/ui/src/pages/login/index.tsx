@@ -17,7 +17,9 @@ export default function LoginPage() {
       const authCode = typeof router.query.code === 'string' ? router.query.code : '';
 
       if (authCode) {
-        const response = await getToken(authCode);
+        const codeVerifier = localStorage.getItem('pkceVerifier');
+        const response = await getToken(authCode, codeVerifier || undefined);
+
         idTokenRef.current = response.id_token;
         const refreshToken = response.refresh_token;
         const credentials = await getCredentials(idTokenRef.current);
