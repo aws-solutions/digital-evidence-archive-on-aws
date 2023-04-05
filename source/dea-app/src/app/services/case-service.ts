@@ -121,9 +121,9 @@ export const updateCaseStatus = async (
   }
 
   try {
-    const s3FileKeys = await CaseFilePersistence.getAllCaseFileS3Keys(deaCase.ulid, repositoryProvider);
-    console.log(s3FileKeys);
-    const s3BatchJobId = await startDeleteCaseFilesS3BatchJob(deaCase.ulid, s3FileKeys, datasetsProvider);
+    const s3Objects = await CaseFilePersistence.getAllCaseFileS3Objects(deaCase.ulid, repositoryProvider);
+    console.log(s3Objects);
+    const s3BatchJobId = await startDeleteCaseFilesS3BatchJob(deaCase.ulid, s3Objects, datasetsProvider);
     return CasePersistence.updateCaseStatus(
       updatedCase,
       newStatus,

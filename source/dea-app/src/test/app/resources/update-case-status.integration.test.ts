@@ -33,6 +33,7 @@ import { createUser } from '../../../persistence/user';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
+  callCompleteCaseFileUpload,
   callInitiateCaseFileUpload,
   checkApiSucceeded,
   DATASETS_PROVIDER,
@@ -46,6 +47,7 @@ let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput>;
 const EVENT = getDummyEvent();
 const S3_BATCH_JOB_ID = 'ho ho ho';
 const ETAG = 'hehe';
+const VERSION_ID = 'haha';
 
 describe('update case status', () => {
   beforeAll(async () => {
@@ -71,9 +73,15 @@ describe('update case status', () => {
     // reset mock so that each test can validate its own set of mock calls
     s3Mock = mockClient(S3Client);
     s3Mock.resolves({
-      UploadId: 'haha',
-      VersionId: 'lol',
+      UploadId: 'lol',
+      VersionId: VERSION_ID,
       ETag: ETAG,
+      Parts: [
+        {
+          ETag: 'I am an etag',
+          PartNumber: 99,
+        },
+      ],
     });
 
     s3ControlMock = mockClient(S3ControlClient);
@@ -90,6 +98,7 @@ describe('update case status', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, createdCase.ulid, 'file1');
+    await callCompleteCaseFileUpload(EVENT, repositoryProvider, caseFile.ulid ?? fail(), createdCase.ulid);
 
     const updatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
     validateCaseUpdatedAsExpected(
@@ -100,30 +109,8 @@ describe('update case status', () => {
       S3_BATCH_JOB_ID
     );
 
-    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 1);
-    expect(s3Mock).toHaveReceivedCommandWith(PutObjectCommand, {
-      Bucket: DATASETS_PROVIDER.bucketName,
-      Body: `${DATASETS_PROVIDER.bucketName},${createdCase.ulid}/${caseFile.ulid}`,
-    });
-
-    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 1);
-    expect(s3ControlMock).toHaveReceivedCommandWith(CreateJobCommand, {
-      ConfirmationRequired: false,
-      RoleArn: DATASETS_PROVIDER.s3BatchDeleteCaseFileLambdaRole,
-      Priority: 1,
-      Operation: {
-        LambdaInvoke: {
-          FunctionArn: DATASETS_PROVIDER.s3BatchDeleteCaseFileLambdaArn,
-        },
-      },
-      Report: {
-        Enabled: true,
-        Bucket: DATASETS_PROVIDER.bucketName,
-        Prefix: 'delete-case-file-reports',
-        Format: 'Report_CSV_20180820',
-        ReportScope: JobReportScope.AllTasks,
-      },
-    });
+    validateS3Mocks(createdCase.ulid, caseFile.ulid);
+    validateS3ControlMocks();
   });
 
   it('should update filesStatus to DELETE_FAILED when it fails to create manifest', async () => {
@@ -134,6 +121,7 @@ describe('update case status', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, createdCase.ulid, 'file1');
+    await callCompleteCaseFileUpload(EVENT, repositoryProvider, caseFile.ulid ?? fail(), createdCase.ulid);
 
     s3Mock.resolves({
       ETag: undefined,
@@ -150,11 +138,7 @@ describe('update case status', () => {
       CaseFileStatus.DELETE_FAILED
     );
 
-    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 1);
-    expect(s3Mock).toHaveReceivedCommandWith(PutObjectCommand, {
-      Bucket: DATASETS_PROVIDER.bucketName,
-      Body: `${DATASETS_PROVIDER.bucketName},${createdCase.ulid}/${caseFile.ulid}`,
-    });
+    validateS3Mocks(createdCase.ulid, caseFile.ulid);
     expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
   });
 
@@ -166,6 +150,7 @@ describe('update case status', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, createdCase.ulid, 'file1');
+    await callCompleteCaseFileUpload(EVENT, repositoryProvider, caseFile.ulid ?? fail(), createdCase.ulid);
 
     s3ControlMock.resolves({
       JobId: undefined,
@@ -182,29 +167,8 @@ describe('update case status', () => {
       CaseFileStatus.DELETE_FAILED
     );
 
-    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 1);
-    expect(s3Mock).toHaveReceivedCommandWith(PutObjectCommand, {
-      Bucket: DATASETS_PROVIDER.bucketName,
-      Body: `${DATASETS_PROVIDER.bucketName},${createdCase.ulid}/${caseFile.ulid}`,
-    });
-    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 1);
-    expect(s3ControlMock).toHaveReceivedCommandWith(CreateJobCommand, {
-      ConfirmationRequired: false,
-      RoleArn: DATASETS_PROVIDER.s3BatchDeleteCaseFileLambdaRole,
-      Priority: 1,
-      Operation: {
-        LambdaInvoke: {
-          FunctionArn: DATASETS_PROVIDER.s3BatchDeleteCaseFileLambdaArn,
-        },
-      },
-      Report: {
-        Enabled: true,
-        Bucket: DATASETS_PROVIDER.bucketName,
-        Prefix: 'delete-case-file-reports',
-        Format: 'Report_CSV_20180820',
-        ReportScope: JobReportScope.AllTasks,
-      },
-    });
+    validateS3Mocks(createdCase.ulid, caseFile.ulid);
+    validateS3ControlMocks();
   });
 
   it('delete should succeed with no files to delete', async () => {
@@ -428,5 +392,34 @@ function validateCaseUpdatedAsExpected(
     status,
     filesStatus,
     s3BatchJobId,
+  });
+}
+
+function validateS3Mocks(caseId: string, fileId?: string) {
+  expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 1);
+  expect(s3Mock).toHaveReceivedCommandWith(PutObjectCommand, {
+    Bucket: DATASETS_PROVIDER.bucketName,
+    Body: `${DATASETS_PROVIDER.bucketName},${caseId}/${fileId},${VERSION_ID}`,
+  });
+}
+
+function validateS3ControlMocks() {
+  expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 1);
+  expect(s3ControlMock).toHaveReceivedCommandWith(CreateJobCommand, {
+    ConfirmationRequired: false,
+    RoleArn: DATASETS_PROVIDER.s3BatchDeleteCaseFileLambdaRole,
+    Priority: 1,
+    Operation: {
+      LambdaInvoke: {
+        FunctionArn: DATASETS_PROVIDER.s3BatchDeleteCaseFileLambdaArn,
+      },
+    },
+    Report: {
+      Enabled: true,
+      Bucket: DATASETS_PROVIDER.bucketName,
+      Prefix: 'delete-case-file-reports',
+      Format: 'Report_CSV_20180820',
+      ReportScope: JobReportScope.AllTasks,
+    },
   });
 }

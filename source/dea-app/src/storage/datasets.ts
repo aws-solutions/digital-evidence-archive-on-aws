@@ -15,6 +15,7 @@ import {
   PutObjectCommand,
   ObjectLockLegalHoldStatus,
   GetObjectCommand,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { S3ControlClient, CreateJobCommand, JobReportScope } from '@aws-sdk/client-s3-control';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -30,6 +31,11 @@ export interface DatasetsProvider {
   presignedCommandExpirySeconds: number;
   s3BatchDeleteCaseFileLambdaArn: string;
   s3BatchDeleteCaseFileLambdaRole: string;
+}
+
+export interface S3Object {
+  key: string;
+  versionId: string;
 }
 
 export const defaultDatasetsProvider = {
@@ -135,6 +141,7 @@ export const completeUploadForCaseFile = async (
       Bucket: datasetsProvider.bucketName,
       Key: s3Key,
       LegalHold: { Status: ObjectLockLegalHoldStatus.ON },
+      VersionId: uploadResponse.VersionId,
     })
   );
 };
@@ -160,28 +167,51 @@ export const getPresignedUrlForDownload = async (
 
 export const startDeleteCaseFilesS3BatchJob = async (
   caseId: string,
-  s3FileKeys: string[],
+  s3Objects: S3Object[],
   datasetsProvider: DatasetsProvider
 ): Promise<string | undefined> => {
-  if (s3FileKeys.length === 0) {
+  if (s3Objects.length === 0) {
     logger.info('Not starting delete batch job because there are no files to delete');
     return;
   }
-  logger.info('Creating delete files batch job', { fileCount: s3FileKeys.length, caseId });
+  logger.info('Creating delete files batch job', { fileCount: s3Objects.length, caseId });
 
   const manifestFileName = `delete-case-file-manifests/case-${caseId}-delete-files-job-${Date.now()}.csv`;
-  const manifestFileEtag = await _createJobManifestFile(s3FileKeys, manifestFileName, datasetsProvider);
+  const manifestFileEtag = await _createJobManifestFile(s3Objects, manifestFileName, datasetsProvider);
   return _createDeleteCaseFileBatchJob(manifestFileName, manifestFileEtag, datasetsProvider);
 };
 
+export const deleteCaseFile = async (
+  s3Key: string,
+  s3VersionId: string,
+  datasetsProvider: DatasetsProvider
+): Promise<void> => {
+  await datasetsProvider.s3Client.send(
+    new PutObjectLegalHoldCommand({
+      Bucket: datasetsProvider.bucketName,
+      Key: s3Key,
+      LegalHold: { Status: ObjectLockLegalHoldStatus.OFF },
+      VersionId: s3VersionId,
+    })
+  );
+
+  await datasetsProvider.s3Client.send(
+    new DeleteObjectCommand({
+      Bucket: datasetsProvider.bucketName,
+      Key: s3Key,
+      VersionId: s3VersionId,
+    })
+  );
+};
+
 async function _createJobManifestFile(
-  s3FileKeys: string[],
+  s3Objects: S3Object[],
   manifestFileName: string,
   datasetsProvider: DatasetsProvider
 ): Promise<string> {
   logger.info('Creating job manifest file', { manifestFileName });
   const bucketName = datasetsProvider.bucketName;
-  const manifestCsv = s3FileKeys.map((key) => `${bucketName},${key}`).join('\r\n');
+  const manifestCsv = s3Objects.map((key) => `${bucketName},${key.key},${key.versionId}`).join('\r\n');
 
   console.log(manifestCsv);
   const response = await datasetsProvider.s3Client.send(
@@ -205,7 +235,7 @@ const _createDeleteCaseFileBatchJob = async (
   manifestFileName: string,
   manifestFileEtag: string,
   datasetsProvider: DatasetsProvider
-) => {
+): Promise<string> => {
   const client = new S3ControlClient({ region });
   const accountId = datasetsProvider.s3BatchDeleteCaseFileLambdaRole.split(':')[4];
   const input = {
@@ -228,7 +258,7 @@ const _createDeleteCaseFileBatchJob = async (
     Manifest: {
       Spec: {
         Format: 'S3BatchOperations_CSV_20180820',
-        Fields: ['Bucket', 'Key'],
+        Fields: ['Bucket', 'Key', 'VersionId'],
       },
       Location: {
         ObjectArn: `s3://${datasetsProvider.bucketName}/${manifestFileName}`,
