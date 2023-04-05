@@ -315,11 +315,11 @@ export class DeaAuthConstruct extends Construct {
       standardAttributes: {
         familyName: {
           required: true,
-          mutable: false,
+          mutable: true,
         },
         givenName: {
           required: true,
-          mutable: false,
+          mutable: true,
         },
       },
       userInvitation: {
@@ -364,29 +364,6 @@ export class DeaAuthConstruct extends Construct {
       callbackUrls.push(authTestUrl);
     }
 
-    const poolClient = userPool.addClient('dea-app-client', {
-      accessTokenValidity: accessTokenValidity,
-      // use Server-side authentication workflow
-      authFlows: {
-        adminUserPassword: true,
-        userPassword: true,
-      },
-      enableTokenRevocation: true,
-      generateSecret: false,
-      idTokenValidity: idTokenValidity,
-
-      oAuth: {
-        callbackUrls,
-        flows: {
-          authorizationCodeGrant: true,
-        },
-      },
-
-      preventUserExistenceErrors: true,
-      refreshTokenValidity: refreshTokenValidity,
-      userPoolClientName: 'dea-app-client',
-    });
-
     // If external IDP information was provided in the config,
     // integrate it into the user pool here
     const idpInfo = deaConfig.idpMetadata();
@@ -415,6 +392,29 @@ export class DeaAuthConstruct extends Construct {
         allowedPattern: '.*',
       });
     }
+
+    const poolClient = userPool.addClient('dea-app-client', {
+      accessTokenValidity: accessTokenValidity,
+      // use Server-side authentication workflow
+      authFlows: {
+        adminUserPassword: true,
+        userPassword: true,
+      },
+      enableTokenRevocation: true,
+      generateSecret: false,
+      idTokenValidity: idTokenValidity,
+
+      oAuth: {
+        callbackUrls,
+        flows: {
+          authorizationCodeGrant: true,
+        },
+      },
+
+      preventUserExistenceErrors: true,
+      refreshTokenValidity: refreshTokenValidity,
+      userPoolClientName: 'dea-app-client',
+    });
 
     return [userPool, poolClient, newDomain.baseUrl()];
   }
