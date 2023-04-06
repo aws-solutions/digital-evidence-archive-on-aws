@@ -7,9 +7,18 @@
       "name": "dea-app:Integration Debug",
       "program": "${workspaceFolder}/source/dea-app/node_modules/@rushstack/heft/lib/start.js",
       "cwd": "${workspaceFolder}/source/dea-app/",
-      "args": ["--debug", "test", "--no-build", "--clean", "--test-path-pattern", ".*/*integration.test.*"],
+      "args": [
+        "--debug",
+        "test",
+        "--no-build",
+        "--clean",
+        "--test-path-pattern",
+        ".*/*integration.test.*"
+      ],
       "console": "integratedTerminal",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "type": "node",
@@ -17,9 +26,18 @@
       "name": "dea-app:Unit Debug",
       "program": "${workspaceFolder}/source/dea-app/node_modules/@rushstack/heft/lib/start.js",
       "cwd": "${workspaceFolder}/source/dea-app/",
-      "args": ["--debug", "test", "--no-build", "--clean", "--test-path-pattern", ".*/*unit.test.*"],
+      "args": [
+        "--debug",
+        "test",
+        "--no-build",
+        "--clean",
+        "--test-path-pattern",
+        ".*/*unit.test.*"
+      ],
       "console": "integratedTerminal",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "type": "node",
@@ -27,9 +45,18 @@
       "name": "dea-backend:Integration Debug",
       "program": "${workspaceFolder}/source/dea-backend/node_modules/@rushstack/heft/lib/start.js",
       "cwd": "${workspaceFolder}/source/dea-backend/",
-      "args": ["--debug", "test", "--no-build", "--clean", "--test-path-pattern", ".*/*integration.test.*"],
+      "args": [
+        "--debug",
+        "test",
+        "--no-build",
+        "--clean",
+        "--test-path-pattern",
+        ".*/*integration.test.*"
+      ],
       "console": "integratedTerminal",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "type": "node",
@@ -37,9 +64,18 @@
       "name": "dea-backend:Unit Debug",
       "program": "${workspaceFolder}/source/dea-backend/node_modules/@rushstack/heft/lib/start.js",
       "cwd": "${workspaceFolder}/source/dea-backend/",
-      "args": ["--debug", "test", "--no-build", "--clean", "--test-path-pattern", ".*/*unit.test.*"],
+      "args": [
+        "--debug",
+        "test",
+        "--no-build",
+        "--clean",
+        "--test-path-pattern",
+        ".*/*unit.test.*"
+      ],
       "console": "integratedTerminal",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "type": "node",
@@ -47,9 +83,18 @@
       "name": "dea-main:Integration Debug",
       "program": "${workspaceFolder}/source/dea-main/node_modules/@rushstack/heft/lib/start.js",
       "cwd": "${workspaceFolder}/source/dea-main/",
-      "args": ["--debug", "test", "--no-build", "--clean", "--test-path-pattern", ".*/*integration.test.*"],
+      "args": [
+        "--debug",
+        "test",
+        "--no-build",
+        "--clean",
+        "--test-path-pattern",
+        ".*/*integration.test.*"
+      ],
       "console": "integratedTerminal",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     },
     {
       "type": "node",
@@ -57,9 +102,18 @@
       "name": "dea-main:Unit Debug",
       "program": "${workspaceFolder}/source/dea-main/node_modules/@rushstack/heft/lib/start.js",
       "cwd": "${workspaceFolder}/source/dea-main/",
-      "args": ["--debug", "test", "--no-build", "--clean", "--test-path-pattern", ".*/*unit.test.*"],
+      "args": [
+        "--debug",
+        "test",
+        "--no-build",
+        "--clean",
+        "--test-path-pattern",
+        ".*/*unit.test.*"
+      ],
       "console": "integratedTerminal",
-      "sourceMaps": true
+      "sourceMaps": true,
+      "outFiles": [],
+      "resolveSourceMapLocations": null
     }
   ]
 }

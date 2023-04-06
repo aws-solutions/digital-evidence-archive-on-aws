@@ -4,6 +4,7 @@
  */
 import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
+import { Oauth2Token } from '../../models/auth';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
@@ -17,7 +18,7 @@ describe('create cases api', () => {
   const caseIdsToDelete: string[] = [];
 
   let creds: Credentials;
-  let idToken: string;
+  let idToken: Oauth2Token;
 
   beforeAll(async () => {
     // Create user in test group

@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { Oauth2Token } from '@aws/dea-app';
 import { ValidationError } from '@aws/dea-app/lib/app/exceptions/validation-exception';
 import { DEAGatewayProxyHandler } from '@aws/dea-app/lib/app/resources/dea-gateway-proxy-handler';
 import { runPreExecutionChecks } from '@aws/dea-app/lib/app/resources/dea-lambda-utils';
@@ -139,15 +140,15 @@ const getInitialIdentity = (event: APIGatewayProxyEvent): ActorIdentity => {
         authCode,
       };
     }
+  }
 
-    const idToken = event.pathParameters['idToken'];
-    if (idToken) {
-      return {
-        idType: IdentityType.ID_TOKEN_REQUESTOR,
-        sourceIp: event.requestContext.identity.sourceIp,
-        idToken,
-      };
-    }
+  if (event.headers['cookie']) {
+    const token: Oauth2Token = JSON.parse(event.headers['cookie'].replace('idToken=', ''));
+    return {
+      idType: IdentityType.ID_TOKEN_REQUESTOR,
+      sourceIp: event.requestContext.identity.sourceIp,
+      idToken: token.id_token,
+    };
   }
 
   return {

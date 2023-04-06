@@ -6,6 +6,7 @@
 import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
 import sha256 from 'crypto-js/sha256';
+import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { DeaCaseFile } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
@@ -41,7 +42,7 @@ describe('Test case file APIs', () => {
   jest.setTimeout(30000);
 
   let creds: Credentials;
-  let idToken: string;
+  let idToken: Oauth2Token;
 
   beforeAll(async () => {
     // Create user in test group
@@ -167,7 +168,7 @@ describe('Test case file APIs', () => {
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function createCase(idToken: string, creds: Credentials): Promise<DeaCase> {
+async function createCase(idToken: Oauth2Token, creds: Credentials): Promise<DeaCase> {
   const caseName = `CASE with files_${randomSuffix()}`;
   return await createCaseSuccess(
     DEA_API_URL,

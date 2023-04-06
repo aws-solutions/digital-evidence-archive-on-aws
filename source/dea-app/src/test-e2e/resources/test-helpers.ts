@@ -15,14 +15,15 @@ import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 import Joi from 'joi';
+import { Oauth2Token } from '../../models/auth';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { DeaCaseFile } from '../../models/case-file';
 import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
 import { caseFileResponseSchema } from '../../models/validation/case-file';
 import {
-  ResponseCaseFilePage,
   CHUNK_SIZE_MB,
+  ResponseCaseFilePage,
 } from '../../test/app/resources/case-file-integration-test-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -49,7 +50,7 @@ export interface s3Object {
 export async function deleteCase(
   baseUrl: string,
   caseUlid: string,
-  idToken: string,
+  idToken: Oauth2Token,
   creds: Credentials
 ): Promise<void> {
   const response = await callDeaAPIWithCreds(`${baseUrl}cases/${caseUlid}/details`, 'DELETE', idToken, creds);
@@ -60,7 +61,7 @@ export async function deleteCase(
 export async function createCaseSuccess(
   baseUrl: string,
   deaCase: DeaCaseInput,
-  idToken: string,
+  idToken: Oauth2Token,
   creds: Credentials
 ): Promise<DeaCase> {
   const response = await callDeaAPIWithCreds(`${baseUrl}cases`, 'POST', idToken, creds, deaCase);
@@ -90,13 +91,13 @@ export async function callDeaAPI(
 export async function callDeaAPIWithCreds(
   url: string,
   method: DeaHttpMethod,
-  idToken: string,
+  cookie: Oauth2Token,
   creds: Credentials,
   data?: unknown
 ) {
   const client = axios.create({
     headers: {
-      idToken: idToken,
+      cookie: `idToken=${JSON.stringify(cookie)}`,
     },
   });
 
@@ -110,7 +111,7 @@ export async function callDeaAPIWithCreds(
 
   client.interceptors.request.use(interceptor);
 
-  client.defaults.headers.common['idToken'] = idToken;
+  client.defaults.headers.common['cookie'] = `idToken=${JSON.stringify(cookie)}`;
 
   switch (method) {
     case 'GET':
@@ -135,7 +136,7 @@ export async function callDeaAPIWithCreds(
 export const getSpecificUserByFirstName = async (
   deaApiUrl: string,
   userFirstName: string,
-  token: string,
+  token: Oauth2Token,
   creds: Credentials
 ): Promise<DeaUser> => {
   const userResponse = await callDeaAPIWithCreds(
@@ -157,7 +158,7 @@ export const getSpecificUserByFirstName = async (
 
 export const initiateCaseFileUploadSuccess = async (
   deaApiUrl: string,
-  idToken: string,
+  idToken: Oauth2Token,
   creds: Credentials,
   caseUlid: string | undefined,
   fileName: string,
@@ -189,7 +190,7 @@ export const initiateCaseFileUploadSuccess = async (
 
 export const listCaseFilesSuccess = async (
   deaApiUrl: string,
-  idToken: string,
+  idToken: Oauth2Token,
   creds: Credentials,
   caseUlid: string | undefined,
   filePath: string
@@ -207,7 +208,7 @@ export const listCaseFilesSuccess = async (
 
 export const describeCaseFileDetailsSuccess = async (
   deaApiUrl: string,
-  idToken: string,
+  idToken: Oauth2Token,
   creds: Credentials,
   caseUlid: string | undefined,
   fileUlid: string | undefined
@@ -225,7 +226,7 @@ export const describeCaseFileDetailsSuccess = async (
 
 export const getCaseFileDownloadUrl = async (
   deaApiUrl: string,
-  idToken: string,
+  idToken: Oauth2Token,
   creds: Credentials,
   caseUlid: string | undefined,
   fileUlid: string | undefined
@@ -281,7 +282,7 @@ export const downloadContentFromS3 = async (
 
 export const completeCaseFileUploadSuccess = async (
   deaApiUrl: string,
-  idToken: string,
+  idToken: Oauth2Token,
   creds: Credentials,
   caseUlid: string | undefined,
   ulid: string | undefined,

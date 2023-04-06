@@ -6,12 +6,10 @@ import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { getCredentials } from '../../../app/resources/get-credentials';
 import { getToken } from '../../../app/resources/get-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
-import { Oauth2Token } from '../../../models/auth';
-import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../../test-e2e/helpers/auth-helper';
 
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent, setCookieToCookie } from '../../integration-objects';
 
 let cognitoParams: CognitoSsmParams;
 let pkceStrings: PkceStrings;
@@ -60,15 +58,13 @@ describe('get-token', () => {
     const response = await getToken(event, dummyContext);
     expect(response.statusCode).toEqual(200);
 
-    if (!response.body) {
+    if (!response.headers) {
       fail();
     }
 
-    const retrievedTokens: Oauth2Token = jsonParseWithDates(response.body);
-
     const credentialsEvent = getDummyEvent({
-      pathParameters: {
-        idToken: retrievedTokens.id_token,
+      headers: {
+        cookie: setCookieToCookie(response),
       },
     });
 

@@ -5,6 +5,7 @@
 
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
+import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { caseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
@@ -20,7 +21,7 @@ describe('get all cases api', () => {
   const caseIdsToDelete: string[] = [];
 
   let creds: Credentials;
-  let idToken: string;
+  let idToken: Oauth2Token;
 
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'CreateCasesTestGroup', 'GetAllCases', 'TestUser');

@@ -14,7 +14,7 @@ import {
   useRefreshToken,
 } from '../../app/services/auth-service';
 import { Oauth2Token } from '../../models/auth';
-import { IdTokenSchema } from '../../models/validation/auth';
+import { Oauth2TokenSchema } from '../../models/validation/auth';
 import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../test-e2e/resources/test-helpers';
@@ -111,7 +111,7 @@ describe('auth service', () => {
 
   it('successfully obtain new id token using refresh token. Revoking the token should prevent future use for the refresh token', async () => {
     const response = await useRefreshToken(refreshToken);
-    Joi.assert(response, IdTokenSchema);
+    Joi.assert(response, Oauth2TokenSchema);
 
     // now revoke the token
     const revokeResponse = await revokeRefreshToken(refreshToken);

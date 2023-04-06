@@ -13,7 +13,7 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 import axios from 'axios';
 import { getRequiredEnv, getRequiredHeader } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
-import { IdToken, Oauth2Token } from '../../models/auth';
+import { Oauth2Token } from '../../models/auth';
 
 const stage = getRequiredEnv('STAGE', 'chewbacca');
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
@@ -202,7 +202,7 @@ export const exchangeAuthorizationCode = async (
   return response.data;
 };
 
-export const useRefreshToken = async (refreshToken: string): Promise<IdToken> => {
+export const useRefreshToken = async (refreshToken: string): Promise<Oauth2Token> => {
   const cognitoParams = await getCognitoSsmParams();
   const axiosInstance = axios.create({
     baseURL: cognitoParams.cognitoDomainUrl,
@@ -226,9 +226,7 @@ export const useRefreshToken = async (refreshToken: string): Promise<IdToken> =>
     throw new Error(`Request failed with status code ${response.status}`);
   }
 
-  return {
-    idToken: response.data.id_token,
-  };
+  return response.data;
 };
 
 export const revokeRefreshToken = async (refreshToken: string) => {

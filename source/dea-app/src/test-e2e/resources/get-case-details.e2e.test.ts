@@ -6,19 +6,21 @@
 import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
+import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { caseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
+import { callDeaAPIWithCreds, createCaseSuccess, deleteCase, randomSuffix } from './test-helpers';
 
 describe('get case api', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
-  const testUser = 'getCaseE2ETestUser';
+  const suffix = randomSuffix(5);
+  const testUser = `getCaseE2ETestUser${suffix}`;
   const deaApiUrl = testEnv.apiUrlOutput;
   let testUserCreds: Credentials;
-  let testUserToken: string;
+  let testUserToken: Oauth2Token;
 
   beforeAll(async () => {
     // Create user in test group
@@ -32,7 +34,7 @@ describe('get case api', () => {
 
   it('should get a created case', async () => {
     // Create Case
-    const caseName = 'caseWithDetails';
+    const caseName = `caseWithDetails${suffix}`;
     const createdCase = await createCaseSuccess(
       deaApiUrl,
       {

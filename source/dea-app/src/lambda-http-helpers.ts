@@ -7,6 +7,8 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 import Joi from 'joi';
 import { ValidationError } from './app/exceptions/validation-exception';
 import { logger } from './logger';
+import { Oauth2Token } from './models/auth';
+import { Oauth2TokenSchema } from './models/validation/auth';
 import { base64String, paginationLimit } from './models/validation/joi-common';
 
 export interface PaginationParams {
@@ -103,6 +105,22 @@ export const getRequiredHeader = (event: APIGatewayProxyEvent, headerName: strin
     headers: JSON.stringify(event.headers),
   });
   throw new ValidationError(`Required header '${headerName}' is missing.`);
+};
+
+export const getOauthToken = (event: APIGatewayProxyEvent): Oauth2Token => {
+  if (event.headers['cookie'] && event.headers['cookie'].includes('idToken=')) {
+    const token: Oauth2Token = JSON.parse(event.headers['cookie'].replace('idToken=', ''));
+    Joi.assert(token, Oauth2TokenSchema);
+    return token;
+  }
+
+  throw new ValidationError(`invalid oauth`);
+};
+
+export const getAllowedOrigin = (): string | undefined => {
+  const value = process.env['ALLOWED_ORIGIN'];
+
+  return value;
 };
 
 export const getUserUlid = (event: APIGatewayProxyEvent): string => {
