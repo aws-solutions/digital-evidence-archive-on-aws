@@ -12,6 +12,7 @@ import { convictConfig } from '../../config';
 import { DeaAuditTrail } from '../../constructs/dea-audit-trail';
 import { DeaAuthConstruct } from '../../constructs/dea-auth';
 import { DeaBackendConstruct } from '../../constructs/dea-backend-stack';
+import { DeaEventHandlers } from '../../constructs/dea-event-handlers';
 import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
 import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
@@ -49,11 +50,18 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
     });
+    const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
+      deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
+      deaTableArn: backend.deaTable.tableArn,
+      lambdaEnv: {},
+      kmsKey: key,
+    });
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
       deaDatasetsBucketName: backend.datasetsBucket.bucketName,
+      s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       kmsKey: key,
       region: stack.region,
@@ -117,12 +125,19 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
     });
+    const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
+      deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
+      deaTableArn: backend.deaTable.tableArn,
+      lambdaEnv: {},
+      kmsKey: key,
+    });
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
       deaDatasetsBucketName: backend.datasetsBucket.bucketName,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
+      s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
       kmsKey: key,
       region: stack.region,
       accountId: stack.account,

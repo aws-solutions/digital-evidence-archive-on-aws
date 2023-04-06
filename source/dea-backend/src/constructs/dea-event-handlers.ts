@@ -6,6 +6,7 @@
 import path from 'path';
 import { Duration } from 'aws-cdk-lib';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Key } from 'aws-cdk-lib/aws-kms';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
@@ -20,22 +21,30 @@ interface DeaEventHandlerProps {
   deaTableArn: string;
   deaDatasetsBucketArn: string;
   lambdaEnv: LambdaEnvironment;
+  kmsKey: Key;
 }
 
 export class DeaEventHandlers extends Construct {
   public lambdaBaseRole: Role;
   public s3BatchDeleteCaseFileLambda: NodejsFunction;
+  public s3BatchDeleteCaseFileRole: Role;
 
   public constructor(scope: Construct, stackName: string, props: DeaEventHandlerProps) {
     super(scope, stackName);
 
-    this.lambdaBaseRole = this._createLambdaBaseRole(props.deaTableArn, props.deaDatasetsBucketArn);
+    this.lambdaBaseRole = this._createLambdaBaseRole(
+      props.deaTableArn,
+      props.deaDatasetsBucketArn,
+      props.kmsKey.keyArn
+    );
 
     this.s3BatchDeleteCaseFileLambda = this._createLambda(
       `s3_batch_delete_case_file`,
       '../../src/handlers/s3-batch-delete-case-file-handler.ts',
       props.lambdaEnv
     );
+
+    this.s3BatchDeleteCaseFileRole = this._createS3BatchRole(props.deaDatasetsBucketArn);
   }
 
   private _createLambda(id: string, pathToSource: string, lambdaEnv: LambdaEnvironment): NodejsFunction {
@@ -66,7 +75,29 @@ export class DeaEventHandlers extends Construct {
     return lambda;
   }
 
-  private _createLambdaBaseRole(tableArn: string, datasetsBucketArn: string): Role {
+  private _createS3BatchRole(datasetsBucketArn: string): Role {
+    const role = new Role(this, 's3-batch-delete-case-file-role', {
+      assumedBy: new ServicePrincipal('batchoperations.s3.amazonaws.com'),
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:GetObject', 's3:GetObjectVersion', 's3:PutObject'],
+        resources: [`${datasetsBucketArn}/manifests/*`, `${datasetsBucketArn}/reports/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['lambda:InvokeFunction'],
+        resources: [this.s3BatchDeleteCaseFileLambda.functionArn],
+      })
+    );
+
+    return role;
+  }
+
+  private _createLambdaBaseRole(tableArn: string, datasetsBucketArn: string, kmsKeyArn: string): Role {
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
     );
@@ -76,9 +107,15 @@ export class DeaEventHandlers extends Construct {
     });
 
     role.addToPolicy(
-      // TODO before PR: reduce permission-set further if possible
       new PolicyStatement({
-        actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query', 'dynamodb:UpdateItem'],
+        // NOTE: REJECT PR IF WILDCARD NOT REMOVED
+        actions: [
+          'dynamodb:GetItem',
+          'dynamodb:PutItem',
+          'dynamodb:Query',
+          'dynamodb:UpdateItem',
+          'dynamodb:*',
+        ],
         resources: [tableArn, `${tableArn}/index/GSI1`, `${tableArn}/index/GSI2`],
       })
     );
@@ -90,8 +127,17 @@ export class DeaEventHandlers extends Construct {
           's3:DeleteObjectVersion',
           's3:GetObjectLegalHold',
           's3:PutObjectLegalHold',
+          // NOTE: REJECT PR IF WILDCARD NOT REMOVED
+          's3:*',
         ],
         resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [kmsKeyArn],
       })
     );
 

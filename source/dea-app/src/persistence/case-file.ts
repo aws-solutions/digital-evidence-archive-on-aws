@@ -57,7 +57,7 @@ export const getAllCaseFileS3Objects = async (
     },
     {
       fields: ['ulid', 'versionId'],
-      where: '${isFile} = {true}',
+      where: '${isFile} = {true} AND ${status} <> {DELETED}',
     }
   );
   return items.map((item) => {
@@ -78,14 +78,10 @@ export const updateCaseFileStatus = async (
     },
     {
       set: { status },
-      return: 'get',
     }
   );
 
-  if (!caseFileEntity) {
-    return caseFileEntity;
-  }
-  return caseFileFromEntity(caseFileEntity);
+  return caseFileEntity ? caseFileFromEntity(caseFileEntity) : caseFileEntity;
 };
 
 const createCaseFilePaths = async (deaCaseFile: DeaCaseFile, repositoryProvider: ModelRepositoryProvider) => {

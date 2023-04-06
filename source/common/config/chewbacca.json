@@ -31,6 +31,10 @@
           "method": "POST"
         },
         {
+          "path": "/cases/{caseId}/status",
+          "method": "PUT"
+        },
+        {
           "path": "/cases/{caseId}/userMemberships",
           "method": "GET"
         },

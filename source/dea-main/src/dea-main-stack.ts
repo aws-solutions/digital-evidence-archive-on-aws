@@ -56,7 +56,9 @@ export class DeaMainStack extends cdk.Stack {
     const deaEventHandlers = new DeaEventHandlers(this, 'DeaEventHandlers', {
       deaTableArn: backendConstruct.deaTable.tableArn,
       deaDatasetsBucketArn: backendConstruct.datasetsBucket.bucketArn,
+      kmsKey,
       lambdaEnv: {
+        AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backendConstruct.deaTable.tableName,
         DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
       },
@@ -68,6 +70,7 @@ export class DeaMainStack extends cdk.Stack {
       deaDatasetsBucketArn: backendConstruct.datasetsBucket.bucketArn,
       deaDatasetsBucketName: backendConstruct.datasetsBucket.bucketName,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
+      s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
       kmsKey,
       region,
       accountId,
@@ -76,7 +79,7 @@ export class DeaMainStack extends cdk.Stack {
         TABLE_NAME: backendConstruct.deaTable.tableName,
         DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
         DELETE_CASE_FILE_LAMBDA_ARN: deaEventHandlers.s3BatchDeleteCaseFileLambda.functionArn,
-        DELETE_CASE_FILE_LAMBDA_ROLE: deaEventHandlers.lambdaBaseRole.roleArn,
+        DELETE_CASE_FILE_ROLE: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
       },
     });
 

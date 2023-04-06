@@ -19,6 +19,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { S3ControlClient, CreateJobCommand, JobReportScope } from '@aws-sdk/client-s3-control';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { v4 as uuidv4 } from 'uuid';
 import { getRequiredEnv } from '../lambda-http-helpers';
 import { logger } from '../logger';
 import { DeaCaseFile } from '../models/case-file';
@@ -30,7 +31,7 @@ export interface DatasetsProvider {
   bucketName: string;
   presignedCommandExpirySeconds: number;
   s3BatchDeleteCaseFileLambdaArn: string;
-  s3BatchDeleteCaseFileLambdaRole: string;
+  s3BatchDeleteCaseFileRole: string;
 }
 
 export interface S3Object {
@@ -46,9 +47,9 @@ export const defaultDatasetsProvider = {
     'DELETE_CASE_FILE_LAMBDA_ARN',
     'DELETE_CASE_FILE_LAMBDA_ARN is not set in your lambda!'
   ),
-  s3BatchDeleteCaseFileLambdaRole: getRequiredEnv(
-    'DELETE_CASE_FILE_LAMBDA_ROLE',
-    'DELETE_CASE_FILE_LAMBDA_ROLE is not set in your lambda!'
+  s3BatchDeleteCaseFileRole: getRequiredEnv(
+    'DELETE_CASE_FILE_ROLE',
+    'DELETE_CASE_FILE_ROLE is not set in your lambda!'
   ),
   presignedCommandExpirySeconds: 3600,
 };
@@ -176,9 +177,10 @@ export const startDeleteCaseFilesS3BatchJob = async (
   }
   logger.info('Creating delete files batch job', { fileCount: s3Objects.length, caseId });
 
-  const manifestFileName = `delete-case-file-manifests/case-${caseId}-delete-files-job-${Date.now()}.csv`;
+  const manifestFileName = `manifests/case-${caseId}-delete-files-job-${Date.now()}.csv`;
   const manifestFileEtag = await _createJobManifestFile(s3Objects, manifestFileName, datasetsProvider);
-  return _createDeleteCaseFileBatchJob(manifestFileName, manifestFileEtag, datasetsProvider);
+  const etag = manifestFileEtag.replace(/^"(.*)"$/, '$1');
+  return _createDeleteCaseFileBatchJob(manifestFileName, etag, datasetsProvider);
 };
 
 export const deleteCaseFile = async (
@@ -211,17 +213,20 @@ async function _createJobManifestFile(
 ): Promise<string> {
   logger.info('Creating job manifest file', { manifestFileName });
   const bucketName = datasetsProvider.bucketName;
+  // const manifestCsv = s3Objects.map((key) => `${bucketName},${key.key}`).join('\r\n');
   const manifestCsv = s3Objects.map((key) => `${bucketName},${key.key},${key.versionId}`).join('\r\n');
 
-  console.log(manifestCsv);
   const response = await datasetsProvider.s3Client.send(
     new PutObjectCommand({
       Key: manifestFileName,
       Bucket: bucketName,
       Body: manifestCsv,
+      // S3 batch doesn't support kms encrypted manifest files
+      ServerSideEncryption: 'AES256',
+      BucketKeyEnabled: false,
     })
   );
-  console.log('Created job manifest file successfully', {
+  logger.info('Created job manifest file successfully', {
     manifestFileName,
     etag: response.ETag,
   });
@@ -237,12 +242,13 @@ const _createDeleteCaseFileBatchJob = async (
   datasetsProvider: DatasetsProvider
 ): Promise<string> => {
   const client = new S3ControlClient({ region });
-  const accountId = datasetsProvider.s3BatchDeleteCaseFileLambdaRole.split(':')[4];
+  const accountId = datasetsProvider.s3BatchDeleteCaseFileRole.split(':')[4];
   const input = {
     ConfirmationRequired: false,
     AccountId: accountId,
-    RoleArn: datasetsProvider.s3BatchDeleteCaseFileLambdaRole,
+    RoleArn: datasetsProvider.s3BatchDeleteCaseFileRole,
     Priority: 1,
+    ClientRequestToken: uuidv4(),
     Operation: {
       LambdaInvoke: {
         FunctionArn: datasetsProvider.s3BatchDeleteCaseFileLambdaArn,
@@ -250,22 +256,24 @@ const _createDeleteCaseFileBatchJob = async (
     },
     Report: {
       Enabled: true,
-      Bucket: datasetsProvider.bucketName,
-      Prefix: 'delete-case-file-reports',
+      Bucket: `arn:aws:s3:::${datasetsProvider.bucketName}`,
+      Prefix: 'reports',
       Format: 'Report_CSV_20180820',
       ReportScope: JobReportScope.AllTasks,
     },
     Manifest: {
       Spec: {
         Format: 'S3BatchOperations_CSV_20180820',
+        //Fields: ['Bucket', 'Key'],
         Fields: ['Bucket', 'Key', 'VersionId'],
       },
       Location: {
-        ObjectArn: `s3://${datasetsProvider.bucketName}/${manifestFileName}`,
+        ObjectArn: `arn:aws:s3:::${datasetsProvider.bucketName}/${manifestFileName}`,
         ETag: manifestFileEtag,
       },
     },
   };
+  logger.info('CreateJobCommand Input', input);
 
   const result = await client.send(new CreateJobCommand(input));
   if (!result.JobId) {

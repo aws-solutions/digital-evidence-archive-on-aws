@@ -33,6 +33,7 @@ interface DeaRestApiProps {
   deaTableName: string;
   deaDatasetsBucketArn: string;
   deaDatasetsBucketName: string;
+  s3BatchDeleteCaseFileRoleArn: string;
   deaAuditLogArn: string;
   kmsKey: Key;
   region: string;
@@ -57,7 +58,8 @@ export class DeaRestApiConstruct extends Construct {
       props.deaDatasetsBucketArn,
       props.region,
       props.accountId,
-      props.deaAuditLogArn
+      props.deaAuditLogArn,
+      props.s3BatchDeleteCaseFileRoleArn
     );
 
     this.authLambdaRole = this._createAuthLambdaRole(props.region, props.accountId);
@@ -261,7 +263,8 @@ export class DeaRestApiConstruct extends Construct {
     datasetsBucketArn: string,
     region: string,
     accountId: string,
-    auditLogArn: string
+    auditLogArn: string,
+    s3BatchDeleteCaseFileRoleArn: string
   ): Role {
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
@@ -310,8 +313,15 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['logs:GetQueryResults'],
+        actions: ['logs:GetQueryResults', 's3:CreateJob'],
         resources: ['*'],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [s3BatchDeleteCaseFileRoleArn],
       })
     );
 

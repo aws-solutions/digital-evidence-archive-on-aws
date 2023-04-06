@@ -9,6 +9,7 @@ import sha256 from 'crypto-js/sha256';
 import { DeaCase } from '../../models/case';
 import { DeaCaseFile } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
+import { CaseStatus } from '../../models/case-status';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
@@ -21,8 +22,8 @@ import {
   initiateCaseFileUploadSuccess,
   listCaseFilesSuccess,
   randomSuffix,
-  s3Cleanup,
   s3Object,
+  updateCaseStatus,
   uploadContentToS3,
 } from './test-helpers';
 
@@ -57,8 +58,6 @@ describe('Test case file APIs', () => {
     }
 
     await cognitoHelper.cleanup();
-
-    await s3Cleanup(s3ObjectsToDelete);
   });
 
   it('Upload a case file', async () => {
@@ -163,6 +162,16 @@ describe('Test case file APIs', () => {
     const downloadedContent = await downloadContentFromS3(downloadUrl, describedCaseFile.contentType);
     expect(downloadedContent).toEqual(FILE_CONTENT);
     expect(sha256(downloadedContent).toString()).toEqual(describedCaseFile.sha256Hash);
+
+    await updateCaseStatus(
+      DEA_API_URL,
+      idToken,
+      creds,
+      caseUlid,
+      createdCase.name,
+      CaseStatus.INACTIVE,
+      true
+    );
   });
 });
 

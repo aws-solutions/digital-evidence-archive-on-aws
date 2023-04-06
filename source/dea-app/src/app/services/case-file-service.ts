@@ -33,9 +33,6 @@ export const initiateCaseFileUpload = async (
   repositoryProvider: ModelRepositoryProvider,
   datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFile> => {
-  console.log('initiate');
-  const s3Objects = await CaseFilePersistence.getAllCaseFileS3Objects(uploadDTO.caseUlid, repositoryProvider);
-  console.log(s3Objects);
   const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
     uploadDTO,
     userUlid,
@@ -137,20 +134,8 @@ export const completeCaseFileUpload = async (
   repositoryProvider: ModelRepositoryProvider,
   datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFile> => {
-  console.log('complete');
-  const s3Objects = await CaseFilePersistence.getAllCaseFileS3Objects(
-    deaCaseFile.caseUlid,
-    repositoryProvider
-  );
-  console.log(s3Objects);
   await completeUploadForCaseFile(deaCaseFile, datasetsProvider);
   const caseFile = await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider);
-  console.log('complete done');
-  const s3Objects1 = await CaseFilePersistence.getAllCaseFileS3Objects(
-    deaCaseFile.caseUlid,
-    repositoryProvider
-  );
-  console.log(s3Objects1);
   return caseFile;
 };
 

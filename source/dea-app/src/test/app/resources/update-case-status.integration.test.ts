@@ -407,7 +407,7 @@ function validateS3ControlMocks() {
   expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 1);
   expect(s3ControlMock).toHaveReceivedCommandWith(CreateJobCommand, {
     ConfirmationRequired: false,
-    RoleArn: DATASETS_PROVIDER.s3BatchDeleteCaseFileLambdaRole,
+    RoleArn: DATASETS_PROVIDER.s3BatchDeleteCaseFileRole,
     Priority: 1,
     Operation: {
       LambdaInvoke: {
@@ -416,8 +416,8 @@ function validateS3ControlMocks() {
     },
     Report: {
       Enabled: true,
-      Bucket: DATASETS_PROVIDER.bucketName,
-      Prefix: 'delete-case-file-reports',
+      Bucket: `arn:aws:s3:::${DATASETS_PROVIDER.bucketName}`,
+      Prefix: 'reports',
       Format: 'Report_CSV_20180820',
       ReportScope: JobReportScope.AllTasks,
     },

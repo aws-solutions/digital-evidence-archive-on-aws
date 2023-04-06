@@ -46,7 +46,7 @@ export const DATASETS_PROVIDER = {
   bucketName: 'testBucket',
   presignedCommandExpirySeconds: 3600,
   s3BatchDeleteCaseFileLambdaArn: 'arn:aws:lambda:us-east-1:1234:function:foo',
-  s3BatchDeleteCaseFileLambdaRole: 'arn:aws:iam::1234:role/foo',
+  s3BatchDeleteCaseFileRole: 'arn:aws:iam::1234:role/foo',
 };
 
 jest.setTimeout(20000);

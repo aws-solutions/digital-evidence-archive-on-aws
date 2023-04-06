@@ -6,7 +6,7 @@
 import { Context, S3BatchEvent, S3BatchResult, S3BatchResultResult } from 'aws-lambda';
 import { logger } from '../logger';
 import { CaseFileStatus } from '../models/case-file-status';
-import { updateCaseFileStatus } from '../persistence/case-file';
+import { getCaseFileByUlid, updateCaseFileStatus } from '../persistence/case-file';
 import { defaultProvider } from '../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider, deleteCaseFile } from './datasets';
 
@@ -29,7 +29,7 @@ export const deleteCaseFileHandler = async (
   for (const task of event.tasks) {
     const { s3Key, s3VersionId } = task;
     const [caseId, fileId] = s3Key.split('/');
-    logger.info('Attempting to delete s3 object', { s3Key, s3VersionId });
+    logger.info('Attempting to delete s3 object', { s3Key, s3VersionId, caseId, fileId });
     if (!s3VersionId) {
       results.push({
         taskId: task.taskId,
@@ -41,6 +41,8 @@ export const deleteCaseFileHandler = async (
     }
     try {
       await deleteCaseFile(s3Key, s3VersionId, datasetsProvider);
+      logger.info('Successfully deleted object', { s3Key, s3VersionId });
+      console.log(repositoryProvider);
       await updateCaseFileStatus(caseId, fileId, CaseFileStatus.DELETED, repositoryProvider);
       results.push({
         taskId: task.taskId,
@@ -48,15 +50,23 @@ export const deleteCaseFileHandler = async (
         resultString: `Successfully deleted object: ${s3Key}`,
       });
     } catch (e) {
-      logger.error(`Failed to delete S3 object: ${s3Key}`, e);
+      logger.error(`Unexpected failure`, e);
       try {
+        logger.info('repositoryProvider: ', {
+          repositoryProvider,
+          table: repositoryProvider.table,
+          caseFile: repositoryProvider.CaseFileModel,
+        });
+        // testing line, delete this fetch later
+        const file = await getCaseFileByUlid(fileId, caseId, repositoryProvider);
+        logger.info('getCaseFileByUlid', { file, fileId, caseId });
         await updateCaseFileStatus(caseId, fileId, CaseFileStatus.DELETE_FAILED, repositoryProvider);
       } catch (e) {
         logger.error(`Failed to update DDB: ${s3Key}`, e);
       }
       results.push({
         taskId: task.taskId,
-        resultCode: 'TemporaryFailure',
+        resultCode: 'PermanentFailure',
         resultString: `Failed to delete object: ${s3Key}`,
       });
     }

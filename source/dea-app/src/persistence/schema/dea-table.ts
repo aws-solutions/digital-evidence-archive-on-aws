@@ -12,7 +12,7 @@ import { DeaSchema } from './dea-schema';
 const region = process.env.AWS_REGION ?? 'us-east-1';
 const client = new Dynamo({ client: new DynamoDBClient({ region }) });
 const deaTableName = getRequiredEnv('TABLE_NAME', 'TABLE_NAME is not set in your lambda!');
-
+console.log('setting up ddb table', { region, client, deaTableName });
 export const deaTable = new Table({
   client: client,
   name: deaTableName,
