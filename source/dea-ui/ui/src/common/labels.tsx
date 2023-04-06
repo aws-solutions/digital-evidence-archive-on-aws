@@ -193,6 +193,11 @@ export const caseActionOptions = {
           value: CaseAction.UPDATE_CASE_DETAILS,
           label: 'Edit case',
         };
+      case CaseAction.UPDATE_CASE_STATUS:
+        return {
+          value: CaseAction.UPDATE_CASE_STATUS,
+          label: 'Delete case files',
+        };
       case CaseAction.UPLOAD:
         return {
           value: CaseAction.UPLOAD,
