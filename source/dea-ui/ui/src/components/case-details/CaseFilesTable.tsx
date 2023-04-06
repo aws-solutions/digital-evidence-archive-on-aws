@@ -22,6 +22,7 @@ import * as React from 'react';
 import { getPresignedUrl, useListCaseFiles } from '../../api/cases';
 import { commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
+import { formatDate } from '../../helpers/dateHelper';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { CaseDetailsBodyProps } from './CaseDetailsBody';
 
@@ -46,7 +47,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
     },
   ];
 
-  const { items, filterProps } = useCollection(data, {
+  const { items, filterProps, collectionProps } = useCollection(data, {
     filtering: {
       empty: TableEmptyDisplay(filesListLabels.noFilesLabel, filesListLabels.noDisplayLabel),
       noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
@@ -202,6 +203,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
 
   return (
     <Table
+      {...collectionProps}
       data-testid="file-table"
       onSelectionChange={({ detail }) => {
         setSelectedFiles(detail.selectedItems);
@@ -227,7 +229,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
         {
           id: 'uploadDate',
           header: commonTableLabels.dateUploadedHeader,
-          cell: (e) => e.created,
+          cell: (e) => formatDate(e.created),
           width: 170,
           minWidth: 165,
           sortingField: 'uploadDate',

@@ -1,6 +1,6 @@
 const withTM = require('next-transpile-modules')(['@cloudscape-design/components']);
 
-const STAGE = process.env.STAGE ?? 'chewbacca';
+const STAGE = process.env.NEXT_PUBLIC_STAGE ?? 'chewbacca';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
