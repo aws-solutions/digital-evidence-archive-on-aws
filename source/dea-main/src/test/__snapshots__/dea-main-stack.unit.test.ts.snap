@@ -10126,12 +10126,12 @@ Object {
         },
         "Schema": Array [
           Object {
-            "Mutable": false,
+            "Mutable": true,
             "Name": "family_name",
             "Required": true,
           },
           Object {
-            "Mutable": false,
+            "Mutable": true,
             "Name": "given_name",
             "Required": true,
           },
