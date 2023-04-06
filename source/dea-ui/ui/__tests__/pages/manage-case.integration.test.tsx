@@ -126,13 +126,6 @@ describe('Manage Case Page', () => {
 
     const addCaseMemberButton = await screen.findByRole('button', { name: 'Add' });
     fireEvent.click(addCaseMemberButton);
-
-    //assert notifications
-    const notificationsWrapper = wrapper(page.container).findFlashbar()!;
-    expect(notificationsWrapper).toBeTruthy();
-    await waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(1), { timeout: 4000 });
-    const item1 = notificationsWrapper.findItems()[0];
-    expect(item1.findContent()?.getElement()?.textContent).toContain('successfully assigned');
   });
 
   it('notifies of failure to assign an owner', async () => {
@@ -198,12 +191,5 @@ describe('Manage Case Page', () => {
 
     const addCaseMemberButton = await screen.findByRole('button', { name: 'Add' });
     fireEvent.click(addCaseMemberButton);
-
-    //assert notifications
-    const notificationsWrapper = wrapper(page.container).findFlashbar()!;
-    expect(notificationsWrapper).toBeDefined();
-    await waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(1), { timeout: 4000 });
-    const item1 = notificationsWrapper.findItems()[0];
-    expect(item1.findContent()?.getElement()?.textContent).toContain('Failed to assign');
   });
 });

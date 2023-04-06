@@ -8,7 +8,6 @@ import SideNavigation, { SideNavigationProps } from '@cloudscape-design/componen
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useAvailableEndpoints } from '../api/auth';
-import RouteGuard from './RouteGuard';
 
 export interface NavigationProps {
   initialHref?: string;
@@ -60,20 +59,18 @@ export default function Navigation({ initialHref, header }: NavigationProps): JS
   );
 
   return (
-    <RouteGuard>
-      <SideNavigation
-        data-testid="sideNavigation"
-        activeHref={activeHref}
-        header={header ?? defaultNavHeader}
-        onFollow={(event) => {
-          if (!event.detail.external) {
-            event.preventDefault();
-            setActiveHref(event.detail.href);
-            void router.push(event.detail.href);
-          }
-        }}
-        items={navItems}
-      />
-    </RouteGuard>
+    <SideNavigation
+      data-testid="sideNavigation"
+      activeHref={activeHref}
+      header={header ?? defaultNavHeader}
+      onFollow={(event) => {
+        if (!event.detail.external) {
+          event.preventDefault();
+          setActiveHref(event.detail.href);
+          void router.push(event.detail.href);
+        }
+      }}
+      items={navItems}
+    />
   );
 }

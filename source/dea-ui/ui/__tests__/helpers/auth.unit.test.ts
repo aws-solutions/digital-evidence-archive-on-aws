@@ -79,7 +79,7 @@ describe('auth helper', () => {
       headers: {},
       config: {},
     });
-    const loginUrl = await getLoginUrl();
+    const loginUrl = await getLoginUrl('dummyCallbackUrl');
     expect(loginUrl).toEqual('dummyloginurl.com');
   });
 
@@ -94,7 +94,9 @@ describe('auth helper', () => {
         config: {},
       },
     });
-    await expect(getLoginUrl()).rejects.toThrow('there was an error while trying to retrieve data');
+    await expect(getLoginUrl('dummyCallbackUrl')).rejects.toThrow(
+      'there was an error while trying to retrieve data'
+    );
   });
 
   it('should return logout Url', async () => {
@@ -106,7 +108,7 @@ describe('auth helper', () => {
       headers: {},
       config: {},
     });
-    const logoutUrl = await getLogoutUrl();
+    const logoutUrl = await getLogoutUrl('dummyCallbackUrl');
     expect(logoutUrl).toEqual('dummylogouturl.com');
   });
 
@@ -121,7 +123,9 @@ describe('auth helper', () => {
         config: {},
       },
     });
-    await expect(getLogoutUrl()).rejects.toThrow('there was an error while trying to retrieve data');
+    await expect(getLogoutUrl('dummyCallbackUrl')).rejects.toThrow(
+      'there was an error while trying to retrieve data'
+    );
   });
 
   it('should revoke successfully', async () => {
