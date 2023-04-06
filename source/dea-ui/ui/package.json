@@ -36,7 +36,7 @@
     "serve": "node .next/server/webpack-runtime.js",
     "sort-package-json": "sort-package-json package.json",
     "start": "next start",
-    "test": "jest --coverage",
+    "test": "jest --coverage && rushx make-badges",
     "test:noe2e": "jest --ci --coverage '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": "jest --ci --coverage",
     "unit:only": "jest --ci --coverage '.*/*unit.test.*'"
