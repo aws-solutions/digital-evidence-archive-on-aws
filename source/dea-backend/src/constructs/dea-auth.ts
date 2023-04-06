@@ -4,6 +4,7 @@
  */
 
 import { assert } from 'console';
+import * as fs from 'fs';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
 import { CfnParameter, Duration } from 'aws-cdk-lib';
 import { RestApi } from 'aws-cdk-lib/aws-apigateway';
@@ -11,10 +12,13 @@ import {
   AccountRecovery,
   CfnIdentityPool,
   CfnIdentityPoolRoleAttachment,
+  ProviderAttribute,
   StringAttribute,
   UserPool,
   UserPoolClient,
   UserPoolDomain,
+  UserPoolIdentityProviderSaml,
+  UserPoolIdentityProviderSamlMetadata,
 } from 'aws-cdk-lib/aws-cognito';
 import {
   Effect,
@@ -161,7 +165,7 @@ export class DeaAuthConstruct extends Construct {
   private _createAuthStack(apiEndpointArns: Map<string, string>, callbackUrl: string, region: string): void {
     // See Implementation Guide for how to integrate your existing
     // Identity Provider with Cognito User Pool for SSO
-    const [pool, poolClient, cognitoDomainUrl] = this._createCognitoIdP(callbackUrl);
+    const [pool, poolClient, cognitoDomainUrl] = this._createCognitoIdP(callbackUrl, region);
 
     const providerUrl = `cognito-idp.${region}.amazonaws.com/${pool.userPoolId}:${poolClient.userPoolClientId}`;
 
@@ -276,7 +280,7 @@ export class DeaAuthConstruct extends Construct {
   // For production, the Cognito will simply act as a token vendor
   // and ONLY allow federation, no native auth
   // TODO: determine if Cognito is CJIS compatible
-  private _createCognitoIdP(callbackUrl: string): [UserPool, UserPoolClient, string] {
+  private _createCognitoIdP(callbackUrl: string, region: string): [UserPool, UserPoolClient, string] {
     const tempPasswordValidity = Duration.days(1);
     // must re-authenticate in every 12 hours
     // Note when inactive for 30+ minutes, you will also have to reauthenticate
@@ -311,11 +315,11 @@ export class DeaAuthConstruct extends Construct {
       standardAttributes: {
         familyName: {
           required: true,
-          mutable: false,
+          mutable: true,
         },
         givenName: {
           required: true,
-          mutable: false,
+          mutable: true,
         },
       },
       userInvitation: {
@@ -358,6 +362,36 @@ export class DeaAuthConstruct extends Construct {
 
       const authTestUrl = callbackUrl.replace('/login', '/auth-test');
       callbackUrls.push(authTestUrl);
+    }
+
+    // If external IDP information was provided in the config,
+    // integrate it into the user pool here
+    const idpInfo = deaConfig.idpMetadata();
+    if (idpInfo && idpInfo.metadataPath) {
+      const idpSamlMetadata = this._createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
+      const idp = new UserPoolIdentityProviderSaml(this, 'AgencyIdP', {
+        metadata: idpSamlMetadata,
+        userPool: userPool,
+        attributeMapping: {
+          preferredUsername: ProviderAttribute.other(idpInfo.attributeMap.username),
+          email: ProviderAttribute.other(idpInfo.attributeMap.email),
+          familyName: ProviderAttribute.other(idpInfo.attributeMap.lastName),
+          givenName: ProviderAttribute.other(idpInfo.attributeMap.firstName),
+          custom: {
+            'custom:DEARole': ProviderAttribute.other(idpInfo.attributeMap.deaRoleName),
+          },
+        },
+      });
+
+      // Put the name of the IdP in SSM so the hosted UI can automaticaly redirect to the IdP Signin page
+      const stage = deaConfig.stage();
+      new StringParameter(this, 'agency-idp-name', {
+        parameterName: `/dea/${region}/${stage}-agency-idp-name`,
+        stringValue: idp.providerName,
+        description: 'stores the agency idp name for redirection during login with hosted ui',
+        tier: ParameterTier.STANDARD,
+        allowedPattern: '.*',
+      });
     }
 
     const poolClient = userPool.addClient('dea-app-client', {
@@ -455,5 +489,15 @@ export class DeaAuthConstruct extends Construct {
       tier: ParameterTier.STANDARD,
       allowedPattern: '.*',
     });
+  }
+
+  private _createIdpSAMLMetadata(path: string, pathType: string): UserPoolIdentityProviderSamlMetadata {
+    if (pathType === 'URL') {
+      return UserPoolIdentityProviderSamlMetadata.url(path);
+    }
+
+    // else its a file, read in the contents from the file
+    const fileContent = fs.readFileSync(path, 'utf-8');
+    return UserPoolIdentityProviderSamlMetadata.file(fileContent);
   }
 }
