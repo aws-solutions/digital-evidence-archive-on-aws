@@ -26,7 +26,13 @@ describe('get-logout-url', () => {
   });
 
   it('successfully get logout url from get-login-url', async () => {
-    const response = await getLogoutUrl(getDummyEvent(), dummyContext);
+    const event = getDummyEvent({
+      queryStringParameters: {
+        callbackUrl: cognitoParams.callbackUrl,
+      },
+    });
+
+    const response = await getLogoutUrl(event, dummyContext);
     if (!response.body) {
       fail();
     }
