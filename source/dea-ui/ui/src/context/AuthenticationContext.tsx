@@ -13,7 +13,7 @@ import { IUser, unknownUser } from '../models/User';
 
 export interface IAuthenticationProps {
   user: IUser;
-  signIn: (user: IUser) => void;
+  signIn: () => void;
   signOut: () => void;
   isLoggedIn: boolean;
 }
@@ -59,10 +59,7 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
 
   const signIn = async (): Promise<void> => {
     try {
-      let callbackUrl = '';
-      if (typeof window !== 'undefined') {
-        callbackUrl = `${window.location}`.replace(/\/ui(.*)/, '/ui/login');
-      }
+      const callbackUrl = getCallbackUrl();
       let loginUrl = await getLoginUrl(callbackUrl);
 
       // Create PKCE challenge and include code challenge and code challenge method in oauth2/authorize
@@ -87,18 +84,31 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
       console.log('Error revoking token, refresh token may be expired already:', e);
     }
 
+    clearLocalStorage();
+    setUser(unknownUser);
+
+    // Logout of cognito session and redirect to login page
+    const callbackUrl = getCallbackUrl();
+    const logoutUrl = await getLogoutUrl(callbackUrl);
+    await router.push(logoutUrl);
+  };
+
+  function clearLocalStorage() {
     localStorage.removeItem('accessKeyId');
     localStorage.removeItem('secretAccessKey');
     localStorage.removeItem('sessionToken');
     localStorage.removeItem('idToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('pkceVerifier');
-    setUser(unknownUser);
+  }
 
-    // Logout of cognito session and redirect to login page
-    await getLogoutUrl();
-    await signIn();
-  };
+  function getCallbackUrl() {
+    let callbackUrl = '';
+    if (typeof window !== 'undefined') {
+      callbackUrl = `${window.location}`.replace(/\/ui(.*)/, '/ui/login');
+    }
+    return callbackUrl;
+  }
 
   function decodeTokenAndSetUser(idToken: string): void {
     const decodedToken: { [id: string]: string | Array<string> } = jwt(String(idToken));

@@ -4,19 +4,24 @@
  */
 
 import { getLogoutUrl } from '../../../app/resources/get-logout-url';
-import { getCognitoLogoutUrl, getCognitoSsmParams } from '../../../app/services/auth-service';
+import {
+  CognitoSsmParams,
+  getCognitoLogoutUrl,
+  getCognitoSsmParams,
+} from '../../../app/services/auth-service';
 import { getDummyEvent, dummyContext } from '../../integration-objects';
 
 let expectedUrl: string;
+let cognitoParams: CognitoSsmParams;
 describe('get-logout-url', () => {
   beforeAll(async () => {
     // get SSM parameters to compare
-    const cognitoParams = await getCognitoSsmParams();
+    cognitoParams = await getCognitoSsmParams();
     expectedUrl = `${cognitoParams.cognitoDomainUrl}/logout?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
   });
 
   it('successfully get credentials from id token', async () => {
-    const logoutUrl = await getCognitoLogoutUrl();
+    const logoutUrl = await getCognitoLogoutUrl(cognitoParams.callbackUrl);
     expect(logoutUrl).toEqual(expectedUrl);
   });
 

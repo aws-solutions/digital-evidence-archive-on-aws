@@ -7,10 +7,12 @@ import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
 import { getCredentials, getToken } from '../../api/auth';
 import { commonLabels } from '../../common/labels';
+import { useAuthentication } from '../../context/AuthenticationContext';
 
 export default function LoginPage() {
   const router = useRouter();
   const idTokenRef = useRef('');
+  const { signIn } = useAuthentication();
 
   useEffect(() => {
     const login = async () => {
@@ -18,23 +20,33 @@ export default function LoginPage() {
 
       if (authCode) {
         const codeVerifier = localStorage.getItem('pkceVerifier');
-        const response = await getToken(authCode, codeVerifier || undefined);
+        if (!codeVerifier) {
+          signIn();
+          return;
+        }
 
-        idTokenRef.current = response.id_token;
-        const refreshToken = response.refresh_token;
-        const credentials = await getCredentials(idTokenRef.current);
+        try {
+          const response = await getToken(authCode, codeVerifier);
+          idTokenRef.current = response.id_token;
+          const refreshToken = response.refresh_token;
+          const credentials = await getCredentials(idTokenRef.current);
 
-        localStorage.setItem('idToken', idTokenRef.current);
-        localStorage.setItem('refreshToken', refreshToken);
-        localStorage.setItem('accessKeyId', credentials.AccessKeyId);
-        localStorage.setItem('secretAccessKey', credentials.SecretKey);
-        localStorage.setItem('sessionToken', credentials.SessionToken);
-        await router.push('/');
+          localStorage.setItem('idToken', idTokenRef.current);
+          localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('accessKeyId', credentials.AccessKeyId);
+          localStorage.setItem('secretAccessKey', credentials.SecretKey);
+          localStorage.setItem('sessionToken', credentials.SessionToken);
+          await router.push('/');
+        } catch (e) {
+          console.log(e);
+          signIn();
+          return;
+        }
       }
     };
 
     login().catch((e) => console.log(e));
-  }, [router]);
+  }, [router, signIn]);
 
   return (
     <div>

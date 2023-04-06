@@ -13,7 +13,7 @@ export interface Credentials {
   SessionToken: string;
 }
 
-export const getToken = async (authCode: string, codeVerifier?: string): Promise<Oauth2Token> => {
+export const getToken = async (authCode: string, codeVerifier: string): Promise<Oauth2Token> => {
   try {
     const response: Oauth2Token = await httpApiPost(`auth/${authCode}/token`, { codeVerifier });
     return response;
@@ -43,9 +43,9 @@ export const getLoginUrl = async (callbackUrl: string) => {
   }
 };
 
-export const getLogoutUrl = async () => {
+export const getLogoutUrl = async (callbackUrl: string) => {
   try {
-    const response: string = await httpApiGet(`auth/logoutUrl`, {});
+    const response: string = await httpApiGet(`auth/logoutUrl?callbackUrl=${callbackUrl}`, {});
     return response;
   } catch (error) {
     console.error(error);
