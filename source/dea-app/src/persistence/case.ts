@@ -118,6 +118,28 @@ export const updateCaseStatus = async (
   return caseFromEntity(updatedCase);
 };
 
+export const updateCasePostJobCompletion = async (
+  deaCase: DeaCase,
+  filesStatus: CaseFileStatus,
+  repositoryProvider: CaseModelRepositoryProvider
+): Promise<DeaCase> => {
+  const updatedCase = await repositoryProvider.CaseModel.update(
+    {
+      ...deaCase,
+      filesStatus,
+      s3BatchJobId: null, // remove jobId since the job is now complete
+    },
+    {
+      // Normally, update() will return the updated item automatically,
+      //   however, it the item has unique attributes,
+      //   a transaction is used which does not return the updated item.
+      //   In this case, use {return: 'get'} to retrieve and return the updated item.
+      return: 'get',
+    }
+  );
+  return caseFromEntity(updatedCase);
+};
+
 export const updateCase = async (
   deaCase: DeaCase,
   repositoryProvider: CaseModelRepositoryProvider

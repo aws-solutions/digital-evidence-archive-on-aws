@@ -257,11 +257,14 @@ export const updateCaseStatus = async (
     deleteFiles,
   });
 
-  console.log(response);
   expect(response.status).toEqual(200);
   const updatedCase: DeaCase = response.data;
   Joi.assert(updatedCase, caseResponseSchema);
   return updatedCase;
+};
+
+export const delay = async (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 export const uploadContentToS3 = async (

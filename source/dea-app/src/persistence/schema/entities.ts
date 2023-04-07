@@ -19,6 +19,9 @@ export const CaseFileModel: Model<CaseFileType> = deaTable.getModel('CaseFile');
 export type SessionType = Entity<typeof DeaSchema.models.Session>;
 export const SessionModel: Model<SessionType> = deaTable.getModel('Session');
 
+export type JobType = Entity<typeof DeaSchema.models.Job>;
+export const JobModel: Model<JobType> = deaTable.getModel('Job');
+
 export type UserType = Entity<typeof DeaSchema.models.User>;
 export const UserModel: Model<UserType> = deaTable.getModel('User');
 
@@ -38,6 +41,10 @@ export interface SessionModelRepositoryProvider {
   SessionModel: Model<SessionType>;
 }
 
+export interface JobModelRepositoryProvider {
+  JobModel: Model<JobType>;
+}
+
 export interface UserModelRepositoryProvider {
   UserModel: Model<UserType>;
 }
@@ -47,6 +54,7 @@ export interface ModelRepositoryProvider
     CaseUserModelRepositoryProvider,
     CaseFileModelRepositoryProvider,
     SessionModelRepositoryProvider,
+    JobModelRepositoryProvider,
     UserModelRepositoryProvider {
   table: Table;
 }
@@ -57,5 +65,6 @@ export const defaultProvider: ModelRepositoryProvider = {
   CaseUserModel: CaseUserModel,
   CaseFileModel: CaseFileModel,
   SessionModel: SessionModel,
+  JobModel: JobModel,
   UserModel: UserModel,
 };

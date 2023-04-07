@@ -20,6 +20,7 @@ import {
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import Joi from 'joi';
+import { v4 as uuidv4 } from 'uuid';
 import { updateCaseStatus } from '../../../app/resources/update-case-status';
 import { DeaCase, DeaCaseInput } from '../../../models/case';
 import { CaseFileStatus } from '../../../models/case-file-status';
@@ -45,7 +46,6 @@ let s3Mock: AwsStub<S3Input, S3Output>;
 let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput>;
 
 const EVENT = getDummyEvent();
-const S3_BATCH_JOB_ID = 'ho ho ho';
 const ETAG = 'hehe';
 const VERSION_ID = 'haha';
 
@@ -85,9 +85,6 @@ describe('update case status', () => {
     });
 
     s3ControlMock = mockClient(S3ControlClient);
-    s3ControlMock.resolves({
-      JobId: S3_BATCH_JOB_ID,
-    });
   });
 
   it('should successfully inactivate case and create delete batch job', async () => {
@@ -100,17 +97,151 @@ describe('update case status', () => {
     const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, createdCase.ulid, 'file1');
     await callCompleteCaseFileUpload(EVENT, repositoryProvider, caseFile.ulid ?? fail(), createdCase.ulid);
 
+    const jobId = uuidv4();
+    s3ControlMock.resolves({
+      JobId: jobId,
+    });
+
     const updatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
     validateCaseUpdatedAsExpected(
       createdCase,
       updatedCase,
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETING,
-      S3_BATCH_JOB_ID
+      jobId
     );
 
     validateS3Mocks(createdCase.ulid, caseFile.ulid);
     validateS3ControlMocks();
+  });
+
+  it('delete should succeed with no files to delete', async () => {
+    const theCase: DeaCaseInput = {
+      name: 'no files to delete',
+      description: 'description',
+    };
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+    const updatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
+
+    validateCaseUpdatedAsExpected(createdCase, updatedCase, CaseStatus.INACTIVE, CaseFileStatus.DELETED);
+
+    //ensure no job was created
+    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
+    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
+  });
+
+  it('should activate inactive case', async () => {
+    const theCase: DeaCaseInput = {
+      name: 'InactiveToActive',
+      description: 'description',
+    };
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+
+    // update case status to inactive directly in DB
+    await updateCaseStatusInDb(createdCase, CaseStatus.INACTIVE, CaseFileStatus.DELETED, repositoryProvider);
+
+    const updatedCase = await callUpdateCaseStatusAndValidate(createdCase, false, CaseStatus.ACTIVE);
+
+    validateCaseUpdatedAsExpected(createdCase, updatedCase, CaseStatus.ACTIVE, CaseFileStatus.ACTIVE);
+
+    //ensure no job was created
+    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
+    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
+  });
+
+  it('should not activate case that is deleting files', async () => {
+    const theCase: DeaCaseInput = {
+      name: 'ActivateFailWhenDeleting',
+      description: 'description',
+    };
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+    const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, createdCase.ulid, 'file1');
+    await callCompleteCaseFileUpload(EVENT, repositoryProvider, caseFile.ulid ?? fail(), createdCase.ulid);
+
+    const jobId = uuidv4();
+    s3ControlMock.resolves({
+      JobId: jobId,
+    });
+
+    const inactivatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
+    validateCaseUpdatedAsExpected(
+      createdCase,
+      inactivatedCase,
+      CaseStatus.INACTIVE,
+      CaseFileStatus.DELETING,
+      jobId
+    );
+
+    await expect(callUpdateCaseStatusAndValidate(inactivatedCase, false, CaseStatus.ACTIVE)).rejects.toThrow(
+      "Case status can't be changed to ACTIVE when its files are being deleted"
+    );
+  });
+
+  it('is idempotent inactive to inactive', async () => {
+    const theCase: DeaCaseInput = {
+      name: 'ACaseForTestingDeleteIdempotency',
+      description: 'description',
+    };
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+
+    const updatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
+
+    // update case status again. expect case without updates
+    const notUpdatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
+
+    // validate that both updated and 'notUpdated' cases are as expected and newer than created case
+    validateCaseUpdatedAsExpected(createdCase, updatedCase, CaseStatus.INACTIVE, CaseFileStatus.DELETED);
+    validateCaseUpdatedAsExpected(createdCase, notUpdatedCase, CaseStatus.INACTIVE, CaseFileStatus.DELETED);
+
+    if (!updatedCase.updated || !notUpdatedCase.updated) {
+      fail();
+    }
+
+    // make sure case wasn't updated second time
+    expect(notUpdatedCase.updated.getTime()).not.toBeGreaterThan(updatedCase.updated.getTime());
+    expect(updatedCase.updated.getTime()).toBeCloseTo(notUpdatedCase.updated.getTime());
+
+    //ensure no job was created
+    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
+    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
+  });
+
+  it('No op when requesting to activate active case', async () => {
+    const theCase: DeaCaseInput = {
+      name: 'ACaseForTestingNoOp',
+      description: 'description',
+    };
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+
+    const notUpdatedCase = await callUpdateCaseStatusAndValidate(createdCase, false, CaseStatus.ACTIVE);
+
+    if (!createdCase.updated || !notUpdatedCase.updated) {
+      fail();
+    }
+
+    // make sure case wasn't updated
+    expect(notUpdatedCase.updated.getTime()).not.toBeGreaterThan(createdCase.updated.getTime());
+    expect(notUpdatedCase.updated.getTime()).toBeCloseTo(createdCase.updated.getTime());
+
+    //ensure no job was created
+    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
+    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
+  });
+
+  it('should fail if delete-file requested when activating case', async () => {
+    const theCase: DeaCaseInput = {
+      name: 'Failed delete case',
+      description: 'description',
+    };
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+
+    await expect(callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.ACTIVE)).rejects.toThrow(
+      'Delete files can only be requested when inactivating a case'
+    );
+
+    //ensure no job was created
+    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
+    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
   });
 
   it('should update filesStatus to DELETE_FAILED when it fails to create manifest', async () => {
@@ -169,125 +300,6 @@ describe('update case status', () => {
 
     validateS3Mocks(createdCase.ulid, caseFile.ulid);
     validateS3ControlMocks();
-  });
-
-  it('delete should succeed with no files to delete', async () => {
-    const theCase: DeaCaseInput = {
-      name: 'no files to delete',
-      description: 'description',
-    };
-    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
-    const updatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
-
-    validateCaseUpdatedAsExpected(createdCase, updatedCase, CaseStatus.INACTIVE, CaseFileStatus.DELETING);
-
-    //ensure no job was created
-    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
-    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
-  });
-
-  it('should activate inactive case', async () => {
-    const theCase: DeaCaseInput = {
-      name: 'InactiveToActive',
-      description: 'description',
-    };
-    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
-
-    // update case status to inactive directly in DB
-    await updateCaseStatusInDb(createdCase, CaseStatus.INACTIVE, CaseFileStatus.DELETED, repositoryProvider);
-
-    const updatedCase = await callUpdateCaseStatusAndValidate(createdCase, false, CaseStatus.ACTIVE);
-
-    validateCaseUpdatedAsExpected(createdCase, updatedCase, CaseStatus.ACTIVE, CaseFileStatus.ACTIVE);
-
-    //ensure no job was created
-    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
-    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
-  });
-
-  it('should not activate case that is deleting files', async () => {
-    const theCase: DeaCaseInput = {
-      name: 'ActivateFailWhenDeleting',
-      description: 'description',
-    };
-    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
-
-    const inactivatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
-
-    await expect(callUpdateCaseStatusAndValidate(inactivatedCase, false, CaseStatus.ACTIVE)).rejects.toThrow(
-      "Case status can't be changed to ACTIVE when its files are being deleted"
-    );
-
-    //ensure no job was created
-    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
-    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
-  });
-
-  it('is idempotent inactive to inactive', async () => {
-    const theCase: DeaCaseInput = {
-      name: 'ACaseForTestingDeleteIdempotency',
-      description: 'description',
-    };
-    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
-
-    const updatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
-
-    // update case status again. expect case without updates
-    const notUpdatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
-
-    // validate that both updated and 'notUpdated' cases are newer than created case
-    validateCaseUpdatedAsExpected(createdCase, updatedCase, CaseStatus.INACTIVE, CaseFileStatus.DELETING);
-    validateCaseUpdatedAsExpected(createdCase, notUpdatedCase, CaseStatus.INACTIVE, CaseFileStatus.DELETING);
-
-    if (!updatedCase.updated || !notUpdatedCase.updated) {
-      fail();
-    }
-
-    // make sure case wasn't updated second time
-    expect(notUpdatedCase.updated.getTime()).not.toBeGreaterThan(updatedCase.updated.getTime());
-    expect(updatedCase.updated.getTime()).toBeCloseTo(notUpdatedCase.updated.getTime());
-
-    //ensure no job was created
-    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
-    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
-  });
-
-  it('No op when requesting to activate active case', async () => {
-    const theCase: DeaCaseInput = {
-      name: 'ACaseForTestingNoOp',
-      description: 'description',
-    };
-    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
-
-    const notUpdatedCase = await callUpdateCaseStatusAndValidate(createdCase, false, CaseStatus.ACTIVE);
-
-    if (!createdCase.updated || !notUpdatedCase.updated) {
-      fail();
-    }
-
-    // make sure case wasn't updated
-    expect(notUpdatedCase.updated.getTime()).not.toBeGreaterThan(createdCase.updated.getTime());
-    expect(notUpdatedCase.updated.getTime()).toBeCloseTo(createdCase.updated.getTime());
-
-    //ensure no job was created
-    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
-    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
-  });
-
-  it('should fail if delete-file requested when activating case', async () => {
-    const theCase: DeaCaseInput = {
-      name: 'Failed delete case',
-      description: 'description',
-    };
-    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
-
-    await expect(callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.ACTIVE)).rejects.toThrow(
-      'Delete files can only be requested when inactivating a case'
-    );
-
-    //ensure no job was created
-    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
-    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
   });
 
   it('should error if no payload is provided', async () => {

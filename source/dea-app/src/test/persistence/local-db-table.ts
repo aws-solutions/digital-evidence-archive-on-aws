@@ -30,5 +30,6 @@ export const getTestRepositoryProvider = async (tableName: string): Promise<Mode
     CaseFileModel: table.getModel('CaseFile'),
     SessionModel: table.getModel('Session'),
     UserModel: table.getModel('User'),
+    JobModel: table.getModel('Job'),
   };
 };

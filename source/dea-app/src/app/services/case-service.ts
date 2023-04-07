@@ -13,6 +13,7 @@ import { DeaUser } from '../../models/user';
 import * as CasePersistence from '../../persistence/case';
 import * as CaseFilePersistence from '../../persistence/case-file';
 import * as CaseUserPersistence from '../../persistence/case-user';
+import { createJob } from '../../persistence/job';
 import { isDefined } from '../../persistence/persistence-helpers';
 import { CaseType, ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, startDeleteCaseFilesS3BatchJob } from '../../storage/datasets';
@@ -122,13 +123,24 @@ export const updateCaseStatus = async (
 
   try {
     const s3Objects = await CaseFilePersistence.getAllCaseFileS3Objects(deaCase.ulid, repositoryProvider);
-    const s3BatchJobId = await startDeleteCaseFilesS3BatchJob(deaCase.ulid, s3Objects, datasetsProvider);
+    const jobId = await startDeleteCaseFilesS3BatchJob(deaCase.ulid, s3Objects, datasetsProvider);
+    if (!jobId) {
+      // no files to delete
+      return CasePersistence.updateCaseStatus(
+        updatedCase,
+        newStatus,
+        CaseFileStatus.DELETED,
+        repositoryProvider
+      );
+    }
+
+    await createJob({ caseUlid: deaCase.ulid, jobId }, repositoryProvider);
     return CasePersistence.updateCaseStatus(
       updatedCase,
       newStatus,
       CaseFileStatus.DELETING,
       repositoryProvider,
-      s3BatchJobId
+      jobId
     );
   } catch (e) {
     logger.error('Failed to start delete case files s3 batch job.', e);

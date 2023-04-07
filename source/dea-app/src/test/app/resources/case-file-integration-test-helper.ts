@@ -5,6 +5,7 @@
 
 import { fail } from 'assert';
 import { S3Client } from '@aws-sdk/client-s3';
+import { S3ControlClient } from '@aws-sdk/client-s3-control';
 import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
@@ -22,7 +23,7 @@ import { createUser } from '../../../persistence/user';
 import { dummyContext } from '../../integration-objects';
 
 export type ResponseCaseFilePage = {
-  cases: DeaCaseFile[];
+  files: DeaCaseFile[];
   next: string | undefined;
 };
 
@@ -43,6 +44,7 @@ const TAG = 'yum';
 const DETAILS = 'hungry';
 export const DATASETS_PROVIDER = {
   s3Client: new S3Client({ region: 'us-east-1' }),
+  s3ControlClient: new S3ControlClient({ region: 'us-east-1' }),
   bucketName: 'testBucket',
   presignedCommandExpirySeconds: 3600,
   s3BatchDeleteCaseFileLambdaArn: 'arn:aws:lambda:us-east-1:1234:function:foo',

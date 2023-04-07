@@ -17,7 +17,13 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
-import { S3ControlClient, CreateJobCommand, JobReportScope } from '@aws-sdk/client-s3-control';
+import {
+  S3ControlClient,
+  CreateJobCommand,
+  JobReportScope,
+  DescribeJobCommand,
+  DescribeJobResult,
+} from '@aws-sdk/client-s3-control';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
 import { getRequiredEnv } from '../lambda-http-helpers';
@@ -206,6 +212,11 @@ export const deleteCaseFile = async (
   );
 };
 
+export const describeS3BatchJob = async (JobId: string, AccountId: string): Promise<DescribeJobResult> => {
+  const s3ControlClient = new S3ControlClient({ region });
+  return s3ControlClient.send(new DescribeJobCommand({ JobId, AccountId }));
+};
+
 async function _createJobManifestFile(
   s3Objects: S3Object[],
   manifestFileName: string,
@@ -213,7 +224,6 @@ async function _createJobManifestFile(
 ): Promise<string> {
   logger.info('Creating job manifest file', { manifestFileName });
   const bucketName = datasetsProvider.bucketName;
-  // const manifestCsv = s3Objects.map((key) => `${bucketName},${key.key}`).join('\r\n');
   const manifestCsv = s3Objects.map((key) => `${bucketName},${key.key},${key.versionId}`).join('\r\n');
 
   const response = await datasetsProvider.s3Client.send(
@@ -241,7 +251,6 @@ const _createDeleteCaseFileBatchJob = async (
   manifestFileEtag: string,
   datasetsProvider: DatasetsProvider
 ): Promise<string> => {
-  const client = new S3ControlClient({ region });
   const accountId = datasetsProvider.s3BatchDeleteCaseFileRole.split(':')[4];
   const input = {
     ConfirmationRequired: false,
@@ -264,7 +273,6 @@ const _createDeleteCaseFileBatchJob = async (
     Manifest: {
       Spec: {
         Format: 'S3BatchOperations_CSV_20180820',
-        //Fields: ['Bucket', 'Key'],
         Fields: ['Bucket', 'Key', 'VersionId'],
       },
       Location: {
@@ -273,9 +281,10 @@ const _createDeleteCaseFileBatchJob = async (
       },
     },
   };
-  logger.info('CreateJobCommand Input', input);
+  logger.debug('CreateJobCommand Input', input);
 
-  const result = await client.send(new CreateJobCommand(input));
+  const s3ControlClient = new S3ControlClient({ region });
+  const result = await s3ControlClient.send(new CreateJobCommand(input));
   if (!result.JobId) {
     throw new Error('Failed to create delete files batch job.');
   }

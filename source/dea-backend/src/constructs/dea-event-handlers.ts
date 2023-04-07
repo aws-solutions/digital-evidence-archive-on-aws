@@ -4,7 +4,8 @@
  */
 
 import path from 'path';
-import { Duration } from 'aws-cdk-lib';
+import { Duration, aws_events_targets } from 'aws-cdk-lib';
+import { Rule } from 'aws-cdk-lib/aws-events';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -25,14 +26,14 @@ interface DeaEventHandlerProps {
 }
 
 export class DeaEventHandlers extends Construct {
-  public lambdaBaseRole: Role;
   public s3BatchDeleteCaseFileLambda: NodejsFunction;
   public s3BatchDeleteCaseFileRole: Role;
 
   public constructor(scope: Construct, stackName: string, props: DeaEventHandlerProps) {
     super(scope, stackName);
 
-    this.lambdaBaseRole = this._createLambdaBaseRole(
+    const lambdaBaseRole = this._createLambdaBaseRole(
+      's3-batch-delete-case-file-handler-role',
       props.deaTableArn,
       props.deaDatasetsBucketArn,
       props.kmsKey.keyArn
@@ -40,17 +41,58 @@ export class DeaEventHandlers extends Construct {
 
     this.s3BatchDeleteCaseFileLambda = this._createLambda(
       `s3_batch_delete_case_file`,
+      'S3BatchDeleteCaseFileLambda',
       '../../src/handlers/s3-batch-delete-case-file-handler.ts',
-      props.lambdaEnv
+      props.lambdaEnv,
+      lambdaBaseRole
     );
 
     this.s3BatchDeleteCaseFileRole = this._createS3BatchRole(props.deaDatasetsBucketArn);
+
+    // create event bridge lambda role FIXME before PR
+    const statusHandlerRole = this._createLambdaBaseRole(
+      's3-batch-status-change-handler-role',
+      props.deaTableArn,
+      props.deaDatasetsBucketArn,
+      props.kmsKey.keyArn
+    );
+
+    const s3BatchJobStatusChangeHandlerLambda = this._createLambda(
+      `s3_batch_status_handler`,
+      'S3BatchJobStatusChangeLambda',
+      '../../src/handlers/s3-batch-job-status-change-handler.ts',
+      props.lambdaEnv,
+      statusHandlerRole
+    );
+
+    // create event bridge rule
+    this._createEventBridgeRuleForS3BatchJobs(s3BatchJobStatusChangeHandlerLambda);
   }
 
-  private _createLambda(id: string, pathToSource: string, lambdaEnv: LambdaEnvironment): NodejsFunction {
+  private _createEventBridgeRuleForS3BatchJobs(targetLambda: NodejsFunction) {
+    new Rule(this, 'S3BatchJobStatusChangeRule', {
+      enabled: true,
+      eventPattern: {
+        source: ['aws.s3'],
+        detail: {
+          eventSource: ['s3.amazonaws.com'],
+          eventName: ['JobStatusChanged'],
+        },
+      },
+      targets: [new aws_events_targets.LambdaFunction(targetLambda)],
+    });
+  }
+
+  private _createLambda(
+    id: string,
+    cfnExportName: string,
+    pathToSource: string,
+    lambdaEnv: LambdaEnvironment,
+    role: Role
+  ): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
       memorySize: 512,
-      role: this.lambdaBaseRole,
+      role,
       timeout: Duration.seconds(60),
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
@@ -68,7 +110,7 @@ export class DeaEventHandlers extends Construct {
       },
     });
 
-    createCfnOutput(this, 'S3BatchDeleteCaseFileLambda', {
+    createCfnOutput(this, cfnExportName, {
       value: lambda.functionArn,
     });
 
@@ -97,11 +139,16 @@ export class DeaEventHandlers extends Construct {
     return role;
   }
 
-  private _createLambdaBaseRole(tableArn: string, datasetsBucketArn: string, kmsKeyArn: string): Role {
+  private _createLambdaBaseRole(
+    id: string,
+    tableArn: string,
+    datasetsBucketArn: string,
+    kmsKeyArn: string
+  ): Role {
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
     );
-    const role = new Role(this, 'dea-base-lambda-role', {
+    const role = new Role(this, id, {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [basicExecutionPolicy],
     });
@@ -131,6 +178,13 @@ export class DeaEventHandlers extends Construct {
           's3:*',
         ],
         resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:DescribeJob'],
+        resources: ['*'],
       })
     );
 

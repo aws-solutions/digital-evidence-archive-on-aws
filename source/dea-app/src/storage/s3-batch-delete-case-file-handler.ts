@@ -6,13 +6,15 @@
 import { Context, S3BatchEvent, S3BatchResult, S3BatchResultResult } from 'aws-lambda';
 import { logger } from '../logger';
 import { CaseFileStatus } from '../models/case-file-status';
-import { getCaseFileByUlid, updateCaseFileStatus } from '../persistence/case-file';
+import { updateCaseFileStatus } from '../persistence/case-file';
 import { defaultProvider } from '../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider, deleteCaseFile } from './datasets';
 
 export const deleteCaseFileHandler = async (
   event: S3BatchEvent,
   context: Context,
+  //eslint-disable-next-line @typescript-eslint/no-empty-function
+  callbackFn = () => {},
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
@@ -21,6 +23,7 @@ export const deleteCaseFileHandler = async (
 ): Promise<S3BatchResult> => {
   logger.debug('Event', { Data: JSON.stringify(event, null, 2) });
   logger.debug('Context', { Data: JSON.stringify(context, null, 2) });
+  logger.debug('callbackFn', { callbackFn });
   const results: S3BatchResultResult[] = [];
   if (event.tasks.length === 0) {
     throw new Error('No tasks in event');
@@ -42,7 +45,6 @@ export const deleteCaseFileHandler = async (
     try {
       await deleteCaseFile(s3Key, s3VersionId, datasetsProvider);
       logger.info('Successfully deleted object', { s3Key, s3VersionId });
-      console.log(repositoryProvider);
       await updateCaseFileStatus(caseId, fileId, CaseFileStatus.DELETED, repositoryProvider);
       results.push({
         taskId: task.taskId,
@@ -52,14 +54,6 @@ export const deleteCaseFileHandler = async (
     } catch (e) {
       logger.error(`Unexpected failure`, e);
       try {
-        logger.info('repositoryProvider: ', {
-          repositoryProvider,
-          table: repositoryProvider.table,
-          caseFile: repositoryProvider.CaseFileModel,
-        });
-        // testing line, delete this fetch later
-        const file = await getCaseFileByUlid(fileId, caseId, repositoryProvider);
-        logger.info('getCaseFileByUlid', { file, fileId, caseId });
         await updateCaseFileStatus(caseId, fileId, CaseFileStatus.DELETE_FAILED, repositoryProvider);
       } catch (e) {
         logger.error(`Failed to update DDB: ${s3Key}`, e);

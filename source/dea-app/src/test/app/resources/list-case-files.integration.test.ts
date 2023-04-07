@@ -60,10 +60,10 @@ describe('Test list case files', () => {
   it('List case-files should successfully get case-files', async () => {
     const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToList);
     const caseFileList: ResponseCaseFilePage = await callListCaseFiles(EVENT, repositoryProvider, caseToList);
-    expect(caseFileList.cases.length).toEqual(1);
+    expect(caseFileList.files.length).toEqual(1);
     expect(caseFileList.next).toBeUndefined();
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    await validateCaseFile(caseFileList.cases[0], caseFile.ulid as string, caseToList, fileDescriber.ulid);
+    await validateCaseFile(caseFileList.files[0], caseFile.ulid as string, caseToList, fileDescriber.ulid);
   });
 
   it('List case-files should successfully get case-files with pagination', async () => {
@@ -89,7 +89,7 @@ describe('Test list case files', () => {
       '1',
       filePath
     );
-    expect(caseFileList1.cases.length).toEqual(1);
+    expect(caseFileList1.files.length).toEqual(1);
     expect(caseFileList1.next).toBeDefined();
 
     const caseFileList2: ResponseCaseFilePage = await callListCaseFiles(
@@ -100,12 +100,12 @@ describe('Test list case files', () => {
       filePath,
       caseFileList1.next
     );
-    expect(caseFileList2.cases.length).toEqual(1);
+    expect(caseFileList2.files.length).toEqual(1);
     expect(caseFileList2.next).toBeUndefined();
 
     // OK to assume that casefile1 is returned before casefile2 because GSI sorts by filename
     await validateCaseFile(
-      caseFileList1.cases[0],
+      caseFileList1.files[0],
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       caseFile1.ulid as string,
       caseToList,
@@ -116,7 +116,7 @@ describe('Test list case files', () => {
     );
 
     await validateCaseFile(
-      caseFileList2.cases[0],
+      caseFileList2.files[0],
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       caseFile2.ulid as string,
       caseToList,
@@ -135,7 +135,7 @@ describe('Test list case files', () => {
       '30',
       '/noresult/'
     );
-    expect(caseFileList.cases.length).toEqual(0);
+    expect(caseFileList.files.length).toEqual(0);
     expect(caseFileList.next).toBeUndefined();
   });
 
