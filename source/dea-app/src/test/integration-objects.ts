@@ -129,7 +129,7 @@ const dummyAuditEvent: CJISAuditEventBody = {
   actorIdentity: {
     idType: IdentityType.COGNITO_ID,
     sourceIp: '0.0.0.0',
-    id: 'us-east-1:1-2-3-4',
+    idPoolUserId: 'us-east-1:1-2-3-4',
   },
   result: AuditEventResult.FAILURE,
 };

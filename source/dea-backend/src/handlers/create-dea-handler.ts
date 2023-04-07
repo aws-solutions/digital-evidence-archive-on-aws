@@ -112,7 +112,7 @@ const getInitialIdentity = (event: APIGatewayProxyEvent): ActorIdentity => {
     return {
       idType: IdentityType.COGNITO_ID,
       sourceIp: event.requestContext.identity.sourceIp,
-      id: event.requestContext.identity.cognitoIdentityId,
+      idPoolUserId: event.requestContext.identity.cognitoIdentityId,
     };
   }
 

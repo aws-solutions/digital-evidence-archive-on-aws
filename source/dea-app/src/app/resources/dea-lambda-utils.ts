@@ -51,15 +51,16 @@ export const runPreExecutionChecks = async (
     throw new NotFoundError('Resource Not Found');
   }
   event.headers['deaRole'] = deaRole;
+  const tokenSub = idTokenPayload.sub;
   // got token payload - progress audit identity
   auditEvent.actorIdentity = {
     idType: IdentityType.COGNITO_TOKEN,
     sourceIp: event.requestContext.identity.sourceIp,
-    id: event.requestContext.identity.cognitoIdentityId,
+    idPoolUserId: event.requestContext.identity.cognitoIdentityId,
     username: idTokenPayload['cognito:username'],
     deaRole,
+    userPoolUserId: tokenSub,
   };
-  const tokenSub = idTokenPayload.sub;
   let maybeUser = await getUserFromTokenId(tokenSub, repositoryProvider);
   if (!maybeUser) {
     // Create the user in the database and store the new user's ulid
@@ -72,12 +73,13 @@ export const runPreExecutionChecks = async (
   auditEvent.actorIdentity = {
     idType: IdentityType.FULL_USER_ID,
     sourceIp: event.requestContext.identity.sourceIp,
-    id: event.requestContext.identity.cognitoIdentityId,
+    idPoolUserId: event.requestContext.identity.cognitoIdentityId,
     username: idTokenPayload['cognito:username'],
     firstName: maybeUser.firstName,
     lastName: maybeUser.lastName,
     userUlid,
     deaRole,
+    userPoolUserId: tokenSub,
   };
 
   event.headers['userUlid'] = userUlid;
