@@ -32,7 +32,7 @@ export class DeaEventHandlers extends Construct {
   public constructor(scope: Construct, stackName: string, props: DeaEventHandlerProps) {
     super(scope, stackName);
 
-    const lambdaBaseRole = this._createLambdaBaseRole(
+    const s3BatchDeleteCaseFileRole = this._createS3BatchDeleteCaseFileRole(
       's3-batch-delete-case-file-handler-role',
       props.deaTableArn,
       props.deaDatasetsBucketArn,
@@ -44,13 +44,10 @@ export class DeaEventHandlers extends Construct {
       'S3BatchDeleteCaseFileLambda',
       '../../src/handlers/s3-batch-delete-case-file-handler.ts',
       props.lambdaEnv,
-      lambdaBaseRole
+      s3BatchDeleteCaseFileRole
     );
 
-    this.s3BatchDeleteCaseFileRole = this._createS3BatchRole(props.deaDatasetsBucketArn);
-
-    // create event bridge lambda role FIXME before PR
-    const statusHandlerRole = this._createLambdaBaseRole(
+    const statusHandlerRole = this._createS3BatchStatusChangeHandlerRole(
       's3-batch-status-change-handler-role',
       props.deaTableArn,
       props.deaDatasetsBucketArn,
@@ -64,6 +61,8 @@ export class DeaEventHandlers extends Construct {
       props.lambdaEnv,
       statusHandlerRole
     );
+
+    this.s3BatchDeleteCaseFileRole = this._createS3BatchRole(props.deaDatasetsBucketArn);
 
     // create event bridge rule
     this._createEventBridgeRuleForS3BatchJobs(s3BatchJobStatusChangeHandlerLambda);
@@ -139,7 +138,7 @@ export class DeaEventHandlers extends Construct {
     return role;
   }
 
-  private _createLambdaBaseRole(
+  private _createS3BatchDeleteCaseFileRole(
     id: string,
     tableArn: string,
     datasetsBucketArn: string,
@@ -155,15 +154,8 @@ export class DeaEventHandlers extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        // NOTE: REJECT PR IF WILDCARD NOT REMOVED
-        actions: [
-          'dynamodb:GetItem',
-          'dynamodb:PutItem',
-          'dynamodb:Query',
-          'dynamodb:UpdateItem',
-          'dynamodb:*',
-        ],
-        resources: [tableArn, `${tableArn}/index/GSI1`, `${tableArn}/index/GSI2`],
+        actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query', 'dynamodb:UpdateItem'],
+        resources: [tableArn],
       })
     );
 
@@ -174,10 +166,46 @@ export class DeaEventHandlers extends Construct {
           's3:DeleteObjectVersion',
           's3:GetObjectLegalHold',
           's3:PutObjectLegalHold',
-          // NOTE: REJECT PR IF WILDCARD NOT REMOVED
-          's3:*',
         ],
         resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:DescribeJob'],
+        resources: ['*'],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [kmsKeyArn],
+      })
+    );
+
+    return role;
+  }
+
+  private _createS3BatchStatusChangeHandlerRole(
+    id: string,
+    tableArn: string,
+    datasetsBucketArn: string,
+    kmsKeyArn: string
+  ): Role {
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+    const role = new Role(this, id, {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [basicExecutionPolicy],
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query', 'dynamodb:UpdateItem'],
+        resources: [tableArn],
       })
     );
 
