@@ -9,5 +9,5 @@ import { responseOk } from './dea-lambda-utils';
 
 export const getAvailableEndpointsForUser: DEAGatewayProxyHandler = async (event) => {
   const actions = await getAvailableEndpoints(event);
-  return responseOk({ endpoints: actions });
+  return responseOk(event, { endpoints: actions });
 };

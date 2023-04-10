@@ -31,5 +31,5 @@ export const getToken: DEAGatewayProxyHandler = async (event) => {
     username = `${idTokenPayload['given_name']} ${idTokenPayload['family_name']}`;
   }
 
-  return okSetIdTokenCookie(getTokenResult, JSON.stringify({ username }));
+  return okSetIdTokenCookie(event, getTokenResult, JSON.stringify({ username }));
 };

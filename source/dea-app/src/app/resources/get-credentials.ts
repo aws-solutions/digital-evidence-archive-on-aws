@@ -11,5 +11,5 @@ export const getCredentials: DEAGatewayProxyHandler = async (event) => {
   const idTokenString = getOauthToken(event);
   const response = await getCredentialsByToken(idTokenString.id_token);
 
-  return responseOk(response);
+  return responseOk(event, response);
 };

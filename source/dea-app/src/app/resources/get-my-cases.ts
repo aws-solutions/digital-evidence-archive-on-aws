@@ -27,7 +27,7 @@ export const getMyCases: DEAGatewayProxyHandler = async (
     repositoryProvider
   );
 
-  return responseOk({
+  return responseOk(event, {
     cases: pageOfCases,
     total: pageOfCases.count,
     next: getNextToken(pageOfCases.next),

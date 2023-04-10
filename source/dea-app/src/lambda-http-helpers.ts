@@ -117,8 +117,8 @@ export const getOauthToken = (event: APIGatewayProxyEvent): Oauth2Token => {
   throw new ValidationError(`invalid oauth`);
 };
 
-export const getAllowedOrigin = (): string | undefined => {
-  const value = process.env['ALLOWED_ORIGIN'];
+export const getAllowedOrigins = (): string[] => {
+  const value = process.env['ALLOWED_ORIGINS']?.split(',') ?? [];
 
   return value;
 };

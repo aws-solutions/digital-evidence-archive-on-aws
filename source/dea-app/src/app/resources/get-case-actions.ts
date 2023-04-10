@@ -26,5 +26,5 @@ export const getCaseActions: DEAGatewayProxyHandler = async (
     throw new NotFoundError(`Could not find case: ${caseUlid} in the DB`);
   }
 
-  return responseOk(caseUser);
+  return responseOk(event, caseUser);
 };

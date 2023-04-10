@@ -8,7 +8,6 @@ import { Duration } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   AuthorizationType,
-  Cors,
   EndpointType,
   LambdaIntegration,
   LogGroupLogDestination,
@@ -104,7 +103,7 @@ export class DeaRestApiConstruct extends Construct {
         ],
         allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         allowCredentials: true,
-        allowOrigins: Cors.ALL_ORIGINS,
+        allowOrigins: deaConfig.deaAllowedOrigins().split(','),
       },
       defaultMethodOptions: {
         authorizationType: AuthorizationType.IAM,
@@ -211,7 +210,7 @@ export class DeaRestApiConstruct extends Construct {
     const lambda = new NodejsFunction(this, id, {
       memorySize: 512,
       role: role,
-      timeout: Duration.seconds(30),
+      timeout: Duration.seconds(10),
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
       entry: path.join(__dirname, pathToSource),
@@ -219,6 +218,7 @@ export class DeaRestApiConstruct extends Construct {
       environment: {
         NODE_OPTIONS: '--enable-source-maps',
         STAGE: deaConfig.stage(),
+        ALLOWED_ORIGINS: deaConfig.deaAllowedOrigins(),
         ...lambdaEnv,
       },
       bundling: {

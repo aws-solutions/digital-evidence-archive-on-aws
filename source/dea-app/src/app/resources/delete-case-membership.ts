@@ -21,5 +21,5 @@ export const deleteCaseMembership: DEAGatewayProxyHandler = async (
   const userId = getRequiredPathParam(event, 'userId', joiUlid);
 
   await deleteCaseUser(userId, caseId, repositoryProvider);
-  return responseNoContent();
+  return responseNoContent(event);
 };

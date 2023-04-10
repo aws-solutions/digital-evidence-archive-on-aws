@@ -356,10 +356,14 @@ export class DeaAuthConstruct extends Construct {
     });
 
     const callbackUrls = [callbackUrl];
-    if (deaConfig.isTestStack()) {
-      // test stacks add localhost as a callback url for UI redirect during local development
-      callbackUrls.push(`https://localhost:3000/${deaConfig.stage()}/ui/login`);
+    deaConfig
+      .deaAllowedOrigins()
+      .split(',')
+      .forEach((origin) => {
+        callbackUrls.push(`${origin}/${deaConfig.stage()}/ui/login`);
+      });
 
+    if (deaConfig.isTestStack()) {
       const authTestUrl = callbackUrl.replace('/login', '/auth-test');
       callbackUrls.push(authTestUrl);
     }
