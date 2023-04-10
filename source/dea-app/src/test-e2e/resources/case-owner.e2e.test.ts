@@ -6,6 +6,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
+import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { CaseAction, OWNER_ACTIONS } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
@@ -38,8 +39,8 @@ describe('CaseOwner E2E', () => {
 
   let ownerCreds: Credentials;
   let inviteeCreds: Credentials;
-  let ownerToken: string;
-  let inviteeToken: string;
+  let ownerToken: Oauth2Token;
+  let inviteeToken: Oauth2Token;
 
   beforeAll(async () => {
     // Create user

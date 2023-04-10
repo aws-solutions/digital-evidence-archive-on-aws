@@ -6,8 +6,9 @@
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { APIGatewayProxyResult } from 'aws-lambda';
 import { getDeaUserFromToken, getTokenPayload } from '../../cognito-token-helpers';
-import { getRequiredHeader } from '../../lambda-http-helpers';
+import { getAllowedOrigin, getOauthToken } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
+import { Oauth2Token } from '../../models/auth';
 import { DeaUser } from '../../models/user';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
@@ -23,6 +24,8 @@ export type DEAPreLambdaExecutionChecks = (
   auditEvent: CJISAuditEventBody,
   repositoryProvider: LambdaRepositoryProvider
 ) => Promise<void>;
+
+const allowedOrigin = getAllowedOrigin();
 
 export const runPreExecutionChecks = async (
   event: LambdaEvent,
@@ -41,7 +44,7 @@ export const runPreExecutionChecks = async (
   // header to as the unique id, since we cannot verify identity id from client is trustworthy
   // since it is not encoded from the id pool
   // Additionally we get the first and last name of the user from the id token
-  const idToken = getRequiredHeader(event, 'idToken');
+  const idToken = getOauthToken(event).id_token;
   const idTokenPayload = await getTokenPayload(idToken, process.env.AWS_REGION ?? 'us-east-1');
   const deaRole = idTokenPayload['custom:DEARole'] ? String(idTokenPayload['custom:DEARole']) : undefined;
   if (!deaRole) {
@@ -139,34 +142,50 @@ const addUserToDatabase = async (
   return deaUserResult;
 };
 
+const withAllowedOrigin = (response: APIGatewayProxyResult) => {
+  if (allowedOrigin) {
+    if (!response.headers) {
+      response.headers = {};
+    }
+    response.headers['Access-Control-Allow-Origin'] = allowedOrigin;
+  }
+  return response;
+};
+
 export const responseOk = (body: unknown): APIGatewayProxyResult => {
-  return {
+  return withAllowedOrigin({
     statusCode: 200,
     body: JSON.stringify(body),
+    headers: {},
+  });
+};
+
+export const okSetIdTokenCookie = (idToken: Oauth2Token, body: string): APIGatewayProxyResult => {
+  return withAllowedOrigin({
+    statusCode: 200,
+    body,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Set-Cookie': `idToken=${JSON.stringify(idToken)}; Path=/; SameSite=None; Secure; HttpOnly`,
+      'Access-Control-Allow-Credential': 'true',
     },
-  };
+  });
 };
 
 export const csvResponse = (csvData: string): APIGatewayProxyResult => {
-  return {
+  return withAllowedOrigin({
     statusCode: 200,
     body: csvData,
     headers: {
       'Content-Type': 'text/csv',
       'Content-Disposition': `attachment; filename="case_audit_${new Date().toDateString()}"`,
-      'Access-Control-Allow-Origin': '*',
     },
-  };
+  });
 };
 
 export const responseNoContent = (): APIGatewayProxyResult => {
-  return {
+  return withAllowedOrigin({
     statusCode: 204,
     body: '',
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
-  };
+    headers: {},
+  });
 };

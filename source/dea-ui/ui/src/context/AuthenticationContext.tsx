@@ -3,11 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { RevokeToken } from '@aws/dea-app/lib/models/auth';
-import jwt from 'jwt-decode';
 import { useRouter } from 'next/router';
 import pkceChallenge from 'pkce-challenge';
-import { createContext, useContext, Context, useState, useEffect } from 'react';
+import { Context, createContext, useContext, useEffect, useState } from 'react';
 import { getLoginUrl, getLogoutUrl, revokeToken } from '../api/auth';
 import { IUser, unknownUser } from '../models/User';
 
@@ -40,14 +38,13 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
         return;
       }
 
-      const accessKeyId = localStorage.getItem('accessKeyId');
-      const secretAccessKey = localStorage.getItem('secretAccessKey');
-      const sessionToken = localStorage.getItem('sessionToken');
-      const idToken = localStorage.getItem('idToken');
-      const refreshToken = localStorage.getItem('refreshToken');
+      const accessKeyId = sessionStorage.getItem('accessKeyId');
+      const secretAccessKey = sessionStorage.getItem('secretAccessKey');
+      const sessionToken = sessionStorage.getItem('sessionToken');
+      const username = localStorage.getItem('username');
 
-      if (accessKeyId && secretAccessKey && sessionToken && idToken && refreshToken) {
-        decodeTokenAndSetUser(idToken);
+      if (accessKeyId && secretAccessKey && sessionToken && username) {
+        setUser({ username });
       } else {
         // Not logged in, redirect to login page
         await signIn();
@@ -64,7 +61,7 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
 
       // Create PKCE challenge and include code challenge and code challenge method in oauth2/authorize
       const challenge = pkceChallenge(128);
-      localStorage.setItem('pkceVerifier', challenge.code_verifier);
+      sessionStorage.setItem('pkceVerifier', challenge.code_verifier);
       loginUrl += `&code_challenge=${challenge.code_challenge}&code_challenge_method=S256`;
       await router.push(loginUrl);
     } catch (e) {
@@ -72,19 +69,13 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
     }
   };
   const signOut = async (): Promise<void> => {
-    const refreshToken = localStorage.getItem('refreshToken');
     try {
-      if (refreshToken) {
-        const payload: RevokeToken = {
-          refreshToken: refreshToken,
-        };
-        await revokeToken(payload);
-      }
+      await revokeToken();
     } catch (e) {
       console.log('Error revoking token, refresh token may be expired already:', e);
     }
 
-    clearLocalStorage();
+    clearStorage();
     setUser(unknownUser);
 
     // Logout of cognito session and redirect to login page
@@ -93,13 +84,12 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
     await router.push(logoutUrl);
   };
 
-  function clearLocalStorage() {
-    localStorage.removeItem('accessKeyId');
-    localStorage.removeItem('secretAccessKey');
-    localStorage.removeItem('sessionToken');
-    localStorage.removeItem('idToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('pkceVerifier');
+  function clearStorage() {
+    sessionStorage.removeItem('accessKeyId');
+    sessionStorage.removeItem('secretAccessKey');
+    sessionStorage.removeItem('sessionToken');
+    sessionStorage.removeItem('pkceVerifier');
+    localStorage.removeItem('username');
   }
 
   function getCallbackUrl() {
@@ -108,15 +98,6 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
       callbackUrl = `${window.location}`.replace(/\/ui(.*)/, '/ui/login');
     }
     return callbackUrl;
-  }
-
-  function decodeTokenAndSetUser(idToken: string): void {
-    const decodedToken: { [id: string]: string | Array<string> } = jwt(String(idToken));
-    const cognitoUsername =
-      typeof decodedToken['cognito:username'] === 'string' ? decodedToken['cognito:username'] : '';
-    setUser({
-      username: cognitoUsername,
-    });
   }
 
   const isLoggedIn = user !== unknownUser;

@@ -4,6 +4,7 @@
  */
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
+import { Oauth2Token } from '../../models/auth';
 import { DeaUser } from '../../models/user';
 import { userResponseSchema } from '../../models/validation/user';
 import CognitoHelper from '../helpers/cognito-helper';
@@ -22,9 +23,9 @@ describe('get users api', () => {
   const deaApiUrl = testEnv.apiUrlOutput;
 
   let creds: Credentials;
-  let idToken: string;
+  let idToken: Oauth2Token;
   let creds2: Credentials;
-  let idToken2: string;
+  let idToken2: Oauth2Token;
 
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'CaseWorker', user1FirstName, 'TestUser');

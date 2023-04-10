@@ -25,53 +25,53 @@ describe('cognito helpers integration test', () => {
   });
 
   it('should decode and return payload for valid token', async () => {
-    const { idToken, refreshToken } = await cognitoHelper.getIdTokenForUser(testUser);
+    const { id_token, refresh_token } = await cognitoHelper.getIdTokenForUser(testUser);
 
-    const payload = await getTokenPayload(idToken, region);
+    const payload = await getTokenPayload(id_token, region);
 
     expect(payload.iss).toStrictEqual('https://' + cognitoHelper._idpUrl);
     expect(payload.aud).toStrictEqual(cognitoHelper._userPoolClientId);
-    expect(refreshToken).toBeTruthy();
+    expect(refresh_token).toBeTruthy();
     expect(payload.token_use).toStrictEqual('id');
   });
 
   it('should fail when SSM params do not exist', async () => {
-    const { idToken } = await cognitoHelper.getIdTokenForUser(testUser);
+    const { id_token } = await cognitoHelper.getIdTokenForUser(testUser);
 
     const fakeRegion = region === 'us-east-1' ? 'us-east-2' : 'us-east-1';
 
-    await expect(getTokenPayload(idToken, fakeRegion)).rejects.toThrow(
+    await expect(getTokenPayload(id_token, fakeRegion)).rejects.toThrow(
       'Unable to grab the parameters in SSM needed for token verification.'
     );
   });
 
   it('should fail if token is modified', async () => {
-    const { idToken } = await cognitoHelper.getIdTokenForUser(testUser);
+    const { id_token } = await cognitoHelper.getIdTokenForUser(testUser);
 
-    const replacementIndex = idToken.length / 2;
-    const replacementChar = idToken.charAt(replacementIndex) === 'A' ? 'B' : 'A';
+    const replacementIndex = id_token.length / 2;
+    const replacementChar = id_token.charAt(replacementIndex) === 'A' ? 'B' : 'A';
     const modifiedToken =
-      idToken.substring(0, replacementIndex) + replacementChar + idToken.substring(replacementIndex + 1);
+      id_token.substring(0, replacementIndex) + replacementChar + id_token.substring(replacementIndex + 1);
 
     await expect(getTokenPayload(modifiedToken, region)).rejects.toThrow('Unable to verify id token: ');
   });
 
   it('should decode and return a DeaUserInput from the token', async () => {
-    const { idToken } = await cognitoHelper.getIdTokenForUser(testUser);
-    const tokenPayload = await getTokenPayload(idToken, region);
+    const { id_token } = await cognitoHelper.getIdTokenForUser(testUser);
+    const tokenPayload = await getTokenPayload(id_token, region);
 
     const deaUser = await getDeaUserFromToken(tokenPayload);
 
     expect(deaUser).toBeDefined();
 
-    expect(deaUser.tokenId).toStrictEqual((await getTokenPayload(idToken, region)).sub);
+    expect(deaUser.tokenId).toStrictEqual((await getTokenPayload(id_token, region)).sub);
     expect(deaUser.firstName).toStrictEqual(firstName);
     expect(deaUser.lastName).toStrictEqual(lastName);
   });
 
   it('should fail when first/last name not in id token', async () => {
-    const { idToken } = await cognitoHelper.getIdTokenForUser(testUser);
-    const tokenPayload = await getTokenPayload(idToken, region);
+    const { id_token } = await cognitoHelper.getIdTokenForUser(testUser);
+    const tokenPayload = await getTokenPayload(id_token, region);
 
     delete tokenPayload['given_name'];
     await expect(getDeaUserFromToken(tokenPayload)).rejects.toThrow(

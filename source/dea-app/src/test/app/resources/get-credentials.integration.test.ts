@@ -11,8 +11,9 @@ import { dummyContext, getDummyEvent } from '../../integration-objects';
 describe('get-credentials', () => {
   it('should throw an error if the id token is not valid', async () => {
     const event = getDummyEvent({
-      pathParameters: {
-        idToken: 'fake.fake.fake',
+      headers: {
+        cookie:
+          'idToken={"id_token": "fake.fake.fake","access_token": "fake.fake.fake","refresh_token": "fake.fake.fake","expires_in": 43200,"token_type": "Bearer"}',
       },
     });
 

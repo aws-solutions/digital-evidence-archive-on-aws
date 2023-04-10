@@ -2,7 +2,6 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-import { Oauth2Token, RevokeToken } from '@aws/dea-app/lib/models/auth';
 import useSWR from 'swr';
 import { httpApiGet, httpApiPost } from '../helpers/apiHelper';
 import { DeaListResult } from './cases';
@@ -13,9 +12,13 @@ export interface Credentials {
   SessionToken: string;
 }
 
-export const getToken = async (authCode: string, codeVerifier: string): Promise<Oauth2Token> => {
+export interface TokenResponse {
+  username: string;
+}
+
+export const getToken = async (authCode: string, codeVerifier: string): Promise<TokenResponse> => {
   try {
-    const response: Oauth2Token = await httpApiPost(`auth/${authCode}/token`, { codeVerifier });
+    const response: TokenResponse = await httpApiPost(`auth/${authCode}/token`, { codeVerifier });
     return response;
   } catch (error) {
     console.error(error);
@@ -23,9 +26,9 @@ export const getToken = async (authCode: string, codeVerifier: string): Promise<
   }
 };
 
-export const getCredentials = async (idToken: string) => {
+export const getCredentials = async () => {
   try {
-    const response: Credentials = await httpApiGet(`auth/credentials/${idToken}/exchange`, {});
+    const response: Credentials = await httpApiGet(`auth/credentials/exchange`, {});
     return response;
   } catch (error) {
     console.error(error);
@@ -53,8 +56,8 @@ export const getLogoutUrl = async (callbackUrl: string) => {
   }
 };
 
-export const revokeToken = async (revokeToken: RevokeToken): Promise<void> => {
-  await httpApiPost(`auth/revokeToken`, { ...revokeToken });
+export const revokeToken = async (): Promise<void> => {
+  await httpApiPost(`auth/revokeToken`, undefined);
 };
 
 export const useAvailableEndpoints = (): DeaListResult<string> => {

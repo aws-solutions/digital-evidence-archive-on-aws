@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { Credentials } from 'aws4-axios';
+import { Oauth2Token } from '../../models/auth';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPIWithCreds, randomSuffix } from './test-helpers';
@@ -19,7 +20,7 @@ describe('get available endpoints E2E', () => {
   const deaApiUrl = testEnv.apiUrlOutput;
 
   let creds: Credentials;
-  let idToken: string;
+  let idToken: Oauth2Token;
 
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'NoPermissionsGroup', 'getEndpoints', 'TestUser');

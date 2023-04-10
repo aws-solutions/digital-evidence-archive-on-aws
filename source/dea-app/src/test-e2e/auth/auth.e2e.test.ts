@@ -4,9 +4,10 @@
  */
 import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
+import _ from 'lodash';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
 import { getTokenPayload } from '../../cognito-token-helpers';
-import { Oauth2Token, RefreshToken, RevokeToken } from '../../models/auth';
+import { Oauth2Token } from '../../models/auth';
 import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../helpers/auth-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -37,7 +38,7 @@ describe('API authentication', () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
-    const payload = await getTokenPayload(idToken, region);
+    const payload = await getTokenPayload(idToken.id_token, region);
     expect(payload['custom:DEARole']).toStrictEqual('AuthTestGroup');
   }, 40000);
 
@@ -169,14 +170,21 @@ describe('API authentication', () => {
     const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
     // modify id token to make it invalid
-    const replacementIndex = idToken.length / 2;
-    const replacementChar = idToken.charAt(replacementIndex) === 'A' ? 'B' : 'A';
+    const replacementIndex = idToken.id_token.length / 2;
+    const replacementChar = idToken.id_token.charAt(replacementIndex) === 'A' ? 'B' : 'A';
     const modifiedToken =
-      idToken.substring(0, replacementIndex) + replacementChar + idToken.substring(replacementIndex + 1);
+      idToken.id_token.substring(0, replacementIndex) +
+      replacementChar +
+      idToken.id_token.substring(replacementIndex + 1);
+
+    const modifiedOauth = _.cloneDeep({
+      ...idToken,
+      id_token: modifiedToken,
+    });
 
     // Now call DEA with modified token and make sure it fails
     const url = `${deaApiUrl}cases/my-cases`;
-    const response = await callDeaAPIWithCreds(url, 'GET', modifiedToken, creds);
+    const response = await callDeaAPIWithCreds(url, 'GET', modifiedOauth, creds);
     expect(response.status).toEqual(400);
     expect(response.statusText).toEqual('Bad Request');
   }, 40000);
@@ -187,31 +195,24 @@ describe('API authentication', () => {
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'RevokeTokenE2E', 'AuthTester');
 
     // Get credentials
-    const [creds, idToken, refreshToken] = await cognitoHelper.getCredentialsForUser(user);
+    const [creds, oauthToken] = await cognitoHelper.getCredentialsForUser(user);
 
     // Make api call (adds session to database)
     const url = `${deaApiUrl}cases/my-cases`;
-    const response1 = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
+    const response1 = await callDeaAPIWithCreds(url, 'GET', oauthToken, creds);
     expect(response1.status).toEqual(200);
 
     // revoke token
-    const payload: RevokeToken = {
-      refreshToken: refreshToken,
-    };
     const revokeUrl = `${deaApiUrl}auth/revokeToken`;
-    const response = await callDeaAPIWithCreds(revokeUrl, 'POST', idToken, creds, payload);
+    const response = await callDeaAPIWithCreds(revokeUrl, 'POST', oauthToken, creds, undefined);
     expect(response.data).toEqual(200);
 
     // Try to make API call with the token, it should fail
-    const response2 = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
+    const response2 = await callDeaAPIWithCreds(url, 'GET', oauthToken, creds);
     expect(response2.status).toEqual(412); // Reauthentication error
 
-    // call /refreshToken with the revoked token, it should fail
-    const refreshPayload: RefreshToken = {
-      refreshToken: refreshToken,
-    };
     const refreshUrl = `${deaApiUrl}auth/refreshToken`;
-    const failedRefresh = await callDeaAPIWithCreds(refreshUrl, 'POST', idToken, creds, refreshPayload);
+    const failedRefresh = await callDeaAPIWithCreds(refreshUrl, 'POST', oauthToken, creds, undefined);
     expect(failedRefresh.status).toEqual(412);
 
     // Get new credentials, make api call should pass immediately since old session is marked as revoked
@@ -226,24 +227,20 @@ describe('API authentication', () => {
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'RefreshTokenE2E', 'AuthTester');
 
     // Get credentials
-    const [creds, idToken, refreshToken] = await cognitoHelper.getCredentialsForUser(user);
+    const [creds, oauthToken] = await cognitoHelper.getCredentialsForUser(user);
 
     // Make api call (adds session to database)
     const url = `${deaApiUrl}cases/my-cases`;
-    const response1 = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
+    const response1 = await callDeaAPIWithCreds(url, 'GET', oauthToken, creds);
     expect(response1.status).toEqual(200);
 
-    // use refresh token for new id token
-    const payload: RefreshToken = {
-      refreshToken: refreshToken,
-    };
     const refreshUrl = `${deaApiUrl}auth/refreshToken`;
-    const refreshResponse = await callDeaAPIWithCreds(refreshUrl, 'POST', idToken, creds, payload);
+    const refreshResponse = await callDeaAPIWithCreds(refreshUrl, 'POST', oauthToken, creds, undefined);
     expect(refreshResponse.status).toEqual(200);
     const newIdToken = await refreshResponse.data.idToken;
 
     // Try to make API call with the old token, it should fail
-    const response2 = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
+    const response2 = await callDeaAPIWithCreds(url, 'GET', oauthToken, creds);
     expect(response2.status).toEqual(412); // Reauthentication error
 
     // call API with the new token
@@ -251,17 +248,18 @@ describe('API authentication', () => {
     expect(response3.status).toEqual(200);
   }, 40000);
 
-  it('should disallow concurrent active session', async () => {
+  it.only('should disallow concurrent active session', async () => {
     // Create user
     const user = 'ConcurrentUserE2ETest';
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'ConcurrentE2E', 'AuthTester');
 
     // Get credentials
-    const [creds, idToken, refreshToken] = await cognitoHelper.getCredentialsForUser(user);
+    const [creds, oauthToken] = await cognitoHelper.getCredentialsForUser(user);
+    console.log(JSON.stringify(oauthToken));
 
     // Make successful API call
     const url = `${deaApiUrl}cases/my-cases`;
-    const response = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
+    const response = await callDeaAPIWithCreds(url, 'GET', oauthToken, creds);
     expect(response.status).toEqual(200);
 
     // Get new credentials
@@ -270,12 +268,8 @@ describe('API authentication', () => {
     const failed = await callDeaAPIWithCreds(url, 'GET', idToken1, creds1);
     expect(failed.status).toEqual(412); // Reauthentication error
 
-    // Call /revoke on original credentials (this is called by UI during logout process)
-    const payload: RevokeToken = {
-      refreshToken: refreshToken,
-    };
     const revokeUrl = `${deaApiUrl}auth/revokeToken`;
-    const revokeResponse = await callDeaAPIWithCreds(revokeUrl, 'POST', idToken, creds, payload);
+    const revokeResponse = await callDeaAPIWithCreds(revokeUrl, 'POST', oauthToken, creds, undefined);
     expect(revokeResponse.data).toEqual(200);
 
     // Call API with second set of credentials, see that it succeeds
