@@ -3,7 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getScopedCaseInformation } from '@aws/dea-app';
 import * as CompleteCaseFileUploadHandler from '../../handlers/complete-case-file-upload-handler';
 import * as CreateCaseOwnerHandler from '../../handlers/create-case-owner-handler';
 import * as CreateCaseUserHandler from '../../handlers/create-case-user-handler';
