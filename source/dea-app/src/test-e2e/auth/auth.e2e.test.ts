@@ -465,12 +465,12 @@ describe('API authentication', () => {
     expect(credsResponse.status).toEqual(200);
 
     // Call a CaseWorker API, expect success
-    const response = await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', idToken, creds);
+    const response = await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', retrievedTokens, creds);
     expect(response.status).toBe(200);
     expect(response.data).toHaveProperty('cases');
 
     // Call an Evidence Manager API, expect failure
-    const failed = await callDeaAPIWithCreds(`${deaApiUrl}cases/all-cases`, 'GET', idToken, creds);
+    const failed = await callDeaAPIWithCreds(`${deaApiUrl}cases/all-cases`, 'GET', retrievedTokens, creds);
     expect(failed.status).toEqual(403);
   }, 60000);
 });
