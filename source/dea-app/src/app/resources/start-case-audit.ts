@@ -32,5 +32,5 @@ export const startCaseAudit: DEAGatewayProxyHandler = async (
   const endTime = Number.parseInt(end);
   const queryId = await auditService.requestAuditForCase(caseId, startTime, endTime, cloudwatchClient);
 
-  return responseOk({ auditId: queryId });
+  return responseOk(event, { auditId: queryId });
 };

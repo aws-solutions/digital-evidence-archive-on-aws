@@ -16,5 +16,5 @@ export const getLoginUrl: DEAGatewayProxyHandler = async (event) => {
   const loginUrl = await getLoginHostedUiUrl(callbackUrl);
 
   Joi.assert(loginUrl, loginUrlRegex);
-  return responseOk(loginUrl);
+  return responseOk(event, loginUrl);
 };

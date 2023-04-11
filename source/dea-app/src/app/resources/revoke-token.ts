@@ -25,5 +25,5 @@ export const revokeToken: DEAGatewayProxyHandler = async (
   const tokenId = getTokenId(event);
   await markSessionAsRevoked(userUlid, tokenId, repositoryProvider);
 
-  return responseOk(revokeTokenResult);
+  return responseOk(event, revokeTokenResult);
 };

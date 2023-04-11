@@ -8,7 +8,7 @@ This is a prototype app and you should expect to modify the source code to refle
 
 | Statements                                                                                   | Branches                                                                                 | Functions                                                                                  | Lines                                                                              |
 | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| ![Statements](https://img.shields.io/badge/statements-91.49%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-89.88%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-91.6%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-91.29%25-brightgreen.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-92.17%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-90.96%25-brightgreen.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-91.63%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-92.05%25-brightgreen.svg?style=flat) |
 
 ## Deploying code changes
 
@@ -16,17 +16,22 @@ Navigate to dea-main and follow instructions in [README](../../README.md)
 
 ## Running locally
 
-First, run the development server:
+First, run the https proxy so your cookies will work:
+```sh
+rushx httpsproxy
+```
+In a separate tab or process, run the development server:
 
 ```sh
 rushx dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. You'll need to navigate further to /{stage}/ui, e.g. [http://localhost:3000/chewbacca/ui](http://localhost:3000/chewbacca/ui)
+Open [https://localhost:3001](https://localhost:3001) with your browser to see the result. You'll need to navigate further to /{stage}/ui, e.g. [https://localhost:3001/chewbacca/ui](https://localhost:3001/chewbacca/ui)
 
 The UI running locally will be configured to point to your deployed backend via the DEA_API_URL environment variable, which will be copied into a generated [.env.local](.env.local) for use by Nextjs.
 
-You will need to visit the Cognito Hosted UI to authenticate your instance, for finding the URL you need you can run [getLoginUrls](./scripts/getLoginUrls.sh), oce you login with a cognito user ([Test User Generation for API requests](../../README.md)) you will be redirected to the UI which will now have credentials.
+You can generate cognito tests users by following the directions here:
+([Test User Generation for API requests](../../README.md)) you will be redirected to the UI which will now have credentials.
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -199,5 +199,4 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/create-case-owner-handler.ts',
     },
   ],
-  allowedOrigins: JSON.parse(process.env.ALLOWED_ORIGINS || '[]'),
 };

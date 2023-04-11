@@ -418,5 +418,6 @@
         }
       ]
     }
-  ]
+  ],
+  "deaAllowedOrigins": "https://localhost:3001"
 }

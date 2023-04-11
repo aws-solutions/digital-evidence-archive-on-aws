@@ -4,9 +4,9 @@
  */
 
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
-import { APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getDeaUserFromToken, getTokenPayload } from '../../cognito-token-helpers';
-import { getAllowedOrigin, getOauthToken } from '../../lambda-http-helpers';
+import { getAllowedOrigins, getOauthToken } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { Oauth2Token } from '../../models/auth';
 import { DeaUser } from '../../models/user';
@@ -25,7 +25,7 @@ export type DEAPreLambdaExecutionChecks = (
   repositoryProvider: LambdaRepositoryProvider
 ) => Promise<void>;
 
-const allowedOrigin = getAllowedOrigin();
+const allowedOrigins = getAllowedOrigins();
 
 export const runPreExecutionChecks = async (
   event: LambdaEvent,
@@ -142,26 +142,32 @@ const addUserToDatabase = async (
   return deaUserResult;
 };
 
-const withAllowedOrigin = (response: APIGatewayProxyResult) => {
-  if (allowedOrigin) {
+const withAllowedOrigin = (event: APIGatewayProxyEvent, response: APIGatewayProxyResult) => {
+  const requestHost = event.headers['origin'];
+  if (requestHost && allowedOrigins.includes(requestHost)) {
     if (!response.headers) {
       response.headers = {};
     }
-    response.headers['Access-Control-Allow-Origin'] = allowedOrigin;
+    response.headers['Access-Control-Allow-Origin'] = requestHost;
+    response.headers['Access-Control-Allow-Credentials'] = true;
   }
   return response;
 };
 
-export const responseOk = (body: unknown): APIGatewayProxyResult => {
-  return withAllowedOrigin({
+export const responseOk = (event: APIGatewayProxyEvent, body: unknown): APIGatewayProxyResult => {
+  return withAllowedOrigin(event, {
     statusCode: 200,
     body: JSON.stringify(body),
     headers: {},
   });
 };
 
-export const okSetIdTokenCookie = (idToken: Oauth2Token, body: string): APIGatewayProxyResult => {
-  return withAllowedOrigin({
+export const okSetIdTokenCookie = (
+  event: APIGatewayProxyEvent,
+  idToken: Oauth2Token,
+  body: string
+): APIGatewayProxyResult => {
+  return withAllowedOrigin(event, {
     statusCode: 200,
     body,
     headers: {
@@ -171,8 +177,8 @@ export const okSetIdTokenCookie = (idToken: Oauth2Token, body: string): APIGatew
   });
 };
 
-export const csvResponse = (csvData: string): APIGatewayProxyResult => {
-  return withAllowedOrigin({
+export const csvResponse = (event: APIGatewayProxyEvent, csvData: string): APIGatewayProxyResult => {
+  return withAllowedOrigin(event, {
     statusCode: 200,
     body: csvData,
     headers: {
@@ -182,8 +188,8 @@ export const csvResponse = (csvData: string): APIGatewayProxyResult => {
   });
 };
 
-export const responseNoContent = (): APIGatewayProxyResult => {
-  return withAllowedOrigin({
+export const responseNoContent = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
+  return withAllowedOrigin(event, {
     statusCode: 204,
     body: '',
     headers: {},

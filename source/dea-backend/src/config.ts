@@ -160,6 +160,11 @@ const convictSchema = {
       },
     },
   },
+  deaAllowedOrigins: {
+    doc: 'Comma separated list of allowed domains',
+    format: String,
+    default: '',
+  },
 };
 
 export interface IdPAttributes {
@@ -201,6 +206,7 @@ interface DEAConfig {
   retainPolicy(): RemovalPolicy;
   retentionDays(): RetentionDays;
   idpMetadata(): IdpMetadataInfo | undefined;
+  deaAllowedOrigins(): string;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -216,6 +222,7 @@ export const deaConfig: DEAConfig = {
   retainPolicy: () => (convictConfig.get('testStack') ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN),
   retentionDays: () => (convictConfig.get('testStack') ? RetentionDays.TWO_WEEKS : RetentionDays.INFINITE),
   idpMetadata: () => convictConfig.get('idpInfo'),
+  deaAllowedOrigins: () => convictConfig.get('deaAllowedOrigins'),
 };
 
 export const loadConfig = (stage: string): void => {

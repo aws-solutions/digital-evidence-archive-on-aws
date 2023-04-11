@@ -16,5 +16,5 @@ export const getLogoutUrl: DEAGatewayProxyHandler = async (event) => {
   const logoutUrl = await getCognitoLogoutUrl(callbackUrl);
 
   Joi.assert(logoutUrl, loginUrlRegex);
-  return responseOk(logoutUrl);
+  return responseOk(event, logoutUrl);
 };

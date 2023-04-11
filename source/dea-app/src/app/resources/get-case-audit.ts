@@ -27,8 +27,8 @@ export const getCaseAudit: DEAGatewayProxyHandler = async (
   const result = await auditService.getAuditResult(auditId, cloudwatchClient);
 
   if (result.csvFormattedData) {
-    return csvResponse(result.csvFormattedData);
+    return csvResponse(event, result.csvFormattedData);
   } else {
-    return responseOk(result);
+    return responseOk(event, result);
   }
 };

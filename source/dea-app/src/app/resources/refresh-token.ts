@@ -27,5 +27,5 @@ export const refreshToken: DEAGatewayProxyHandler = async (
   const tokenId = getTokenId(event);
   await markSessionAsRevoked(userUlid, tokenId, repositoryProvider);
 
-  return okSetIdTokenCookie(refreshTokenResult, '');
+  return okSetIdTokenCookie(event, refreshTokenResult, '');
 };

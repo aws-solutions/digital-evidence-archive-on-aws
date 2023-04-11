@@ -255,7 +255,6 @@ describe('API authentication', () => {
 
     // Get credentials
     const [creds, oauthToken] = await cognitoHelper.getCredentialsForUser(user);
-    console.log(JSON.stringify(oauthToken));
 
     // Make successful API call
     const url = `${deaApiUrl}cases/my-cases`;
