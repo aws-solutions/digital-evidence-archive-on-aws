@@ -16,7 +16,8 @@ export const getAuthorizationCode = async (
   callbackUrl: string,
   username: string,
   password: string,
-  code_challenge: string
+  code_challenge: string,
+  agencyIdpName?: string
 ) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -24,12 +25,26 @@ export const getAuthorizationCode = async (
   const clientId = testEnv.clientId;
 
   // Step 2: Sign in to the hosted UI
-  const hostedUiUrl = `${cognitoDomainPath}/login?response_type=code&client_id=${clientId}&redirect_uri=${callbackUrl}&code_challenge=${code_challenge}&code_challenge_method=S256`;
+  let hostedUiUrl = `${cognitoDomainPath}/login?response_type=code&client_id=${clientId}&redirect_uri=${callbackUrl}&code_challenge=${code_challenge}&code_challenge_method=S256`;
+  if (agencyIdpName) {
+    hostedUiUrl = `${cognitoDomainPath}/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${callbackUrl}&code_challenge=${code_challenge}&code_challenge_method=S256&identity_provider=${agencyIdpName}`;
+  }
   await page.goto(hostedUiUrl);
-  await page.type('input[id="signInFormUsername"]', username);
-  await page.type('input[id="signInFormPassword"]', password);
 
-  await page.click('input[name="signInSubmitButton"]');
+  // Get the login fields
+  await page.content();
+  const logonField = await page.waitForSelector("input[type='text']");
+  const pwField = await page.waitForSelector("input[type='password']");
+  const submitField = await page.waitForSelector("input[type='submit']");
+
+  if (!logonField || !pwField || !submitField) {
+    throw new Error('Was unable to find required page elements to log on.');
+  }
+
+  // Fill in the fields and submit
+  await logonField.type(username);
+  await pwField.type(password);
+  await submitField.click();
 
   await page.waitForNavigation({
     waitUntil: 'load',
