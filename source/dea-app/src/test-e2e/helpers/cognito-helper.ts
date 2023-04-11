@@ -12,6 +12,7 @@ import {
   AdminCreateUserCommand,
   AdminDeleteUserCommand,
   AdminGetUserCommand,
+  AdminGetUserResponse,
   AdminSetUserPasswordCommand,
   AuthenticationResultType,
   AuthFlowType,
@@ -102,19 +103,22 @@ export default class CognitoHelper {
     }
   }
 
-  public async getUser(userName: string): Promise<boolean> {
+  public async getUser(userName: string): Promise<AdminGetUserResponse | undefined> {
     try {
-      await this._userPoolProvider.send(
+      return await this._userPoolProvider.send(
         new AdminGetUserCommand({
           Username: userName,
           UserPoolId: this._userPoolId,
         })
       );
-      return true;
     } catch (error) {
       console.log('Could not find user ' + error);
-      return false;
+      return;
     }
+  }
+
+  public async doesUserExist(userName: string): Promise<boolean> {
+    return (await this.getUser(userName)) ? true : false;
   }
 
   private async getUserPoolAuthForUser(userName: string): Promise<AuthenticationResultType> {

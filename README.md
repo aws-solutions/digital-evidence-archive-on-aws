@@ -162,6 +162,17 @@ rush test:noe2e (ideal for updating coverage without running E2E)
 ```
 > :warning: Java Runtime Environment (JRE) is required for unit tests to run successfully. Please install before running unit tests  
 
+#### IdP End to End Test
+In the Auth E2E test suite we include a test that mimics DEA Authentication and Authorization Process with the configured external IDP. This test will be skipped UNLESS you have 
+configured your stack with the IdP (affirmed by querying SSM ParamStore for the Idp Name) AND you have stored credentials for a test user in SSM using the following command:
+
+```
+cd ./dea-app
+rushx idp-test-setup --username <TEST_USER_NAME> --password <TEST_USER_PASSWORD>
+```
+
+The user should already be created in the IdP, assigned to the DEA application under test, and given DEARole of CaseWorker.
+
 ### One Time Package Installs
 
 - Enable pnpm commands (needed for local CDK bundling)
