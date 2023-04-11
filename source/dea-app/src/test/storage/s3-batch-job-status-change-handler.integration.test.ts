@@ -9,8 +9,6 @@ import {
   S3ControlClient,
   ServiceInputTypes as S3ControlInput,
   ServiceOutputTypes as S3ControlOutput,
-  CreateJobCommand,
-  JobReportScope,
 } from '@aws-sdk/client-s3-control';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';

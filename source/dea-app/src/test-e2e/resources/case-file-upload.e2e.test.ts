@@ -24,6 +24,7 @@ import {
   initiateCaseFileUploadSuccess,
   listCaseFilesSuccess,
   randomSuffix,
+  s3Cleanup,
   s3Object,
   updateCaseStatus,
   uploadContentToS3,
@@ -60,6 +61,8 @@ describe('Test case file APIs', () => {
     }
 
     await cognitoHelper.cleanup();
+
+    await s3Cleanup(s3ObjectsToDelete);
   });
 
   it('Upload a case file', async () => {
