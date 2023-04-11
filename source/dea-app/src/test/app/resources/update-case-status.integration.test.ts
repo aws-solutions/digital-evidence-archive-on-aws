@@ -19,15 +19,12 @@ import {
 } from '@aws-sdk/client-s3-control';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
-import Joi from 'joi';
 import { v4 as uuidv4 } from 'uuid';
 import { updateCaseStatus } from '../../../app/resources/update-case-status';
-import { DeaCase, DeaCaseInput } from '../../../models/case';
+import { DeaCaseInput } from '../../../models/case';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
-import { caseResponseSchema } from '../../../models/validation/case';
-import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { createCase, getCase, updateCaseStatus as updateCaseStatusInDb } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
@@ -36,8 +33,9 @@ import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
   callCompleteCaseFileUpload,
   callInitiateCaseFileUpload,
-  checkApiSucceeded,
+  callUpdateCaseStatusAndValidate,
   DATASETS_PROVIDER,
+  validateCaseStatusUpdatedAsExpected,
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -51,7 +49,7 @@ const VERSION_ID = 'haha';
 
 describe('update case status', () => {
   beforeAll(async () => {
-    repositoryProvider = await getTestRepositoryProvider('updateCaseStatusTest');
+    repositoryProvider = await getTestRepositoryProvider('updateCaseStatus');
 
     caseOwner =
       (await createUser(
@@ -102,13 +100,20 @@ describe('update case status', () => {
       JobId: jobId,
     });
 
-    const updatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
-    validateCaseUpdatedAsExpected(
+    const updatedCase = await callUpdateCaseStatusAndValidate(
+      EVENT,
+      createdCase,
+      true,
+      CaseStatus.INACTIVE,
+      repositoryProvider
+    );
+    await validateCaseStatusUpdatedAsExpected(
       createdCase,
       updatedCase,
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETING,
-      jobId
+      jobId,
+      repositoryProvider
     );
 
     validateS3Mocks(createdCase.ulid, caseFile.ulid);
@@ -121,9 +126,22 @@ describe('update case status', () => {
       description: 'description',
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
-    const updatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
+    const updatedCase = await callUpdateCaseStatusAndValidate(
+      EVENT,
+      createdCase,
+      true,
+      CaseStatus.INACTIVE,
+      repositoryProvider
+    );
 
-    validateCaseUpdatedAsExpected(createdCase, updatedCase, CaseStatus.INACTIVE, CaseFileStatus.DELETED);
+    await validateCaseStatusUpdatedAsExpected(
+      createdCase,
+      updatedCase,
+      CaseStatus.INACTIVE,
+      CaseFileStatus.DELETED,
+      undefined,
+      repositoryProvider
+    );
 
     //ensure no job was created
     expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
@@ -140,9 +158,22 @@ describe('update case status', () => {
     // update case status to inactive directly in DB
     await updateCaseStatusInDb(createdCase, CaseStatus.INACTIVE, CaseFileStatus.DELETED, repositoryProvider);
 
-    const updatedCase = await callUpdateCaseStatusAndValidate(createdCase, false, CaseStatus.ACTIVE);
+    const updatedCase = await callUpdateCaseStatusAndValidate(
+      EVENT,
+      createdCase,
+      false,
+      CaseStatus.ACTIVE,
+      repositoryProvider
+    );
 
-    validateCaseUpdatedAsExpected(createdCase, updatedCase, CaseStatus.ACTIVE, CaseFileStatus.ACTIVE);
+    await validateCaseStatusUpdatedAsExpected(
+      createdCase,
+      updatedCase,
+      CaseStatus.ACTIVE,
+      CaseFileStatus.ACTIVE,
+      undefined,
+      repositoryProvider
+    );
 
     //ensure no job was created
     expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
@@ -163,18 +194,25 @@ describe('update case status', () => {
       JobId: jobId,
     });
 
-    const inactivatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
-    validateCaseUpdatedAsExpected(
+    const inactivatedCase = await callUpdateCaseStatusAndValidate(
+      EVENT,
+      createdCase,
+      true,
+      CaseStatus.INACTIVE,
+      repositoryProvider
+    );
+    await validateCaseStatusUpdatedAsExpected(
       createdCase,
       inactivatedCase,
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETING,
-      jobId
+      jobId,
+      repositoryProvider
     );
 
-    await expect(callUpdateCaseStatusAndValidate(inactivatedCase, false, CaseStatus.ACTIVE)).rejects.toThrow(
-      "Case status can't be changed to ACTIVE when its files are being deleted"
-    );
+    await expect(
+      callUpdateCaseStatusAndValidate(EVENT, inactivatedCase, false, CaseStatus.ACTIVE, repositoryProvider)
+    ).rejects.toThrow("Case status can't be changed to ACTIVE when its files are being deleted");
   });
 
   it('is idempotent inactive to inactive', async () => {
@@ -184,14 +222,40 @@ describe('update case status', () => {
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
-    const updatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
+    const updatedCase = await callUpdateCaseStatusAndValidate(
+      EVENT,
+      createdCase,
+      true,
+      CaseStatus.INACTIVE,
+      repositoryProvider
+    );
 
     // update case status again. expect case without updates
-    const notUpdatedCase = await callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE);
+    const notUpdatedCase = await callUpdateCaseStatusAndValidate(
+      EVENT,
+      createdCase,
+      true,
+      CaseStatus.INACTIVE,
+      repositoryProvider
+    );
 
     // validate that both updated and 'notUpdated' cases are as expected and newer than created case
-    validateCaseUpdatedAsExpected(createdCase, updatedCase, CaseStatus.INACTIVE, CaseFileStatus.DELETED);
-    validateCaseUpdatedAsExpected(createdCase, notUpdatedCase, CaseStatus.INACTIVE, CaseFileStatus.DELETED);
+    await validateCaseStatusUpdatedAsExpected(
+      createdCase,
+      updatedCase,
+      CaseStatus.INACTIVE,
+      CaseFileStatus.DELETED,
+      undefined,
+      repositoryProvider
+    );
+    await validateCaseStatusUpdatedAsExpected(
+      createdCase,
+      notUpdatedCase,
+      CaseStatus.INACTIVE,
+      CaseFileStatus.DELETED,
+      undefined,
+      repositoryProvider
+    );
 
     if (!updatedCase.updated || !notUpdatedCase.updated) {
       fail();
@@ -213,7 +277,13 @@ describe('update case status', () => {
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
-    const notUpdatedCase = await callUpdateCaseStatusAndValidate(createdCase, false, CaseStatus.ACTIVE);
+    const notUpdatedCase = await callUpdateCaseStatusAndValidate(
+      EVENT,
+      createdCase,
+      false,
+      CaseStatus.ACTIVE,
+      repositoryProvider
+    );
 
     if (!createdCase.updated || !notUpdatedCase.updated) {
       fail();
@@ -235,9 +305,9 @@ describe('update case status', () => {
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
-    await expect(callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.ACTIVE)).rejects.toThrow(
-      'Delete files can only be requested when inactivating a case'
-    );
+    await expect(
+      callUpdateCaseStatusAndValidate(EVENT, createdCase, true, CaseStatus.ACTIVE, repositoryProvider)
+    ).rejects.toThrow('Delete files can only be requested when inactivating a case');
 
     //ensure no job was created
     expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
@@ -257,16 +327,18 @@ describe('update case status', () => {
     s3Mock.resolves({
       ETag: undefined,
     });
-    await expect(callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE)).rejects.toThrow(
-      'Failed to delete files. Please retry.'
-    );
+    await expect(
+      callUpdateCaseStatusAndValidate(EVENT, createdCase, true, CaseStatus.INACTIVE, repositoryProvider)
+    ).rejects.toThrow('Failed to delete files. Please retry.');
 
     const updatedCase = (await getCase(createdCase.ulid, undefined, repositoryProvider)) ?? fail();
-    validateCaseUpdatedAsExpected(
+    await validateCaseStatusUpdatedAsExpected(
       createdCase,
       updatedCase,
       CaseStatus.INACTIVE,
-      CaseFileStatus.DELETE_FAILED
+      CaseFileStatus.DELETE_FAILED,
+      undefined,
+      repositoryProvider
     );
 
     validateS3Mocks(createdCase.ulid, caseFile.ulid);
@@ -286,16 +358,18 @@ describe('update case status', () => {
     s3ControlMock.resolves({
       JobId: undefined,
     });
-    await expect(callUpdateCaseStatusAndValidate(createdCase, true, CaseStatus.INACTIVE)).rejects.toThrow(
-      'Failed to delete files. Please retry.'
-    );
+    await expect(
+      callUpdateCaseStatusAndValidate(EVENT, createdCase, true, CaseStatus.INACTIVE, repositoryProvider)
+    ).rejects.toThrow('Failed to delete files. Please retry.');
 
     const updatedCase = (await getCase(createdCase.ulid, undefined, repositoryProvider)) ?? fail();
-    validateCaseUpdatedAsExpected(
+    await validateCaseStatusUpdatedAsExpected(
       createdCase,
       updatedCase,
       CaseStatus.INACTIVE,
-      CaseFileStatus.DELETE_FAILED
+      CaseFileStatus.DELETE_FAILED,
+      undefined,
+      repositoryProvider
     );
 
     validateS3Mocks(createdCase.ulid, caseFile.ulid);
@@ -359,53 +433,6 @@ describe('update case status', () => {
     expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
   });
 });
-
-async function callUpdateCaseStatusAndValidate(
-  createdCase: DeaCase,
-  deleteFiles: boolean,
-  status: CaseStatus
-): Promise<DeaCase> {
-  const event = {
-    ...EVENT,
-    pathParameters: {
-      caseId: createdCase.ulid,
-    },
-    body: JSON.stringify({
-      name: createdCase.name,
-      deleteFiles,
-      status,
-    }),
-  };
-  const response = await updateCaseStatus(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
-  checkApiSucceeded(response);
-
-  const updatedCase: DeaCase = jsonParseWithDates(response.body);
-  Joi.assert(updatedCase, caseResponseSchema);
-
-  return updatedCase;
-}
-
-function validateCaseUpdatedAsExpected(
-  createdCase: DeaCase,
-  updatedCase: DeaCase,
-  status: CaseStatus,
-  filesStatus: CaseFileStatus,
-  s3BatchJobId?: string
-) {
-  if (!updatedCase.updated || !createdCase.updated) {
-    fail();
-  }
-
-  expect(updatedCase.updated.getTime()).toBeGreaterThan(createdCase.updated.getTime());
-
-  expect(updatedCase).toEqual({
-    ...createdCase,
-    updated: updatedCase.updated,
-    status,
-    filesStatus,
-    s3BatchJobId,
-  });
-}
 
 function validateS3Mocks(caseId: string, fileId?: string) {
   expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 1);

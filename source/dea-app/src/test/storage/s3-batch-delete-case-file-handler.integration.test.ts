@@ -1,0 +1,215 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
+import { fail } from 'assert';
+import {
+  S3Client,
+  ServiceInputTypes as S3Input,
+  ServiceOutputTypes as S3Output,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
+import { S3BatchEvent, S3BatchResult, S3BatchResultResultCode } from 'aws-lambda';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
+import { DeaCaseInput } from '../../models/case';
+import { CaseFileStatus } from '../../models/case-file-status';
+import { DeaUser } from '../../models/user';
+import { createCase } from '../../persistence/case';
+import { ModelRepositoryProvider } from '../../persistence/schema/entities';
+import { createUser } from '../../persistence/user';
+import { deleteCaseFileHandler } from '../../storage/s3-batch-delete-case-file-handler';
+import {
+  callCompleteCaseFileUpload,
+  callGetCaseFileDetails,
+  callInitiateCaseFileUpload,
+  DATASETS_PROVIDER,
+} from '../app/resources/case-file-integration-test-helper';
+import { dummyContext, getDummyEvent } from '../integration-objects';
+import { getTestRepositoryProvider } from '../persistence/local-db-table';
+
+const apiEvent = getDummyEvent();
+export const CALLBACK_FN = () => {
+  return 'dummy';
+};
+const VERSION_ID = 'version';
+const TASK_ID = 'task_id';
+const INVOCATION_ID = 'invocation';
+const INVOCATION_SCHEMA = '1.0';
+
+let repositoryProvider: ModelRepositoryProvider;
+let caseOwner: DeaUser;
+let s3Mock: AwsStub<S3Input, S3Output>;
+
+describe('S3 batch delete case-file lambda', () => {
+  beforeAll(async () => {
+    repositoryProvider = await getTestRepositoryProvider('s3BatchDeleteCaseFileLambda');
+
+    caseOwner =
+      (await createUser(
+        {
+          tokenId: 'caseowner',
+          firstName: 'Case',
+          lastName: 'Owner',
+        },
+        repositoryProvider
+      )) ?? fail();
+    apiEvent.headers['userUlid'] = caseOwner.ulid;
+  });
+
+  afterAll(async () => {
+    await repositoryProvider.table.deleteTable('DeleteTableForever');
+  });
+
+  beforeEach(() => {
+    // reset mock so that each test can validate its own set of mock calls
+    s3Mock = mockClient(S3Client);
+    s3Mock.resolves({
+      UploadId: 'lol',
+      VersionId: VERSION_ID,
+      ETag: 'ETAG',
+      Parts: [
+        {
+          ETag: 'I am an etag',
+          PartNumber: 99,
+        },
+      ],
+    });
+  });
+
+  it('should successfully delete files and update case-file status', async () => {
+    const theCase: DeaCaseInput = {
+      name: 'happy path',
+      description: 'description',
+    };
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+    const caseId = createdCase.ulid;
+
+    let caseFile = await callInitiateCaseFileUpload(apiEvent, repositoryProvider, caseId, 'file1');
+    const fileId = caseFile.ulid ?? fail();
+    caseFile = await callCompleteCaseFileUpload(apiEvent, repositoryProvider, fileId, caseId);
+
+    const response = await deleteCaseFileHandler(
+      getS3BatchDeleteCaseFileEvent(caseId, fileId, caseFile.versionId ?? null),
+      dummyContext,
+      CALLBACK_FN,
+      repositoryProvider,
+      DATASETS_PROVIDER
+    );
+    const deletedCaseFile = await callGetCaseFileDetails(apiEvent, repositoryProvider, fileId, caseId);
+
+    const expectedResult = `Successfully deleted object: ${caseId}/${fileId}`;
+
+    expect(response).toEqual(getS3BatchResult(caseId, fileId, 'Succeeded', expectedResult));
+    expect(deletedCaseFile.status).toEqual(CaseFileStatus.DELETED);
+
+    expect(s3Mock).toHaveReceivedCommandTimes(DeleteObjectCommand, 1);
+    expect(s3Mock).toHaveReceivedCommandWith(DeleteObjectCommand, {
+      Bucket: DATASETS_PROVIDER.bucketName,
+      Key: `${caseId}/${fileId}`,
+      VersionId: VERSION_ID,
+    });
+  });
+
+  it('should mark as failed when no versionId in event', async () => {
+    const theCase: DeaCaseInput = {
+      name: 'no version id',
+      description: 'description',
+    };
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+    const caseId = createdCase.ulid;
+
+    const caseFile = await callInitiateCaseFileUpload(apiEvent, repositoryProvider, caseId, 'file1');
+    const fileId = caseFile.ulid ?? fail();
+    await callCompleteCaseFileUpload(apiEvent, repositoryProvider, fileId, caseId);
+
+    const response = await deleteCaseFileHandler(
+      getS3BatchDeleteCaseFileEvent(caseId, fileId, null),
+      dummyContext,
+      CALLBACK_FN,
+      repositoryProvider,
+      DATASETS_PROVIDER
+    );
+    const notDeletedCaseFile = await callGetCaseFileDetails(apiEvent, repositoryProvider, fileId, caseId);
+
+    const expectedResult = `Missing Version ID for key: ${caseId}/${fileId}`;
+
+    expect(response).toEqual(getS3BatchResult(caseId, fileId, 'PermanentFailure', expectedResult));
+    expect(notDeletedCaseFile.status).toEqual(CaseFileStatus.ACTIVE);
+
+    expect(s3Mock).toHaveReceivedCommandTimes(DeleteObjectCommand, 0);
+  });
+
+  it('should mark as failed when delete-object fails', async () => {
+    const theCase: DeaCaseInput = {
+      name: 's3 client failure',
+      description: 'description',
+    };
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+    const caseId = createdCase.ulid;
+
+    let caseFile = await callInitiateCaseFileUpload(apiEvent, repositoryProvider, caseId, 'file1');
+    const fileId = caseFile.ulid ?? fail();
+    caseFile = await callCompleteCaseFileUpload(apiEvent, repositoryProvider, fileId, caseId);
+
+    s3Mock.rejects('failure time!!');
+
+    const response = await deleteCaseFileHandler(
+      getS3BatchDeleteCaseFileEvent(caseId, fileId, caseFile.versionId ?? null),
+      dummyContext,
+      CALLBACK_FN,
+      repositoryProvider,
+      DATASETS_PROVIDER
+    );
+    const notDeletedCaseFile = await callGetCaseFileDetails(apiEvent, repositoryProvider, fileId, caseId);
+
+    const expectedResult = `Failed to delete object: ${caseId}/${fileId}`;
+
+    expect(response).toEqual(getS3BatchResult(caseId, fileId, 'PermanentFailure', expectedResult));
+    expect(notDeletedCaseFile.status).toEqual(CaseFileStatus.DELETE_FAILED);
+  });
+});
+
+export function getS3BatchDeleteCaseFileEvent(
+  caseId: string,
+  fileId: string,
+  s3VersionId: string | null,
+  s3BucketArn = DATASETS_PROVIDER.bucketName
+): S3BatchEvent {
+  return {
+    tasks: [
+      {
+        taskId: TASK_ID,
+        s3Key: `${caseId}/${fileId}`,
+        s3VersionId,
+        s3BucketArn,
+      },
+    ],
+    invocationId: INVOCATION_ID,
+    invocationSchemaVersion: INVOCATION_SCHEMA,
+    job: {
+      id: 'namaste',
+    },
+  };
+}
+
+export function getS3BatchResult(
+  caseId: string,
+  fileId: string,
+  resultCode: S3BatchResultResultCode,
+  resultString: string
+): S3BatchResult {
+  return {
+    invocationSchemaVersion: INVOCATION_SCHEMA,
+    invocationId: INVOCATION_ID,
+    treatMissingKeysAs: 'PermanentFailure',
+    results: [
+      {
+        taskId: TASK_ID,
+        resultString,
+        resultCode,
+      },
+    ],
+  };
+}

@@ -7,17 +7,22 @@ import { fail } from 'assert';
 import { S3Client } from '@aws-sdk/client-s3';
 import { S3ControlClient } from '@aws-sdk/client-s3-control';
 import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda';
+import Joi from 'joi';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
 import { getCaseFileDetails } from '../../../app/resources/get-case-file-details';
 import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
 import { listCaseFiles } from '../../../app/resources/list-case-files';
+import { updateCaseStatus } from '../../../app/resources/update-case-status';
 import * as CaseService from '../../../app/services/case-service';
 import { DeaCase } from '../../../models/case';
 import { DeaCaseFile } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
+import { caseResponseSchema } from '../../../models/validation/case';
+import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
+import { getJob } from '../../../persistence/job';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { dummyContext } from '../../integration-objects';
@@ -225,6 +230,65 @@ export const callCreateUser = async (
     repositoryProvider
   );
 };
+
+export const callUpdateCaseStatusAndValidate = async (
+  baseEvent: APIGatewayProxyEvent,
+  createdCase: DeaCase,
+  deleteFiles: boolean,
+  status: CaseStatus,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCase> => {
+  const event = {
+    ...baseEvent,
+    pathParameters: {
+      caseId: createdCase.ulid,
+    },
+    body: JSON.stringify({
+      name: createdCase.name,
+      deleteFiles,
+      status,
+    }),
+  };
+  const response = await updateCaseStatus(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
+  checkApiSucceeded(response);
+
+  const updatedCase: DeaCase = jsonParseWithDates(response.body);
+  Joi.assert(updatedCase, caseResponseSchema);
+
+  return updatedCase;
+};
+
+export async function validateCaseStatusUpdatedAsExpected(
+  createdCase: DeaCase,
+  updatedCase: DeaCase,
+  status: CaseStatus,
+  filesStatus: CaseFileStatus,
+  s3BatchJobId: string | undefined,
+  repositoryProvider: ModelRepositoryProvider
+) {
+  if (!updatedCase.updated || !createdCase.updated) {
+    fail();
+  }
+
+  expect(updatedCase.updated.getTime()).toBeGreaterThan(createdCase.updated.getTime());
+
+  expect(updatedCase).toEqual({
+    ...createdCase,
+    updated: updatedCase.updated,
+    status,
+    filesStatus,
+    s3BatchJobId,
+  });
+
+  if (s3BatchJobId) {
+    const job = await getJob(s3BatchJobId, repositoryProvider);
+    if (!job) {
+      fail();
+    }
+    expect(job.jobId).toEqual(s3BatchJobId);
+    expect(job?.caseUlid).toEqual(createdCase.ulid);
+  }
+}
 
 export const checkApiSucceeded = (response: APIGatewayProxyResult) => {
   expect(response.statusCode).toEqual(200);

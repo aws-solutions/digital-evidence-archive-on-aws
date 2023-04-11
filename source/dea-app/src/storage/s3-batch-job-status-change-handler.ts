@@ -10,9 +10,11 @@ import { DeaCase } from '../models/case';
 import { CaseFileStatus } from '../models/case-file-status';
 import { CaseStatus } from '../models/case-status';
 import { getCase, updateCasePostJobCompletion } from '../persistence/case';
+import { getAllCaseFileS3Objects } from '../persistence/case-file';
 import { deleteJob, getJob } from '../persistence/job';
 import { defaultProvider, ModelRepositoryProvider } from '../persistence/schema/entities';
 import { describeS3BatchJob } from './datasets';
+import { lambdaCallBackFunction } from './s3-batch-delete-case-file-handler';
 
 export interface S3BatchEventBridgeDetail {
   serviceEventDetails: ServiceEventDetails;
@@ -24,14 +26,13 @@ export interface ServiceEventDetails {
   status: string;
   jobEventId: string;
   failureCodes: string;
-  statusChangeReason: [];
+  statusChangeReason: string[];
 }
 
 export const s3BatchJobStatusChangeHandler = async (
   event: EventBridgeEvent<string, S3BatchEventBridgeDetail>,
   context: Context,
-  //eslint-disable-next-line @typescript-eslint/no-empty-function
-  callbackFn = () => {},
+  callbackFn: lambdaCallBackFunction,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
@@ -42,6 +43,7 @@ export const s3BatchJobStatusChangeHandler = async (
 
   if (event.detail.serviceEventDetails.status !== 'Complete') {
     logger.info("Job status isn't complete. No actions performed.");
+    return;
   }
 
   const jobId = event.detail.serviceEventDetails.jobId;
@@ -64,8 +66,17 @@ export const s3BatchJobStatusChangeHandler = async (
   logger.debug('S3batch job', s3BatchJob);
 
   if (deaCase.status === CaseStatus.INACTIVE && deaCase.filesStatus === CaseFileStatus.DELETING) {
+    const activeFiles = await getAllCaseFileS3Objects(deaCase.ulid, repositoryProvider);
+    if (activeFiles && activeFiles.length > 0) {
+      logger.info('There are un-deleted files associated with this case. marking as failed', {
+        fileCount: activeFiles.length,
+      });
+      await updateCaseAndDeleteJob(deaCase, jobId, CaseFileStatus.DELETE_FAILED, repositoryProvider);
+      return;
+    }
+
     if (s3BatchJobSucceeded(s3BatchJob)) {
-      logger.info('Job succeeded, marking complete');
+      logger.info('Job succeeded, making sure that all files were deleted');
       await updateCaseAndDeleteJob(deaCase, jobId, CaseFileStatus.DELETED, repositoryProvider);
     } else {
       logger.info('Job failed, marking as failed');
@@ -73,8 +84,6 @@ export const s3BatchJobStatusChangeHandler = async (
     }
     return;
   }
-
-  logger.info('No actions performed. Exiting');
 };
 
 async function updateCaseAndDeleteJob(
