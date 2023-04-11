@@ -16,7 +16,7 @@
         "s3:*",
         "ssm:*",
         "cloudtrail:*",
-        "event:*"
+        "events:*"
       ],
       "Resource": "*"
     },
