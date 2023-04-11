@@ -23,6 +23,8 @@ import {
 import {
   Effect,
   FederatedPrincipal,
+  ManagedPolicy,
+  PermissionsBoundary,
   Policy,
   PolicyStatement,
   Role,
@@ -67,7 +69,8 @@ export class DeaAuthConstruct extends Construct {
     roleName: string,
     description: string,
     apiEndpoints: Array<string>,
-    principal: WebIdentityPrincipal
+    principal: WebIdentityPrincipal,
+    roleBoundary: ManagedPolicy
   ): Role {
     const role = new Role(this, roleName, {
       assumedBy: principal,
@@ -88,6 +91,7 @@ export class DeaAuthConstruct extends Construct {
         ],
       })
     );
+    PermissionsBoundary.of(role).apply(roleBoundary);
 
     return role;
   }
@@ -125,11 +129,28 @@ export class DeaAuthConstruct extends Construct {
     // * Auditors: can call Audit APIs to generate reports
     // * Case Workers: can create cases, and upload/download to cases they have permissions to (case ACL)
 
+    const roleBoundary = new ManagedPolicy(this, 'deaRoleBoundary', {
+      statements: [
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: ['execute-api:Invoke'],
+          resources: [...apiEndpointArns.values()],
+        }),
+      ],
+    });
+
     const deaRoleTypes = deaConfig.deaRoleTypes();
     deaRoleTypes.forEach((roleType) => {
       const endpointStrings = roleType.endpoints.map((endpoint) => `${endpoint.path}${endpoint.method}`);
       const groupEndpoints = this._getEndpoints(apiEndpointArns, endpointStrings);
-      this._createDEARole(roleType.name, roleType.description, deaRolesMap, groupEndpoints, principal);
+      this._createDEARole(
+        roleType.name,
+        roleType.description,
+        deaRolesMap,
+        groupEndpoints,
+        principal,
+        roleBoundary
+      );
       new StringListParameter(this, `${roleType.name}_actions`, {
         parameterName: `/dea/${region}/${stage}-${roleType.name}-actions`,
         stringListValue: endpointStrings,
@@ -429,9 +450,10 @@ export class DeaAuthConstruct extends Construct {
     desc: string,
     deaRolesMap: Map<string, Role>,
     endpoints: string[],
-    principal: WebIdentityPrincipal
+    principal: WebIdentityPrincipal,
+    roleBoundary: ManagedPolicy
   ): void {
-    const deaRole = this._createIamRole(`${name}Role`, `Role ${desc}`, endpoints, principal);
+    const deaRole = this._createIamRole(`${name}Role`, `Role ${desc}`, endpoints, principal, roleBoundary);
     deaRolesMap.set(name, deaRole);
   }
 
