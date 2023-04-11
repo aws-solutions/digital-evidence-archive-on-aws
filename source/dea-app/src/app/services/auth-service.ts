@@ -29,7 +29,13 @@ export interface CognitoSsmParams {
   agencyIdpName?: string;
 }
 
+let cachedCognitoParams: CognitoSsmParams;
+
 export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
+  if (cachedCognitoParams) {
+    return cachedCognitoParams;
+  }
+
   const ssmClient = new SSMClient({ region });
 
   const cognitoDomainPath = `/dea/${region}/${stage}-userpool-cognito-domain-param`;
@@ -89,7 +95,7 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
   });
 
   if (cognitoDomainUrl && clientId && callbackUrl && identityPoolId && userPoolId) {
-    return {
+    cachedCognitoParams = {
       cognitoDomainUrl,
       clientId,
       callbackUrl,
@@ -97,6 +103,7 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
       userPoolId,
       agencyIdpName,
     };
+    return cachedCognitoParams;
   } else {
     throw new Error(
       `Unable to grab the parameters in SSM needed for token verification: ${cognitoDomainUrl}, ${clientId}, ${callbackUrl}, ${identityPoolId}`
