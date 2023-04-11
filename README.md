@@ -15,7 +15,7 @@ Deployments are controlled by your `STAGE` environment variable. If unspecified 
 Any deployments cohabitating on a single AWS account will require an account-unique `STAGE` name.
 By default the build process will seek a configuration file ([example](/source/common/config/chewbacca.json)) with the same name as your `STAGE`, however, you can optionally specify `CONFIGNAME` in your environment to specify a filename separate from your `STAGE`, this is useful if you want multiple stages that share the same configuration.
 DEA deployment requires a Cognito Domain Prefix to be specified for creation and reference during CDK deployment, for this you must set a value for `DOMAIN_PREFIX` in your environment. If a value is not specified a CfnParameter will be added to the stack, which will produce an error if not specified during deployment along the lines of `Resolution error: ID components may not include unresolved tokens`.
-There are several environment values required to run E2E tests successfully, these should be set for you when running the test suite after deploying your stack. If you notice your tests failing due to unset values you can run the [setEnv](/source/dea-app/setEnv.sh) script to pull these values from your stack (e.g. `source ./dea-app/setEnv.sh`).
+There are several environment values required to run E2E tests successfully, these should be set for you when running the test suite after deploying your stack. If you notice your tests failing due to unset values you can run the [setEnv](/source/common/scripts/setEnv.sh) script to pull these values from your stack (e.g. `source ./common/scripts/setEnv.sh`).
 
 Install Rush 
 
@@ -95,7 +95,7 @@ aws iam create-policy-version \
 ---
 ## Test User Generation for API requests
 The default APIs are secured with IAM authentication, to support the development process there are some npm scripts available that grant basic test user management. The credentials retrieved from your test users can be used via AWSv4 authentication along with a custom header value `idToken`.
-The following task are available in the [dea-app](/source/dea-app/) directory, and act upon a deployed cognito instance, identified by ENV values from [setEnv](/source/dea-app/setEnv.sh).
+The following tasks are available in the [dea-app](/source/dea-app/) directory, and act upon a deployed cognito instance, identified by ENV values from [setEnv](/source/common/scripts/setEnv.sh).
 #### Create Test User
 - This will generate a test user in your deployed Cognito instance, and output to your terminal the API credentials for this user.
 > example:
