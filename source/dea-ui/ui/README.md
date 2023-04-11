@@ -12,7 +12,7 @@ This is a prototype app and you should expect to modify the source code to refle
 
 ## Deploying code changes
 
-Navigate to dea-main and follow instructions in [README](../../README.md)
+Navigate to DEA root directory and follow instructions in [README](../../../README.md)
 
 ## Running locally
 
@@ -44,3 +44,9 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 ## Design system
 
 For the design system we are using Cloudscape. More information can be found [here](https://cloudscape.design/).
+
+#### Common issues
+
+If ports 3000 or 3001 are already in use. Use the `npx kill-port` command to clear the port before running the https proxy or development server
+
+example: `npx kill-port 3000`

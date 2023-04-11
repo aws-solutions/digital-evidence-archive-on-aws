@@ -21,7 +21,13 @@ Parent Infrastructure stack for DEA
 
 ### Deployment
 
-1. Run the following commands in this directory to deploy DEA
+1. Configure environment variables
+
+```sh
+export DOMAIN_PREFIX={unique sub-domain for cognito hosted UI}
+```
+
+2. Run the following commands in this directory to deploy DEA
 
 - `rushx cdk bootstrap aws://{aws id}/{region}`
 - `rushx cdk deploy`
@@ -31,6 +37,4 @@ Parent Infrastructure stack for DEA
 | Command | Issue | Fix|
 | --- | ----------- | ----------- |
 | `rushx cdk bootstrap aws://{aws id}/{region}` | `Resolution error: ID components may not include unresolved tokens` | `export DOMAIN_PREFIX=<cognito-domain-prefix>` |
-| `rushx cdk deploy` | `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Cannot read properties of undefined (reading '...source/common/config/rush')` | `npm install aws-cdk-lib`|
-
-
+| `rushx cdk deploy` | `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Cannot read properties of undefined (reading '...source/common/config/rush')` | `npm install -g pnpm@7.16.0`|

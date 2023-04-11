@@ -2,6 +2,8 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+import { AdminGetUserResponse } from '@aws-sdk/client-cognito-identity-provider';
+import { SSMClient, GetParametersCommand } from '@aws-sdk/client-ssm';
 import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios from 'axios';
 import _ from 'lodash';
@@ -21,6 +23,7 @@ describe('API authentication', () => {
   const testUser = `authE2ETestUser-${randomSuffix()}`;
   const deaApiUrl = testEnv.apiUrlOutput;
   const region = testEnv.awsRegion;
+  const stage = testEnv.stage;
   let creds: Credentials;
 
   beforeAll(async () => {
@@ -101,7 +104,13 @@ describe('API authentication', () => {
 
     // get SSM parameters to compare
     const cognitoParams = await getCognitoSsmParams();
-    const expectedUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
+    let expectedUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
+    // If you have an external IdP integrated, then DEA uses
+    // the identity_provider query param to redirect automatically
+    // to the IdP from the Hosted UI
+    if (cognitoParams.agencyIdpName) {
+      expectedUrl += `&identity_provider=${cognitoParams.agencyIdpName}`;
+    }
 
     // fetch url
     const url = `${deaApiUrl}auth/loginUrl?callbackUrl=${cognitoParams.callbackUrl}`;
@@ -309,4 +318,159 @@ describe('API authentication', () => {
   it('should log successful and unsuccessful logins/api invocations', async () => {
     /* TODO */
   });
+
+  // This test will ONLY run in you have an external idp linked up to Cognito, (with
+  // the appropriate attribute mapping)
+  // whose name (recognized by Cognito) is stored in SSM Param Store under
+  // /dea/<region>/<stage>-agency-idp-name, AND have a test user ALREADY created
+  // in the IdP (assigned to the DEA application under test and has DEARole assigned as CaseWorker)
+  // whose login credentials are stored in SSM Param store under
+  // /dea/<region>/<stage>-test/idp/idp-test-user-logon and /dea/<region>/<stage>-test/idp/idp-test-user-password
+  // you can use the following script in the dea-app folder to set those fields in SSM
+  // "rushx idp-test-setup --username <TEST_USER_NAME> --password <TEST_USER_PASSWORD>"
+  it('should authenticate and authorize a federated user from the configured IdP', async () => {
+    // Check that SSM Parameters are all present, if not skip the test
+    const ssmClient = new SSMClient({ region });
+    const agencyIdpNamePath = `/dea/${region}/${stage}-agency-idp-name`;
+    const testUserLogonPath = `/dea/${region}/${stage}-test/idp/idp-test-user-logon`;
+    const testUserPasswordPath = `/dea/${region}/${stage}-test/idp/idp-test-user-password`;
+    const ssmResponse = await ssmClient.send(
+      new GetParametersCommand({
+        Names: [agencyIdpNamePath, testUserLogonPath, testUserPasswordPath],
+      })
+    );
+
+    if (
+      !ssmResponse.Parameters ||
+      ssmResponse.Parameters.length != 3 ||
+      !ssmResponse.Parameters[0].Value ||
+      !ssmResponse.Parameters[1].Value ||
+      !ssmResponse.Parameters[2].Value
+    ) {
+      console.warn(
+        'Skipping IdP E2E test, because external IdP is not integrated OR test user fields are not set.'
+      );
+      return;
+    }
+
+    // Parse the response into variables
+    let agencyIdpName;
+    let testUserLogon;
+    let testUserPassword;
+    ssmResponse.Parameters.forEach((param) => {
+      switch (param.Name) {
+        case agencyIdpNamePath:
+          agencyIdpName = param.Value;
+          break;
+        case testUserLogonPath:
+          testUserLogon = param.Value;
+          break;
+        case testUserPasswordPath:
+          testUserPassword = param.Value;
+          break;
+        default:
+          throw new Error('Error when parsing external IdP/test user information');
+      }
+    });
+
+    if (!agencyIdpName || !testUserLogon || !testUserPassword) {
+      throw new Error('Error when parsing external IdP/test user information');
+    }
+
+    // Delete user in Cognito Pool to test first time federation
+    // so we can test that the attribute mapping works as expected
+    const testUserCognitoUserName = `${agencyIdpName}_${testUserLogon}`;
+    const doesUserExist = await cognitoHelper.doesUserExist(testUserCognitoUserName);
+    if (doesUserExist) {
+      console.info(
+        'External IdP test user already exists in Cognito, deleting user to test first time attribute mapping.'
+      );
+      await cognitoHelper.deleteUser(testUserCognitoUserName);
+    }
+
+    // Use Hosted UI to federate user and get auth code
+    const cognitoParams = await getCognitoSsmParams();
+    const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
+    let authCode: string | undefined;
+    for (let i = 0; i < 3; i++) {
+      try {
+        authCode = await getAuthorizationCode(
+          cognitoParams.cognitoDomainUrl,
+          authTestUrl,
+          testUserLogon,
+          testUserPassword,
+          pkceStrings.code_challenge,
+          agencyIdpName
+        );
+
+        if (authCode) {
+          break;
+        }
+      } catch (e) {
+        console.log('Failed to grab auth code, retrying...');
+      }
+    }
+
+    if (!authCode) {
+      throw new Error('Failed to retrieve auth code.');
+    }
+
+    // Query Cognito to describe user, expect user's attributes to have
+    // been created correctly
+    const user = await cognitoHelper.getUser(testUserCognitoUserName);
+    if (!user) {
+      throw new Error('User was not created in the user pool after federation');
+    }
+    if (!user.UserAttributes) {
+      throw new Error('Unable to get user attributes.');
+    }
+    function verifyUserAttr(user: AdminGetUserResponse, fieldName: string, expectedValue: string) {
+      const value = user.UserAttributes?.find((attr) => attr.Name === fieldName);
+      expect(value?.Value).toStrictEqual(expectedValue);
+    }
+    verifyUserAttr(user, 'email', testUserLogon);
+    verifyUserAttr(user, 'preferred_username', testUserLogon);
+    verifyUserAttr(user, 'custom:DEARole', 'CaseWorker');
+    // Verify the first and last names are set
+    expect(user.UserAttributes.find((attr) => attr.Name === 'family_name')).toBeDefined();
+    expect(user.UserAttributes.find((attr) => attr.Name === 'given_name')).toBeDefined();
+    // Check that a sub was defined (we use this in the db to check whether the user was added to db or not)
+    expect(user.UserAttributes.find((attr) => attr.Name === 'sub')).toBeDefined();
+
+    // Exchange auth code for id token
+    const client = axios.create();
+    const url = `${deaApiUrl}auth/${authCode}/token`;
+    const headers = { 'callback-override': authTestUrl };
+    const tokenResponse = await client.post(
+      url,
+      JSON.stringify({
+        codeVerifier: pkceStrings.code_verifier,
+      }),
+      { headers, validateStatus }
+    );
+    expect(tokenResponse.status).toEqual(200);
+    const retrievedTokens: Oauth2Token = tokenResponse.data;
+    const idToken = retrievedTokens.id_token;
+
+    // Confirm IdToken has the correct fields
+    const payload = await getTokenPayload(idToken, region);
+    expect(payload['custom:DEARole']).toStrictEqual('CaseWorker');
+    expect(payload['family_name']).toBeDefined();
+    expect(payload['given_name']).toBeDefined();
+    expect(payload.sub).toBeDefined();
+
+    // Exchange id token for credentials
+    const credentialsUrl = `${deaApiUrl}auth/credentials/${idToken}/exchange`;
+    const credsResponse = await client.get(credentialsUrl, { validateStatus });
+    expect(credsResponse.status).toEqual(200);
+
+    // Call a CaseWorker API, expect success
+    const response = await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', retrievedTokens, creds);
+    expect(response.status).toBe(200);
+    expect(response.data).toHaveProperty('cases');
+
+    // Call an Evidence Manager API, expect failure
+    const failed = await callDeaAPIWithCreds(`${deaApiUrl}cases/all-cases`, 'GET', retrievedTokens, creds);
+    expect(failed.status).toEqual(403);
+  }, 60000);
 });
