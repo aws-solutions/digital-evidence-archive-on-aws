@@ -3,14 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getRequiredPayload, getTokenId, getUserUlid } from '../../lambda-http-helpers';
-import { RefreshToken } from '../../models/auth';
-import { RefreshTokenSchema } from '../../models/validation/auth';
+import { getOauthToken, getTokenId, getUserUlid } from '../../lambda-http-helpers';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { useRefreshToken } from '../services/auth-service';
 import { markSessionAsRevoked } from '../services/session-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
-import { responseOk } from './dea-lambda-utils';
+import { okSetIdTokenCookie } from './dea-lambda-utils';
 
 export const refreshToken: DEAGatewayProxyHandler = async (
   event,
@@ -19,8 +17,8 @@ export const refreshToken: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  const refreshTokenPayload: RefreshToken = getRequiredPayload(event, 'refresh_token', RefreshTokenSchema);
-  const refreshTokenResult = await useRefreshToken(refreshTokenPayload.refreshToken);
+  const oauthToken = getOauthToken(event);
+  const refreshTokenResult = await useRefreshToken(oauthToken.refresh_token);
 
   // Now mark the previous session as revoked in db
   // so the new idtoken can be used in api calls
@@ -29,5 +27,5 @@ export const refreshToken: DEAGatewayProxyHandler = async (
   const tokenId = getTokenId(event);
   await markSessionAsRevoked(userUlid, tokenId, repositoryProvider);
 
-  return responseOk(refreshTokenResult);
+  return okSetIdTokenCookie(event, refreshTokenResult, '');
 };

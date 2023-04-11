@@ -11,28 +11,21 @@ if (typeof window !== 'undefined' && !urlBase) {
 }
 
 const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
-  const accessKeyId = localStorage.getItem('accessKeyId');
-  const secretAccessKey = localStorage.getItem('secretAccessKey');
-  const sessionToken = localStorage.getItem('sessionToken');
-  const idToken = localStorage.getItem('idToken');
+  const accessKeyId = sessionStorage.getItem('accessKeyId');
+  const secretAccessKey = sessionStorage.getItem('secretAccessKey');
+  const sessionToken = sessionStorage.getItem('sessionToken');
 
   options.headers = {
     ...options.headers,
-    authorization: 'allow',
   };
-  const client = axios.create();
+  const client = axios.create({ withCredentials: true });
 
-  if (idToken && accessKeyId && secretAccessKey && sessionToken) {
+  if (accessKeyId && secretAccessKey && sessionToken) {
     // create credentials
     const credentials: Credentials = {
       accessKeyId,
       secretAccessKey,
       sessionToken,
-    };
-
-    options.headers = {
-      ...options.headers,
-      idToken: idToken,
     };
     const interceptor = aws4Interceptor(
       {
@@ -48,7 +41,6 @@ const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
     // TODO: call logger to capture exception
     throw new Error('there was an error while trying to retrieve data');
   });
-
   return data;
 };
 

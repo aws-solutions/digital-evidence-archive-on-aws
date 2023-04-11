@@ -5,6 +5,7 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Credentials } from 'aws4-axios';
+import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
 import { DeaCaseFile } from '../../models/case-file';
@@ -41,7 +42,7 @@ export interface ACLTestHarness {
 export interface ACLTestUser {
   userUlid: string;
   creds: Credentials;
-  idToken: string;
+  idToken: Oauth2Token;
   userName: string;
 }
 
@@ -264,7 +265,7 @@ const initializeACLE2ETest = async (
   }
   await Promise.all(createUserPromises);
 
-  const credsMap = new Map<string, [Credentials, string]>();
+  const credsMap = new Map<string, [Credentials, Oauth2Token]>();
 
   // Initialize the users in the Database
   const initUserPromises: Promise<unknown>[] = [];
@@ -384,7 +385,7 @@ const cleanupTestHarness = async (testHarnes: ACLTestHarness): Promise<void> => 
 function getACLTestUser(
   userName: string,
   users: DeaUser[],
-  credsMap: Map<string, [Credentials, string]>
+  credsMap: Map<string, [Credentials, Oauth2Token]>
 ): ACLTestUser {
   const [creds, idToken] = credsMap.get(userName)!;
   return {
@@ -430,7 +431,11 @@ const setupCaseFile = async (
   return caseFile;
 };
 
-const setupCaseAuditId = async (caseUlid: string, idToken: string, creds: Credentials): Promise<string> => {
+const setupCaseAuditId = async (
+  caseUlid: string,
+  idToken: Oauth2Token,
+  creds: Credentials
+): Promise<string> => {
   const response = await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/audit`, 'POST', idToken, creds);
 
   expect(response.status).toEqual(200);

@@ -94,16 +94,17 @@ export type TokenExchangeRequestor = {
 export type CognitoIdentityId = {
   idType: IdentityType.COGNITO_ID;
   sourceIp: string;
-  id: string;
+  idPoolUserId: string;
 };
 
 // The data in this identifier comes from successful retrieval of Cognito token (+ data from the prior progression)
 export type CognitoTokenId = {
   idType: IdentityType.COGNITO_TOKEN;
   sourceIp: string;
-  id: string;
+  idPoolUserId: string;
   username: string;
   deaRole: string;
+  userPoolUserId: string;
 };
 
 export type LoginUrlId = {
@@ -120,12 +121,13 @@ export type LogoutUrlId = {
 export type FullUserId = {
   idType: IdentityType.FULL_USER_ID;
   sourceIp: string;
-  id: string;
+  idPoolUserId: string; // unique id given to federated user by the Cognito Identity Pool
   username: string;
   firstName: string;
   lastName: string;
-  userUlid: string;
+  userUlid: string; // unique id for user granted and used by DEA system. Stored in DDB and used for CaseUser
   deaRole: string;
+  userPoolUserId: string; // unique id given to federated user by the Cognito User Pool. Stored in DDB and used to determine whether user is in DB already or not
 };
 
 // We support different progressions of identifier, anticipating that we may encounter an error along the authentication process
@@ -161,7 +163,7 @@ export type CJISAuditEventBody = {
 };
 
 const queryFields =
-  'dateTime, requestPath, sourceComponent, eventType, actorIdentity.idType, actorIdentity.id, actorIdentity.sourceIp, actorIdentity.username, actorIdentity.firstName, actorIdentity.lastName, actorIdentity.userUlid, actorIdentity.deaRole, actorIdentity.authCode, actorIdentity.idToken, caseId, fileId';
+  'dateTime, requestPath, sourceComponent, eventType, actorIdentity.idType, actorIdentity.idPoolUserId, actorIdentity.sourceIp, actorIdentity.username, actorIdentity.firstName, actorIdentity.lastName, actorIdentity.userPoolUserId, actorIdentity.userUlid, actorIdentity.deaRole, actorIdentity.authCode, actorIdentity.idToken, caseId, fileId, targetUserId';
 
 export interface AuditResult {
   status: QueryStatus | string;

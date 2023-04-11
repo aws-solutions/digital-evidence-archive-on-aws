@@ -49,5 +49,5 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
     datasetsProvider
   );
 
-  return responseOk(completeUploadResponse);
+  return responseOk(event, completeUploadResponse);
 };

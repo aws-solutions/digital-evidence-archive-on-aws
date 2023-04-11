@@ -25,5 +25,5 @@ export const getScopedCaseInformation: DEAGatewayProxyHandler = async (
     throw new NotFoundError(`Case with ulid ${caseId} not found.`);
   }
 
-  return responseOk({ name: retreivedCase.name, ulid: retreivedCase.ulid });
+  return responseOk(event, { name: retreivedCase.name, ulid: retreivedCase.ulid });
 };

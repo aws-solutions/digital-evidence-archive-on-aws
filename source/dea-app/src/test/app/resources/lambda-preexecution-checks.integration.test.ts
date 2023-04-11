@@ -15,6 +15,7 @@ import { runPreExecutionChecks } from '../../../app/resources/dea-lambda-utils';
 import { IdentityType } from '../../../app/services/audit-service';
 import { shouldSessionBeConsideredInactive } from '../../../app/services/session-service';
 import { getTokenPayload } from '../../../cognito-token-helpers';
+import { Oauth2Token } from '../../../models/auth';
 import { DeaUser } from '../../../models/user';
 import { sessionResponseSchema } from '../../../models/validation/session';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
@@ -46,12 +47,12 @@ describe('lambda pre-execution checks', () => {
   }, 40000);
 
   it('should add first time federated user to dynamo table', async () => {
-    const { idToken } = await cognitoHelper.getIdTokenForUser(testUser);
+    const oauthToken = await cognitoHelper.getIdTokenForUser(testUser);
 
-    const tokenPayload = await getTokenPayload(idToken, region);
-    const tokenId = tokenPayload.sub;
     const event = getDummyEvent();
-    event.headers['idToken'] = idToken;
+    event.headers['cookie'] = `idToken=${JSON.stringify(oauthToken)}`;
+    const tokenPayload = await getTokenPayload(oauthToken.id_token, region);
+    const tokenId = tokenPayload.sub;
 
     const auditEvent = getDummyAuditEvent();
 
@@ -93,12 +94,12 @@ describe('lambda pre-execution checks', () => {
     // make sure not added twice (in the getByToken code, we assert only 1 exists)
 
     const result = await cognitoHelper.getIdTokenForUser(testUser);
-    const idToken2 = result.idToken;
-    const tokenId2 = (await getTokenPayload(idToken, region)).sub;
+    const idToken2 = result.id_token;
+    const tokenId2 = (await getTokenPayload(idToken2, region)).sub;
     expect(tokenId2).toStrictEqual(tokenId);
 
     const event2 = getDummyEvent();
-    event2.headers['idToken'] = idToken2;
+    event2.headers['cookie'] = `idToken=${JSON.stringify(result)}`;
 
     const auditEvent2 = getDummyAuditEvent();
     await runPreExecutionChecks(event2, dummyContext, auditEvent2, repositoryProvider);
@@ -141,17 +142,17 @@ describe('lambda pre-execution checks', () => {
     // Create user
     const user = 'SuccessSession';
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Success', 'Session');
-    const { idToken } = await cognitoHelper.getIdTokenForUser(user);
+    const oauthToken = await cognitoHelper.getIdTokenForUser(user);
 
     // Call API expect success, adds session to db
-    const userUlid = await callPreChecks(idToken);
+    const userUlid = await callPreChecks(oauthToken);
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
     const session1 = sessions[0];
     Joi.assert(session1, sessionResponseSchema);
 
     // Call API again with same creds, expect success
-    await callPreChecks(idToken);
+    await callPreChecks(oauthToken);
     const sessions2 = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions2.length).toEqual(1);
     const session2 = sessions2[0];
@@ -166,10 +167,10 @@ describe('lambda pre-execution checks', () => {
     // Create user
     const user = 'RevokedSession';
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Revoked', 'Session');
-    const { idToken } = await cognitoHelper.getIdTokenForUser(user);
+    const oauthToken = await cognitoHelper.getIdTokenForUser(user);
 
     // Call API, adds session to db
-    const userUlid = await callPreChecks(idToken);
+    const userUlid = await callPreChecks(oauthToken);
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
     const session1 = sessions[0];
@@ -184,10 +185,10 @@ describe('lambda pre-execution checks', () => {
     );
 
     // Call API again, expect failure
-    await expect(callPreChecks(idToken)).rejects.toThrow(ReauthenticationError);
+    await expect(callPreChecks(oauthToken)).rejects.toThrow(ReauthenticationError);
 
     // Create new session, call API, should succeed
-    const newIdToken = (await cognitoHelper.getIdTokenForUser(user)).idToken;
+    const newIdToken = await cognitoHelper.getIdTokenForUser(user);
     await callPreChecks(newIdToken);
   }, 40000);
 
@@ -195,10 +196,10 @@ describe('lambda pre-execution checks', () => {
     // Create user
     const user = 'ExpiredSession';
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Expired', 'Session');
-    const { idToken } = await cognitoHelper.getIdTokenForUser(user);
+    const oauthToken = await cognitoHelper.getIdTokenForUser(user);
 
     // Call API, adds session to db
-    const userUlid = await callPreChecks(idToken);
+    const userUlid = await callPreChecks(oauthToken);
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
     const session1 = sessions[0];
@@ -213,10 +214,10 @@ describe('lambda pre-execution checks', () => {
     );
 
     // Call API again, expect failure
-    await expect(callPreChecks(idToken)).rejects.toThrow(ReauthenticationError);
+    await expect(callPreChecks(oauthToken)).rejects.toThrow(ReauthenticationError);
 
     // Create new session, call API, should succeed
-    const newIdToken = (await cognitoHelper.getIdTokenForUser(user)).idToken;
+    const newIdToken = await cognitoHelper.getIdTokenForUser(user);
     await callPreChecks(newIdToken);
   }, 40000);
 
@@ -224,10 +225,10 @@ describe('lambda pre-execution checks', () => {
     // Create user
     const user = 'InactiveSession';
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Inactive', 'Session');
-    const { idToken } = await cognitoHelper.getIdTokenForUser(user);
+    const oauthToken = await cognitoHelper.getIdTokenForUser(user);
 
     // Call API, adds session to db
-    const userUlid = await callPreChecks(idToken);
+    const userUlid = await callPreChecks(oauthToken);
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
     const session = sessions[0];
@@ -245,16 +246,16 @@ describe('lambda pre-execution checks', () => {
     // Create user
     const user = 'ConcurrentSession';
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Concurrent', 'Session');
-    const { idToken } = await cognitoHelper.getIdTokenForUser(user);
+    const oauthToken = await cognitoHelper.getIdTokenForUser(user);
 
     // Call API, adds session to db
-    const userUlid = await callPreChecks(idToken);
+    const userUlid = await callPreChecks(oauthToken);
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
     const session = sessions[0];
 
     // Create another session, call API (see that it is blocked)
-    const newIdToken = (await cognitoHelper.getIdTokenForUser(user)).idToken;
+    const newIdToken = await cognitoHelper.getIdTokenForUser(user);
     await expect(callPreChecks(newIdToken)).rejects.toThrow(ReauthenticationError);
 
     // Mimic Logout on original session by marking session revoked
@@ -271,9 +272,9 @@ describe('lambda pre-execution checks', () => {
   }, 40000);
 });
 
-const callPreChecks = async (idToken: string): Promise<string> => {
+const callPreChecks = async (oauthToken: Oauth2Token): Promise<string> => {
   const event = getDummyEvent();
-  event.headers['idToken'] = idToken;
+  event.headers['cookie'] = `idToken=${JSON.stringify(oauthToken)}`;
   const auditEvent = getDummyAuditEvent();
 
   // Call API expect success

@@ -6,6 +6,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
+import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { CaseAction, OWNER_ACTIONS } from '../../models/case-action';
 import { CaseStatus } from '../../models/case-status';
@@ -38,12 +39,12 @@ describe('CaseOwner E2E', () => {
 
   let ownerCreds: Credentials;
   let inviteeCreds: Credentials;
-  let ownerToken: string;
-  let inviteeToken: string;
+  let ownerToken: Oauth2Token;
+  let inviteeToken: Oauth2Token;
 
   beforeAll(async () => {
     // Create user
-    await cognitoHelper.createUser(testOwner, 'CaseWorker', testOwner, 'TestUser');
+    await cognitoHelper.createUser(testOwner, 'WorkingManager', testOwner, 'TestUser');
     await cognitoHelper.createUser(testInvitee, 'CaseWorker', testInvitee, 'TestUser');
 
     [ownerCreds, ownerToken] = await cognitoHelper.getCredentialsForUser(testOwner);
@@ -222,10 +223,10 @@ describe('CaseOwner E2E', () => {
     fetchedWithInviteeCases.forEach((fetchedCase) => Joi.assert(fetchedCase, caseUserResponseSchema));
     const caseOwnerEntry = fetchedWithInviteeCases.find((caseuser) => caseuser.userUlid === ownerUlid);
     expect(caseOwnerEntry).toBeDefined();
-    expect(caseOwnerEntry?.actions.join('|') === OWNER_ACTIONS.join('|')).toBeTruthy();
+    expect(caseOwnerEntry?.actions).toEqual(expect.arrayContaining(OWNER_ACTIONS));
     const inviteeEntry = fetchedWithInviteeCases.find((caseuser) => caseuser.userUlid === inviteeUlid);
     expect(inviteeEntry).toBeDefined();
-    expect(inviteeEntry?.actions.join('|') === viewOnlyPermissions.join('|')).toBeTruthy();
+    expect(inviteeEntry?.actions).toEqual(expect.arrayContaining(viewOnlyPermissions));
 
     // confirm invitee can access to the case details
     const accessResponse = await callDeaAPIWithCreds(
@@ -289,7 +290,9 @@ describe('CaseOwner E2E', () => {
     const fetchedCases: CaseUser[] = await membershipListResponse.data.caseUsers;
     expect(fetchedCases.length).toBe(2);
     fetchedCases.forEach((fetchedCase) => Joi.assert(fetchedCase, caseUserResponseSchema));
-    fetchedCases.forEach((fetchedCase) => fetchedCase.actions.join('|') === OWNER_ACTIONS.join('|'));
+    fetchedCases.forEach((fetchedCase) =>
+      expect(fetchedCase?.actions).toEqual(expect.arrayContaining(OWNER_ACTIONS))
+    );
 
     // Confirm invitee can now update the case
     const updateReattempt = await callDeaAPIWithCreds(

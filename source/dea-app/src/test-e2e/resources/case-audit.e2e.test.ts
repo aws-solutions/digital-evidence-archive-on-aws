@@ -6,6 +6,7 @@
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
 import { AuditEventType } from '../../app/services/audit-service';
+import { Oauth2Token } from '../../models/auth';
 import { joiUuid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -17,7 +18,7 @@ describe('case audit e2e', () => {
   const testUser = `caseAuditTestUser${randomSuffix()}`;
   const deaApiUrl = testEnv.apiUrlOutput;
   let creds: Credentials;
-  let idToken: string;
+  let idToken: Oauth2Token;
 
   const caseIdsToDelete: string[] = [];
 

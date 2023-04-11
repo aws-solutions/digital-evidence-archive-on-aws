@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { APIGatewayProxyEvent, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import _ from 'lodash';
 import {
   AuditEventResult,
@@ -26,7 +26,6 @@ const dummyEvent: APIGatewayProxyEvent = {
     'CloudFront-Viewer-ASN': '123',
     'CloudFront-Viewer-Country': 'US',
     Host: 'abc123.execute-api.us-east-1.amazonaws.com',
-    idToken: 'bogustoken',
     'User-Agent': 'axios/0.27.2',
     Via: 'middleearth',
     'X-Amz-Cf-Id': 'bogus',
@@ -46,7 +45,6 @@ const dummyEvent: APIGatewayProxyEvent = {
     'CloudFront-Viewer-ASN': ['123'],
     'CloudFront-Viewer-Country': ['US'],
     Host: ['123.execute-api.us-east-1.amazonaws.com'],
-    idToken: ['bogus'],
     'User-Agent': ['axios/0.27.2'],
     Via: ['middleearth'],
     'X-Amz-Cf-Id': ['123'],
@@ -129,7 +127,7 @@ const dummyAuditEvent: CJISAuditEventBody = {
   actorIdentity: {
     idType: IdentityType.COGNITO_ID,
     sourceIp: '0.0.0.0',
-    id: 'us-east-1:1-2-3-4',
+    idPoolUserId: 'us-east-1:1-2-3-4',
   },
   result: AuditEventResult.FAILURE,
 };
@@ -145,4 +143,15 @@ export const getDummyAuditEvent = (): CJISAuditEventBody => {
   return _.cloneDeep({
     ...dummyAuditEvent,
   });
+};
+
+export const setCookieToCookie = (response: APIGatewayProxyResult): string => {
+  if (!response.headers) {
+    throw new Error('headers not present when attempting to create cookie');
+  }
+  if (typeof response.headers['Set-Cookie'] !== 'string') {
+    throw new Error('set-cookie header is of unexpected type');
+  }
+  const setCookie = response.headers['Set-Cookie'];
+  return setCookie.substring(0, setCookie.indexOf(';'));
 };

@@ -4,10 +4,11 @@
  */
 
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
-import { APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getDeaUserFromToken, getTokenPayload } from '../../cognito-token-helpers';
-import { getRequiredHeader } from '../../lambda-http-helpers';
+import { getAllowedOrigins, getOauthToken } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
+import { Oauth2Token } from '../../models/auth';
 import { DeaUser } from '../../models/user';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
@@ -23,6 +24,8 @@ export type DEAPreLambdaExecutionChecks = (
   auditEvent: CJISAuditEventBody,
   repositoryProvider: LambdaRepositoryProvider
 ) => Promise<void>;
+
+const allowedOrigins = getAllowedOrigins();
 
 export const runPreExecutionChecks = async (
   event: LambdaEvent,
@@ -41,7 +44,7 @@ export const runPreExecutionChecks = async (
   // header to as the unique id, since we cannot verify identity id from client is trustworthy
   // since it is not encoded from the id pool
   // Additionally we get the first and last name of the user from the id token
-  const idToken = getRequiredHeader(event, 'idToken');
+  const idToken = getOauthToken(event).id_token;
   const idTokenPayload = await getTokenPayload(idToken, process.env.AWS_REGION ?? 'us-east-1');
   const deaRole = idTokenPayload['custom:DEARole'] ? String(idTokenPayload['custom:DEARole']) : undefined;
   if (!deaRole) {
@@ -51,15 +54,16 @@ export const runPreExecutionChecks = async (
     throw new NotFoundError('Resource Not Found');
   }
   event.headers['deaRole'] = deaRole;
+  const tokenSub = idTokenPayload.sub;
   // got token payload - progress audit identity
   auditEvent.actorIdentity = {
     idType: IdentityType.COGNITO_TOKEN,
     sourceIp: event.requestContext.identity.sourceIp,
-    id: event.requestContext.identity.cognitoIdentityId,
+    idPoolUserId: event.requestContext.identity.cognitoIdentityId,
     username: idTokenPayload['cognito:username'],
     deaRole,
+    userPoolUserId: tokenSub,
   };
-  const tokenSub = idTokenPayload.sub;
   let maybeUser = await getUserFromTokenId(tokenSub, repositoryProvider);
   if (!maybeUser) {
     // Create the user in the database and store the new user's ulid
@@ -72,12 +76,13 @@ export const runPreExecutionChecks = async (
   auditEvent.actorIdentity = {
     idType: IdentityType.FULL_USER_ID,
     sourceIp: event.requestContext.identity.sourceIp,
-    id: event.requestContext.identity.cognitoIdentityId,
+    idPoolUserId: event.requestContext.identity.cognitoIdentityId,
     username: idTokenPayload['cognito:username'],
     firstName: maybeUser.firstName,
     lastName: maybeUser.lastName,
     userUlid,
     deaRole,
+    userPoolUserId: tokenSub,
   };
 
   event.headers['userUlid'] = userUlid;
@@ -137,34 +142,56 @@ const addUserToDatabase = async (
   return deaUserResult;
 };
 
-export const responseOk = (body: unknown): APIGatewayProxyResult => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(body),
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
-  };
+const withAllowedOrigin = (event: APIGatewayProxyEvent, response: APIGatewayProxyResult) => {
+  const requestHost = event.headers['origin'];
+  if (requestHost && allowedOrigins.includes(requestHost)) {
+    if (!response.headers) {
+      response.headers = {};
+    }
+    response.headers['Access-Control-Allow-Origin'] = requestHost;
+    response.headers['Access-Control-Allow-Credentials'] = true;
+  }
+  return response;
 };
 
-export const csvResponse = (csvData: string): APIGatewayProxyResult => {
-  return {
+export const responseOk = (event: APIGatewayProxyEvent, body: unknown): APIGatewayProxyResult => {
+  return withAllowedOrigin(event, {
+    statusCode: 200,
+    body: JSON.stringify(body),
+    headers: {},
+  });
+};
+
+export const okSetIdTokenCookie = (
+  event: APIGatewayProxyEvent,
+  idToken: Oauth2Token,
+  body: string
+): APIGatewayProxyResult => {
+  return withAllowedOrigin(event, {
+    statusCode: 200,
+    body,
+    headers: {
+      'Set-Cookie': `idToken=${JSON.stringify(idToken)}; Path=/; SameSite=None; Secure; HttpOnly`,
+      'Access-Control-Allow-Credential': 'true',
+    },
+  });
+};
+
+export const csvResponse = (event: APIGatewayProxyEvent, csvData: string): APIGatewayProxyResult => {
+  return withAllowedOrigin(event, {
     statusCode: 200,
     body: csvData,
     headers: {
       'Content-Type': 'text/csv',
       'Content-Disposition': `attachment; filename="case_audit_${new Date().toDateString()}"`,
-      'Access-Control-Allow-Origin': '*',
     },
-  };
+  });
 };
 
-export const responseNoContent = (): APIGatewayProxyResult => {
-  return {
+export const responseNoContent = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
+  return withAllowedOrigin(event, {
     statusCode: 204,
     body: '',
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-    },
-  };
+    headers: {},
+  });
 };

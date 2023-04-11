@@ -16,7 +16,7 @@ import {
 } from '../models/CaseFiles';
 import { CreateCaseForm } from '../models/Cases';
 import { CaseUserForm } from '../models/CaseUser';
-import { DeaCaseDTO } from './models/case';
+import { CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
 
 export interface DeaListResult<T> {
   data: T[];
@@ -54,20 +54,25 @@ interface CaseListReponse {
 }
 
 export const useListAllCases = (): DeaListResult<DeaCaseDTO> => {
-  const { data, isValidating } = useSWR(() => `cases/all-cases`, httpApiGet<CaseListReponse> );
+  const { data, error } = useSWR(() => `cases/all-cases`, httpApiGet<CaseListReponse> );
   const cases: DeaCaseDTO[] = data?.cases ?? [];
-  return { data: cases, isLoading: isValidating };
+  return { data: cases, isLoading: !data && !error };
 };
 
 export const useListMyCases = (): DeaListResult<DeaCaseDTO> => {
-  const { data, isValidating } = useSWR(() => `cases/my-cases`, (httpApiGet<CaseListReponse>) );
+  const { data, error } = useSWR(() => `cases/my-cases`, (httpApiGet<CaseListReponse>) );
   const cases: DeaCaseDTO[] = data?.cases ?? [];
-  return { data: cases, isLoading: isValidating };
+  return { data: cases, isLoading: !data && !error };
 };
 
 export const useGetCaseById = (id: string): DeaSingleResult<DeaCaseDTO | undefined> => {
-  const { data, isValidating } = useSWR(() => `cases/${id}/details`, httpApiGet<DeaCaseDTO>);
-  return { data, isLoading: isValidating };
+  const { data, error } = useSWR(() => `cases/${id}/details`, httpApiGet<DeaCaseDTO>);
+  return { data, isLoading: !data && !error };
+};
+
+export const useGetScopedCaseInfoById = (id: string): DeaSingleResult<ScopedDeaCaseDTO | undefined> => {
+  const { data, error } = useSWR(() => `cases/${id}/scopedInformation`, httpApiGet<ScopedDeaCaseDTO>);
+  return { data, isLoading: !data && !error };
 };
 
 export const createCase = async (createCaseForm: CreateCaseForm): Promise<void> => {
@@ -75,9 +80,9 @@ export const createCase = async (createCaseForm: CreateCaseForm): Promise<void> 
 };
 
 export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DeaCaseFile> => {
-  const { data, isValidating } = useSWR(() => `cases/${id}/files?filePath=${filePath}`, httpApiGet<{files: DeaCaseFile[]}>);
-  const caseFiles: DeaCaseFile[] = data?.files ?? [];
-  return { data: caseFiles, isLoading: isValidating && !data };
+  const { data, error } = useSWR(() => `cases/${id}/files?filePath=${filePath}`, httpApiGet<{cases: DeaCaseFile[]}>);
+  const caseFiles: DeaCaseFile[] = data?.cases ?? [];
+  return { data: caseFiles, isLoading: !error && !data };
 };
 
 export const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFile> => {
@@ -93,19 +98,23 @@ export const getPresignedUrl = async (apiInput: DownloadFileForm): Promise<Downl
 };
 
 export const useGetUsers = (nameBeginsWith: string): DeaListResult<DeaUser> => {
-  const { data, isValidating } = useSWR(() => `users?nameBeginsWith=${nameBeginsWith}`, httpApiGet<{users: DeaUser[]}>);
+  const { data, error } = useSWR(() => `users?nameBeginsWith=${nameBeginsWith}`, httpApiGet<{users: DeaUser[]}>);
   const users: DeaUser[] = data?.users ?? [];
-  return { data: users, isLoading: isValidating };
+  return { data: users, isLoading: !data && !error };
 };
 
 export const addCaseMember = async (caseUserForm: CaseUserForm): Promise<void> => {
   await httpApiPost(`cases/${caseUserForm.caseUlid}/userMemberships`, { ...caseUserForm });
 };
 
+export const addCaseOwner = async (caseOwner: CaseOwnerDTO): Promise<void> => {
+  await httpApiPost(`cases/${caseOwner.caseUlid}/owner`, { ...caseOwner });
+};
+
 export const useGetCaseMembers = (id: string): DeaListResult<CaseUser> => {
-  const { data, isValidating, mutate } = useSWR(() => `cases/${id}/userMemberships`, httpApiGet<{caseUsers: CaseUser[]}>);
+  const { data, error, mutate } = useSWR(() => `cases/${id}/userMemberships`, httpApiGet<{caseUsers: CaseUser[]}>);
   const cases: CaseUser[] = data?.caseUsers ?? [];
-  return { data: cases, isLoading: isValidating, mutate };
+  return { data: cases, isLoading: !error && !data, mutate };
 };
 
 export const removeCaseMember = async (caseUser: CaseUserForm): Promise<void> => {
@@ -146,6 +155,6 @@ export function delay(ms: number) {
 }
 
 export const useGetCaseActions = (id: string): DeaSingleResult<CaseUser | undefined> => {
-  const { data, isValidating } = useSWR(() => `cases/${id}/actions`, httpApiGet<CaseUser>);
-  return { data, isLoading: isValidating };
+  const { data, error } = useSWR(() => `cases/${id}/actions`, httpApiGet<CaseUser>);
+  return { data, isLoading: !data && !error };
 };

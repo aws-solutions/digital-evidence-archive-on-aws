@@ -125,6 +125,7 @@ export const auditLogLabels = {
 
 export const manageCaseAccessLabels = {
   manageCaseAccessLabel: 'Case Members',
+  assignCaseOwnersLabel: 'Assign Invite Permissions',
   manageAccessDescription:
     'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
   manageAccessSearchLabel: 'Search for people',
@@ -139,12 +140,16 @@ export const manageCaseAccessLabels = {
   searchAutosuggestFinishedText: (value: string) =>
     value ? `End of "${value}" results` : 'End of all results',
   manageCasePeopleAccessLabel: 'People with access',
+  manageOwnerAccessLabel: 'People with Invite permissions',
   manageMemberEmailLabel: 'View Email',
   manageMemberAccessTypeLabel: 'Access Type',
   manageMemberPermissionsLabel: 'Permission(s)',
   manageMemberPermissionsPlaceholder: 'Choose permissions',
   addCaseMemberSuccessMessage: (user: string) => `${user} has been invited to the case successfully.`,
   addCaseMemberFailMessage: (user: string) => `${user} has not been invited to the case.`,
+  addCaseOwnerSuccessMessage: (user: string) =>
+    `${user} was successfully assigned invite permissions on the case.`,
+  addCaseOwnerFailMessage: (user: string) => `Failed to assign ${user} invite permissions on the case.`,
   removeCaseMemberSuccessMessage: (user: string) => `${user} has been removed successfully.`,
   removeCaseMemberFailMessage: (user: string) => `${user} has not been removed.`,
   removeCaseMemberRequestTitle: (user: string) => `Remove ${user}?`,
@@ -188,6 +193,11 @@ export const caseActionOptions = {
           value: CaseAction.UPDATE_CASE_DETAILS,
           label: 'Edit case',
         };
+      case CaseAction.UPDATE_CASE_STATUS:
+        return {
+          value: CaseAction.UPDATE_CASE_STATUS,
+          label: 'Delete case files',
+        };
       case CaseAction.UPLOAD:
         return {
           value: CaseAction.UPLOAD,
@@ -224,4 +234,13 @@ export const caseActionOptions = {
   selectableOptions: (): SelectProps.Option[] => {
     return OWNER_ACTIONS.map((caseAction: CaseAction) => caseActionOptions.actionOption(caseAction));
   },
+};
+
+export const breadcrumbLabels = {
+  homePageLabel: 'Digital Evidence Archive',
+  createNewCaseLabel: 'Create New Case',
+  caseLabel: 'Case',
+  caseDetailsLabel: 'Case Details',
+  manageCaseLabel: 'Manage Case',
+  uploadFilesAndFoldersLabel: 'Upload folders/files',
 };

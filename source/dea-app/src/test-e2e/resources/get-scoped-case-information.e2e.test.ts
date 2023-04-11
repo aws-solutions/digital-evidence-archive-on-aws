@@ -6,6 +6,7 @@
 import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
+import { Oauth2Token } from '../../models/auth';
 import { ScopedDeaCase } from '../../models/case';
 import { scopedCaseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
@@ -20,9 +21,9 @@ describe('get scoped case info E2E', () => {
   const evidenceManager = `getScopedCaseInfoManager${suffix}`;
   const deaApiUrl = testEnv.apiUrlOutput;
   let workerCreds: Credentials;
-  let workerToken: string;
+  let workerToken: Oauth2Token;
   let managerCreds: Credentials;
-  let managerToken: string;
+  let managerToken: Oauth2Token;
 
   beforeAll(async () => {
     // Create user in test group

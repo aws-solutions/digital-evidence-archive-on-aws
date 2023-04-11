@@ -3,16 +3,15 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { RevokeToken } from '@aws/dea-app/lib/models/auth';
-import jwt from 'jwt-decode';
 import { useRouter } from 'next/router';
-import { createContext, useContext, Context, useState, useEffect } from 'react';
+import pkceChallenge from 'pkce-challenge';
+import { Context, createContext, useContext, useEffect, useState } from 'react';
 import { getLoginUrl, getLogoutUrl, revokeToken } from '../api/auth';
 import { IUser, unknownUser } from '../models/User';
 
 export interface IAuthenticationProps {
   user: IUser;
-  signIn: (user: IUser) => void;
+  signIn: () => void;
   signOut: () => void;
   isLoggedIn: boolean;
 }
@@ -39,53 +38,66 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
         return;
       }
 
-      const accessKeyId = localStorage.getItem('accessKeyId');
-      const secretAccessKey = localStorage.getItem('secretAccessKey');
-      const sessionToken = localStorage.getItem('sessionToken');
-      const idToken = localStorage.getItem('idToken');
-      const refreshToken = localStorage.getItem('refreshToken');
+      const accessKeyId = sessionStorage.getItem('accessKeyId');
+      const secretAccessKey = sessionStorage.getItem('secretAccessKey');
+      const sessionToken = sessionStorage.getItem('sessionToken');
+      const username = localStorage.getItem('username');
 
-      if (accessKeyId && secretAccessKey && sessionToken && idToken && refreshToken) {
-        decodeTokenAndSetUser(idToken);
+      if (accessKeyId && secretAccessKey && sessionToken && username) {
+        setUser({ username });
       } else {
         // Not logged in, redirect to login page
-        const loginUrl = await getLoginUrl();
-        await router.push(loginUrl);
+        await signIn();
       }
     };
     checkLogin().catch((e) => console.log(e));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
-  const signIn = (user: IUser): void => setUser(user);
-  const signOut = async (): Promise<void> => {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (refreshToken) {
-      const payload: RevokeToken = {
-        refreshToken: refreshToken,
-      };
+  const signIn = async (): Promise<void> => {
+    try {
+      const callbackUrl = getCallbackUrl();
+      let loginUrl = await getLoginUrl(callbackUrl);
 
-      await revokeToken(payload);
+      // Create PKCE challenge and include code challenge and code challenge method in oauth2/authorize
+      const challenge = pkceChallenge(128);
+      sessionStorage.setItem('pkceVerifier', challenge.code_verifier);
+      loginUrl += `&code_challenge=${challenge.code_challenge}&code_challenge_method=S256`;
+      await router.push(loginUrl);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const signOut = async (): Promise<void> => {
+    try {
+      await revokeToken();
+    } catch (e) {
+      console.log('Error revoking token, refresh token may be expired already:', e);
     }
 
-    localStorage.removeItem('accessKeyId');
-    localStorage.removeItem('secretAccessKey');
-    localStorage.removeItem('sessionToken');
-    localStorage.removeItem('idToken');
-    localStorage.removeItem('refreshToken');
+    clearStorage();
     setUser(unknownUser);
 
-    // Redirect to login page
-    const logoutUrl = await getLogoutUrl();
+    // Logout of cognito session and redirect to login page
+    const callbackUrl = getCallbackUrl();
+    const logoutUrl = await getLogoutUrl(callbackUrl);
     await router.push(logoutUrl);
   };
 
-  function decodeTokenAndSetUser(idToken: string): void {
-    const decodedToken: { [id: string]: string | Array<string> } = jwt(String(idToken));
-    const cognitoUsername =
-      typeof decodedToken['cognito:username'] === 'string' ? decodedToken['cognito:username'] : '';
-    setUser({
-      username: cognitoUsername,
-    });
+  function clearStorage() {
+    sessionStorage.removeItem('accessKeyId');
+    sessionStorage.removeItem('secretAccessKey');
+    sessionStorage.removeItem('sessionToken');
+    sessionStorage.removeItem('pkceVerifier');
+    localStorage.removeItem('username');
+  }
+
+  function getCallbackUrl() {
+    let callbackUrl = '';
+    if (typeof window !== 'undefined') {
+      callbackUrl = `${window.location}`.replace(/\/ui(.*)/, '/ui/login');
+    }
+    return callbackUrl;
   }
 
   const isLoggedIn = user !== unknownUser;

@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import { DeaListResult } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
 import { caseListLabels, commonTableLabels } from '../../common/labels';
+import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
@@ -27,7 +28,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
   const { data, isLoading } = props.useCaseFetcher();
 
   // Property and date filter collections
-  const { items, filteredItemsCount, propertyFilterProps } = useCollection(data, {
+  const { items, filteredItemsCount, propertyFilterProps, collectionProps } = useCollection(data, {
     filtering: {
       empty: TableEmptyDisplay(caseListLabels.noCasesLabel, caseListLabels.noDisplayLabel),
       noMatch: TableNoMatchDisplay(caseListLabels.noCasesMatchLabel),
@@ -59,6 +60,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
 
   return (
     <Table
+      {...collectionProps}
       data-testid="case-table"
       trackBy="ulid"
       loading={isLoading}
@@ -113,12 +115,12 @@ function CaseTable(props: CaseTableProps): JSX.Element {
           sortingField: 'objectCount',
         },
         {
-          id: 'creationDate',
+          id: 'created',
           header: commonTableLabels.creationDateHeader,
-          cell: (e) => new Date(e.created).toLocaleString(),
+          cell: (e) => formatDateFromISOString(e.created),
           width: 200,
           minWidth: 165,
-          sortingField: 'creationDate',
+          sortingField: 'created',
         },
       ]}
       filter={

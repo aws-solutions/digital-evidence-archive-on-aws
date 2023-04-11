@@ -21,6 +21,7 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Credentials } from 'aws4-axios';
 import { getTokenPayload } from '../../cognito-token-helpers';
+import { Oauth2Token } from '../../models/auth';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { deleteUser, getUserByTokenId } from '../../persistence/user';
 import { testEnv } from './settings';
@@ -135,26 +136,32 @@ export default class CognitoHelper {
     return result.AuthenticationResult;
   }
 
-  public async getIdTokenForUser(userName: string): Promise<{ idToken: string; refreshToken: string }> {
+  public async getIdTokenForUser(userName: string): Promise<Oauth2Token> {
     const result = await this.getUserPoolAuthForUser(userName);
 
-    if (!result.IdToken || !result.RefreshToken) {
+    if (!result.IdToken || !result.RefreshToken || !result.AccessToken) {
       throw new Error('Unable to get id token and refresh token from user pool.');
     }
 
-    return { idToken: result.IdToken, refreshToken: result.RefreshToken };
+    return {
+      id_token: result.IdToken,
+      refresh_token: result.RefreshToken,
+      expires_in: result.ExpiresIn ?? 4000,
+      access_token: result.AccessToken,
+      token_type: result.TokenType ?? 'Bearer',
+    };
   }
 
-  public async getCredentialsForUser(userName: string): Promise<[Credentials, string, string]> {
+  public async getCredentialsForUser(userName: string): Promise<[Credentials, Oauth2Token]> {
     // 1. Authenticate with User Pool, get Token
-    const { idToken, refreshToken } = await this.getIdTokenForUser(userName);
+    const oauthToken = await this.getIdTokenForUser(userName);
 
     // 2. Get Identity from Identity Pool
     const identityId = await this._identityPoolClient.send(
       new GetIdCommand({
         IdentityPoolId: this._identityPoolId,
         Logins: {
-          [this._idpUrl]: idToken,
+          [this._idpUrl]: oauthToken.id_token,
         },
       })
     );
@@ -164,7 +171,7 @@ export default class CognitoHelper {
       new GetCredentialsForIdentityCommand({
         IdentityId: identityId.IdentityId,
         Logins: {
-          [this._idpUrl]: idToken,
+          [this._idpUrl]: oauthToken.id_token,
         },
       })
     );
@@ -180,8 +187,7 @@ export default class CognitoHelper {
           secretAccessKey: creds.SecretKey,
           sessionToken: creds.SessionToken,
         },
-        idToken,
-        refreshToken,
+        oauthToken,
       ];
     } else {
       throw new Error('Failed to get credentials from the identity pool:');
@@ -195,8 +201,8 @@ export default class CognitoHelper {
         // try to remove the user from the db
         // NOTE: it won't be there unless you called
         // lambda using creds from the the user
-        const { idToken } = await this.getIdTokenForUser(username);
-        const tokenId = (await getTokenPayload(idToken, this._region)).sub;
+        const { id_token } = await this.getIdTokenForUser(username);
+        const tokenId = (await getTokenPayload(id_token, this._region)).sub;
         if (repositoryProvider) {
           const dbUser = await getUserByTokenId(tokenId, repositoryProvider);
           if (dbUser) {

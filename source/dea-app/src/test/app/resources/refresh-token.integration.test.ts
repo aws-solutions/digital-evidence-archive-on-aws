@@ -3,23 +3,26 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { ReauthenticationError } from '../../../app/exceptions/reauthentication-exception';
-import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { runPreExecutionChecks } from '../../../app/resources/dea-lambda-utils';
 import { getToken } from '../../../app/resources/get-token';
 import { refreshToken } from '../../../app/resources/refresh-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
 import { Oauth2Token } from '../../../models/auth';
-import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { getSession } from '../../../persistence/session';
-import { getAuthorizationCode } from '../../../test-e2e/helpers/auth-helper';
+import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
-import { dummyContext, getDummyAuditEvent, getDummyEvent } from '../../integration-objects';
+import {
+  dummyContext,
+  getDummyAuditEvent,
+  getDummyEvent,
+  setCookieToCookie,
+} from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let cognitoParams: CognitoSsmParams;
-let idToken: string;
 let repositoryProvider: ModelRepositoryProvider;
+let pkceStrings: PkceStrings;
 
 describe('refresh-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
@@ -33,6 +36,7 @@ describe('refresh-token', () => {
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
     cognitoParams = await getCognitoSsmParams();
     repositoryProvider = await getTestRepositoryProvider('refreshTokenTest');
+    pkceStrings = getPkceStrings();
   });
 
   afterAll(async () => {
@@ -47,10 +51,14 @@ describe('refresh-token', () => {
       cognitoParams.cognitoDomainUrl,
       authTestUrl,
       testUser,
-      cognitoHelper.testPassword
+      cognitoHelper.testPassword,
+      pkceStrings.code_challenge
     );
 
     const event = getDummyEvent({
+      body: JSON.stringify({
+        codeVerifier: pkceStrings.code_verifier,
+      }),
       pathParameters: {
         authCode: authCode,
       },
@@ -66,17 +74,13 @@ describe('refresh-token', () => {
       fail();
     }
 
-    const retrievedTokens: Oauth2Token = jsonParseWithDates(response.body);
-
-    // Store for next test
-    idToken = retrievedTokens.id_token;
-
+    const cookie = setCookieToCookie(response);
+    const authToken: Oauth2Token = JSON.parse(cookie.replace('idToken=', ''));
     const dummyEvent = getDummyEvent({
-      body: JSON.stringify({
-        refreshToken: retrievedTokens.refresh_token,
-      }),
+      headers: {
+        cookie,
+      },
     });
-    dummyEvent.headers['idToken'] = idToken;
     const auditEvent = getDummyAuditEvent();
 
     // call runLambdaPrechecks to add session to database
@@ -95,8 +99,9 @@ describe('refresh-token', () => {
     // refresh token to get new id token
     const refreshResponse = await refreshToken(dummyEvent, dummyContext, repositoryProvider);
     expect(refreshResponse.statusCode).toEqual(200);
-    const newIdToken = JSON.parse(refreshResponse.body).idToken;
-    expect(newIdToken).not.toStrictEqual(idToken);
+    const newCookie = setCookieToCookie(refreshResponse);
+    const newAuthToken: Oauth2Token = JSON.parse(newCookie.replace('idToken=', ''));
+    expect(newAuthToken.id_token).not.toStrictEqual(authToken.id_token);
 
     // assert original session is marked as revoked
     const session1 = await getSession(userUlid, tokenId, repositoryProvider);
@@ -110,7 +115,7 @@ describe('refresh-token', () => {
 
     // call API with the new id token, it should pass session checks
     const dummyEvent1 = getDummyEvent();
-    dummyEvent1.headers['idToken'] = newIdToken;
+    dummyEvent1.headers['cookie'] = newCookie;
     await runPreExecutionChecks(dummyEvent1, dummyContext, auditEvent, repositoryProvider);
 
     // Check new session exists
@@ -119,23 +124,5 @@ describe('refresh-token', () => {
     const session2 = await getSession(userUlid, newTokenId, repositoryProvider);
     expect(session2).toBeDefined();
     expect(session2?.isRevoked).toBeFalsy();
-  }, 40000);
-
-  it('should throw an error if trying use id token for refresh', async () => {
-    const dummyEvent = getDummyEvent({
-      body: JSON.stringify({
-        refreshToken: idToken,
-      }),
-    });
-
-    await expect(refreshToken(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(
-      'Request failed with status code 400'
-    );
-  }, 40000);
-
-  it('should throw an error if the payload is missing', async () => {
-    await expect(refreshToken(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(
-      ValidationError
-    );
   }, 40000);
 });

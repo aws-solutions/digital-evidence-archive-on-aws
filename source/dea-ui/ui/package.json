@@ -16,15 +16,16 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
-    "build": "./setEnv.sh && next build && next export --silent",
-    "build-only": "./setEnv.sh && next build",
+    "build": "./setNextEnv.sh && next build && next export --silent",
+    "build-only": "./setNextEnv.sh && next build",
     "build:test": "rushx build && rushx test && rushx make-badges",
     "check-license-header": "license-check-and-add check -f license-add-config.json",
     "cypress": "cypress open",
-    "cypress:e2e": "cypress run --config baseUrl=${DEA_API_URL}ui",
+    "cypress:e2e": ". ../../common/scripts/setEnv.sh && cypress run --config baseUrl=${DEA_API_URL}ui",
     "cypress:headless": "cypress run",
     "cypress:test": "start-server-and-test start http-get://localhost:3000/${STAGE}/ui cypress:headless",
-    "dev": "next dev",
+    "httpsproxy": "local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3001 --target 3000",
+    "dev": ". ../../common/scripts/setEnv.sh && ./setNextEnv.sh && next dev",
     "e2e:only": "jest --ci --coverage '.*/*e2e.test.*'",
     "export": "next build && next export",
     "integration:only": "jest --ci --coverage --testPathPattern '.*/*integration.test.*'",
@@ -36,7 +37,7 @@
     "serve": "node .next/server/webpack-runtime.js",
     "sort-package-json": "sort-package-json package.json",
     "start": "next start",
-    "test": "jest --coverage",
+    "test": "jest --coverage && rushx make-badges",
     "test:noe2e": "jest --ci --coverage '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": "jest --ci --coverage",
     "unit:only": "jest --ci --coverage '.*/*unit.test.*'"
@@ -113,6 +114,7 @@
     "sort-package-json": "^2.4.1",
     "start-server-and-test": "~1.15.3",
     "ts-mockito": "~2.6.1",
-    "typescript": "^4.5.2"
+    "typescript": "^4.5.2",
+    "local-ssl-proxy": "~2.0.5"
   }
 }

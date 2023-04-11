@@ -467,6 +467,10 @@
       "allowedCategories": ["production", "prototypes"]
     },
     {
+      "name": "local-ssl-proxy",
+      "allowedCategories": ["production"]
+    },
+    {
       "name": "lodash",
       "allowedCategories": ["production", "prototypes"]
     },

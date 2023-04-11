@@ -6,7 +6,7 @@
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
 import { useListMyCases } from '../api/cases';
-import { caseListLabels } from '../common/labels';
+import { breadcrumbLabels, caseListLabels } from '../common/labels';
 import BaseLayout from '../components/BaseLayout';
 import CaseTable from '../components/case-list-table/CaseTable';
 
@@ -17,11 +17,7 @@ export interface IHomeProps {
 const Home: NextPage = () => {
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
-      text: 'Digital Evidence Archive',
-      href: '#',
-    },
-    {
-      text: 'Login',
+      text: breadcrumbLabels.homePageLabel,
       href: '#',
     },
   ];

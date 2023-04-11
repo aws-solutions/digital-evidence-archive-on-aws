@@ -21,5 +21,5 @@ export const deleteCase: DEAGatewayProxyHandler = async (
 
   await CaseService.deleteCase(caseId, repositoryProvider);
 
-  return responseNoContent();
+  return responseNoContent(event);
 };

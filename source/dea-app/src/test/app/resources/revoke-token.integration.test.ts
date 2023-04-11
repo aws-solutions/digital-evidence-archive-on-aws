@@ -3,23 +3,25 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { ReauthenticationError } from '../../../app/exceptions/reauthentication-exception';
-import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { runPreExecutionChecks } from '../../../app/resources/dea-lambda-utils';
 import { getToken } from '../../../app/resources/get-token';
 import { revokeToken } from '../../../app/resources/revoke-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
-import { Oauth2Token } from '../../../models/auth';
-import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { getSession } from '../../../persistence/session';
-import { getAuthorizationCode } from '../../../test-e2e/helpers/auth-helper';
+import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
-import { dummyContext, getDummyAuditEvent, getDummyEvent } from '../../integration-objects';
+import {
+  dummyContext,
+  getDummyAuditEvent,
+  getDummyEvent,
+  setCookieToCookie,
+} from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let cognitoParams: CognitoSsmParams;
-let idToken: string;
 let repositoryProvider: ModelRepositoryProvider;
+let pkceStrings: PkceStrings;
 
 describe('revoke-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
@@ -33,6 +35,7 @@ describe('revoke-token', () => {
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
     cognitoParams = await getCognitoSsmParams();
     repositoryProvider = await getTestRepositoryProvider('revokeTokenTest');
+    pkceStrings = getPkceStrings();
   });
 
   afterAll(async () => {
@@ -47,10 +50,14 @@ describe('revoke-token', () => {
       cognitoParams.cognitoDomainUrl,
       authTestUrl,
       testUser,
-      cognitoHelper.testPassword
+      cognitoHelper.testPassword,
+      pkceStrings.code_challenge
     );
 
     const event = getDummyEvent({
+      body: JSON.stringify({
+        codeVerifier: pkceStrings.code_verifier,
+      }),
       pathParameters: {
         authCode: authCode,
       },
@@ -66,17 +73,9 @@ describe('revoke-token', () => {
       fail();
     }
 
-    const retrievedTokens: Oauth2Token = jsonParseWithDates(response.body);
-
-    // Store for next test
-    idToken = retrievedTokens.id_token;
-
     const dummyEvent = getDummyEvent({
-      body: JSON.stringify({
-        refreshToken: retrievedTokens.refresh_token,
-      }),
+      headers: { cookie: setCookieToCookie(response) },
     });
-    dummyEvent.headers['idToken'] = idToken;
     const auditEvent = getDummyAuditEvent();
 
     // call runLambdaPrechecks to add session to database
@@ -108,23 +107,5 @@ describe('revoke-token', () => {
     await expect(
       runPreExecutionChecks(dummyEvent, dummyContext, auditEvent, repositoryProvider)
     ).rejects.toThrow(ReauthenticationError);
-  }, 40000);
-
-  it('should throw an error if trying to revoke id token', async () => {
-    const dummyEvent = getDummyEvent({
-      body: JSON.stringify({
-        refreshToken: idToken,
-      }),
-    });
-
-    await expect(revokeToken(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(
-      'Request failed with status code 400'
-    );
-  }, 40000);
-
-  it('should throw an error if the payload is missing', async () => {
-    await expect(revokeToken(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(
-      ValidationError
-    );
   }, 40000);
 });

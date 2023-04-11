@@ -227,6 +227,10 @@
         {
           "path": "/cases/{caseId}/scopedInformation",
           "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/owner",
+          "method": "POST"
         }
       ]
     },
@@ -281,6 +285,10 @@
         {
           "path": "/cases/{caseId}/scopedInformation",
           "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/owner",
+          "method": "POST"
         }
       ]
     },
@@ -418,5 +426,6 @@
         }
       ]
     }
-  ]
+  ],
+  "deaAllowedOrigins": "https://localhost:3001"
 }

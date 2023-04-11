@@ -2,9 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-import { getRequiredPayload, getTokenId, getUserUlid } from '../../lambda-http-helpers';
-import { RevokeToken } from '../../models/auth';
-import { RevokeTokenSchema } from '../../models/validation/auth';
+import { getOauthToken, getTokenId, getUserUlid } from '../../lambda-http-helpers';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { revokeRefreshToken } from '../services/auth-service';
 import { markSessionAsRevoked } from '../services/session-service';
@@ -18,8 +16,8 @@ export const revokeToken: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  const refreshTokenPayload: RevokeToken = getRequiredPayload(event, 'refresh_token', RevokeTokenSchema);
-  const revokeTokenResult = await revokeRefreshToken(refreshTokenPayload.refreshToken);
+  const oauthToken = getOauthToken(event);
+  const revokeTokenResult = await revokeRefreshToken(oauthToken.refresh_token);
 
   // Now mark the session as revoked in db so user cannot gain access with the same
   // id token
@@ -27,5 +25,5 @@ export const revokeToken: DEAGatewayProxyHandler = async (
   const tokenId = getTokenId(event);
   await markSessionAsRevoked(userUlid, tokenId, repositoryProvider);
 
-  return responseOk(revokeTokenResult);
+  return responseOk(event, revokeTokenResult);
 };

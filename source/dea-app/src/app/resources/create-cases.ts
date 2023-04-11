@@ -32,5 +32,5 @@ export const createCases: DEAGatewayProxyHandler = async (
 
   const updateBody = await CaseService.createCases(deaCase, user, repositoryProvider);
 
-  return responseOk(updateBody);
+  return responseOk(event, updateBody);
 };

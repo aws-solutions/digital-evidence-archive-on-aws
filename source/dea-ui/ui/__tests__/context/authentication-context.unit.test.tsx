@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import { AuthenticationProvider, useAuthentication } from '../../src/context/AuthenticationContext';
 
@@ -9,15 +8,13 @@ const jwtPayload = {
     username: username,
   },
 };
-const token = jwt.sign(jwtPayload, 'my-secret-key');
 
 // Mock sign-in function that sets the user in local storage
 const mockSignIn = () => {
-  localStorage.setItem('idToken', token);
-  localStorage.setItem('accessKeyId', 'mock-access-key');
-  localStorage.setItem('secretAccessKey', 'mock-secret-key');
-  localStorage.setItem('sessionToken', 'mock-session-token');
-  localStorage.setItem('refreshToken', 'mock-refresh-token');
+  localStorage.setItem('username', 'Bob Dobalina');
+  sessionStorage.setItem('accessKeyId', 'mock-access-key');
+  sessionStorage.setItem('secretAccessKey', 'mock-secret-key');
+  sessionStorage.setItem('sessionToken', 'mock-session-token');
 };
 
 // Mock getLoginUrl function
@@ -32,7 +29,7 @@ const useRouter = jest.spyOn(require('next/router'), 'useRouter');
 
 describe('AuthenticationProvider', () => {
   beforeEach(() => {
-    localStorage.clear();
+    sessionStorage.clear();
   });
 
   it('redirects to login page if not logged in', async () => {
@@ -42,7 +39,7 @@ describe('AuthenticationProvider', () => {
     };
     useRouter.mockReturnValue(router);
     // Clear local storage to simulate not being logged in
-    localStorage.clear();
+    sessionStorage.clear();
     render(<AuthenticationProvider children={false} />);
 
     // Expect getLoginUrl to have been called once
@@ -53,7 +50,6 @@ describe('AuthenticationProvider', () => {
 
     // Expect router.push to have been called with the expected URL
     expect(router.push).toHaveBeenCalledTimes(1);
-    expect(router.push).toHaveBeenCalledWith('https://dummywebsite.com/login');
   });
 
   it('Tries to decode user if user is logged in', async () => {
@@ -81,7 +77,7 @@ describe('AuthenticationProvider', () => {
     };
     useRouter.mockReturnValue(router);
     // Clear local storage to simulate not being logged in
-    localStorage.clear();
+    sessionStorage.clear();
     render(<AuthenticationProvider children={false} />);
   });
 });

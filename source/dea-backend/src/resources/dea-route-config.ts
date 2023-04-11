@@ -140,7 +140,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.EXCHANGE_TOKEN_FOR_CREDS,
-      path: '/auth/credentials/{idToken}/exchange',
+      path: '/auth/credentials/exchange',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-credentials-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
@@ -199,5 +199,4 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/create-case-owner-handler.ts',
     },
   ],
-  allowedOrigins: JSON.parse(process.env.ALLOWED_ORIGINS || '[]'),
 };

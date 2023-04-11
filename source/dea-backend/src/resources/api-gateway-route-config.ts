@@ -8,7 +8,6 @@ import { AuthorizationType } from 'aws-cdk-lib/aws-apigateway';
 
 export interface ApiGatewayRouteConfig {
   readonly routes: ApiGatewayRoute[];
-  readonly allowedOrigins: string[];
 }
 
 export interface ApiGatewayRoute {

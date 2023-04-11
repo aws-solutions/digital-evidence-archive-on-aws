@@ -6,6 +6,7 @@
 import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
+import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
 import { DeaUser } from '../../models/user';
@@ -26,9 +27,9 @@ describe('get my cases api', () => {
   const deaApiUrl = testEnv.apiUrlOutput;
 
   let creds: Credentials;
-  let idToken: string;
+  let idToken: Oauth2Token;
   let creds2: Credentials;
-  let idToken2: string;
+  let idToken2: Oauth2Token;
 
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'GetMyCasesTestGroup', user1FirstName, 'TestUser');
@@ -157,7 +158,7 @@ describe('get my cases api', () => {
 const deleteCases = async (
   caseIdsToDelete: string[],
   deaApiUrl: string,
-  idToken: string,
+  idToken: Oauth2Token,
   creds: Credentials
 ) => {
   for (const caseId of caseIdsToDelete) {

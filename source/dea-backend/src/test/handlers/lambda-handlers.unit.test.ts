@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { getScopedCaseInformation } from '@aws/dea-app';
 import * as CompleteCaseFileUploadHandler from '../../handlers/complete-case-file-upload-handler';
 import * as CreateCaseOwnerHandler from '../../handlers/create-case-owner-handler';
 import * as CreateCaseUserHandler from '../../handlers/create-case-user-handler';
@@ -21,6 +22,7 @@ import * as GetCredentialsHandler from '../../handlers/get-credentials-handler';
 import * as GetLoginUrlHandler from '../../handlers/get-login-url-handler';
 import * as GetLogoutUrlHandler from '../../handlers/get-logout-url-handler';
 import * as GetMyCasesHandler from '../../handlers/get-my-cases-handler';
+import * as GetScopedCaseInformation from '../../handlers/get-scoped-case-info-handler';
 import * as GetTokenHandler from '../../handlers/get-token-handler';
 import * as GetUsersHandler from '../../handlers/get-users-handler';
 import * as InitiateCaseFileUploadHandler from '../../handlers/initiate-case-file-upload-handler';
@@ -65,6 +67,7 @@ describe('lambda handlers', () => {
       GetCaseActionsHandler.handler,
       GetAvailableEndpoints.handler,
       UpdateCaseStatusHandler.handler,
+      GetScopedCaseInformation.handler,
     ];
 
     handlers.forEach((handler) => {

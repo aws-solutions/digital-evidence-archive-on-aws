@@ -201,11 +201,13 @@ describe('dea lambda audits', () => {
       testAuditService.service
     );
 
-    const theEvent = getDummyEvent();
+    const theEvent = getDummyEvent({
+      headers: {
+        cookie:
+          'idToken={"id_token": "fake.fake.fake","access_token": "fake.fake.fake","refresh_token": "fake.fake.fake","expires_in": 43200,"token_type": "Bearer"}',
+      },
+    });
     theEvent.requestContext.identity.cognitoIdentityId = null;
-    theEvent.pathParameters = {
-      idToken: 'abc123',
-    };
 
     const response = await sut(theEvent, dummyContext);
     expect(response).toEqual({ body: ':D', statusCode: 200 });

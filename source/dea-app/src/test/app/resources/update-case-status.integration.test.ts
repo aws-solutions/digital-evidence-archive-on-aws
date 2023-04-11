@@ -50,7 +50,6 @@ const VERSION_ID = 'haha';
 describe('update case status', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('updateCaseStatus');
-
     caseOwner =
       (await createUser(
         {

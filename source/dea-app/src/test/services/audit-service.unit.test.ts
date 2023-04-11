@@ -48,7 +48,7 @@ describe('audit service', () => {
       requestPath: '/',
       sourceComponent: AuditEventSource.API_GATEWAY,
       eventType: AuditEventType.CREATE_CASE,
-      actorIdentity: { idType: IdentityType.COGNITO_ID, id: 'identifier', sourceIp: '123' },
+      actorIdentity: { idType: IdentityType.COGNITO_ID, idPoolUserId: 'identifier', sourceIp: '123' },
       result: AuditEventResult.SUCCESS,
     });
     verify(clientMock.send(anyOfClass(CreateLogStreamCommand)));
@@ -74,7 +74,7 @@ describe('audit service', () => {
         requestPath: '/',
         sourceComponent: AuditEventSource.API_GATEWAY,
         eventType: AuditEventType.CREATE_CASE,
-        actorIdentity: { idType: IdentityType.COGNITO_ID, id: 'identifier', sourceIp: '123' },
+        actorIdentity: { idType: IdentityType.COGNITO_ID, idPoolUserId: 'identifier', sourceIp: '123' },
         result: AuditEventResult.SUCCESS,
       })
     ).rejects.toThrow(Error);
@@ -98,7 +98,7 @@ describe('audit service', () => {
         requestPath: '/',
         sourceComponent: AuditEventSource.API_GATEWAY,
         eventType: AuditEventType.CREATE_CASE,
-        actorIdentity: { idType: IdentityType.COGNITO_ID, id: 'identifier', sourceIp: '123' },
+        actorIdentity: { idType: IdentityType.COGNITO_ID, idPoolUserId: 'identifier', sourceIp: '123' },
         result: AuditEventResult.SUCCESS,
       })
     ).rejects.toThrow(Error);

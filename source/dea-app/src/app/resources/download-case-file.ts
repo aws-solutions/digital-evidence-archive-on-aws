@@ -36,5 +36,5 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
 
   const downloadUrl = await getPresignedUrlForDownload(retrievedCaseFile, datasetsProvider);
 
-  return responseOk({ downloadUrl });
+  return responseOk(event, { downloadUrl });
 };

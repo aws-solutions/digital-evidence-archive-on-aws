@@ -29,5 +29,5 @@ export const createCaseMembership: DEAGatewayProxyHandler = async (
   }
 
   const caseUserResult = await createCaseUserMembershipFromDTO(caseUser, repositoryProvider);
-  return responseOk(caseUserResult);
+  return responseOk(event, caseUserResult);
 };

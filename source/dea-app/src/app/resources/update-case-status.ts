@@ -54,11 +54,11 @@ export const updateCaseStatus: DEAGatewayProxyHandler = async (
       [CaseFileStatus.DELETING, CaseFileStatus.DELETED].includes(deaCase.filesStatus)
     ) {
       // Do nothing if requested case status matches current status and if files don't need to be deleted
-      return responseOk(deaCase);
+      return responseOk(event, deaCase);
     }
     if (input.status === CaseStatus.ACTIVE) {
       // If case is active and requested status is active, then do nothing
-      return responseOk(deaCase);
+      return responseOk(event, deaCase);
     }
   }
 
@@ -69,5 +69,5 @@ export const updateCaseStatus: DEAGatewayProxyHandler = async (
     repositoryProvider,
     datasetsProvider
   );
-  return responseOk(updatedCase);
+  return responseOk(event, updatedCase);
 };
