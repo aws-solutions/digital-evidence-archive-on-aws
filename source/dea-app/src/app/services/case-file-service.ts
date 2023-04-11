@@ -71,15 +71,6 @@ export const validateInitiateUploadRequirements = async (
   }
 };
 
-// export const deleteCaseFile = async (
-//   s3Key: string,
-//   versionId: string,
-//   repositoryProvider: ModelRepositoryProvider,
-//   datasetsProvider: DatasetsProvider
-// ): Promise<void> => {
-//
-// }
-
 export const validateCompleteCaseFileRequirements = async (
   completeCaseFileUploadDTO: CompleteCaseFileUploadDTO,
   userUlid: string,
@@ -135,8 +126,7 @@ export const completeCaseFileUpload = async (
   datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFile> => {
   await completeUploadForCaseFile(deaCaseFile, datasetsProvider);
-  const caseFile = await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider);
-  return caseFile;
+  return await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider);
 };
 
 export const listCaseFilesByFilePath = async (
