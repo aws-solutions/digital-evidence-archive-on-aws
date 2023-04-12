@@ -9398,6 +9398,34 @@ Object {
               },
               "Resource": "*",
             },
+            Object {
+              "Action": Array [
+                "kms:Encrypt*",
+                "kms:Decrypt*",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+                "kms:Describe*",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Array [
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+                      "Arn",
+                    ],
+                  },
+                ],
+              },
+              "Resource": "*",
+              "Sid": "main-key-share-statement",
+            },
           ],
           "Version": "2012-10-17",
         },

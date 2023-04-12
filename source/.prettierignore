@@ -63,10 +63,12 @@ jspm_packages/
 .DS_Store
 
 # Rush temporary files
-common/deploy/
-common/temp/
-common/autoinstallers/*/.npmrc
+source/common/deploy/
+source/common/temp/
+source/common/autoinstallers/*/.npmrc
 **/.rush/temp/
+
+# Rush scripts
 
 # Heft
 .heft
@@ -76,9 +78,9 @@ common/autoinstallers/*/.npmrc
 #-------------------------------------------------------------------------------------------------------------------
 
 # Rush files
-common/changes/
-common/scripts/
-common/config/
+source/common/changes/
+source/common/scripts/
+source/common/config/
 CHANGELOG.*
 
 # Package manager files

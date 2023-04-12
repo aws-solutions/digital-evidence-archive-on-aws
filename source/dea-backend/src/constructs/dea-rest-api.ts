@@ -13,7 +13,14 @@ import {
   LogGroupLogDestination,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
-import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import {
+  ArnPrincipal,
+  Effect,
+  ManagedPolicy,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+} from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -62,6 +69,19 @@ export class DeaRestApiConstruct extends Construct {
     );
 
     this.authLambdaRole = this._createAuthLambdaRole(props.region, props.accountId);
+
+    props.kmsKey.addToResourcePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
+        principals: [
+          new ArnPrincipal(this.lambdaBaseRole.roleArn),
+          new ArnPrincipal(this.authLambdaRole.roleArn),
+        ],
+        resources: ['*'],
+        sid: 'main-key-share-statement',
+      })
+    );
 
     const accessLogGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
       encryptionKey: props.kmsKey,
