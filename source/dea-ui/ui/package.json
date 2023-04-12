@@ -24,7 +24,7 @@
     "cypress:e2e": ". ../../common/scripts/setEnv.sh && cypress run --config baseUrl=${DEA_API_URL}ui",
     "cypress:headless": "cypress run",
     "cypress:test": "start-server-and-test start http-get://localhost:3000/${STAGE}/ui cypress:headless",
-    "httpsproxy": "(local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3001 --target 3000 &) && rushx dev",
+    "dev:https": "(local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3001 --target 3000 &) && rushx dev",
     "dev": ". ../../common/scripts/setEnv.sh && ./setNextEnv.sh && next dev",
     "e2e:only": "jest --ci --coverage '.*/*e2e.test.*'",
     "export": "next build && next export",

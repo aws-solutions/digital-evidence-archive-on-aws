@@ -58,12 +58,12 @@ At this point you can run an https proxy for localhost.
 > In dea-ui/ui
 
 ```sh
-rushx httpsproxy
+rushx dev:https
 ```
 
 Now `https://localhost:3001` will proxy requests to `localhost:3000`
 
-Keep the proxy running in a separate tab or process, and then run `rushx dev` as you normally would. use `https://localhost:3001/{stage}/ui` to access the front end
+The proxy will launch the applicacion in backgound and there is no need to run `rushx dev` as you normally would. use `https://localhost:3001/{stage}/ui` to access the front end
 
 ---
 ## CDK Policy Customization
