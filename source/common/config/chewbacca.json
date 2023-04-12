@@ -231,6 +231,14 @@
         {
           "path": "/cases/{caseId}/owner",
           "method": "POST"
+        },
+        {
+          "path": "/users/{userId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/users/{userId}/audit/{auditId}/csv",
+          "method": "GET"
         }
       ]
     },
@@ -289,6 +297,14 @@
         {
           "path": "/cases/{caseId}/owner",
           "method": "POST"
+        },
+        {
+          "path": "/users/{userId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/users/{userId}/audit/{auditId}/csv",
+          "method": "GET"
         }
       ]
     },

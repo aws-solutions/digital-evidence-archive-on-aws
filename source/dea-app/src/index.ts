@@ -3,13 +3,13 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { ForbiddenError, FORBIDDEN_ERROR_NAME } from './app/exceptions/forbidden-exception';
-import { NotFoundError, NOT_FOUND_ERROR_NAME } from './app/exceptions/not-found-exception';
+import { FORBIDDEN_ERROR_NAME, ForbiddenError } from './app/exceptions/forbidden-exception';
+import { NOT_FOUND_ERROR_NAME, NotFoundError } from './app/exceptions/not-found-exception';
 import {
-  ReauthenticationError,
   REAUTHENTICATION_ERROR_NAME,
+  ReauthenticationError,
 } from './app/exceptions/reauthentication-exception';
-import { ValidationError, VALIDATION_ERROR_NAME } from './app/exceptions/validation-exception';
+import { VALIDATION_ERROR_NAME, ValidationError } from './app/exceptions/validation-exception';
 import { completeCaseFileUpload } from './app/resources/complete-case-file-upload';
 import { createCaseMembership } from './app/resources/create-case-membership';
 import { createCases } from './app/resources/create-cases';
@@ -30,12 +30,14 @@ import { getLogoutUrl } from './app/resources/get-logout-url';
 import { getMyCases } from './app/resources/get-my-cases';
 import { getScopedCaseInformation } from './app/resources/get-scoped-case-information';
 import { getToken } from './app/resources/get-token';
+import { getUserAudit } from './app/resources/get-user-audit';
 import { getUsers } from './app/resources/get-users';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
 import { listCaseFiles } from './app/resources/list-case-files';
 import { refreshToken } from './app/resources/refresh-token';
 import { revokeToken } from './app/resources/revoke-token';
 import { startCaseAudit } from './app/resources/start-case-audit';
+import { startUserAudit } from './app/resources/start-user-audit';
 import { updateCaseMembership } from './app/resources/update-case-membership';
 import { updateCaseStatus } from './app/resources/update-case-status';
 import { updateCases } from './app/resources/update-cases';
@@ -94,6 +96,8 @@ export {
   getTestAuditService,
   getDummyEvent,
   getAvailableEndpointsForUser,
+  startUserAudit,
+  getUserAudit,
   CaseAction,
   DeaCase,
   DeaCaseFile,

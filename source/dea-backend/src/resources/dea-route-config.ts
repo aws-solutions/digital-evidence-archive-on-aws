@@ -198,5 +198,17 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/create-case-owner-handler.ts',
     },
+    {
+      eventName: AuditEventType.GET_USER_AUDIT,
+      path: '/users/{userId}/audit/{auditId}/csv',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-user-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.REQUEST_USER_AUDIT,
+      path: '/users/{userId}/audit',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/request-user-audit-handler.ts',
+    },
   ],
 };
