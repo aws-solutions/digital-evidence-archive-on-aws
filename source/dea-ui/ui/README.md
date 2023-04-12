@@ -18,7 +18,7 @@ Navigate to DEA root directory and follow instructions in [README](../../../READ
 
 First, run the https proxy so your cookies will work:
 ```sh
-rushx httpsproxy
+rushx dev:https
 ```
 In a separate tab or process, run the development server:
 
