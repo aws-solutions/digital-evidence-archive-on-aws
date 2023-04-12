@@ -10,6 +10,7 @@ import { CaseStatus } from '../../models/case-status';
 import { updateCaseStatusSchema } from '../../models/validation/case';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
+import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
@@ -21,7 +22,9 @@ export const updateCaseStatus: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider = defaultProvider,
+  /* istanbul ignore next */
+  datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const input: UpdateCaseStatusInput = getRequiredPayload(
@@ -59,11 +62,12 @@ export const updateCaseStatus: DEAGatewayProxyHandler = async (
     }
   }
 
-  const updateBody = await CaseService.updateCaseStatus(
+  const updatedCase = await CaseService.updateCaseStatus(
     deaCase,
     input.status,
     input.deleteFiles,
-    repositoryProvider
+    repositoryProvider,
+    datasetsProvider
   );
-  return responseOk(event, updateBody);
+  return responseOk(event, updatedCase);
 };

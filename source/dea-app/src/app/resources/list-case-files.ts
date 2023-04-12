@@ -45,7 +45,7 @@ export const listCaseFiles: DEAGatewayProxyHandler = async (
   );
 
   return responseOk(event, {
-    cases: pageOfCaseFiles,
+    files: pageOfCaseFiles,
     total: pageOfCaseFiles.count,
     next: getNextToken(pageOfCaseFiles.next),
   });

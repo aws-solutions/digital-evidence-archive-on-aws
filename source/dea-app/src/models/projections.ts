@@ -5,11 +5,19 @@
 
 import { DeaCase } from '../models/case';
 import { DeaCaseFile } from '../models/case-file';
-import { CaseType, CaseUserType, SessionType, UserType, CaseFileType } from '../persistence/schema/entities';
+import {
+  CaseType,
+  CaseUserType,
+  SessionType,
+  UserType,
+  CaseFileType,
+  JobType,
+} from '../persistence/schema/entities';
 import { CaseAction } from './case-action';
 import { CaseFileStatus } from './case-file-status';
 import { CaseStatus } from './case-status';
 import { CaseUser } from './case-user';
+import { Job } from './job';
 import { DeaSession } from './session';
 import { DeaUser } from './user';
 
@@ -24,6 +32,7 @@ export const caseFromEntity = (caseEntity: CaseType): DeaCase => {
     status: caseEntity.status as CaseStatus,
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     filesStatus: caseEntity.filesStatus as CaseFileStatus,
+    s3BatchJobId: caseEntity.s3BatchJobId,
     created: caseEntity.created,
     updated: caseEntity.updated,
   };
@@ -86,5 +95,14 @@ export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFile =>
     reason: caseFileEntity.reason,
     tag: caseFileEntity.tag,
     details: caseFileEntity.details,
+  };
+};
+
+export const jobFromEntity = (jobEntity: JobType): Job => {
+  return {
+    jobId: jobEntity.jobId,
+    caseUlid: jobEntity.caseUlid,
+    updated: jobEntity.updated,
+    created: jobEntity.created,
   };
 };

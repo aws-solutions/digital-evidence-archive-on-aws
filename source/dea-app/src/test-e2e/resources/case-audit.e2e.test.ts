@@ -10,7 +10,7 @@ import { Oauth2Token } from '../../models/auth';
 import { joiUuid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPIWithCreds, createCaseSuccess, deleteCase, randomSuffix } from './test-helpers';
+import { callDeaAPIWithCreds, createCaseSuccess, delay, deleteCase, randomSuffix } from './test-helpers';
 
 describe('case audit e2e', () => {
   const cognitoHelper = new CognitoHelper();
@@ -140,8 +140,4 @@ describe('case audit e2e', () => {
     expect(csvData).toContain(AuditEventType.UPDATE_CASE_DETAILS);
     expect(csvData).toContain(AuditEventType.GET_USERS_FROM_CASE);
   }, 180000);
-
-  function delay(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
 });

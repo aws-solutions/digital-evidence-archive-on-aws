@@ -21,6 +21,7 @@ import * as GetCredentialsHandler from '../../handlers/get-credentials-handler';
 import * as GetLoginUrlHandler from '../../handlers/get-login-url-handler';
 import * as GetLogoutUrlHandler from '../../handlers/get-logout-url-handler';
 import * as GetMyCasesHandler from '../../handlers/get-my-cases-handler';
+import * as GetScopedCaseInformation from '../../handlers/get-scoped-case-info-handler';
 import * as GetTokenHandler from '../../handlers/get-token-handler';
 import * as GetUsersHandler from '../../handlers/get-users-handler';
 import * as InitiateCaseFileUploadHandler from '../../handlers/initiate-case-file-upload-handler';
@@ -28,6 +29,8 @@ import * as ListCaseFilesHandler from '../../handlers/list-case-files-handler';
 import * as RefreshTokenHandler from '../../handlers/refresh-token-handler';
 import * as StartCaseAuditHandler from '../../handlers/request-case-audit-handler';
 import * as RevokeTokenHandler from '../../handlers/revoke-token-handler';
+import * as S3BatchDeleteCaseFileHandler from '../../handlers/s3-batch-delete-case-file-handler';
+import * as S3BatchJobStatusChangeHandler from '../../handlers/s3-batch-job-status-change-handler';
 import * as UpdateCaseStatusHandler from '../../handlers/update-case-status-handler';
 import * as UpdateCaseUserHandler from '../../handlers/update-case-user-handler';
 import * as UpdateCasesHandler from '../../handlers/update-cases-handler';
@@ -63,10 +66,19 @@ describe('lambda handlers', () => {
       GetCaseActionsHandler.handler,
       GetAvailableEndpoints.handler,
       UpdateCaseStatusHandler.handler,
+      GetScopedCaseInformation.handler,
     ];
 
     handlers.forEach((handler) => {
       expect(typeof handler === 'function').toBeTruthy();
+    });
+  });
+
+  it('should not be wrapped with the deaHandler', () => {
+    const handlers = [S3BatchDeleteCaseFileHandler, S3BatchJobStatusChangeHandler];
+
+    handlers.forEach((handler) => {
+      expect(typeof handler === 'function').toBeFalsy();
     });
   });
 });

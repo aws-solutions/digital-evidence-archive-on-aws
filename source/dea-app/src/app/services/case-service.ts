@@ -4,15 +4,19 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
+import { logger } from '../../logger';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { caseFromEntity } from '../../models/projections';
 import { DeaUser } from '../../models/user';
 import * as CasePersistence from '../../persistence/case';
+import * as CaseFilePersistence from '../../persistence/case-file';
 import * as CaseUserPersistence from '../../persistence/case-user';
+import { createJob } from '../../persistence/job';
 import { isDefined } from '../../persistence/persistence-helpers';
 import { CaseType, ModelRepositoryProvider } from '../../persistence/schema/entities';
+import { DatasetsProvider, startDeleteCaseFilesS3BatchJob } from '../../storage/datasets';
 import * as CaseUserService from './case-user-service';
 
 export const createCases = async (
@@ -102,15 +106,47 @@ export const updateCaseStatus = async (
   deaCase: DeaCase,
   newStatus: CaseStatus,
   deleteFiles: boolean,
-  repositoryProvider: ModelRepositoryProvider
+  repositoryProvider: ModelRepositoryProvider,
+  datasetsProvider: DatasetsProvider
 ): Promise<DeaCase> => {
-  const filesStatus = calculateFilesStatus(deaCase, newStatus, deleteFiles);
-  return await CasePersistence.updateCaseStatus(deaCase, newStatus, filesStatus, repositoryProvider);
-};
+  const filesStatus = deleteFiles ? CaseFileStatus.DELETE_FAILED : CaseFileStatus.ACTIVE;
+  const updatedCase = await CasePersistence.updateCaseStatus(
+    deaCase,
+    newStatus,
+    filesStatus,
+    repositoryProvider
+  );
 
-function calculateFilesStatus(deaCase: DeaCase, newStatus: CaseStatus, deleteFiles: boolean): CaseFileStatus {
-  return deleteFiles ? CaseFileStatus.DELETING : CaseFileStatus.ACTIVE;
-}
+  if (!deleteFiles) {
+    return updatedCase;
+  }
+
+  try {
+    const s3Objects = await CaseFilePersistence.getAllCaseFileS3Objects(deaCase.ulid, repositoryProvider);
+    const jobId = await startDeleteCaseFilesS3BatchJob(deaCase.ulid, s3Objects, datasetsProvider);
+    if (!jobId) {
+      // no files to delete
+      return CasePersistence.updateCaseStatus(
+        updatedCase,
+        newStatus,
+        CaseFileStatus.DELETED,
+        repositoryProvider
+      );
+    }
+
+    await createJob({ caseUlid: deaCase.ulid, jobId }, repositoryProvider);
+    return CasePersistence.updateCaseStatus(
+      updatedCase,
+      newStatus,
+      CaseFileStatus.DELETING,
+      repositoryProvider,
+      jobId
+    );
+  } catch (e) {
+    logger.error('Failed to start delete case files s3 batch job.', e);
+    throw new Error('Failed to delete files. Please retry.');
+  }
+};
 
 export const deleteCase = async (
   caseUlid: string,

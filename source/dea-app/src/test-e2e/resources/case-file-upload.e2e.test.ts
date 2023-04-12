@@ -10,11 +10,14 @@ import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { DeaCaseFile } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
+import { CaseStatus } from '../../models/case-status';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
+  callDeaAPIWithCreds,
   completeCaseFileUploadSuccess,
   createCaseSuccess,
+  delay,
   deleteCase,
   describeCaseFileDetailsSuccess,
   downloadContentFromS3,
@@ -24,6 +27,7 @@ import {
   randomSuffix,
   s3Cleanup,
   s3Object,
+  updateCaseStatus,
   uploadContentToS3,
 } from './test-helpers';
 
@@ -39,7 +43,7 @@ describe('Test case file APIs', () => {
   const caseIdsToDelete: string[] = [];
   const s3ObjectsToDelete: s3Object[] = [];
 
-  jest.setTimeout(30000);
+  jest.setTimeout(180_000); // 3 minute timeout
 
   let creds: Credentials;
   let idToken: Oauth2Token;
@@ -69,7 +73,7 @@ describe('Test case file APIs', () => {
 
     // verify list-case-files returns zero case-files
     let listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
-    expect(listCaseFilesResponse.cases.length).toEqual(0);
+    expect(listCaseFilesResponse.files.length).toEqual(0);
     expect(listCaseFilesResponse.next).toBeUndefined();
 
     // initiate upload
@@ -104,7 +108,7 @@ describe('Test case file APIs', () => {
 
     // verify list-case-files and describe-case-file match expected state after initiate-upload
     listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
-    expect(listCaseFilesResponse.cases.length).toEqual(2);
+    expect(listCaseFilesResponse.files.length).toEqual(2);
     expect(listCaseFilesResponse.next).toBeUndefined();
     let describedCaseFile = await describeCaseFileDetailsSuccess(
       DEA_API_URL,
@@ -115,7 +119,7 @@ describe('Test case file APIs', () => {
     );
     expect(describedCaseFile.status).toEqual(CaseFileStatus.PENDING);
     expect(
-      listCaseFilesResponse.cases.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
+      listCaseFilesResponse.files.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
     ).toBeTruthy();
 
     // complete upload
@@ -143,20 +147,20 @@ describe('Test case file APIs', () => {
 
     // verify list-case-files and describe-case-file match expected state after complete-upload
     listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, '/');
-    expect(listCaseFilesResponse.cases.length).toEqual(1);
-    expect(listCaseFilesResponse.cases[0].fileName).toEqual('food');
-    expect(listCaseFilesResponse.cases[0].isFile).toEqual(false);
+    expect(listCaseFilesResponse.files.length).toEqual(1);
+    expect(listCaseFilesResponse.files[0].fileName).toEqual('food');
+    expect(listCaseFilesResponse.files[0].isFile).toEqual(false);
     listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, '/food/');
-    expect(listCaseFilesResponse.cases.length).toEqual(1);
-    expect(listCaseFilesResponse.cases[0].fileName).toEqual('sushi');
-    expect(listCaseFilesResponse.cases[0].isFile).toEqual(false);
+    expect(listCaseFilesResponse.files.length).toEqual(1);
+    expect(listCaseFilesResponse.files[0].fileName).toEqual('sushi');
+    expect(listCaseFilesResponse.files[0].isFile).toEqual(false);
     listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
-    expect(listCaseFilesResponse.cases.length).toEqual(2);
+    expect(listCaseFilesResponse.files.length).toEqual(2);
     expect(listCaseFilesResponse.next).toBeUndefined();
     describedCaseFile = await describeCaseFileDetailsSuccess(DEA_API_URL, idToken, creds, caseUlid, fileUlid);
     expect(describedCaseFile.status).toEqual(CaseFileStatus.ACTIVE);
     expect(
-      listCaseFilesResponse.cases.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
+      listCaseFilesResponse.files.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
     ).toBeTruthy();
 
     // verify download-case-file works as expected
@@ -164,6 +168,37 @@ describe('Test case file APIs', () => {
     const downloadedContent = await downloadContentFromS3(downloadUrl, describedCaseFile.contentType);
     expect(downloadedContent).toEqual(FILE_CONTENT);
     expect(sha256(downloadedContent).toString()).toEqual(describedCaseFile.sha256Hash);
+
+    let updatedCase = await updateCaseStatus(
+      DEA_API_URL,
+      idToken,
+      creds,
+      caseUlid,
+      createdCase.name,
+      CaseStatus.INACTIVE,
+      true
+    );
+
+    expect(updatedCase.status).toEqual(CaseStatus.INACTIVE);
+    expect(updatedCase.filesStatus).toEqual(CaseFileStatus.DELETING);
+    expect(updatedCase.s3BatchJobId).toBeTruthy();
+
+    // Give S3 batch 2 minutes to do the async job. Increase if necessary (EventBridge SLA is 15min)
+    const retries = 8;
+    while (updatedCase.filesStatus !== CaseFileStatus.DELETED && retries > 0) {
+      await delay(15_000);
+      updatedCase = await getCase(caseUlid, idToken, creds);
+
+      if (updatedCase.filesStatus === CaseFileStatus.DELETE_FAILED) {
+        break;
+      }
+    }
+
+    expect(updatedCase.filesStatus).toEqual(CaseFileStatus.DELETED);
+    listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
+    for (const file of listCaseFilesResponse.files) {
+      expect(file.status).toEqual(CaseFileStatus.DELETED);
+    }
   });
 });
 
@@ -179,4 +214,16 @@ async function createCase(idToken: Oauth2Token, creds: Credentials): Promise<Dea
     idToken,
     creds
   );
+}
+
+async function getCase(caseId: string, idToken: Oauth2Token, creds: Credentials) {
+  const getResponse = await callDeaAPIWithCreds(
+    `${DEA_API_URL}cases/${caseId}/details`,
+    'GET',
+    idToken,
+    creds
+  );
+
+  expect(getResponse.status).toEqual(200);
+  return getResponse.data;
 }

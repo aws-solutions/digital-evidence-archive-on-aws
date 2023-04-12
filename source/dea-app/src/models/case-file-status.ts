@@ -6,6 +6,7 @@
 export enum CaseFileStatus {
   ACTIVE = 'ACTIVE',
   DELETING = 'DELETING',
+  DELETE_FAILED = 'DELETE_FAILED',
   DELETED = 'DELETED',
   PENDING = 'PENDING',
 }

@@ -8,6 +8,7 @@ import { logger } from '../logger';
 import { DeaCaseFile, InitiateCaseFileUploadDTO } from '../models/case-file';
 import { CaseFileStatus } from '../models/case-file-status';
 import { caseFileFromEntity } from '../models/projections';
+import { S3Object } from '../storage/datasets';
 import { isDefined } from './persistence-helpers';
 import { ModelRepositoryProvider } from './schema/entities';
 
@@ -44,6 +45,43 @@ export const completeCaseFileUpload = async (
   await createCaseFilePaths(deaCaseFile, repositoryProvider);
 
   return caseFileFromEntity(newEntity);
+};
+
+export const getAllCaseFileS3Objects = async (
+  caseId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<S3Object[]> => {
+  const items = await repositoryProvider.CaseFileModel.find(
+    {
+      PK: `CASE#${caseId}#`,
+    },
+    {
+      fields: ['ulid', 'versionId'],
+      where: '${isFile} = {true} AND ${status} <> {DELETED}',
+    }
+  );
+  return items.map((item) => {
+    return { key: `${caseId}/${item.ulid}`, versionId: item.versionId ?? '' };
+  });
+};
+
+export const updateCaseFileStatus = async (
+  caseUlid: string,
+  ulid: string,
+  status: CaseFileStatus,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCaseFile> => {
+  const caseFileEntity = await repositoryProvider.CaseFileModel.update(
+    {
+      PK: `CASE#${caseUlid}#`,
+      SK: `FILE#${ulid}#`,
+    },
+    {
+      set: { status },
+    }
+  );
+
+  return caseFileEntity ? caseFileFromEntity(caseFileEntity) : caseFileEntity;
 };
 
 const createCaseFilePaths = async (deaCaseFile: DeaCaseFile, repositoryProvider: ModelRepositoryProvider) => {

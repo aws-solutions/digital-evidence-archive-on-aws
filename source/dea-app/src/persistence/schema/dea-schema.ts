@@ -8,7 +8,7 @@ import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { allButDisallowed, ulidRegex, filePathSafeCharsRegex } from '../../models/validation/joi-common';
 
-const DEFAULT_TTL_TIME_ADDITION_SECONDS = 3600;
+const DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS = 3600; // 1 hour
 
 export const DeaSchema = {
   format: 'onetable:1.1.0',
@@ -31,6 +31,7 @@ export const DeaSchema = {
       description: { type: String, validate: allButDisallowed },
       objectCount: { type: Number },
       filesStatus: { type: String, required: true, enum: Object.keys(CaseFileStatus) },
+      s3BatchJobId: { type: String },
       //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },
@@ -109,11 +110,22 @@ export const DeaSchema = {
         ttl: true,
         type: Number,
         default: () => {
-          return Math.floor(Date.now() / 1000 + DEFAULT_TTL_TIME_ADDITION_SECONDS);
+          return Math.floor(Date.now() / 1000 + DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS);
         },
         required: true,
       },
       isRevoked: { type: Boolean, required: true },
+      created: { type: Date },
+      updated: { type: Date },
+    },
+    Job: {
+      PK: { type: String, value: 'JOB#${jobId}#', required: true },
+      SK: { type: String, value: 'JOB#', required: true },
+      GSI1PK: { type: String, value: 'CASE#' },
+      GSI1SK: { type: String, value: 'CASE#${lowerCaseName}#${ulid}#' },
+      jobId: { type: String, required: true },
+      caseUlid: { type: String, validate: ulidRegex, required: true },
+      //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },
     },

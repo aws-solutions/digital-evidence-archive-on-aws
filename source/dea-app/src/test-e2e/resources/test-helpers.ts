@@ -18,6 +18,7 @@ import Joi from 'joi';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { DeaCaseFile } from '../../models/case-file';
+import { CaseStatus } from '../../models/case-status';
 import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
 import { caseFileResponseSchema } from '../../models/validation/case-file';
@@ -240,6 +241,31 @@ export const getCaseFileDownloadUrl = async (
 
   expect(response.status).toEqual(200);
   return response.data.downloadUrl;
+};
+
+export const updateCaseStatus = async (
+  deaApiUrl: string,
+  idToken: Oauth2Token,
+  creds: Credentials,
+  caseUlid: string | undefined,
+  caseName: string,
+  status: CaseStatus,
+  deleteFiles = true
+): Promise<DeaCase> => {
+  const response = await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/status`, 'PUT', idToken, creds, {
+    name: caseName,
+    status,
+    deleteFiles,
+  });
+
+  expect(response.status).toEqual(200);
+  const updatedCase: DeaCase = response.data;
+  Joi.assert(updatedCase, caseResponseSchema);
+  return updatedCase;
+};
+
+export const delay = async (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 export const uploadContentToS3 = async (
