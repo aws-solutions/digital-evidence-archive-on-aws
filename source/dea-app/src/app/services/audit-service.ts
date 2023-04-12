@@ -56,6 +56,8 @@ export enum AuditEventType {
   REQUEST_CASE_AUDIT = 'RequestCaseAudit',
   GET_AVAILABLE_ENDPOINTS = 'GetAvailableEndpoints',
   GET_SCOPED_CASE_INFO = 'GetScopedCaseInformation',
+  GET_USER_AUDIT = 'GetUserAudit',
+  REQUEST_USER_AUDIT = 'RequestUserAudit',
   UNKNOWN = 'UnknownEvent',
 }
 
@@ -195,8 +197,8 @@ export class DeaAuditService extends AuditService {
     return this.write(event);
   }
 
-  public async requestAuditForCase(
-    caseId: string,
+  private async _startAuditQuery(
+    filterPredicate: string,
     start: number,
     end: number,
     cloudwatchClient: CloudWatchLogsClient
@@ -206,13 +208,31 @@ export class DeaAuditService extends AuditService {
       logGroupName: auditLogGroup,
       startTime: start,
       endTime: end,
-      queryString: `filter caseId like /${caseId}/ | fields ${queryFields} | sort @timestamp desc | limit 10000`,
+      queryString: `filter ${filterPredicate} | fields ${queryFields} | sort @timestamp desc | limit 10000`,
     });
     const startResponse = await cloudwatchClient.send(startQueryCmd);
     if (!startResponse.queryId) {
       throw new Error('Unknown error starting Cloudwatch Logs Query.');
     }
     return startResponse.queryId;
+  }
+
+  public async requestAuditForCase(
+    caseId: string,
+    start: number,
+    end: number,
+    cloudwatchClient: CloudWatchLogsClient
+  ) {
+    return this._startAuditQuery(`caseId like /${caseId}/`, start, end, cloudwatchClient);
+  }
+
+  public async requestAuditForUser(
+    userUlid: string,
+    start: number,
+    end: number,
+    cloudwatchClient: CloudWatchLogsClient
+  ) {
+    return this._startAuditQuery(`actorIdentity.userUlid = '${userUlid}'`, start, end, cloudwatchClient);
   }
 
   public async getAuditResult(queryId: string, cloudwatchClient: CloudWatchLogsClient): Promise<AuditResult> {
