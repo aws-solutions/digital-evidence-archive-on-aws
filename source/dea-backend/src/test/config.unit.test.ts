@@ -69,4 +69,20 @@ describe('convict based config', () => {
     expect(deaConfig.retainPolicy()).toEqual(RemovalPolicy.RETAIN);
     expect(deaConfig.retentionDays()).toEqual(RetentionDays.INFINITE);
   });
+
+  it('allows kms actions in a test stack', () => {
+    convictConfig.set('testStack', true);
+    const actions = deaConfig.kmsAccountActions();
+    const wildcard = actions.find((action) => action === 'kms:*');
+    expect(wildcard).toBeDefined();
+  });
+
+  it('disallows kms actions in a prod stack', () => {
+    convictConfig.set('testStack', false);
+    const actions = deaConfig.kmsAccountActions();
+    const wildcard = actions.find((action) => action === 'kms:*');
+    const decryptAction = actions.find((action) => action === 'kms:Decrypt*');
+    expect(wildcard).toBeUndefined();
+    expect(decryptAction).toBeUndefined();
+  });
 });

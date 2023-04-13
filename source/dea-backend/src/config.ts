@@ -207,6 +207,7 @@ interface DEAConfig {
   retentionDays(): RetentionDays;
   idpMetadata(): IdpMetadataInfo | undefined;
   deaAllowedOrigins(): string;
+  kmsAccountActions(): string[];
 }
 
 export const convictConfig = convict(convictSchema);
@@ -223,6 +224,25 @@ export const deaConfig: DEAConfig = {
   retentionDays: () => (convictConfig.get('testStack') ? RetentionDays.TWO_WEEKS : RetentionDays.INFINITE),
   idpMetadata: () => convictConfig.get('idpInfo'),
   deaAllowedOrigins: () => convictConfig.get('deaAllowedOrigins'),
+  kmsAccountActions: () =>
+    convictConfig.get('testStack')
+      ? ['kms:*']
+      : [
+          'kms:Create*',
+          'kms:Describe*',
+          'kms:Enable*',
+          'kms:List*',
+          'kms:Put*',
+          'kms:Update*',
+          'kms:Revoke*',
+          'kms:Disable*',
+          'kms:Get*',
+          'kms:Delete*',
+          'kms:TagResource',
+          'kms:UntagResource',
+          'kms:ScheduleKeyDeletion',
+          'kms:CancelKeyDeletion',
+        ],
 };
 
 export const loadConfig = (stage: string): void => {

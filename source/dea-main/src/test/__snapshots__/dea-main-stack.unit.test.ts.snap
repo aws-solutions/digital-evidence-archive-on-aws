@@ -15591,30 +15591,6 @@ Object {
         "KeyPolicy": Object {
           "Statement": Array [
             Object {
-              "Action": "kms:*",
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":iam::",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":root",
-                    ],
-                  ],
-                },
-              },
-              "Resource": "*",
-              "Sid": "main-key-share-statement",
-            },
-            Object {
               "Action": Array [
                 "kms:Encrypt*",
                 "kms:Decrypt*",
@@ -15641,6 +15617,30 @@ Object {
               "Sid": "main-key-share-statement",
             },
             Object {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+              "Sid": "Allow management",
+            },
+            Object {
               "Action": Array [
                 "kms:Encrypt",
                 "kms:ReEncrypt*",
@@ -15651,6 +15651,34 @@ Object {
                 "Service": "cloudtrail.amazonaws.com",
               },
               "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt*",
+                "kms:Decrypt*",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+                "kms:Describe*",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Array [
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaApiGatewaydeabaselambdarole91512884",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaApiGatewaydeaauthlambdarole4F5CC393",
+                      "Arn",
+                    ],
+                  },
+                ],
+              },
+              "Resource": "*",
+              "Sid": "main-key-share-statement",
             },
             Object {
               "Action": Array [

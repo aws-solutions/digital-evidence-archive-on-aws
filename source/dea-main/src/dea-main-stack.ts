@@ -138,13 +138,6 @@ export class DeaMainStack extends cdk.Stack {
       statements: [
         new PolicyStatement({
           effect: Effect.ALLOW,
-          actions: ['kms:*'],
-          principals: [new AccountPrincipal(this.account)],
-          resources: ['*'],
-          sid: 'main-key-share-statement',
-        }),
-        new PolicyStatement({
-          effect: Effect.ALLOW,
           actions: [
             'kms:Encrypt*',
             'kms:Decrypt*',
@@ -153,9 +146,16 @@ export class DeaMainStack extends cdk.Stack {
             'kms:Describe*',
           ],
           principals: [new ServicePrincipal(`logs.${this.region}.amazonaws.com`)],
-          // resources: [deaApi.accessLogGroup.logGroupArn],
           resources: ['*'],
           sid: 'main-key-share-statement',
+        }),
+        // prevent MalformedPolicyDocumentException - kms management can be granted
+        new PolicyStatement({
+          sid: 'Allow management',
+          effect: Effect.ALLOW,
+          principals: [new AccountPrincipal(this.account)],
+          actions: deaConfig.kmsAccountActions(),
+          resources: ['*'],
         }),
       ],
     });
