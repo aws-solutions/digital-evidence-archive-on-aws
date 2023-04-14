@@ -466,6 +466,7 @@ describe('dea lambda audits', () => {
       fail();
     }
     expect(sentInput.logEvents[0].message).toContain(`"fileHash":"ERROR: hash is absent"`);
+    expect(sentInput.logEvents[0].message).toContain(`success with warnings`);
   });
 
   it('should add the fileHash to the Audit Event', async () => {

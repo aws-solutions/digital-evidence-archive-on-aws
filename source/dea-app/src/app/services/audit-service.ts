@@ -17,6 +17,7 @@ import { deaAuditPlugin } from '../audit/dea-audit-plugin';
 export enum AuditEventResult {
   SUCCESS = 'success',
   FAILURE = 'failure',
+  SUCCESS_WITH_WARNINGS = 'success with warning',
 }
 
 export enum AuditEventSource {
