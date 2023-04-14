@@ -262,5 +262,7 @@ async function completeCaseFileUploadAndValidate(
     LegalHold: { Status: ObjectLockLegalHoldStatus.ON },
   });
 
+  expect(EVENT.headers['caseFileHash']).toBeDefined();
+
   return deaCaseFile;
 }

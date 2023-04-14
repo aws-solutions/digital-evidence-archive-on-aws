@@ -67,6 +67,7 @@ describe('Test get case file details', () => {
 
     await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDescribe);
     caseFile = await callGetCaseFileDetails(EVENT, repositoryProvider, fileId, caseToDescribe);
+    expect(EVENT.headers['caseFileHash']).toBeDefined();
     await validateCaseFile(caseFile, fileId, caseToDescribe, fileDescriber.ulid, CaseFileStatus.ACTIVE);
   });
 

@@ -165,7 +165,7 @@ export type CJISAuditEventBody = {
 };
 
 const queryFields =
-  'dateTime, requestPath, sourceComponent, eventType, actorIdentity.idType, actorIdentity.idPoolUserId, actorIdentity.sourceIp, actorIdentity.username, actorIdentity.firstName, actorIdentity.lastName, actorIdentity.userPoolUserId, actorIdentity.userUlid, actorIdentity.deaRole, actorIdentity.authCode, actorIdentity.idToken, caseId, fileId, targetUserId';
+  'dateTime, requestPath, sourceComponent, eventType, actorIdentity.idType, actorIdentity.idPoolUserId, actorIdentity.sourceIp, actorIdentity.username, actorIdentity.firstName, actorIdentity.lastName, actorIdentity.userPoolUserId, actorIdentity.userUlid, actorIdentity.deaRole, actorIdentity.authCode, actorIdentity.idToken, caseId, fileId, fileHash, targetUserId';
 
 export interface AuditResult {
   status: QueryStatus | string;

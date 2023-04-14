@@ -114,6 +114,7 @@ export const callCompleteCaseFileUpload = async (
     }
   );
   const response = await completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
+  expect(event.headers['caseFileHash']).toStrictEqual(sha256Hash);
 
   checkApiSucceeded(response);
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -138,6 +139,8 @@ export const callDownloadCaseFile = async (
   );
   const response = await downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   checkApiSucceeded(response);
+
+  expect(event.headers['caseFileHash']).toBeDefined();
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return JSON.parse(response.body as string).downloadUrl ?? fail();

@@ -26,5 +26,9 @@ export const getCaseFileDetails: DEAGatewayProxyHandler = async (
     throw new NotFoundError(`Could not find file: ${fileId} in the DB`);
   }
 
+  if (retrievedCaseFile.isFile && retrievedCaseFile.sha256Hash) {
+    event.headers['caseFileHash'] = retrievedCaseFile.sha256Hash;
+  }
+
   return responseOk(event, retrievedCaseFile);
 };
