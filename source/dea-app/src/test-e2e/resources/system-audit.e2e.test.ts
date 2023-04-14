@@ -10,13 +10,7 @@ import { Oauth2Token } from '../../models/auth';
 import { joiUuid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import {
-  callDeaAPIWithCreds,
-  createCaseSuccess,
-  deleteCase,
-  getSpecificUserByFirstName,
-  randomSuffix,
-} from './test-helpers';
+import { callDeaAPIWithCreds, createCaseSuccess, deleteCase, randomSuffix } from './test-helpers';
 
 describe('system audit e2e', () => {
   const cognitoHelper = new CognitoHelper();
@@ -27,7 +21,6 @@ describe('system audit e2e', () => {
   const deaApiUrl = testEnv.apiUrlOutput;
   let creds: Credentials;
   let idToken: Oauth2Token;
-  let userUlid: string;
   let managerCreds: Credentials;
   let managerIdToken: Oauth2Token;
 
@@ -44,8 +37,6 @@ describe('system audit e2e', () => {
 
     // initialize the user into the DB
     await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', idToken, creds);
-    // get the user ulid
-    userUlid = (await getSpecificUserByFirstName(deaApiUrl, testUser, managerIdToken, managerCreds)).ulid;
   }, 10000);
 
   afterAll(async () => {
@@ -133,7 +124,7 @@ describe('system audit e2e', () => {
         await delay(2000);
 
         getQueryReponse = await callDeaAPIWithCreds(
-          `${deaApiUrl}users/${userUlid}/audit/${auditId}/csv`,
+          `${deaApiUrl}system/audit/${auditId}/csv`,
           'GET',
           managerIdToken,
           managerCreds
