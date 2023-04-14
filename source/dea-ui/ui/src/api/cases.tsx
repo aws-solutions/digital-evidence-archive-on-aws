@@ -81,7 +81,7 @@ export const createCase = async (createCaseForm: CreateCaseForm): Promise<void> 
 
 export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DeaCaseFile> => {
   const { data, error } = useSWR(() => `cases/${id}/files?filePath=${filePath}`, httpApiGet<{cases: DeaCaseFile[]}>);
-  const caseFiles: DeaCaseFile[] = data?.cases ?? [];
+  const caseFiles: DeaCaseFile[] = data?.files ?? [];
   return { data: caseFiles, isLoading: !error && !data };
 };
 
