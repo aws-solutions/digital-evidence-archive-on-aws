@@ -70,6 +70,19 @@ export const createDeaHandler = (
       const result = await handler(event, context);
       if (result.statusCode >= 200 && result.statusCode < 300) {
         auditEvent.result = AuditEventResult.SUCCESS;
+
+        // include file hash in event type if it was populated
+        auditEvent.fileHash = event.headers['caseFileHash'];
+        // Fail if the fileHash was not included on complete upload operation
+        const eventType = getEventType(event);
+        if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD && !auditEvent.fileHash) {
+          logger.error('File hash was not included in auditEvent after complete file upload operation.', {
+            resource: event.resource,
+            httpMethod: event.httpMethod,
+          });
+          auditEvent.fileHash = 'ERROR: hash is absent';
+          auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
+        }
       }
       return result;
     } catch (error) {
