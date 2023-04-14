@@ -142,7 +142,7 @@ const addUserToDatabase = async (
   return deaUserResult;
 };
 
-const withAllowedOrigin = (event: APIGatewayProxyEvent, response: APIGatewayProxyResult) => {
+export const withAllowedOrigin = (event: APIGatewayProxyEvent, response: APIGatewayProxyResult) => {
   const requestHost = event.headers['origin'];
   if (requestHost && allowedOrigins.includes(requestHost)) {
     if (!response.headers) {

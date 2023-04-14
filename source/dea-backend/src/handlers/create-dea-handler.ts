@@ -6,7 +6,7 @@
 import { Oauth2Token } from '@aws/dea-app';
 import { ValidationError } from '@aws/dea-app/lib/app/exceptions/validation-exception';
 import { DEAGatewayProxyHandler } from '@aws/dea-app/lib/app/resources/dea-gateway-proxy-handler';
-import { runPreExecutionChecks } from '@aws/dea-app/lib/app/resources/dea-lambda-utils';
+import { runPreExecutionChecks, withAllowedOrigin } from '@aws/dea-app/lib/app/resources/dea-lambda-utils';
 import { verifyCaseACLs } from '@aws/dea-app/lib/app/resources/verify-case-acls';
 import {
   ActorIdentity,
@@ -78,15 +78,17 @@ export const createDeaHandler = (
         if ('name' in error) {
           const errorHandler = exceptionHandlers.get(error.name);
           if (errorHandler) {
-            return errorHandler(error);
+            return errorHandler(error, event);
           }
         }
       }
 
-      return Promise.resolve({
-        statusCode: 500,
-        body: 'Server Error',
-      });
+      return Promise.resolve(
+        withAllowedOrigin(event, {
+          statusCode: 500,
+          body: 'Server Error',
+        })
+      );
     } finally {
       await deaAuditService.writeCJISCompliantEntry(auditEvent);
     }
