@@ -457,7 +457,7 @@ describe('dea lambda audits', () => {
     theEvent.body = ':D';
 
     const response = await sut(theEvent, dummyContext);
-    expect(response).toEqual({ body: 'File hash missing.', statusCode: 400 });
+    expect(response).toEqual({ body: ':D', statusCode: 200 });
 
     const sent = capture(testAuditService.client.send).last();
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -465,8 +465,8 @@ describe('dea lambda audits', () => {
     if (!sentInput.logEvents) {
       fail();
     }
+    expect(sentInput.logEvents[0].message).toContain(`"result":"success with warning"`);
     expect(sentInput.logEvents[0].message).toContain(`"fileHash":"ERROR: hash is absent"`);
-    expect(sentInput.logEvents[0].message).toContain(`success with warnings`);
   });
 
   it('should add the fileHash to the Audit Event', async () => {
