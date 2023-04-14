@@ -33,6 +33,7 @@ import { getLoginUrl } from './app/resources/get-login-url';
 import { getLogoutUrl } from './app/resources/get-logout-url';
 import { getMyCases } from './app/resources/get-my-cases';
 import { getScopedCaseInformation } from './app/resources/get-scoped-case-information';
+import { getSystemAudit } from './app/resources/get-system-audit';
 import { getToken } from './app/resources/get-token';
 import { getUserAudit } from './app/resources/get-user-audit';
 import { getUsers } from './app/resources/get-users';
@@ -41,6 +42,7 @@ import { listCaseFiles } from './app/resources/list-case-files';
 import { refreshToken } from './app/resources/refresh-token';
 import { revokeToken } from './app/resources/revoke-token';
 import { startCaseAudit } from './app/resources/start-case-audit';
+import { startSystemAudit } from './app/resources/start-system-audit';
 import { startUserAudit } from './app/resources/start-user-audit';
 import { updateCaseMembership } from './app/resources/update-case-membership';
 import { updateCaseStatus } from './app/resources/update-case-status';
@@ -102,6 +104,8 @@ export {
   getAvailableEndpointsForUser,
   startUserAudit,
   getUserAudit,
+  startSystemAudit,
+  getSystemAudit,
   CaseAction,
   DeaCase,
   DeaCaseFile,

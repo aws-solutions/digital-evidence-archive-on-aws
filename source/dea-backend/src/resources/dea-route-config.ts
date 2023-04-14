@@ -210,5 +210,17 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/request-user-audit-handler.ts',
     },
+    {
+      eventName: AuditEventType.GET_SYSTEM_AUDIT,
+      path: '/system/audit/{auditId}/csv',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-system-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.REQUEST_SYSTEM_AUDIT,
+      path: '/system/audit',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/request-system-audit-handler.ts',
+    },
   ],
 };

@@ -239,6 +239,14 @@
         {
           "path": "/users/{userId}/audit/{auditId}/csv",
           "method": "GET"
+        },
+        {
+          "path": "/system/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/system/audit/{auditId}/csv",
+          "method": "GET"
         }
       ]
     },
@@ -304,6 +312,14 @@
         },
         {
           "path": "/users/{userId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/system/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/system/audit/{auditId}/csv",
           "method": "GET"
         }
       ]

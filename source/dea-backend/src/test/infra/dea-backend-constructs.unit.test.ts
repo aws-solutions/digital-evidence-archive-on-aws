@@ -63,6 +63,7 @@ describe('DeaBackend constructs', () => {
       deaDatasetsBucketName: backend.datasetsBucket.bucketName,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
+      deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
       region: stack.region,
       accountId: stack.account,
@@ -70,6 +71,7 @@ describe('DeaBackend constructs', () => {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backend.deaTable.tableName,
         DATASETS_BUCKET_NAME: backend.datasetsBucket.bucketName,
+        TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
       },
     });
 
@@ -85,8 +87,8 @@ describe('DeaBackend constructs', () => {
     });
 
     //handlers
-    const expectedLambdaCount = 34;
-    const expectedMethodCount = 67;
+    const expectedLambdaCount = 36;
+    const expectedMethodCount = 73;
     template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCount);
     template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCount);
 
@@ -137,6 +139,7 @@ describe('DeaBackend constructs', () => {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
       deaDatasetsBucketName: backend.datasetsBucket.bucketName,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
+      deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
       kmsKey: key,
       region: stack.region,
@@ -145,6 +148,7 @@ describe('DeaBackend constructs', () => {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backend.deaTable.tableName,
         DATASETS_BUCKET_NAME: backend.datasetsBucket.bucketName,
+        TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
       },
     });
 
