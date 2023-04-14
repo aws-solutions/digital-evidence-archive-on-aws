@@ -27,7 +27,7 @@ jest.mock('axios');
 const mockedAxios = Axios as jest.Mocked<typeof Axios>;
 
 const mockFilesRoot = {
-  cases: [
+  files: [
     {
       ulid: '01GV3NH93AX2GYHBQNVR27NEMJ',
       caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
