@@ -436,7 +436,7 @@ describe('dea lambda audits', () => {
     expect(sentInput.logEvents[0].message).not.toContain(`"targetUserId"`);
   });
 
-  it('should fail when fileHash is not included for CompleteCaseFileUpload', async () => {
+  it('should indicate when fileHash is not included for CompleteCaseFileUpload', async () => {
     const testAuditService = getTestAuditService();
     const theEvent = getDummyEvent();
 
@@ -465,7 +465,7 @@ describe('dea lambda audits', () => {
     if (!sentInput.logEvents) {
       fail();
     }
-    expect(sentInput.logEvents[0].message).toContain(`"result":"failure"`);
+    expect(sentInput.logEvents[0].message).toContain(`"fileHash":"ERROR: hash is absent"`);
   });
 
   it('should add the fileHash to the Audit Event', async () => {

@@ -78,7 +78,7 @@ export const createDeaHandler = (
             resource: event.resource,
             httpMethod: event.httpMethod,
           });
-          throw new ValidationError('File hash missing from complete file upload operation.');
+          auditEvent.fileHash = 'ERROR: hash is absent';
         }
         auditEvent.result = AuditEventResult.SUCCESS;
       }
