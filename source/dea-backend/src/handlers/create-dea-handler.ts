@@ -71,12 +71,14 @@ export const createDeaHandler = (
       if (result.statusCode >= 200 && result.statusCode < 300) {
         // include file hash in event type if it was populated
         auditEvent.fileHash = event.headers['caseFileHash'];
-        if (wasCaseFileEventType(event) && !auditEvent.fileHash) {
-          logger.error('File hash was not included in auditEvent after a file type operation.', {
+        // Fail if the fileHash was not included on complete upload operation
+        const eventType = getEventType(event);
+        if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD && !auditEvent.fileHash) {
+          logger.error('File hash was not included in auditEvent after complete file upload operation.', {
             resource: event.resource,
             httpMethod: event.httpMethod,
           });
-          throw new ValidationError('File hash missing.');
+          throw new ValidationError('File hash missing from complete file upload operation.');
         }
         auditEvent.result = AuditEventResult.SUCCESS;
       }
@@ -196,11 +198,4 @@ const getTargetUserId = (event: APIGatewayProxyEvent): string | undefined => {
     }
   }
   return event.pathParameters?.userId;
-};
-
-const wasCaseFileEventType = (event: APIGatewayProxyEvent): boolean => {
-  const eventType = getEventType(event);
-  return (
-    eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD || eventType == AuditEventType.DOWNLOAD_CASE_FILE
-  );
 };

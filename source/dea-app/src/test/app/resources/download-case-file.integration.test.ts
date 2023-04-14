@@ -128,6 +128,5 @@ describe('Test case file download', () => {
 async function downloadCaseFileAndValidate(fileId: string, caseId: string): Promise<string> {
   const presignedUrl = await callDownloadCaseFile(EVENT, repositoryProvider, fileId, caseId);
   expect(presignedUrl).toContain(`https://s3.us-east-1.amazonaws.com/${DATASETS_PROVIDER.bucketName}`);
-  expect(EVENT.headers['caseFileHash']).toBeDefined();
   return presignedUrl;
 }

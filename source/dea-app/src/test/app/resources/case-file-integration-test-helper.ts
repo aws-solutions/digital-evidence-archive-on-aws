@@ -140,8 +140,6 @@ export const callDownloadCaseFile = async (
   const response = await downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   checkApiSucceeded(response);
 
-  expect(event.headers['caseFileHash']).toBeDefined();
-
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return JSON.parse(response.body as string).downloadUrl ?? fail();
 };

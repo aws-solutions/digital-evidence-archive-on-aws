@@ -34,8 +34,6 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
     throw new ValidationError(`Can't download a file in ${retrievedCaseFile.status} state`);
   }
 
-  event.headers['caseFileHash'] = retrievedCaseFile.sha256Hash;
-
   const downloadUrl = await getPresignedUrlForDownload(retrievedCaseFile, datasetsProvider);
 
   return responseOk(event, { downloadUrl });
