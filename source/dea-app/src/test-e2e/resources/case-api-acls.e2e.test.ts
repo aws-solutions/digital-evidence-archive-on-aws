@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import sha256 from 'crypto-js/sha256';
 import { CaseAction } from '../../models/case-action';
 import { validateEndpointACLs } from './case-api-acl-tester';
 import { DeaHttpMethod } from './test-helpers';
@@ -126,6 +127,7 @@ const completeCaseFileUploadArgs: argsType = [
     caseUlid: CASE_ID,
     ulid: FILE_ID,
     uploadId: UPLOAD_ID,
+    sha256Hash: sha256('hello world').toString(),
   }),
   false,
   true,
