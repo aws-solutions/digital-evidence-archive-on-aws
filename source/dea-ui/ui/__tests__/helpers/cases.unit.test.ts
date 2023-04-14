@@ -77,17 +77,17 @@ describe('useListAllCases', () => {
     await expect(createCase(dummyForm)).toBeTruthy();
   });
 
-  it('should return a list of my cases', () => {
-    const mockCases = {
-      cases: [
+  it('should return a list of my files', () => {
+    const mockFiles = {
+      files: [
         { id: 12345, name: 'Who killed Anakin' },
         { id: 23456, name: 'How is Palpatine Alive' },
       ],
     };
-    useSWR.mockReturnValue({ data: mockCases, isValidating: false });
+    useSWR.mockReturnValue({ data: mockFiles, isValidating: false });
 
     const { data, isLoading } = useListCaseFiles('dummyId', '/');
-    expect(data).toEqual(mockCases.cases);
+    expect(data).toEqual(mockFiles.files);
     expect(isLoading).toEqual(false);
   });
 });
