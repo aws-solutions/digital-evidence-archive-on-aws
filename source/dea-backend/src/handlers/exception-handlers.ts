@@ -7,7 +7,8 @@ import { FORBIDDEN_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/forbidden-
 import { NOT_FOUND_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/not-found-exception';
 import { REAUTHENTICATION_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/reauthentication-exception';
 import { VALIDATION_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/validation-exception';
-import { APIGatewayProxyResult } from 'aws-lambda';
+import { withAllowedOrigin } from '@aws/dea-app/lib/app/resources/dea-lambda-utils';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
 import { logger } from '../logger';
 
@@ -15,55 +16,55 @@ const AWS_CLIENT_INVALID_PARAMETER_NAME = 'InvalidParameterException';
 // If you have a new error case that you want to support, create a new Class that extends Error
 // and add a handler here that responds with an appropriate status code.
 
-export type ExceptionHandler = (error: Error) => Promise<APIGatewayProxyResult>;
+export type ExceptionHandler = (error: Error, event: APIGatewayProxyEvent) => Promise<APIGatewayProxyResult>;
 
-const notFoundHandler: ExceptionHandler = async (error) => {
+const notFoundHandler: ExceptionHandler = async (error, event) => {
   logger.error('NotFoundError', error);
-  return {
+  return withAllowedOrigin(event, {
     statusCode: 404,
     body: error.message,
-  };
+  });
 };
 
-const validationErrorHandler: ExceptionHandler = async (error) => {
+const validationErrorHandler: ExceptionHandler = async (error, event) => {
   logger.error('ValidationError', error);
-  return {
+  return withAllowedOrigin(event, {
     statusCode: 400,
     body: error.message,
-  };
+  });
 };
 
-const joiValidationErrorHandler: ExceptionHandler = async (error) => {
+const joiValidationErrorHandler: ExceptionHandler = async (error, event) => {
   if (error instanceof Joi.ValidationError) {
-    return {
+    return withAllowedOrigin(event, {
       statusCode: 400,
       body: error.details.map((err) => err.message).join(','),
-    };
+    });
   }
-  return validationErrorHandler(error);
+  return validationErrorHandler(error, event);
 };
 
-const forbiddenErrorHandler: ExceptionHandler = async (error) => {
+const forbiddenErrorHandler: ExceptionHandler = async (error, event) => {
   logger.error('Forbidden', { message: error.message });
-  return {
+  return withAllowedOrigin(event, {
     statusCode: 403,
     body: 'Forbidden',
-  };
+  });
 };
 
-const reauthenticationErrorHandler: ExceptionHandler = async (error) => {
+const reauthenticationErrorHandler: ExceptionHandler = async (error, event) => {
   logger.error('Reauthenticate', { message: error.message });
-  return {
+  return withAllowedOrigin(event, {
     statusCode: 412,
     body: 'Reauthenticate',
-  };
+  });
 };
 
-const defaultErrorHandler: ExceptionHandler = async () => {
-  return {
+const defaultErrorHandler: ExceptionHandler = async (error, event) => {
+  return withAllowedOrigin(event, {
     statusCode: 500,
     body: 'An error occurred',
-  };
+  });
 };
 
 const joiInstance = new Joi.ValidationError('', [], undefined);

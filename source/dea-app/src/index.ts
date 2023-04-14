@@ -14,7 +14,11 @@ import { completeCaseFileUpload } from './app/resources/complete-case-file-uploa
 import { createCaseMembership } from './app/resources/create-case-membership';
 import { createCases } from './app/resources/create-cases';
 import { DEAGatewayProxyHandler } from './app/resources/dea-gateway-proxy-handler';
-import { DEAPreLambdaExecutionChecks, runPreExecutionChecks } from './app/resources/dea-lambda-utils';
+import {
+  DEAPreLambdaExecutionChecks,
+  runPreExecutionChecks,
+  withAllowedOrigin,
+} from './app/resources/dea-lambda-utils';
 import { deleteCaseMembership } from './app/resources/delete-case-membership';
 import { deleteCase } from './app/resources/delete-cases';
 import { downloadCaseFile } from './app/resources/download-case-file';
@@ -121,4 +125,5 @@ export {
   deleteCaseFileHandler,
   s3BatchJobStatusChangeHandler,
   S3BatchEventBridgeDetail,
+  withAllowedOrigin,
 };
