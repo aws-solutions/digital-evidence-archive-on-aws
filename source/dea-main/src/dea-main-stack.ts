@@ -70,6 +70,7 @@ export class DeaMainStack extends cdk.Stack {
       deaDatasetsBucketArn: backendConstruct.datasetsBucket.bucketArn,
       deaDatasetsBucketName: backendConstruct.datasetsBucket.bucketName,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
+      deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
       kmsKey,
       region,
@@ -80,6 +81,7 @@ export class DeaMainStack extends cdk.Stack {
         DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
         DELETE_CASE_FILE_LAMBDA_ARN: deaEventHandlers.s3BatchDeleteCaseFileLambda.functionArn,
         DELETE_CASE_FILE_ROLE: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
+        TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
       },
     });
 

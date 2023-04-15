@@ -470,6 +470,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -541,6 +544,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -614,6 +620,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -685,6 +694,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -758,6 +770,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -829,6 +844,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -902,6 +920,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -973,6 +994,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -1046,6 +1070,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -1117,6 +1144,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -1190,6 +1220,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -1261,6 +1294,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -1334,6 +1370,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -1405,6 +1444,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -1478,6 +1520,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -1549,6 +1594,84 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewaydeabaselambdarole91512884",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 10,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayGETGetSystemAuditAD3F46B8": Object {
+      "DependsOn": Array [
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
+            },
+            "DELETE_CASE_FILE_LAMBDA_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
+                "Arn",
+              ],
+            },
+            "DELETE_CASE_FILE_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaEventHandlerss3batchdeletecasefileroleBAD7A58C",
+                "Arn",
+              ],
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -1622,6 +1745,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -1693,6 +1819,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -1766,6 +1895,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -1837,6 +1969,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -1910,6 +2045,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -1981,6 +2119,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -2054,6 +2195,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -2125,6 +2269,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -2198,6 +2345,84 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewaydeabaselambdarole91512884",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 10,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayPOSTRequestSystemAudit1876CDAF": Object {
+      "DependsOn": Array [
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
+            },
+            "DELETE_CASE_FILE_LAMBDA_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
+                "Arn",
+              ],
+            },
+            "DELETE_CASE_FILE_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaEventHandlerss3batchdeletecasefileroleBAD7A58C",
+                "Arn",
+              ],
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -2269,6 +2494,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -2342,6 +2570,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -2413,6 +2644,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -2486,6 +2720,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -2558,6 +2795,9 @@ Object {
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
             },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
           },
         },
         "Handler": "index.handler",
@@ -2629,6 +2869,9 @@ Object {
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
             },
           },
         },
@@ -2727,7 +2970,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E776295fbdbd1297ea84b10255b270dc91fd56": Object {
+    "DeaApiGatewaydeaapiDeployment99E7762970eb05cd1d53047135704b9ec5580d77": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiauthauthCodeOPTIONS8EA9BA0F",
         "DeaApiGatewaydeaapiauthauthCodeFC92ADBD",
@@ -2818,6 +3061,16 @@ Object {
         "DeaApiGatewaydeaapicasesPOST966FABAB",
         "DeaApiGatewaydeaapicasesC01D624D",
         "DeaApiGatewaydeaapiOPTIONS098252F2",
+        "DeaApiGatewaydeaapisystemauditauditIdcsvGET6F78F58A",
+        "DeaApiGatewaydeaapisystemauditauditIdcsvOPTIONSB627E509",
+        "DeaApiGatewaydeaapisystemauditauditIdcsv14E7D7D1",
+        "DeaApiGatewaydeaapisystemauditauditIdOPTIONS4E0961DF",
+        "DeaApiGatewaydeaapisystemauditauditIdBE52065E",
+        "DeaApiGatewaydeaapisystemauditOPTIONSF92BC8D9",
+        "DeaApiGatewaydeaapisystemauditPOST7DE89403",
+        "DeaApiGatewaydeaapisystemaudit7E7C8D6B",
+        "DeaApiGatewaydeaapisystemOPTIONS6EF8E1C0",
+        "DeaApiGatewaydeaapisystem63A4B81F",
         "DeaApiGatewaydeaapiuiproxyGETD7F3590B",
         "DeaApiGatewaydeaapiuiproxyOPTIONS7D1A7859",
         "DeaApiGatewaydeaapiuiproxy57F1250D",
@@ -2876,7 +3129,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E776295fbdbd1297ea84b10255b270dc91fd56",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E7762970eb05cd1d53047135704b9ec5580d77",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
@@ -7910,6 +8163,465 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
+    "DeaApiGatewaydeaapisystem63A4B81F": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewaydeaapi822A9228",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "system",
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaApiGatewaydeaapisystemOPTIONS6EF8E1C0": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
+                "method.response.header.Vary": "'Origin'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Vary": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapisystem63A4B81F",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapisystemaudit7E7C8D6B": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaApiGatewaydeaapisystem63A4B81F",
+        },
+        "PathPart": "audit",
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaApiGatewaydeaapisystemauditOPTIONSF92BC8D9": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
+                "method.response.header.Vary": "'Origin'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Vary": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapisystemaudit7E7C8D6B",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapisystemauditPOST7DE89403": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "POST",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaApiGatewayPOSTRequestSystemAudit1876CDAF",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapisystemaudit7E7C8D6B",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapisystemauditPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTsystemaudit9CEA872E": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTRequestSystemAudit1876CDAF",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaApiGatewaydeaapi822A9228",
+              },
+              "/",
+              Object {
+                "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/POST/system/audit",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaApiGatewaydeaapisystemauditPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTsystemauditE2A490DF": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTRequestSystemAudit1876CDAF",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaApiGatewaydeaapi822A9228",
+              },
+              "/test-invoke-stage/POST/system/audit",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaApiGatewaydeaapisystemauditauditIdBE52065E": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaApiGatewaydeaapisystemaudit7E7C8D6B",
+        },
+        "PathPart": "{auditId}",
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaApiGatewaydeaapisystemauditauditIdOPTIONS4E0961DF": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
+                "method.response.header.Vary": "'Origin'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Vary": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapisystemauditauditIdBE52065E",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapisystemauditauditIdcsv14E7D7D1": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaApiGatewaydeaapisystemauditauditIdBE52065E",
+        },
+        "PathPart": "csv",
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaApiGatewaydeaapisystemauditauditIdcsvGET6F78F58A": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaApiGatewayGETGetSystemAuditAD3F46B8",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapisystemauditauditIdcsv14E7D7D1",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaApiGatewaydeaapisystemauditauditIdcsvGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETsystemauditauditIdcsv830DFC59": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetSystemAuditAD3F46B8",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaApiGatewaydeaapi822A9228",
+              },
+              "/",
+              Object {
+                "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/GET/system/audit/*/csv",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaApiGatewaydeaapisystemauditauditIdcsvGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETsystemauditauditIdcsvD0028623": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetSystemAuditAD3F46B8",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaApiGatewaydeaapi822A9228",
+              },
+              "/test-invoke-stage/GET/system/audit/*/csv",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaApiGatewaydeaapisystemauditauditIdcsvOPTIONSB627E509": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
+                "method.response.header.Vary": "'Origin'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Vary": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaApiGatewaydeaapisystemauditauditIdcsv14E7D7D1",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaApiGatewaydeaapi822A9228",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
     "DeaApiGatewaydeaapiui838E08AB": Object {
       "Properties": Object {
         "ParentId": Object {
@@ -9667,12 +10379,20 @@ Object {
             Object {
               "Action": "logs:StartQuery",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "deaAuditLogs7B75D3F1",
-                  "Arn",
-                ],
-              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "deaAuditLogs7B75D3F1",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "deaTrailLogs0A0531F5",
+                    "Arn",
+                  ],
+                },
+              ],
             },
             Object {
               "Action": Array [
@@ -11710,6 +12430,62 @@ Object {
                     ],
                   ],
                 },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                      },
+                      "/POST/system/audit",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                      },
+                      "/GET/system/audit/*/csv",
+                    ],
+                  ],
+                },
               ],
             },
           ],
@@ -11731,7 +12507,7 @@ Object {
         "Name": "/dea/us-east-1/[STAGE-REMOVED]-EvidenceManager-actions",
         "Tier": "Standard",
         "Type": "StringList",
-        "Value": "/cases/{caseId}/actionsGET,/cases/{caseId}/userMembershipsGET,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/all-casesGET,/availableEndpointsGET,/cases/{caseId}/scopedInformationGET,/cases/{caseId}/ownerPOST,/users/{userId}/auditPOST,/users/{userId}/audit/{auditId}/csvGET",
+        "Value": "/cases/{caseId}/actionsGET,/cases/{caseId}/userMembershipsGET,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/all-casesGET,/availableEndpointsGET,/cases/{caseId}/scopedInformationGET,/cases/{caseId}/ownerPOST,/users/{userId}/auditPOST,/users/{userId}/audit/{auditId}/csvGET,/system/auditPOST,/system/audit/{auditId}/csvGET",
       },
       "Type": "AWS::SSM::Parameter",
     },
@@ -13273,6 +14049,62 @@ Object {
                     ],
                   ],
                 },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                      },
+                      "/POST/system/audit",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                      },
+                      "/GET/system/audit/*/csv",
+                    ],
+                  ],
+                },
               ],
             },
           ],
@@ -13294,7 +14126,7 @@ Object {
         "Name": "/dea/us-east-1/[STAGE-REMOVED]-WorkingManager-actions",
         "Tier": "Standard",
         "Type": "StringList",
-        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsPUT,/cases/{caseId}/detailsDELETE,/cases/{caseId}/actionsGET,/cases/{caseId}/userMembershipsGET,/cases/{caseId}/userMembershipsPOST,/cases/{caseId}/users/{userId}/membershipsPUT,/cases/{caseId}/users/{userId}/membershipsDELETE,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/{caseId}/filesPOST,/cases/{caseId}/filesGET,/cases/{caseId}/files/{fileId}/contentsPUT,/cases/{caseId}/files/{fileId}/infoGET,/cases/{caseId}/files/{fileId}/contentsGET,/cases/my-casesGET,/cases/all-casesGET,/cases/{caseId}/audit/{auditId}/csvGET,/cases/{caseId}/auditPOST,/availableEndpointsGET,/cases/{caseId}/scopedInformationGET,/cases/{caseId}/ownerPOST,/users/{userId}/auditPOST,/users/{userId}/audit/{auditId}/csvGET",
+        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsPUT,/cases/{caseId}/detailsDELETE,/cases/{caseId}/actionsGET,/cases/{caseId}/userMembershipsGET,/cases/{caseId}/userMembershipsPOST,/cases/{caseId}/users/{userId}/membershipsPUT,/cases/{caseId}/users/{userId}/membershipsDELETE,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/{caseId}/filesPOST,/cases/{caseId}/filesGET,/cases/{caseId}/files/{fileId}/contentsPUT,/cases/{caseId}/files/{fileId}/infoGET,/cases/{caseId}/files/{fileId}/contentsGET,/cases/my-casesGET,/cases/all-casesGET,/cases/{caseId}/audit/{auditId}/csvGET,/cases/{caseId}/auditPOST,/availableEndpointsGET,/cases/{caseId}/scopedInformationGET,/cases/{caseId}/ownerPOST,/users/{userId}/auditPOST,/users/{userId}/audit/{auditId}/csvGET,/system/auditPOST,/system/audit/{auditId}/csvGET",
       },
       "Type": "AWS::SSM::Parameter",
     },
@@ -14207,6 +15039,62 @@ Object {
                         "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
                       },
                       "/POST/users/*/audit",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                      },
+                      "/GET/system/audit/*/csv",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapi822A9228",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                      },
+                      "/POST/system/audit",
                     ],
                   ],
                 },

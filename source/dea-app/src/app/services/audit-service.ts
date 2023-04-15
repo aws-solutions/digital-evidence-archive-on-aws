@@ -9,6 +9,7 @@ import {
   CloudWatchLogsClient,
   GetQueryResultsCommand,
   QueryStatus,
+  ResultField,
   StartQueryCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
 import { getRequiredEnv } from '../../lambda-http-helpers';
@@ -59,6 +60,8 @@ export enum AuditEventType {
   GET_SCOPED_CASE_INFO = 'GetScopedCaseInformation',
   GET_USER_AUDIT = 'GetUserAudit',
   REQUEST_USER_AUDIT = 'RequestUserAudit',
+  GET_SYSTEM_AUDIT = 'GetSystemAudit',
+  REQUEST_SYSTEM_AUDIT = 'RequestSystemAudit',
   UNKNOWN = 'UnknownEvent',
 }
 
@@ -165,8 +168,32 @@ export type CJISAuditEventBody = {
   targetUserId?: string;
 };
 
-const queryFields =
-  'dateTime, requestPath, sourceComponent, eventType, actorIdentity.idType, actorIdentity.idPoolUserId, actorIdentity.sourceIp, actorIdentity.username, actorIdentity.firstName, actorIdentity.lastName, actorIdentity.userPoolUserId, actorIdentity.userUlid, actorIdentity.deaRole, actorIdentity.authCode, actorIdentity.idToken, caseId, fileId, fileHash, targetUserId';
+/**
+ * CloudWatch fields to show in query results.
+ * To combine values from multiple source properties we use coalesce function.
+ * coalesce: Returns the first non-null value from the list.
+ */
+const queryFields = [
+  'coalesce(dateTime, eventTime) as eventDateTime',
+  'eventType',
+  'coalesce(requestPath, eventName) as eventDetails',
+  'coalesce(sourceComponent, eventSource) as source',
+  'coalesce(sourceIPAddress, actorIdentity.sourceIp) as sourceIp',
+  'coalesce(actorIdentity.idType, userIdentity.type) as userType',
+  'coalesce(actorIdentity.username, userIdentity.userName) as username',
+  'actorIdentity.deaRole',
+  'actorIdentity.userUlid',
+  'actorIdentity.firstName',
+  'actorIdentity.lastName',
+  'actorIdentity.idPoolUserId',
+  'actorIdentity.userPoolUserId',
+  'actorIdentity.authCode',
+  'actorIdentity.idToken',
+  'caseId',
+  'fileId',
+  'fileHash',
+  'targetUserId',
+];
 
 export interface AuditResult {
   status: QueryStatus | string;
@@ -183,7 +210,6 @@ const requiredAuditValues = [
   'result',
 ];
 const fieldsToMask = ['password', 'accessKey', 'idToken', 'X-Amz-Security-Token'];
-
 export class DeaAuditService extends AuditService {
   constructor(
     auditPlugin: AuditPlugin,
@@ -199,17 +225,18 @@ export class DeaAuditService extends AuditService {
   }
 
   private async _startAuditQuery(
-    filterPredicate: string,
     start: number,
     end: number,
-    cloudwatchClient: CloudWatchLogsClient
+    cloudwatchClient: CloudWatchLogsClient,
+    logGroupNames: string[],
+    filterPredicate?: string
   ) {
-    const auditLogGroup = getRequiredEnv('AUDIT_LOG_GROUP_NAME');
+    const defaultQuery = `fields ${queryFields.join(', ')} | sort @timestamp desc | limit 10000`;
     const startQueryCmd = new StartQueryCommand({
-      logGroupName: auditLogGroup,
+      logGroupNames,
       startTime: start,
       endTime: end,
-      queryString: `filter ${filterPredicate} | fields ${queryFields} | sort @timestamp desc | limit 10000`,
+      queryString: filterPredicate ? `filter ${filterPredicate} | ${defaultQuery}` : defaultQuery,
     });
     const startResponse = await cloudwatchClient.send(startQueryCmd);
     if (!startResponse.queryId) {
@@ -224,7 +251,9 @@ export class DeaAuditService extends AuditService {
     end: number,
     cloudwatchClient: CloudWatchLogsClient
   ) {
-    return this._startAuditQuery(`caseId like /${caseId}/`, start, end, cloudwatchClient);
+    const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME')];
+    const filterPredicate = `caseId like /${caseId}/`;
+    return this._startAuditQuery(start, end, cloudwatchClient, auditLogGroups, filterPredicate);
   }
 
   public async requestAuditForUser(
@@ -233,7 +262,14 @@ export class DeaAuditService extends AuditService {
     end: number,
     cloudwatchClient: CloudWatchLogsClient
   ) {
-    return this._startAuditQuery(`actorIdentity.userUlid = '${userUlid}'`, start, end, cloudwatchClient);
+    const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME')];
+    const filterPredicate = `actorIdentity.userUlid = '${userUlid}'`;
+    return this._startAuditQuery(start, end, cloudwatchClient, auditLogGroups, filterPredicate);
+  }
+
+  public async requestSystemAudit(start: number, end: number, cloudwatchClient: CloudWatchLogsClient) {
+    const systemLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME'), getRequiredEnv('TRAIL_LOG_GROUP_NAME')];
+    return this._startAuditQuery(start, end, cloudwatchClient, systemLogGroups);
   }
 
   public async getAuditResult(queryId: string, cloudwatchClient: CloudWatchLogsClient): Promise<AuditResult> {
@@ -248,17 +284,9 @@ export class DeaAuditService extends AuditService {
       getResultsResponse.results &&
       getResultsResponse.results.length > 0
     ) {
-      const separator = ', ';
-      const newline = '\r\n';
-      const results = getResultsResponse.results;
-      let csvData = results[0].map((column) => column.field).join(separator) + newline;
-      results.forEach((row) => {
-        csvData += row.map((column) => column.value).join(separator) + newline;
-      });
-
       return {
         status: QueryStatus.Complete,
-        csvFormattedData: csvData,
+        csvFormattedData: this._formatResults(getResultsResponse.results),
       };
     } else {
       return {
@@ -266,6 +294,27 @@ export class DeaAuditService extends AuditService {
         csvFormattedData: undefined,
       };
     }
+  }
+
+  private _formatResults(results: ResultField[][]): string {
+    const separator = ', ';
+    const newline = '\r\n';
+    let csvData = '';
+    let csvHeaders = '';
+    results.forEach((row) => {
+      // Excluding @ptr field from the csv output.
+      // Only the fields requested in the query are returned, along with a @ptr field, which is the identifier for the log record.
+      const csvFields = row.filter((column) => column.field !== '@ptr');
+      csvData += csvFields.map((column) => column.value).join(separator) + newline;
+      // csv headers come from the row with more fields.
+      // All the rows not necessarily have the same amount of fields, only fields with values are returned for each row.
+      const rowHeader = csvFields.map((column) => column.field).join(separator) + newline;
+      if (csvHeaders.length < rowHeader.length) {
+        csvHeaders = rowHeader;
+      }
+    });
+    const csvContent = csvHeaders + csvData;
+    return csvContent;
   }
 }
 

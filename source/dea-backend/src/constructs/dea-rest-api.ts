@@ -41,6 +41,7 @@ interface DeaRestApiProps {
   deaDatasetsBucketName: string;
   s3BatchDeleteCaseFileRoleArn: string;
   deaAuditLogArn: string;
+  deaTrailLogArn: string;
   kmsKey: Key;
   region: string;
   accountId: string;
@@ -65,6 +66,7 @@ export class DeaRestApiConstruct extends Construct {
       props.region,
       props.accountId,
       props.deaAuditLogArn,
+      props.deaTrailLogArn,
       props.s3BatchDeleteCaseFileRoleArn
     );
 
@@ -284,6 +286,7 @@ export class DeaRestApiConstruct extends Construct {
     region: string,
     accountId: string,
     auditLogArn: string,
+    trailLogArn: string,
     s3BatchDeleteCaseFileRoleArn: string
   ): Role {
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
@@ -327,7 +330,7 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['logs:StartQuery'],
-        resources: [auditLogArn],
+        resources: [auditLogArn, trailLogArn],
       })
     );
 
