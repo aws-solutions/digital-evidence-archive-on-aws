@@ -6,10 +6,7 @@
 export async function retry<T>(fn: () => Promise<T>, retries = 10, interval = 500) {
   for (let i = 0; i < retries; i++) {
     try {
-      const result = await fn();
-      if (result) {
-        return result;
-      }
+      return await fn();
     } catch (e) {
       if (i < retries - 1) {
         // Random backoff
