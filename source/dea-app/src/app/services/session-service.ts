@@ -14,7 +14,26 @@ const createSession = async (
   session: DeaSessionInput,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaSession> => {
-  return await SessionPersistence.createSession(session, repositoryProvider);
+  try {
+    return await SessionPersistence.createSession(session, repositoryProvider);
+  } catch (error) {
+    // Its possible for the frontend to make 2 calls simulataneously after login
+    // causing a race condition where both calls try to find the sessions
+    // see it doesn't exist, and try to create it
+    // and one would fail due to uniqueness constraint.
+    // Therefore, try to see if session exists, and return that
+    const maybeSession = await SessionPersistence.getSession(
+      session.userUlid,
+      session.tokenId,
+      repositoryProvider
+    );
+
+    if (!maybeSession) {
+      throw new Error(error);
+    }
+
+    return maybeSession;
+  }
 };
 
 const getSessionsForUser = async (
