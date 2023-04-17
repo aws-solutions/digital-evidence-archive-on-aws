@@ -13,10 +13,11 @@ import {
   Spinner,
 } from '@cloudscape-design/components';
 import { useState } from 'react';
-import { getCaseAuditCSV, useGetCaseById } from '../../api/cases';
+import { getCaseAuditCSV, useGetCaseActions, useGetCaseById } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
 import { auditLogLabels, commonLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
+import { canDownloadCaseAudit } from '../../helpers/userActionSupport';
 import CaseDetailsTabs from './CaseDetailsTabs';
 
 export interface CaseDetailsBodyProps {
@@ -25,6 +26,7 @@ export interface CaseDetailsBodyProps {
 
 function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
   const [downloadInProgress, setDownloadInProgress] = useState(false);
+  const userActions = useGetCaseActions(props.caseId);
   const { data, isLoading } = useGetCaseById(props.caseId);
   const { pushNotification } = useNotifications();
   if (isLoading) {
@@ -57,7 +59,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
               <h4>{auditLogLabels.caseAuditLogLabel}</h4>
               <Button
                 data-testid="download-case-audit-csv-button"
-                disabled={downloadInProgress}
+                disabled={downloadInProgress || !canDownloadCaseAudit(userActions.data?.actions)}
                 variant="link"
                 onClick={async () => {
                   setDownloadInProgress(true);

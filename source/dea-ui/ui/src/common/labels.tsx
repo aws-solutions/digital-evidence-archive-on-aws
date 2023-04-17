@@ -25,6 +25,7 @@ export const commonLabels = {
   description: 'Description',
   creationDate: 'Creation Date',
   requiredField: 'This is a required field.',
+  requiredLength: 'Required field must be at least 2 characters long.',
   closeModalAriaLabel: 'Close modal',
 };
 
