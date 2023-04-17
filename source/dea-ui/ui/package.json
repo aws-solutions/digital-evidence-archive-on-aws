@@ -40,6 +40,7 @@
     "start": "next start",
     "test": "jest --coverage && rushx make-badges",
     "test:noe2e": "jest --ci --coverage '.*/*(integration|unit).test.*' && rushx make-badges",
+    "test:dev": "jest --watch",
     "test:only": "jest --ci --coverage",
     "unit:only": "jest --ci '.*/*unit.test.*'"
   },

@@ -116,6 +116,12 @@ export class DeaUiConstruct extends Construct {
             statusCode: '200',
             responseParameters: {
               'method.response.header.Content-Type': 'integration.response.header.Content-Type',
+              'method.response.header.Content-Security-Policy':
+                "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+              'method.response.header.Strict-Transport-Security': "'max-age=31540000; includeSubdomains'",
+              'method.response.header.X-Content-Type-Options': "'nosniff'",
+              'method.response.header.X-Frame-Options': "'DENY'",
+              'method.response.header.X-XSS-Protection': "'1; mode=block'",
             },
           },
         ],
@@ -141,6 +147,11 @@ export class DeaUiConstruct extends Construct {
           responseParameters: {
             'method.response.header.Content-Length': true,
             'method.response.header.Content-Type': true,
+            'method.response.header.Content-Security-Policy': true,
+            'method.response.header.Strict-Transport-Security': true,
+            'method.response.header.X-Content-Type-Options': true,
+            'method.response.header.X-Frame-Options': true,
+            'method.response.header.X-XSS-Protection': true,
           },
         },
       ],
