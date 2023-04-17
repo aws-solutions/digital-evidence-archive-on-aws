@@ -7,10 +7,12 @@ import { useCollection } from '@cloudscape-design/collection-hooks';
 import { Button, Link, Pagination, PropertyFilter, SpaceBetween, Table } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
+import { useAvailableEndpoints } from '../../api/auth';
 import { DeaListResult } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
 import { caseListLabels, commonTableLabels } from '../../common/labels';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
+import { canCreateCases } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
@@ -26,6 +28,7 @@ export interface CaseTableProps {
 
 function CaseTable(props: CaseTableProps): JSX.Element {
   const router = useRouter();
+  const availableEndpoints = useAvailableEndpoints();
   const { data, isLoading } = props.useCaseFetcher();
 
   // Property and date filter collections
@@ -88,7 +91,12 @@ function CaseTable(props: CaseTableProps): JSX.Element {
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
               {props.canCreate && (
-                <Button data-testid="create-case-button" variant="primary" onClick={createNewCaseHandler}>
+                <Button
+                  disabled={!canCreateCases(availableEndpoints.data)}
+                  data-testid="create-case-button"
+                  variant="primary"
+                  onClick={createNewCaseHandler}
+                >
                   {caseListLabels.createNewCaseLabel}
                 </Button>
               )}

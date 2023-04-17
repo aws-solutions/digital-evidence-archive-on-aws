@@ -19,15 +19,17 @@ import {
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
-import { getPresignedUrl, useListCaseFiles } from '../../api/cases';
+import { getPresignedUrl, useGetCaseActions, useListCaseFiles } from '../../api/cases';
 import { commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDate } from '../../helpers/dateHelper';
+import { canDownloadFiles, canUploadFiles } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { CaseDetailsBodyProps } from './CaseDetailsBody';
 
 function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
   const router = useRouter();
+  const userActions = useGetCaseActions(props.caseId);
   // Property and date filter collections
   const [filesTableState, setFilesTableState] = React.useState({
     textFilter: '',
@@ -115,14 +117,18 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       description={filesListLabels.filterDescription}
       actions={
         <SpaceBetween direction="horizontal" size="xs">
-          <Button data-testid="upload-file-button" onClick={uploadFilesHandler}>
+          <Button
+            data-testid="upload-file-button"
+            onClick={uploadFilesHandler}
+            disabled={!canUploadFiles(userActions?.data?.actions)}
+          >
             {commonLabels.uploadButton}
           </Button>
           <Button
             data-testid="download-file-button"
             variant="primary"
             onClick={downloadFilesHandler}
-            disabled={downloadInProgress}
+            disabled={downloadInProgress || !canDownloadFiles(userActions?.data?.actions)}
           >
             {commonLabels.downloadButton}
             {downloadInProgress ? <Spinner size="big" /> : null}
@@ -155,7 +161,9 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       <Box padding={{ bottom: 's' }} variant="p" color="inherit">
         {filesListLabels.noDisplayLabel}
       </Box>
-      <Button onClick={uploadFilesHandler}>{filesListLabels.uploadFileLabel}</Button>
+      <Button onClick={uploadFilesHandler} disabled={!canUploadFiles(userActions?.data?.actions)}>
+        {filesListLabels.uploadFileLabel}
+      </Button>
     </Box>
   );
 

@@ -1,7 +1,7 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { useGetCaseById } from '../../src/api/cases';
+import { useGetCaseById, useGetCaseActions } from '../../src/api/cases';
 import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
@@ -15,6 +15,7 @@ jest.mock('next/router', () => ({
 
 jest.mock('../../src/api/cases', () => ({
   useGetCaseById: jest.fn(),
+  useGetCaseActions: jest.fn(),
 }));
 
 describe('CaseDetailsPage', () => {

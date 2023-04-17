@@ -1,6 +1,6 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { fail } from 'assert';
 import axios from 'axios';
 import { breadcrumbLabels, caseListLabels } from '../../src/common/labels';
@@ -19,28 +19,45 @@ jest.mock('next/router', () => ({
 }));
 
 describe('Dashboard', () => {
-  it('renders a list of cases', async () => {
+  beforeAll(() => {
     mockedAxios.create.mockReturnThis();
-    mockedAxios.request.mockResolvedValue({
-      data: {
-        cases: [
-          {
-            ulid: 'abc',
-            name: 'mocked case',
-            status: 'ACTIVE',
+    mockedAxios.request.mockImplementation((eventObj) => {
+      if (eventObj.url?.endsWith('availableEndpoints')) {
+        return Promise.resolve({
+          data: {
+            endpoints: ['/casesPOST'],
           },
-          {
-            ulid: 'def',
-            name: 'case2',
-            status: 'ACTIVE',
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      } else {
+        return Promise.resolve({
+          data: {
+            cases: [
+              {
+                ulid: 'abc',
+                name: 'mocked case',
+                status: 'ACTIVE',
+              },
+              {
+                ulid: 'def',
+                name: 'case2',
+                status: 'ACTIVE',
+              },
+            ],
           },
-        ],
-      },
-      status: 200,
-      statusText: 'Ok',
-      headers: {},
-      config: {},
+          status: 200,
+          statusText: 'Ok',
+          headers: {},
+          config: {},
+        });
+      }
     });
+  });
+
+  it('renders a list of cases', async () => {
     const page = render(<Home />);
     const listItem = await screen.findByText('mocked case');
 
@@ -56,19 +73,10 @@ describe('Dashboard', () => {
   });
 
   it('navigates to create a new case', async () => {
-    mockedAxios.create.mockReturnThis();
-    mockedAxios.request.mockResolvedValue({
-      data: {
-        cases: [],
-      },
-      status: 200,
-      statusText: 'Ok',
-      headers: {},
-      config: {},
-    });
     render(<Home />);
 
     const createCaseButton = await screen.findByText(caseListLabels.createNewCaseLabel);
+    await waitFor(() => expect(createCaseButton).toBeEnabled());
     fireEvent.click(createCaseButton);
     expect(push).toHaveBeenCalledWith('/create-cases');
   });

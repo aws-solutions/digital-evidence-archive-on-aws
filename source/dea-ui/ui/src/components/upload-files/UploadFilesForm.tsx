@@ -202,6 +202,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     router.push(`/case-detail?caseId=${props.caseId}`);
   }
 
+  function validateFields(): boolean {
+    return reason.length > 1 && tag.length > 1 && details.length > 1;
+  }
+
   return (
     <SpaceBetween data-testid="upload-file-form-space" size="s">
       <Form>
@@ -217,7 +221,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               data-testid="input-tag"
               label={fileOperationsLabels.evidenceTagLabel}
               description={fileOperationsLabels.evidenceTagDescription}
-              errorText={tag ? '' : commonLabels.requiredField}
+              errorText={tag.length > 1 ? '' : commonLabels.requiredLength}
             >
               <Input
                 value={tag}
@@ -230,7 +234,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               data-testid="input-details"
               label={fileOperationsLabels.evidenceDetailsLabel}
               description={fileOperationsLabels.evidenceDetailsDescription}
-              errorText={details ? '' : commonLabels.requiredField}
+              errorText={details.length > 1 ? '' : commonLabels.requiredLength}
             >
               <Textarea
                 value={details}
@@ -243,7 +247,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               data-testid="input-reason"
               label={fileOperationsLabels.uploadReasonLabel}
               description={fileOperationsLabels.uploadReasonDescription}
-              errorText={reason ? '' : commonLabels.requiredField}
+              errorText={reason.length > 1 ? '' : commonLabels.requiredLength}
             >
               <Input
                 value={reason}
@@ -283,7 +287,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           iconAlign="right"
           data-testid="upload-file-submit"
           onClick={onSubmitHandler}
-          disabled={uploadInProgress || !reason || !tag || !details}
+          disabled={uploadInProgress || !validateFields()}
         >
           {commonLabels.uploadButton}
         </Button>
