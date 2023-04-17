@@ -587,7 +587,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::RestApi",
     },
-    "testApiDeployment3727A0B9d408c2bd31fd3c6a9e3f921ddc0def4e": Object {
+    "testApiDeployment3727A0B9dfa38d21c52796305c593d40fc1f6117": Object {
       "DependsOn": Array [
         "testApiuiproxyGET92230E90",
         "testApiuiproxyDDF9EC1E",
@@ -618,7 +618,7 @@ Object {
       ],
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "testApiDeployment3727A0B9d408c2bd31fd3c6a9e3f921ddc0def4e",
+          "Ref": "testApiDeployment3727A0B9dfa38d21c52796305c593d40fc1f6117",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",
@@ -703,7 +703,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -795,7 +800,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -887,7 +897,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -979,7 +994,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -1071,7 +1091,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -1163,7 +1188,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -1255,7 +1285,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
