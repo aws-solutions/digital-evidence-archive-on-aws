@@ -6,6 +6,7 @@
 import { useCollection } from '@cloudscape-design/collection-hooks';
 import { Button, Link, Pagination, PropertyFilter, SpaceBetween, Table } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
+import * as React from 'react';
 import { DeaListResult } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
 import { caseListLabels, commonTableLabels } from '../../common/labels';
@@ -58,10 +59,19 @@ function CaseTable(props: CaseTableProps): JSX.Element {
     void router.push('/create-cases');
   }
 
+  function updateCaseStatusHandler(deaCase: DeaCaseDTO) {
+    console.log(deaCase);
+  }
+
+  const [selectedItems, setSelectedItems] = React.useState<DeaCaseDTO[]>([]);
+
   return (
     <Table
       {...collectionProps}
       data-testid="case-table"
+      onSelectionChange={({ detail }) => setSelectedItems(detail.selectedItems)}
+      selectedItems={selectedItems}
+      selectionType="single"
       trackBy="ulid"
       loading={isLoading}
       variant="full-page"
