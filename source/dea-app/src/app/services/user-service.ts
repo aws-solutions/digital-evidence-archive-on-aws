@@ -7,6 +7,7 @@ import { Paged } from 'dynamodb-onetable';
 import { DeaUser, DeaUserInput } from '../../models/user';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import * as UserPersistence from '../../persistence/user';
+import { retry } from './service-helpers';
 
 export const createUser = async (
   user: DeaUserInput,
@@ -20,8 +21,9 @@ export const createUser = async (
     // in the db, see it doesn't exist, and try to create it
     // and one would fail due to uniqueness constraint.
     // Therefore, try to see if user exists, and return that
-    const maybeUser = await getUserUsingTokenId(user.tokenId, repositoryProvider);
-
+    const maybeUser = await retry<DeaUser>(
+      async () => await getUserUsingTokenId(user.tokenId, repositoryProvider)
+    );
     if (!maybeUser) {
       throw new Error(error);
     }

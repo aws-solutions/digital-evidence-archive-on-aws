@@ -7,10 +7,11 @@ import { logger } from '../../logger';
 import { DeaSession, DeaSessionInput } from '../../models/session';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import * as SessionPersistence from '../../persistence/session';
+import { retry } from './service-helpers';
 
 const INACTIVITY_TIMEOUT_IN_MS = 1800000;
 
-const createSession = async (
+export const createSession = async (
   session: DeaSessionInput,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaSession> => {
@@ -22,12 +23,9 @@ const createSession = async (
     // see it doesn't exist, and try to create it
     // and one would fail due to uniqueness constraint.
     // Therefore, try to see if session exists, and return that
-    const maybeSession = await SessionPersistence.getSession(
-      session.userUlid,
-      session.tokenId,
-      repositoryProvider
+    const maybeSession = await retry<DeaSession>(
+      async () => await SessionPersistence.getSession(session.userUlid, session.tokenId, repositoryProvider)
     );
-
     if (!maybeSession) {
       throw new Error(error);
     }

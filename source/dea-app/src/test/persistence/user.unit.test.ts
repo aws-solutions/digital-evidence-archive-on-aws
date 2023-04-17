@@ -138,11 +138,22 @@ describe('user persistence', () => {
     };
     const actual = await updateUser(updatedUser, modelProvider);
 
+    expect(actual.firstName).toStrictEqual(updatedFirstName);
+    expect(actual.lastName).toStrictEqual(updatedLastName);
+    expect(actual.tokenId).toStrictEqual(tokenId);
+    expect(actual.ulid).toStrictEqual(createdUser.ulid);
+    // const createDate = actual.created ?? fail();
+
+    // console.log(actual);
+    // expect(actual.updated?.getTime()).toBeGreaterThan(createDate.getTime());
+
     expect(actual).toEqual({
       ...updatedUser,
       created: createdUser.created,
       updated: actual?.updated,
     });
+    expect(actual.created).toBeDefined();
+    expect(actual.created).toStrictEqual(createdUser.created);
 
     await deleteAndVerifyUser(createdUser.ulid, modelProvider);
   });
