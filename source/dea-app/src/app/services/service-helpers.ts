@@ -9,9 +9,7 @@ export async function retry<T>(fn: () => Promise<T>, retries = 5, intervalInMs =
       return await fn();
     } catch (e) {
       if (i < retries - 1) {
-        // Random backoff
-        const delayInMs = intervalInMs;
-        await sleep(delayInMs);
+        await sleep(intervalInMs);
       } else {
         throw e;
       }
