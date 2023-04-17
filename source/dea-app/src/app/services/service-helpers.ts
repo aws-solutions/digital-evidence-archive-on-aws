@@ -3,14 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-export async function retry<T>(fn: () => Promise<T | undefined>, retries = 10, interval = 500) {
+export async function retry<T>(fn: () => Promise<T>, retries = 10, interval = 500) {
   for (let i = 0; i < retries; i++) {
     try {
       const result = await fn();
       if (result) {
         return result;
-      } else {
-        continue;
       }
     } catch (e) {
       if (i < retries - 1) {

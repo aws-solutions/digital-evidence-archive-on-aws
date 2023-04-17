@@ -23,9 +23,17 @@ export const createSession = async (
     // see it doesn't exist, and try to create it
     // and one would fail due to uniqueness constraint.
     // Therefore, try to see if session exists, and return that
-    const maybeSession = await retry<DeaSession>(
-      async () => await SessionPersistence.getSession(session.userUlid, session.tokenId, repositoryProvider)
-    );
+    const maybeSession = await retry<DeaSession>(async () => {
+      const maybeSession = await SessionPersistence.getSession(
+        session.userUlid,
+        session.tokenId,
+        repositoryProvider
+      );
+      if (!maybeSession) {
+        throw new Error('Could not find session...');
+      }
+      return maybeSession;
+    });
     if (!maybeSession) {
       throw new Error(error);
     }

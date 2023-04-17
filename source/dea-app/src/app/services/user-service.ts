@@ -21,9 +21,13 @@ export const createUser = async (
     // in the db, see it doesn't exist, and try to create it
     // and one would fail due to uniqueness constraint.
     // Therefore, try to see if user exists, and return that
-    const maybeUser = await retry<DeaUser>(
-      async () => await getUserUsingTokenId(user.tokenId, repositoryProvider)
-    );
+    const maybeUser = await retry<DeaUser>(async () => {
+      const maybeUser = await getUserUsingTokenId(user.tokenId, repositoryProvider);
+      if (!maybeUser) {
+        throw new Error('Could not find user...');
+      }
+      return maybeUser;
+    });
     if (!maybeUser) {
       throw new Error(error);
     }
