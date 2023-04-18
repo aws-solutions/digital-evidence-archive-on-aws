@@ -91,7 +91,7 @@ describe('refresh-token', () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const userUlid = dummyEvent.headers['userUlid']!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const tokenId = dummyEvent.headers['tokenJti']!;
+    const tokenId = dummyEvent.headers['tokenId']!;
 
     // assert session exists
     const session = await getSession(userUlid, tokenId, repositoryProvider);
@@ -114,7 +114,7 @@ describe('refresh-token', () => {
     // since the new and old id token share an origin_jti
     // the new id token should continue the old session
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const newTokenId = dummyEvent1.headers['tokenJti']!;
+    const newTokenId = dummyEvent1.headers['tokenId']!;
     expect(newTokenId).toStrictEqual(tokenId); // they share a jti
     const sessions = await getSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toBe(1);

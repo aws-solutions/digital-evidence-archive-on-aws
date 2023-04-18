@@ -77,8 +77,8 @@ describe('lambda pre-execution checks', () => {
     // check that the event contains the ulid from the new user
     expect(event.headers['userUlid']).toBeDefined();
     expect(event.headers['userUlid']).toStrictEqual(user?.ulid);
-    expect(event.headers['tokenJti']).toBeDefined();
-    expect(event.headers['tokenJti']).toStrictEqual(tokenPayload.origin_jti);
+    expect(event.headers['tokenId']).toBeDefined();
+    expect(event.headers['tokenId']).toStrictEqual(tokenPayload.origin_jti);
 
     // Mimic race condition of 2 APIs running pre-exec checks and trying
     // to create the user at the same time

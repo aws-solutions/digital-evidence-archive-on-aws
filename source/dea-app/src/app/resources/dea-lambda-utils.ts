@@ -94,7 +94,7 @@ export const runPreExecutionChecks = async (
   // the refresh token to get a new valid token
   // (CJIS requires reauthentication for session requirement failures)
   const tokenId = idTokenPayload.origin_jti;
-  event.headers['tokenJti'] = tokenId;
+  event.headers['tokenId'] = tokenId;
 
   // Verify the session management requirements here
   // E.g. no concurrent sessions and session lock after 30 minutes
