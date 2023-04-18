@@ -16,7 +16,7 @@ import { listCaseFiles } from '../../../app/resources/list-case-files';
 import { updateCaseStatus } from '../../../app/resources/update-case-status';
 import * as CaseService from '../../../app/services/case-service';
 import { DeaCase } from '../../../models/case';
-import { DeaCaseFile } from '../../../models/case-file';
+import { CaseFileDTO, DeaCaseFile, DeaCaseFileResult } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
@@ -28,7 +28,7 @@ import { createUser } from '../../../persistence/user';
 import { dummyContext } from '../../integration-objects';
 
 export type ResponseCaseFilePage = {
-  files: DeaCaseFile[];
+  files: CaseFileDTO[];
   next: string | undefined;
 };
 
@@ -38,7 +38,6 @@ const LAST_NAME = 'FILE';
 const CASE_NAME = 'Dinner';
 const CASE_DESCRIPTION = 'Yummy';
 const FILE_NAME = 'tuna.jpeg';
-const USER_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY0';
 const FILE_PATH = '/food/sushi/';
 const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
 const FILE_SIZE_MB = 50;
@@ -90,9 +89,7 @@ export const callInitiateCaseFileUpload = async (
   );
   const response = await initiateCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   checkApiSucceeded(response);
-
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return JSON.parse(response.body as string);
+  return JSON.parse(response.body);
 };
 
 export const callCompleteCaseFileUpload = async (
@@ -101,7 +98,7 @@ export const callCompleteCaseFileUpload = async (
   ulid: string,
   caseUlid: string,
   sha256Hash: string = SHA256_HASH
-): Promise<DeaCaseFile> => {
+): Promise<DeaCaseFileResult> => {
   const event = Object.assign(
     {},
     {
@@ -117,8 +114,7 @@ export const callCompleteCaseFileUpload = async (
   expect(event.headers['caseFileHash']).toStrictEqual(sha256Hash);
 
   checkApiSucceeded(response);
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return JSON.parse(response.body as string);
+  return JSON.parse(response.body);
 };
 
 export const callDownloadCaseFile = async (
@@ -170,7 +166,7 @@ export const callGetCaseFileDetails = async (
   repositoryProvider: ModelRepositoryProvider,
   fileId: string,
   caseId: string
-): Promise<DeaCaseFile> => {
+): Promise<CaseFileDTO> => {
   const event = Object.assign(
     {},
     {
@@ -212,8 +208,7 @@ export const callListCaseFiles = async (
   );
   const response = await listCaseFiles(event, dummyContext, repositoryProvider);
   checkApiSucceeded(response);
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return JSON.parse(response.body as string);
+  return JSON.parse(response.body);
 };
 
 export const callCreateUser = async (
@@ -300,18 +295,18 @@ export const checkApiSucceeded = (response: APIGatewayProxyResult) => {
 };
 
 export const validateCaseFile = async (
-  deaCaseFile: DeaCaseFile,
+  deaCaseFile: DeaCaseFile | CaseFileDTO,
   expectedfileId: string,
   expectedCaseId: string,
-  expectedCreator: string = USER_ULID,
-  expectedStatus: string = CaseFileStatus.PENDING,
-  expectedFileName: string = FILE_NAME,
-  expectedFilePath: string = FILE_PATH,
-  expectedContentType: string = CONTENT_TYPE,
-  expectedFileSizeMb: number = FILE_SIZE_MB,
-  expectedTag: string = TAG,
-  expectedReason: string = REASON,
-  expectedDetails: string = DETAILS
+  expectedCreator = `${FIRST_NAME} ${LAST_NAME}`,
+  expectedStatus = CaseFileStatus.PENDING,
+  expectedFileName = FILE_NAME,
+  expectedFilePath = FILE_PATH,
+  expectedContentType = CONTENT_TYPE,
+  expectedFileSizeMb = FILE_SIZE_MB,
+  expectedTag = TAG,
+  expectedReason = REASON,
+  expectedDetails = DETAILS
 ): Promise<void> => {
   expect(deaCaseFile.ulid).toEqual(expectedfileId);
   expect(deaCaseFile.isFile).toEqual(true);

@@ -8,7 +8,7 @@ import { getPaginationParameters, getRequiredPathParam } from '../../lambda-http
 import { joiUlid, filePath as filePathRegex } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
-import { listCaseFilesByFilePath } from '../services/case-file-service';
+import { hydrateUsersForFiles, listCaseFilesByFilePath } from '../services/case-file-service';
 import { getCase } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
@@ -44,8 +44,10 @@ export const listCaseFiles: DEAGatewayProxyHandler = async (
     paginationParams.nextToken
   );
 
+  const hydratedFiles = await hydrateUsersForFiles(pageOfCaseFiles, repositoryProvider);
+
   return responseOk(event, {
-    files: pageOfCaseFiles,
+    files: hydratedFiles,
     total: pageOfCaseFiles.count,
     next: getNextToken(pageOfCaseFiles.next),
   });

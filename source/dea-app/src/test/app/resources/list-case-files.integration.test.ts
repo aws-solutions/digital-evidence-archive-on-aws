@@ -62,8 +62,13 @@ describe('Test list case files', () => {
     const caseFileList: ResponseCaseFilePage = await callListCaseFiles(EVENT, repositoryProvider, caseToList);
     expect(caseFileList.files.length).toEqual(1);
     expect(caseFileList.next).toBeUndefined();
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    await validateCaseFile(caseFileList.files[0], caseFile.ulid as string, caseToList, fileDescriber.ulid);
+    await validateCaseFile(
+      caseFileList.files[0],
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      caseFile.ulid as string,
+      caseToList,
+      `${fileDescriber.firstName} ${fileDescriber.lastName}`
+    );
   });
 
   it('List case-files should successfully get case-files with pagination', async () => {
@@ -109,7 +114,7 @@ describe('Test list case files', () => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       caseFile1.ulid as string,
       caseToList,
-      fileDescriber.ulid,
+      `${fileDescriber.firstName} ${fileDescriber.lastName}`,
       CaseFileStatus.PENDING,
       'file1',
       filePath
@@ -120,7 +125,7 @@ describe('Test list case files', () => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       caseFile2.ulid as string,
       caseToList,
-      fileDescriber.ulid,
+      `${fileDescriber.firstName} ${fileDescriber.lastName}`,
       CaseFileStatus.PENDING,
       'file2',
       filePath

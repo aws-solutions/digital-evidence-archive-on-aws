@@ -5,16 +5,20 @@
 
 import { Paged } from 'dynamodb-onetable';
 import {
+  CaseFileDTO,
   CompleteCaseFileUploadDTO,
   DeaCaseFile,
+  DeaCaseFileResult,
   InitiateCaseFileUploadDTO,
   UploadDTO,
 } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
+import { DeaUser } from '../../models/user';
 import * as CaseFilePersistence from '../../persistence/case-file';
 import { getCaseFileByFileLocation, getCaseFileByUlid } from '../../persistence/case-file';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
+import { getUsers } from '../../persistence/user';
 import {
   completeUploadForCaseFile,
   DatasetsProvider,
@@ -124,7 +128,7 @@ export const completeCaseFileUpload = async (
   deaCaseFile: DeaCaseFile,
   repositoryProvider: ModelRepositoryProvider,
   datasetsProvider: DatasetsProvider
-): Promise<DeaCaseFile> => {
+): Promise<DeaCaseFileResult> => {
   await completeUploadForCaseFile(deaCaseFile, datasetsProvider);
   return await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider);
 };
@@ -135,14 +139,61 @@ export const listCaseFilesByFilePath = async (
   limit = 30,
   repositoryProvider: ModelRepositoryProvider,
   nextToken?: object
-): Promise<Paged<DeaCaseFile>> => {
-  return CaseFilePersistence.listCaseFilesByFilePath(caseId, filePath, limit, repositoryProvider, nextToken);
+): Promise<Paged<DeaCaseFileResult>> => {
+  return await CaseFilePersistence.listCaseFilesByFilePath(
+    caseId,
+    filePath,
+    limit,
+    repositoryProvider,
+    nextToken
+  );
+};
+
+export const hydrateUsersForFiles = async (
+  files: DeaCaseFileResult[],
+  repositoryProvider: ModelRepositoryProvider
+): Promise<CaseFileDTO[]> => {
+  // get all unique user ulids referenced on the files
+  const userUlids = [...new Set(files.map((file) => file.createdBy))];
+  // fetch the users
+  const userMap = await getUsers(userUlids, repositoryProvider);
+  return caseFilesToDTO(files, userMap);
+};
+
+const caseFilesToDTO = (
+  files: Paged<DeaCaseFileResult>,
+  userMap: Map<string, DeaUser>
+): Paged<CaseFileDTO> => {
+  return files.map((file) => {
+    const user = userMap.get(file.createdBy);
+    let createdBy = file.createdBy;
+    if (user) {
+      createdBy = `${user?.firstName} ${user?.lastName}`;
+    }
+    return {
+      ulid: file.ulid,
+      caseUlid: file.caseUlid,
+      fileName: file.fileName,
+      contentType: file.contentType,
+      createdBy,
+      filePath: file.filePath,
+      fileSizeMb: file.fileSizeMb,
+      sha256Hash: file.sha256Hash,
+      status: file.status,
+      created: file.created,
+      updated: file.updated,
+      isFile: file.isFile,
+      reason: file.reason,
+      tag: file.tag,
+      details: file.details,
+    };
+  });
 };
 
 export const getCaseFile = async (
   caseId: string,
   ulid: string,
   repositoryProvider: ModelRepositoryProvider
-): Promise<DeaCaseFile | undefined> => {
-  return CaseFilePersistence.getCaseFileByUlid(ulid, caseId, repositoryProvider);
+): Promise<DeaCaseFileResult | undefined> => {
+  return await CaseFilePersistence.getCaseFileByUlid(ulid, caseId, repositoryProvider);
 };

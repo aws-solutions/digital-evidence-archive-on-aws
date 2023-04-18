@@ -151,6 +151,10 @@ export class DeaRestApiConstruct extends Construct {
       stage: this.deaRestApi.deploymentStage,
     });
 
+    createCfnOutput(this, 'UiUrl', {
+      value: `${this.deaRestApi.url}ui`,
+    });
+
     createCfnOutput(this, 'deaApiUrl', {
       value: this.deaRestApi.url,
     });
