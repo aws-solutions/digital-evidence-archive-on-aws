@@ -4,7 +4,7 @@ import { act, cleanup, fireEvent, getByRole, render, screen, waitFor } from '@te
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import Axios from 'axios';
-import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
+import { auditLogLabels, caseDetailLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
