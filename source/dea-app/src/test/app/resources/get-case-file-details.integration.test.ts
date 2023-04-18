@@ -9,7 +9,6 @@ import { S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client
 
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { getCaseFileDetails } from '../../../app/resources/get-case-file-details';
-import { DeaCaseFile } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
@@ -59,15 +58,27 @@ describe('Test get case file details', () => {
   });
 
   it('Get-file-details should successfully get file details', async () => {
-    let caseFile: DeaCaseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToDescribe);
+    const caseFileUpload = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToDescribe);
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const fileId = caseFile.ulid as string;
-    caseFile = await callGetCaseFileDetails(EVENT, repositoryProvider, fileId, caseToDescribe);
-    await validateCaseFile(caseFile, fileId, caseToDescribe, fileDescriber.ulid, CaseFileStatus.PENDING);
+    const fileId = caseFileUpload.ulid as string;
+    let caseFile = await callGetCaseFileDetails(EVENT, repositoryProvider, fileId, caseToDescribe);
+    await validateCaseFile(
+      caseFile,
+      fileId,
+      caseToDescribe,
+      `${fileDescriber.firstName} ${fileDescriber.lastName}`,
+      CaseFileStatus.PENDING
+    );
 
     await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDescribe);
     caseFile = await callGetCaseFileDetails(EVENT, repositoryProvider, fileId, caseToDescribe);
-    await validateCaseFile(caseFile, fileId, caseToDescribe, fileDescriber.ulid, CaseFileStatus.ACTIVE);
+    await validateCaseFile(
+      caseFile,
+      fileId,
+      caseToDescribe,
+      `${fileDescriber.firstName} ${fileDescriber.lastName}`,
+      CaseFileStatus.ACTIVE
+    );
   });
 
   it('Get-file-details should throw a validation exception when case-id path param missing', async () => {

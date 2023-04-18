@@ -9,6 +9,7 @@ import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/aut
 import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../../test-e2e/helpers/auth-helper';
 
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
+import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent, setCookieToCookie } from '../../integration-objects';
 
 let cognitoParams: CognitoSsmParams;
@@ -17,7 +18,8 @@ let pkceStrings: PkceStrings;
 describe('get-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
-  const testUser = 'authCodeIntegrationTestUser';
+  const suffix = randomSuffix(5);
+  const testUser = `authCodeIntegrationTestUser${suffix}`;
   const firstName = 'CognitoTokenHelper';
   const lastName = 'TestUser';
 

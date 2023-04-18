@@ -3,6 +3,35 @@
 exports[`DeaMainStack synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
+    "DeaApiGatewayUiUrl17F784E2": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-UiUrl",
+      },
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "DeaApiGatewaydeaapi822A9228",
+            },
+            ".execute-api.",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ".",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+            },
+            "/ui",
+          ],
+        ],
+      },
+    },
     "DeaApiGatewaydeaApiUrlD841996C": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-deaApiUrl",

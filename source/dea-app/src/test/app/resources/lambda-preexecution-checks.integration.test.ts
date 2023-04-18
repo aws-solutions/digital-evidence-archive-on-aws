@@ -23,6 +23,7 @@ import { listSessionsForUser, updateSession } from '../../../persistence/session
 import { getUserByTokenId, listUsers } from '../../../persistence/user';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { testEnv } from '../../../test-e2e/helpers/settings';
+import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyAuditEvent, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
@@ -31,7 +32,8 @@ let repositoryProvider: ModelRepositoryProvider;
 describe('lambda pre-execution checks', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
-  const testUser = 'lambdaPreExecutionChecksTestUser';
+  const suffix = randomSuffix();
+  const testUser = `lambdaPreExecutionChecksTestUser${suffix}`;
   const firstName = 'PreExecCheck';
   const lastName = 'TestUser';
   const region = testEnv.awsRegion;
@@ -140,7 +142,7 @@ describe('lambda pre-execution checks', () => {
 
   it('should succeed if session meets requirements', async () => {
     // Create user
-    const user = 'SuccessSession';
+    const user = `SuccessSession${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Success', 'Session');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
 
@@ -165,7 +167,7 @@ describe('lambda pre-execution checks', () => {
 
   it('should require reauthentication if your session is revoked', async () => {
     // Create user
-    const user = 'RevokedSession';
+    const user = `RevokedSession${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Revoked', 'Session');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
 
@@ -194,7 +196,7 @@ describe('lambda pre-execution checks', () => {
 
   it('should require reauthentication if your session is expired', async () => {
     // Create user
-    const user = 'ExpiredSession';
+    const user = `ExpiredSession${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Expired', 'Session');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
 
@@ -223,7 +225,7 @@ describe('lambda pre-execution checks', () => {
 
   it('should require reauthentication if your session was last active 30+ minutes ago', async () => {
     // Create user
-    const user = 'InactiveSession';
+    const user = `InactiveSession${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Inactive', 'Session');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
 
@@ -244,7 +246,7 @@ describe('lambda pre-execution checks', () => {
 
   it('should block access if there are multiple active sessions for a user.', async () => {
     // Create user
-    const user = 'ConcurrentSession';
+    const user = `ConcurrentSession${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Concurrent', 'Session');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
 

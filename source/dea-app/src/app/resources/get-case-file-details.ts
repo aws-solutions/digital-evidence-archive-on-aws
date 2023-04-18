@@ -7,7 +7,7 @@ import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
-import { getCaseFile } from '../services/case-file-service';
+import { getCaseFile, hydrateUsersForFiles } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
@@ -26,5 +26,7 @@ export const getCaseFileDetails: DEAGatewayProxyHandler = async (
     throw new NotFoundError(`Could not find file: ${fileId} in the DB`);
   }
 
-  return responseOk(event, retrievedCaseFile);
+  const hydratedFiles = await hydrateUsersForFiles([retrievedCaseFile], repositoryProvider);
+
+  return responseOk(event, hydratedFiles[0]);
 };

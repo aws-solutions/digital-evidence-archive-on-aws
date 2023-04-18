@@ -7,7 +7,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 
 let urlBase = process.env.NEXT_PUBLIC_DEA_API_URL;
 if (typeof window !== 'undefined' && !urlBase) {
-  urlBase = `https://${window.location.hostname}`;
+  urlBase = `https://${window.location.hostname}/${process.env.NEXT_PUBLIC_STAGE}/`;
 }
 
 const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
