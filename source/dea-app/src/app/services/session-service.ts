@@ -42,7 +42,7 @@ export const createSession = async (
   }
 };
 
-const getSessionsForUser = async (
+export const getSessionsForUser = async (
   userUlid: string,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<Paged<DeaSession>> => {
@@ -53,7 +53,7 @@ const getSessionsForUser = async (
 // and can continue with their API call
 // Requirements:
 // 1. There are no concurrent active sesssion for the user:
-// (we determine this by using the jti on the token)
+// (we determine this by using the origin_jti on the token)
 // 2. If the current session for the user already exisits
 // it has not been 30+ minutes since the last updated time
 // on the session
@@ -68,11 +68,6 @@ export const isCurrentSessionValid = async (
   repositoryProvider: ModelRepositoryProvider
 ): Promise<boolean | string> => {
   const sessions = await getSessionsForUser(userUlid, repositoryProvider);
-
-  const activeSessions = sessions
-    .filter((session) => !isSessionExpired(session))
-    .filter((session) => !session.isRevoked)
-    .filter((session) => !shouldSessionBeConsideredInactive(session));
 
   // First check if the current user session already exists in
   // the database: if so, check there are no other active sessions
@@ -92,38 +87,17 @@ export const isCurrentSessionValid = async (
       return 'You have been inactive for 30+ minutes, please reauthenticate.';
     }
 
-    // Are there any other active sessions?
-    const otherActiveSessions = activeSessions.filter((session) => session.tokenId !== tokenId);
-    if (otherActiveSessions.length > 0) {
-      return (
-        'You have ' +
-        otherActiveSessions.length +
-        ' other active sessions. Please log out of those sessions' +
-        ' and try again.'
-      );
-    }
-
     await updateLastActiveTimeForSession(currentSessionForUser, repositoryProvider);
     return true;
   } else {
-    // If there are no sessions, then add this current session and return success
-    if (activeSessions.length == 0) {
-      await createSession(
-        {
-          userUlid,
-          tokenId,
-        },
-        repositoryProvider
-      );
-      return true;
-    }
-
-    return (
-      'You have ' +
-      activeSessions.length +
-      ' other active sessions. Please log out of those sessions' +
-      ' and try again.'
+    await createSession(
+      {
+        userUlid,
+        tokenId,
+      },
+      repositoryProvider
     );
+    return true;
   }
 };
 

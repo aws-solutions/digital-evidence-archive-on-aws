@@ -13,7 +13,16 @@ import { Oauth2Token } from '../../models/auth';
 import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../helpers/auth-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPI, callDeaAPIWithCreds, randomSuffix, validateStatus } from '../resources/test-helpers';
+import {
+  callAuthAPIWithOauthToken,
+  callDeaAPI,
+  callDeaAPIWithCreds,
+  parseOauthTokenFromCookies,
+  randomSuffix,
+  revokeToken,
+  useRefreshToken,
+  validateStatus,
+} from '../resources/test-helpers';
 
 let pkceStrings: PkceStrings;
 
@@ -146,12 +155,11 @@ describe('API authentication', () => {
       { headers, validateStatus }
     );
     expect(response.status).toEqual(200);
-    const retrievedTokens: Oauth2Token = response.data;
-    const idToken = retrievedTokens.id_token;
+    const retrievedTokens = parseOauthTokenFromCookies(response);
 
     // 3. Exchange id token for credentials
-    const credentialsUrl = `${deaApiUrl}auth/credentials/${idToken}/exchange`;
-    const credsResponse = await client.get(credentialsUrl, { validateStatus });
+    const credentialsUrl = `${deaApiUrl}auth/credentials/exchange`;
+    const credsResponse = await callAuthAPIWithOauthToken(credentialsUrl, retrievedTokens, true);
     expect(credsResponse.status).toEqual(200);
   }, 60000);
 
@@ -166,13 +174,17 @@ describe('API authentication', () => {
   });
 
   it('should fail with dummy idToken', async () => {
-    const client = axios.create();
-    const idToken = 'fake.fake.fake';
+    const fakeToken: Oauth2Token = {
+      id_token: 'fake.fake.fake',
+      access_token: 'fake.fake.fake',
+      refresh_token: 'fake.fake.fake',
+      expires_in: 43200,
+      token_type: 'Bearer',
+    };
 
-    const url = `${deaApiUrl}auth/credentials/${idToken}/exchange`;
-    const response = await client.get(url, { validateStatus });
-    expect(response.status).toEqual(500);
-    expect(response.statusText).toEqual('Internal Server Error');
+    const credentialsUrl = `${deaApiUrl}auth/credentials/exchange`;
+    const credsResponse = await callAuthAPIWithOauthToken(credentialsUrl, fakeToken, true);
+    expect(credsResponse.status).toEqual(500);
   });
 
   it('should fail when the id token has been modified', async () => {
@@ -212,17 +224,10 @@ describe('API authentication', () => {
     expect(response1.status).toEqual(200);
 
     // revoke token
-    const revokeUrl = `${deaApiUrl}auth/revokeToken`;
-    const response = await callDeaAPIWithCreds(revokeUrl, 'POST', oauthToken, creds, undefined);
-    expect(response.data).toEqual(200);
+    await revokeToken(deaApiUrl, oauthToken);
 
-    // Try to make API call with the token, it should fail
-    const response2 = await callDeaAPIWithCreds(url, 'GET', oauthToken, creds);
-    expect(response2.status).toEqual(412); // Reauthentication error
-
-    const refreshUrl = `${deaApiUrl}auth/refreshToken`;
-    const failedRefresh = await callDeaAPIWithCreds(refreshUrl, 'POST', oauthToken, creds, undefined);
-    expect(failedRefresh.status).toEqual(412);
+    // Try to refresh token
+    await expect(useRefreshToken(deaApiUrl, oauthToken)).rejects.toThrowError('Refresh failed');
 
     // Get new credentials, make api call should pass immediately since old session is marked as revoked
     const [creds1, idToken1] = await cognitoHelper.getCredentialsForUser(user);
@@ -243,21 +248,15 @@ describe('API authentication', () => {
     const response1 = await callDeaAPIWithCreds(url, 'GET', oauthToken, creds);
     expect(response1.status).toEqual(200);
 
-    const refreshUrl = `${deaApiUrl}auth/refreshToken`;
-    const refreshResponse = await callDeaAPIWithCreds(refreshUrl, 'POST', oauthToken, creds, undefined);
-    expect(refreshResponse.status).toEqual(200);
-    const newIdToken = await refreshResponse.data.idToken;
-
-    // Try to make API call with the old token, it should fail
-    const response2 = await callDeaAPIWithCreds(url, 'GET', oauthToken, creds);
-    expect(response2.status).toEqual(412); // Reauthentication error
+    // Get new id token by calling refreshToken
+    const newIdToken = await useRefreshToken(deaApiUrl, oauthToken);
 
     // call API with the new token
     const response3 = await callDeaAPIWithCreds(url, 'GET', newIdToken, creds);
     expect(response3.status).toEqual(200);
   }, 40000);
 
-  it.only('should disallow concurrent active session', async () => {
+  it('should disallow concurrent active session', async () => {
     // Create user
     const user = 'ConcurrentUserE2ETest';
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'ConcurrentE2E', 'AuthTester');
@@ -272,17 +271,22 @@ describe('API authentication', () => {
 
     // Get new credentials
     const [creds1, idToken1] = await cognitoHelper.getCredentialsForUser(user);
-    // Call API with new credentials, see that it fails with ReAuthentication error
-    const failed = await callDeaAPIWithCreds(url, 'GET', idToken1, creds1);
-    expect(failed.status).toEqual(412); // Reauthentication error
+    // Call API with new credentials, see that it passes
+    const newSessionResponse = await callDeaAPIWithCreds(url, 'GET', idToken1, creds1);
+    expect(newSessionResponse.status).toEqual(200);
 
-    const revokeUrl = `${deaApiUrl}auth/revokeToken`;
-    const revokeResponse = await callDeaAPIWithCreds(revokeUrl, 'POST', oauthToken, creds, undefined);
-    expect(revokeResponse.data).toEqual(200);
+    // Call API with old set of credentials, see that it fails
+    const response1 = await callDeaAPIWithCreds(url, 'GET', oauthToken, creds);
+    expect(response1.status).toEqual(412); // Reauthentication error
 
-    // Call API with second set of credentials, see that it succeeds
-    const response1 = await callDeaAPIWithCreds(url, 'GET', idToken1, creds1);
-    expect(response1.status).toEqual(200);
+    // Refresh old set of credentials, see that it still fails
+    const newIdToken = await useRefreshToken(deaApiUrl, oauthToken);
+    const response2 = await callDeaAPIWithCreds(url, 'GET', newIdToken, creds);
+    expect(response2.status).toEqual(412); // Reauthentication error
+
+    // Call new set of credentials again, it should pass
+    const newSessionResponse2 = await callDeaAPIWithCreds(url, 'GET', idToken1, creds1);
+    expect(newSessionResponse2.status).toEqual(200);
   }, 40000);
 
   // TODO: Once we have tests that we only run once ever 24 hours, add this
