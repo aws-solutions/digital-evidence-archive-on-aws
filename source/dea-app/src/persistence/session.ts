@@ -47,9 +47,18 @@ export const updateSession = async (
   deaSession: DeaSession,
   repositoryProvider: SessionModelRepositoryProvider
 ): Promise<DeaSession> => {
-  const newEntity = await repositoryProvider.SessionModel.update({
-    ...deaSession,
-  });
+  const newEntity = await repositoryProvider.SessionModel.update(
+    {
+      ...deaSession,
+    },
+    {
+      // Normally, update() will return the updated item automatically,
+      //   however, it the item has unique attributes,
+      //   a transaction is used which does not return the updated item.
+      //   In this case, use {return: 'get'} to retrieve and return the updated item.
+      return: 'get',
+    }
+  );
 
   return sessionFromEntity(newEntity);
 };
