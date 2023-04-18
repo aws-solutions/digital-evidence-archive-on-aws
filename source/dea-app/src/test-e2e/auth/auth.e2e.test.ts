@@ -146,13 +146,6 @@ describe('API authentication', () => {
       { headers, validateStatus }
     );
     expect(response.status).toEqual(200);
-    const retrievedTokens: Oauth2Token = response.data;
-    const idToken = retrievedTokens.id_token;
-
-    // 3. Exchange id token for credentials
-    const credentialsUrl = `${deaApiUrl}auth/credentials/${idToken}/exchange`;
-    const credsResponse = await client.get(credentialsUrl, { validateStatus });
-    expect(credsResponse.status).toEqual(200);
   }, 60000);
 
   it('should fail with dummy auth code', async () => {
@@ -163,16 +156,6 @@ describe('API authentication', () => {
     const response = await client.get(url, { validateStatus });
     expect(response.status).toEqual(403);
     expect(response.statusText).toEqual('Forbidden');
-  });
-
-  it('should fail with dummy idToken', async () => {
-    const client = axios.create();
-    const idToken = 'fake.fake.fake';
-
-    const url = `${deaApiUrl}auth/credentials/${idToken}/exchange`;
-    const response = await client.get(url, { validateStatus });
-    expect(response.status).toEqual(500);
-    expect(response.statusText).toEqual('Internal Server Error');
   });
 
   it('should fail when the id token has been modified', async () => {
@@ -458,11 +441,6 @@ describe('API authentication', () => {
     expect(payload['family_name']).toBeDefined();
     expect(payload['given_name']).toBeDefined();
     expect(payload.sub).toBeDefined();
-
-    // Exchange id token for credentials
-    const credentialsUrl = `${deaApiUrl}auth/credentials/${idToken}/exchange`;
-    const credsResponse = await client.get(credentialsUrl, { validateStatus });
-    expect(credsResponse.status).toEqual(200);
 
     // Call a CaseWorker API, expect success
     const response = await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', retrievedTokens, creds);

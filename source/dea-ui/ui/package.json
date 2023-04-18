@@ -44,6 +44,8 @@
   },
   "dependencies": {
     "@aws/dea-app": "workspace:*",
+    "@aws-sdk/client-cognito-identity": "3.299.0",
+    "@aws-sdk/client-cognito-identity-provider": "3.299.0",
     "@cloudscape-design/collection-hooks": "^1.0.20",
     "@cloudscape-design/components": "^3.0.235",
     "@cloudscape-design/design-tokens": "~3.0.9",

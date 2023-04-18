@@ -49,7 +49,6 @@ export enum AuditEventType {
   GET_AUTH_TOKEN = 'GetAuthenticationToken',
   REFRESH_AUTH_TOKEN = 'RefreshIdToken',
   REVOKE_AUTH_TOKEN = 'RevokeAuthToken',
-  EXCHANGE_TOKEN_FOR_CREDS = 'ExchangeAuthTokenForCredentials',
   GET_ALL_USERS = 'GetAllUsers',
   DOWNLOAD_CASE_FILE = 'DownloadCaseFile',
   GET_CASE_FILES = 'GetCaseFiles',

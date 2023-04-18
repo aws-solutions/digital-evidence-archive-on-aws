@@ -167,7 +167,7 @@ export const exchangeAuthorizationCode = async (
   codeVerifier: string,
   origin?: string,
   callbackOverride?: string
-): Promise<Oauth2Token> => {
+): Promise<[Oauth2Token, string, string]> => {
   const cognitoParams = await getCognitoSsmParams();
   const axiosInstance = axios.create({
     baseURL: cognitoParams.cognitoDomainUrl,
@@ -206,7 +206,7 @@ export const exchangeAuthorizationCode = async (
     throw new Error(`Request failed with status code ${response.status}`);
   }
 
-  return response.data;
+  return [response.data, cognitoParams.identityPoolId, cognitoParams.userPoolId];
 };
 
 export const useRefreshToken = async (refreshToken: string): Promise<Oauth2Token> => {
