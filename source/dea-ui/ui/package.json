@@ -26,9 +26,10 @@
     "cypress:test": "start-server-and-test start http-get://localhost:3000/${STAGE}/ui cypress:headless",
     "dev:https": "(local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3001 --target 3000 &) && rushx dev",
     "dev": ". ../../common/scripts/setEnv.sh && ./setNextEnv.sh && next dev",
-    "e2e:only": "jest --ci --coverage '.*/*e2e.test.*'",
+    "e2e:only": "",
+    "audit:only": "",
     "export": "next build && next export",
-    "integration:only": "jest --ci --coverage --testPathPattern '.*/*integration.test.*'",
+    "integration:only": "jest --ci --testPathPattern '.*/*integration.test.*'",
     "license-checker": "license-checker --onlyAllow 'MIT; Apache-2.0; ISC; BSD'",
     "lint": "next lint --max-warnings=0 && rushx pkg-json-lint",
     "lint:fix": "next lint --fix --max-warnings=0",
@@ -40,7 +41,7 @@
     "test": "jest --coverage && rushx make-badges",
     "test:noe2e": "jest --ci --coverage '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": "jest --ci --coverage",
-    "unit:only": "jest --ci --coverage '.*/*unit.test.*'"
+    "unit:only": "jest --ci '.*/*unit.test.*'"
   },
   "dependencies": {
     "@aws/dea-app": "workspace:*",
