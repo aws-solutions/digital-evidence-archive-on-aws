@@ -28,6 +28,7 @@ const Home: NextPage = () => {
         detailPage="case-detail"
         useCaseFetcher={useListMyCases}
         canCreate={true}
+        canUpdateStatus={true}
         headerLabel={caseListLabels.casesLabel}
       ></CaseTable>
     </BaseLayout>

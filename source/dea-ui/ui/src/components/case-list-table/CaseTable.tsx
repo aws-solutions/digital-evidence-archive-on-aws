@@ -12,16 +12,18 @@ import { DeaListResult } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
 import { caseListLabels, commonTableLabels } from '../../common/labels';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
-import { canCreateCases } from '../../helpers/userActionSupport';
+import { canCreateCases, canUpdateCaseStatus } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
 import { filteringOptions, filteringProperties, searchableColumns } from './caseListDefinitions';
+import { CancelableEventHandler, ClickDetail } from '@cloudscape-design/components/internal/events';
 
 export type CaseFetcherSignature = () => DeaListResult<DeaCaseDTO>;
 export interface CaseTableProps {
   useCaseFetcher: CaseFetcherSignature;
   canCreate: boolean;
+  canUpdateStatus: boolean;
   detailPage: string;
   headerLabel: string;
 }
@@ -62,8 +64,8 @@ function CaseTable(props: CaseTableProps): JSX.Element {
     void router.push('/create-cases');
   }
 
-  function updateCaseStatusHandler(deaCase: DeaCaseDTO) {
-    console.log(deaCase);
+  function updateCaseStatusHandler(input: any) {
+    console.log(input);
   }
 
   const [selectedItems, setSelectedItems] = React.useState<DeaCaseDTO[]>([]);
@@ -96,6 +98,15 @@ function CaseTable(props: CaseTableProps): JSX.Element {
                   data-testid="create-case-button"
                   variant="primary"
                   onClick={createNewCaseHandler}
+                >
+                  {caseListLabels.createNewCaseLabel}
+                </Button>
+              )}
+              {props.canUpdateStatus && (
+                <Button
+                  disabled={!canUpdateCaseStatus(availableEndpoints.data)}
+                  variant="primary"
+                  onClick={updateCaseStatusHandler}
                 >
                   {caseListLabels.createNewCaseLabel}
                 </Button>
