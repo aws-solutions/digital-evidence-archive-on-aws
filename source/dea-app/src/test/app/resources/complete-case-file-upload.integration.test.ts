@@ -17,7 +17,7 @@ import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { listCaseFilesByFilePath } from '../../../app/services/case-file-service';
-import { DeaCaseFile } from '../../../models/case-file';
+import { DeaCaseFileResult } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
@@ -78,12 +78,7 @@ describe('Test complete case file upload', () => {
 
   it('should successfully complete a file upload', async () => {
     const fileName = 'positive test';
-    const caseFile: DeaCaseFile = await callInitiateCaseFileUpload(
-      EVENT,
-      repositoryProvider,
-      caseToUploadTo,
-      fileName
-    );
+    const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, fileName);
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const fileId = caseFile.ulid as string;
     await completeCaseFileUploadAndValidate(fileId, caseToUploadTo, fileName);
@@ -92,18 +87,8 @@ describe('Test complete case file upload', () => {
   it('should successfully complete a file upload and create no duplicate path entries', async () => {
     const fileName = 'file1.png';
     const fileName2 = 'file2.png';
-    const caseFile: DeaCaseFile = await callInitiateCaseFileUpload(
-      EVENT,
-      repositoryProvider,
-      caseToUploadTo,
-      fileName
-    );
-    const caseFile2: DeaCaseFile = await callInitiateCaseFileUpload(
-      EVENT,
-      repositoryProvider,
-      caseToUploadTo,
-      fileName2
-    );
+    const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, fileName);
+    const caseFile2 = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, fileName2);
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const fileId = caseFile.ulid as string;
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -159,7 +144,7 @@ describe('Test complete case file upload', () => {
 
   it("Complete upload should throw an exception when case-file isn't pending", async () => {
     const activeFileName = 'completeActiveFile';
-    const caseFile: DeaCaseFile = await callInitiateCaseFileUpload(
+    const caseFile = await callInitiateCaseFileUpload(
       EVENT,
       repositoryProvider,
       caseToUploadTo,
@@ -176,7 +161,7 @@ describe('Test complete case file upload', () => {
 
   it('Complete upload should throw an exception when caller is different user', async () => {
     const activeFileName = 'mismatchUserFile';
-    const caseFile: DeaCaseFile = await callInitiateCaseFileUpload(
+    const caseFile = await callInitiateCaseFileUpload(
       EVENT,
       repositoryProvider,
       caseToUploadTo,
@@ -236,7 +221,7 @@ async function completeCaseFileUploadAndValidate(
   caseUlid: string,
   fileName: string,
   callCount = 1
-): Promise<DeaCaseFile> {
+): Promise<DeaCaseFileResult> {
   const deaCaseFile = await callCompleteCaseFileUpload(EVENT, repositoryProvider, ulid, caseUlid);
   await validateCaseFile(deaCaseFile, ulid, caseUlid, fileUploader.ulid, CaseFileStatus.ACTIVE, fileName);
 

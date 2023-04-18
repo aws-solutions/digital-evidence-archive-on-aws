@@ -93,7 +93,7 @@ describe('system audit e2e', () => {
     await delay(25000);
 
     let csvData: string | undefined;
-    const queryRetries = 5;
+    const queryRetries = 20;
     while (!csvData && queryRetries > 0) {
       const startAuditQueryResponse = await callDeaAPIWithCreds(
         `${deaApiUrl}system/audit`,
@@ -106,7 +106,7 @@ describe('system audit e2e', () => {
       const auditId: string = startAuditQueryResponse.data.auditId;
       Joi.assert(auditId, joiUuid);
 
-      let retries = 5;
+      let retries = 10;
       let getQueryReponse = await callDeaAPIWithCreds(
         `${deaApiUrl}system/audit/${auditId}/csv`,
         'GET',
@@ -136,11 +136,15 @@ describe('system audit e2e', () => {
       if (
         getQueryReponse.data &&
         !getQueryReponse.data.status &&
+        potentialCsvData.includes(testUser) &&
+        potentialCsvData.includes(caseUlid) &&
         potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
         potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
         potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE)
       ) {
         csvData = getQueryReponse.data;
+      } else {
+        await delay(2000);
       }
     }
     expect(csvData).toContain('/cases/{caseId}/details');

@@ -4,7 +4,7 @@
  */
 
 import { DeaCase } from '../models/case';
-import { DeaCaseFile } from '../models/case-file';
+import { DeaCaseFileResult } from '../models/case-file';
 import {
   CaseType,
   CaseUserType,
@@ -74,7 +74,7 @@ export const caseUserFromEntity = (caseUserEntity: CaseUserType): CaseUser => {
   };
 };
 
-export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFile => {
+export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFileResult => {
   return {
     ulid: caseFileEntity.ulid,
     caseUlid: caseFileEntity.caseUlid,

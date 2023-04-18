@@ -8,7 +8,6 @@ import { fail } from 'assert';
 import { S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
-import { DeaCaseFile } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
@@ -61,7 +60,7 @@ describe('Test case file download', () => {
 
   it('should successfully download a file', async () => {
     const fileName = 'positive test';
-    const caseFile: DeaCaseFile = await callInitiateCaseFileUpload(
+    const caseFile = await callInitiateCaseFileUpload(
       EVENT,
       repositoryProvider,
       caseToDownloadFrom,
@@ -111,7 +110,7 @@ describe('Test case file download', () => {
 
   it("download should throw an exception when case-file isn't active", async () => {
     const pendingFileName = 'downloadPendingFile';
-    const caseFile: DeaCaseFile = await callInitiateCaseFileUpload(
+    const caseFile = await callInitiateCaseFileUpload(
       EVENT,
       repositoryProvider,
       caseToDownloadFrom,
