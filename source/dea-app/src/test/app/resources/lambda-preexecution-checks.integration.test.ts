@@ -13,7 +13,8 @@ import { NotFoundError } from '../../../app/exceptions/not-found-exception';
 import { ReauthenticationError } from '../../../app/exceptions/reauthentication-exception';
 import { runPreExecutionChecks } from '../../../app/resources/dea-lambda-utils';
 import { IdentityType } from '../../../app/services/audit-service';
-import { shouldSessionBeConsideredInactive } from '../../../app/services/session-service';
+import { createSession, shouldSessionBeConsideredInactive } from '../../../app/services/session-service';
+import { createUser } from '../../../app/services/user-service';
 import { getTokenPayload } from '../../../cognito-token-helpers';
 import { Oauth2Token } from '../../../models/auth';
 import { DeaUser } from '../../../models/user';
@@ -77,6 +78,20 @@ describe('lambda pre-execution checks', () => {
     expect(event.headers['userUlid']).toStrictEqual(user?.ulid);
     expect(event.headers['tokenJti']).toBeDefined();
     expect(event.headers['tokenJti']).toStrictEqual(tokenPayload.jti);
+
+    // Mimic race condition of 2 APIs running pre-exec checks and trying
+    // to create the user at the same time
+    // Expect we get the original user back
+    const duplicateUser = await createUser(
+      {
+        tokenId,
+        firstName,
+        lastName,
+      },
+      repositoryProvider
+    );
+    expect(duplicateUser.created).toBeDefined();
+    expect(duplicateUser.created).toStrictEqual(user?.created);
 
     // Mark session revoked (mimic logout)
     // so we can test same user different idtoken
@@ -163,6 +178,17 @@ describe('lambda pre-execution checks', () => {
     expect(session2.updated!.getTime()).toBeGreaterThan(session1.updated!.getTime());
     expect(session2.created).toBeDefined();
     expect(session2.created).toStrictEqual(session1.created);
+
+    // Now try to create the session again (mimic race condition)
+    // should just return the original session
+    const session3 = await createSession(
+      {
+        userUlid,
+        tokenId: session1.tokenId,
+      },
+      repositoryProvider
+    );
+    expect(session3.created).toStrictEqual(session1.created);
   }, 40000);
 
   it('should require reauthentication if your session is revoked', async () => {
