@@ -87,16 +87,14 @@ export const runPreExecutionChecks = async (
 
   event.headers['userUlid'] = userUlid;
 
-  // We use the jti from the token as a unique identitfier
+  // We use the origin_jti from the token as a unique identitfier
   // for the token to distinguish between sessions for a user
-  const tokenId = idTokenPayload.jti;
-  // This jti will be used for refresh/revoke endpoints
-  // to invalidate the current session. For refresh this will
-  // allow the new session to meet session reqs without waiting for
-  // the first to expire. For revoke, this blocks further
-  // access to the system with the id token, since it will
-  // not meet sessions reqs if it is revoked
-  event.headers['tokenJti'] = tokenId;
+  // Therefore if the session is marked as revoked/expired,
+  // then the user has to Reauthenticate, can cannot use
+  // the refresh token to get a new valid token
+  // (CJIS requires reauthentication for session requirement failures)
+  const tokenId = idTokenPayload.origin_jti;
+  event.headers['tokenId'] = tokenId;
 
   // Verify the session management requirements here
   // E.g. no concurrent sessions and session lock after 30 minutes
@@ -112,6 +110,13 @@ export const runPreExecutionChecks = async (
   } else {
     if (sessionCheckResponse) {
       logger.info('User ' + userUlid + ' passed session requirements');
+      // Revoke older sessions if any
+      const sessionsForUser = (await SessionService.getSessionsForUser(userUlid, repositoryProvider))
+        .filter((session) => session.tokenId !== tokenId)
+        .filter((session) => !session.isRevoked);
+      for (const session of sessionsForUser) {
+        await SessionService.markSessionAsRevoked(userUlid, session.tokenId, repositoryProvider);
+      }
     } else {
       const errString = 'Something went wrong during session requirements check';
       logger.error(errString);

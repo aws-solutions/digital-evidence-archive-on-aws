@@ -8,7 +8,7 @@ import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { allButDisallowed, ulidRegex, filePathSafeCharsRegex } from '../../models/validation/joi-common';
 
-const DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS = 3600; // 1 hour
+const DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS = 43200; // 12 hours (e.g. expiry of the refresh token)
 
 export const DeaSchema = {
   format: 'onetable:1.1.0',
