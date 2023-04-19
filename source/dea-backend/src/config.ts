@@ -207,6 +207,7 @@ interface DEAConfig {
   retentionDays(): RetentionDays;
   idpMetadata(): IdpMetadataInfo | undefined;
   deaAllowedOrigins(): string;
+  deaAllowedOriginsList(): string[];
   kmsAccountActions(): string[];
 }
 
@@ -224,6 +225,10 @@ export const deaConfig: DEAConfig = {
   retentionDays: () => (convictConfig.get('testStack') ? RetentionDays.TWO_WEEKS : RetentionDays.INFINITE),
   idpMetadata: () => convictConfig.get('idpInfo'),
   deaAllowedOrigins: () => convictConfig.get('deaAllowedOrigins'),
+  deaAllowedOriginsList: () => {
+    const value = convictConfig.get('deaAllowedOrigins');
+    return value === '' ? [] : value.split(',');
+  },
   kmsAccountActions: () =>
     convictConfig.get('testStack')
       ? ['kms:*']

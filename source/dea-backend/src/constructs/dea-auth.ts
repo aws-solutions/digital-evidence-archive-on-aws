@@ -377,12 +377,9 @@ export class DeaAuthConstruct extends Construct {
     });
 
     const callbackUrls = [callbackUrl];
-    deaConfig
-      .deaAllowedOrigins()
-      .split(',')
-      .forEach((origin) => {
-        callbackUrls.push(`${origin}/${deaConfig.stage()}/ui/login`);
-      });
+    deaConfig.deaAllowedOriginsList().forEach((origin) => {
+      callbackUrls.push(`${origin}/${deaConfig.stage()}/ui/login`);
+    });
 
     if (deaConfig.isTestStack()) {
       const authTestUrl = callbackUrl.replace('/login', '/auth-test');

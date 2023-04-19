@@ -85,4 +85,16 @@ describe('convict based config', () => {
     expect(wildcard).toBeUndefined();
     expect(decryptAction).toBeUndefined();
   });
+
+  it('returns default allowed origin configuration', () => {
+    convictConfig.set('deaAllowedOrigins', '');
+    expect(deaConfig.deaAllowedOrigins()).toEqual('');
+    expect(deaConfig.deaAllowedOriginsList()).toEqual([]);
+  });
+
+  it('returns allowed origin configuration', () => {
+    convictConfig.set('deaAllowedOrigins', 'https://localhost,https://test');
+    expect(deaConfig.deaAllowedOrigins()).toEqual('https://localhost,https://test');
+    expect(deaConfig.deaAllowedOriginsList()).toEqual(['https://localhost', 'https://test']);
+  });
 });
