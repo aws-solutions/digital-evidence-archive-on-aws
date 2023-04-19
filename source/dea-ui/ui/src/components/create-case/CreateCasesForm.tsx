@@ -15,24 +15,29 @@ import {
   TextContent,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
-import * as React from 'react';
 import { useState } from 'react';
 import { createCase } from '../../api/cases';
 import { commonLabels, createCaseLabels } from '../../common/labels';
+import { useNotifications } from '../../context/NotificationsContext';
 import { CreateCaseForm } from '../../models/Cases';
 
 function CreateCasesForm(): JSX.Element {
-  const [, setIsSubmitLoading] = useState(false);
+  const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const router = useRouter();
   const [formData, setFormData] = useState<CreateCaseForm>({ name: '' });
+  const { pushNotification } = useNotifications();
 
   async function onSubmitHandler() {
     setIsSubmitLoading(true);
     try {
       await createCase(formData);
+      void router.push('/');
+    } catch (e) {
+      if (e instanceof Error) {
+        pushNotification('error', e.message);
+      }
     } finally {
       setIsSubmitLoading(false);
-      void router.push('/');
     }
   }
 
@@ -42,7 +47,7 @@ function CreateCasesForm(): JSX.Element {
 
   return (
     <SpaceBetween data-testid="create-case-form-space" size="s">
-      <form onSubmit={(e) => e.preventDefault()} data-testid="create-case-form">
+      <form onSubmit={onSubmitHandler} data-testid="create-case-form">
         <Form>
           <Container header={<Header variant="h2">{createCaseLabels.enterCaseDetailsLabel}</Header>}>
             <SpaceBetween direction="vertical" size="l">
@@ -88,6 +93,7 @@ function CreateCasesForm(): JSX.Element {
           iconAlign="right"
           data-testid="create-case-submit"
           onClick={onSubmitHandler}
+          disabled={IsSubmitLoading || !formData.name}
         >
           {commonLabels.createButton}
         </Button>
