@@ -233,6 +233,9 @@ jobs:
         uses: actions/checkout@v3
       - name: Install
         uses: ./.github/actions/baseAction
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
