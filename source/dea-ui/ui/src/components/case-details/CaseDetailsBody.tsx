@@ -78,7 +78,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
             </div>
           </ColumnLayout>
         </Container>
-        <CaseDetailsTabs caseId={props.caseId}></CaseDetailsTabs>
+        <CaseDetailsTabs caseId={props.caseId} caseStatus={data.status}></CaseDetailsTabs>
       </ContentLayout>
     );
   }

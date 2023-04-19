@@ -3,10 +3,14 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
+import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
+
 export interface DeaCaseDTO {
   readonly ulid: string;
   readonly name: string;
-  readonly status: string;
+  readonly status: CaseStatus;
+  readonly filesStatus: CaseFileStatus;
   readonly description?: string;
   readonly objectCount?: number;
   readonly created: string;

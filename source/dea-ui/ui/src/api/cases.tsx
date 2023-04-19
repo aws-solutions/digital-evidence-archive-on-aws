@@ -14,7 +14,7 @@ import {
   DownloadFileResult,
   InitiateUploadForm,
 } from '../models/CaseFiles';
-import { CreateCaseForm } from '../models/Cases';
+import {CreateCaseForm, UpdateCaseStatusForm} from '../models/Cases';
 import { CaseUserForm } from '../models/CaseUser';
 import { CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
 
@@ -123,6 +123,11 @@ export const removeCaseMember = async (caseUser: CaseUserForm): Promise<void> =>
 
 export const updateCaseMember = async (caseUser: CaseUserForm): Promise<void> => {
   await httpApiPut(`cases/${caseUser.caseUlid}/users/${caseUser.userUlid}/memberships`, { ...caseUser });
+};
+
+export const updateCaseStatus = async (apiInput: UpdateCaseStatusForm): Promise<void> => {
+  const {caseId, ...data} = apiInput;
+  await httpApiPut(`cases/${caseId}/status`, data);
 };
 
 export const getCaseAuditCSV = async (caseId: string): Promise<string> => {

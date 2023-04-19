@@ -6,7 +6,7 @@
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 
 const CREATE_CASE_PATH = '/casesPOST';
-const UPDATE_CASE_STATUS_PATH = '/cases/statusPUT';
+const UPDATE_CASE_STATUS_PATH = '/cases/{caseId}/statusPUT';
 
 export const canInvite = (actions?: CaseAction[]): boolean => {
   return actions?.includes(CaseAction.INVITE) ?? false;

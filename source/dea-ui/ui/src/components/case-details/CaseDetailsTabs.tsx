@@ -3,16 +3,21 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { Tabs, TabsProps } from '@cloudscape-design/components';
 import { useMemo, useState } from 'react';
 import { useGetCaseActions } from '../../api/cases';
 import { caseDetailLabels } from '../../common/labels';
 import { canInvite, canViewFiles } from '../../helpers/userActionSupport';
-import { CaseDetailsBodyProps } from './CaseDetailsBody';
 import CaseFilesTable from './CaseFilesTable';
 import ManageAccessForm from './ManageAccessForm';
 
-function CaseDetailsTabs(props: CaseDetailsBodyProps): JSX.Element {
+export interface CaseDetailsTabsProps {
+  readonly caseId: string;
+  readonly caseStatus: CaseStatus;
+}
+
+function CaseDetailsTabs(props: CaseDetailsTabsProps): JSX.Element {
   const { data } = useGetCaseActions(props.caseId);
   const [tabs, setTabs] = useState<TabsProps.Tab[]>([]);
   useMemo(
@@ -26,7 +31,7 @@ function CaseDetailsTabs(props: CaseDetailsBodyProps): JSX.Element {
         tabsContents.push({
           label: caseDetailLabels.caseFilesLabel,
           id: 'caseFiles',
-          content: <CaseFilesTable caseId={props.caseId}></CaseFilesTable>,
+          content: <CaseFilesTable caseId={props.caseId} caseStatus={props.caseStatus}></CaseFilesTable>,
         });
       }
       if (canInvite(data.actions)) {

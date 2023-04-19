@@ -4,6 +4,7 @@
  */
 
 import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
+import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { PropertyFilterProperty, useCollection } from '@cloudscape-design/collection-hooks';
 import {
   Box,
@@ -13,9 +14,9 @@ import {
   Icon,
   Pagination,
   SpaceBetween,
+  Spinner,
   Table,
   TextFilter,
-  Spinner,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
@@ -25,9 +26,9 @@ import { useNotifications } from '../../context/NotificationsContext';
 import { formatDate } from '../../helpers/dateHelper';
 import { canDownloadFiles, canUploadFiles } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
-import { CaseDetailsBodyProps } from './CaseDetailsBody';
+import { CaseDetailsTabsProps } from './CaseDetailsTabs';
 
-function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
+function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const router = useRouter();
   const userActions = useGetCaseActions(props.caseId);
   // Property and date filter collections
@@ -120,7 +121,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
           <Button
             data-testid="upload-file-button"
             onClick={uploadFilesHandler}
-            disabled={!canUploadFiles(userActions?.data?.actions)}
+            disabled={!(canUploadFiles(userActions?.data?.actions) && props.caseStatus === CaseStatus.ACTIVE)}
           >
             {commonLabels.uploadButton}
           </Button>
@@ -128,7 +129,10 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
             data-testid="download-file-button"
             variant="primary"
             onClick={downloadFilesHandler}
-            disabled={downloadInProgress || !canDownloadFiles(userActions?.data?.actions)}
+            disabled={
+              downloadInProgress ||
+              !(canDownloadFiles(userActions?.data?.actions) && props.caseStatus === CaseStatus.ACTIVE)
+            }
           >
             {commonLabels.downloadButton}
             {downloadInProgress ? <Spinner size="big" /> : null}
@@ -195,9 +199,9 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
           alink.href = downloadResponse.downloadUrl;
           alink.download = file.fileName;
           alink.click();
-          // sleep 2ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
+          // sleep 5ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
           // long term we should consider zipping the files in the backend and then downloading as a single file
-          await sleep(2);
+          await sleep(5);
         } catch (e) {
           pushNotification('error', `Failed to download ${file.fileName}`);
           console.log(`failed to download ${file.fileName}`, e);
@@ -249,6 +253,14 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
           width: 170,
           minWidth: 165,
           sortingField: 'uploader',
+        },
+        {
+          id: 'status',
+          header: commonTableLabels.statusHeader,
+          cell: (e) => e.status,
+          width: 170,
+          minWidth: 165,
+          sortingField: 'status',
         },
       ]}
       items={items}

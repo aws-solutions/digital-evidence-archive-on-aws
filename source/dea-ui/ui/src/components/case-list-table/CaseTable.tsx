@@ -3,21 +3,33 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
+import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { useCollection } from '@cloudscape-design/collection-hooks';
-import { Button, Link, Pagination, PropertyFilter, SpaceBetween, Table } from '@cloudscape-design/components';
+import {
+  Button,
+  Link,
+  Pagination,
+  PropertyFilter,
+  SpaceBetween,
+  Table,
+  Toggle,
+} from '@cloudscape-design/components';
+import Box from '@cloudscape-design/components/box';
+import Modal from '@cloudscape-design/components/modal';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
-import { DeaListResult } from '../../api/cases';
+import { DeaListResult, updateCaseStatus } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
-import { caseListLabels, commonTableLabels } from '../../common/labels';
+import { caseListLabels, commonLabels, commonTableLabels } from '../../common/labels';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { canCreateCases, canUpdateCaseStatus } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
+import { ConfirmModal } from '../common-components/ConfirmModal';
 import { TableHeader } from '../common-components/TableHeader';
 import { filteringOptions, filteringProperties, searchableColumns } from './caseListDefinitions';
-import { CancelableEventHandler, ClickDetail } from '@cloudscape-design/components/internal/events';
 
 export type CaseFetcherSignature = () => DeaListResult<DeaCaseDTO>;
 export interface CaseTableProps {
@@ -32,6 +44,10 @@ function CaseTable(props: CaseTableProps): JSX.Element {
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();
   const { data, isLoading } = props.useCaseFetcher();
+  const [selectedCase, setSelectedCase] = React.useState<DeaCaseDTO[]>([]);
+  const [showActivateModal, setShowActivateModal] = React.useState(false);
+  const [showDeactivateModal, setShowDeactivateModal] = React.useState(false);
+  const [deleteFiles, setDeleteFiles] = React.useState(false);
 
   // Property and date filter collections
   const { items, filteredItemsCount, propertyFilterProps, collectionProps } = useCollection(data, {
@@ -64,18 +80,72 @@ function CaseTable(props: CaseTableProps): JSX.Element {
     void router.push('/create-cases');
   }
 
-  function updateCaseStatusHandler(input: any) {
-    console.log(input);
+  function canActivateCase(): boolean {
+    return (
+      canUpdateCaseStatus(availableEndpoints.data) &&
+      selectedCase.length === 1 &&
+      selectedCase[0].status === CaseStatus.INACTIVE
+    );
   }
 
-  const [selectedItems, setSelectedItems] = React.useState<DeaCaseDTO[]>([]);
+  async function activateCaseHandler() {
+    if (selectedCase.length === 0) {
+      console.error('No cases selected for activate');
+    }
+    const deaCase = selectedCase[0];
+    await updateCaseStatus({
+      name: deaCase.name,
+      caseId: deaCase.ulid,
+      status: CaseStatus.ACTIVE,
+      deleteFiles: false,
+    });
+    disableActivateCaseModal();
+  }
+
+  function canDeactivateCase(): boolean {
+    return (
+      canUpdateCaseStatus(availableEndpoints.data) &&
+      selectedCase.length === 1 &&
+      (selectedCase[0].status === CaseStatus.ACTIVE ||
+        selectedCase[0].filesStatus === CaseFileStatus.DELETE_FAILED)
+    );
+  }
+  async function deactivateCaseHandler() {
+    if (selectedCase.length === 0) {
+      console.error('No cases selected for deactivate');
+    }
+    const deaCase = selectedCase[0];
+    await updateCaseStatus({
+      name: deaCase.name,
+      caseId: deaCase.ulid,
+      status: CaseStatus.INACTIVE,
+      deleteFiles,
+    });
+    disableDeactivateCaseModal();
+  }
+
+  function enableDeactivateCaseModal() {
+    setShowDeactivateModal(true);
+  }
+
+  function disableDeactivateCaseModal() {
+    setShowDeactivateModal(false);
+  }
+
+  function enableActivateCaseModal() {
+    setShowActivateModal(true);
+  }
+
+  function disableActivateCaseModal() {
+    setShowActivateModal(false);
+  }
 
   return (
     <Table
       {...collectionProps}
       data-testid="case-table"
-      onSelectionChange={({ detail }) => setSelectedItems(detail.selectedItems)}
-      selectedItems={selectedItems}
+      onSelectionChange={({ detail }) => setSelectedCase(detail.selectedItems)}
+      selectedItems={selectedCase}
       selectionType="single"
       trackBy="ulid"
       loading={isLoading}
@@ -92,21 +162,62 @@ function CaseTable(props: CaseTableProps): JSX.Element {
           description={caseListLabels.casesPageDescription}
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
+              <Modal
+                onDismiss={disableDeactivateCaseModal}
+                visible={showDeactivateModal && selectedCase.length !== 0}
+                closeAriaLabel={commonLabels.closeModalAriaLabel}
+                footer={
+                  <Box float="right">
+                    <SpaceBetween direction="horizontal" size="xs">
+                      <Button variant="link" onClick={disableDeactivateCaseModal}>
+                        {commonLabels.cancelButton}
+                      </Button>
+                      <Button variant="primary" onClick={deactivateCaseHandler}>
+                        {commonLabels.deactivateButton}
+                      </Button>
+                    </SpaceBetween>
+                  </Box>
+                }
+                header={
+                  selectedCase.length === 0
+                    ? 'No cases selected'
+                    : caseListLabels.deactivateCaseModalLabel(selectedCase[0].name)
+                }
+              >
+                {caseListLabels.deactivateCaseModalMessage}
+                <Toggle onChange={({ detail }) => setDeleteFiles(detail.checked)} checked={deleteFiles}>
+                  {caseListLabels.deleteFilesLabel}
+                </Toggle>
+              </Modal>
+              {props.canUpdateStatus && (
+                <Button disabled={!canDeactivateCase()} variant="primary" onClick={enableDeactivateCaseModal}>
+                  {caseListLabels.deactivateCaseLabel}
+                </Button>
+              )}
+              <ConfirmModal
+                isOpen={showActivateModal && selectedCase.length !== 0}
+                title={
+                  selectedCase.length === 0
+                    ? 'unselected'
+                    : caseListLabels.activateCaseModalLabel(selectedCase[0].name)
+                }
+                message={caseListLabels.activateCaseModalMessage}
+                confirmAction={activateCaseHandler}
+                confirmButtonText={commonLabels.activateButton}
+                cancelAction={disableActivateCaseModal}
+                cancelButtonText={commonLabels.cancelButton}
+              />
+              {props.canUpdateStatus && (
+                <Button disabled={!canActivateCase()} variant="primary" onClick={enableActivateCaseModal}>
+                  {caseListLabels.activateCaseLabel}
+                </Button>
+              )}
               {props.canCreate && (
                 <Button
                   disabled={!canCreateCases(availableEndpoints.data)}
                   data-testid="create-case-button"
                   variant="primary"
                   onClick={createNewCaseHandler}
-                >
-                  {caseListLabels.createNewCaseLabel}
-                </Button>
-              )}
-              {props.canUpdateStatus && (
-                <Button
-                  disabled={!canUpdateCaseStatus(availableEndpoints.data)}
-                  variant="primary"
-                  onClick={updateCaseStatusHandler}
                 >
                   {caseListLabels.createNewCaseLabel}
                 </Button>
@@ -150,6 +261,14 @@ function CaseTable(props: CaseTableProps): JSX.Element {
           width: 200,
           minWidth: 165,
           sortingField: 'created',
+        },
+        {
+          id: 'status',
+          header: commonTableLabels.statusHeader,
+          cell: (e) => e.status,
+          width: 200,
+          minWidth: 165,
+          sortingField: 'status',
         },
       ]}
       filter={
