@@ -162,6 +162,18 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/request-case-audit-handler.ts',
     },
     {
+      eventName: AuditEventType.GET_CASE_FILE_AUDIT,
+      path: '/cases/{caseId}/files/{fileId}/audit/{auditId}/csv',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-case-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.REQUEST_CASE_FILE_AUDIT,
+      path: '/cases/{caseId}/files/{fileId}/audit',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/request-case-audit-handler.ts',
+    },
+    {
       eventName: AuditEventType.GET_AVAILABLE_ENDPOINTS,
       path: '/availableEndpoints',
       httpMethod: ApiGatewayMethod.GET,

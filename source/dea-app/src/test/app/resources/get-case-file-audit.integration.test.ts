@@ -5,11 +5,11 @@
 
 import { CloudWatchLogsClient, GetQueryResultsCommand, QueryStatus } from '@aws-sdk/client-cloudwatch-logs';
 import { anyOfClass, anything, instance, mock, when } from 'ts-mockito';
-import { getUserAudit } from '../../../app/resources/get-user-audit';
+import { getCaseFileAudit } from '../../../app/resources/get-case-file-audit';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 
-describe('get user audit', () => {
+describe('start case file audit', () => {
   const OLD_ENV = process.env;
 
   beforeEach(() => {
@@ -44,11 +44,12 @@ describe('get user audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        userId: bogusUlid,
+        caseId: bogusUlid,
+        fileId: bogusUlid,
         auditId: '11111111-1111-1111-1111-111111111111',
       },
     });
-    const result = await getUserAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(event, dummyContext, undefined, undefined, clientMockInstance);
 
     expect(result.statusCode).toEqual(200);
     expect(result.body).toEqual(expectedCSV);
@@ -61,11 +62,12 @@ describe('get user audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        userId: bogusUlid,
+        caseId: bogusUlid,
+        fileId: bogusUlid,
         auditId: '11111111-1111-1111-1111-111111111111',
       },
     });
-    const result = await getUserAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(event, dummyContext, undefined, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Running');
@@ -78,11 +80,12 @@ describe('get user audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        userId: bogusUlid,
+        caseId: bogusUlid,
+        fileId: bogusUlid,
         auditId: '11111111-1111-1111-1111-111111111111',
       },
     });
-    const result = await getUserAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(event, dummyContext, undefined, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Complete');
@@ -100,11 +103,12 @@ describe('get user audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        userId: bogusUlid,
+        caseId: bogusUlid,
+        fileId: bogusUlid,
         auditId: '11111111-1111-1111-1111-111111111111',
       },
     });
-    const result = await getUserAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(event, dummyContext, undefined, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Complete');
@@ -118,11 +122,12 @@ describe('get user audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        userId: bogusUlid,
+        caseId: bogusUlid,
+        fileId: bogusUlid,
         auditId: '11111111-1111-1111-1111-111111111111',
       },
     });
-    const result = await getUserAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(event, dummyContext, undefined, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');
