@@ -13,6 +13,7 @@ import { NotFoundError } from '../../../app/exceptions/not-found-exception';
 import { ReauthenticationError } from '../../../app/exceptions/reauthentication-exception';
 import { runPreExecutionChecks } from '../../../app/resources/dea-lambda-utils';
 import { IdentityType } from '../../../app/services/audit-service';
+import { useRefreshToken } from '../../../app/services/auth-service';
 import { createSession, shouldSessionBeConsideredInactive } from '../../../app/services/session-service';
 import { createUser } from '../../../app/services/user-service';
 import { getTokenPayload } from '../../../cognito-token-helpers';
@@ -76,8 +77,8 @@ describe('lambda pre-execution checks', () => {
     // check that the event contains the ulid from the new user
     expect(event.headers['userUlid']).toBeDefined();
     expect(event.headers['userUlid']).toStrictEqual(user?.ulid);
-    expect(event.headers['tokenJti']).toBeDefined();
-    expect(event.headers['tokenJti']).toStrictEqual(tokenPayload.jti);
+    expect(event.headers['tokenId']).toBeDefined();
+    expect(event.headers['tokenId']).toStrictEqual(tokenPayload.origin_jti);
 
     // Mimic race condition of 2 APIs running pre-exec checks and trying
     // to create the user at the same time
@@ -270,7 +271,7 @@ describe('lambda pre-execution checks', () => {
     jest.useRealTimers();
   }, 40000);
 
-  it('should block access if there are multiple active sessions for a user.', async () => {
+  it('should revoke all previous sessions for a user when they log in with a new session.', async () => {
     // Create user
     const user = `ConcurrentSession${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Concurrent', 'Session');
@@ -280,23 +281,32 @@ describe('lambda pre-execution checks', () => {
     const userUlid = await callPreChecks(oauthToken);
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
-    const session = sessions[0];
 
-    // Create another session, call API (see that it is blocked)
+    // Create another session, call API, it should succeed and revoke old session
     const newIdToken = await cognitoHelper.getIdTokenForUser(user);
-    await expect(callPreChecks(newIdToken)).rejects.toThrow(ReauthenticationError);
-
-    // Mimic Logout on original session by marking session revoked
-    await updateSession(
-      {
-        ...session,
-        isRevoked: true,
-      },
-      repositoryProvider
-    );
-
-    // Call API with second session, expect success
     await callPreChecks(newIdToken);
+
+    // There should be 2 sessions for the user now
+    // The old one which is revoked, and the new session
+    const sessions2 = await listSessionsForUser(userUlid, repositoryProvider);
+    expect(sessions2.length).toEqual(2);
+    const newSession = sessions2.filter((session) => !session.isRevoked);
+    expect(newSession.length).toBe(1);
+
+    // Try old session, it should fail
+    await expect(callPreChecks(oauthToken)).rejects.toThrow(ReauthenticationError);
+
+    // Get new id token with old refresh token, call API with new id token, it should fail
+    // since old session with origin_jti was revoked
+    const newIdTokenForOldSession = await useRefreshToken(oauthToken.refresh_token);
+    await expect(callPreChecks(newIdTokenForOldSession)).rejects.toThrow(ReauthenticationError);
+
+    // Try new session again it should succeed.
+    await callPreChecks(newIdToken);
+
+    // There should still only be 2 sessions
+    const sessions3 = await listSessionsForUser(userUlid, repositoryProvider);
+    expect(sessions3.length).toEqual(2);
   }, 40000);
 });
 

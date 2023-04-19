@@ -70,7 +70,7 @@ describe('session persistence', () => {
     expect(session.created!.getTime()).toBeLessThan(new Date().getTime());
     // Check that the TTL was set to an hour from now
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(session.ttl).toBe(Math.floor(session.created!.getTime() / 1000) + 3600);
+    expect(session.ttl).toBe(Math.floor(session.created!.getTime() / 1000) + 43200);
     expect(session).toStrictEqual(result);
   });
 

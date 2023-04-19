@@ -32,7 +32,7 @@ describe('lambda http helper edge cases', () => {
   describe('getTokenId', () => {
     it('Throws exception when jti missing from event', () => {
       const event = getDummyEvent();
-      expect(() => getTokenId(event)).toThrow('Token Jti was not present in the event header');
+      expect(() => getTokenId(event)).toThrow('TokenId was not present in the event header');
     });
   });
 

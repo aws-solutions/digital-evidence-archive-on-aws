@@ -12,7 +12,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { aws4Interceptor, Credentials } from 'aws4-axios';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import sha256 from 'crypto-js/sha256';
 import Joi from 'joi';
 import { Oauth2Token } from '../../models/auth';
@@ -368,4 +368,48 @@ export const s3Cleanup = async (s3ObjectsToDelete: s3Object[]): Promise<void> =>
       console.log('[INFO] Could not delete multipart upload. Perhaps the upload completed', e);
     }
   }
+};
+
+export const callAuthAPIWithOauthToken = async (url: string, oauthToken: Oauth2Token, isGetReq = false) => {
+  const client = axios.create({
+    headers: {
+      cookie: `idToken=${JSON.stringify(oauthToken)}`,
+    },
+  });
+  client.defaults.headers.common['cookie'] = `idToken=${JSON.stringify(oauthToken)}`;
+
+  if (isGetReq) {
+    return await client.get(url, { withCredentials: true, validateStatus });
+  }
+
+  return await client.post(url, undefined, {
+    withCredentials: true,
+    validateStatus,
+  });
+};
+
+export const revokeToken = async (deaApiUrl: string, oauthToken: Oauth2Token): Promise<void> => {
+  const revokeUrl = `${deaApiUrl}auth/revokeToken`;
+  const revokeResponse = await callAuthAPIWithOauthToken(revokeUrl, oauthToken);
+
+  if (revokeResponse.status != 200) {
+    throw new Error('Revoke failed');
+  }
+};
+
+export const useRefreshToken = async (deaApiUrl: string, oauthToken: Oauth2Token): Promise<Oauth2Token> => {
+  const refreshUrl = `${deaApiUrl}auth/refreshToken`;
+  const refreshResponse = await callAuthAPIWithOauthToken(refreshUrl, oauthToken);
+
+  if (refreshResponse.status != 200) {
+    throw new Error('Refresh failed');
+  }
+
+  return parseOauthTokenFromCookies(refreshResponse);
+};
+
+export const parseOauthTokenFromCookies = (response: AxiosResponse): Oauth2Token => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const cookie = response.headers['set-cookie']![0]!.replace('idToken=', '').split(';')[0];
+  return JSON.parse(cookie);
 };
