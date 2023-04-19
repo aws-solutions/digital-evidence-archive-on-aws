@@ -14,10 +14,8 @@ import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../helpers/au
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
-  callAuthAPIWithOauthToken,
   callDeaAPI,
   callDeaAPIWithCreds,
-  parseOauthTokenFromCookies,
   randomSuffix,
   revokeToken,
   useRefreshToken,
