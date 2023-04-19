@@ -229,6 +229,10 @@ jobs:
     name: CDK Destroy
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/baseAction
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -236,7 +240,6 @@ jobs:
           role-session-name: GITHUBACTIONSESSION
           aws-region: ${{ secrets.AWS_REGION }}
       - name: cdk destroy
-        continue-on-error: true
         run: |
           cd dea-main
           npm run cdk destroy ${STAGE}-DeaMainStack -- --force
