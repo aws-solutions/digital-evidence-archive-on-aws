@@ -2,8 +2,8 @@ name: Pull Request Workflow
 
 env:
   CONFIGNAME: 'chewbacca'
-  STAGE: RUN${{github.run_number}}
-  DOMAIN_PREFIX: deatestenv${{github.run_number}}
+  STAGE: PRPIPELINE${{github.event.pull_request.number}}
+  DOMAIN_PREFIX: deatestenv${{github.event.pull_request.number}}
 
 on:
   pull_request:
