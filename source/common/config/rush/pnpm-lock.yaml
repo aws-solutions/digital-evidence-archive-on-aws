@@ -365,7 +365,6 @@ importers:
     specifiers:
       '@aws-sdk/client-cognito-identity': 3.299.0
       '@aws-sdk/client-cognito-identity-provider': 3.299.0
-      '@aws-sdk/client-ssm': 3.299.0
       '@aws/dea-app': workspace:*
       '@babel/core': ~7.21.3
       '@babel/preset-env': ~7.20.2
@@ -440,7 +439,6 @@ importers:
     dependencies:
       '@aws-sdk/client-cognito-identity': 3.299.0
       '@aws-sdk/client-cognito-identity-provider': 3.299.0
-      '@aws-sdk/client-ssm': 3.299.0
       '@aws/dea-app': link:../../dea-app
       '@cloudscape-design/collection-hooks': 1.0.20_react@17.0.2
       '@cloudscape-design/components': 3.0.235_wnecvl2xit6hykxlpfa3byfhr4

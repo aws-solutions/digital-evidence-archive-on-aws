@@ -41,6 +41,35 @@ Object {
         ],
       },
     },
+    "DeaRestApiConstructUiUrl40DB9ADB": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-UiUrl",
+      },
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+            },
+            ".execute-api.",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ".",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+            },
+            "/ui",
+          ],
+        ],
+      },
+    },
     "DeaRestApiConstructdeaApiUrlB03CD416": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-deaApiUrl",
