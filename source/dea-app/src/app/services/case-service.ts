@@ -5,10 +5,11 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { logger } from '../../logger';
-import { DeaCase, DeaCaseInput } from '../../models/case';
+import { DeaCase, DeaCaseInput, MyCase } from '../../models/case';
+import { CaseAction } from '../../models/case-action';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
-import { caseFromEntity } from '../../models/projections';
+import { myCaseFromEntityAndActionsMap } from '../../models/projections';
 import { DeaUser } from '../../models/user';
 import * as CasePersistence from '../../persistence/case';
 import * as CaseFilePersistence from '../../persistence/case-file';
@@ -42,7 +43,7 @@ export const listCasesForUser = async (
   limit = 30,
   nextToken: object | undefined,
   repositoryProvider: ModelRepositoryProvider
-): Promise<Paged<DeaCase>> => {
+): Promise<Paged<MyCase>> => {
   // Get all memberships for the user
   const caseMemberships = await CaseUserPersistence.listCaseUsersByUser(
     userUlid,
@@ -51,11 +52,14 @@ export const listCasesForUser = async (
     repositoryProvider
   );
 
+  const caseActionsMap = new Map<string, CaseAction[]>();
+
   // Build a batch object of get requests for the case in each membership
   let caseEntities: CaseType[] = [];
   let batch = {};
   let batchSize = 0;
   for (const caseMembership of caseMemberships) {
+    caseActionsMap.set(caseMembership.caseUlid, caseMembership.actions);
     await CasePersistence.getCase(caseMembership.caseUlid, batch, repositoryProvider);
     ++batchSize;
     if (batchSize === 25) {
@@ -79,8 +83,8 @@ export const listCasesForUser = async (
   })) as CaseType[];
   caseEntities = caseEntities.concat(finalCases);
 
-  const cases: Paged<DeaCase> = caseEntities
-    .map((caseEntity) => caseFromEntity(caseEntity))
+  const cases: Paged<MyCase> = caseEntities
+    .map((caseEntity) => myCaseFromEntityAndActionsMap(caseEntity, caseActionsMap))
     .filter(isDefined);
   cases.count = caseMemberships.count;
   cases.next = caseMemberships.next;

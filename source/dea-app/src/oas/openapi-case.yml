@@ -586,7 +586,7 @@ components:
           type: string
         caseId:
           type: string
-        fileSizeMb:
+        fileSizeBytes:
           type: number
         sha256Hash:
           type: string

@@ -18,6 +18,7 @@ export const commonLabels = {
   downloadButton: 'Download',
   saveButton: 'Save',
   loadingLabel: 'Loading...',
+  statusLabel: 'Status',
   loginLabel: 'Logging in...',
   notFoundLabel: 'Not Found',
   noMatchesLabel: 'No matches found',
@@ -93,7 +94,7 @@ export const caseListLabels = {
 export const filesListLabels = {
   caseFilesLabel: 'Case Files',
   loading: 'Loading files',
-  noFilesLabel: 'No files',
+  noFilesLabel: "It's looking empty in here.",
   noDisplayLabel: 'No files to display',
   uploadFileLabel: 'Upload a file',
   searchLabel: 'Search by file name',

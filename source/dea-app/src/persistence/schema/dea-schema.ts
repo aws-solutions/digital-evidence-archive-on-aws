@@ -29,7 +29,7 @@ export const DeaSchema = {
       lowerCaseName: { type: String, required: true, validate: allButDisallowed },
       status: { type: String, required: true, enum: Object.keys(CaseStatus) },
       description: { type: String, validate: allButDisallowed },
-      objectCount: { type: Number },
+      objectCount: { type: Number, required: true, default: 0 },
       filesStatus: { type: String, required: true, enum: Object.keys(CaseFileStatus) },
       s3BatchJobId: { type: String },
       //managed by onetable - but included for entity generation
@@ -82,7 +82,7 @@ export const DeaSchema = {
       caseUlid: { type: String, validate: ulidRegex, required: true },
       createdBy: { type: String, validate: ulidRegex, required: true },
       isFile: { type: Boolean, required: true },
-      fileSizeMb: { type: Number, required: true },
+      fileSizeBytes: { type: Number, required: true },
       status: { type: String, required: true, enum: Object.keys(CaseFileStatus) },
       ttl: { ttl: true, type: Number },
       uploadId: { type: String },

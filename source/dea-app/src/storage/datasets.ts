@@ -63,7 +63,7 @@ export const defaultDatasetsProvider = {
 export const generatePresignedUrlsForCaseFile = async (
   caseFile: DeaCaseFile,
   datasetsProvider: DatasetsProvider,
-  chunkSizeMb: number
+  chunkSizeBytes: number
 ): Promise<void> => {
   const s3Key = _getS3KeyForCaseFile(caseFile);
   logger.info('Initiating multipart upload.', { s3Key });
@@ -81,7 +81,7 @@ export const generatePresignedUrlsForCaseFile = async (
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const uploadId = response.UploadId as string;
 
-  const fileParts = Math.max(Math.ceil(caseFile.fileSizeMb / chunkSizeMb), 1);
+  const fileParts = Math.max(Math.ceil(caseFile.fileSizeBytes / chunkSizeBytes), 1);
 
   logger.info('Generating presigned URLs.', { fileParts, s3Key });
   const presignedUrlPromises = [];

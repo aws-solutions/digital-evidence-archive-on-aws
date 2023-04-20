@@ -21,6 +21,7 @@ import { CaseFileStatus } from '../../../models/case-file-status';
 import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
 import { caseResponseSchema } from '../../../models/validation/case';
+import { ONE_MB } from '../../../models/validation/joi-common';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { getJob } from '../../../persistence/job';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
@@ -41,8 +42,8 @@ const FILE_NAME = 'tuna.jpeg';
 const USER_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY0';
 const FILE_PATH = '/food/sushi/';
 const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
-const FILE_SIZE_MB = 50;
-export const CHUNK_SIZE_MB = 500;
+const FILE_SIZE_BYTES = 50;
+export const CHUNK_SIZE_BYTES = 499 * ONE_MB;
 const CONTENT_TYPE = 'image/jpeg';
 const REASON = 'none';
 const TAG = 'yum';
@@ -65,11 +66,11 @@ export const callInitiateCaseFileUpload = async (
   fileName = FILE_NAME,
   filePath = FILE_PATH,
   contentType = CONTENT_TYPE,
-  fileSizeMb = FILE_SIZE_MB,
+  fileSizeBytes = FILE_SIZE_BYTES,
   tag = TAG,
   reason = REASON,
   details = DETAILS,
-  chunkSizeMb = CHUNK_SIZE_MB
+  chunkSizeBytes = CHUNK_SIZE_BYTES
 ): Promise<DeaCaseFile> => {
   const event = Object.assign(
     {},
@@ -80,11 +81,11 @@ export const callInitiateCaseFileUpload = async (
         fileName,
         filePath,
         contentType,
-        fileSizeMb,
+        fileSizeBytes,
         tag,
         reason,
         details,
-        chunkSizeMb,
+        chunkSizeBytes,
       }),
     }
   );
@@ -265,7 +266,8 @@ export async function validateCaseStatusUpdatedAsExpected(
   status: CaseStatus,
   filesStatus: CaseFileStatus,
   s3BatchJobId: string | undefined,
-  repositoryProvider: ModelRepositoryProvider
+  repositoryProvider: ModelRepositoryProvider,
+  objectCount = 0
 ) {
   if (!updatedCase.updated || !createdCase.updated) {
     fail();
@@ -279,6 +281,7 @@ export async function validateCaseStatusUpdatedAsExpected(
     status,
     filesStatus,
     s3BatchJobId,
+    objectCount,
   });
 
   if (s3BatchJobId) {
@@ -308,7 +311,7 @@ export const validateCaseFile = async (
   expectedFileName: string = FILE_NAME,
   expectedFilePath: string = FILE_PATH,
   expectedContentType: string = CONTENT_TYPE,
-  expectedFileSizeMb: number = FILE_SIZE_MB,
+  expectedFileSizeMb: number = FILE_SIZE_BYTES,
   expectedTag: string = TAG,
   expectedReason: string = REASON,
   expectedDetails: string = DETAILS
@@ -320,7 +323,7 @@ export const validateCaseFile = async (
   expect(deaCaseFile.fileName).toEqual(expectedFileName);
   expect(deaCaseFile.filePath).toEqual(expectedFilePath);
   expect(deaCaseFile.createdBy).toEqual(expectedCreator);
-  expect(deaCaseFile.fileSizeMb).toEqual(expectedFileSizeMb);
+  expect(deaCaseFile.fileSizeBytes).toEqual(expectedFileSizeMb);
   expect(deaCaseFile.tag).toEqual(expectedTag);
   expect(deaCaseFile.details).toEqual(expectedDetails);
   expect(deaCaseFile.reason).toEqual(expectedReason);

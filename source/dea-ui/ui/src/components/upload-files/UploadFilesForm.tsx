@@ -29,7 +29,7 @@ import { UploadFilesProps } from './UploadFilesBody';
 interface FileUploadProgressRow {
   fileName: string;
   status: UploadStatus;
-  fileSizeMb: number;
+  fileSizeBytes: number;
 }
 
 enum UploadStatus {
@@ -44,7 +44,7 @@ interface ActiveFileUpload {
   initiatedCaseFilePromise: Promise<DeaCaseFile>;
 }
 
-const ONE_MB = 1024 * 1024;
+export const ONE_MB = 1024 * 1024;
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -61,11 +61,11 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       setUploadInProgress(true);
       const activeFileUploads: ActiveFileUpload[] = [];
       for (const selectedFile of selectedFiles) {
-        const fileSizeMb = Math.ceil(Math.max(selectedFile.size, 1) / ONE_MB);
+        const fileSizeBytes = Math.max(selectedFile.size, 1);
         // Trying to use small chunk size (50MB) to reduce memory use.
         // However, since S3 allows a max of 10,000 parts for multipart uploads, we will increase chunk size for larger files
-        const chunkSizeMb = Math.max(selectedFile.size / 10_000 / ONE_MB, 50);
-        const uploadingFile = { fileName: selectedFile.name, fileSizeMb, status: UploadStatus.progress };
+        const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
+        const uploadingFile = { fileName: selectedFile.name, fileSizeBytes, status: UploadStatus.progress };
         // per file try/finally state to initiate uploads
         try {
           uploadedFiles.push(uploadingFile);
@@ -74,8 +74,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             caseUlid: props.caseId,
             fileName: selectedFile.name,
             filePath: props.filePath,
-            fileSizeMb,
-            chunkSizeMb,
+            fileSizeBytes,
+            chunkSizeBytes,
             contentType,
             tag,
             reason,
@@ -102,8 +102,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           const hash = cryptoJS.algo.SHA256.create();
           if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
             const numberOfUrls = initiatedCaseFile.presignedUrls.length;
-            const chunkSizeBytes = initiatedCaseFile.chunkSizeMb
-              ? initiatedCaseFile.chunkSizeMb * ONE_MB
+            const chunkSizeBytes = initiatedCaseFile.chunkSizeBytes
+              ? initiatedCaseFile.chunkSizeBytes
               : 50 * ONE_MB;
             for (let index = 0; index < initiatedCaseFile.presignedUrls.length; index += 1) {
               const url = initiatedCaseFile.presignedUrls[index];
@@ -314,10 +314,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             {
               id: 'size',
               header: commonTableLabels.fileSizeHeader,
-              cell: (e) => `${e.fileSizeMb}MB`,
+              cell: (e) => `${Math.ceil(e.fileSizeBytes / ONE_MB)}MB`,
               width: 170,
               minWidth: 165,
-              sortingField: 'fileSizeMb',
+              sortingField: 'fileSizeBytes',
             },
             {
               id: 'status',

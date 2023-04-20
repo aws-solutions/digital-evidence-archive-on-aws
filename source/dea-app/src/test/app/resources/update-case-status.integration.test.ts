@@ -112,7 +112,8 @@ describe('update case status', () => {
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETING,
       jobId,
-      repositoryProvider
+      repositoryProvider,
+      1
     );
 
     validateS3Mocks(createdCase.ulid, caseFile.ulid);
@@ -206,7 +207,8 @@ describe('update case status', () => {
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETING,
       jobId,
-      repositoryProvider
+      repositoryProvider,
+      1
     );
 
     await expect(
@@ -337,7 +339,8 @@ describe('update case status', () => {
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETE_FAILED,
       undefined,
-      repositoryProvider
+      repositoryProvider,
+      1
     );
 
     validateS3Mocks(createdCase.ulid, caseFile.ulid);
@@ -368,7 +371,8 @@ describe('update case status', () => {
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETE_FAILED,
       undefined,
-      repositoryProvider
+      repositoryProvider,
+      1
     );
 
     validateS3Mocks(createdCase.ulid, caseFile.ulid);

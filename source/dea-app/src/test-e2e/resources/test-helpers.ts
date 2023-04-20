@@ -23,7 +23,7 @@ import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
 import { caseFileResponseSchema } from '../../models/validation/case-file';
 import {
-  CHUNK_SIZE_MB,
+  CHUNK_SIZE_BYTES,
   ResponseCaseFilePage,
 } from '../../test/app/resources/case-file-integration-test-helper';
 import CognitoHelper from '../helpers/cognito-helper';
@@ -164,9 +164,9 @@ export const initiateCaseFileUploadSuccess = async (
   caseUlid: string | undefined,
   fileName: string,
   filePath: string,
-  fileSizeMb: number,
+  fileSizeBytes: number,
   contentType: string = CONTENT_TYPE,
-  chunkSizeMb = CHUNK_SIZE_MB
+  chunkSizeBytes = CHUNK_SIZE_BYTES
 ): Promise<DeaCaseFile> => {
   const initiateUploadResponse = await callDeaAPIWithCreds(
     `${deaApiUrl}cases/${caseUlid}/files`,
@@ -178,8 +178,8 @@ export const initiateCaseFileUploadSuccess = async (
       fileName,
       filePath,
       contentType,
-      fileSizeMb,
-      chunkSizeMb,
+      fileSizeBytes,
+      chunkSizeBytes,
     }
   );
 

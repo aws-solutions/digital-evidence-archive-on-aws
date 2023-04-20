@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { DeaCase } from '../models/case';
+import { DeaCase, MyCase } from '../models/case';
 import { DeaCaseFile } from '../models/case-file';
 import {
   CaseType,
@@ -33,6 +33,27 @@ export const caseFromEntity = (caseEntity: CaseType): DeaCase => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     filesStatus: caseEntity.filesStatus as CaseFileStatus,
     s3BatchJobId: caseEntity.s3BatchJobId,
+    created: caseEntity.created,
+    updated: caseEntity.updated,
+  };
+};
+
+export const myCaseFromEntityAndActionsMap = (
+  caseEntity: CaseType,
+  actionsMap: Map<string, CaseAction[]>
+): MyCase => {
+  return {
+    ulid: caseEntity.ulid,
+    name: caseEntity.name,
+    description: caseEntity.description,
+    objectCount: caseEntity.objectCount,
+    // status schema is defined with CaseStatus so we can safely cast here
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    status: caseEntity.status as CaseStatus,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    filesStatus: caseEntity.filesStatus as CaseFileStatus,
+    s3BatchJobId: caseEntity.s3BatchJobId,
+    actions: actionsMap.get(caseEntity.ulid) ?? [],
     created: caseEntity.created,
     updated: caseEntity.updated,
   };
@@ -82,7 +103,7 @@ export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFile =>
     contentType: caseFileEntity.contentType,
     createdBy: caseFileEntity.createdBy,
     filePath: caseFileEntity.filePath,
-    fileSizeMb: caseFileEntity.fileSizeMb,
+    fileSizeBytes: caseFileEntity.fileSizeBytes,
     uploadId: caseFileEntity.uploadId,
     sha256Hash: caseFileEntity.sha256Hash,
     versionId: caseFileEntity.versionId,

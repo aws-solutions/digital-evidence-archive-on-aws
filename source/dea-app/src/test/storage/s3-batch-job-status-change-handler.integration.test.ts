@@ -280,7 +280,8 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
     CaseStatus.INACTIVE,
     CaseFileStatus.DELETING,
     jobId,
-    repositoryProvider
+    repositoryProvider,
+    1
   );
 
   if (callDeleteFilesLambda) {

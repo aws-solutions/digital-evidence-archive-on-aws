@@ -147,6 +147,7 @@ describe('case persistence', () => {
       created: createdCase?.created,
       updated: createdCase?.updated,
       status: CaseStatus.ACTIVE,
+      objectCount: 0,
       filesStatus: CaseFileStatus.ACTIVE,
       ...currentTestCase,
     };
@@ -158,6 +159,7 @@ describe('case persistence', () => {
       name: 'Case Wars7',
       status: CaseStatus.ACTIVE,
       filesStatus: CaseFileStatus.ACTIVE,
+      objectCount: 0,
       description: 'The first 6 were better',
     };
 
@@ -200,6 +202,7 @@ describe('case persistence', () => {
       created: createdCase?.created,
       updated: createdCase?.updated,
       status: CaseStatus.ACTIVE,
+      objectCount: 0,
       filesStatus: CaseFileStatus.ACTIVE,
       ...currentTestCase,
     };

@@ -34,7 +34,7 @@ import {
 const FILE_PATH = '/food/sushi/';
 const FILE_CONTENT = 'hello world';
 const TEST_USER = 'caseFileUploadTestUser';
-const FILE_SIZE_MB = 50;
+const FILE_SIZE_BYTES = 50;
 const DEA_API_URL = testEnv.apiUrlOutput;
 
 describe('Test case file APIs', () => {
@@ -84,7 +84,7 @@ describe('Test case file APIs', () => {
       caseUlid,
       'positiveTest',
       FILE_PATH,
-      FILE_SIZE_MB
+      FILE_SIZE_BYTES
     );
 
     const initiatedCaseFile2: DeaCaseFile = await initiateCaseFileUploadSuccess(
@@ -94,7 +94,7 @@ describe('Test case file APIs', () => {
       caseUlid,
       'colocatedPositiveTest',
       FILE_PATH,
-      FILE_SIZE_MB
+      FILE_SIZE_BYTES
     );
 
     const fileUlid = initiatedCaseFile.ulid ?? fail();

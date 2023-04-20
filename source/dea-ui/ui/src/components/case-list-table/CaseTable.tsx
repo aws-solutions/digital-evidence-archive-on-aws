@@ -3,11 +3,13 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
 import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { useCollection } from '@cloudscape-design/collection-hooks';
 import {
   Button,
+  Icon,
   Link,
   Pagination,
   PropertyFilter,
@@ -23,6 +25,7 @@ import { useAvailableEndpoints } from '../../api/auth';
 import { DeaListResult, updateCaseStatus } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
 import { caseListLabels, commonLabels, commonTableLabels } from '../../common/labels';
+import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { canCreateCases, canUpdateCaseStatus } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
@@ -35,7 +38,6 @@ export type CaseFetcherSignature = () => DeaListResult<DeaCaseDTO>;
 export interface CaseTableProps {
   useCaseFetcher: CaseFetcherSignature;
   canCreate: boolean;
-  canUpdateStatus: boolean;
   detailPage: string;
   headerLabel: string;
 }
@@ -43,11 +45,12 @@ export interface CaseTableProps {
 function CaseTable(props: CaseTableProps): JSX.Element {
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();
-  const { data, isLoading } = props.useCaseFetcher();
+  const { data, isLoading, mutate } = props.useCaseFetcher();
   const [selectedCase, setSelectedCase] = React.useState<DeaCaseDTO[]>([]);
   const [showActivateModal, setShowActivateModal] = React.useState(false);
   const [showDeactivateModal, setShowDeactivateModal] = React.useState(false);
   const [deleteFiles, setDeleteFiles] = React.useState(false);
+  const { pushNotification } = useNotifications();
 
   // Property and date filter collections
   const { items, filteredItemsCount, propertyFilterProps, collectionProps } = useCollection(data, {
@@ -81,11 +84,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
   }
 
   function canActivateCase(): boolean {
-    return (
-      canUpdateCaseStatus(availableEndpoints.data) &&
-      selectedCase.length === 1 &&
-      selectedCase[0].status === CaseStatus.INACTIVE
-    );
+    return selectedCase.length === 1 && selectedCase[0].status === CaseStatus.INACTIVE;
   }
 
   async function activateCaseHandler() {
@@ -93,21 +92,28 @@ function CaseTable(props: CaseTableProps): JSX.Element {
       console.error('No cases selected for activate');
     }
     const deaCase = selectedCase[0];
-    await updateCaseStatus({
-      name: deaCase.name,
-      caseId: deaCase.ulid,
-      status: CaseStatus.ACTIVE,
-      deleteFiles: false,
-    });
-    disableActivateCaseModal();
+    try {
+      await updateCaseStatus({
+        name: deaCase.name,
+        caseId: deaCase.ulid,
+        status: CaseStatus.ACTIVE,
+        deleteFiles: false,
+      });
+      disableActivateCaseModal();
+      pushNotification('success', `${deaCase.name} has been activated.`);
+      mutate();
+    } catch (e) {
+      pushNotification('error', `Failed to activate ${deaCase.name}.`);
+    }
+
+    setSelectedCase([]);
   }
 
   function canDeactivateCase(): boolean {
     return (
-      canUpdateCaseStatus(availableEndpoints.data) &&
       selectedCase.length === 1 &&
       (selectedCase[0].status === CaseStatus.ACTIVE ||
-        selectedCase[0].filesStatus === CaseFileStatus.DELETE_FAILED)
+        [CaseFileStatus.DELETE_FAILED, CaseFileStatus.ACTIVE].includes(selectedCase[0].filesStatus))
     );
   }
   async function deactivateCaseHandler() {
@@ -115,13 +121,22 @@ function CaseTable(props: CaseTableProps): JSX.Element {
       console.error('No cases selected for deactivate');
     }
     const deaCase = selectedCase[0];
-    await updateCaseStatus({
-      name: deaCase.name,
-      caseId: deaCase.ulid,
-      status: CaseStatus.INACTIVE,
-      deleteFiles,
-    });
-    disableDeactivateCaseModal();
+    try {
+      const updatePromise = updateCaseStatus({
+        name: deaCase.name,
+        caseId: deaCase.ulid,
+        status: CaseStatus.INACTIVE,
+        deleteFiles,
+      });
+      disableDeactivateCaseModal();
+      await updatePromise;
+      pushNotification('success', `${deaCase.name} has been deactivated.`);
+      mutate();
+    } catch (e) {
+      pushNotification('error', `Failed to deactivate ${deaCase.name}.`);
+    }
+
+    setSelectedCase([]);
   }
 
   function enableDeactivateCaseModal() {
@@ -140,6 +155,35 @@ function CaseTable(props: CaseTableProps): JSX.Element {
     setShowActivateModal(false);
   }
 
+  function noUserCaseStatusUpdatePermission(deaCase: DeaCaseDTO): boolean {
+    if (!deaCase.actions) {
+      return true;
+    }
+    return !deaCase.actions.includes(CaseAction.UPDATE_CASE_STATUS);
+  }
+
+  function statusCell(deaCase: DeaCaseDTO) {
+    if (deaCase.status == CaseStatus.ACTIVE) {
+      return (
+        <Box>
+          <SpaceBetween direction="horizontal" size="xs" key={deaCase.ulid}>
+            <Icon name="check" variant="success" />
+            <span>{deaCase.status.slice(0, 1) + deaCase.status.slice(1).toLowerCase()}</span>
+          </SpaceBetween>
+        </Box>
+      );
+    } else {
+      return (
+        <Box>
+          <SpaceBetween direction="horizontal" size="xs" key={deaCase.ulid}>
+            <Icon name="status-stopped" variant="disabled" />
+            <span>{deaCase.status.slice(0, 1) + deaCase.status.slice(1).toLowerCase()}</span>
+          </SpaceBetween>
+        </Box>
+      );
+    }
+  }
+
   return (
     <Table
       {...collectionProps}
@@ -147,6 +191,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
       onSelectionChange={({ detail }) => setSelectedCase(detail.selectedItems)}
       selectedItems={selectedCase}
       selectionType="single"
+      isItemDisabled={noUserCaseStatusUpdatePermission}
       trackBy="ulid"
       loading={isLoading}
       variant="full-page"
@@ -189,7 +234,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
                   {caseListLabels.deleteFilesLabel}
                 </Toggle>
               </Modal>
-              {props.canUpdateStatus && (
+              {canUpdateCaseStatus(availableEndpoints.data) && (
                 <Button disabled={!canDeactivateCase()} variant="primary" onClick={enableDeactivateCaseModal}>
                   {caseListLabels.deactivateCaseLabel}
                 </Button>
@@ -207,7 +252,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
                 cancelAction={disableActivateCaseModal}
                 cancelButtonText={commonLabels.cancelButton}
               />
-              {props.canUpdateStatus && (
+              {canUpdateCaseStatus(availableEndpoints.data) && (
                 <Button disabled={!canActivateCase()} variant="primary" onClick={enableActivateCaseModal}>
                   {caseListLabels.activateCaseLabel}
                 </Button>
@@ -265,7 +310,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
         {
           id: 'status',
           header: commonTableLabels.statusHeader,
-          cell: (e) => e.status,
+          cell: statusCell,
           width: 200,
           minWidth: 165,
           sortingField: 'status',

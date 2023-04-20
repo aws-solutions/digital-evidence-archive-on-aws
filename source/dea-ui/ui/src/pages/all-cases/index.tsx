@@ -22,7 +22,6 @@ export default function AllCasesPage() {
         detailPage="manage-case"
         useCaseFetcher={useListAllCases}
         canCreate={false}
-        canUpdateStatus={false}
         headerLabel={caseListLabels.systemCasesLabel}
       ></CaseTable>
     </BaseLayout>

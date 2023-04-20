@@ -60,9 +60,9 @@ export const useListAllCases = (): DeaListResult<DeaCaseDTO> => {
 };
 
 export const useListMyCases = (): DeaListResult<DeaCaseDTO> => {
-  const { data, error } = useSWR(() => `cases/my-cases`, (httpApiGet<CaseListReponse>) );
+  const { data, error, mutate } = useSWR(() => `cases/my-cases`, (httpApiGet<CaseListReponse>) );
   const cases: DeaCaseDTO[] = data?.cases ?? [];
-  return { data: cases, isLoading: !data && !error };
+  return { data: cases, isLoading: !data && !error, mutate };
 };
 
 export const useGetCaseById = (id: string): DeaSingleResult<DeaCaseDTO | undefined> => {
