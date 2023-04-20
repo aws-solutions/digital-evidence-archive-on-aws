@@ -5,6 +5,7 @@
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Credentials } from 'aws4-axios';
+import { AxiosResponse } from 'axios';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
@@ -54,6 +55,19 @@ interface ApiParameters {
 const cognitoHelper = new CognitoHelper();
 
 const deaApiUrl = testEnv.apiUrlOutput;
+
+export type argsType = [
+  string /* testSuiteName */,
+  CaseAction[] /* requiredActions */,
+  string /* urlPath */,
+  DeaHttpMethod /* httpMethod */,
+  string? /* data */,
+  boolean? /* createCompanionMemberships */,
+  boolean? /* testRequiresOwnerCaseFile */,
+  boolean? /* testRequiresUserCaseFile */,
+  boolean? /* testRequiresDownload */,
+  boolean? /* testRequiresAuditId */
+];
 
 export const validateEndpointACLs = (
   testSuiteName: string,
@@ -149,7 +163,7 @@ export const validateEndpointACLs = (
       );
 
       if (response.status > 300) {
-        console.log(response);
+        console.log(response.data);
       }
       expect(response.status).toBeGreaterThanOrEqual(200);
       expect(response.status).toBeLessThan(300);
@@ -167,7 +181,7 @@ export const validateEndpointACLs = (
         apiParams.data?.replace('{companion}', testHarness.companionIds[1])
       );
       if (response.status > 300) {
-        console.log(response);
+        console.log(response.data);
       }
       expect(response.status).toBeGreaterThanOrEqual(200);
       expect(response.status).toBeLessThan(300);
@@ -263,6 +277,7 @@ const initializeACLE2ETest = async (
       )
     );
   }
+
   await Promise.all(createUserPromises);
 
   const credsMap = new Map<string, [Credentials, Oauth2Token]>();
@@ -277,7 +292,11 @@ const initializeACLE2ETest = async (
     const [ccreds, cidToken] = await cognitoHelper.getCredentialsForUser(`${userName}${companionSuffix}`);
     initUserPromises.push(callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', cidToken, ccreds));
   }
-  await Promise.all(initUserPromises);
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  const responses: AxiosResponse[] = (await Promise.all(initUserPromises)) as AxiosResponse[];
+  responses.forEach((response) => {
+    expect(response.status).toEqual(200);
+  });
 
   const [ownerCreds, ownerToken] = credsMap.get(ownerName)!;
   const userResponse = await callDeaAPIWithCreds(
@@ -358,14 +377,18 @@ const initializeACLE2ETest = async (
       ownerToken,
       ownerCreds,
       {
-        userUlid: harness.userWithAllButRequiredActions.userUlid,
+        userUlid: harness.userWithNoActions.userUlid,
         caseUlid: createdCase.ulid,
         actions: [],
       }
     )
   );
 
-  await Promise.all(membershipPromises);
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  const memberShipResponses: AxiosResponse[] = (await Promise.all(membershipPromises)) as AxiosResponse[];
+  memberShipResponses.forEach((response) => {
+    expect(response.status).toEqual(200);
+  });
 
   return harness;
 };

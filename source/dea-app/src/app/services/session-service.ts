@@ -109,7 +109,15 @@ export const updateLastActiveTimeForSession = async (
   session: DeaSession,
   repositoryProvider: ModelRepositoryProvider
 ) => {
-  await SessionPersistence.updateSession(session, repositoryProvider);
+  try {
+    await SessionPersistence.updateSession(session, repositoryProvider);
+  } catch (error) {
+    if ('code' in error && error.code === 'TransactionCanceledException') {
+      logger.debug(`Session update already in progress, moving on...`);
+    } else {
+      throw error;
+    }
+  }
 };
 
 // When a user logouts, or a new id token is
