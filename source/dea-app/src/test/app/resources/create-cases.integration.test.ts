@@ -107,7 +107,7 @@ describe('create cases resource', () => {
     });
     event.headers['userUlid'] = user.ulid;
     await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      'Transaction Cancelled'
+      `Case with name "${name}" is already in use`
     );
   });
 

@@ -30,7 +30,7 @@ describe('Navigation', () => {
   it('downloads system audit logs', async () => {
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url === 'https://localhostsystem/audit') {
+      if (eventObj.url?.endsWith('audit')) {
         return Promise.resolve({
           data: { auditId: 'audit-id' },
           status: 200,
@@ -38,7 +38,7 @@ describe('Navigation', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === 'https://localhostsystem/audit/audit-id/csv') {
+      } else if (eventObj.url?.endsWith('csv')) {
         return Promise.resolve({
           data: csvResult[++csvCall],
           status: 200,
@@ -78,7 +78,7 @@ describe('Navigation', () => {
   it('recovers from a from a csv download failure', async () => {
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url === 'https://localhostsystem/audit') {
+      if (eventObj.url?.endsWith('audit')) {
         return Promise.resolve({
           data: { auditId: 'audit-id' },
           status: 200,
@@ -86,7 +86,7 @@ describe('Navigation', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === 'https://localhostsystem/audit/audit-id/csv') {
+      } else if (eventObj.url?.endsWith('csv')) {
         return Promise.resolve({
           data: failingCsvResult[++failingCall],
           status: 200,
