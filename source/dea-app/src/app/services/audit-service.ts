@@ -55,6 +55,8 @@ export enum AuditEventType {
   GET_CASE_FILE_DETAIL = 'GetCaseFileDetail',
   GET_CASE_AUDIT = 'GetCaseAudit',
   REQUEST_CASE_AUDIT = 'RequestCaseAudit',
+  GET_CASE_FILE_AUDIT = 'GetCaseFileAudit',
+  REQUEST_CASE_FILE_AUDIT = 'RequestCaseFileAudit',
   GET_AVAILABLE_ENDPOINTS = 'GetAvailableEndpoints',
   GET_SCOPED_CASE_INFO = 'GetScopedCaseInformation',
   GET_USER_AUDIT = 'GetUserAudit',
@@ -252,6 +254,18 @@ export class DeaAuditService extends AuditService {
   ) {
     const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME')];
     const filterPredicate = `caseId like /${caseId}/`;
+    return this._startAuditQuery(start, end, cloudwatchClient, auditLogGroups, filterPredicate);
+  }
+
+  public async requestAuditForCaseFile(
+    caseId: string,
+    fileId: string,
+    start: number,
+    end: number,
+    cloudwatchClient: CloudWatchLogsClient
+  ) {
+    const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME')];
+    const filterPredicate = `caseId like /${caseId}/ and fileId like /${fileId}/`;
     return this._startAuditQuery(start, end, cloudwatchClient, auditLogGroups, filterPredicate);
   }
 

@@ -10,15 +10,13 @@ import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { DeaCaseFile } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
-import { CaseStatus } from '../../models/case-status';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
-  callDeaAPIWithCreds,
   completeCaseFileUploadSuccess,
   createCaseSuccess,
-  delay,
   deleteCase,
+  deleteCaseFiles,
   describeCaseFileDetailsSuccess,
   downloadContentFromS3,
   getCaseFileDownloadUrl,
@@ -27,7 +25,6 @@ import {
   randomSuffix,
   s3Cleanup,
   s3Object,
-  updateCaseStatus,
   uploadContentToS3,
 } from './test-helpers';
 
@@ -169,36 +166,7 @@ describe('Test case file APIs', () => {
     expect(downloadedContent).toEqual(FILE_CONTENT);
     expect(sha256(downloadedContent).toString()).toEqual(describedCaseFile.sha256Hash);
 
-    let updatedCase = await updateCaseStatus(
-      DEA_API_URL,
-      idToken,
-      creds,
-      caseUlid,
-      createdCase.name,
-      CaseStatus.INACTIVE,
-      true
-    );
-
-    expect(updatedCase.status).toEqual(CaseStatus.INACTIVE);
-    expect(updatedCase.filesStatus).toEqual(CaseFileStatus.DELETING);
-    expect(updatedCase.s3BatchJobId).toBeTruthy();
-
-    // Give S3 batch 2 minutes to do the async job. Increase if necessary (EventBridge SLA is 15min)
-    const retries = 8;
-    while (updatedCase.filesStatus !== CaseFileStatus.DELETED && retries > 0) {
-      await delay(15_000);
-      updatedCase = await getCase(caseUlid, idToken, creds);
-
-      if (updatedCase.filesStatus === CaseFileStatus.DELETE_FAILED) {
-        break;
-      }
-    }
-
-    expect(updatedCase.filesStatus).toEqual(CaseFileStatus.DELETED);
-    listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
-    for (const file of listCaseFilesResponse.files) {
-      expect(file.status).toEqual(CaseFileStatus.DELETED);
-    }
+    await deleteCaseFiles(DEA_API_URL, caseUlid, createdCase.name, FILE_PATH, idToken, creds);
   });
 });
 
@@ -214,16 +182,4 @@ async function createCase(idToken: Oauth2Token, creds: Credentials): Promise<Dea
     idToken,
     creds
   );
-}
-
-async function getCase(caseId: string, idToken: Oauth2Token, creds: Credentials) {
-  const getResponse = await callDeaAPIWithCreds(
-    `${DEA_API_URL}cases/${caseId}/details`,
-    'GET',
-    idToken,
-    creds
-  );
-
-  expect(getResponse.status).toEqual(200);
-  return getResponse.data;
 }
