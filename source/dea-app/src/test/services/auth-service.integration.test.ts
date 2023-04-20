@@ -109,7 +109,7 @@ describe('auth service', () => {
   }, 40000);
 
   it('successfully obtain new id token using refresh token. Revoking the token should prevent future use for the refresh token', async () => {
-    const response = await useRefreshToken(refreshToken);
+    const [response] = await useRefreshToken(refreshToken);
     Joi.assert(response, Oauth2TokenSchema);
 
     // now revoke the token

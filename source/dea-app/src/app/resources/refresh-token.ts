@@ -10,7 +10,15 @@ import { okSetIdTokenCookie } from './dea-lambda-utils';
 
 export const refreshToken: DEAGatewayProxyHandler = async (event) => {
   const oauthToken = getOauthToken(event);
-  const refreshTokenResult = await useRefreshToken(oauthToken.refresh_token);
+  const [refreshTokenResult, identityPoolId, userPoolId] = await useRefreshToken(oauthToken.refresh_token);
 
-  return okSetIdTokenCookie(event, refreshTokenResult, '');
+  return okSetIdTokenCookie(
+    event,
+    refreshTokenResult,
+    JSON.stringify({
+      idToken: refreshTokenResult.id_token,
+      identityPoolId: identityPoolId,
+      userPoolId: userPoolId,
+    })
+  );
 };

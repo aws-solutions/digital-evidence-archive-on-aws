@@ -298,7 +298,7 @@ describe('lambda pre-execution checks', () => {
 
     // Get new id token with old refresh token, call API with new id token, it should fail
     // since old session with origin_jti was revoked
-    const newIdTokenForOldSession = await useRefreshToken(oauthToken.refresh_token);
+    const [newIdTokenForOldSession] = await useRefreshToken(oauthToken.refresh_token);
     await expect(callPreChecks(newIdTokenForOldSession)).rejects.toThrow(ReauthenticationError);
 
     // Try new session again it should succeed.
