@@ -13,7 +13,8 @@ export interface DeaCaseDTO {
   readonly status: CaseStatus;
   readonly filesStatus: CaseFileStatus;
   readonly description?: string;
-  readonly objectCount?: number;
+  readonly objectCount: number;
+  readonly storageSizeBytes: number;
   readonly actions?: CaseAction[];
   readonly created: string;
   readonly updated: string;

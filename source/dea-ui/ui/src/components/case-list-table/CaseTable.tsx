@@ -32,6 +32,7 @@ import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/Com
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { ConfirmModal } from '../common-components/ConfirmModal';
 import { TableHeader } from '../common-components/TableHeader';
+import { ONE_MB } from '../upload-files/UploadFilesForm';
 import { filteringOptions, filteringProperties, searchableColumns } from './caseListDefinitions';
 
 export type CaseFetcherSignature = () => DeaListResult<DeaCaseDTO>;
@@ -298,6 +299,14 @@ function CaseTable(props: CaseTableProps): JSX.Element {
           width: 220,
           minWidth: 165,
           sortingField: 'objectCount',
+        },
+        {
+          id: 'totalSize',
+          header: commonTableLabels.totalSize,
+          cell: (e) => `${Math.ceil(e.storageSizeBytes / ONE_MB)}MB`,
+          width: 220,
+          minWidth: 165,
+          sortingField: 'storageSizeBytes',
         },
         {
           id: 'created',

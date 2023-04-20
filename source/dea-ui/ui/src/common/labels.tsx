@@ -41,6 +41,7 @@ export const commonTableLabels = {
   caseNameHeader: 'Case name',
   caseLeadHeader: 'Case Lead(s)',
   objectCounterHeader: 'No. of files',
+  totalSize: 'Total Size',
   creationDateHeader: 'Creation date',
   statusHeader: 'Status',
   fileTypeHeader: 'File type',
