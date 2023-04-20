@@ -6,29 +6,16 @@ import useSWR from 'swr';
 import { httpApiGet, httpApiPost } from '../helpers/apiHelper';
 import { DeaListResult } from './cases';
 
-export interface Credentials {
-  AccessKeyId: string;
-  SecretKey: string;
-  SessionToken: string;
-}
-
 export interface TokenResponse {
   username: string;
+  idToken: string;
+  identityPoolId: string;
+  userPoolId: string;
 }
 
 export const getToken = async (authCode: string, codeVerifier: string): Promise<TokenResponse> => {
   try {
     const response: TokenResponse = await httpApiPost(`auth/${authCode}/token`, { codeVerifier });
-    return response;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
-
-export const getCredentials = async () => {
-  try {
-    const response: Credentials = await httpApiGet(`auth/credentials/exchange`, {});
     return response;
   } catch (error) {
     console.error(error);

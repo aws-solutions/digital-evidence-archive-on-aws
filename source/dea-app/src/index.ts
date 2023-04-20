@@ -28,7 +28,6 @@ import { getCaseAudit } from './app/resources/get-case-audit';
 import { getCase } from './app/resources/get-case-details';
 import { getCaseFileDetails } from './app/resources/get-case-file-details';
 import { getCaseMembership } from './app/resources/get-case-membership';
-import { getCredentials } from './app/resources/get-credentials';
 import { getLoginUrl } from './app/resources/get-login-url';
 import { getLogoutUrl } from './app/resources/get-logout-url';
 import { getMyCases } from './app/resources/get-my-cases';
@@ -73,7 +72,6 @@ export {
   revokeToken,
   getLoginUrl,
   getLogoutUrl,
-  getCredentials,
   createCases,
   deleteCase,
   getAllCases,

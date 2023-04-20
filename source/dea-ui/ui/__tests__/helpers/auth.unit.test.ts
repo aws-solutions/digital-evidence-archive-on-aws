@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import axios from 'axios';
-import { getCredentials, getToken, getLoginUrl, getLogoutUrl, revokeToken } from '../../src/api/auth';
+import { getToken, getLoginUrl, getLogoutUrl, revokeToken } from '../../src/api/auth';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -32,42 +32,6 @@ describe('auth helper', () => {
       },
     });
     await expect(getToken('badAuthCode')).rejects.toThrow('there was an error while trying to retrieve data');
-  });
-
-  it('should return credentials', async () => {
-    const expectedData = { AccessKeyId: 100, SecretKey: 'secret', SessionToken: 'abc' };
-    // id token mock
-    mockedAxios.create.mockReturnThis();
-    mockedAxios.request.mockResolvedValue({
-      data: {
-        AccessKeyId: 100,
-        SecretKey: 'secret',
-        SessionToken: 'abc',
-      },
-      status: 200,
-      statusText: 'Ok',
-      headers: {},
-      config: {},
-    });
-
-    const credentials = await getCredentials('123456');
-    expect(credentials).toEqual(expectedData);
-  });
-
-  it('should fail to return creds', async () => {
-    mockedAxios.create.mockReturnThis();
-    mockedAxios.request.mockRejectedValue({
-      response: {
-        data: {},
-        status: 400,
-        statusText: 'Bad Request',
-        headers: {},
-        config: {},
-      },
-    });
-    await expect(getCredentials('badIdToken')).rejects.toThrow(
-      'there was an error while trying to retrieve data'
-    );
   });
 
   it('should return login Url', async () => {

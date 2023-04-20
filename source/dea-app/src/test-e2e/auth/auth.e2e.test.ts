@@ -14,10 +14,8 @@ import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../helpers/au
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
-  callAuthAPIWithOauthToken,
   callDeaAPI,
   callDeaAPIWithCreds,
-  parseOauthTokenFromCookies,
   randomSuffix,
   revokeToken,
   useRefreshToken,
@@ -155,12 +153,6 @@ describe('API authentication', () => {
       { headers, validateStatus }
     );
     expect(response.status).toEqual(200);
-    const retrievedTokens = parseOauthTokenFromCookies(response);
-
-    // 3. Exchange id token for credentials
-    const credentialsUrl = `${deaApiUrl}auth/credentials/exchange`;
-    const credsResponse = await callAuthAPIWithOauthToken(credentialsUrl, retrievedTokens, true);
-    expect(credsResponse.status).toEqual(200);
   }, 60000);
 
   it('should fail with dummy auth code', async () => {
@@ -171,20 +163,6 @@ describe('API authentication', () => {
     const response = await client.get(url, { validateStatus });
     expect(response.status).toEqual(403);
     expect(response.statusText).toEqual('Forbidden');
-  });
-
-  it('should fail with dummy idToken', async () => {
-    const fakeToken: Oauth2Token = {
-      id_token: 'fake.fake.fake',
-      access_token: 'fake.fake.fake',
-      refresh_token: 'fake.fake.fake',
-      expires_in: 43200,
-      token_type: 'Bearer',
-    };
-
-    const credentialsUrl = `${deaApiUrl}auth/credentials/exchange`;
-    const credsResponse = await callAuthAPIWithOauthToken(credentialsUrl, fakeToken, true);
-    expect(credsResponse.status).toEqual(500);
   });
 
   it('should fail when the id token has been modified', async () => {
@@ -462,11 +440,6 @@ describe('API authentication', () => {
     expect(payload['family_name']).toBeDefined();
     expect(payload['given_name']).toBeDefined();
     expect(payload.sub).toBeDefined();
-
-    // Exchange id token for credentials
-    const credentialsUrl = `${deaApiUrl}auth/credentials/${idToken}/exchange`;
-    const credsResponse = await client.get(credentialsUrl, { validateStatus });
-    expect(credsResponse.status).toEqual(200);
 
     // Call a CaseWorker API, expect success
     const response = await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', retrievedTokens, creds);

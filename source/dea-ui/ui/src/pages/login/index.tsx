@@ -6,9 +6,10 @@
 import { Spinner } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { getCredentials, getToken } from '../../api/auth';
+import { getToken } from '../../api/auth';
 import { commonLabels } from '../../common/labels';
 import { useAuthentication } from '../../context/AuthenticationContext';
+import { getCredentialsByToken } from '../../helpers/authService';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,7 +29,11 @@ export default function LoginPage() {
         try {
           const response = await getToken(authCode, codeVerifier);
           const username = response.username;
-          const credentials = await getCredentials();
+          const credentials = await getCredentialsByToken(
+            response.idToken,
+            response.identityPoolId,
+            response.userPoolId
+          );
 
           localStorage.setItem('username', username);
           sessionStorage.setItem('accessKeyId', credentials.AccessKeyId);
