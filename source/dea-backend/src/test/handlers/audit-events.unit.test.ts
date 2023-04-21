@@ -501,4 +501,70 @@ describe('dea lambda audits', () => {
     }
     expect(sentInput.logEvents[0].message).toContain(`"fileHash":"1"`);
   });
+
+  it('should indicate when caseId is not included for successful CreateCase', async () => {
+    const testAuditService = getTestAuditService();
+    const theEvent = getDummyEvent();
+
+    const sut = createDeaHandler(
+      async () => {
+        return {
+          statusCode: 200,
+          body: ':D',
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    theEvent.resource = '/cases';
+    theEvent.httpMethod = 'POST';
+    theEvent.body = ':D';
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: ':D', statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).toContain(`"result":"success with warning"`);
+    expect(sentInput.logEvents[0].message).toContain(`"caseId":"ERROR: case id is absent`);
+  });
+
+  it('should add the caseId to the Audit Event for CreateCase', async () => {
+    const testAuditService = getTestAuditService();
+    const theEvent = getDummyEvent();
+
+    const sut = createDeaHandler(
+      async () => {
+        theEvent.headers['caseId'] = '1';
+        return {
+          statusCode: 200,
+          body: ':D',
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    theEvent.resource = '/cases';
+    theEvent.httpMethod = 'POST';
+    theEvent.body = ':D';
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: ':D', statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).toContain(`"caseId":"1"`);
+  });
 });

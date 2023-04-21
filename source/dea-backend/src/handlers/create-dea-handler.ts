@@ -71,10 +71,25 @@ export const createDeaHandler = (
       if (result.statusCode >= 200 && result.statusCode < 300) {
         auditEvent.result = AuditEventResult.SUCCESS;
 
+        const eventType = getEventType(event);
+
+        //Warn if caseId was not included on the CreateCase Operation
+        if (eventType == AuditEventType.CREATE_CASE) {
+          // Include case id if it was populated
+          auditEvent.caseId = event.headers['caseId'];
+          if (!auditEvent.caseId) {
+            logger.error('CaseId was not included in auditEvent after complete case creation operation.', {
+              resource: event.resource,
+              httpMethod: event.httpMethod,
+            });
+            auditEvent.caseId = 'ERROR: case id is absent';
+            auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
+          }
+        }
+
         // include file hash in event type if it was populated
         auditEvent.fileHash = event.headers['caseFileHash'];
-        // Fail if the fileHash was not included on complete upload operation
-        const eventType = getEventType(event);
+        // Warn if the fileHash was not included on complete upload operation
         if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD && !auditEvent.fileHash) {
           logger.error('File hash was not included in auditEvent after complete file upload operation.', {
             resource: event.resource,
