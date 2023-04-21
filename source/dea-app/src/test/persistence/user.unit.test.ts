@@ -3,22 +3,20 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Paged, Table } from 'dynamodb-onetable';
+import { Paged } from 'dynamodb-onetable';
 import { DeaUser, DeaUserInput } from '../../models/user';
-import { UserModelRepositoryProvider } from '../../persistence/schema/entities';
+import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { createUser, deleteUser, getUser, listUsers, updateUser } from '../../persistence/user';
-import { initLocalDb } from './local-db-table';
+import { getTestRepositoryProvider } from './local-db-table';
 
 describe('user persistence', () => {
-  let testTable: Table;
-  let modelProvider: UserModelRepositoryProvider;
+  let modelProvider: ModelRepositoryProvider;
   beforeAll(async () => {
-    testTable = await initLocalDb('userTestsTable');
-    modelProvider = { UserModel: testTable.getModel('User') };
+    modelProvider = await getTestRepositoryProvider('userTestsTable');
   });
 
   afterAll(async () => {
-    await testTable.deleteTable('DeleteTableForever');
+    await modelProvider.table.deleteTable('DeleteTableForever');
   });
 
   it('should create and get a user by id', async () => {
@@ -159,7 +157,7 @@ describe('user persistence', () => {
   });
 });
 
-const deleteAndVerifyUser = async (ulid: string, modelProvider: UserModelRepositoryProvider) => {
+const deleteAndVerifyUser = async (ulid: string, modelProvider: ModelRepositoryProvider) => {
   await deleteUser(ulid, modelProvider);
   const deletedUser1 = await getUser(ulid, modelProvider);
   expect(deletedUser1).toBeUndefined();

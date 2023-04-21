@@ -6,11 +6,20 @@
 import { CloudWatchLogsClient, GetQueryResultsCommand, QueryStatus } from '@aws-sdk/client-cloudwatch-logs';
 import { anyOfClass, anything, instance, mock, when } from 'ts-mockito';
 import { getCaseFileAudit } from '../../../app/resources/get-case-file-audit';
+import { AuditType } from '../../../persistence/schema/dea-schema';
+import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { getTestRepositoryProvider } from '../../persistence/local-db-table';
+import { startAudit } from '../audit-test-support';
 
 describe('start case file audit', () => {
   const OLD_ENV = process.env;
+
+  let modelProvider: ModelRepositoryProvider;
+  beforeAll(async () => {
+    modelProvider = await getTestRepositoryProvider('getCaseFileAuditIntegration');
+  });
 
   beforeEach(() => {
     jest.resetModules();
@@ -23,6 +32,7 @@ describe('start case file audit', () => {
   });
 
   it('responds with csv data', async () => {
+    const auditId = await startAudit(AuditType.CASEFILE, `${bogusUlid}${bogusUlid}`, modelProvider);
     const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
     const clientMockInstance = instance(clientMock);
     when(clientMock.send(anyOfClass(GetQueryResultsCommand))).thenResolve({
@@ -46,16 +56,17 @@ describe('start case file audit', () => {
       pathParameters: {
         caseId: bogusUlid,
         fileId: bogusUlid,
-        auditId: '11111111-1111-1111-1111-111111111111',
+        auditId,
       },
     });
-    const result = await getCaseFileAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
 
     expect(result.statusCode).toEqual(200);
     expect(result.body).toEqual(expectedCSV);
   });
 
   it('returns status if not complete', async () => {
+    const auditId = await startAudit(AuditType.CASEFILE, `${bogusUlid}${bogusUlid}`, modelProvider);
     const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
     const clientMockInstance = instance(clientMock);
     when(clientMock.send(anything())).thenResolve({ $metadata: {}, status: QueryStatus.Running });
@@ -64,16 +75,17 @@ describe('start case file audit', () => {
       pathParameters: {
         caseId: bogusUlid,
         fileId: bogusUlid,
-        auditId: '11111111-1111-1111-1111-111111111111',
+        auditId,
       },
     });
-    const result = await getCaseFileAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Running');
   });
 
   it('returns complete with no data if data is not returned', async () => {
+    const auditId = await startAudit(AuditType.CASEFILE, `${bogusUlid}${bogusUlid}`, modelProvider);
     const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
     const clientMockInstance = instance(clientMock);
     when(clientMock.send(anything())).thenResolve({ $metadata: {}, status: QueryStatus.Complete });
@@ -82,10 +94,10 @@ describe('start case file audit', () => {
       pathParameters: {
         caseId: bogusUlid,
         fileId: bogusUlid,
-        auditId: '11111111-1111-1111-1111-111111111111',
+        auditId,
       },
     });
-    const result = await getCaseFileAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Complete');
@@ -93,6 +105,7 @@ describe('start case file audit', () => {
   });
 
   it('returns complete with no data if data is empty', async () => {
+    const auditId = await startAudit(AuditType.CASEFILE, `${bogusUlid}${bogusUlid}`, modelProvider);
     const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
     const clientMockInstance = instance(clientMock);
     when(clientMock.send(anything())).thenResolve({
@@ -105,10 +118,10 @@ describe('start case file audit', () => {
       pathParameters: {
         caseId: bogusUlid,
         fileId: bogusUlid,
-        auditId: '11111111-1111-1111-1111-111111111111',
+        auditId,
       },
     });
-    const result = await getCaseFileAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Complete');
@@ -116,6 +129,7 @@ describe('start case file audit', () => {
   });
 
   it('returns unknown status if the status is not provided', async () => {
+    const auditId = await startAudit(AuditType.CASEFILE, `${bogusUlid}${bogusUlid}`, modelProvider);
     const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
     const clientMockInstance = instance(clientMock);
     when(clientMock.send(anything())).thenResolve({ $metadata: {} });
@@ -124,10 +138,10 @@ describe('start case file audit', () => {
       pathParameters: {
         caseId: bogusUlid,
         fileId: bogusUlid,
-        auditId: '11111111-1111-1111-1111-111111111111',
+        auditId,
       },
     });
-    const result = await getCaseFileAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');

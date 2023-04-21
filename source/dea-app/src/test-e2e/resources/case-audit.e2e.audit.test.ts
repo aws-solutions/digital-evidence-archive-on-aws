@@ -7,7 +7,7 @@ import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
 import { AuditEventType } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
-import { joiUuid } from '../../models/validation/joi-common';
+import { joiUlid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import { callDeaAPIWithCreds, createCaseSuccess, delay, deleteCase, randomSuffix } from './test-helpers';
@@ -15,17 +15,23 @@ import { callDeaAPIWithCreds, createCaseSuccess, delay, deleteCase, randomSuffix
 describe('case audit e2e', () => {
   const cognitoHelper = new CognitoHelper();
 
-  const testUser = `caseAuditTestUser${randomSuffix()}`;
+  const suffix = randomSuffix();
+  const testUser = `caseAuditTestUser${suffix}`;
+  const unauthorizedUser = `caseAuditTestUserUnauth${suffix}`;
   const deaApiUrl = testEnv.apiUrlOutput;
   let creds: Credentials;
   let idToken: Oauth2Token;
+  let managerCreds: Credentials;
+  let managerToken: Oauth2Token;
 
   const caseIdsToDelete: string[] = [];
 
   beforeAll(async () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'CaseWorker', 'CaseAudit', 'TestUser');
+    await cognitoHelper.createUser(unauthorizedUser, 'EvidenceManager', 'CaseAudit', 'UnauthorizedUser');
     [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
+    [managerCreds, managerToken] = await cognitoHelper.getCredentialsForUser(unauthorizedUser);
   }, 10000);
 
   afterAll(async () => {
@@ -93,7 +99,7 @@ describe('case audit e2e', () => {
 
       expect(startAuditQueryResponse.status).toEqual(200);
       const auditId: string = startAuditQueryResponse.data.auditId;
-      Joi.assert(auditId, joiUuid);
+      Joi.assert(auditId, joiUlid);
 
       let retries = 5;
       let getQueryReponse = await callDeaAPIWithCreds(
@@ -140,4 +146,41 @@ describe('case audit e2e', () => {
     expect(csvData).toContain(AuditEventType.UPDATE_CASE_DETAILS);
     expect(csvData).toContain(AuditEventType.GET_USERS_FROM_CASE);
   }, 180000);
+
+  it('should prevent retrieval by an unauthorized user', async () => {
+    const caseName = `auditTestCase${randomSuffix()}`;
+    const createdCase = await createCaseSuccess(
+      deaApiUrl,
+      {
+        name: caseName,
+        description: 'this is a description',
+      },
+      idToken,
+      creds
+    );
+    const caseUlid = createdCase.ulid ?? fail();
+    caseIdsToDelete.push(caseUlid);
+
+    //get an audit id with an authorized user (case membership)
+    const startAuditQueryResponse = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${caseUlid}/audit`,
+      'POST',
+      idToken,
+      creds
+    );
+
+    expect(startAuditQueryResponse.status).toEqual(200);
+    const auditId: string = startAuditQueryResponse.data.auditId;
+    Joi.assert(auditId, joiUlid);
+
+    // now use that audit id with an unauthorized user via a different csv endpoint that they have access to
+    const getQueryReponse = await callDeaAPIWithCreds(
+      `${deaApiUrl}system/audit/${auditId}/csv`,
+      'GET',
+      managerToken,
+      managerCreds
+    );
+
+    expect(getQueryReponse.status).toEqual(404);
+  });
 });

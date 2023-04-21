@@ -25,6 +25,9 @@ export const JobModel: Model<JobType> = deaTable.getModel('Job');
 export type UserType = Entity<typeof DeaSchema.models.User>;
 export const UserModel: Model<UserType> = deaTable.getModel('User');
 
+export type AuditJobType = Entity<typeof DeaSchema.models.AuditJob>;
+export const AuditJobModel: Model<AuditJobType> = deaTable.getModel('AuditJob');
+
 export interface CaseModelRepositoryProvider {
   CaseModel: Model<CaseType>;
 }
@@ -49,13 +52,18 @@ export interface UserModelRepositoryProvider {
   UserModel: Model<UserType>;
 }
 
+export interface AuditJobModelRepositoryProvider {
+  AuditJobModel: Model<AuditJobType>;
+}
+
 export interface ModelRepositoryProvider
   extends CaseModelRepositoryProvider,
     CaseUserModelRepositoryProvider,
     CaseFileModelRepositoryProvider,
     SessionModelRepositoryProvider,
     JobModelRepositoryProvider,
-    UserModelRepositoryProvider {
+    UserModelRepositoryProvider,
+    AuditJobModelRepositoryProvider {
   table: Table;
 }
 
@@ -67,4 +75,5 @@ export const defaultProvider: ModelRepositoryProvider = {
   SessionModel: SessionModel,
   JobModel: JobModel,
   UserModel: UserModel,
+  AuditJobModel: AuditJobModel,
 };

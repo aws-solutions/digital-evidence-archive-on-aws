@@ -15,16 +15,16 @@
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
+    "acl:only": ". ../common/scripts/setEnv.sh && heft test --no-build --disable-code-coverage --test-path-pattern '.*/*e2e.acl.test.*'",
     "add-license-header": "license-check-and-add add -f license-add-config.json",
+    "audit:only": ". ../common/scripts/setEnv.sh && heft test --no-build --disable-code-coverage --test-path-pattern '.*/*e2e.audit.test.*'",
     "build": "heft build",
     "build:clean": "heft build --clean",
     "build:test": "heft test && rushx pkg-json-lint && rushx make-badges",
     "check-license-header": "license-check-and-add check -f license-add-config.json",
     "create-cognito-user": ". ../common/scripts/setEnv.sh && npx ts-node src/test/local-dev-support/create-user.ts",
     "delete-cognito-user": ". ../common/scripts/setEnv.sh && npx ts-node src/test/local-dev-support/delete-user.ts",
-    "acl:only": ". ../common/scripts/setEnv.sh && heft test --no-build --disable-code-coverage --test-path-pattern '.*/*e2e.acl.test.*'",
     "e2e:only": ". ../common/scripts/setEnv.sh && heft test --no-build --disable-code-coverage --test-path-pattern '.*/*e2e.test.*'",
-    "audit:only": ". ../common/scripts/setEnv.sh && heft test --no-build --disable-code-coverage --test-path-pattern '.*/*e2e.audit.test.*'",
     "get-user-creds": ". ../common/scripts/setEnv.sh && npx ts-node src/test/local-dev-support/get-user-creds.ts",
     "idp-test-setup": ". ../common/scripts/setEnv.sh && npx ts-node src/test/local-dev-support/idp-test-setup.ts",
     "integration:only": ". ../common/scripts/setEnv.sh && heft test --no-build --disable-code-coverage  --test-path-pattern '.*/*integration.test.*'",
@@ -57,9 +57,9 @@
     "crypto-js": "^4.1.1",
     "jsonwebtoken": "~9.0.0",
     "lodash": "^4.17.21",
+    "pkce-challenge": "^3.0.0",
     "puppeteer": "19.8.0",
-    "uuid": "^9.0.0",
-    "pkce-challenge": "^3.0.0"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@aws-sdk/client-cloudwatch-logs": "~3.299.0",
@@ -107,7 +107,7 @@
     "ts-mockito": "~2.6.1",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.2",
-    "wait-port": "~1.0.4",
-    "ulid": "~2.3.0"
+    "ulid": "~2.3.0",
+    "wait-port": "~1.0.4"
   }
 }

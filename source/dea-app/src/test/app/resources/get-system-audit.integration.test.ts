@@ -6,10 +6,19 @@
 import { CloudWatchLogsClient, GetQueryResultsCommand, QueryStatus } from '@aws-sdk/client-cloudwatch-logs';
 import { anyOfClass, anything, instance, mock, when } from 'ts-mockito';
 import { getSystemAudit } from '../../../app/resources/get-system-audit';
+import { AuditType } from '../../../persistence/schema/dea-schema';
+import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { getTestRepositoryProvider } from '../../persistence/local-db-table';
+import { startAudit } from '../audit-test-support';
 
 describe('get system audit', () => {
   const OLD_ENV = process.env;
+
+  let modelProvider: ModelRepositoryProvider;
+  beforeAll(async () => {
+    modelProvider = await getTestRepositoryProvider('getSystemAuditIntegration');
+  });
 
   beforeEach(() => {
     jest.resetModules();
@@ -23,6 +32,7 @@ describe('get system audit', () => {
   });
 
   it('responds with csv data', async () => {
+    const auditId = await startAudit(AuditType.SYSTEM, 'SYSTEM', modelProvider);
     const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
     const clientMockInstance = instance(clientMock);
     when(clientMock.send(anyOfClass(GetQueryResultsCommand))).thenResolve({
@@ -44,42 +54,44 @@ describe('get system audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        auditId: '11111111-1111-1111-1111-111111111111',
+        auditId,
       },
     });
-    const result = await getSystemAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getSystemAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
 
     expect(result.statusCode).toEqual(200);
     expect(result.body).toEqual(expectedCSV);
   });
 
   it('returns status if not complete', async () => {
+    const auditId = await startAudit(AuditType.SYSTEM, 'SYSTEM', modelProvider);
     const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
     const clientMockInstance = instance(clientMock);
     when(clientMock.send(anything())).thenResolve({ $metadata: {}, status: QueryStatus.Running });
 
     const event = getDummyEvent({
       pathParameters: {
-        auditId: '11111111-1111-1111-1111-111111111111',
+        auditId,
       },
     });
-    const result = await getSystemAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getSystemAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Running');
   });
 
   it('returns complete with no data if data is not returned', async () => {
+    const auditId = await startAudit(AuditType.SYSTEM, 'SYSTEM', modelProvider);
     const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
     const clientMockInstance = instance(clientMock);
     when(clientMock.send(anything())).thenResolve({ $metadata: {}, status: QueryStatus.Complete });
 
     const event = getDummyEvent({
       pathParameters: {
-        auditId: '11111111-1111-1111-1111-111111111111',
+        auditId,
       },
     });
-    const result = await getSystemAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getSystemAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Complete');
@@ -87,6 +99,7 @@ describe('get system audit', () => {
   });
 
   it('returns complete with no data if data is empty', async () => {
+    const auditId = await startAudit(AuditType.SYSTEM, 'SYSTEM', modelProvider);
     const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
     const clientMockInstance = instance(clientMock);
     when(clientMock.send(anything())).thenResolve({
@@ -97,10 +110,10 @@ describe('get system audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        auditId: '11111111-1111-1111-1111-111111111111',
+        auditId,
       },
     });
-    const result = await getSystemAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getSystemAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Complete');
@@ -108,16 +121,17 @@ describe('get system audit', () => {
   });
 
   it('returns unknown status if the status is not provided', async () => {
+    const auditId = await startAudit(AuditType.SYSTEM, 'SYSTEM', modelProvider);
     const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
     const clientMockInstance = instance(clientMock);
     when(clientMock.send(anything())).thenResolve({ $metadata: {} });
 
     const event = getDummyEvent({
       pathParameters: {
-        auditId: '11111111-1111-1111-1111-111111111111',
+        auditId,
       },
     });
-    const result = await getSystemAudit(event, dummyContext, undefined, undefined, clientMockInstance);
+    const result = await getSystemAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');
