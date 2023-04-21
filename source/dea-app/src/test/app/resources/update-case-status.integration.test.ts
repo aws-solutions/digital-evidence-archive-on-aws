@@ -35,6 +35,7 @@ import {
   callInitiateCaseFileUpload,
   callUpdateCaseStatusAndValidate,
   DATASETS_PROVIDER,
+  FILE_SIZE_BYTES,
   validateCaseStatusUpdatedAsExpected,
 } from './case-file-integration-test-helper';
 
@@ -113,7 +114,8 @@ describe('update case status', () => {
       CaseFileStatus.DELETING,
       jobId,
       repositoryProvider,
-      1
+      1,
+      FILE_SIZE_BYTES
     );
 
     validateS3Mocks(createdCase.ulid, caseFile.ulid);
@@ -208,7 +210,8 @@ describe('update case status', () => {
       CaseFileStatus.DELETING,
       jobId,
       repositoryProvider,
-      1
+      1,
+      FILE_SIZE_BYTES
     );
 
     await expect(
@@ -340,7 +343,8 @@ describe('update case status', () => {
       CaseFileStatus.DELETE_FAILED,
       undefined,
       repositoryProvider,
-      1
+      1,
+      FILE_SIZE_BYTES
     );
 
     validateS3Mocks(createdCase.ulid, caseFile.ulid);
@@ -372,7 +376,8 @@ describe('update case status', () => {
       CaseFileStatus.DELETE_FAILED,
       undefined,
       repositoryProvider,
-      1
+      1,
+      FILE_SIZE_BYTES
     );
 
     validateS3Mocks(createdCase.ulid, caseFile.ulid);

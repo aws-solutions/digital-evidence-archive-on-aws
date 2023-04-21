@@ -89,7 +89,7 @@ describe('case persistence', () => {
         status: CaseStatus.ACTIVE,
         filesStatus: CaseFileStatus.ACTIVE,
         objectCount: 0,
-        storageSizeBytes: 0,
+        totalSizeBytes: 0,
         created: listCase1Created,
         updated: listCase1Updated,
       },
@@ -99,7 +99,7 @@ describe('case persistence', () => {
         status: CaseStatus.ACTIVE,
         filesStatus: CaseFileStatus.ACTIVE,
         objectCount: 0,
-        storageSizeBytes: 0,
+        totalSizeBytes: 0,
         created: listCase2Created,
         updated: listCase2Updated,
       },
@@ -110,7 +110,7 @@ describe('case persistence', () => {
         filesStatus: CaseFileStatus.ACTIVE,
         description: 'TheDescription',
         objectCount: 0,
-        storageSizeBytes: 0,
+        totalSizeBytes: 0,
         created: testCase.created,
         updated: testCase.updated,
       },
@@ -151,7 +151,7 @@ describe('case persistence', () => {
       updated: createdCase?.updated,
       status: CaseStatus.ACTIVE,
       objectCount: 0,
-      storageSizeBytes: 0,
+      totalSizeBytes: 0,
       filesStatus: CaseFileStatus.ACTIVE,
       ...currentTestCase,
     };
@@ -164,7 +164,7 @@ describe('case persistence', () => {
       status: CaseStatus.ACTIVE,
       filesStatus: CaseFileStatus.ACTIVE,
       objectCount: 0,
-      storageSizeBytes: 0,
+      totalSizeBytes: 0,
       description: 'The first 6 were better',
     };
 
@@ -173,7 +173,7 @@ describe('case persistence', () => {
     const updateCheck: DeaCase = {
       ...updateTestCase,
       objectCount: updatedCase?.objectCount,
-      storageSizeBytes: 0,
+      totalSizeBytes: 0,
       created: createdCase?.created,
       updated: updatedCase?.updated,
     };
@@ -209,7 +209,7 @@ describe('case persistence', () => {
       updated: createdCase?.updated,
       status: CaseStatus.ACTIVE,
       objectCount: 0,
-      storageSizeBytes: 0,
+      totalSizeBytes: 0,
       filesStatus: CaseFileStatus.ACTIVE,
       ...currentTestCase,
     };

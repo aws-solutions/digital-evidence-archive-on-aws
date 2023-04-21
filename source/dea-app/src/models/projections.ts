@@ -27,7 +27,7 @@ export const caseFromEntity = (caseEntity: CaseType): DeaCase => {
     name: caseEntity.name,
     description: caseEntity.description,
     objectCount: caseEntity.objectCount,
-    storageSizeBytes: caseEntity.storageSizeBytes,
+    totalSizeBytes: caseEntity.totalSizeBytes,
     // status schema is defined with CaseStatus so we can safely cast here
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     status: caseEntity.status as CaseStatus,
@@ -48,7 +48,7 @@ export const myCaseFromEntityAndActionsMap = (
     name: caseEntity.name,
     description: caseEntity.description,
     objectCount: caseEntity.objectCount,
-    storageSizeBytes: caseEntity.storageSizeBytes,
+    totalSizeBytes: caseEntity.totalSizeBytes,
     // status schema is defined with CaseStatus so we can safely cast here
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     status: caseEntity.status as CaseStatus,

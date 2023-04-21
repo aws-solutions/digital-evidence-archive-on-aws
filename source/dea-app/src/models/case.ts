@@ -13,7 +13,7 @@ export interface DeaCase {
   readonly status: CaseStatus;
   readonly description?: string;
   readonly objectCount: number;
-  readonly storageSizeBytes: number;
+  readonly totalSizeBytes: number;
   readonly filesStatus: CaseFileStatus;
   readonly s3BatchJobId?: string;
   readonly created?: Date;

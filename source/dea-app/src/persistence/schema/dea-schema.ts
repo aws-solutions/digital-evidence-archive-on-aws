@@ -30,7 +30,7 @@ export const DeaSchema = {
       status: { type: String, required: true, enum: Object.keys(CaseStatus) },
       description: { type: String, validate: allButDisallowed },
       objectCount: { type: Number, required: true, default: 0 },
-      storageSizeBytes: { type: Number, required: true, default: 0 },
+      totalSizeBytes: { type: Number, required: true, default: 0 },
       filesStatus: { type: String, required: true, enum: Object.keys(CaseFileStatus) },
       s3BatchJobId: { type: String },
       //managed by onetable - but included for entity generation

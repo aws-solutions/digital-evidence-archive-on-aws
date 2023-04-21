@@ -41,7 +41,7 @@ const CASE_DESCRIPTION = 'Yummy';
 const FILE_NAME = 'tuna.jpeg';
 const FILE_PATH = '/food/sushi/';
 const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
-const FILE_SIZE_BYTES = 50;
+export const FILE_SIZE_BYTES = 50;
 export const CHUNK_SIZE_BYTES = 499 * ONE_MB;
 const CONTENT_TYPE = 'image/jpeg';
 const REASON = 'none';
@@ -262,7 +262,8 @@ export async function validateCaseStatusUpdatedAsExpected(
   filesStatus: CaseFileStatus,
   s3BatchJobId: string | undefined,
   repositoryProvider: ModelRepositoryProvider,
-  objectCount = 0
+  objectCount = 0,
+  totalSizeBytes = 0
 ) {
   if (!updatedCase.updated || !createdCase.updated) {
     fail();
@@ -277,6 +278,7 @@ export async function validateCaseStatusUpdatedAsExpected(
     filesStatus,
     s3BatchJobId,
     objectCount,
+    totalSizeBytes,
   });
 
   if (s3BatchJobId) {

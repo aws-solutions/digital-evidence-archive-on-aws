@@ -23,6 +23,7 @@ export const caseResponseSchema = Joi.object({
   status: caseStatus,
   description: safeDescription,
   objectCount: Joi.number(),
+  totalSizeBytes: Joi.number(),
   filesStatus: caseFileStatus,
   s3BatchJobId: s3Identifier,
   created: Joi.date(),

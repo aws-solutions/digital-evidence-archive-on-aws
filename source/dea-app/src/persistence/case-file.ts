@@ -52,7 +52,7 @@ export const completeCaseFileUpload = async (
       SK: 'CASE#',
     },
     {
-      add: { objectCount: 1, storageSizeBytes: deaCaseFile.fileSizeBytes },
+      add: { objectCount: 1, totalSizeBytes: deaCaseFile.fileSizeBytes },
       transaction,
     }
   );
