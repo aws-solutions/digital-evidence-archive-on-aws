@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Paged } from 'dynamodb-onetable';
+import { OneTableError, Paged } from 'dynamodb-onetable';
 import { logger } from '../../logger';
 import { DeaCase, DeaCaseInput, MyCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
@@ -18,6 +18,7 @@ import { createJob } from '../../persistence/job';
 import { isDefined } from '../../persistence/persistence-helpers';
 import { CaseType, ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, startDeleteCaseFilesS3BatchJob } from '../../storage/datasets';
+import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseUserService from './case-user-service';
 
 export const createCases = async (
@@ -25,9 +26,21 @@ export const createCases = async (
   owner: DeaUser,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCase> => {
-  const createdCase = await CasePersistence.createCase(deaCase, owner, repositoryProvider);
-
-  return createdCase;
+  try {
+    return await CasePersistence.createCase(deaCase, owner, repositoryProvider);
+  } catch (error) {
+    // Check if OneTableError happened because the case name is already in use.
+    if ('code' in error) {
+      const oneTableError: OneTableError = error;
+      const conditionalcheckfailed = oneTableError.context?.err?.CancellationReasons.find(
+        (reason: { Code: string }) => reason.Code === 'ConditionalCheckFailed'
+      );
+      if (oneTableError.code === 'TransactionCanceledException' && conditionalcheckfailed) {
+        throw new ValidationError(`Case with name "${deaCase.name}" is already in use`);
+      }
+    }
+    throw error;
+  }
 };
 
 export const listAllCases = async (

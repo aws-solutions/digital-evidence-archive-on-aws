@@ -13,6 +13,7 @@ import {
   PutLogEventsCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
 import { now } from 'lodash';
+import { ulid } from 'ulid';
 import { getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { CJISAuditEventBody } from '../services/audit-service';
@@ -28,7 +29,7 @@ export default class DeaAuditWriter implements Writer {
   private _logStreamName: string;
 
   public constructor(private cloudwatchClient: CloudWatchLogsClient) {
-    this._logStreamName = `${lambdaName}-${new Date().toISOString()}`.replaceAll(':', '');
+    this._logStreamName = `${lambdaName}-${ulid()}`.replaceAll(':', '');
     if (auditLogGroup !== 'NO_AUDIT_LOG_GROUP') {
       const createLogStreamCommand = new CreateLogStreamCommand({
         logGroupName: auditLogGroup,

@@ -15,7 +15,7 @@ export const getToken: DEAGatewayProxyHandler = async (event) => {
   const authCode = getRequiredPathParam(event, 'authCode', authCodeRegex);
   const tokenPayload: ExchangeToken = getRequiredPayload(event, 'exchange token', ExchangeTokenSchema);
 
-  const getTokenResult = await exchangeAuthorizationCode(
+  const [getTokenResult, identityPoolId, userPoolId] = await exchangeAuthorizationCode(
     authCode,
     tokenPayload.codeVerifier,
     event.headers['origin'],
@@ -31,5 +31,14 @@ export const getToken: DEAGatewayProxyHandler = async (event) => {
     username = `${idTokenPayload['given_name']} ${idTokenPayload['family_name']}`;
   }
 
-  return okSetIdTokenCookie(event, getTokenResult, JSON.stringify({ username }));
+  return okSetIdTokenCookie(
+    event,
+    getTokenResult,
+    JSON.stringify({
+      username,
+      idToken: getTokenResult.id_token,
+      identityPoolId: identityPoolId,
+      userPoolId: userPoolId,
+    })
+  );
 };

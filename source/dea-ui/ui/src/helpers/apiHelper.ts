@@ -3,11 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { aws4Interceptor, Credentials } from 'aws4-axios';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
 let urlBase = process.env.NEXT_PUBLIC_DEA_API_URL;
 if (typeof window !== 'undefined' && !urlBase) {
-  urlBase = `https://${window.location.hostname}`;
+  urlBase = `https://${window.location.hostname}/${process.env.NEXT_PUBLIC_STAGE}/`;
 }
 
 const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
@@ -38,6 +38,10 @@ const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
   }
   const { data } = await client.request(options).catch((error: Error) => {
     console.log(error);
+    if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST') {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data);
+    }
     // TODO: call logger to capture exception
     throw new Error('there was an error while trying to retrieve data');
   });

@@ -13,7 +13,6 @@ import {
   revokeRefreshToken,
   useRefreshToken,
 } from '../../app/services/auth-service';
-import { Oauth2Token } from '../../models/auth';
 import { Oauth2TokenSchema } from '../../models/validation/auth';
 import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../test-e2e/helpers/cognito-helper';
@@ -63,7 +62,7 @@ describe('auth service', () => {
       cognitoHelper.testPassword,
       pkceStrings.code_challenge
     );
-    const tokens: Oauth2Token = await exchangeAuthorizationCode(
+    const [tokens] = await exchangeAuthorizationCode(
       authCode,
       pkceStrings.code_verifier,
       undefined,
@@ -94,7 +93,7 @@ describe('auth service', () => {
       cognitoHelper.testPassword,
       pkceStrings.code_challenge
     );
-    const { id_token } = await exchangeAuthorizationCode(
+    const [{ id_token }] = await exchangeAuthorizationCode(
       authCode,
       pkceStrings.code_verifier,
       undefined,
@@ -110,7 +109,7 @@ describe('auth service', () => {
   }, 40000);
 
   it('successfully obtain new id token using refresh token. Revoking the token should prevent future use for the refresh token', async () => {
-    const response = await useRefreshToken(refreshToken);
+    const [response] = await useRefreshToken(refreshToken);
     Joi.assert(response, Oauth2TokenSchema);
 
     // now revoke the token

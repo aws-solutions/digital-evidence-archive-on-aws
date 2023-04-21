@@ -4,7 +4,7 @@ import { act, cleanup, fireEvent, getByRole, render, screen, waitFor } from '@te
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import Axios from 'axios';
-import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
+import { auditLogLabels, caseDetailLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
@@ -171,7 +171,7 @@ describe('CaseDetailsPage', () => {
   it('renders a case details page', async () => {
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url === 'https://localhostcases/100/details') {
+      if (eventObj.url?.endsWith('100/details')) {
         return Promise.resolve({
           data: mockedCaseDetail,
           status: 200,
@@ -179,7 +179,7 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+      } else if (eventObj.url?.endsWith('100/actions')) {
         return Promise.resolve({
           data: mockedCaseActions,
           status: 200,
@@ -187,7 +187,7 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === 'https://localhostcases/100/files?filePath=/food/') {
+      } else if (eventObj.url?.endsWith('files?filePath=/food/')) {
         return Promise.resolve({
           data: mockFilesFood,
           status: 200,
@@ -262,7 +262,7 @@ describe('CaseDetailsPage', () => {
     const OTHER_USER_ID = mockedUsers.users[1].ulid;
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url === `https://localhostcases/${CASE_ID}/details`) {
+      if (eventObj.url?.endsWith(`${CASE_ID}/details`)) {
         return Promise.resolve({
           data: mockedCaseDetail,
           status: 200,
@@ -270,7 +270,7 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+      } else if (eventObj.url?.endsWith('100/actions')) {
         return Promise.resolve({
           data: mockedCaseActions,
           status: 200,
@@ -278,7 +278,7 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === `https://localhostcases/${CASE_ID}/userMemberships`) {
+      } else if (eventObj.url?.endsWith(`${CASE_ID}/userMemberships`)) {
         if (eventObj.method === 'POST') {
           return Promise.resolve({
             data: {},
@@ -295,7 +295,7 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === `https://localhostcases/${CASE_ID}//users/${ACTIVE_USER_ID}/memberships`) {
+      } else if (eventObj.url?.endsWith(`${CASE_ID}/users/${ACTIVE_USER_ID}/memberships`)) {
         if (eventObj.method === 'DELETE') {
           return Promise.resolve({
             data: {},
@@ -417,7 +417,7 @@ describe('CaseDetailsPage', () => {
   it('navigates to upload files page', async () => {
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url === 'https://localhostcases/100/actions') {
+      if (eventObj.url?.endsWith('actions')) {
         return Promise.resolve({
           data: mockedCaseActions,
           status: 200,
@@ -447,7 +447,7 @@ describe('CaseDetailsPage', () => {
   it('downloads a case audit', async () => {
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url === 'https://localhostcases/100/details') {
+      if (eventObj.url?.endsWith('details')) {
         return Promise.resolve({
           data: mockedCaseDetail,
           status: 200,
@@ -455,7 +455,7 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+      } else if (eventObj.url?.endsWith('actions')) {
         return Promise.resolve({
           data: mockedCaseActions,
           status: 200,
@@ -463,7 +463,7 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === 'https://localhostcases/abc/audit') {
+      } else if (eventObj.url?.endsWith('audit')) {
         return Promise.resolve({
           data: { auditId: '11111111-1111-1111-1111-111111111111' },
           status: 200,
@@ -471,9 +471,7 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
-      } else if (
-        eventObj.url === 'https://localhostcases/abc/audit/11111111-1111-1111-1111-111111111111/csv'
-      ) {
+      } else if (eventObj.url?.endsWith('csv')) {
         return Promise.resolve({
           data: csvResult[++csvCall],
           status: 200,
@@ -508,7 +506,7 @@ describe('CaseDetailsPage', () => {
   it('recovers from a from a csv download failure', async () => {
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url === 'https://localhostcases/100/details') {
+      if (eventObj.url?.endsWith('details')) {
         return Promise.resolve({
           data: mockedCaseDetail,
           status: 200,
@@ -516,7 +514,7 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+      } else if (eventObj.url?.endsWith('actions')) {
         return Promise.resolve({
           data: mockedCaseActions,
           status: 200,
@@ -524,7 +522,7 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === 'https://localhostcases/abc/audit') {
+      } else if (eventObj.url?.endsWith('audit')) {
         return Promise.resolve({
           data: { auditId: '11111111-1111-1111-1111-111111111111' },
           status: 200,
@@ -532,9 +530,7 @@ describe('CaseDetailsPage', () => {
           headers: {},
           config: {},
         });
-      } else if (
-        eventObj.url === 'https://localhostcases/abc/audit/11111111-1111-1111-1111-111111111111/csv'
-      ) {
+      } else if (eventObj.url?.endsWith('csv')) {
         return Promise.resolve({
           data: failingCsvResult[++failingCall],
           status: 200,

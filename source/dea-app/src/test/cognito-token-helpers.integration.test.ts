@@ -6,11 +6,13 @@
 import { getDeaUserFromToken, getTokenPayload } from '../cognito-token-helpers';
 import CognitoHelper from '../test-e2e/helpers/cognito-helper';
 import { testEnv } from '../test-e2e/helpers/settings';
+import { randomSuffix } from '../test-e2e/resources/test-helpers';
 
 describe('cognito helpers integration test', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
-  const testUser = 'cognitoHelpersIntegrationTestUser';
+  const suffix = randomSuffix(5);
+  const testUser = `cognitoHelpersIntegrationTestUser${suffix}`;
   const firstName = 'CognitoTokenHelper';
   const lastName = 'TestUser';
   const region = testEnv.awsRegion;

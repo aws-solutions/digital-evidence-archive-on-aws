@@ -134,7 +134,7 @@ export const auditLogLabels = {
   emptyAuditLabel: 'No audit',
   noDisplayAuditLabel: 'No audit to display.',
   loadingLabel: 'loading audit log',
-  errorLabel: 'Error downloading case audit. Audit query is empty or encountered an error or cancellation.',
+  errorLabel: 'Error downloading audit logs. Audit query is empty or encountered an error or cancellation.',
 };
 
 export const manageCaseAccessLabels = {
@@ -257,4 +257,11 @@ export const breadcrumbLabels = {
   caseDetailsLabel: 'Case Details',
   manageCaseLabel: 'Manage Case',
   uploadFilesAndFoldersLabel: 'Upload folders/files',
+};
+
+export const navigationLabels = {
+  documentationLabel: 'Documentation',
+  myCasesLabel: 'My Cases',
+  allSystemCasesLabel: 'All System Cases',
+  systemAuditLogsLabel: 'Download System Audit Log',
 };

@@ -5,7 +5,7 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { logger } from '../logger';
-import { DeaCaseFile, InitiateCaseFileUploadDTO } from '../models/case-file';
+import { DeaCaseFile, DeaCaseFileResult, InitiateCaseFileUploadDTO } from '../models/case-file';
 import { CaseFileStatus } from '../models/case-file-status';
 import { caseFileFromEntity } from '../models/projections';
 import { S3Object } from '../storage/datasets';
@@ -18,7 +18,7 @@ export const initiateCaseFileUpload = async (
   uploadDTO: InitiateCaseFileUploadDTO,
   userUlid: string,
   repositoryProvider: ModelRepositoryProvider
-): Promise<DeaCaseFile> => {
+): Promise<DeaCaseFileResult> => {
   // strip out chunkSizeBytes before saving in dynamo-db
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { chunkSizeBytes, ...deaCaseFile } = uploadDTO;
@@ -35,7 +35,7 @@ export const initiateCaseFileUpload = async (
 export const completeCaseFileUpload = async (
   deaCaseFile: DeaCaseFile,
   repositoryProvider: ModelRepositoryProvider
-): Promise<DeaCaseFile> => {
+): Promise<DeaCaseFileResult> => {
   const transaction = {};
   const newEntity = await repositoryProvider.CaseFileModel.update(
     {
@@ -141,7 +141,7 @@ export const getCaseFileByUlid = async (
   ulid: string,
   caseUlid: string,
   repositoryProvider: ModelRepositoryProvider
-): Promise<DeaCaseFile | undefined> => {
+): Promise<DeaCaseFileResult | undefined> => {
   const caseFileEntity = await repositoryProvider.CaseFileModel.get({
     PK: `CASE#${caseUlid}#`,
     SK: `FILE#${ulid}#`,
@@ -158,7 +158,7 @@ export const getCaseFileByFileLocation = async (
   filePath: string,
   fileName: string,
   repositoryProvider: ModelRepositoryProvider
-): Promise<DeaCaseFile | undefined> => {
+): Promise<DeaCaseFileResult | undefined> => {
   const caseFileEntity = await repositoryProvider.CaseFileModel.get(
     {
       GSI2PK: `CASE#${caseUlid}#${filePath}${fileName}#`,
@@ -181,7 +181,7 @@ export const listCaseFilesByFilePath = async (
   limit: number,
   repositoryProvider: ModelRepositoryProvider,
   nextToken?: object
-): Promise<Paged<DeaCaseFile>> => {
+): Promise<Paged<DeaCaseFileResult>> => {
   const caseFileEntities = await repositoryProvider.CaseFileModel.find(
     {
       GSI1PK: `CASE#${caseUlid}#${filePath}#`,
@@ -193,7 +193,7 @@ export const listCaseFilesByFilePath = async (
     }
   );
 
-  const caseFiles: Paged<DeaCaseFile> = caseFileEntities
+  const caseFiles: Paged<DeaCaseFileResult> = caseFileEntities
     .map((entity) => caseFileFromEntity(entity))
     .filter(isDefined);
   caseFiles.count = caseFileEntities.length;

@@ -12,12 +12,14 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { aws4Interceptor, Credentials } from 'aws4-axios';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import sha256 from 'crypto-js/sha256';
 import Joi from 'joi';
+import { AuditEventType } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { DeaCaseFile } from '../../models/case-file';
+import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
@@ -59,6 +61,46 @@ export async function deleteCase(
   expect(response.status).toEqual(204);
 }
 
+export async function deleteCaseFiles(
+  baseUrl: string,
+  caseUlid: string,
+  caseName: string,
+  filePath: string,
+  idToken: Oauth2Token,
+  creds: Credentials
+) {
+  let updatedCase = await updateCaseStatus(
+    baseUrl,
+    idToken,
+    creds,
+    caseUlid,
+    caseName,
+    CaseStatus.INACTIVE,
+    true
+  );
+
+  expect(updatedCase.status).toEqual(CaseStatus.INACTIVE);
+  expect(updatedCase.filesStatus).toEqual(CaseFileStatus.DELETING);
+  expect(updatedCase.s3BatchJobId).toBeTruthy();
+
+  // Give S3 batch 2 minutes to do the async job. Increase if necessary (EventBridge SLA is 15min)
+  const retries = 8;
+  while (updatedCase.filesStatus !== CaseFileStatus.DELETED && retries > 0) {
+    await delay(15_000);
+    updatedCase = await getCase(baseUrl, caseUlid, idToken, creds);
+
+    if (updatedCase.filesStatus === CaseFileStatus.DELETE_FAILED) {
+      break;
+    }
+  }
+
+  expect(updatedCase.filesStatus).toEqual(CaseFileStatus.DELETED);
+  const listCaseFilesResponse = await listCaseFilesSuccess(baseUrl, idToken, creds, caseUlid, filePath);
+  for (const file of listCaseFilesResponse.files) {
+    expect(file.status).toEqual(CaseFileStatus.DELETED);
+  }
+}
+
 export async function createCaseSuccess(
   baseUrl: string,
   deaCase: DeaCaseInput,
@@ -76,6 +118,13 @@ export async function createCaseSuccess(
   Joi.assert(createdCase, caseResponseSchema);
   expect(createdCase.name).toEqual(deaCase.name);
   return createdCase;
+}
+
+async function getCase(baseUrl: string, caseId: string, idToken: Oauth2Token, creds: Credentials) {
+  const getResponse = await callDeaAPIWithCreds(`${baseUrl}cases/${caseId}/details`, 'GET', idToken, creds);
+
+  expect(getResponse.status).toEqual(200);
+  return getResponse.data;
 }
 
 export async function callDeaAPI(
@@ -368,4 +417,96 @@ export const s3Cleanup = async (s3ObjectsToDelete: s3Object[]): Promise<void> =>
       console.log('[INFO] Could not delete multipart upload. Perhaps the upload completed', e);
     }
   }
+};
+
+export const callAuthAPIWithOauthToken = async (url: string, oauthToken: Oauth2Token, isGetReq = false) => {
+  const client = axios.create({
+    headers: {
+      cookie: `idToken=${JSON.stringify(oauthToken)}`,
+    },
+  });
+  client.defaults.headers.common['cookie'] = `idToken=${JSON.stringify(oauthToken)}`;
+
+  if (isGetReq) {
+    return await client.get(url, { withCredentials: true, validateStatus });
+  }
+
+  return await client.post(url, undefined, {
+    withCredentials: true,
+    validateStatus,
+  });
+};
+
+export const revokeToken = async (deaApiUrl: string, oauthToken: Oauth2Token): Promise<void> => {
+  const revokeUrl = `${deaApiUrl}auth/revokeToken`;
+  const revokeResponse = await callAuthAPIWithOauthToken(revokeUrl, oauthToken);
+
+  if (revokeResponse.status != 200) {
+    throw new Error('Revoke failed');
+  }
+};
+
+export const useRefreshToken = async (deaApiUrl: string, oauthToken: Oauth2Token): Promise<Oauth2Token> => {
+  const refreshUrl = `${deaApiUrl}auth/refreshToken`;
+  const refreshResponse = await callAuthAPIWithOauthToken(refreshUrl, oauthToken);
+
+  if (refreshResponse.status != 200) {
+    throw new Error('Refresh failed');
+  }
+
+  return parseOauthTokenFromCookies(refreshResponse);
+};
+
+export const parseOauthTokenFromCookies = (response: AxiosResponse): Oauth2Token => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const cookie = response.headers['set-cookie']![0]!.replace('idToken=', '').split(';')[0];
+  return JSON.parse(cookie);
+};
+
+// TODO: make it so we do the same for CaseAudit and UserAudit, and
+// extend the E2E tests to do the same checks as the CaseFileAudit
+export type AuditEventEntry = CaseFileAuditEventEntry;
+
+export type CaseFileAuditEventEntry = {
+  eventType: AuditEventType;
+  username: string;
+  caseId: string;
+  fileId: string;
+  fileHash?: string;
+};
+
+const parseAuditCsv = (csvData: string, parseFn: (entry: string) => AuditEventEntry): AuditEventEntry[] => {
+  // Split csv into entries, filter out the heading entries
+  return csvData
+    .trimEnd()
+    .split('\n')
+    .filter((entry) => !entry.includes('eventDateTime'))
+    .map((entry) => parseFn(entry));
+};
+
+export const parseCaseFileAuditCsv = (csvData: string): CaseFileAuditEventEntry[] => {
+  function parseCaseFileAuditEvent(entry: string): AuditEventEntry {
+    const fields = entry.split(', ').map((field) => field.trimEnd());
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const eventType = fields[1] as AuditEventType;
+    if (eventType == undefined) {
+      console.log('ERROR ' + fields[1]);
+      console.log(fields);
+      console.log(entry);
+    }
+    let fileHash: string | undefined;
+    if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD) {
+      expect(fields[15]).toBeDefined();
+      fileHash = fields[15];
+    }
+    return {
+      eventType,
+      username: fields[6],
+      caseId: fields[13],
+      fileId: fields[14],
+      fileHash,
+    };
+  }
+
+  return parseAuditCsv(csvData, parseCaseFileAuditEvent);
 };

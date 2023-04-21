@@ -29,6 +29,45 @@ export interface DeaCaseFile {
   readonly updated?: Date;
 }
 
+export interface DeaCaseFileResult {
+  ulid: string;
+  caseUlid: string;
+  fileName: string;
+  contentType?: string;
+  createdBy: string;
+  filePath: string;
+  fileSizeBytes: number;
+  uploadId?: string;
+  sha256Hash?: string;
+  versionId?: string;
+  status: CaseFileStatus;
+  created?: Date;
+  updated?: Date;
+  isFile: boolean;
+  ttl?: number;
+  reason?: string;
+  tag?: string;
+  details?: string;
+}
+
+export interface CaseFileDTO {
+  readonly ulid: string;
+  readonly caseUlid: string;
+  readonly fileName: string;
+  readonly contentType?: string;
+  readonly createdBy: string;
+  readonly filePath: string;
+  readonly fileSizeBytes: number;
+  readonly sha256Hash?: string;
+  readonly status: string;
+  readonly created?: Date;
+  readonly updated?: Date;
+  readonly isFile: boolean;
+  readonly reason?: string;
+  readonly tag?: string;
+  readonly details?: string;
+}
+
 export interface CompleteCaseFileUploadDTO {
   readonly caseUlid: string;
   readonly ulid: string;

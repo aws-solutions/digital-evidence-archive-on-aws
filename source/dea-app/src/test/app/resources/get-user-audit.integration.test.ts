@@ -44,7 +44,7 @@ describe('get user audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        caseId: bogusUlid,
+        userId: bogusUlid,
         auditId: '11111111-1111-1111-1111-111111111111',
       },
     });

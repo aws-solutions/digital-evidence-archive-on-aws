@@ -8,7 +8,7 @@ import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { allButDisallowed, ulidRegex, filePathSafeCharsRegex } from '../../models/validation/joi-common';
 
-const DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS = 3600; // 1 hour
+const DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS = 43200; // 12 hours (e.g. expiry of the refresh token)
 
 export const DeaSchema = {
   format: 'onetable:1.1.0',
@@ -106,7 +106,7 @@ export const DeaSchema = {
       // the User tokenId is the "sub" field from the id token and is
       // used to determine whether the user is a first time federated user
       // this tokenId is the jti of the id token and is a unique identifier
-      tokenId: { type: String, required: true },
+      tokenId: { type: String, required: true, unique: true },
       ttl: {
         ttl: true,
         type: Number,
@@ -142,7 +142,7 @@ export const DeaSchema = {
       // The following is the sub field from the identity token for the user
       // is guaranteed to unique per user. This field is used to determine
       // whether or not user has already been added to the DB
-      tokenId: { type: String, required: true },
+      tokenId: { type: String, required: true, unique: true },
       firstName: { type: String, required: true, validate: allButDisallowed },
       lastName: { type: String, required: true, validate: allButDisallowed },
       lowerFirstName: { type: String, required: true, validate: allButDisallowed },

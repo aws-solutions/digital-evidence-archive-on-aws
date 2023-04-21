@@ -96,7 +96,7 @@ describe('case detail file download', () => {
   it('downloads selected files', async () => {
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url === 'https://localhostcases/100/details') {
+      if (eventObj.url?.endsWith('100/details')) {
         return Promise.resolve({
           data: mockedCaseDetail,
           status: 200,
@@ -104,7 +104,7 @@ describe('case detail file download', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url === 'https://localhostcases/100/actions') {
+      } else if (eventObj.url?.endsWith('100/actions')) {
         return Promise.resolve({
           data: mockedCaseActions,
           status: 200,

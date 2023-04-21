@@ -41,11 +41,11 @@ enum QueryStatus {
 }
 
 const progressStatus = [QueryStatus.Running, QueryStatus.Scheduled]
-export interface DeaCaseAuditStatus {
+export interface DeaAuditStatus {
   status: QueryStatus;
 }
 
-export interface DeaCaseAuditStartResponse {
+export interface DeaAuditStartResponse {
   auditId: string;
 }
 
@@ -147,11 +147,11 @@ export const getCaseAuditCSV = async (caseId: string): Promise<string> => {
 }
 
 export const startCaseAuditQuery = async (caseId: string): Promise<string> => {
-  const data: DeaCaseAuditStartResponse = await httpApiPost(`cases/${caseId}/audit`, undefined);
+  const data: DeaAuditStartResponse = await httpApiPost(`cases/${caseId}/audit`, undefined);
   return data.auditId;
 }
 
-export const retrieveCaseAuditResult = async (caseId: string, auditId: string): Promise<string | DeaCaseAuditStatus> => {
+export const retrieveCaseAuditResult = async (caseId: string, auditId: string): Promise<string | DeaAuditStatus> => {
   return await httpApiGet(`cases/${caseId}/audit/${auditId}/csv`, undefined);
 }
 
@@ -163,3 +163,28 @@ export const useGetCaseActions = (id: string): DeaSingleResult<CaseUser | undefi
   const { data, error } = useSWR(() => `cases/${id}/actions`, httpApiGet<CaseUser>);
   return { data, isLoading: !data && !error };
 };
+
+export const getSystemAuditCSV = async (): Promise<string> => {
+  const auditId = await startSystemAuditQuery();
+  let auditResponse = await retrieveSystemAuditResult(auditId);
+  let maxRetries = 60;
+  while (typeof(auditResponse) !== 'string') {
+    if (!progressStatus.includes(auditResponse.status) ||
+        maxRetries === 0) {
+      throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
+    }
+    --maxRetries;
+    await delay(1000);
+    auditResponse = await retrieveSystemAuditResult(auditId);
+  }
+  return auditResponse;
+}
+
+export const startSystemAuditQuery = async (): Promise<string> => {
+  const data: DeaAuditStartResponse = await httpApiPost(`system/audit`, undefined);
+  return data.auditId;
+}
+
+export const retrieveSystemAuditResult = async (auditId: string): Promise<string | DeaAuditStatus> => {
+  return await httpApiGet(`system/audit/${auditId}/csv`, undefined);
+}

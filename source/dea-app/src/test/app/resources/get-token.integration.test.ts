@@ -3,13 +3,13 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { ValidationError } from '../../../app/exceptions/validation-exception';
-import { getCredentials } from '../../../app/resources/get-credentials';
 import { getToken } from '../../../app/resources/get-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
 import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../../test-e2e/helpers/auth-helper';
 
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
-import { dummyContext, getDummyEvent, setCookieToCookie } from '../../integration-objects';
+import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 
 let cognitoParams: CognitoSsmParams;
 let pkceStrings: PkceStrings;
@@ -17,7 +17,8 @@ let pkceStrings: PkceStrings;
 describe('get-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
-  const testUser = 'authCodeIntegrationTestUser';
+  const suffix = randomSuffix(5);
+  const testUser = `authCodeIntegrationTestUser${suffix}`;
   const firstName = 'CognitoTokenHelper';
   const lastName = 'TestUser';
 
@@ -61,21 +62,6 @@ describe('get-token', () => {
     if (!response.headers) {
       fail();
     }
-
-    const credentialsEvent = getDummyEvent({
-      headers: {
-        cookie: setCookieToCookie(response),
-      },
-    });
-
-    const credsRepsonse = await getCredentials(credentialsEvent, dummyContext);
-    if (!credsRepsonse.body) {
-      fail();
-    }
-    const credentials = JSON.parse(credsRepsonse.body);
-    expect(credentials).toHaveProperty('AccessKeyId');
-    expect(credentials).toHaveProperty('SecretKey');
-    expect(credentials).toHaveProperty('SessionToken');
   }, 20000);
 
   it('should throw an error if the authorization code is not valid', async () => {

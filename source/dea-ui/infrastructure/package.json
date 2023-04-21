@@ -21,8 +21,9 @@
     "cdk": "cdk",
     "cdk-deploy": "rushx build && cdk deploy --all --require-approval never --outputs-file ../ui/src/config/${STAGE}.json",
     "check-license-header": "license-check-and-add check -f license-add-config.json",
-    "e2e:only": "heft test --no-build --test-path-pattern '.*/*e2e.test.*'",
-    "integration:only": "heft test --no-build  --test-path-pattern '.*/*integration.test.*'",
+    "e2e:only": "",
+    "audit:only": "",
+    "integration:only": "heft test --no-build --disable-code-coverage --test-path-pattern '.*/*integration.test.*'",
     "license-checker": "license-checker --onlyAllow 'MIT; Apache-2.0; ISC; BSD'",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix --max-warnings=0",
@@ -32,7 +33,7 @@
     "test:noe2e": "heft test --no-build --test-path-pattern '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": "heft test --no-build --verbose --test-path-pattern test",
     "test:only:u": "heft test -u --no-build --verbose --test-path-pattern test",
-    "unit:only": "heft test --no-build  --test-path-pattern '.*/*unit.test.*'",
+    "unit:only": "heft test --no-build --disable-code-coverage --test-path-pattern '.*/*unit.test.*'",
     "watch": "tsc -w"
   },
   "dependencies": {

@@ -26,9 +26,9 @@ import { getAllCases } from './app/resources/get-all-cases';
 import { getAvailableEndpointsForUser } from './app/resources/get-available-endpoints';
 import { getCaseAudit } from './app/resources/get-case-audit';
 import { getCase } from './app/resources/get-case-details';
+import { getCaseFileAudit } from './app/resources/get-case-file-audit';
 import { getCaseFileDetails } from './app/resources/get-case-file-details';
 import { getCaseMembership } from './app/resources/get-case-membership';
-import { getCredentials } from './app/resources/get-credentials';
 import { getLoginUrl } from './app/resources/get-login-url';
 import { getLogoutUrl } from './app/resources/get-logout-url';
 import { getMyCases } from './app/resources/get-my-cases';
@@ -42,6 +42,7 @@ import { listCaseFiles } from './app/resources/list-case-files';
 import { refreshToken } from './app/resources/refresh-token';
 import { revokeToken } from './app/resources/revoke-token';
 import { startCaseAudit } from './app/resources/start-case-audit';
+import { startCaseFileAudit } from './app/resources/start-case-file-audit';
 import { startSystemAudit } from './app/resources/start-system-audit';
 import { startUserAudit } from './app/resources/start-user-audit';
 import { updateCaseMembership } from './app/resources/update-case-membership';
@@ -73,7 +74,6 @@ export {
   revokeToken,
   getLoginUrl,
   getLogoutUrl,
-  getCredentials,
   createCases,
   deleteCase,
   getAllCases,
@@ -93,6 +93,8 @@ export {
   getCaseUser,
   startCaseAudit,
   getCaseAudit,
+  startCaseFileAudit,
+  getCaseFileAudit,
   getRequiredPathParam,
   getScopedCaseInformation,
   getUsers,
