@@ -493,10 +493,12 @@ const parseAuditCsv = (csvData: string, parseFn: (entry: string) => AuditEventEn
 };
 
 export const parseCaseFileAuditCsv = (csvData: string): CaseFileAuditEventEntry[] => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return parseAuditCsv(csvData, parseCaseFileAuditEvent).map((entry) => entry as CaseFileAuditEventEntry);
 };
 
 export const parseCaseAuditCsv = (csvData: string): CaseAuditEventEntry[] => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return parseAuditCsv(csvData, parseCaseAuditEvent).map((entry) => entry as CaseAuditEventEntry);
 };
 
@@ -527,7 +529,6 @@ const CASE_LEVEL_EVENT_TYPES = new Set<AuditEventType>([
 
 function parseCaseFileAuditEvent(entry: string): CaseAuditEventEntry {
   const fields = entry.split(', ').map((field) => field.trimEnd());
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const eventType = parseAuditEventType(fields);
   expect(CASE_FILE_EVENT_TYPES.has(eventType));
   let fileHash: string | undefined;
@@ -546,7 +547,6 @@ function parseCaseFileAuditEvent(entry: string): CaseAuditEventEntry {
 
 function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
   const fields = entry.split(', ').map((field) => field.trimEnd());
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const eventType = parseAuditEventType(fields);
   if (CASE_FILE_EVENT_TYPES.has(eventType)) {
     return parseCaseFileAuditEvent(entry);
@@ -566,6 +566,7 @@ function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
 }
 
 function parseAuditEventType(fields: string[]): AuditEventType {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const eventType = fields[1] as AuditEventType;
   if (eventType === undefined || eventType === AuditEventType.UNKNOWN) {
     fail('Unable to parse event type from log entry');
