@@ -303,10 +303,10 @@ function CaseTable(props: CaseTableProps): JSX.Element {
         {
           id: 'totalSize',
           header: commonTableLabels.totalSize,
-          cell: (e) => `${Math.ceil(e.storageSizeBytes / ONE_MB)}MB`,
+          cell: (e) => `${Math.ceil(e.totalSizeBytes / ONE_MB)}MB`,
           width: 220,
           minWidth: 165,
-          sortingField: 'storageSizeBytes',
+          sortingField: 'totalSizeBytes',
         },
         {
           id: 'created',
