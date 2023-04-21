@@ -7,7 +7,7 @@ import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
 import { AuditEventType } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
-import { joiUuid } from '../../models/validation/joi-common';
+import { joiUlid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
@@ -113,7 +113,7 @@ describe('user audit e2e', () => {
 
       expect(startAuditQueryResponse.status).toEqual(200);
       const auditId: string = startAuditQueryResponse.data.auditId;
-      Joi.assert(auditId, joiUuid);
+      Joi.assert(auditId, joiUlid);
 
       let retries = 5;
       let getQueryReponse = await callDeaAPIWithCreds(

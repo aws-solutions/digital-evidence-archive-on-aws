@@ -15,6 +15,7 @@
   "main": "lib/index.js",
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
+    "audit:only": "",
     "build": "heft build",
     "build:clean": "heft build --clean",
     "build:test": "heft test --verbose --test-path-pattern test && rushx make-badges",
@@ -24,7 +25,6 @@
     "cdk:synth": "cdk synth",
     "check-license-header": "license-check-and-add check -f license-add-config.json",
     "e2e:only": ". ../common/scripts/setEnv.sh && heft test --no-build --disable-code-coverage --test-path-pattern '.*/*e2e.test.*'",
-    "audit:only": "",
     "integration:only": "heft test --no-build --disable-code-coverage --test-path-pattern '.*/*integration.test.*'",
     "license-checker": "license-checker --onlyAllow 'MIT; Apache-2.0; ISC; BSD'",
     "lint": "eslint . --max-warnings=0",

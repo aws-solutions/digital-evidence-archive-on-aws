@@ -13,6 +13,9 @@ import {
   StartQueryCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
 import { getRequiredEnv } from '../../lambda-http-helpers';
+import * as AuditJobPersistence from '../../persistence/audit-job';
+import { AuditType } from '../../persistence/schema/dea-schema';
+import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { deaAuditPlugin } from '../audit/dea-audit-plugin';
 
 export enum AuditEventResult {
@@ -230,7 +233,10 @@ export class DeaAuditService extends AuditService {
     end: number,
     cloudwatchClient: CloudWatchLogsClient,
     logGroupNames: string[],
-    filterPredicate?: string
+    filterPredicate: string | undefined,
+    auditType: AuditType,
+    resourceId: string,
+    repositoryProvider: ModelRepositoryProvider
   ) {
     const defaultQuery = `fields ${queryFields.join(', ')} | sort @timestamp desc | limit 10000`;
     const startQueryCmd = new StartQueryCommand({
@@ -243,18 +249,35 @@ export class DeaAuditService extends AuditService {
     if (!startResponse.queryId) {
       throw new Error('Unknown error starting Cloudwatch Logs Query.');
     }
-    return startResponse.queryId;
+
+    return AuditJobPersistence.createAuditJob(
+      startResponse.queryId,
+      auditType,
+      resourceId,
+      repositoryProvider
+    );
   }
 
   public async requestAuditForCase(
     caseId: string,
     start: number,
     end: number,
-    cloudwatchClient: CloudWatchLogsClient
+    resourceId: string,
+    cloudwatchClient: CloudWatchLogsClient,
+    repositoryProvider: ModelRepositoryProvider
   ) {
     const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME')];
     const filterPredicate = `caseId like /${caseId}/`;
-    return this._startAuditQuery(start, end, cloudwatchClient, auditLogGroups, filterPredicate);
+    return this._startAuditQuery(
+      start,
+      end,
+      cloudwatchClient,
+      auditLogGroups,
+      filterPredicate,
+      AuditType.CASE,
+      resourceId,
+      repositoryProvider
+    );
   }
 
   public async requestAuditForCaseFile(
@@ -262,30 +285,128 @@ export class DeaAuditService extends AuditService {
     fileId: string,
     start: number,
     end: number,
-    cloudwatchClient: CloudWatchLogsClient
+    resourceId: string,
+    cloudwatchClient: CloudWatchLogsClient,
+    repositoryProvider: ModelRepositoryProvider
   ) {
     const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME')];
     const filterPredicate = `caseId like /${caseId}/ and fileId like /${fileId}/`;
-    return this._startAuditQuery(start, end, cloudwatchClient, auditLogGroups, filterPredicate);
+    return this._startAuditQuery(
+      start,
+      end,
+      cloudwatchClient,
+      auditLogGroups,
+      filterPredicate,
+      AuditType.CASEFILE,
+      resourceId,
+      repositoryProvider
+    );
   }
 
   public async requestAuditForUser(
     userUlid: string,
     start: number,
     end: number,
-    cloudwatchClient: CloudWatchLogsClient
+    resourceId: string,
+    cloudwatchClient: CloudWatchLogsClient,
+    repositoryProvider: ModelRepositoryProvider
   ) {
     const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME')];
     const filterPredicate = `actorIdentity.userUlid = '${userUlid}'`;
-    return this._startAuditQuery(start, end, cloudwatchClient, auditLogGroups, filterPredicate);
+    return this._startAuditQuery(
+      start,
+      end,
+      cloudwatchClient,
+      auditLogGroups,
+      filterPredicate,
+      AuditType.USER,
+      resourceId,
+      repositoryProvider
+    );
   }
 
-  public async requestSystemAudit(start: number, end: number, cloudwatchClient: CloudWatchLogsClient) {
+  public async requestSystemAudit(
+    start: number,
+    end: number,
+    cloudwatchClient: CloudWatchLogsClient,
+    repositoryProvider: ModelRepositoryProvider
+  ) {
     const systemLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME'), getRequiredEnv('TRAIL_LOG_GROUP_NAME')];
-    return this._startAuditQuery(start, end, cloudwatchClient, systemLogGroups);
+    return this._startAuditQuery(
+      start,
+      end,
+      cloudwatchClient,
+      systemLogGroups,
+      undefined,
+      AuditType.SYSTEM,
+      'SYSTEM',
+      repositoryProvider
+    );
   }
 
-  public async getAuditResult(queryId: string, cloudwatchClient: CloudWatchLogsClient): Promise<AuditResult> {
+  public async getCaseAuditResult(
+    auditId: string,
+    resourceUlid: string,
+    cloudwatchClient: CloudWatchLogsClient,
+    repositoryProvider: ModelRepositoryProvider
+  ) {
+    const queryId = await AuditJobPersistence.getAuditJobQueryId(
+      auditId,
+      AuditType.CASE,
+      resourceUlid,
+      repositoryProvider
+    );
+    return this.getAuditResult(queryId, cloudwatchClient);
+  }
+
+  public async getUserAuditResult(
+    auditId: string,
+    resourceUlid: string,
+    cloudwatchClient: CloudWatchLogsClient,
+    repositoryProvider: ModelRepositoryProvider
+  ) {
+    const queryId = await AuditJobPersistence.getAuditJobQueryId(
+      auditId,
+      AuditType.USER,
+      resourceUlid,
+      repositoryProvider
+    );
+    return this.getAuditResult(queryId, cloudwatchClient);
+  }
+
+  public async getSystemAuditResult(
+    auditId: string,
+    cloudwatchClient: CloudWatchLogsClient,
+    repositoryProvider: ModelRepositoryProvider
+  ) {
+    const queryId = await AuditJobPersistence.getAuditJobQueryId(
+      auditId,
+      AuditType.SYSTEM,
+      'SYSTEM',
+      repositoryProvider
+    );
+    return this.getAuditResult(queryId, cloudwatchClient);
+  }
+
+  public async getCaseFileAuditResult(
+    auditId: string,
+    resourceUlid: string,
+    cloudwatchClient: CloudWatchLogsClient,
+    repositoryProvider: ModelRepositoryProvider
+  ) {
+    const queryId = await AuditJobPersistence.getAuditJobQueryId(
+      auditId,
+      AuditType.CASEFILE,
+      resourceUlid,
+      repositoryProvider
+    );
+    return this.getAuditResult(queryId, cloudwatchClient);
+  }
+
+  private async getAuditResult(
+    queryId: string,
+    cloudwatchClient: CloudWatchLogsClient
+  ): Promise<AuditResult> {
     const getResultsCommand = new GetQueryResultsCommand({
       queryId,
     });

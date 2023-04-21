@@ -16,6 +16,7 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
+    "audit:only": "",
     "build": "./setNextEnv.sh && next build && next export --silent",
     "build-only": "./setNextEnv.sh && next build",
     "build:test": "rushx build && rushx test && rushx make-badges",
@@ -24,10 +25,9 @@
     "cypress:e2e": ". ../../common/scripts/setEnv.sh && cypress run --config baseUrl=${DEA_API_URL}ui",
     "cypress:headless": "cypress run",
     "cypress:test": "start-server-and-test start http-get://localhost:3000/${STAGE}/ui cypress:headless",
-    "dev:https": "(local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3001 --target 3000 &) && rushx dev",
     "dev": ". ../../common/scripts/setEnv.sh && ./setNextEnv.sh && next dev",
+    "dev:https": "(local-ssl-proxy --key localhost-key.pem --cert localhost.pem --source 3001 --target 3000 &) && rushx dev",
     "e2e:only": "",
-    "audit:only": "",
     "export": "next build && next export",
     "integration:only": "jest --ci --testPathPattern '.*/*integration.test.*'",
     "license-checker": "license-checker --onlyAllow 'MIT; Apache-2.0; ISC; BSD'",
@@ -44,9 +44,9 @@
     "unit:only": "jest --ci '.*/*unit.test.*'"
   },
   "dependencies": {
-    "@aws/dea-app": "workspace:*",
     "@aws-sdk/client-cognito-identity": "3.299.0",
     "@aws-sdk/client-cognito-identity-provider": "3.299.0",
+    "@aws/dea-app": "workspace:*",
     "@cloudscape-design/collection-hooks": "^1.0.20",
     "@cloudscape-design/components": "^3.0.235",
     "@cloudscape-design/design-tokens": "~3.0.9",
@@ -108,6 +108,7 @@
     "jest-environment-jsdom": "~29.5.0",
     "license-check-and-add": "^4.0.5",
     "license-checker": "^25.0.1",
+    "local-ssl-proxy": "~2.0.5",
     "lodash.kebabcase": "~4.1.1",
     "nodemon": "^2.0.22",
     "npm-package-json-lint": "^6.4.0",
@@ -117,7 +118,6 @@
     "sort-package-json": "^2.4.1",
     "start-server-and-test": "~1.15.3",
     "ts-mockito": "~2.6.1",
-    "typescript": "^4.5.2",
-    "local-ssl-proxy": "~2.0.5"
+    "typescript": "^4.5.2"
   }
 }

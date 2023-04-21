@@ -10,6 +10,13 @@ import { allButDisallowed, ulidRegex, filePathSafeCharsRegex } from '../../model
 
 const DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS = 43200; // 12 hours (e.g. expiry of the refresh token)
 
+export enum AuditType {
+  CASE = 'CASE',
+  CASEFILE = 'CASEFILE',
+  SYSTEM = 'SYSTEM',
+  USER = 'USER',
+}
+
 export const DeaSchema = {
   format: 'onetable:1.1.0',
   version: '0.1.0',
@@ -149,6 +156,14 @@ export const DeaSchema = {
       //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },
+    },
+    AuditJob: {
+      PK: { type: String, value: 'AUDIT#${ulid}#', required: true },
+      SK: { type: String, value: '${auditType}#${resourceId}#' },
+      ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
+      queryId: { type: String, required: true },
+      resourceId: { type: String, required: true },
+      auditType: { type: String, required: true, enum: Object.keys(AuditType) },
     },
   } as const,
   params: {
