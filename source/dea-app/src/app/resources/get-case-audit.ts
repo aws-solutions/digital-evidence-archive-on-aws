@@ -4,7 +4,7 @@
  */
 
 import { getRequiredPathParam } from '../../lambda-http-helpers';
-import { joiUuid } from '../../models/validation/joi-common';
+import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
 import { defaultCloudwatchClient } from '../audit/dea-audit-plugin';
@@ -17,14 +17,15 @@ export const getCaseAudit: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */ // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _repositoryProvider = defaultProvider,
+  repositoryProvider = defaultProvider,
   /* istanbul ignore next */ // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _datasetsProvider = defaultDatasetsProvider,
   /* istanbul ignore next */
   cloudwatchClient = defaultCloudwatchClient
 ) => {
-  const auditId = getRequiredPathParam(event, 'auditId', joiUuid);
-  const result = await auditService.getAuditResult(auditId, cloudwatchClient);
+  const auditId = getRequiredPathParam(event, 'auditId', joiUlid);
+  const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
+  const result = await auditService.getCaseAuditResult(auditId, caseId, cloudwatchClient, repositoryProvider);
 
   if (result.csvFormattedData) {
     return csvResponse(event, result.csvFormattedData);

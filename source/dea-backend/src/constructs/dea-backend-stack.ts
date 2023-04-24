@@ -144,12 +144,11 @@ export class DeaBackendConstruct extends Construct {
       versioned: true,
       serverAccessLogsBucket: accessLogBucket,
       serverAccessLogsPrefix: accessLogPrefix,
-      // TODO: Tighten up CORS rules
       cors: [
         {
-          allowedHeaders: ['*'],
-          allowedMethods: [HttpMethods.GET, HttpMethods.PUT, HttpMethods.HEAD],
           allowedOrigins: ['*'],
+          allowedMethods: [HttpMethods.GET, HttpMethods.PUT, HttpMethods.HEAD],
+          allowedHeaders: ['*'],
         },
       ],
     });

@@ -30,7 +30,7 @@ import {
 
 const FILE_PATH = '/food/sushi/';
 const FILE_CONTENT = 'hello world';
-const TEST_USER = 'caseFileUploadTestUser';
+const TEST_USER = `caseFileUploadTestUser${randomSuffix()}`;
 const FILE_SIZE_BYTES = 50;
 const DEA_API_URL = testEnv.apiUrlOutput;
 

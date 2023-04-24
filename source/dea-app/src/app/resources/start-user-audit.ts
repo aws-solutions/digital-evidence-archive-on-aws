@@ -30,7 +30,14 @@ export const startUserAudit: DEAGatewayProxyHandler = async (
   const end = getQueryParam(event, 'to', now.toString(), Joi.number().integer());
   const startTime = Number.parseInt(start);
   const endTime = Number.parseInt(end);
-  const queryId = await auditService.requestAuditForUser(userId, startTime, endTime, cloudwatchClient);
+  const queryId = await auditService.requestAuditForUser(
+    userId,
+    startTime,
+    endTime,
+    userId,
+    cloudwatchClient,
+    _repositoryProvider
+  );
 
   return responseOk(event, { auditId: queryId });
 };

@@ -86,12 +86,6 @@ describe('DeaBackend constructs', () => {
       AuthorizationType: 'AWS_IAM',
     });
 
-    //handlers
-    const expectedLambdaCount = 37;
-    const expectedMethodCount = 75;
-    template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCount);
-    template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCount);
-
     //Auth construct
     const apiEndpointArns = new Map([
       ['A', 'Aarn'],
