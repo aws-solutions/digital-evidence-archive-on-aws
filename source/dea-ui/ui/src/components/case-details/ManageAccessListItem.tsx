@@ -87,6 +87,7 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
       </ColumnLayout>
       <div className={styles['button-container']}>
         <ConfirmModal
+          testid="access-confirm-modal"
           isOpen={isOpenRemoveModal}
           title={manageCaseAccessLabels.removeCaseMemberRequestTitle(
             `${caseMember.userFirstName} ${caseMember.userLastName}`
