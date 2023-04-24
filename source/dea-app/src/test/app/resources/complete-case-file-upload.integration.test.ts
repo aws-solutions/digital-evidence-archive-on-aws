@@ -21,6 +21,7 @@ import { DeaCaseFileResult } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
+import { getCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
@@ -30,6 +31,7 @@ import {
   callCreateUser,
   callInitiateCaseFileUpload,
   DATASETS_PROVIDER,
+  FILE_SIZE_BYTES,
   validateCaseFile,
 } from './case-file-integration-test-helper';
 
@@ -82,9 +84,15 @@ describe('Test complete case file upload', () => {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const fileId = caseFile.ulid as string;
     await completeCaseFileUploadAndValidate(fileId, caseToUploadTo, fileName);
+
+    const updatedCase = (await getCase(caseToUploadTo, undefined, repositoryProvider)) ?? fail();
+    expect(updatedCase.objectCount).toEqual(1);
+    expect(updatedCase.totalSizeBytes).toEqual(FILE_SIZE_BYTES);
   });
 
   it('should successfully complete a file upload and create no duplicate path entries', async () => {
+    const caseToUploadTo =
+      (await callCreateCase(fileUploader, repositoryProvider, 'two files in a case')).ulid ?? fail();
     const fileName = 'file1.png';
     const fileName2 = 'file2.png';
     const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, fileName);
@@ -99,6 +107,10 @@ describe('Test complete case file upload', () => {
     const result = await listCaseFilesByFilePath(caseToUploadTo, '/', undefined, repositoryProvider);
     expect(result.length).toEqual(1);
     expect(result[0].fileName).toEqual('food');
+
+    const updatedCase = (await getCase(caseToUploadTo, undefined, repositoryProvider)) ?? fail();
+    expect(updatedCase.objectCount).toEqual(2);
+    expect(updatedCase.totalSizeBytes).toEqual(FILE_SIZE_BYTES * 2);
   });
 
   it('Complete upload should throw a validation exception when no payload is provided', async () => {

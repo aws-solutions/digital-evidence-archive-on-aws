@@ -209,6 +209,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
               <Modal
+                data-testid="deactivate-modal"
                 onDismiss={disableDeactivateCaseModal}
                 visible={showDeactivateModal && selectedCase.length !== 0}
                 closeAriaLabel={commonLabels.closeModalAriaLabel}
@@ -218,7 +219,11 @@ function CaseTable(props: CaseTableProps): JSX.Element {
                       <Button variant="link" onClick={disableDeactivateCaseModal}>
                         {commonLabels.cancelButton}
                       </Button>
-                      <Button variant="primary" onClick={deactivateCaseHandler}>
+                      <Button
+                        data-testid="submit-deactivate"
+                        variant="primary"
+                        onClick={deactivateCaseHandler}
+                      >
                         {commonLabels.deactivateButton}
                       </Button>
                     </SpaceBetween>
@@ -236,11 +241,17 @@ function CaseTable(props: CaseTableProps): JSX.Element {
                 </Toggle>
               </Modal>
               {canUpdateCaseStatus(availableEndpoints.data) && (
-                <Button disabled={!canDeactivateCase()} variant="primary" onClick={enableDeactivateCaseModal}>
+                <Button
+                  data-testid="deactivate-button"
+                  disabled={!canDeactivateCase()}
+                  variant="primary"
+                  onClick={enableDeactivateCaseModal}
+                >
                   {caseListLabels.deactivateCaseLabel}
                 </Button>
               )}
               <ConfirmModal
+                testid="activate-modal"
                 isOpen={showActivateModal && selectedCase.length !== 0}
                 title={
                   selectedCase.length === 0
@@ -254,7 +265,12 @@ function CaseTable(props: CaseTableProps): JSX.Element {
                 cancelButtonText={commonLabels.cancelButton}
               />
               {canUpdateCaseStatus(availableEndpoints.data) && (
-                <Button disabled={!canActivateCase()} variant="primary" onClick={enableActivateCaseModal}>
+                <Button
+                  data-testid="activate-button"
+                  disabled={!canActivateCase()}
+                  variant="primary"
+                  onClick={enableActivateCaseModal}
+                >
                   {caseListLabels.activateCaseLabel}
                 </Button>
               )}

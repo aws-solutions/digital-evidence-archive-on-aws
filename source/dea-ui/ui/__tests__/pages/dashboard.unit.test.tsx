@@ -1,9 +1,10 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
+import createWrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { fail } from 'assert';
 import axios from 'axios';
-import { breadcrumbLabels, caseListLabels } from '../../src/common/labels';
+import { breadcrumbLabels, caseListLabels, commonLabels } from '../../src/common/labels';
 import { i18nStrings } from '../../src/components/common-components/commonDefinitions';
 import Home from '../../src/pages';
 
@@ -25,7 +26,7 @@ describe('Dashboard', () => {
       if (eventObj.url?.endsWith('availableEndpoints')) {
         return Promise.resolve({
           data: {
-            endpoints: ['/casesPOST'],
+            endpoints: ['/casesPOST', '/cases/{caseId}/statusPUT'],
           },
           status: 200,
           statusText: 'Ok',
@@ -40,11 +41,13 @@ describe('Dashboard', () => {
                 ulid: 'abc',
                 name: 'mocked case',
                 status: 'ACTIVE',
+                actions: ['UPDATE_CASE_STATUS'],
               },
               {
                 ulid: 'def',
                 name: 'case2',
-                status: 'ACTIVE',
+                status: 'INACTIVE',
+                actions: ['UPDATE_CASE_STATUS'],
               },
             ],
           },
@@ -82,22 +85,6 @@ describe('Dashboard', () => {
   });
 
   it('navigates to create case details', async () => {
-    mockedAxios.create.mockReturnThis();
-    mockedAxios.request.mockResolvedValue({
-      data: {
-        cases: [
-          {
-            ulid: 'abc',
-            name: 'mocked case',
-            status: 'ACTIVE',
-          },
-        ],
-      },
-      status: 200,
-      statusText: 'Ok',
-      headers: {},
-      config: {},
-    });
     render(<Home />);
 
     const table = await screen.findByTestId('case-table');
@@ -147,5 +134,72 @@ describe('Dashboard', () => {
   it('removeTokenButtonAriaLabel returns the expected string', () => {
     const result = i18nStrings.removeTokenButtonAriaLabel();
     expect(result).toEqual('Remove token');
+  });
+
+  it('can deactivate a case', async () => {
+    const page = render(<Home />);
+    const pageWrapper = wrapper(page.baseElement);
+    expect(page).toBeTruthy();
+    expect(pageWrapper).toBeTruthy();
+
+    const tableWrapper = pageWrapper.findTable();
+    if (!tableWrapper) fail();
+    expect(tableWrapper.findRows().length).toEqual(2);
+
+    const deactivateButton = screen.queryByTestId('deactivate-button');
+    if (!deactivateButton) fail();
+    expect(deactivateButton).toBeDisabled();
+
+    const activeCaseSelection = tableWrapper.findRowSelectionArea(1);
+    expect(activeCaseSelection).toBeTruthy();
+    await act(async () => {
+      activeCaseSelection!.click();
+    });
+
+    expect(tableWrapper.findSelectedRows().length).toEqual(1);
+
+    await waitFor(() => expect(screen.queryByTestId('deactivate-button')).toBeEnabled());
+    fireEvent.click(deactivateButton);
+
+    await waitFor(() => expect(screen.queryByTestId('deactivate-modal')).toBeVisible());
+    const deactivateButtonInModal = screen.queryByTestId('submit-deactivate');
+    if (!deactivateButtonInModal) fail();
+    fireEvent.click(deactivateButtonInModal);
+
+    await waitFor(() => expect(screen.queryByTestId('deactivate-button')).toBeDisabled());
+  });
+
+  it('can activate a case', async () => {
+    const page = render(<Home />);
+    const pageWrapper = wrapper(page.baseElement);
+    expect(page).toBeTruthy();
+    expect(pageWrapper).toBeTruthy();
+
+    const tableWrapper = pageWrapper.findTable();
+    if (!tableWrapper) fail();
+    expect(tableWrapper!.findRows().length).toEqual(2);
+
+    const activateButton = screen.queryByTestId('activate-button');
+    if (!activateButton) fail();
+    expect(activateButton).toBeDisabled();
+
+    const inactiveCaseSelection = tableWrapper.findRowSelectionArea(2);
+    expect(inactiveCaseSelection).toBeTruthy();
+    await act(async () => {
+      inactiveCaseSelection!.click();
+    });
+
+    expect(tableWrapper.findSelectedRows().length).toEqual(1);
+
+    await waitFor(() => expect(screen.queryByTestId('activate-button')).toBeEnabled());
+    fireEvent.click(activateButton);
+
+    // wait for modal to be visible
+    await waitFor(() => expect(screen.queryByTestId('activate-modal')).toBeVisible());
+    const activateButtonInModal = screen.queryByText(commonLabels.activateButton);
+    if (!activateButtonInModal) fail();
+    fireEvent.click(activateButtonInModal);
+
+    await waitFor(() => expect(screen.queryByTestId('activate-button')).toBeDisabled());
   });
 });

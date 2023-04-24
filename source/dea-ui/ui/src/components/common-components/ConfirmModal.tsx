@@ -10,6 +10,7 @@ import SpaceBetween from '@cloudscape-design/components/space-between';
 import { commonLabels } from '../../common/labels';
 
 interface ConfirmModalProps {
+  testid: string;
   isOpen: boolean;
   title: string;
   message: string;
@@ -20,9 +21,11 @@ interface ConfirmModalProps {
 }
 
 export function ConfirmModal(props: ConfirmModalProps) {
-  const { isOpen, title, message, cancelAction, cancelButtonText, confirmAction, confirmButtonText } = props;
+  const { isOpen, title, message, cancelAction, cancelButtonText, confirmAction, confirmButtonText, testid } =
+    props;
   return (
     <Modal
+      data-testid={testid}
       onDismiss={cancelAction}
       visible={isOpen}
       closeAriaLabel={commonLabels.closeModalAriaLabel}
