@@ -180,6 +180,60 @@ Object {
     },
   },
   "Resources": Object {
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": Object {
+      "DependsOn": Array [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs14.x",
+        "Timeout": 120,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": Object {
       "DependsOn": Array [
         "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
@@ -2992,6 +3046,588 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayUpdateBucketCORS2D79DACA": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "DeaApiGatewaydeaapiAccountBA9E69BF",
+        "DeaApiGatewaydeaapiCloudWatchRole1E7850B5",
+        "DeaApiGatewaydeaapiDEAUsagePlanEA7656DD",
+        "DeaApiGatewaydeaapiauthauthCodeOPTIONS8EA9BA0F",
+        "DeaApiGatewaydeaapiauthauthCodeFC92ADBD",
+        "DeaApiGatewaydeaapiauthauthCodetokenOPTIONSECFF39C3",
+        "DeaApiGatewaydeaapiauthauthCodetokenPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTauthauthCodetoken9B5873D4",
+        "DeaApiGatewaydeaapiauthauthCodetokenPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTauthauthCodetokenF01BAD47",
+        "DeaApiGatewaydeaapiauthauthCodetokenPOST7CE36F34",
+        "DeaApiGatewaydeaapiauthauthCodetoken7071838E",
+        "DeaApiGatewaydeaapiauthloginUrlGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETauthloginUrl5CC8D391",
+        "DeaApiGatewaydeaapiauthloginUrlGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETauthloginUrlB20E499C",
+        "DeaApiGatewaydeaapiauthloginUrlGETA4078375",
+        "DeaApiGatewaydeaapiauthloginUrlOPTIONSC71EAA7B",
+        "DeaApiGatewaydeaapiauthloginUrlDBEB32CD",
+        "DeaApiGatewaydeaapiauthlogoutUrlGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETauthlogoutUrl430C249B",
+        "DeaApiGatewaydeaapiauthlogoutUrlGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETauthlogoutUrlB37EA100",
+        "DeaApiGatewaydeaapiauthlogoutUrlGET44834196",
+        "DeaApiGatewaydeaapiauthlogoutUrlOPTIONSA32BAB71",
+        "DeaApiGatewaydeaapiauthlogoutUrlD5D9A02E",
+        "DeaApiGatewaydeaapiauthOPTIONS95F6C2CF",
+        "DeaApiGatewaydeaapiauthrefreshTokenOPTIONS969FDA6D",
+        "DeaApiGatewaydeaapiauthrefreshTokenPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTauthrefreshToken047B7DBF",
+        "DeaApiGatewaydeaapiauthrefreshTokenPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTauthrefreshToken73C06D6B",
+        "DeaApiGatewaydeaapiauthrefreshTokenPOST0744B2BB",
+        "DeaApiGatewaydeaapiauthrefreshToken9A393A9C",
+        "DeaApiGatewaydeaapiauth42A62286",
+        "DeaApiGatewaydeaapiauthrevokeTokenOPTIONS2D8639A5",
+        "DeaApiGatewaydeaapiauthrevokeTokenPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTauthrevokeTokenAABF3021",
+        "DeaApiGatewaydeaapiauthrevokeTokenPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTauthrevokeTokenF1BC5D37",
+        "DeaApiGatewaydeaapiauthrevokeTokenPOSTE5A8C6B9",
+        "DeaApiGatewaydeaapiauthrevokeTokenE3DB92E3",
+        "DeaApiGatewaydeaapiavailableEndpointsGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETavailableEndpoints8C83E32B",
+        "DeaApiGatewaydeaapiavailableEndpointsGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETavailableEndpoints9A6A6EAA",
+        "DeaApiGatewaydeaapiavailableEndpointsGET1778E5A8",
+        "DeaApiGatewaydeaapiavailableEndpointsOPTIONS271595FD",
+        "DeaApiGatewaydeaapiavailableEndpointsF4D850DD",
+        "DeaApiGatewaydeaapicasescaseIdactionsGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdactions2A8255E4",
+        "DeaApiGatewaydeaapicasescaseIdactionsGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdactions88198B7F",
+        "DeaApiGatewaydeaapicasescaseIdactionsGET6EB75B66",
+        "DeaApiGatewaydeaapicasescaseIdactionsOPTIONS2140F793",
+        "DeaApiGatewaydeaapicasescaseIdactionsAB55E158",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdcsvGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdauditauditIdcsv51981359",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdcsvGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdauditauditIdcsv35FD9F8E",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdcsvGETF934A5FF",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdcsvOPTIONSF0C8820E",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdcsv59A5449B",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdOPTIONSEE8EF3DD",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdA0355355",
+        "DeaApiGatewaydeaapicasescaseIdauditOPTIONSBC0FFF0A",
+        "DeaApiGatewaydeaapicasescaseIdauditPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdaudit8BCD9592",
+        "DeaApiGatewaydeaapicasescaseIdauditPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdaudit23E7CD9F",
+        "DeaApiGatewaydeaapicasescaseIdauditPOST92AD4FAB",
+        "DeaApiGatewaydeaapicasescaseIdauditBB1A3E17",
+        "DeaApiGatewaydeaapicasescaseIddetailsDELETEApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9DELETEcasescaseIddetails2C70D817",
+        "DeaApiGatewaydeaapicasescaseIddetailsDELETEApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9DELETEcasescaseIddetails86ADF27E",
+        "DeaApiGatewaydeaapicasescaseIddetailsDELETEE7B8E1B0",
+        "DeaApiGatewaydeaapicasescaseIddetailsGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIddetailsAA4D9CB6",
+        "DeaApiGatewaydeaapicasescaseIddetailsGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIddetails4472EF26",
+        "DeaApiGatewaydeaapicasescaseIddetailsGET41929CBD",
+        "DeaApiGatewaydeaapicasescaseIddetailsOPTIONS53E2D203",
+        "DeaApiGatewaydeaapicasescaseIddetailsPUTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIddetailsD766813D",
+        "DeaApiGatewaydeaapicasescaseIddetailsPUTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIddetails9A2A063C",
+        "DeaApiGatewaydeaapicasescaseIddetailsPUT3D9BC22B",
+        "DeaApiGatewaydeaapicasescaseIddetailsE86153E3",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfilesfileIdauditauditIdcsv45C2E9D3",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfilesfileIdauditauditIdcsv8ADDBAC8",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdcsvGETE24DF9D9",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONSA5AF99EF",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdcsvDA9009C7",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdOPTIONS7688D070",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditId116F093C",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditOPTIONS2634277B",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdfilesfileIdaudit2A108591",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdfilesfileIdaudit8ABE9CD3",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditPOSTF4A15C85",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdaudit13E81F29",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfilesfileIdcontents3718517A",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfilesfileIdcontentsABB5AD19",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsGETD43BFE99",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsOPTIONS1DC417CA",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIdfilesfileIdcontentsC2DBDB31",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIdfilesfileIdcontents4825A2D8",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsPUTF6AA4CB8",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontents21AB00FB",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdinfoGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfilesfileIdinfo4EED31E6",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdinfoGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfilesfileIdinfo4F0E68C5",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdinfoGET4FE96B29",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdinfoOPTIONSC2BB332A",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdinfoF9BE4EE2",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdOPTIONS25DF38EE",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileId16B45CA0",
+        "DeaApiGatewaydeaapicasescaseIdfilesGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfiles2C1EE942",
+        "DeaApiGatewaydeaapicasescaseIdfilesGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfiles1B592EBC",
+        "DeaApiGatewaydeaapicasescaseIdfilesGET13698780",
+        "DeaApiGatewaydeaapicasescaseIdfilesOPTIONS7517D173",
+        "DeaApiGatewaydeaapicasescaseIdfilesPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdfiles29AFF255",
+        "DeaApiGatewaydeaapicasescaseIdfilesPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdfiles74542E67",
+        "DeaApiGatewaydeaapicasescaseIdfilesPOST3D5F353E",
+        "DeaApiGatewaydeaapicasescaseIdfilesF29B9178",
+        "DeaApiGatewaydeaapicasescaseIdOPTIONSED4E4189",
+        "DeaApiGatewaydeaapicasescaseIdownerOPTIONS08191B25",
+        "DeaApiGatewaydeaapicasescaseIdownerPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdownerEBEB2C05",
+        "DeaApiGatewaydeaapicasescaseIdownerPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdownerDCCD430E",
+        "DeaApiGatewaydeaapicasescaseIdownerPOSTEA20102A",
+        "DeaApiGatewaydeaapicasescaseIdowner33837916",
+        "DeaApiGatewaydeaapicasescaseId3D754C88",
+        "DeaApiGatewaydeaapicasescaseIdscopedInformationGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdscopedInformation281866C3",
+        "DeaApiGatewaydeaapicasescaseIdscopedInformationGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdscopedInformation898CA4C9",
+        "DeaApiGatewaydeaapicasescaseIdscopedInformationGETF7DBC337",
+        "DeaApiGatewaydeaapicasescaseIdscopedInformationOPTIONS80FCFACF",
+        "DeaApiGatewaydeaapicasescaseIdscopedInformation7E7BAB42",
+        "DeaApiGatewaydeaapicasescaseIdstatusOPTIONSCC9D3E46",
+        "DeaApiGatewaydeaapicasescaseIdstatusPUTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIdstatusDABA766E",
+        "DeaApiGatewaydeaapicasescaseIdstatusPUTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIdstatusA83EE228",
+        "DeaApiGatewaydeaapicasescaseIdstatusPUTDBBE8278",
+        "DeaApiGatewaydeaapicasescaseIdstatusEAC066DB",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIduserMemberships96997C99",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIduserMembershipsCE758452",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsGET89A6E1EF",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsOPTIONSA41AAFF1",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIduserMemberships1569B97D",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIduserMemberships9016B401",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsPOST9A7D9804",
+        "DeaApiGatewaydeaapicasescaseIduserMemberships4457D242",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9DELETEcasescaseIdusersuserIdmemberships2C9CC8B5",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9DELETEcasescaseIdusersuserIdmembershipsC5C31048",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsDELETE8D61025A",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsOPTIONS0F1651A7",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIdusersuserIdmemberships448538AB",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIdusersuserIdmembershipsB3E7C0CC",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsPUT6003274C",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsBA0A2E7C",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdOPTIONS3B6673A7",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdEE478FC8",
+        "DeaApiGatewaydeaapicasescaseIdusersOPTIONS09886FE5",
+        "DeaApiGatewaydeaapicasescaseIdusers2F3FB5C6",
+        "DeaApiGatewaydeaapicasesallcasesGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasesallcases1F8DA228",
+        "DeaApiGatewaydeaapicasesallcasesGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasesallcasesB4DD5CAB",
+        "DeaApiGatewaydeaapicasesallcasesGET92FB3B5C",
+        "DeaApiGatewaydeaapicasesallcasesOPTIONSF976C9CD",
+        "DeaApiGatewaydeaapicasesallcasesBDAE5421",
+        "DeaApiGatewaydeaapicasesmycasesGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasesmycases3B33517B",
+        "DeaApiGatewaydeaapicasesmycasesGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasesmycases742BCA77",
+        "DeaApiGatewaydeaapicasesmycasesGET6F1F66A1",
+        "DeaApiGatewaydeaapicasesmycasesOPTIONS4C431DB3",
+        "DeaApiGatewaydeaapicasesmycases25599FEB",
+        "DeaApiGatewaydeaapicasesOPTIONS4FE777E3",
+        "DeaApiGatewaydeaapicasesPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcases87C8F16F",
+        "DeaApiGatewaydeaapicasesPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcases87E8FD3D",
+        "DeaApiGatewaydeaapicasesPOST966FABAB",
+        "DeaApiGatewaydeaapicasesC01D624D",
+        "DeaApiGatewaydeaapiOPTIONS098252F2",
+        "DeaApiGatewaydeaapisystemauditauditIdcsvGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETsystemauditauditIdcsv830DFC59",
+        "DeaApiGatewaydeaapisystemauditauditIdcsvGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETsystemauditauditIdcsvD0028623",
+        "DeaApiGatewaydeaapisystemauditauditIdcsvGET6F78F58A",
+        "DeaApiGatewaydeaapisystemauditauditIdcsvOPTIONSB627E509",
+        "DeaApiGatewaydeaapisystemauditauditIdcsv14E7D7D1",
+        "DeaApiGatewaydeaapisystemauditauditIdOPTIONS4E0961DF",
+        "DeaApiGatewaydeaapisystemauditauditIdBE52065E",
+        "DeaApiGatewaydeaapisystemauditOPTIONSF92BC8D9",
+        "DeaApiGatewaydeaapisystemauditPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTsystemaudit9CEA872E",
+        "DeaApiGatewaydeaapisystemauditPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTsystemauditE2A490DF",
+        "DeaApiGatewaydeaapisystemauditPOST7DE89403",
+        "DeaApiGatewaydeaapisystemaudit7E7C8D6B",
+        "DeaApiGatewaydeaapisystemOPTIONS6EF8E1C0",
+        "DeaApiGatewaydeaapisystem63A4B81F",
+        "DeaApiGatewaydeaapiuiproxyGETD7F3590B",
+        "DeaApiGatewaydeaapiuiproxyOPTIONS7D1A7859",
+        "DeaApiGatewaydeaapiuiproxy57F1250D",
+        "DeaApiGatewaydeaapiuiauthtestGET744C7E45",
+        "DeaApiGatewaydeaapiuiauthtestOPTIONSD475105E",
+        "DeaApiGatewaydeaapiuiauthtest0A8A5523",
+        "DeaApiGatewaydeaapiuicasedetailGETD21EB4EB",
+        "DeaApiGatewaydeaapiuicasedetailOPTIONSC371556A",
+        "DeaApiGatewaydeaapiuicasedetail096431E3",
+        "DeaApiGatewaydeaapiuicreatecasesGET6E1F559E",
+        "DeaApiGatewaydeaapiuicreatecasesOPTIONS4DF4B902",
+        "DeaApiGatewaydeaapiuicreatecases51731CAC",
+        "DeaApiGatewaydeaapiuiGET4360368B",
+        "DeaApiGatewaydeaapiuiloginGETF8B1569E",
+        "DeaApiGatewaydeaapiuiloginOPTIONS72139AA0",
+        "DeaApiGatewaydeaapiuilogin44F28D1A",
+        "DeaApiGatewaydeaapiuiOPTIONSF590A754",
+        "DeaApiGatewaydeaapiui838E08AB",
+        "DeaApiGatewaydeaapiuiuploadfilesGET18F68E99",
+        "DeaApiGatewaydeaapiuiuploadfilesOPTIONS447589BB",
+        "DeaApiGatewaydeaapiuiuploadfilesD316EB71",
+        "DeaApiGatewaydeaapiusersuserIdauditauditIdcsvGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETusersuserIdauditauditIdcsv96605EA3",
+        "DeaApiGatewaydeaapiusersuserIdauditauditIdcsvGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETusersuserIdauditauditIdcsv935E851F",
+        "DeaApiGatewaydeaapiusersuserIdauditauditIdcsvGETCE4980FD",
+        "DeaApiGatewaydeaapiusersuserIdauditauditIdcsvOPTIONSBB3692CC",
+        "DeaApiGatewaydeaapiusersuserIdauditauditIdcsvF855DE4D",
+        "DeaApiGatewaydeaapiusersuserIdauditauditIdOPTIONSCD66D9A6",
+        "DeaApiGatewaydeaapiusersuserIdauditauditId319420ED",
+        "DeaApiGatewaydeaapiusersuserIdauditOPTIONSDD803370",
+        "DeaApiGatewaydeaapiusersuserIdauditPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTusersuserIdaudit0BD35E2E",
+        "DeaApiGatewaydeaapiusersuserIdauditPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTusersuserIdaudit147E063E",
+        "DeaApiGatewaydeaapiusersuserIdauditPOST9A50C105",
+        "DeaApiGatewaydeaapiusersuserIdaudit446C5798",
+        "DeaApiGatewaydeaapiusersuserIdOPTIONSFD82C006",
+        "DeaApiGatewaydeaapiusersuserIdC25AB5D9",
+        "DeaApiGatewaydeaapiusersGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETusersDC199B18",
+        "DeaApiGatewaydeaapiusersGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETusers46F292AE",
+        "DeaApiGatewaydeaapiusersGETDBF3AD6C",
+        "DeaApiGatewaydeaapiusersOPTIONS330C13A7",
+        "DeaApiGatewaydeaapiusersCC765E55",
+        "DeaApiGatewaydeaapiDeployment99E77629f6b6114eb74cf2a2e5080a203dc83be8",
+        "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+        "DeaApiGatewaydeaapi822A9228",
+        "DeaApiGatewayUpdateBucketCORSCustomResourcePolicy9EC0AABC",
+      ],
+      "Properties": Object {
+        "Create": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"service\\":\\"S3\\",\\"action\\":\\"putBucketCors\\",\\"parameters\\":{\\"Bucket\\":\\"",
+              Object {
+                "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
+              },
+              "\\",\\"CORSConfiguration\\":{\\"CORSRules\\":[{\\"AllowedOrigins\\":[\\"https://localhost:3001\\",\\"https://",
+              Object {
+                "Fn::Select": Array [
+                  0,
+                  Object {
+                    "Fn::Split": Array [
+                      "/",
+                      Object {
+                        "Fn::Select": Array [
+                          1,
+                          Object {
+                            "Fn::Split": Array [
+                              "//",
+                              Object {
+                                "Fn::Join": Array [
+                                  "",
+                                  Array [
+                                    "https://",
+                                    Object {
+                                      "Ref": "DeaApiGatewaydeaapi822A9228",
+                                    },
+                                    ".execute-api.",
+                                    Object {
+                                      "Ref": "AWS::Region",
+                                    },
+                                    ".",
+                                    Object {
+                                      "Ref": "AWS::URLSuffix",
+                                    },
+                                    "/",
+                                    Object {
+                                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                                    },
+                                    "/",
+                                  ],
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              "\\"],\\"AllowedMethods\\":[\\"GET\\",\\"PUT\\",\\"HEAD\\"],\\"AllowedHeaders\\":[\\"*\\"]}]}},\\"physicalResourceId\\":{\\"id\\":\\"",
+              Object {
+                "Ref": "DeaApiGatewaydeaapi822A9228",
+              },
+              "\\"}}",
+            ],
+          ],
+        },
+        "InstallLatestAwsSdk": false,
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"service\\":\\"S3\\",\\"action\\":\\"putBucketCors\\",\\"parameters\\":{\\"Bucket\\":\\"",
+              Object {
+                "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
+              },
+              "\\",\\"CORSConfiguration\\":{\\"CORSRules\\":[{\\"AllowedOrigins\\":[\\"https://localhost:3001\\",\\"https://",
+              Object {
+                "Fn::Select": Array [
+                  0,
+                  Object {
+                    "Fn::Split": Array [
+                      "/",
+                      Object {
+                        "Fn::Select": Array [
+                          1,
+                          Object {
+                            "Fn::Split": Array [
+                              "//",
+                              Object {
+                                "Fn::Join": Array [
+                                  "",
+                                  Array [
+                                    "https://",
+                                    Object {
+                                      "Ref": "DeaApiGatewaydeaapi822A9228",
+                                    },
+                                    ".execute-api.",
+                                    Object {
+                                      "Ref": "AWS::Region",
+                                    },
+                                    ".",
+                                    Object {
+                                      "Ref": "AWS::URLSuffix",
+                                    },
+                                    "/",
+                                    Object {
+                                      "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                                    },
+                                    "/",
+                                  ],
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              "\\"],\\"AllowedMethods\\":[\\"GET\\",\\"PUT\\",\\"HEAD\\"],\\"AllowedHeaders\\":[\\"*\\"]}]}},\\"physicalResourceId\\":{\\"id\\":\\"",
+              Object {
+                "Ref": "DeaApiGatewaydeaapi822A9228",
+              },
+              "\\"}}",
+            ],
+          ],
+        },
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaApiGatewayUpdateBucketCORSCustomResourcePolicy9EC0AABC": Object {
+      "DependsOn": Array [
+        "DeaApiGatewaydeaapiAccountBA9E69BF",
+        "DeaApiGatewaydeaapiCloudWatchRole1E7850B5",
+        "DeaApiGatewaydeaapiDEAUsagePlanEA7656DD",
+        "DeaApiGatewaydeaapiauthauthCodeOPTIONS8EA9BA0F",
+        "DeaApiGatewaydeaapiauthauthCodeFC92ADBD",
+        "DeaApiGatewaydeaapiauthauthCodetokenOPTIONSECFF39C3",
+        "DeaApiGatewaydeaapiauthauthCodetokenPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTauthauthCodetoken9B5873D4",
+        "DeaApiGatewaydeaapiauthauthCodetokenPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTauthauthCodetokenF01BAD47",
+        "DeaApiGatewaydeaapiauthauthCodetokenPOST7CE36F34",
+        "DeaApiGatewaydeaapiauthauthCodetoken7071838E",
+        "DeaApiGatewaydeaapiauthloginUrlGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETauthloginUrl5CC8D391",
+        "DeaApiGatewaydeaapiauthloginUrlGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETauthloginUrlB20E499C",
+        "DeaApiGatewaydeaapiauthloginUrlGETA4078375",
+        "DeaApiGatewaydeaapiauthloginUrlOPTIONSC71EAA7B",
+        "DeaApiGatewaydeaapiauthloginUrlDBEB32CD",
+        "DeaApiGatewaydeaapiauthlogoutUrlGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETauthlogoutUrl430C249B",
+        "DeaApiGatewaydeaapiauthlogoutUrlGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETauthlogoutUrlB37EA100",
+        "DeaApiGatewaydeaapiauthlogoutUrlGET44834196",
+        "DeaApiGatewaydeaapiauthlogoutUrlOPTIONSA32BAB71",
+        "DeaApiGatewaydeaapiauthlogoutUrlD5D9A02E",
+        "DeaApiGatewaydeaapiauthOPTIONS95F6C2CF",
+        "DeaApiGatewaydeaapiauthrefreshTokenOPTIONS969FDA6D",
+        "DeaApiGatewaydeaapiauthrefreshTokenPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTauthrefreshToken047B7DBF",
+        "DeaApiGatewaydeaapiauthrefreshTokenPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTauthrefreshToken73C06D6B",
+        "DeaApiGatewaydeaapiauthrefreshTokenPOST0744B2BB",
+        "DeaApiGatewaydeaapiauthrefreshToken9A393A9C",
+        "DeaApiGatewaydeaapiauth42A62286",
+        "DeaApiGatewaydeaapiauthrevokeTokenOPTIONS2D8639A5",
+        "DeaApiGatewaydeaapiauthrevokeTokenPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTauthrevokeTokenAABF3021",
+        "DeaApiGatewaydeaapiauthrevokeTokenPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTauthrevokeTokenF1BC5D37",
+        "DeaApiGatewaydeaapiauthrevokeTokenPOSTE5A8C6B9",
+        "DeaApiGatewaydeaapiauthrevokeTokenE3DB92E3",
+        "DeaApiGatewaydeaapiavailableEndpointsGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETavailableEndpoints8C83E32B",
+        "DeaApiGatewaydeaapiavailableEndpointsGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETavailableEndpoints9A6A6EAA",
+        "DeaApiGatewaydeaapiavailableEndpointsGET1778E5A8",
+        "DeaApiGatewaydeaapiavailableEndpointsOPTIONS271595FD",
+        "DeaApiGatewaydeaapiavailableEndpointsF4D850DD",
+        "DeaApiGatewaydeaapicasescaseIdactionsGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdactions2A8255E4",
+        "DeaApiGatewaydeaapicasescaseIdactionsGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdactions88198B7F",
+        "DeaApiGatewaydeaapicasescaseIdactionsGET6EB75B66",
+        "DeaApiGatewaydeaapicasescaseIdactionsOPTIONS2140F793",
+        "DeaApiGatewaydeaapicasescaseIdactionsAB55E158",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdcsvGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdauditauditIdcsv51981359",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdcsvGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdauditauditIdcsv35FD9F8E",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdcsvGETF934A5FF",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdcsvOPTIONSF0C8820E",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdcsv59A5449B",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdOPTIONSEE8EF3DD",
+        "DeaApiGatewaydeaapicasescaseIdauditauditIdA0355355",
+        "DeaApiGatewaydeaapicasescaseIdauditOPTIONSBC0FFF0A",
+        "DeaApiGatewaydeaapicasescaseIdauditPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdaudit8BCD9592",
+        "DeaApiGatewaydeaapicasescaseIdauditPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdaudit23E7CD9F",
+        "DeaApiGatewaydeaapicasescaseIdauditPOST92AD4FAB",
+        "DeaApiGatewaydeaapicasescaseIdauditBB1A3E17",
+        "DeaApiGatewaydeaapicasescaseIddetailsDELETEApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9DELETEcasescaseIddetails2C70D817",
+        "DeaApiGatewaydeaapicasescaseIddetailsDELETEApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9DELETEcasescaseIddetails86ADF27E",
+        "DeaApiGatewaydeaapicasescaseIddetailsDELETEE7B8E1B0",
+        "DeaApiGatewaydeaapicasescaseIddetailsGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIddetailsAA4D9CB6",
+        "DeaApiGatewaydeaapicasescaseIddetailsGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIddetails4472EF26",
+        "DeaApiGatewaydeaapicasescaseIddetailsGET41929CBD",
+        "DeaApiGatewaydeaapicasescaseIddetailsOPTIONS53E2D203",
+        "DeaApiGatewaydeaapicasescaseIddetailsPUTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIddetailsD766813D",
+        "DeaApiGatewaydeaapicasescaseIddetailsPUTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIddetails9A2A063C",
+        "DeaApiGatewaydeaapicasescaseIddetailsPUT3D9BC22B",
+        "DeaApiGatewaydeaapicasescaseIddetailsE86153E3",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfilesfileIdauditauditIdcsv45C2E9D3",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfilesfileIdauditauditIdcsv8ADDBAC8",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdcsvGETE24DF9D9",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONSA5AF99EF",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdcsvDA9009C7",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdOPTIONS7688D070",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditId116F093C",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditOPTIONS2634277B",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdfilesfileIdaudit2A108591",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdfilesfileIdaudit8ABE9CD3",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditPOSTF4A15C85",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdaudit13E81F29",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfilesfileIdcontents3718517A",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfilesfileIdcontentsABB5AD19",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsGETD43BFE99",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsOPTIONS1DC417CA",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIdfilesfileIdcontentsC2DBDB31",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIdfilesfileIdcontents4825A2D8",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsPUTF6AA4CB8",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontents21AB00FB",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdinfoGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfilesfileIdinfo4EED31E6",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdinfoGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfilesfileIdinfo4F0E68C5",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdinfoGET4FE96B29",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdinfoOPTIONSC2BB332A",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdinfoF9BE4EE2",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileIdOPTIONS25DF38EE",
+        "DeaApiGatewaydeaapicasescaseIdfilesfileId16B45CA0",
+        "DeaApiGatewaydeaapicasescaseIdfilesGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfiles2C1EE942",
+        "DeaApiGatewaydeaapicasescaseIdfilesGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdfiles1B592EBC",
+        "DeaApiGatewaydeaapicasescaseIdfilesGET13698780",
+        "DeaApiGatewaydeaapicasescaseIdfilesOPTIONS7517D173",
+        "DeaApiGatewaydeaapicasescaseIdfilesPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdfiles29AFF255",
+        "DeaApiGatewaydeaapicasescaseIdfilesPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdfiles74542E67",
+        "DeaApiGatewaydeaapicasescaseIdfilesPOST3D5F353E",
+        "DeaApiGatewaydeaapicasescaseIdfilesF29B9178",
+        "DeaApiGatewaydeaapicasescaseIdOPTIONSED4E4189",
+        "DeaApiGatewaydeaapicasescaseIdownerOPTIONS08191B25",
+        "DeaApiGatewaydeaapicasescaseIdownerPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdownerEBEB2C05",
+        "DeaApiGatewaydeaapicasescaseIdownerPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIdownerDCCD430E",
+        "DeaApiGatewaydeaapicasescaseIdownerPOSTEA20102A",
+        "DeaApiGatewaydeaapicasescaseIdowner33837916",
+        "DeaApiGatewaydeaapicasescaseId3D754C88",
+        "DeaApiGatewaydeaapicasescaseIdscopedInformationGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdscopedInformation281866C3",
+        "DeaApiGatewaydeaapicasescaseIdscopedInformationGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIdscopedInformation898CA4C9",
+        "DeaApiGatewaydeaapicasescaseIdscopedInformationGETF7DBC337",
+        "DeaApiGatewaydeaapicasescaseIdscopedInformationOPTIONS80FCFACF",
+        "DeaApiGatewaydeaapicasescaseIdscopedInformation7E7BAB42",
+        "DeaApiGatewaydeaapicasescaseIdstatusOPTIONSCC9D3E46",
+        "DeaApiGatewaydeaapicasescaseIdstatusPUTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIdstatusDABA766E",
+        "DeaApiGatewaydeaapicasescaseIdstatusPUTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIdstatusA83EE228",
+        "DeaApiGatewaydeaapicasescaseIdstatusPUTDBBE8278",
+        "DeaApiGatewaydeaapicasescaseIdstatusEAC066DB",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIduserMemberships96997C99",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasescaseIduserMembershipsCE758452",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsGET89A6E1EF",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsOPTIONSA41AAFF1",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIduserMemberships1569B97D",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcasescaseIduserMemberships9016B401",
+        "DeaApiGatewaydeaapicasescaseIduserMembershipsPOST9A7D9804",
+        "DeaApiGatewaydeaapicasescaseIduserMemberships4457D242",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9DELETEcasescaseIdusersuserIdmemberships2C9CC8B5",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9DELETEcasescaseIdusersuserIdmembershipsC5C31048",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsDELETE8D61025A",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsOPTIONS0F1651A7",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIdusersuserIdmemberships448538AB",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9PUTcasescaseIdusersuserIdmembershipsB3E7C0CC",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsPUT6003274C",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsBA0A2E7C",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdOPTIONS3B6673A7",
+        "DeaApiGatewaydeaapicasescaseIdusersuserIdEE478FC8",
+        "DeaApiGatewaydeaapicasescaseIdusersOPTIONS09886FE5",
+        "DeaApiGatewaydeaapicasescaseIdusers2F3FB5C6",
+        "DeaApiGatewaydeaapicasesallcasesGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasesallcases1F8DA228",
+        "DeaApiGatewaydeaapicasesallcasesGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasesallcasesB4DD5CAB",
+        "DeaApiGatewaydeaapicasesallcasesGET92FB3B5C",
+        "DeaApiGatewaydeaapicasesallcasesOPTIONSF976C9CD",
+        "DeaApiGatewaydeaapicasesallcasesBDAE5421",
+        "DeaApiGatewaydeaapicasesmycasesGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasesmycases3B33517B",
+        "DeaApiGatewaydeaapicasesmycasesGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETcasesmycases742BCA77",
+        "DeaApiGatewaydeaapicasesmycasesGET6F1F66A1",
+        "DeaApiGatewaydeaapicasesmycasesOPTIONS4C431DB3",
+        "DeaApiGatewaydeaapicasesmycases25599FEB",
+        "DeaApiGatewaydeaapicasesOPTIONS4FE777E3",
+        "DeaApiGatewaydeaapicasesPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcases87C8F16F",
+        "DeaApiGatewaydeaapicasesPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTcases87E8FD3D",
+        "DeaApiGatewaydeaapicasesPOST966FABAB",
+        "DeaApiGatewaydeaapicasesC01D624D",
+        "DeaApiGatewaydeaapiOPTIONS098252F2",
+        "DeaApiGatewaydeaapisystemauditauditIdcsvGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETsystemauditauditIdcsv830DFC59",
+        "DeaApiGatewaydeaapisystemauditauditIdcsvGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETsystemauditauditIdcsvD0028623",
+        "DeaApiGatewaydeaapisystemauditauditIdcsvGET6F78F58A",
+        "DeaApiGatewaydeaapisystemauditauditIdcsvOPTIONSB627E509",
+        "DeaApiGatewaydeaapisystemauditauditIdcsv14E7D7D1",
+        "DeaApiGatewaydeaapisystemauditauditIdOPTIONS4E0961DF",
+        "DeaApiGatewaydeaapisystemauditauditIdBE52065E",
+        "DeaApiGatewaydeaapisystemauditOPTIONSF92BC8D9",
+        "DeaApiGatewaydeaapisystemauditPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTsystemaudit9CEA872E",
+        "DeaApiGatewaydeaapisystemauditPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTsystemauditE2A490DF",
+        "DeaApiGatewaydeaapisystemauditPOST7DE89403",
+        "DeaApiGatewaydeaapisystemaudit7E7C8D6B",
+        "DeaApiGatewaydeaapisystemOPTIONS6EF8E1C0",
+        "DeaApiGatewaydeaapisystem63A4B81F",
+        "DeaApiGatewaydeaapiuiproxyGETD7F3590B",
+        "DeaApiGatewaydeaapiuiproxyOPTIONS7D1A7859",
+        "DeaApiGatewaydeaapiuiproxy57F1250D",
+        "DeaApiGatewaydeaapiuiauthtestGET744C7E45",
+        "DeaApiGatewaydeaapiuiauthtestOPTIONSD475105E",
+        "DeaApiGatewaydeaapiuiauthtest0A8A5523",
+        "DeaApiGatewaydeaapiuicasedetailGETD21EB4EB",
+        "DeaApiGatewaydeaapiuicasedetailOPTIONSC371556A",
+        "DeaApiGatewaydeaapiuicasedetail096431E3",
+        "DeaApiGatewaydeaapiuicreatecasesGET6E1F559E",
+        "DeaApiGatewaydeaapiuicreatecasesOPTIONS4DF4B902",
+        "DeaApiGatewaydeaapiuicreatecases51731CAC",
+        "DeaApiGatewaydeaapiuiGET4360368B",
+        "DeaApiGatewaydeaapiuiloginGETF8B1569E",
+        "DeaApiGatewaydeaapiuiloginOPTIONS72139AA0",
+        "DeaApiGatewaydeaapiuilogin44F28D1A",
+        "DeaApiGatewaydeaapiuiOPTIONSF590A754",
+        "DeaApiGatewaydeaapiui838E08AB",
+        "DeaApiGatewaydeaapiuiuploadfilesGET18F68E99",
+        "DeaApiGatewaydeaapiuiuploadfilesOPTIONS447589BB",
+        "DeaApiGatewaydeaapiuiuploadfilesD316EB71",
+        "DeaApiGatewaydeaapiusersuserIdauditauditIdcsvGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETusersuserIdauditauditIdcsv96605EA3",
+        "DeaApiGatewaydeaapiusersuserIdauditauditIdcsvGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETusersuserIdauditauditIdcsv935E851F",
+        "DeaApiGatewaydeaapiusersuserIdauditauditIdcsvGETCE4980FD",
+        "DeaApiGatewaydeaapiusersuserIdauditauditIdcsvOPTIONSBB3692CC",
+        "DeaApiGatewaydeaapiusersuserIdauditauditIdcsvF855DE4D",
+        "DeaApiGatewaydeaapiusersuserIdauditauditIdOPTIONSCD66D9A6",
+        "DeaApiGatewaydeaapiusersuserIdauditauditId319420ED",
+        "DeaApiGatewaydeaapiusersuserIdauditOPTIONSDD803370",
+        "DeaApiGatewaydeaapiusersuserIdauditPOSTApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9POSTusersuserIdaudit0BD35E2E",
+        "DeaApiGatewaydeaapiusersuserIdauditPOSTApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9POSTusersuserIdaudit147E063E",
+        "DeaApiGatewaydeaapiusersuserIdauditPOST9A50C105",
+        "DeaApiGatewaydeaapiusersuserIdaudit446C5798",
+        "DeaApiGatewaydeaapiusersuserIdOPTIONSFD82C006",
+        "DeaApiGatewaydeaapiusersuserIdC25AB5D9",
+        "DeaApiGatewaydeaapiusersGETApiPermissionDeaMainStackDeaApiGatewaydeaapi25A632E9GETusersDC199B18",
+        "DeaApiGatewaydeaapiusersGETApiPermissionTestDeaMainStackDeaApiGatewaydeaapi25A632E9GETusers46F292AE",
+        "DeaApiGatewaydeaapiusersGETDBF3AD6C",
+        "DeaApiGatewaydeaapiusersOPTIONS330C13A7",
+        "DeaApiGatewaydeaapiusersCC765E55",
+        "DeaApiGatewaydeaapiDeployment99E77629f6b6114eb74cf2a2e5080a203dc83be8",
+        "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+        "DeaApiGatewaydeaapi822A9228",
+      ],
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:PutBucketCors",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaApiGatewayUpdateBucketCORSCustomResourcePolicy9EC0AABC",
+        "Roles": Array [
+          Object {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "DeaApiGatewaydeaapi822A9228": Object {
       "Properties": Object {
         "Description": "Backend API",
@@ -3074,7 +3710,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E77629f674d7af8a4959cb0eaa6d2602cbb3e7": Object {
+    "DeaApiGatewaydeaapiDeployment99E77629f6b6114eb74cf2a2e5080a203dc83be8": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiauthauthCodeOPTIONS8EA9BA0F",
         "DeaApiGatewaydeaapiauthauthCodeFC92ADBD",
@@ -3236,7 +3872,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E77629f674d7af8a4959cb0eaa6d2602cbb3e7",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E77629f6b6114eb74cf2a2e5080a203dc83be8",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
@@ -3254,7 +3890,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -3315,7 +3951,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -3370,7 +4006,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -3425,7 +4061,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -3716,7 +4352,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -3889,7 +4525,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -3944,7 +4580,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -4117,7 +4753,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -4411,7 +5047,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -4469,7 +5105,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -4768,7 +5404,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -4823,7 +5459,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -4996,7 +5632,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -5051,7 +5687,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -5224,7 +5860,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -5397,7 +6033,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -5688,7 +6324,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -5979,7 +6615,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -6152,7 +6788,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -6207,7 +6843,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -6380,7 +7016,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -6553,7 +7189,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -6726,7 +7362,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -7017,7 +7653,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -7072,7 +7708,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -7363,7 +7999,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -7418,7 +8054,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -7709,7 +8345,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -7882,7 +8518,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -7937,7 +8573,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -8110,7 +8746,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -8409,7 +9045,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -8467,7 +9103,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -8522,7 +9158,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -8695,7 +9331,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -8868,7 +9504,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -8943,7 +9579,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -8983,7 +9624,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -9011,7 +9657,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -9073,7 +9719,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -9113,7 +9764,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -9141,7 +9797,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -9203,7 +9859,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -9243,7 +9904,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -9271,7 +9937,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -9333,7 +9999,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -9373,7 +10044,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -9401,7 +10077,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -9463,7 +10139,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -9503,7 +10184,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -9531,7 +10217,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -9603,7 +10289,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -9643,7 +10334,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -9671,7 +10367,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -9733,7 +10429,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -9773,7 +10474,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -9801,7 +10507,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -9983,7 +10689,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -10038,7 +10744,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -10093,7 +10799,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -10266,7 +10972,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",
@@ -10439,7 +11145,7 @@ Object {
             Object {
               "ResponseParameters": Object {
                 "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
                 "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
                 "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
                 "method.response.header.Vary": "'Origin'",

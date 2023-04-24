@@ -587,7 +587,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::RestApi",
     },
-    "testApiDeployment3727A0B997d8ee0d3d68fcab0d79c17f19b27b71": Object {
+    "testApiDeployment3727A0B9dfa38d21c52796305c593d40fc1f6117": Object {
       "DependsOn": Array [
         "testApiuiproxyGET92230E90",
         "testApiuiproxyDDF9EC1E",
@@ -618,7 +618,7 @@ Object {
       ],
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "testApiDeployment3727A0B997d8ee0d3d68fcab0d79c17f19b27b71",
+          "Ref": "testApiDeployment3727A0B9dfa38d21c52796305c593d40fc1f6117",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",
@@ -658,7 +658,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -698,7 +703,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -745,7 +755,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -785,7 +800,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -832,7 +852,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -872,7 +897,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -919,7 +949,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -959,7 +994,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -1006,7 +1046,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -1046,7 +1091,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -1093,7 +1143,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -1133,7 +1188,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -1180,7 +1240,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -1220,7 +1285,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },

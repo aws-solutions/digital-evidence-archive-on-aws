@@ -4,7 +4,7 @@
  */
 
 import path from 'path';
-import { Duration } from 'aws-cdk-lib';
+import { Duration, Fn } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   AuthorizationType,
@@ -25,6 +25,8 @@ import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import { HttpMethods } from 'aws-cdk-lib/aws-s3';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway-route-config';
@@ -124,10 +126,12 @@ export class DeaRestApiConstruct extends Construct {
           'CSRF-Token',
           'x-amz-security-token',
           'set-cookie',
+          'Host',
+          'Content-Length',
         ],
         allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         allowCredentials: true,
-        allowOrigins: deaConfig.deaAllowedOrigins().split(','),
+        allowOrigins: deaConfig.deaAllowedOriginsList(),
       },
       defaultMethodOptions: {
         authorizationType: AuthorizationType.IAM,
@@ -135,6 +139,40 @@ export class DeaRestApiConstruct extends Construct {
     });
 
     this._configureApiGateway(deaApiRouteConfig, props.lambdaEnv);
+
+    this._updateBucketCors(this.deaRestApi, props.deaDatasetsBucketName);
+  }
+
+  private _updateBucketCors(restApi: RestApi, bucketName: Readonly<string>) {
+    const allowedOrigins = deaConfig.deaAllowedOriginsList();
+    allowedOrigins.push(`https://${Fn.parseDomainName(restApi.url)}`);
+
+    const updateCorsCall = {
+      service: 'S3',
+      action: 'putBucketCors',
+      parameters: {
+        Bucket: bucketName,
+        CORSConfiguration: {
+          CORSRules: [
+            {
+              AllowedOrigins: allowedOrigins,
+              AllowedMethods: [HttpMethods.GET, HttpMethods.PUT, HttpMethods.HEAD],
+              AllowedHeaders: ['*'],
+            },
+          ],
+        },
+      },
+      physicalResourceId: PhysicalResourceId.of(restApi.restApiId),
+    };
+    const updateCors = new AwsCustomResource(this, 'UpdateBucketCORS', {
+      onCreate: updateCorsCall,
+      onUpdate: updateCorsCall,
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+      installLatestAwsSdk: false,
+    });
+    updateCors.node.addDependency(restApi);
   }
 
   private _configureApiGateway(routeConfig: ApiGatewayRouteConfig, lambdaEnv: LambdaEnvironment): void {
