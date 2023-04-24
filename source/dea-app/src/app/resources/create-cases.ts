@@ -32,9 +32,5 @@ export const createCases: DEAGatewayProxyHandler = async (
 
   const updateBody = await CaseService.createCases(deaCase, user, repositoryProvider);
 
-  // Add the new caseId to the event header, so it will be added
-  // to the audit event, and will show up in case audit
-  event.headers['caseId'] = updateBody.ulid;
-
   return responseOk(event, updateBody);
 };

@@ -28,8 +28,6 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
     completeCaseFileUploadRequestSchema
   );
 
-  event.headers['caseFileHash'] = requestCaseFile.sha256Hash;
-
   const userUlid = getUserUlid(event);
   const existingFile = await validateCompleteCaseFileRequirements(
     requestCaseFile,

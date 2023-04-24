@@ -19,7 +19,7 @@ import {
 } from '@aws/dea-app/lib/app/services/audit-service';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
-import { APIGatewayProxyEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { logger } from '../logger';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
 import { exceptionHandlers } from './exception-handlers';
@@ -71,33 +71,7 @@ export const createDeaHandler = (
       if (result.statusCode >= 200 && result.statusCode < 300) {
         auditEvent.result = AuditEventResult.SUCCESS;
 
-        const eventType = getEventType(event);
-
-        //Warn if caseId was not included on the CreateCase Operation
-        if (eventType == AuditEventType.CREATE_CASE) {
-          // Include case id if it was populated
-          auditEvent.caseId = event.headers['caseId'];
-          if (!auditEvent.caseId) {
-            logger.error('CaseId was not included in auditEvent after complete case creation operation.', {
-              resource: event.resource,
-              httpMethod: event.httpMethod,
-            });
-            auditEvent.caseId = 'ERROR: case id is absent';
-            auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
-          }
-        }
-
-        // include file hash in event type if it was populated
-        auditEvent.fileHash = event.headers['caseFileHash'];
-        // Warn if the fileHash was not included on complete upload operation
-        if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD && !auditEvent.fileHash) {
-          logger.error('File hash was not included in auditEvent after complete file upload operation.', {
-            resource: event.resource,
-            httpMethod: event.httpMethod,
-          });
-          auditEvent.fileHash = 'ERROR: hash is absent';
-          auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
-        }
+        parseEventForExtendedAuditFields(event, auditEvent, result);
       }
       return result;
     } catch (error) {
@@ -215,4 +189,62 @@ const getTargetUserId = (event: APIGatewayProxyEvent): string | undefined => {
     }
   }
   return event.pathParameters?.userId;
+};
+
+const parseEventForExtendedAuditFields = (
+  event: APIGatewayProxyEvent,
+  auditEvent: CJISAuditEventBody,
+  result: APIGatewayProxyResult
+) => {
+  const eventType = getEventType(event);
+
+  if (
+    eventType !== AuditEventType.CREATE_CASE &&
+    eventType !== AuditEventType.INITIATE_CASE_FILE_UPLOAD &&
+    eventType !== AuditEventType.COMPLETE_CASE_FILE_UPLOAD
+  ) {
+    return;
+  }
+
+  const body = JSON.parse(result.body);
+
+  //Warn if caseId was not included on the CreateCase Operation
+  if (eventType == AuditEventType.CREATE_CASE) {
+    // Include case id if it was populated
+    auditEvent.caseId = body.ulid;
+    if (!auditEvent.caseId) {
+      logger.error('CaseId was not included in auditEvent after complete case creation operation.', {
+        resource: event.resource,
+        httpMethod: event.httpMethod,
+      });
+      auditEvent.caseId = 'ERROR: case id is absent';
+      auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
+    }
+  }
+
+  // Warn if fileId was not included on the InitiateFileUpload Operation
+  if (eventType == AuditEventType.INITIATE_CASE_FILE_UPLOAD) {
+    // Include file id if it was populated
+    auditEvent.fileId = body.ulid;
+    if (!auditEvent.fileId) {
+      logger.error('FileId was not included in auditEvent after initiate upload operation.', {
+        resource: event.resource,
+        httpMethod: event.httpMethod,
+      });
+      auditEvent.fileId = 'ERROR: file id is absent';
+      auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
+    }
+  }
+
+  // include file hash if it was included in the body of the response
+  auditEvent.fileHash = body.sha256Hash;
+  // Warn if the fileHash was not included on complete upload operation
+  if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD && !auditEvent.fileHash) {
+    logger.error('File hash was not included in auditEvent after complete file upload operation.', {
+      resource: event.resource,
+      httpMethod: event.httpMethod,
+    });
+    auditEvent.fileHash = 'ERROR: hash is absent';
+    auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
+  }
 };
