@@ -17,7 +17,7 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { AnyPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption } from 'aws-cdk-lib/aws-s3';
+import { BlockPublicAccess, Bucket, BucketEncryption, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 
@@ -33,7 +33,6 @@ export class DeaUiConstruct extends Construct {
     super(scope, 'DeaUiStack');
 
     const bucket = new Bucket(this, 'artifact-bucket', {
-      accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       websiteIndexDocument: 'index.html',
       encryption: BucketEncryption.S3_MANAGED,
@@ -41,6 +40,7 @@ export class DeaUiConstruct extends Construct {
       serverAccessLogsPrefix: props.accessLogPrefix,
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
+      objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
 
     this._addS3TLSSigV4BucketPolicy(bucket);

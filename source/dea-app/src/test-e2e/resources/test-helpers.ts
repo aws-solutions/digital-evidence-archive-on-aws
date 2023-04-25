@@ -465,13 +465,21 @@ export const parseOauthTokenFromCookies = (response: AxiosResponse): Oauth2Token
 
 // TODO: make it so we do the same for CaseAudit and UserAudit, and
 // extend the E2E tests to do the same checks as the CaseFileAudit
-export type AuditEventEntry = CaseFileAuditEventEntry;
+export type AuditEventEntry = CaseFileAuditEventEntry | CaseAuditEventEntry;
 
 export type CaseFileAuditEventEntry = {
   eventType: AuditEventType;
   username: string;
   caseId: string;
   fileId: string;
+  fileHash?: string;
+};
+
+export type CaseAuditEventEntry = {
+  eventType: AuditEventType;
+  username: string;
+  caseId: string;
+  fileId?: string;
   fileHash?: string;
 };
 
@@ -485,28 +493,83 @@ const parseAuditCsv = (csvData: string, parseFn: (entry: string) => AuditEventEn
 };
 
 export const parseCaseFileAuditCsv = (csvData: string): CaseFileAuditEventEntry[] => {
-  function parseCaseFileAuditEvent(entry: string): AuditEventEntry {
-    const fields = entry.split(', ').map((field) => field.trimEnd());
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const eventType = fields[1] as AuditEventType;
-    if (eventType == undefined) {
-      console.log('ERROR ' + fields[1]);
-      console.log(fields);
-      console.log(entry);
-    }
-    let fileHash: string | undefined;
-    if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD) {
-      expect(fields[15]).toBeDefined();
-      fileHash = fields[15];
-    }
-    return {
-      eventType,
-      username: fields[6],
-      caseId: fields[13],
-      fileId: fields[14],
-      fileHash,
-    };
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return parseAuditCsv(csvData, parseCaseFileAuditEvent).map((entry) => entry as CaseFileAuditEventEntry);
+};
+
+export const parseCaseAuditCsv = (csvData: string): CaseAuditEventEntry[] => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return parseAuditCsv(csvData, parseCaseAuditEvent).map((entry) => entry as CaseAuditEventEntry);
+};
+
+const CASE_FILE_EVENT_TYPES = new Set<AuditEventType>([
+  AuditEventType.COMPLETE_CASE_FILE_UPLOAD,
+  AuditEventType.DOWNLOAD_CASE_FILE,
+  AuditEventType.GET_CASE_FILE_AUDIT,
+  AuditEventType.GET_CASE_FILE_DETAIL,
+  AuditEventType.INITIATE_CASE_FILE_UPLOAD,
+  AuditEventType.REQUEST_CASE_FILE_AUDIT,
+]);
+const CASE_LEVEL_EVENT_TYPES = new Set<AuditEventType>([
+  AuditEventType.CREATE_CASE,
+  AuditEventType.CREATE_CASE_OWNER,
+  AuditEventType.DELETE_CASE,
+  AuditEventType.GET_CASE_AUDIT,
+  AuditEventType.GET_CASE_DETAILS,
+  AuditEventType.GET_CASE_FILES,
+  AuditEventType.GET_SCOPED_CASE_INFO,
+  AuditEventType.GET_USERS_FROM_CASE,
+  AuditEventType.INVITE_USER_TO_CASE,
+  AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE,
+  AuditEventType.REMOVE_USER_FROM_CASE,
+  AuditEventType.REQUEST_CASE_AUDIT,
+  AuditEventType.UPDATE_CASE_DETAILS,
+  AuditEventType.UPDATE_CASE_STATUS,
+]);
+
+function parseCaseFileAuditEvent(entry: string): CaseAuditEventEntry {
+  const fields = entry.split(', ').map((field) => field.trimEnd());
+  const eventType = parseAuditEventType(fields);
+  expect(CASE_FILE_EVENT_TYPES.has(eventType));
+  let fileHash: string | undefined;
+  if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD) {
+    expect(fields[15]).toBeDefined();
+    fileHash = fields[15];
+  }
+  return {
+    eventType,
+    username: fields[6],
+    caseId: fields[13],
+    fileId: fields[14],
+    fileHash,
+  };
+}
+
+function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
+  const fields = entry.split(', ').map((field) => field.trimEnd());
+  const eventType = parseAuditEventType(fields);
+  if (CASE_FILE_EVENT_TYPES.has(eventType)) {
+    return parseCaseFileAuditEvent(entry);
   }
 
-  return parseAuditCsv(csvData, parseCaseFileAuditEvent);
-};
+  if (!CASE_LEVEL_EVENT_TYPES.has(eventType)) {
+    fail('Unrecognized Event Type in Case Level Audit');
+  }
+
+  return {
+    eventType,
+    username: fields[6],
+    caseId: fields[13],
+    fileId: fields[14],
+    fileHash: fields[15],
+  };
+}
+
+function parseAuditEventType(fields: string[]): AuditEventType {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  const eventType = fields[1] as AuditEventType;
+  if (eventType === undefined || eventType === AuditEventType.UNKNOWN) {
+    fail('Unable to parse event type from log entry');
+  }
+  return eventType;
+}

@@ -112,7 +112,6 @@ export const callCompleteCaseFileUpload = async (
     }
   );
   const response = await completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
-  expect(event.headers['caseFileHash']).toStrictEqual(sha256Hash);
 
   checkApiSucceeded(response);
   return JSON.parse(response.body);

@@ -459,5 +459,6 @@
       ]
     }
   ],
-  "deaAllowedOrigins": "https://localhost:3001"
+  "deaAllowedOrigins": "https://localhost:3001",
+  "deletionAllowed": true
 }

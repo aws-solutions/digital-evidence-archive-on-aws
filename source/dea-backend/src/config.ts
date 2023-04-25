@@ -165,6 +165,11 @@ const convictSchema = {
     format: String,
     default: '',
   },
+  deletionAllowed: {
+    doc: 'Boolean to indicate if Delete Case Handler should be deployed or not',
+    format: 'Boolean',
+    default: false,
+  },
 };
 
 export interface IdPAttributes {
@@ -209,6 +214,7 @@ interface DEAConfig {
   deaAllowedOrigins(): string;
   deaAllowedOriginsList(): string[];
   kmsAccountActions(): string[];
+  deletionAllowed(): boolean;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -248,6 +254,7 @@ export const deaConfig: DEAConfig = {
           'kms:ScheduleKeyDeletion',
           'kms:CancelKeyDeletion',
         ],
+  deletionAllowed: () => convictConfig.get('deletionAllowed'),
 };
 
 export const loadConfig = (stage: string): void => {
