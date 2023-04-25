@@ -15,6 +15,7 @@ import {
   CfnBucket,
   LifecycleRule,
   HttpMethods,
+  ObjectOwnership,
 } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
@@ -85,7 +86,8 @@ export class DeaBackendConstruct extends Construct {
       publicReadAccess: false,
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
-      versioned: false, // https://github.com/awslabs/aws-solutions-constructs/issues/44
+      versioned: false, // https://github.com/awslabs/aws-solutions-constructs/issues/44,
+      objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
 
     const resources = accessLogPrefixes.map((prefix) => `${s3AccessLogsBucket.bucketArn}/${prefix}*`);
@@ -151,6 +153,7 @@ export class DeaBackendConstruct extends Construct {
           allowedHeaders: ['*'],
         },
       ],
+      objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
 
     const datasetsBucketNode = datasetsBucket.node.defaultChild;
