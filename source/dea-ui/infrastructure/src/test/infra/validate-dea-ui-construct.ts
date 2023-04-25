@@ -11,7 +11,6 @@ export const validateDeaUiConstruct = (template: Template): void => {
   });
 
   template.hasResourceProperties('AWS::S3::Bucket', {
-    AccessControl: 'LogDeliveryWrite',
     PublicAccessBlockConfiguration: {
       BlockPublicAcls: true,
       BlockPublicPolicy: true,

@@ -9,7 +9,7 @@ import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
+import { BlockPublicAccess, Bucket, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
 import 'source-map-support/register';
 import { validateDeaUiConstruct } from '../..';
 import { DeaUiConstruct } from '../../dea-ui-stack';
@@ -35,6 +35,7 @@ describe('DeaMainStack', () => {
 
     const accessLogsBucket = new Bucket(stack, 'testS3AccessLogBucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
 
     const restApi = new RestApi(stack, 'testApi', { description: 'Backend API' });

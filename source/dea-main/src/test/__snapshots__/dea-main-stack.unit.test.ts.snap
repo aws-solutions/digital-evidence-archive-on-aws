@@ -11469,6 +11469,13 @@ Object {
             },
           ],
         },
+        "OwnershipControls": Object {
+          "Rules": Array [
+            Object {
+              "ObjectOwnership": "BucketOwnerPreferred",
+            },
+          ],
+        },
         "PublicAccessBlockConfiguration": Object {
           "BlockPublicAcls": true,
           "BlockPublicPolicy": true,
@@ -16312,6 +16319,13 @@ Object {
             },
           ],
         },
+        "OwnershipControls": Object {
+          "Rules": Array [
+            Object {
+              "ObjectOwnership": "BucketOwnerPreferred",
+            },
+          ],
+        },
         "PublicAccessBlockConfiguration": Object {
           "BlockPublicAcls": true,
           "BlockPublicPolicy": true,
@@ -16530,6 +16544,13 @@ Object {
           "LogFilePrefix": "dea-datasets-access-log",
         },
         "ObjectLockEnabled": true,
+        "OwnershipControls": Object {
+          "Rules": Array [
+            Object {
+              "ObjectOwnership": "BucketOwnerPreferred",
+            },
+          ],
+        },
         "PublicAccessBlockConfiguration": Object {
           "BlockPublicAcls": true,
           "BlockPublicPolicy": true,
@@ -17072,7 +17093,6 @@ Object {
     "DeaUiStackartifactbucketFFC87A37": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
-        "AccessControl": "LogDeliveryWrite",
         "BucketEncryption": Object {
           "ServerSideEncryptionConfiguration": Array [
             Object {
@@ -17087,6 +17107,13 @@ Object {
             "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
           },
           "LogFilePrefix": "dea-ui-access-log",
+        },
+        "OwnershipControls": Object {
+          "Rules": Array [
+            Object {
+              "ObjectOwnership": "BucketOwnerPreferred",
+            },
+          ],
         },
         "PublicAccessBlockConfiguration": Object {
           "BlockPublicAcls": true,
