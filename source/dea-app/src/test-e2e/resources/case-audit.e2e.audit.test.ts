@@ -10,7 +10,15 @@ import { Oauth2Token } from '../../models/auth';
 import { joiUlid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPIWithCreds, createCaseSuccess, delay, deleteCase, randomSuffix } from './test-helpers';
+import {
+  callDeaAPIWithCreds,
+  CaseAuditEventEntry,
+  createCaseSuccess,
+  delay,
+  deleteCase,
+  parseCaseAuditCsv,
+  randomSuffix,
+} from './test-helpers';
 
 describe('case audit e2e', () => {
   const cognitoHelper = new CognitoHelper();
@@ -139,12 +147,39 @@ describe('case audit e2e', () => {
       }
     }
 
-    expect(csvData).toContain('/cases/{caseId}/details');
-    expect(csvData).toContain(testUser);
-    expect(csvData).toContain(caseUlid);
-    expect(csvData).toContain(AuditEventType.GET_CASE_DETAILS);
-    expect(csvData).toContain(AuditEventType.UPDATE_CASE_DETAILS);
-    expect(csvData).toContain(AuditEventType.GET_USERS_FROM_CASE);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const entries = parseCaseAuditCsv(csvData!)
+      .filter((entry) => entry.eventType != AuditEventType.GET_CASE_AUDIT)
+      .filter((entry) => entry.eventType != AuditEventType.REQUEST_CASE_AUDIT);
+
+    expect(entries.length).toBe(4);
+
+    function verifyCaseAuditEntry(
+      entry: CaseAuditEventEntry | undefined,
+      expectedEventType: AuditEventType,
+      expectedUsername: string
+    ) {
+      if (!entry) {
+        fail('Entry does not exist');
+      }
+      expect(entry.eventType).toStrictEqual(expectedEventType);
+      expect(entry.username).toStrictEqual(expectedUsername);
+      expect(entry.caseId).toStrictEqual(caseUlid);
+    }
+
+    const createCaseEntry = entries.find((entry) => entry.eventType === AuditEventType.CREATE_CASE);
+    verifyCaseAuditEntry(createCaseEntry, AuditEventType.CREATE_CASE, testUser);
+
+    const updateCaseDetails = entries.find((entry) => entry.eventType === AuditEventType.UPDATE_CASE_DETAILS);
+    verifyCaseAuditEntry(updateCaseDetails, AuditEventType.UPDATE_CASE_DETAILS, testUser);
+
+    const getCaseDetailsEntry = entries.find((entry) => entry.eventType === AuditEventType.GET_CASE_DETAILS);
+    verifyCaseAuditEntry(getCaseDetailsEntry, AuditEventType.GET_CASE_DETAILS, testUser);
+
+    const getUsersFromCaseEntry = entries.find(
+      (entry) => entry.eventType === AuditEventType.GET_USERS_FROM_CASE
+    );
+    verifyCaseAuditEntry(getUsersFromCaseEntry, AuditEventType.GET_USERS_FROM_CASE, testUser);
   }, 180000);
 
   it('should prevent retrieval by an unauthorized user', async () => {

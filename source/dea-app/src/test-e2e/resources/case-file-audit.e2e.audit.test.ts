@@ -33,6 +33,7 @@ import {
 
 const FILE_PATH = '/important/investigation/';
 const FILE_CONTENT = 'I like turtles';
+const OTHER_FILE_CONTENT = 'I DO NOT like turtles';
 const FILE_SIZE_MB = 1;
 
 describe('case file audit e2e', () => {
@@ -117,6 +118,34 @@ describe('case file audit e2e', () => {
     expect(sha256(downloadedContent).toString()).toEqual(fileHash);
     expect(sha256(downloadedContent).toString()).toEqual(describedCaseFile.sha256Hash);
 
+    // Create another file on the case, to later ensure it does not show up on the audit log
+    const otherInitiatedCaseFile: DeaCaseFile = await initiateCaseFileUploadSuccess(
+      deaApiUrl,
+      idToken,
+      creds,
+      caseUlid,
+      'caseFileAuditTestOtherFile',
+      FILE_PATH,
+      FILE_SIZE_MB
+    );
+    const otherFileUlid = otherInitiatedCaseFile.ulid ?? fail();
+    s3ObjectsToDelete.push({
+      key: `${caseUlid}/${otherFileUlid}`,
+      uploadId: otherInitiatedCaseFile.uploadId,
+    });
+    const otherUploadId = otherInitiatedCaseFile.uploadId ?? fail();
+    const otherPresignedUrls = otherInitiatedCaseFile.presignedUrls ?? fail();
+    await uploadContentToS3(otherPresignedUrls, FILE_CONTENT);
+    await completeCaseFileUploadSuccess(
+      deaApiUrl,
+      idToken,
+      creds,
+      caseUlid,
+      otherFileUlid,
+      otherUploadId,
+      OTHER_FILE_CONTENT
+    );
+
     // TODO: create a case user who DOES not have permission to download the file
     // and have them try to download, will show up in audit log as failure
     // Will do this next PR when I string AuditEventResult through the Audit Queries
@@ -193,10 +222,7 @@ describe('case file audit e2e', () => {
       expect(entry.eventType).toStrictEqual(expectedEventType);
       expect(entry.username).toStrictEqual(expectedUsername);
       expect(entry.caseId).toStrictEqual(caseUlid);
-      // When we initiate the upload the fileId does not exist
-      if (expectedEventType !== AuditEventType.INITIATE_CASE_FILE_UPLOAD) {
-        expect(entry.fileId).toStrictEqual(fileUlid);
-      }
+      expect(entry.fileId).toStrictEqual(fileUlid);
       expect(entry.fileHash).toStrictEqual(expectedFileHash);
     }
 
@@ -206,6 +232,10 @@ describe('case file audit e2e', () => {
     // 4. GetCaseFileDetail (By Owner)
     // 4. DownloadCaseFileUpload (By Owner)
     // 5. TODO: DownloadCaseFileUpload (By CaseUser Without Permissions) (When we add event result to audit queries)
+
+    // Expect that the other created file does NOT show up in the entries
+    expect(entries.find((entry) => entry.fileId === otherFileUlid)).toBeUndefined();
+
     expect(entries.length).toBe(4);
     // Now verify each of the event entries
     const initiateUploadEntry = entries.find(

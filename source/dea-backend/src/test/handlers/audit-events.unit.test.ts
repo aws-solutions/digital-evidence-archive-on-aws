@@ -440,11 +440,15 @@ describe('dea lambda audits', () => {
     const testAuditService = getTestAuditService();
     const theEvent = getDummyEvent();
 
+    const deaResponse = JSON.stringify({
+      data: ':D',
+    });
+
     const sut = createDeaHandler(
       async () => {
         return {
           statusCode: 200,
-          body: ':D',
+          body: deaResponse,
         };
       },
       NO_ACL,
@@ -454,10 +458,10 @@ describe('dea lambda audits', () => {
 
     theEvent.resource = '/cases/{caseId}/files/{fileId}/contents';
     theEvent.httpMethod = 'PUT';
-    theEvent.body = ':D';
+    theEvent.body = deaResponse;
 
     const response = await sut(theEvent, dummyContext);
-    expect(response).toEqual({ body: ':D', statusCode: 200 });
+    expect(response).toEqual({ body: deaResponse, statusCode: 200 });
 
     const sent = capture(testAuditService.client.send).last();
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -473,12 +477,15 @@ describe('dea lambda audits', () => {
     const testAuditService = getTestAuditService();
     const theEvent = getDummyEvent();
 
+    const deaResponse = JSON.stringify({
+      sha256Hash: '1',
+    });
+
     const sut = createDeaHandler(
       async () => {
-        theEvent.headers['caseFileHash'] = '1';
         return {
           statusCode: 200,
-          body: ':D',
+          body: deaResponse,
         };
       },
       NO_ACL,
@@ -488,10 +495,10 @@ describe('dea lambda audits', () => {
 
     theEvent.resource = '/cases/{caseId}/files/{fileId}/contents';
     theEvent.httpMethod = 'PUT';
-    theEvent.body = ':D';
+    theEvent.body = deaResponse;
 
     const response = await sut(theEvent, dummyContext);
-    expect(response).toEqual({ body: ':D', statusCode: 200 });
+    expect(response).toEqual({ body: deaResponse, statusCode: 200 });
 
     const sent = capture(testAuditService.client.send).last();
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -500,5 +507,152 @@ describe('dea lambda audits', () => {
       fail();
     }
     expect(sentInput.logEvents[0].message).toContain(`"fileHash":"1"`);
+  });
+
+  it('should indicate when caseId is not included for successful CreateCase', async () => {
+    const testAuditService = getTestAuditService();
+    const theEvent = getDummyEvent();
+
+    const deaResponse = JSON.stringify({
+      data: ':D',
+    });
+
+    const sut = createDeaHandler(
+      async () => {
+        return {
+          statusCode: 200,
+          body: deaResponse,
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    theEvent.resource = '/cases';
+    theEvent.httpMethod = 'POST';
+    theEvent.body = deaResponse;
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: deaResponse, statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).toContain(`"result":"success with warning"`);
+    expect(sentInput.logEvents[0].message).toContain(`"caseId":"ERROR: case id is absent`);
+  });
+
+  it('should add the caseId to the Audit Event for CreateCase', async () => {
+    const testAuditService = getTestAuditService();
+    const theEvent = getDummyEvent();
+
+    const deaResponse = JSON.stringify({
+      ulid: '1',
+    });
+
+    const sut = createDeaHandler(
+      async () => {
+        return {
+          statusCode: 200,
+          body: deaResponse,
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    theEvent.resource = '/cases';
+    theEvent.httpMethod = 'POST';
+    theEvent.body = deaResponse;
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: deaResponse, statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).toContain(`"caseId":"1"`);
+  });
+
+  it('should indicate when fileId is not included for successful InitiateCaseFileUpload', async () => {
+    const testAuditService = getTestAuditService();
+    const theEvent = getDummyEvent();
+
+    const deaResponse = JSON.stringify({
+      data: ':D',
+    });
+
+    const sut = createDeaHandler(
+      async () => {
+        return {
+          statusCode: 200,
+          body: deaResponse,
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    theEvent.resource = '/cases/{caseId}/files';
+    theEvent.httpMethod = 'POST';
+    theEvent.body = deaResponse;
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: deaResponse, statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).toContain(`"result":"success with warning"`);
+    expect(sentInput.logEvents[0].message).toContain(`"fileId":"ERROR: file id is absent`);
+  });
+
+  it('should add the caseId to the Audit Event for CreateCase', async () => {
+    const testAuditService = getTestAuditService();
+    const theEvent = getDummyEvent();
+
+    const deaResponse = JSON.stringify({
+      ulid: '1',
+    });
+
+    const sut = createDeaHandler(
+      async () => {
+        theEvent.headers['fileId'] = '1';
+        return {
+          statusCode: 200,
+          body: deaResponse,
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    theEvent.resource = '/cases/{caseId}/files';
+    theEvent.httpMethod = 'POST';
+    theEvent.body = deaResponse;
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: deaResponse, statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).toContain(`"fileId":"1"`);
   });
 });
