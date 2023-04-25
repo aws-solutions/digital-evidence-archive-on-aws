@@ -185,6 +185,39 @@ function CaseTable(props: CaseTableProps): JSX.Element {
     }
   }
 
+  function deactivateCaseModal() {
+    return (
+      <Modal
+        data-testid="deactivate-modal"
+        onDismiss={disableDeactivateCaseModal}
+        visible={showDeactivateModal && selectedCase.length !== 0}
+        closeAriaLabel={commonLabels.closeModalAriaLabel}
+        footer={
+          <Box float="right">
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button variant="link" onClick={disableDeactivateCaseModal}>
+                {commonLabels.cancelButton}
+              </Button>
+              <Button data-testid="submit-deactivate" variant="primary" onClick={deactivateCaseHandler}>
+                {commonLabels.deactivateButton}
+              </Button>
+            </SpaceBetween>
+          </Box>
+        }
+        header={
+          selectedCase.length === 0
+            ? 'No cases selected'
+            : caseListLabels.deactivateCaseModalLabel(selectedCase[0].name)
+        }
+      >
+        {caseListLabels.deactivateCaseModalMessage}
+        <Toggle onChange={({ detail }) => setDeleteFiles(detail.checked)} checked={deleteFiles}>
+          {caseListLabels.deleteFilesLabel}
+        </Toggle>
+      </Modal>
+    );
+  }
+
   return (
     <Table
       {...collectionProps}
@@ -208,38 +241,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
           description={caseListLabels.casesPageDescription}
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
-              <Modal
-                data-testid="deactivate-modal"
-                onDismiss={disableDeactivateCaseModal}
-                visible={showDeactivateModal && selectedCase.length !== 0}
-                closeAriaLabel={commonLabels.closeModalAriaLabel}
-                footer={
-                  <Box float="right">
-                    <SpaceBetween direction="horizontal" size="xs">
-                      <Button variant="link" onClick={disableDeactivateCaseModal}>
-                        {commonLabels.cancelButton}
-                      </Button>
-                      <Button
-                        data-testid="submit-deactivate"
-                        variant="primary"
-                        onClick={deactivateCaseHandler}
-                      >
-                        {commonLabels.deactivateButton}
-                      </Button>
-                    </SpaceBetween>
-                  </Box>
-                }
-                header={
-                  selectedCase.length === 0
-                    ? 'No cases selected'
-                    : caseListLabels.deactivateCaseModalLabel(selectedCase[0].name)
-                }
-              >
-                {caseListLabels.deactivateCaseModalMessage}
-                <Toggle onChange={({ detail }) => setDeleteFiles(detail.checked)} checked={deleteFiles}>
-                  {caseListLabels.deleteFilesLabel}
-                </Toggle>
-              </Modal>
+              {deactivateCaseModal()}
               {canUpdateCaseStatus(availableEndpoints.data) && (
                 <Button
                   data-testid="deactivate-button"
