@@ -44,6 +44,7 @@ export const commonTableLabels = {
   fileSizeHeader: 'Size',
   dateUploadedHeader: 'Date uploaded',
   uploadedByHeader: 'Uploaded by',
+  caseFileAudit: 'Download Case File Audit',
 };
 
 export const layoutLabels: AppLayoutProps.Labels = {
@@ -105,6 +106,7 @@ export const fileOperationsLabels = {
   uploadReasonLabel: 'Reason for uploading evidence',
   uploadReasonDescription: 'Specify why you are accessing the case files.',
   selectFileSubtext: 'All file types accepted. 5TB max file size.',
+  auditLogLabel: 'Case File Audit Log',
 };
 
 export const caseDetailLabels = {
@@ -116,8 +118,9 @@ export const caseDetailLabels = {
 export const auditLogLabels = {
   downloadCSVLabel: 'Download Case Audit Log CSV',
   caseAuditLogLabel: 'Audit Log',
+  caseFileAuditLogLabel: 'Case File Audit Log',
   descriptionLabel:
-    'This tabel records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file',
+    'This table records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file',
   emptyAuditLabel: 'No audit',
   noDisplayAuditLabel: 'No audit to display.',
   loadingLabel: 'loading audit log',

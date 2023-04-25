@@ -19,11 +19,11 @@ import {
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
-import { getPresignedUrl, useGetCaseActions, useListCaseFiles } from '../../api/cases';
-import { commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
+import { getCaseFileAuditCSV, getPresignedUrl, useGetCaseActions, useListCaseFiles } from '../../api/cases';
+import { auditLogLabels, commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDate } from '../../helpers/dateHelper';
-import { canDownloadFiles, canUploadFiles } from '../../helpers/userActionSupport';
+import { canDownloadCaseAudit, canDownloadFiles, canUploadFiles } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { CaseDetailsBodyProps } from './CaseDetailsBody';
 
@@ -38,6 +38,7 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
   const { data, isLoading } = useListCaseFiles(props.caseId, filesTableState.basePath);
   const [selectedFiles, setSelectedFiles] = React.useState<DeaCaseFile[]>([]);
   const [downloadInProgress, setDownloadInProgress] = React.useState(false);
+  const [caseFileAuditDownloadInProgress, setCaseFileAuditDownloadInProgress] = React.useState(false);
   const { pushNotification } = useNotifications();
 
   const filteringProperties: readonly PropertyFilterProperty[] = [
@@ -133,6 +134,15 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
             {commonLabels.downloadButton}
             {downloadInProgress ? <Spinner size="big" /> : null}
           </Button>
+          <Button
+            data-testid="download-case-file-audit-button"
+            variant="primary"
+            onClick={downloadCaseFileAuditHandler}
+            disabled={caseFileAuditDownloadInProgress || !canDownloadCaseAudit(userActions.data?.actions)}
+          >
+            {auditLogLabels.caseFileAuditLogLabel}
+            {caseFileAuditDownloadInProgress ? <Spinner size="big" /> : null}
+          </Button>
         </SpaceBetween>
       }
     >
@@ -179,6 +189,38 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
       }}
     />
   );
+
+  async function downloadCaseFileAuditHandler() {
+    const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
+    try {
+      setCaseFileAuditDownloadInProgress(true);
+      for (const file of selectedFiles) {
+        try {
+          if (!file.ulid) {
+            pushNotification('error', `Failed to download case file audit for ${file.fileName}`);
+            console.log(`failed to download case file audit for ${file.fileName}`);
+            continue;
+          }
+          const csv = await getCaseFileAuditCSV(file.caseUlid, file.ulid);
+          const blob = new Blob([csv], { type: 'text/csv' });
+          const fileUrl = window.URL.createObjectURL(blob);
+          const alink = document.createElement('a');
+          alink.href = fileUrl;
+          alink.download = `${file.fileName}_Audit_${new Date().toLocaleString()}`;
+          alink.click();
+          // sleep 2ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
+          // long term we should consider zipping the files in the backend and then downloading as a single file
+          await sleep(2);
+        } catch (e) {
+          pushNotification('error', `Failed to download case file audit for ${file.fileName}`);
+          console.log(`failed to download case file audit for ${file.fileName}`, e);
+        }
+      }
+    } finally {
+      setCaseFileAuditDownloadInProgress(false);
+      setSelectedFiles([]);
+    }
+  }
 
   function uploadFilesHandler() {
     void router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
