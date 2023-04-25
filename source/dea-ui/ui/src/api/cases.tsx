@@ -155,6 +155,31 @@ export const retrieveCaseAuditResult = async (caseId: string, auditId: string): 
   return await httpApiGet(`cases/${caseId}/audit/${auditId}/csv`, undefined);
 }
 
+export const getCaseFileAuditCSV = async (caseId: string, fileId: string): Promise<string> => {
+  const auditId = await startCaseFileAuditQuery(caseId, fileId);
+  let auditResponse = await retrieveCaseFileAuditResult(caseId, fileId, auditId);
+  let maxRetries = 60;
+  while (typeof(auditResponse) !== 'string') {
+    if (!progressStatus.includes(auditResponse.status) ||
+        maxRetries === 0) {
+      throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
+    }
+    --maxRetries;
+    await delay(1000);
+    auditResponse = await retrieveCaseFileAuditResult(caseId, fileId, auditId);
+  }
+  return auditResponse;
+}
+
+export const startCaseFileAuditQuery = async (caseId: string, fileId: string): Promise<string> => {
+  const data: DeaAuditStartResponse = await httpApiPost(`cases/${caseId}/files/${fileId}/audit`, undefined);
+  return data.auditId;
+}
+
+export const retrieveCaseFileAuditResult = async (caseId: string, fileId: string, auditId: string): Promise<string | DeaAuditStatus> => {
+  return await httpApiGet(`cases/${caseId}/files/${fileId}/audit/${auditId}/csv`, undefined);
+}
+
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
