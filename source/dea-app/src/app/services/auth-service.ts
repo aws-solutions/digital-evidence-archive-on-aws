@@ -23,6 +23,7 @@ export type AvailableEndpointsSignature = (event: APIGatewayProxyEvent) => Promi
 export interface CognitoSsmParams {
   cognitoDomainUrl: string;
   clientId: string;
+  clientSecret: string;
   callbackUrl: string;
   identityPoolId: string;
   userPoolId: string;
@@ -40,6 +41,7 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
 
   const cognitoDomainPath = `/dea/${region}/${stage}-userpool-cognito-domain-param`;
   const clientIdPath = `/dea/${region}/${stage}-userpool-client-id-param`;
+  const clientSecretPath = `/dea/${region}/${stage}-userpool-client-secret-param`;
   const callbackUrlPath = `/dea/${region}/${stage}-client-callback-url-param`;
   const identityPoolIdPath = `/dea/${region}/${stage}-identity-pool-id-param`;
   const userPoolIdPath = `/dea/${region}/${stage}-userpool-id-param`;
@@ -50,6 +52,7 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
       Names: [
         cognitoDomainPath,
         clientIdPath,
+        clientSecretPath,
         callbackUrlPath,
         identityPoolIdPath,
         userPoolIdPath,
@@ -60,12 +63,13 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
 
   if (!response.Parameters) {
     throw new Error(
-      `No parameters found for: ${cognitoDomainPath}, ${clientIdPath}, ${callbackUrlPath}, ${identityPoolIdPath}, ${userPoolIdPath}, ${agencyIdpNamePath}`
+      `No parameters found for: ${cognitoDomainPath}, ${clientIdPath}, ${clientSecretPath}, ${callbackUrlPath}, ${identityPoolIdPath}, ${userPoolIdPath}, ${agencyIdpNamePath}`
     );
   }
 
   let cognitoDomainUrl;
   let clientId;
+  let clientSecret;
   let callbackUrl;
   let identityPoolId;
   let userPoolId;
@@ -78,6 +82,9 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
         break;
       case clientIdPath:
         clientId = param.Value;
+        break;
+      case clientSecretPath:
+        clientSecret = param.Value;
         break;
       case callbackUrlPath:
         callbackUrl = param.Value;
@@ -94,10 +101,11 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
     }
   });
 
-  if (cognitoDomainUrl && clientId && callbackUrl && identityPoolId && userPoolId) {
+  if (cognitoDomainUrl && clientId && clientSecret && callbackUrl && identityPoolId && userPoolId) {
     cachedCognitoParams = {
       cognitoDomainUrl,
       clientId,
+      clientSecret,
       callbackUrl,
       identityPoolId,
       userPoolId,
@@ -186,6 +194,7 @@ export const exchangeAuthorizationCode = async (
   data.append('client_id', cognitoParams.clientId);
   data.append('code', authorizationCode);
   data.append('redirect_uri', callbackUrl);
+  data.append('client_secret', cognitoParams.clientSecret);
 
   if (codeVerifier) {
     data.append('code_verifier', codeVerifier);
@@ -219,6 +228,7 @@ export const useRefreshToken = async (refreshToken: string): Promise<[Oauth2Toke
   data.append('grant_type', 'refresh_token');
   data.append('client_id', cognitoParams.clientId);
   data.append('refresh_token', refreshToken);
+  data.append('client_secret', cognitoParams.clientSecret);
 
   // make a request using the Axios instance
   const response = await axiosInstance.post('/oauth2/token', data, {
@@ -242,6 +252,11 @@ export const revokeRefreshToken = async (refreshToken: string) => {
     baseURL: cognitoParams.cognitoDomainUrl,
   });
 
+  // Get encoded client ID for client secret support
+  const encodedClientId = Buffer.from(`${cognitoParams.clientId}:${cognitoParams.clientSecret}`).toString(
+    'base64'
+  );
+
   const data = new URLSearchParams();
   data.append('grant_type', 'authorization_code');
   data.append('client_id', cognitoParams.clientId);
@@ -251,6 +266,7 @@ export const revokeRefreshToken = async (refreshToken: string) => {
   const response = await axiosInstance.post('/oauth2/revoke', data, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `Basic ${encodedClientId}`,
     },
     validateStatus: () => true,
   });

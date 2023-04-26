@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import crypto from 'crypto';
 import {
   CognitoIdentityClient,
   GetCredentialsForIdentityCommand,
@@ -32,6 +33,7 @@ export default class CognitoHelper {
   private _userPoolProvider: CognitoIdentityProviderClient;
   private _region: string;
   readonly _userPoolClientId: string;
+  readonly _userPoolClientSecret: string;
   readonly _userPoolId: string;
   private _identityPoolId: string;
   readonly _idpUrl: string;
@@ -43,6 +45,7 @@ export default class CognitoHelper {
     this._region = testEnv.awsRegion;
     this._userPoolId = testEnv.userPoolId;
     this._userPoolClientId = testEnv.clientId;
+    this._userPoolClientSecret = testEnv.clientSecret;
     this._identityPoolId = testEnv.identityPoolId;
 
     this._idpUrl = `cognito-idp.${this._region}.amazonaws.com/${this._userPoolId}`;
@@ -122,12 +125,15 @@ export default class CognitoHelper {
   }
 
   private async getUserPoolAuthForUser(userName: string): Promise<AuthenticationResultType> {
+    const secretHash = this.generateSecretHash(this._userPoolClientId, this._userPoolClientSecret, userName);
+
     const result = await this._userPoolProvider.send(
       new InitiateAuthCommand({
         AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
         AuthParameters: {
           USERNAME: userName,
           PASSWORD: this.testPassword,
+          SECRET_HASH: secretHash,
         },
         ClientId: this._userPoolClientId,
       })
@@ -138,6 +144,15 @@ export default class CognitoHelper {
     }
 
     return result.AuthenticationResult;
+  }
+
+  private generateSecretHash(clientId: string, clientSecret: string, userName: string): string {
+    const secretHash = crypto
+      .createHmac('SHA256', clientSecret)
+      .update(userName + clientId)
+      .digest('base64');
+
+    return secretHash;
   }
 
   public async getIdTokenForUser(userName: string): Promise<Oauth2Token> {

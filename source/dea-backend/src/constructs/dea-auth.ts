@@ -281,10 +281,15 @@ export class DeaAuthConstruct extends Construct {
       value: poolClient.userPoolClientId,
     });
 
+    createCfnOutput(this, 'userPoolClientSecret', {
+      value: poolClient.userPoolClientSecret.unsafeUnwrap(),
+    });
+
     // Add the user pool id and client id to SSM for use in the backend for verifying and decoding tokens
     this._addCognitoInformationToSSM(
       pool.userPoolId,
       poolClient.userPoolClientId,
+      poolClient.userPoolClientSecret.unsafeUnwrap(),
       cognitoDomainUrl,
       callbackUrl,
       idPool.ref,
@@ -424,7 +429,7 @@ export class DeaAuthConstruct extends Construct {
         userPassword: true,
       },
       enableTokenRevocation: true,
-      generateSecret: false,
+      generateSecret: true,
       idTokenValidity: idTokenValidity,
 
       oAuth: {
@@ -467,6 +472,7 @@ export class DeaAuthConstruct extends Construct {
   private _addCognitoInformationToSSM(
     userPoolId: string,
     userPoolClientId: string,
+    userPoolClientSecret: string,
     cognitoDomain: string,
     callbackUrl: string,
     identityPoolId: string,
@@ -484,6 +490,14 @@ export class DeaAuthConstruct extends Construct {
     new StringParameter(this, 'user-pool-client-id-ssm-param', {
       parameterName: `/dea/${region}/${stage}-userpool-client-id-param`,
       stringValue: userPoolClientId,
+      description: 'stores the user pool client secret for use in token verification on the backend',
+      tier: ParameterTier.STANDARD,
+      allowedPattern: '.*',
+    });
+
+    new StringParameter(this, 'user-pool-client-secret-ssm-param', {
+      parameterName: `/dea/${region}/${stage}-userpool-client-secret-param`,
+      stringValue: userPoolClientSecret,
       description: 'stores the user pool client id for use in token verification on the backend',
       tier: ParameterTier.STANDARD,
       allowedPattern: '.*',
