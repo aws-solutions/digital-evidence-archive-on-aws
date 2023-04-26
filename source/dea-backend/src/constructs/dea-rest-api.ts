@@ -63,18 +63,21 @@ export class DeaRestApiConstruct extends Construct {
 
     this.apiEndpointArns = new Map<string, string>();
 
-    this.lambdaBaseRole = this.createLambdaBaseRole(
+    const partition = deaConfig.partition();
+
+    this.lambdaBaseRole = this._createLambdaBaseRole(
       props.kmsKey.keyArn,
       props.deaTableArn,
       props.deaDatasetsBucketArn,
       props.region,
       props.accountId,
+      partition,
       props.deaAuditLogArn,
       props.deaTrailLogArn,
       props.s3BatchDeleteCaseFileRoleArn
     );
 
-    this.authLambdaRole = this.createAuthLambdaRole(props.region, props.accountId);
+    this.authLambdaRole = this.createAuthLambdaRole(props.region, props.accountId, partition);
 
     props.kmsKey.addToResourcePolicy(
       new PolicyStatement({
@@ -319,6 +322,7 @@ export class DeaRestApiConstruct extends Construct {
     datasetsBucketArn: string,
     region: string,
     accountId: string,
+    partition: string,
     auditLogArn: string,
     trailLogArn: string,
     s3BatchDeleteCaseFileRoleArn: string
@@ -394,14 +398,14 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:aws:ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
+        resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
       })
     );
 
     return role;
   }
 
-  private createAuthLambdaRole(region: string, accountId: string): Role {
+  private createAuthLambdaRole(region: string, accountId: string, partition: string): Role {
     const STAGE = deaConfig.stage();
 
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
@@ -415,7 +419,7 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:aws:ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
+        resources: [`arn:${partition}::ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
       })
     );
 
@@ -423,7 +427,7 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['secretsmanager:GetSecretValue'],
         resources: [
-          `arn:aws:secretsmanager:${region}:${accountId}:secret:/dea/${region}/${STAGE}/clientSecret-*`,
+          `arn:${partition}::secretsmanager:${region}:${accountId}:secret:/dea/${region}/${STAGE}/clientSecret-*`,
         ],
       })
     );
