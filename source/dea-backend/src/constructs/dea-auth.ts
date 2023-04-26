@@ -439,7 +439,7 @@ export class DeaAuthConstruct extends Construct {
       userPoolClientName: 'dea-app-client',
     });
 
-    return [userPool, poolClient, newDomain.baseUrl()];
+    return [userPool, poolClient, newDomain.baseUrl({ fips: true })];
   }
 
   private _createDEARole(
