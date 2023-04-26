@@ -295,8 +295,9 @@ export class DeaAuditService extends AuditService {
     cloudwatchClient: CloudWatchLogsClient,
     repositoryProvider: ModelRepositoryProvider
   ) {
+    const s3Key = getS3KeyForCaseFile(caseId, fileId);
     const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME'), getRequiredEnv('TRAIL_LOG_GROUP_NAME')];
-    const filterPredicate = `(caseId = "${caseId}" and fileId = "${fileId}") or (@message like '"PK":"CASE#${caseId}#"' and @message like '"SK":"FILE#${fileId}#"'`;
+    const filterPredicate = `(caseId = "${caseId}" and fileId = "${fileId}") or (@message like '"PK":"CASE#${caseId}#"' and @message like '"SK":"FILE#${fileId}#"') or (@message like "${s3Key}")`;
     return this._startAuditQuery(
       start,
       end,
@@ -456,6 +457,10 @@ export class DeaAuditService extends AuditService {
     const csvContent = csvHeaders + csvData;
     return csvContent;
   }
+}
+
+function getS3KeyForCaseFile(caseId: string, fileId: string): string {
+  return `${caseId}/${fileId}`;
 }
 
 export const auditService = new DeaAuditService(
