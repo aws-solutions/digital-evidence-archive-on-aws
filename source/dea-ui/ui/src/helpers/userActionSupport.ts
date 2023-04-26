@@ -6,6 +6,7 @@
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 
 const CREATE_CASE_PATH = '/casesPOST';
+const UPDATE_CASE_STATUS_PATH = '/cases/{caseId}/statusPUT';
 
 export const canInvite = (actions?: CaseAction[]): boolean => {
   return actions?.includes(CaseAction.INVITE) ?? false;
@@ -31,12 +32,12 @@ export const canViewCaseDetails = (actions?: CaseAction[]): boolean => {
   return actions?.includes(CaseAction.VIEW_CASE_DETAILS) ?? false;
 };
 
-export const canUpdateCaseDetials = (actions?: CaseAction[]): boolean => {
+export const canUpdateCaseDetails = (actions?: CaseAction[]): boolean => {
   return actions?.includes(CaseAction.UPDATE_CASE_DETAILS) ?? false;
 };
 
-export const canUpdateCaseStatus = (actions?: CaseAction[]): boolean => {
-  return actions?.includes(CaseAction.UPDATE_CASE_STATUS) ?? false;
+export const canUpdateCaseStatus = (endpoints?: string[]): boolean => {
+  return endpoints?.includes(UPDATE_CASE_STATUS_PATH) ?? false;
 };
 
 export const canCreateCases = (endpoints?: string[]): boolean => {

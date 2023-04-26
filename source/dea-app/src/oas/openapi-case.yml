@@ -518,6 +518,10 @@ components:
           type: number
         status:
           $ref: '#/components/schemas/CaseStatus'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseAction'
     Cases:
       type: array
       items:
@@ -586,7 +590,7 @@ components:
           type: string
         caseId:
           type: string
-        fileSizeMb:
+        fileSizeBytes:
           type: number
         sha256Hash:
           type: string

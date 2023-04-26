@@ -19,7 +19,7 @@ const initiateUploadCaseFileArgs: argsType = [
     fileName: RANDOM_STRING,
     filePath: `/`,
     contentType: 'application/octet-stream',
-    fileSizeMb: 1,
+    fileSizeBytes: 1,
   }),
   false,
 ];

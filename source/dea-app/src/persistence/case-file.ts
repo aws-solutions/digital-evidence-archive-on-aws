@@ -19,9 +19,9 @@ export const initiateCaseFileUpload = async (
   userUlid: string,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFileResult> => {
-  // strip out chunkSizeMb before saving in dynamo-db
+  // strip out chunkSizeBytes before saving in dynamo-db
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { chunkSizeMb, ...deaCaseFile } = uploadDTO;
+  const { chunkSizeBytes, ...deaCaseFile } = uploadDTO;
   const newEntity = await repositoryProvider.CaseFileModel.create({
     ...deaCaseFile,
     isFile: true,
@@ -36,14 +36,29 @@ export const completeCaseFileUpload = async (
   deaCaseFile: DeaCaseFile,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFileResult> => {
-  const newEntity = await repositoryProvider.CaseFileModel.update({
-    ...deaCaseFile,
-    status: CaseFileStatus.ACTIVE,
-    ttl: null,
-  });
+  const transaction = {};
+  const newEntity = await repositoryProvider.CaseFileModel.update(
+    {
+      ...deaCaseFile,
+      status: CaseFileStatus.ACTIVE,
+      ttl: null,
+    },
+    { transaction }
+  );
 
+  await repositoryProvider.CaseModel.update(
+    {
+      PK: `CASE#${deaCaseFile.caseUlid}#`,
+      SK: 'CASE#',
+    },
+    {
+      add: { objectCount: 1, totalSizeBytes: deaCaseFile.fileSizeBytes },
+      transaction,
+    }
+  );
+
+  await repositoryProvider.table.transact('write', transaction);
   await createCaseFilePaths(deaCaseFile, repositoryProvider);
-
   return caseFileFromEntity(newEntity);
 };
 

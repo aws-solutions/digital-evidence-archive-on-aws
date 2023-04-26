@@ -17,6 +17,7 @@ import { DeaCaseFile } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
+import { ONE_TB } from '../../../models/validation/joi-common';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
@@ -25,7 +26,7 @@ import {
   callCreateCase,
   callCreateUser,
   callInitiateCaseFileUpload,
-  CHUNK_SIZE_MB,
+  CHUNK_SIZE_BYTES,
   DATASETS_PROVIDER,
   validateCaseFile,
 } from './case-file-integration-test-helper';
@@ -194,7 +195,7 @@ describe('Test initiate case file upload', () => {
       await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, FILE_NAME, '/foo/bar/')
     ).toBeDefined();
 
-    // validate fileSizeMb
+    // validate fileSizeBytes
     await expect(
       callInitiateCaseFileUpload(
         EVENT,
@@ -225,11 +226,11 @@ describe('Test initiate case file upload', () => {
         FILE_NAME,
         FILE_PATH,
         CONTENT_TYPE,
-        6_000_001
+        6 * ONE_TB
       )
     ).rejects.toThrow();
 
-    // allowed fileSizeMb
+    // allowed fileSizeBytes
     expect(
       await callInitiateCaseFileUpload(
         EVENT,
@@ -238,7 +239,7 @@ describe('Test initiate case file upload', () => {
         'huge file',
         FILE_PATH,
         CONTENT_TYPE,
-        4_999_999
+        4 * ONE_TB
       )
     ).toBeDefined();
     expect(
@@ -267,8 +268,8 @@ async function initiateCaseFileUploadAndValidate(caseUlid: string, fileName: str
     fileName
   );
 
-  // initiate-case-file should return chunkSizeMb in its response
-  expect(deaCaseFile.chunkSizeMb).toEqual(CHUNK_SIZE_MB);
+  // initiate-case-file should return chunkSizeBytes in its response
+  expect(deaCaseFile.chunkSizeBytes).toEqual(CHUNK_SIZE_BYTES);
 
   expect(s3Mock).toHaveReceivedCommandTimes(CreateMultipartUploadCommand, 1);
   expect(s3Mock).toHaveReceivedCommandWith(CreateMultipartUploadCommand, {

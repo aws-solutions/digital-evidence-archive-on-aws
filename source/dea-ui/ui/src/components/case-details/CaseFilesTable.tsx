@@ -4,6 +4,8 @@
  */
 
 import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
+import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
+import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { PropertyFilterProperty, useCollection } from '@cloudscape-design/collection-hooks';
 import {
   Box,
@@ -13,9 +15,9 @@ import {
   Icon,
   Pagination,
   SpaceBetween,
+  Spinner,
   Table,
   TextFilter,
-  Spinner,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
@@ -25,9 +27,10 @@ import { useNotifications } from '../../context/NotificationsContext';
 import { formatDate } from '../../helpers/dateHelper';
 import { canDownloadCaseAudit, canDownloadFiles, canUploadFiles } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
-import { CaseDetailsBodyProps } from './CaseDetailsBody';
+import { ONE_MB } from '../upload-files/UploadFilesForm';
+import { CaseDetailsTabsProps } from './CaseDetailsTabs';
 
-function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
+function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const router = useRouter();
   const userActions = useGetCaseActions(props.caseId);
   // Property and date filter collections
@@ -111,17 +114,14 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
     );
   };
 
-  // table header Element
-  const tableHeader = (
-    <Header
-      variant="h2"
-      description={filesListLabels.filterDescription}
-      actions={
+  function tableActions() {
+    if (props.caseStatus === CaseStatus.ACTIVE) {
+      return (
         <SpaceBetween direction="horizontal" size="xs">
           <Button
             data-testid="upload-file-button"
             onClick={uploadFilesHandler}
-            disabled={!canUploadFiles(userActions?.data?.actions)}
+            disabled={!(canUploadFiles(userActions?.data?.actions) && props.caseStatus === CaseStatus.ACTIVE)}
           >
             {commonLabels.uploadButton}
           </Button>
@@ -129,7 +129,10 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
             data-testid="download-file-button"
             variant="primary"
             onClick={downloadFilesHandler}
-            disabled={downloadInProgress || !canDownloadFiles(userActions?.data?.actions)}
+            disabled={
+              downloadInProgress ||
+              !(canDownloadFiles(userActions?.data?.actions) && props.caseStatus === CaseStatus.ACTIVE)
+            }
           >
             {commonLabels.downloadButton}
             {downloadInProgress ? <Spinner size="big" /> : null}
@@ -144,8 +147,13 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
             {caseFileAuditDownloadInProgress ? <Spinner size="big" /> : null}
           </Button>
         </SpaceBetween>
-      }
-    >
+      );
+    }
+  }
+
+  // table header Element
+  const tableHeader = (
+    <Header variant="h2" description={filesListLabels.filterDescription} actions={tableActions()}>
       <SpaceBetween direction="horizontal" size="xs">
         <span>{filesListLabels.caseFilesLabel}</span>
         <BreadcrumbGroup
@@ -165,17 +173,25 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
   );
 
   // empty table Element
-  const emptyConfig = (
-    <Box textAlign="center" color="inherit">
-      <b>{filesListLabels.noFilesLabel}</b>
-      <Box padding={{ bottom: 's' }} variant="p" color="inherit">
-        {filesListLabels.noDisplayLabel}
+  const emptyConfig =
+    props.caseStatus === CaseStatus.ACTIVE ? (
+      <Box textAlign="center" color="inherit">
+        <b>{filesListLabels.noFilesLabel}</b>
+        <Box padding={{ bottom: 's' }} variant="p" color="inherit">
+          {filesListLabels.noDisplayLabel}
+        </Box>
+        <Button onClick={uploadFilesHandler} disabled={!canUploadFiles(userActions?.data?.actions)}>
+          {filesListLabels.uploadFileLabel}
+        </Button>
       </Box>
-      <Button onClick={uploadFilesHandler} disabled={!canUploadFiles(userActions?.data?.actions)}>
-        {filesListLabels.uploadFileLabel}
-      </Button>
-    </Box>
-  );
+    ) : (
+      <Box textAlign="center" color="inherit">
+        <b>{filesListLabels.noFilesLabel}</b>
+        <Box padding={{ bottom: 's' }} variant="p" color="inherit">
+          {filesListLabels.noDisplayLabel}
+        </Box>
+      </Box>
+    );
 
   // pagination element
   const tablePagination = (
@@ -237,9 +253,9 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
           alink.href = downloadResponse.downloadUrl;
           alink.download = file.fileName;
           alink.click();
-          // sleep 2ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
+          // sleep 5ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
           // long term we should consider zipping the files in the backend and then downloading as a single file
-          await sleep(2);
+          await sleep(5);
         } catch (e) {
           pushNotification('error', `Failed to download ${file.fileName}`);
           console.log(`failed to download ${file.fileName}`, e);
@@ -255,10 +271,16 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
     <Table
       {...collectionProps}
       data-testid="file-table"
+      selectionType={
+        props.caseStatus === CaseStatus.ACTIVE && canDownloadFiles(userActions?.data?.actions)
+          ? 'multi'
+          : undefined
+      }
       onSelectionChange={({ detail }) => {
         setSelectedFiles(detail.selectedItems);
       }}
       selectedItems={selectedFiles}
+      isItemDisabled={(item) => item.status !== CaseFileStatus.ACTIVE}
       columnDefinitions={[
         {
           id: 'name',
@@ -272,6 +294,14 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
           id: 'fileType',
           header: commonTableLabels.fileTypeHeader,
           cell: (e) => e.contentType,
+          width: 170,
+          minWidth: 165,
+          sortingField: 'fileType',
+        },
+        {
+          id: 'size',
+          header: commonTableLabels.fileSizeHeader,
+          cell: (e) => `${Math.ceil(e.fileSizeBytes / ONE_MB)}MB`,
           width: 170,
           minWidth: 165,
           sortingField: 'fileType',
@@ -292,11 +322,18 @@ function CaseFilesTable(props: CaseDetailsBodyProps): JSX.Element {
           minWidth: 165,
           sortingField: 'uploader',
         },
+        {
+          id: 'status',
+          header: commonTableLabels.statusHeader,
+          cell: (e) => e.status,
+          width: 170,
+          minWidth: 165,
+          sortingField: 'status',
+        },
       ]}
       items={items}
       loadingText={filesListLabels.loading}
       resizableColumns
-      selectionType="multi"
       empty={emptyConfig}
       filter={
         <TextFilter
