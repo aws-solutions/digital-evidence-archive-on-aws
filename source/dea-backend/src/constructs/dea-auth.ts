@@ -206,7 +206,7 @@ export class DeaAuthConstruct extends Construct {
   ): void {
     // See Implementation Guide for how to integrate your existing
     // Identity Provider with Cognito User Pool for SSO
-    const [pool, poolClient, cognitoDomainUrl] = this.createCognitoIdP(callbackUrl, region, kmsKey);
+    const [pool, poolClient, cognitoDomainUrl] = this.createCognitoIdP(callbackUrl, region, kmsKey, partition);
 
     // For gov cloud, Cognito only uses FIPS endpoint, and the only FIPS endpoint
     // is in us-gov-west-1. See https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-cog.html
@@ -307,7 +307,8 @@ export class DeaAuthConstruct extends Construct {
   private createCognitoIdP(
     callbackUrl: string,
     region: string,
-    kmsKey: Key
+    kmsKey: Key,
+    partition: string
   ): [UserPool, UserPoolClient, string] {
     const tempPasswordValidity = Duration.days(1);
     // must re-authenticate in every 12 hours
@@ -454,7 +455,12 @@ export class DeaAuthConstruct extends Construct {
       secretStringValue: poolClient.userPoolClientSecret,
     });
 
-    return [userPool, poolClient, newDomain.baseUrl({ fips: true })];
+    const cognitoDomain =
+      partition === 'aws-us-gov'
+        ? `https://${newDomain.domainName}.auth-fips.us-gov-west-1.amazoncognito.com`
+        : newDomain.baseUrl({ fips: true });
+
+    return [userPool, poolClient, cognitoDomain];
   }
 
   private createDEARole(
