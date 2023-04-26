@@ -168,6 +168,7 @@ describe('case file audit e2e', () => {
       Joi.assert(auditId, joiUlid);
 
       let retries = 5;
+      await delay(5000);
       let getQueryReponse = await callDeaAPIWithCreds(
         `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}/audit/${auditId}/csv`,
         'GET',
@@ -194,21 +195,31 @@ describe('case file audit e2e', () => {
 
       const potentialCsvData: string = getQueryReponse.data;
 
+      if (getQueryReponse.data && !getQueryReponse.data.status) {
+        console.log(`${caseUlid} ${fileUlid}`);
+        console.log(`ddb: ${potentialCsvData.match(/dynamodb.amazonaws.com/g)?.length}`);
+      }
+
       if (
         getQueryReponse.data &&
         !getQueryReponse.data.status &&
         potentialCsvData.includes(AuditEventType.COMPLETE_CASE_FILE_UPLOAD) &&
+        potentialCsvData.match(/dynamodb.amazonaws.com/g)?.length === 5 &&
         potentialCsvData.includes(AuditEventType.GET_CASE_FILE_DETAIL) &&
         potentialCsvData.includes(AuditEventType.DOWNLOAD_CASE_FILE)
       ) {
         csvData = getQueryReponse.data;
+      } else {
+        await delay(10000);
       }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const entries = parseCaseFileAuditCsv(csvData!)
-      .filter((entry) => entry.eventType != AuditEventType.GET_CASE_FILE_AUDIT)
-      .filter((entry) => entry.eventType != AuditEventType.REQUEST_CASE_FILE_AUDIT);
+    const entries = parseCaseFileAuditCsv(csvData!).filter(
+      (entry) =>
+        entry.eventType != AuditEventType.GET_CASE_FILE_AUDIT &&
+        entry.eventType != AuditEventType.REQUEST_CASE_FILE_AUDIT
+    );
 
     function verifyCaseFileAuditEntry(
       entry: CaseFileAuditEventEntry | undefined,
@@ -228,15 +239,25 @@ describe('case file audit e2e', () => {
 
     // There should only be the following events for the CaseFileAudit:
     // 1. InitiateCaseFileUpload
-    // 2. CompleteCaseFileUpload
-    // 4. GetCaseFileDetail (By Owner)
-    // 4. DownloadCaseFileUpload (By Owner)
-    // 5. TODO: DownloadCaseFileUpload (By CaseUser Without Permissions) (When we add event result to audit queries)
+    // 2. DB TransactWriteItems
+    // 3. CompleteCaseFileUpload
+    // 4. DB TransactWriteItems
+    // 5. DB Get
+    // 6. GetCaseFileDetail (By Owner)
+    // 7. DB Get
+    // 8. DownloadCaseFileUpload (By Owner)
+    // 9. DB Get
+    // x. TODO: DownloadCaseFileUpload (By CaseUser Without Permissions) (When we add event result to audit queries)
 
     // Expect that the other created file does NOT show up in the entries
     expect(entries.find((entry) => entry.fileId === otherFileUlid)).toBeUndefined();
 
-    expect(entries.length).toBe(4);
+    expect(entries.length).toBe(9);
+
+    const dbGetItems = entries.filter((entry) => entry.eventDetails === 'GetItem');
+    expect(dbGetItems).toHaveLength(3);
+    const dbTransactItems = entries.filter((entry) => entry.eventDetails === 'TransactWriteItems');
+    expect(dbTransactItems).toHaveLength(2);
     // Now verify each of the event entries
     const initiateUploadEntry = entries.find(
       (entry) => entry.eventType === AuditEventType.INITIATE_CASE_FILE_UPLOAD

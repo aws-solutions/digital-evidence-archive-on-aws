@@ -11,11 +11,14 @@ export const commonLabels = {
   submitButton: 'Submit',
   createButton: 'Create',
   uploadButton: 'Upload',
+  activateButton: 'Activate',
+  deactivateButton: 'Deactivate',
   addButton: 'Add',
   removeButton: 'Remove',
   downloadButton: 'Download',
   saveButton: 'Save',
   loadingLabel: 'Loading...',
+  statusLabel: 'Status',
   loginLabel: 'Logging in...',
   notFoundLabel: 'Not Found',
   noMatchesLabel: 'No matches found',
@@ -38,12 +41,14 @@ export const commonTableLabels = {
   caseNameHeader: 'Case name',
   caseLeadHeader: 'Case Lead(s)',
   objectCounterHeader: 'No. of files',
+  totalSize: 'Total Size',
   creationDateHeader: 'Creation date',
   statusHeader: 'Status',
   fileTypeHeader: 'File type',
   fileSizeHeader: 'Size',
   dateUploadedHeader: 'Date uploaded',
   uploadedByHeader: 'Uploaded by',
+  caseFileAudit: 'Download Case File Audit',
 };
 
 export const layoutLabels: AppLayoutProps.Labels = {
@@ -73,6 +78,15 @@ export const caseListLabels = {
   noCasesMatchLabel: 'No cases matched',
   noDisplayLabel: 'No cases to display',
   createNewCaseLabel: 'Create new case',
+  activateCaseLabel: 'Activate case',
+  deactivateCaseLabel: 'Deactivate case',
+  deactivateCaseModalLabel: (name: string) => `Are you sure you want to deactivate ${name}?`,
+  deactivateCaseModalMessage:
+    'Once the case is deactivated, anyone with access will not be able to edit, add case members, or upload/download files to the case.',
+  deleteFilesLabel: 'Delete all files',
+  activateCaseModalLabel: (name: string) => `Are you sure you want to activate ${name}?`,
+  activateCaseModalMessage:
+    'Once the case is activated, anyone with access will be able to edit, add case members, or upload/download files to the case.',
   searchCasesLabel: 'Search by case name',
   casesLabel: 'Cases',
   systemCasesLabel: 'All System Cases',
@@ -82,7 +96,7 @@ export const caseListLabels = {
 export const filesListLabels = {
   caseFilesLabel: 'Case Files',
   loading: 'Loading files',
-  noFilesLabel: 'No files',
+  noFilesLabel: "It's looking empty in here.",
   noDisplayLabel: 'No files to display',
   uploadFileLabel: 'Upload a file',
   searchLabel: 'Search by file name',
@@ -105,6 +119,7 @@ export const fileOperationsLabels = {
   uploadReasonLabel: 'Reason for uploading evidence',
   uploadReasonDescription: 'Specify why you are accessing the case files.',
   selectFileSubtext: 'All file types accepted. 5TB max file size.',
+  auditLogLabel: 'Case File Audit Log',
 };
 
 export const caseDetailLabels = {
@@ -116,8 +131,9 @@ export const caseDetailLabels = {
 export const auditLogLabels = {
   downloadCSVLabel: 'Download Case Audit Log CSV',
   caseAuditLogLabel: 'Audit Log',
+  caseFileAuditLogLabel: 'Case File Audit Log',
   descriptionLabel:
-    'This tabel records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file',
+    'This table records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file',
   emptyAuditLabel: 'No audit',
   noDisplayAuditLabel: 'No audit to display.',
   loadingLabel: 'loading audit log',

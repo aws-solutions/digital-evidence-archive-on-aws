@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { CaseAction } from '@aws/dea-app';
+import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 
 export interface CaseUserForm {
   caseUlid: string;

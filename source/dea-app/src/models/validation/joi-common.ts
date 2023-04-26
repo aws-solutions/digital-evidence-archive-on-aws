@@ -69,6 +69,8 @@ export const authCode = Joi.string().regex(/^[A-Za-z0-9-_]+$/);
 
 export const safeFileSize = Joi.number()
   .greater(0)
-  .less((5 * ONE_TB) / ONE_MB); // 0-5TB is the range supported by S3
+  .less(5 * ONE_TB); // 0-5TB is the range supported by S3
 
-export const safeChunkSize = Joi.number().greater(5).less(501); // 5MB is minimum size supported by S3, 500MB is the max necessary to upload a 5TB file
+export const safeChunkSize = Joi.number()
+  .greater(5 * ONE_MB)
+  .less(500 * ONE_MB); // 5MB is minimum size supported by S3, 500MB is the max necessary to upload a 5TB file

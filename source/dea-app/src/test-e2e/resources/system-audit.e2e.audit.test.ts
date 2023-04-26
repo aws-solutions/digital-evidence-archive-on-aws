@@ -138,6 +138,12 @@ describe('system audit e2e', () => {
         !getQueryReponse.data.status &&
         potentialCsvData.includes(testUser) &&
         potentialCsvData.includes(caseUlid) &&
+        potentialCsvData.includes('cognito-idp.amazonaws.com') &&
+        potentialCsvData.includes('kms.amazonaws.com') &&
+        potentialCsvData.includes('ssm.amazonaws.com') &&
+        potentialCsvData.includes('logs.amazonaws.com') &&
+        potentialCsvData.includes('apigateway.amazonaws.com') &&
+        potentialCsvData.includes('dynamodb.amazonaws.com') &&
         potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
         potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
         potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE)

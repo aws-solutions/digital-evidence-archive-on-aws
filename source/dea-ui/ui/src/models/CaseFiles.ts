@@ -8,11 +8,11 @@ export interface InitiateUploadForm {
   fileName: string;
   filePath: string;
   contentType: string;
-  fileSizeMb: number;
+  fileSizeBytes: number;
   tag: string;
   details: string;
   reason: string;
-  chunkSizeMb: number;
+  chunkSizeBytes: number;
 }
 
 export interface CompleteUploadForm {

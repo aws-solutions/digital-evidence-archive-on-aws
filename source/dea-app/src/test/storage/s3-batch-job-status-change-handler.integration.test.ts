@@ -29,6 +29,7 @@ import {
   callInitiateCaseFileUpload,
   callUpdateCaseStatusAndValidate,
   DATASETS_PROVIDER,
+  FILE_SIZE_BYTES,
   validateCaseStatusUpdatedAsExpected,
 } from '../app/resources/case-file-integration-test-helper';
 import { dummyContext, getDummyEvent } from '../integration-objects';
@@ -280,7 +281,9 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
     CaseStatus.INACTIVE,
     CaseFileStatus.DELETING,
     jobId,
-    repositoryProvider
+    repositoryProvider,
+    1,
+    FILE_SIZE_BYTES
   );
 
   if (callDeleteFilesLambda) {

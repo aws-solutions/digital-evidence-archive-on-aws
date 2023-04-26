@@ -4,7 +4,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import Axios from 'axios';
-import { auditLogLabels, commonLabels } from '../../src/common/labels';
+import { commonLabels } from '../../src/common/labels';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
 afterEach(cleanup);
@@ -70,7 +70,7 @@ const mockFilesRoot = {
 const mockedCaseDetail = {
   ulid: 'abc',
   name: 'mocked case',
-  status: 'ACTIVE',
+  status: 'INACTIVE',
 };
 
 const mockedCaseActions = {
@@ -92,8 +92,8 @@ const mockedCaseActions = {
   updated: '2023-03-23T15:38:26.955Z',
 };
 
-describe('case detail file download', () => {
-  it('downloads selected files', async () => {
+describe('case detail page with inactive case', () => {
+  it('disables download action', async () => {
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
       if (eventObj.url?.endsWith('100/details')) {
@@ -140,97 +140,8 @@ describe('case detail file download', () => {
     expect(table).toBeTruthy();
 
     const fileSelector = tableWrapper.findCheckbox();
-    if (!fileSelector) {
+    if (fileSelector) {
       fail();
     }
-
-    await act(async () => {
-      fileSelector.click();
-    });
-
-    const downloadButton = await screen.findByText(commonLabels.downloadButton);
-    fireEvent.click(downloadButton);
-
-    // upload button will be disabled while in progress and then re-enabled when done
-    await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeDisabled());
-    await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeEnabled());
-  });
-});
-
-describe('case file audit download', () => {
-  let csvCall = -1;
-  const csvResult = [{ status: 'Running' }, { status: 'Running' }, 'csvresults'];
-
-  it('downloads case file audits for the selected files', async () => {
-    mockedAxios.create.mockReturnThis();
-    mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url?.endsWith('details')) {
-        return Promise.resolve({
-          data: mockedCaseDetail,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith('actions')) {
-        return Promise.resolve({
-          data: mockedCaseActions,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith('audit')) {
-        return Promise.resolve({
-          data: { auditId: '11111111-1111-1111-1111-111111111111' },
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith('csv')) {
-        return Promise.resolve({
-          data: csvResult[++csvCall],
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else {
-        return Promise.resolve({
-          data: mockFilesRoot,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      }
-    });
-
-    const page = render(<CaseDetailsPage />);
-
-    expect(page).toBeTruthy();
-
-    const table = await screen.findByTestId('file-table');
-    const tableWrapper = wrapper(table);
-    expect(table).toBeTruthy();
-
-    const fileSelector = tableWrapper.findCheckbox();
-    if (!fileSelector) {
-      fail();
-    }
-
-    await act(async () => {
-      fileSelector.click();
-    });
-
-    const downloadCaseFileAuditButton = await screen.findByText(auditLogLabels.caseFileAuditLogLabel);
-    fireEvent.click(downloadCaseFileAuditButton);
-
-    // upload button will be disabled while in progress and then re-enabled when done
-    await waitFor(() => expect(screen.queryByTestId('download-case-file-audit-button')).toBeDisabled());
-    await waitFor(() => expect(screen.queryByTestId('download-case-file-audit-button')).toBeEnabled(), {
-      timeout: 4000,
-    });
   });
 });

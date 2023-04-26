@@ -3,15 +3,18 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import {
   Button,
   ColumnLayout,
   Container,
   ContentLayout,
   Header,
+  Icon,
   SpaceBetween,
   Spinner,
 } from '@cloudscape-design/components';
+import * as React from 'react';
 import { useState } from 'react';
 import { getCaseAuditCSV, useGetCaseActions, useGetCaseById } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
@@ -29,6 +32,15 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
   const userActions = useGetCaseActions(props.caseId);
   const { data, isLoading } = useGetCaseById(props.caseId);
   const { pushNotification } = useNotifications();
+
+  function getStatusIcon(status: CaseStatus) {
+    if (status == CaseStatus.ACTIVE) {
+      return <Icon name="check" variant="success" />;
+    } else {
+      return <Icon name="status-stopped" variant="disabled" />;
+    }
+  }
+
   if (isLoading) {
     return <h1>{commonLabels.loadingLabel}</h1>;
   } else {
@@ -77,8 +89,16 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
               </Button>
             </div>
           </ColumnLayout>
+          <ColumnLayout columns={1} variant="text-grid">
+            <div>
+              <h4>{commonLabels.statusLabel}</h4>
+              <p>
+                {getStatusIcon(data.status)} {data.status.slice(0, 1) + data.status.slice(1).toLowerCase()}
+              </p>
+            </div>
+          </ColumnLayout>
         </Container>
-        <CaseDetailsTabs caseId={props.caseId}></CaseDetailsTabs>
+        <CaseDetailsTabs caseId={props.caseId} caseStatus={data.status}></CaseDetailsTabs>
       </ContentLayout>
     );
   }
