@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { fail } from 'assert';
 import { randomBytes } from 'crypto';
 import {
   AbortMultipartUploadCommand,
@@ -469,6 +470,7 @@ export type AuditEventEntry = CaseFileAuditEventEntry | CaseAuditEventEntry;
 
 export type CaseFileAuditEventEntry = {
   eventType: AuditEventType;
+  eventDetails: string;
   username: string;
   caseId: string;
   fileId: string;
@@ -477,6 +479,7 @@ export type CaseFileAuditEventEntry = {
 
 export type CaseAuditEventEntry = {
   eventType: AuditEventType;
+  eventDetails: string;
   username: string;
   caseId: string;
   fileId?: string;
@@ -525,6 +528,7 @@ const CASE_LEVEL_EVENT_TYPES = new Set<AuditEventType>([
   AuditEventType.REQUEST_CASE_AUDIT,
   AuditEventType.UPDATE_CASE_DETAILS,
   AuditEventType.UPDATE_CASE_STATUS,
+  AuditEventType.AWS_API_CALL,
 ]);
 
 function parseCaseFileAuditEvent(entry: string): CaseAuditEventEntry {
@@ -538,6 +542,7 @@ function parseCaseFileAuditEvent(entry: string): CaseAuditEventEntry {
   }
   return {
     eventType,
+    eventDetails: fields[2],
     username: fields[6],
     caseId: fields[13],
     fileId: fields[14],
@@ -553,11 +558,12 @@ function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
   }
 
   if (!CASE_LEVEL_EVENT_TYPES.has(eventType)) {
-    fail('Unrecognized Event Type in Case Level Audit');
+    fail(`Unrecognized Event Type in Case Level Audit ${eventType}`);
   }
 
   return {
     eventType,
+    eventDetails: fields[2],
     username: fields[6],
     caseId: fields[13],
     fileId: fields[14],
