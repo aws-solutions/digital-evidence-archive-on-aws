@@ -268,3 +268,11 @@ export const navigationLabels = {
   allSystemCasesLabel: 'All System Cases',
   systemAuditLogsLabel: 'Download System Audit Log',
 };
+
+export const fileUploadLabels = {
+  chooseFilesLabel: 'Choose folder(s)/file(s)',
+  limitShowFewerLabel: 'Show fewer files',
+  limitShowMoreLabel: 'Show more files',
+  errorIconAriaLabel: 'Error',
+  removeFileAriaLabel: (e: number) => `Remove file ${e + 1}`,
+};

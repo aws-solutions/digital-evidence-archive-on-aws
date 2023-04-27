@@ -378,8 +378,8 @@ importers:
       '@babel/preset-react': ~7.18.6
       '@babel/preset-typescript': ~7.21.0
       '@cloudscape-design/collection-hooks': ^1.0.20
-      '@cloudscape-design/components': ^3.0.235
-      '@cloudscape-design/design-tokens': ~3.0.9
+      '@cloudscape-design/components': ^3.0.262
+      '@cloudscape-design/design-tokens': ~3.0.11
       '@cloudscape-design/global-styles': ~1.0.8
       '@cloudscape-design/jest-preset': ~2.0.8
       '@rushstack/eslint-config': ^3.2.0
@@ -448,8 +448,8 @@ importers:
       '@aws-sdk/client-cognito-identity-provider': 3.299.0
       '@aws/dea-app': link:../../dea-app
       '@cloudscape-design/collection-hooks': 1.0.20_react@17.0.2
-      '@cloudscape-design/components': 3.0.235_wnecvl2xit6hykxlpfa3byfhr4
-      '@cloudscape-design/design-tokens': 3.0.9
+      '@cloudscape-design/components': 3.0.262_wnecvl2xit6hykxlpfa3byfhr4
+      '@cloudscape-design/design-tokens': 3.0.11
       '@cloudscape-design/global-styles': 1.0.8
       '@cloudscape-design/jest-preset': 2.0.8_fnc57paaf3tlxwendyvh2btjsy
       '@types/crypto-js': 4.1.1
@@ -4426,8 +4426,8 @@ packages:
       '@juggle/resize-observer': 3.4.0
     dev: false
 
-  /@cloudscape-design/components/3.0.235_wnecvl2xit6hykxlpfa3byfhr4:
-    resolution: {integrity: sha512-3bLA0DuHLKUOBYs0BVQVfeUFZdpA4XkmIedujqh9kUm83QifJ+cKMni0UNZP09ToBoX+rxpLm1CsNjdwV1hOPw==}
+  /@cloudscape-design/components/3.0.262_wnecvl2xit6hykxlpfa3byfhr4:
+    resolution: {integrity: sha512-1nDgFENcOoXz7kcDVEEv5SuaG1hfvZmiK/ca7h8NEngxedFJhDLz1JCRxd2+bl0HZbgewrSclRW4/lDNVP0C1w==}
     peerDependencies:
       react: ^16.8 || ^17 || ^18
       react-dom: ^16.8 || ^17 || ^18
@@ -4456,8 +4456,8 @@ packages:
       - '@types/react'
     dev: false
 
-  /@cloudscape-design/design-tokens/3.0.9:
-    resolution: {integrity: sha512-7j9OTWg/yQaOoPUqMAN6VnzxfHKD2lCiyW9xW+gblvLlvgOJPMPgZsHKsUE9v14tAtMOZXkIXfoZ1jWH0onotQ==}
+  /@cloudscape-design/design-tokens/3.0.11:
+    resolution: {integrity: sha512-AmKFpZwm9qR4+6CPppZwqLpajuyIjBakGhTQ39sgw9OhB2aKeOKA9tGabikayPb4Pc4OiMDpGAGYEw+L5iR66g==}
     dev: false
 
   /@cloudscape-design/global-styles/1.0.8:

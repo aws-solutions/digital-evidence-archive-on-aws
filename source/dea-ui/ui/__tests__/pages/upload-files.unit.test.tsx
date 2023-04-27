@@ -59,9 +59,10 @@ describe('UploadFiles page', () => {
   });
 
   it('responds to form submit', async () => {
-    render(<Home />);
+    const page = render(<Home />);
 
     const selectFileInput = screen.getByTestId('file-select');
+    expect(selectFileInput).toBeTruthy();
     const testFile = new File(['hello'], 'hello.world', { type: 'text/plain' });
     File.prototype.text = jest.fn().mockResolvedValueOnce('hello');
     await userEvent.upload(selectFileInput, [testFile]);

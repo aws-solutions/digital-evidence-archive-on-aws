@@ -27,12 +27,12 @@ import { DeaCaseDTO } from '../../api/models/case';
 import { caseListLabels, commonLabels, commonTableLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
+import { formatFileSize } from '../../helpers/fileHelper';
 import { canCreateCases, canUpdateCaseStatus } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { ConfirmModal } from '../common-components/ConfirmModal';
 import { TableHeader } from '../common-components/TableHeader';
-import { ONE_MB } from '../upload-files/UploadFilesForm';
 import { filteringOptions, filteringProperties, searchableColumns } from './caseListDefinitions';
 
 export type CaseFetcherSignature = () => DeaListResult<DeaCaseDTO>;
@@ -321,7 +321,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
         {
           id: 'totalSize',
           header: commonTableLabels.totalSize,
-          cell: (e) => `${Math.ceil(e.totalSizeBytes / ONE_MB)}MB`,
+          cell: (e) => formatFileSize(e.totalSizeBytes),
           width: 220,
           minWidth: 165,
           sortingField: 'totalSizeBytes',
