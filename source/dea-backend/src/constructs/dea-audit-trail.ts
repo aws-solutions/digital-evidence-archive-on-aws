@@ -73,15 +73,24 @@ export class DeaAuditTrail extends Construct {
           dataResources: [
             {
               type: 'AWS::DynamoDB::Table',
+              // data plane events for the DEA dynamo table
               values: [deaTableArn],
+            },
+            {
+              type: 'AWS::S3::Object',
+              // data plane events for the datasets bucket only
+              values: [`${deaDatasetsBucket.bucketArn}/`],
+            },
+            {
+              type: 'AWS::Lambda::Function',
+              // data plane events for our lambdas
+              values: ['arn:aws:lambda'],
             },
           ],
         },
       ];
     }
 
-    trail.addS3EventSelector([{ bucket: deaDatasetsBucket }]);
-    trail.logAllLambdaDataEvents();
     return trail;
   }
 
