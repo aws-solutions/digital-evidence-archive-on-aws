@@ -3,7 +3,7 @@
 STACKPREFIX="${STAGE:-chewbacca}"
 REGION="${AWS_REGION:-us-east-1}"
 
-profile_string=$([ -z $AWS_PROFILE ] && echo "--profile $AWS_PROFILE")
+profile_string=$(if [ -n "$AWS_PROFILE" ]; then echo "--profile $AWS_PROFILE"; fi)
 
 export DEA_API_URL=$(aws cloudformation list-exports --region $REGION  $profile_string --query """Exports[?Name == '${STACKPREFIX}-deaApiUrl'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//') 
 export IDENTITY_POOL_ID=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-identityPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//') 
