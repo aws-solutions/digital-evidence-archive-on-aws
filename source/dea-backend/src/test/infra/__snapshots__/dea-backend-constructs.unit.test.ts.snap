@@ -10588,7 +10588,7 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:ssm:",
+                    "arn:aws-us-gov:ssm:",
                     Object {
                       "Ref": "AWS::Region",
                     },
@@ -10810,7 +10810,7 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:ssm:",
+                    "arn:aws-us-gov:ssm:",
                     Object {
                       "Ref": "AWS::Region",
                     },
@@ -10877,17 +10877,6 @@ Object {
           Object {
             "DataResources": Array [
               Object {
-                "Type": "AWS::DynamoDB::Table",
-                "Values": Array [
-                  Object {
-                    "Fn::GetAtt": Array [
-                      "DeaBackendConstructDeaTableB48721A0",
-                      "Arn",
-                    ],
-                  },
-                ],
-              },
-              Object {
                 "Type": "AWS::S3::Object",
                 "Values": Array [
                   Object {
@@ -10904,12 +10893,6 @@ Object {
                       ],
                     ],
                   },
-                ],
-              },
-              Object {
-                "Type": "AWS::Lambda::Function",
-                "Values": Array [
-                  "arn:aws:lambda",
                 ],
               },
             ],
