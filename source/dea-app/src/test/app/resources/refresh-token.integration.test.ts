@@ -32,6 +32,7 @@ describe('refresh-token', () => {
   const testUser = `RefreshTokenIntegrationTestUser${suffix}`;
   const firstName = 'CognitoRefreshTokenHelper';
   const lastName = 'TestUser';
+  const OLD_ENV = process.env;
 
   beforeAll(async () => {
     // Create user in test group
@@ -44,6 +45,12 @@ describe('refresh-token', () => {
   afterAll(async () => {
     await cognitoHelper.cleanup(repositoryProvider);
     await repositoryProvider.table.deleteTable('DeleteTableForever');
+    process.env = OLD_ENV;
+  });
+
+  beforeEach(() => {
+    process.env = { ...OLD_ENV };
+    process.env.SAMESITE = 'Strict';
   });
 
   it('successfully obtain an identity token for immediate use in the APIs', async () => {
