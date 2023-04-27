@@ -141,12 +141,20 @@ export const getCredentialsByToken = async (idToken: string) => {
     region: region,
   });
 
+  let Logins: Record<string, string>;
+  if (region.includes('gov')) {
+    Logins = {
+      [`cognito-idp-fips.us-gov-west-1.amazonaws.com/${cognitoParams.userPoolId}`]: idToken,
+    };
+  } else {
+    Logins = {
+      [`cognito-idp.${region}.amazonaws.com/${cognitoParams.userPoolId}`]: idToken,
+    };
+  }
   // Set up the request parameters
   const getIdCommand = new GetIdCommand({
     IdentityPoolId: cognitoParams.identityPoolId,
-    Logins: {
-      [`cognito-idp.${region}.amazonaws.com/${cognitoParams.userPoolId}`]: idToken,
-    },
+    Logins,
   });
 
   // Call the GetIdCommand to obtain the Cognito identity ID for the user
@@ -154,9 +162,7 @@ export const getCredentialsByToken = async (idToken: string) => {
   // Set up the request parameters for the GetCredentialsForIdentityCommand
   const getCredentialsCommand = new GetCredentialsForIdentityCommand({
     IdentityId,
-    Logins: {
-      [`cognito-idp.${region}.amazonaws.com/${cognitoParams.userPoolId}`]: idToken,
-    },
+    Logins,
   });
 
   // Call the GetCredentialsForIdentityCommand to obtain temporary AWS credentials for the user
