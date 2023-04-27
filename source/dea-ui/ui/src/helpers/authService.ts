@@ -9,7 +9,7 @@ import {
   GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
 
-const region = process.env.REGION ?? process.env.AWS_REGION ?? 'us-east-1';
+const region = process.env.NEXT_PUBLIC_REGION ?? 'us-east-1';
 
 export interface Credentials {
   AccessKeyId: string;
