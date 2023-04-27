@@ -114,6 +114,17 @@ Object {
         "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
       },
     },
+    "DeaAuthuserPoolClientSecretA2CBE3BE": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-userPoolClientSecret",
+      },
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientEFA99634",
+          "UserPoolClient.ClientSecret",
+        ],
+      },
+    },
     "DeaAuthuserPoolIdB0FAC1EB": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-userPoolId",
@@ -13008,7 +13019,7 @@ Object {
           "ALLOW_ADMIN_USER_PASSWORD_AUTH",
           "ALLOW_REFRESH_TOKEN_AUTH",
         ],
-        "GenerateSecret": false,
+        "GenerateSecret": true,
         "IdTokenValidity": 60,
         "PreventUserExistenceErrors": "ENABLED",
         "RefreshTokenValidity": 720,
@@ -13025,6 +13036,97 @@ Object {
         },
       },
       "Type": "AWS::Cognito::UserPoolClient",
+    },
+    "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicy67AC1E5A": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "cognito-idp:DescribeUserPoolClient",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaAuthDEAUserPool22DB2BAB",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicy67AC1E5A",
+        "Roles": Array [
+          Object {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientEFA99634": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicy67AC1E5A",
+      ],
+      "Properties": Object {
+        "Create": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"region\\":\\"",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "\\",\\"service\\":\\"CognitoIdentityServiceProvider\\",\\"action\\":\\"describeUserPoolClient\\",\\"parameters\\":{\\"UserPoolId\\":\\"",
+              Object {
+                "Ref": "DeaAuthDEAUserPool22DB2BAB",
+              },
+              "\\",\\"ClientId\\":\\"",
+              Object {
+                "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+              },
+              "\\"},\\"physicalResourceId\\":{\\"id\\":\\"",
+              Object {
+                "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+              },
+              "\\"}}",
+            ],
+          ],
+        },
+        "InstallLatestAwsSdk": false,
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"region\\":\\"",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "\\",\\"service\\":\\"CognitoIdentityServiceProvider\\",\\"action\\":\\"describeUserPoolClient\\",\\"parameters\\":{\\"UserPoolId\\":\\"",
+              Object {
+                "Ref": "DeaAuthDEAUserPool22DB2BAB",
+              },
+              "\\",\\"ClientId\\":\\"",
+              Object {
+                "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+              },
+              "\\"},\\"physicalResourceId\\":{\\"id\\":\\"",
+              Object {
+                "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+              },
+              "\\"}}",
+            ],
+          ],
+        },
+      },
+      "Type": "Custom::DescribeCognitoUserPoolClient",
+      "UpdateReplacePolicy": "Delete",
     },
     "DeaAuthEvidenceManagerRole778E476E": Object {
       "Properties": Object {
@@ -16186,12 +16288,28 @@ Object {
     "DeaAuthuserpoolclientidssmparam605B45CC": Object {
       "Properties": Object {
         "AllowedPattern": ".*",
-        "Description": "stores the user pool client id for use in token verification on the backend",
+        "Description": "stores the user pool client secret for use in token verification on the backend",
         "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-client-id-param",
         "Tier": "Standard",
         "Type": "String",
         "Value": Object {
           "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaAuthuserpoolclientsecretssmparam8F80B38C": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the user pool client id for use in token verification on the backend",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-client-secret-param",
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": Object {
+          "Fn::GetAtt": Array [
+            "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientEFA99634",
+            "UserPoolClient.ClientSecret",
+          ],
         },
       },
       "Type": "AWS::SSM::Parameter",
