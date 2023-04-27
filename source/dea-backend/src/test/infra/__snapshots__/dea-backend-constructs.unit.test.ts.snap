@@ -10829,6 +10829,31 @@ Object {
                   },
                 ],
               },
+              Object {
+                "Type": "AWS::S3::Object",
+                "Values": Array [
+                  Object {
+                    "Fn::Join": Array [
+                      "",
+                      Array [
+                        Object {
+                          "Fn::GetAtt": Array [
+                            "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                            "Arn",
+                          ],
+                        },
+                        "/",
+                      ],
+                    ],
+                  },
+                ],
+              },
+              Object {
+                "Type": "AWS::Lambda::Function",
+                "Values": Array [
+                  "arn:aws:lambda",
+                ],
+              },
             ],
             "IncludeManagementEvents": true,
             "ReadWriteType": "All",
