@@ -16332,7 +16332,7 @@ Object {
     "DeaAuthuserpoolclientidssmparam605B45CC": Object {
       "Properties": Object {
         "AllowedPattern": ".*",
-        "Description": "stores the user pool client secret for use in token verification on the backend",
+        "Description": "stores the user pool client id for use in token verification on the backend",
         "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-client-id-param",
         "Tier": "Standard",
         "Type": "String",
