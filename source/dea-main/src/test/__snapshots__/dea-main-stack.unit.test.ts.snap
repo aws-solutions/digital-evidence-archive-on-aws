@@ -11508,30 +11508,6 @@ Object {
                 ],
               },
             },
-            Object {
-              "Action": "secretsmanager:GetSecretValue",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:aws:secretsmanager:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":secret:/dea/",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    "/[STAGE-REMOVED]/clientSecret-*",
-                  ],
-                ],
-              },
-            },
           ],
           "Version": "2012-10-17",
         },

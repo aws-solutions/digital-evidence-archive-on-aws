@@ -412,15 +412,6 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
-    role.addToPolicy(
-      new PolicyStatement({
-        actions: ['secretsmanager:GetSecretValue', 'secretsmanager:CreateSecret'],
-        resources: [
-          `arn:aws:secretsmanager:${region}:${accountId}:secret:/dea/${region}/${STAGE}/clientSecret-*`,
-        ],
-      })
-    );
-
     return role;
   }
 
