@@ -8,12 +8,14 @@ import {
   GetCredentialsForIdentityCommand,
   GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import axios from 'axios';
 import { getRequiredEnv, getRequiredHeader } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { Oauth2Token } from '../../models/auth';
+import { ValidationError } from '../exceptions/validation-exception';
 
 const stage = getRequiredEnv('STAGE', 'chewbacca');
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
@@ -162,6 +164,23 @@ export const getCredentialsByToken = async (idToken: string) => {
   return Credentials;
 };
 
+const getClientSecret = async () => {
+  const clientSecretId = `/dea/${region}/${stage}/clientSecret`;
+
+  const client = new SecretsManagerClient({ region: region });
+  const input = {
+    SecretId: clientSecretId,
+  };
+  const command = new GetSecretValueCommand(input);
+  const secretResponse = await client.send(command);
+
+  if (secretResponse.SecretString) {
+    return secretResponse.SecretString;
+  } else {
+    throw new ValidationError(`Cognito secret ${clientSecretId} not found!`);
+  }
+};
+
 export const exchangeAuthorizationCode = async (
   authorizationCode: string,
   codeVerifier: string,
@@ -181,14 +200,19 @@ export const exchangeAuthorizationCode = async (
     callbackUrl = callbackOverride;
   }
 
+  const clientSecret = await getClientSecret();
+
   const data = new URLSearchParams();
   data.append('grant_type', 'authorization_code');
   data.append('client_id', cognitoParams.clientId);
   data.append('code', authorizationCode);
   data.append('redirect_uri', callbackUrl);
+  data.append('client_secret', clientSecret);
 
   if (codeVerifier) {
     data.append('code_verifier', codeVerifier);
+  } else {
+    throw new ValidationError(`Missing PKCE code verifier!`);
   }
 
   // make a request using the Axios instance
@@ -215,10 +239,13 @@ export const useRefreshToken = async (refreshToken: string): Promise<[Oauth2Toke
     baseURL: cognitoParams.cognitoDomainUrl,
   });
 
+  const clientSecret = await getClientSecret();
+
   const data = new URLSearchParams();
   data.append('grant_type', 'refresh_token');
   data.append('client_id', cognitoParams.clientId);
   data.append('refresh_token', refreshToken);
+  data.append('client_secret', clientSecret);
 
   // make a request using the Axios instance
   const response = await axiosInstance.post('/oauth2/token', data, {
@@ -242,6 +269,11 @@ export const revokeRefreshToken = async (refreshToken: string) => {
     baseURL: cognitoParams.cognitoDomainUrl,
   });
 
+  const clientSecret = await getClientSecret();
+
+  // Get encoded client ID for client secret support
+  const encodedClientId = Buffer.from(`${cognitoParams.clientId}:${clientSecret}`).toString('base64');
+
   const data = new URLSearchParams();
   data.append('grant_type', 'authorization_code');
   data.append('client_id', cognitoParams.clientId);
@@ -251,6 +283,7 @@ export const revokeRefreshToken = async (refreshToken: string) => {
   const response = await axiosInstance.post('/oauth2/revoke', data, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `Basic ${encodedClientId}`,
     },
     validateStatus: () => true,
   });
