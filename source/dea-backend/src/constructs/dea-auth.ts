@@ -508,7 +508,7 @@ export class DeaAuthConstruct extends Construct {
     new StringParameter(this, 'user-pool-client-id-ssm-param', {
       parameterName: `/dea/${region}/${stage}-userpool-client-id-param`,
       stringValue: userPoolClientId,
-      description: 'stores the user pool client secret for use in token verification on the backend',
+      description: 'stores the user pool client id for use in token verification on the backend',
       tier: ParameterTier.STANDARD,
       allowedPattern: '.*',
     });
