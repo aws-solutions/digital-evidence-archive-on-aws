@@ -26,8 +26,10 @@ export const getCredentialsByToken = async (idToken: string, identityPoolId: str
   // Set up the request parameters
   let Logins: Record<string, string>;
   if (region.includes('gov')) {
+    // In us-gov-east, we have to redirect to us-gov-west because
+    // Cognito is not available there
     Logins = {
-      [`cognito-idp-fips.us-gov-west-1.amazonaws.com/${userPoolId}`]: idToken,
+      [`cognito-idp.us-gov-west-1.amazonaws.com/${userPoolId}`]: idToken,
     };
   } else {
     Logins = {
