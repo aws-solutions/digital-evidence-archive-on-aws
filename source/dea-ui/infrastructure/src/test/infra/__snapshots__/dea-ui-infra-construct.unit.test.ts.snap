@@ -272,7 +272,6 @@ Object {
     "DeaUiStackartifactbucketFFC87A37": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
-        "AccessControl": "LogDeliveryWrite",
         "BucketEncryption": Object {
           "ServerSideEncryptionConfiguration": Array [
             Object {
@@ -287,6 +286,13 @@ Object {
             "Ref": "testS3AccessLogBucketF0DCA384",
           },
           "LogFilePrefix": "dea-ui-access-log",
+        },
+        "OwnershipControls": Object {
+          "Rules": Array [
+            Object {
+              "ObjectOwnership": "BucketOwnerPreferred",
+            },
+          ],
         },
         "PublicAccessBlockConfiguration": Object {
           "BlockPublicAcls": true,
@@ -587,12 +593,22 @@ Object {
       },
       "Type": "AWS::ApiGateway::RestApi",
     },
-    "testApiDeployment3727A0B9fad01d0f612a090752eb1a8cd3905bfc": Object {
+    "testApiDeployment3727A0B9dfa38d21c52796305c593d40fc1f6117": Object {
       "DependsOn": Array [
         "testApiuiproxyGET92230E90",
         "testApiuiproxyDDF9EC1E",
+        "testApiuiauthtestGET880E0E8F",
+        "testApiuiauthtestC9DEEA73",
+        "testApiuicasedetailGET6D4018AE",
+        "testApiuicasedetail80E12772",
+        "testApiuicreatecasesGET786EA30D",
+        "testApiuicreatecasesA8526372",
         "testApiuiGET8FD5D6F5",
+        "testApiuiloginGET86824034",
+        "testApiuilogin54AC376B",
         "testApiui1F041DD2",
+        "testApiuiuploadfilesGET6DFAC286",
+        "testApiuiuploadfilesD762C518",
       ],
       "Properties": Object {
         "Description": "Backend API",
@@ -608,7 +624,7 @@ Object {
       ],
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "testApiDeployment3727A0B9fad01d0f612a090752eb1a8cd3905bfc",
+          "Ref": "testApiDeployment3727A0B9dfa38d21c52796305c593d40fc1f6117",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",
@@ -648,7 +664,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -688,7 +709,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -700,6 +726,394 @@ Object {
         },
         "ResourceId": Object {
           "Ref": "testApiui1F041DD2",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuiauthtestC9DEEA73": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "auth-test",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuiauthtestGET880E0E8F": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackartifactbucketFFC87A37",
+                },
+                "/auth-test.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuiauthtestC9DEEA73",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuicasedetail80E12772": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "case-detail",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuicasedetailGET6D4018AE": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackartifactbucketFFC87A37",
+                },
+                "/case-detail.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuicasedetail80E12772",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuicreatecasesA8526372": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "create-cases",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuicreatecasesGET786EA30D": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackartifactbucketFFC87A37",
+                },
+                "/create-cases.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuicreatecasesA8526372",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuilogin54AC376B": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "login",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuiloginGET86824034": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackartifactbucketFFC87A37",
+                },
+                "/login.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuilogin54AC376B",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",
@@ -735,7 +1149,12 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
               },
               "StatusCode": "200",
             },
@@ -775,7 +1194,12 @@ Object {
             },
             "ResponseParameters": Object {
               "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
               "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
             },
             "StatusCode": "200",
           },
@@ -787,6 +1211,103 @@ Object {
         },
         "ResourceId": Object {
           "Ref": "testApiuiproxyDDF9EC1E",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuiuploadfilesD762C518": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "upload-files",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuiuploadfilesGET6DFAC286": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackartifactbucketFFC87A37",
+                },
+                "/upload-files.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuiuploadfilesD762C518",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",
@@ -835,6 +1356,13 @@ Object {
       "DeletionPolicy": "Retain",
       "Properties": Object {
         "AccessControl": "LogDeliveryWrite",
+        "OwnershipControls": Object {
+          "Rules": Array [
+            Object {
+              "ObjectOwnership": "BucketOwnerPreferred",
+            },
+          ],
+        },
         "PublicAccessBlockConfiguration": Object {
           "BlockPublicAcls": true,
           "BlockPublicPolicy": true,

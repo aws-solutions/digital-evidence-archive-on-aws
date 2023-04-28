@@ -2,8 +2,8 @@ name: Pull Request Workflow
 
 env:
   CONFIGNAME: 'chewbacca'
-  STAGE: RUN${{github.run_number}}
-  DOMAIN_PREFIX: deatestenv
+  STAGE: PRPIPELINE${{github.event.pull_request.number}}
+  DOMAIN_PREFIX: deatestenv${{github.event.pull_request.number}}
 
 on:
   pull_request:
@@ -12,7 +12,6 @@ on:
       - "main"
     types:
       - opened
-      - edited
       - reopened
       - synchronize
 
@@ -21,12 +20,16 @@ permissions:
       contents: read    # This is required for actions/checkout
 jobs:
   verify:
+    env:
+      CONFIGNAME: 'chewbacca'
+      STAGE: RUN${{github.run_number}}verify
+      DOMAIN_PREFIX: deatestenv${{github.run_number}}verify
     environment: dea-test
     defaults:
       run:
         shell: bash
         working-directory: ./source
-    name: Scan, Build and Test
+    name: Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,6 +38,13 @@ jobs:
         run: node common/scripts/install-run-rush.js viperlight-scan
       - name: Install
         uses: ./.github/actions/baseAction
+      - name: pnpm audit
+        run: |
+          cd common/config/rush
+          pnpm audit
+      - name: license check
+        run: |
+          node common/scripts/install-run-rush.js license-checker
       - name: Secrets Scan
         run: |
           node common/scripts/install-run-rush.js git-secrets-scan
@@ -57,8 +67,24 @@ jobs:
       - name: cfn_nag warning check
         run: |
           ! grep -C 3 'WARN\|FAIL' cfn_nag.out
+  Deploy:
+    environment: dea-test
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./source
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/baseAction
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
       - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: GITHUBACTIONSESSION
@@ -67,15 +93,156 @@ jobs:
         run: |
           cd dea-main
           npm run cdk deploy
+  E2E:
+    needs: Deploy
+    environment: dea-test
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./source
+    name: E2E
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/baseAction
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GITHUBACTIONSESSION
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: set env
+        run: |
           echo "DEA_API_URL=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-deaApiUrl'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "IDENTITY_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-identityPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "USER_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
       - name: Rush Test
         run: |
-          node common/scripts/install-run-rush.js test:only --verbose
+          node common/scripts/install-run-rush.js e2e:only --verbose
+  ACL:
+    needs: Deploy
+    environment: dea-test
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./source
+    name: ACL Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/baseAction
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GITHUBACTIONSESSION
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: set env
+        run: |
+          echo "DEA_API_URL=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-deaApiUrl'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "IDENTITY_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-identityPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "USER_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+      - name: Rush Test
+        run: |
+          cd dea-app
+          node ../common/scripts/install-run-rushx.js acl:only --verbose
+  Test:
+    needs: Deploy
+    environment: dea-test
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./source
+    name: Unit & Integ Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/baseAction
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GITHUBACTIONSESSION
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: set env
+        run: |
+          echo "DEA_API_URL=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-deaApiUrl'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "IDENTITY_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-identityPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "USER_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+      - name: Rush Test
+        run: |
+          node common/scripts/install-run-rush.js test:noe2e --verbose
+  Audit-Test:
+    needs: Deploy
+    environment: dea-test
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./source
+    name: Audit E2E
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/baseAction
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GITHUBACTIONSESSION
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Rush Test
+        run: |
+          node common/scripts/install-run-rush.js audit:only --verbose
+  destroy:
+    needs: [Test, E2E, Audit-Test,ACL]
+    environment: dea-test
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./source
+    name: CDK Destroy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/baseAction
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GITHUBACTIONSESSION
+          aws-region: ${{ secrets.AWS_REGION }}
       - name: cdk destroy
-        if: always()
         run: |
           cd dea-main
-          npm run cdk destroy -- --force
+          npm run cdk destroy ${STAGE}-DeaMainStack -- --force

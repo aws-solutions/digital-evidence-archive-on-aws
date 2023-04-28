@@ -2,12 +2,12 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-
 import { fail } from 'assert';
-import { CaseStatus } from '../../models/case-status';
+import { Credentials } from 'aws4-axios';
+import { Oauth2Token } from '../../models/auth';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPI, callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
+import { callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
 
 describe('create cases api', () => {
   const cognitoHelper = new CognitoHelper();
@@ -17,13 +17,18 @@ describe('create cases api', () => {
 
   const caseIdsToDelete: string[] = [];
 
+  let creds: Credentials;
+  let idToken: Oauth2Token;
+
   beforeAll(async () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'CreateCasesTestGroup', 'CreateCases', 'TestUser');
+    const credentials = await cognitoHelper.getCredentialsForUser(testUser);
+    creds = credentials[0];
+    idToken = credentials[1];
   });
 
   afterAll(async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
     for (const caseId of caseIdsToDelete) {
       await deleteCase(deaApiUrl, caseId, idToken, creds);
     }
@@ -31,15 +36,12 @@ describe('create cases api', () => {
   }, 30000);
 
   it('should create a new case', async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
-
     const caseName = 'CASE B';
 
     const createdCase = await createCaseSuccess(
       deaApiUrl,
       {
         name: caseName,
-        status: CaseStatus.ACTIVE,
         description: 'this is a description',
       },
       idToken,
@@ -50,20 +52,17 @@ describe('create cases api', () => {
   }, 30000);
 
   it('should give an error when payload is missing', async () => {
-    const response = await callDeaAPI(testUser, `${deaApiUrl}cases`, cognitoHelper, 'POST', undefined);
+    const response = await callDeaAPIWithCreds(`${deaApiUrl}cases`, 'POST', idToken, creds, undefined);
 
     expect(response.status).toEqual(400);
   });
 
   it('should give an error when the name is in use', async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
-
     const caseName = 'CASE C';
     const createdCase = await createCaseSuccess(
       deaApiUrl,
       {
         name: caseName,
-        status: CaseStatus.ACTIVE,
         description: 'any description',
       },
       idToken,
@@ -77,7 +76,7 @@ describe('create cases api', () => {
       status: 'ACTIVE',
       description: 'any description',
     });
-
-    expect(response.status).toEqual(500);
+    expect(response.status).toEqual(400);
+    expect(response.data).toBe(`Case with name "${caseName}" is already in use`);
   }, 30000);
 });

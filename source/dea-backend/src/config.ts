@@ -5,6 +5,7 @@
 
 import path from 'path';
 import { RemovalPolicy } from 'aws-cdk-lib';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import convict from 'convict';
 // https://www.npmjs.com/package/convict
 
@@ -17,15 +18,15 @@ function getSourcePath(): string {
   return `${__dirname}${backTrack}`;
 }
 
-const groupArrayFormat: convict.Format = {
-  name: 'group-array',
-  validate: function (groups, schema) {
-    if (!Array.isArray(groups)) {
+const deaRoleTypesFormat: convict.Format = {
+  name: 'dea-role-types',
+  validate: function (deaRoles, schema) {
+    if (!Array.isArray(deaRoles)) {
       throw new Error('must be of type Array');
     }
 
-    for (const group of groups) {
-      convict(schema.groups).load(group).validate();
+    for (const deaRole of deaRoles) {
+      convict(schema.deaRoles).load(deaRole).validate();
     }
   },
 };
@@ -79,34 +80,68 @@ const convictSchema = {
       env: 'DOMAIN_PREFIX',
     },
   },
+  idpInfo: {
+    metadataPath: {
+      doc: 'Either the URL or file path to the IDP metadata',
+      format: String,
+      default: undefined,
+    },
+    metadataPathType: {
+      doc: 'Either the URL or file path to the IDP metadata',
+      format: String,
+      default: 'FILE',
+    },
+    attributeMap: {
+      username: {
+        doc: 'name of the IDP attribute field to get the logon of the user',
+        format: String,
+        default: 'username',
+      },
+      email: {
+        doc: 'name of the IDP attribute field to get the last name of the user',
+        format: String,
+        default: 'email',
+      },
+      firstName: {
+        doc: 'name of the IDP attribute field to get the last name of the user',
+        format: String,
+        default: 'firstName',
+      },
+      lastName: {
+        doc: 'name of the IDP attribute field to get the last name of the user',
+        format: String,
+        default: 'lastName',
+      },
+      deaRoleName: {
+        doc: 'name of the IDP attribute field to get the last name of the user',
+        format: String,
+        default: 'deaRoleName',
+      },
+    },
+  },
   testStack: {
     doc: 'Boolean to indicate if this is a test stack',
     format: Boolean,
     default: false,
   },
-  userGroups: {
-    doc: 'User Pool Groups config',
-    format: groupArrayFormat.name,
+  deaRoleTypes: {
+    doc: 'DEA Role Types config',
+    format: deaRoleTypesFormat.name,
     default: [],
 
-    groups: {
+    deaRoles: {
       name: {
-        doc: 'User pool group name',
+        doc: 'DEA Role Type name',
         format: String,
         default: null,
       },
       description: {
-        doc: 'User pool group description',
+        doc: 'DEA Role type description',
         format: String,
         default: null,
       },
-      precedence: {
-        doc: 'User pool group precedence',
-        format: Number,
-        default: null,
-      },
       endpoints: {
-        doc: 'Endpoints that the user group has access to',
+        doc: 'Endpoints that the users of the role have access to',
         format: endpointArrayFormat.name,
         default: [],
 
@@ -125,21 +160,44 @@ const convictSchema = {
       },
     },
   },
+  deaAllowedOrigins: {
+    doc: 'Comma separated list of allowed domains',
+    format: String,
+    default: '',
+  },
+  deletionAllowed: {
+    doc: 'Boolean to indicate if Delete Case Handler should be deployed or not',
+    format: 'Boolean',
+    default: false,
+  },
 };
+
+export interface IdPAttributes {
+  readonly username: string;
+  readonly email: string;
+  readonly firstName: string;
+  readonly lastName: string;
+  readonly deaRoleName: string;
+}
+
+export interface IdpMetadataInfo {
+  readonly metadataPath: string | undefined;
+  readonly metadataPathType: string;
+  readonly attributeMap: IdPAttributes;
+}
 
 export interface DEAEndpointDefinition {
   readonly path: string;
   readonly method: string;
 }
 
-export interface DEAUserPoolGroupDefinition {
+export interface DEARoleTypeDefinition {
   readonly name: string;
   readonly description: string;
-  readonly precedence: number;
   readonly endpoints: DEAEndpointDefinition[];
 }
 
-convict.addFormat(groupArrayFormat);
+convict.addFormat(deaRoleTypesFormat);
 convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
 
@@ -149,8 +207,14 @@ interface DEAConfig {
   region(): string;
   cognitoDomain(): string | undefined;
   isTestStack(): boolean;
-  userGroups(): DEAUserPoolGroupDefinition[];
+  deaRoleTypes(): DEARoleTypeDefinition[];
   retainPolicy(): RemovalPolicy;
+  retentionDays(): RetentionDays;
+  idpMetadata(): IdpMetadataInfo | undefined;
+  deaAllowedOrigins(): string;
+  deaAllowedOriginsList(): string[];
+  kmsAccountActions(): string[];
+  deletionAllowed(): boolean;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -162,8 +226,35 @@ export const deaConfig: DEAConfig = {
   region: () => convictConfig.get('region'),
   cognitoDomain: () => convictConfig.get('cognito.domain'),
   isTestStack: () => convictConfig.get('testStack'),
-  userGroups: () => convictConfig.get('userGroups'),
+  deaRoleTypes: () => convictConfig.get('deaRoleTypes'),
   retainPolicy: () => (convictConfig.get('testStack') ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN),
+  retentionDays: () => (convictConfig.get('testStack') ? RetentionDays.TWO_WEEKS : RetentionDays.INFINITE),
+  idpMetadata: () => convictConfig.get('idpInfo'),
+  deaAllowedOrigins: () => convictConfig.get('deaAllowedOrigins'),
+  deaAllowedOriginsList: () => {
+    const value = convictConfig.get('deaAllowedOrigins');
+    return value === '' ? [] : value.split(',');
+  },
+  kmsAccountActions: () =>
+    convictConfig.get('testStack')
+      ? ['kms:*']
+      : [
+          'kms:Create*',
+          'kms:Describe*',
+          'kms:Enable*',
+          'kms:List*',
+          'kms:Put*',
+          'kms:Update*',
+          'kms:Revoke*',
+          'kms:Disable*',
+          'kms:Get*',
+          'kms:Delete*',
+          'kms:TagResource',
+          'kms:UntagResource',
+          'kms:ScheduleKeyDeletion',
+          'kms:CancelKeyDeletion',
+        ],
+  deletionAllowed: () => convictConfig.get('deletionAllowed'),
 };
 
 export const loadConfig = (stage: string): void => {

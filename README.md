@@ -6,56 +6,100 @@ Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest 
 
 | Statements                                                                               | Branches                                                                             | Functions                                                                              | Lines                                                                          |
 | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| ![Statements](https://img.shields.io/badge/statements-97.1%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-87.36%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-92.59%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-97.22%25-brightgreen.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-96.09%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-85.92%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-93.57%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-96.15%25-brightgreen.svg?style=flat) |
 
 
-## Project Setup
+# Getting Started
 
-1. Sign in to GitHub
+Deployments are controlled by your `STAGE` environment variable. If unspecified this will default to `chewbacca`.
+Any deployments cohabitating on a single AWS account will require an account-unique `STAGE` name.
+By default the build process will seek a configuration file ([example](/source/common/config/chewbacca.json)) with the same name as your `STAGE`, however, you can optionally specify `CONFIGNAME` in your environment to specify a filename separate from your `STAGE`, this is useful if you want multiple stages that share the same configuration.
+DEA deployment requires a Cognito Domain Prefix to be specified for creation and reference during CDK deployment, for this you must set a value for `DOMAIN_PREFIX` in your environment. If a value is not specified a CfnParameter will be added to the stack, which will produce an error if not specified during deployment along the lines of `Resolution error: ID components may not include unresolved tokens`.
+There are several environment values required to run E2E tests successfully, these should be set for you when running the test suite after deploying your stack. If you notice your tests failing due to unset values you can run the [setEnv](/source/common/scripts/setEnv.sh) script to pull these values from your stack (e.g. `source ./common/scripts/setEnv.sh`).
 
-2. Fork the repository https://github.com/aws-solutions/digital-investigations-on-aws. Underneath the page header, on the upper right, the fork button is second from the right. Choose your account as the owner and uncheck the copy only main branch.
+Install Rush 
 
-3. Clone the forked repo, inputting your username, then your ACCESS token from step 1 as the password
 
-```
-WORKSPACE_NAME=<e.g. DEADev>
-git clone git@github.com:aws-solutions/digital-investigations-on-aws.git $WORKSPACE_NAME
-cd ./$WORKSPACE_NAME
-```
-
-4. Create a Branch (Needed for PRs)
-
-```
-git checkout -b $BRANCH_NAME
+```sh
+npm install -g @microsoft/rush
 ```
 
-5. Run Rush Install
+Run Rush Install and build code
 
 ```
 cd ./source
 rush cupdate
+rush build
+```
+Deploy via the dea-main package:
+```
+cd ./dea-main
+rushx cdk bootstrap aws://{aws id}/{region}
+rushx cdk deploy
+```
+---
+## https proxy for local UI development
+To support secure cookies during local development, you will need to use https with localhost. For this to work you will need a locally trusted Certification Authority. You can do this using mkcert:
+
+```sh
+brew install mkcert
+mkcert install
 ```
 
-6. Setup Git Defender
+> Then create a .pem key in /dea-ui/ui
 
+```sh
+cd dea-ui/ui
+mkcert localhost
 ```
-git defender --setup
+
+At this point you can run an https proxy for localhost.
+
+> In dea-ui/ui
+
+```sh
+rushx dev:https
 ```
 
-## Local Environment Setup
-Deployments are controlled by your `STAGE` environment variable. If unspecified this will default to `chewbacca`.
-Any deployments cohabitating on a single AWS account will require an account-unique `STAGE` name.
-By default the build process will seek a configuration file ([example](/source/common/config/chewbacca.json)) with the same name as your `STAGE`, however, you can optionally specify `CONFIGNAME` in your environment to specify a filename separate from your `STAGE`, this is useful if you want multiple stages that share the same configuration.
-DEA deployment requires a Cognito Domain Prefix to be specified for creation and reference during CDK deployment, for this you must set a value for `COGNITO_PREFIX` in your environment. If a value is not specified a CfnParameter will be added to the stack, which will produce an error if not specified during deployment along the lines of `Resolution error: ID components may not include unresolved tokens`.
-There are several environment values required to run E2E tests successfully, these should be set for you when running the test suite after deploying your stack. If you notice your tests failing due to unset values you can run the [setEnv](/source/dea-app/setEnv.sh) script to pull these values from your stack (e.g. `source ./dea-app/setEnv.sh`).
+Now `https://localhost:3001` will proxy requests to `localhost:3000`
 
+The proxy will launch the applicacion in backgound and there is no need to run `rushx dev` as you normally would. use `https://localhost:3001/{stage}/ui` to access the front end
+
+---
+## CDK Policy Customization
+By default, the policies that CDK boostraps with are too permissive, so we recommend customizing the cdkCFExecutionPolicy. This is done using a policy document, ([cdkCFExecutionPolicy.json](.github/cdkCFExecutionPolicy.json))
+First, create the customized policy, via the aws cli:
+```
+aws iam create-policy \
+  --policy-name cdkCFExecutionPolicy \
+  --policy-document file://../../.github/cdkCFExecutionPolicy.json
+```
+Then boostrap your account, specifying the custom policy:
+```
+ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+cdk bootstrap aws://$ACCOUNT_ID/$AWS_REGION \
+  --cloudformation-execution-policies "arn:aws:iam::$ACCOUNT_ID:policy/cdkCFExecutionPolicy"
+```
+At this point your CDK deployments will use the customized policy!
+If you need to update the policy, simply modify the JSON file, and create a policy version, setting it as the default 
+> :warning: There is a limit to the number of policy versions.
+> Prior to creating a new version, you may need to list, and delete an existing version
+```
+ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+aws iam create-policy-version \
+  --policy-arn arn:aws:iam::$ACCOUNT_ID:policy/cdkCFExecutionPolicy \
+  --policy-document file://../../.github/cdkCFExecutionPolicy.json \
+  --set-as-default
+```
+
+---
 ## Test User Generation for API requests
 The default APIs are secured with IAM authentication, to support the development process there are some npm scripts available that grant basic test user management. The credentials retrieved from your test users can be used via AWSv4 authentication along with a custom header value `idToken`.
-The following task are available in the [dea-app](/source/dea-app/) directory, and act upon a deployed cognito instance, identified by ENV values from [setEnv](/source/dea-app/setEnv.sh).
+The following tasks are available in the [dea-app](/source/dea-app/) directory, and act upon a deployed cognito instance, identified by ENV values from [setEnv](/source/common/scripts/setEnv.sh).
 #### Create Test User
 - This will generate a test user in your deployed Cognito instance, and output to your terminal the API credentials for this user.
 > example:
-`npm run create-cognito-user -- --username=jdoe --firstname=johnny --lastname=doe --usergroup=CaseWorkerGroup --password=somepw`
+`npm run create-cognito-user -- --username=jdoe --firstname=johnny --lastname=doe --usergroup=CaseWorker --password=somepw`
 #### Get credential for a Test User
 - This will retrieve, and print to the terminal, API credentials for an existing user. 
 > example:
@@ -65,6 +109,7 @@ The following task are available in the [dea-app](/source/dea-app/) directory, a
 > example:
 `npm run delete-cognito-user -- --username=jdoe`
 
+---
 ## Creating a PR from a Commit(s)
 
 OPTIONAL: run commit hooks locally
@@ -93,6 +138,7 @@ Go to the branch in GitHub, and Press Submit Pull Request
 
 Assign a reviewer, and ensure Checks Pass
 
+---
 ### Testing
 
 Tests are split into 3 categories:
@@ -107,13 +153,25 @@ The default test tasks will run all test suites (Unit, Integration and E2E). Not
 rush test
 rush test:only
 ```
-Additionally there are 3 tasks that will run only the specified test suite:
+Additionally there are 4 tasks that will run only specific test suite(s):
 ```
 rush unit:only
 rush integration:only
 rush e2e:only
+rush test:noe2e (ideal for updating coverage without running E2E)
 ```
 > :warning: Java Runtime Environment (JRE) is required for unit tests to run successfully. Please install before running unit tests  
+
+#### IdP End to End Test
+In the Auth E2E test suite we include a test that mimics DEA Authentication and Authorization Process with the configured external IDP. This test will be skipped UNLESS you have 
+configured your stack with the IdP (affirmed by querying SSM ParamStore for the Idp Name) AND you have stored credentials for a test user in SSM using the following command:
+
+```
+cd ./dea-app
+rushx idp-test-setup --username <TEST_USER_NAME> --password <TEST_USER_PASSWORD>
+```
+
+The user should already be created in the IdP, assigned to the DEA application under test, and given DEARole of CaseWorker.
 
 ### One Time Package Installs
 

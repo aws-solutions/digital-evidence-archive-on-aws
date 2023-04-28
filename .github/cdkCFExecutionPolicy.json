@@ -14,7 +14,9 @@
         "lambda:*",
         "logs:*",
         "s3:*",
-        "ssm:*"
+        "ssm:*",
+        "cloudtrail:*",
+        "events:*"
       ],
       "Resource": "*"
     },

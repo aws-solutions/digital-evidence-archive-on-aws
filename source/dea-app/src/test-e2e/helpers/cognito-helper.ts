@@ -9,10 +9,10 @@ import {
   GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
 import {
-  AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
   AdminDeleteUserCommand,
   AdminGetUserCommand,
+  AdminGetUserResponse,
   AdminSetUserPasswordCommand,
   AuthenticationResultType,
   AuthFlowType,
@@ -22,6 +22,7 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Credentials } from 'aws4-axios';
 import { getTokenPayload } from '../../cognito-token-helpers';
+import { Oauth2Token } from '../../models/auth';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { deleteUser, getUserByTokenId } from '../../persistence/user';
 import { testEnv } from './settings';
@@ -36,7 +37,7 @@ export default class CognitoHelper {
   readonly _idpUrl: string;
 
   private _usersCreated: string[] = [];
-  private _testPassword: string;
+  public testPassword: string;
 
   public constructor(globalPassword?: string) {
     this._region = testEnv.awsRegion;
@@ -49,12 +50,12 @@ export default class CognitoHelper {
     this._identityPoolClient = new CognitoIdentityClient({ region: this._region });
     this._userPoolProvider = new CognitoIdentityProviderClient({ region: this._region });
 
-    this._testPassword = globalPassword ?? generatePassword();
+    this.testPassword = globalPassword ?? generatePassword();
   }
 
   public async createUser(
     userName: string,
-    groupName: string,
+    deaRole: string,
     firstName: string,
     lastName: string
   ): Promise<void> {
@@ -75,6 +76,10 @@ export default class CognitoHelper {
               Name: 'family_name',
               Value: lastName,
             },
+            {
+              Name: 'custom:DEARole',
+              Value: deaRole,
+            },
           ],
         })
       );
@@ -83,7 +88,7 @@ export default class CognitoHelper {
 
         // 2. Change Password
         const command = new AdminSetUserPasswordCommand({
-          Password: this._testPassword,
+          Password: this.testPassword,
           Permanent: true,
           Username: userName,
           UserPoolId: this._userPoolId,
@@ -96,35 +101,24 @@ export default class CognitoHelper {
       console.log('Failed to create user ' + error);
       return;
     }
-
-    // 3. Add to Cognito Group
-    try {
-      await this._userPoolProvider.send(
-        new AdminAddUserToGroupCommand({
-          Username: userName,
-          UserPoolId: this._userPoolId,
-          GroupName: groupName,
-        })
-      );
-    } catch (error) {
-      console.log('Failed to add to Cognito group ' + error);
-      return;
-    }
   }
 
-  public async getUser(userName: string): Promise<boolean> {
+  public async getUser(userName: string): Promise<AdminGetUserResponse | undefined> {
     try {
-      await this._userPoolProvider.send(
+      return await this._userPoolProvider.send(
         new AdminGetUserCommand({
           Username: userName,
           UserPoolId: this._userPoolId,
         })
       );
-      return true;
     } catch (error) {
       console.log('Could not find user ' + error);
-      return false;
+      return;
     }
+  }
+
+  public async doesUserExist(userName: string): Promise<boolean> {
+    return (await this.getUser(userName)) ? true : false;
   }
 
   private async getUserPoolAuthForUser(userName: string): Promise<AuthenticationResultType> {
@@ -133,7 +127,7 @@ export default class CognitoHelper {
         AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
         AuthParameters: {
           USERNAME: userName,
-          PASSWORD: this._testPassword,
+          PASSWORD: this.testPassword,
         },
         ClientId: this._userPoolClientId,
       })
@@ -146,26 +140,32 @@ export default class CognitoHelper {
     return result.AuthenticationResult;
   }
 
-  public async getIdTokenForUser(userName: string): Promise<string> {
+  public async getIdTokenForUser(userName: string): Promise<Oauth2Token> {
     const result = await this.getUserPoolAuthForUser(userName);
 
-    if (!result.IdToken) {
-      throw new Error('Unable to get id token from user pool.');
+    if (!result.IdToken || !result.RefreshToken || !result.AccessToken) {
+      throw new Error('Unable to get id token and refresh token from user pool.');
     }
 
-    return result.IdToken;
+    return {
+      id_token: result.IdToken,
+      refresh_token: result.RefreshToken,
+      expires_in: result.ExpiresIn ?? 4000,
+      access_token: result.AccessToken,
+      token_type: result.TokenType ?? 'Bearer',
+    };
   }
 
-  public async getCredentialsForUser(userName: string): Promise<[Credentials, string]> {
+  public async getCredentialsForUser(userName: string): Promise<[Credentials, Oauth2Token]> {
     // 1. Authenticate with User Pool, get Token
-    const idToken = await this.getIdTokenForUser(userName);
+    const oauthToken = await this.getIdTokenForUser(userName);
 
     // 2. Get Identity from Identity Pool
     const identityId = await this._identityPoolClient.send(
       new GetIdCommand({
         IdentityPoolId: this._identityPoolId,
         Logins: {
-          [this._idpUrl]: idToken,
+          [this._idpUrl]: oauthToken.id_token,
         },
       })
     );
@@ -175,7 +175,7 @@ export default class CognitoHelper {
       new GetCredentialsForIdentityCommand({
         IdentityId: identityId.IdentityId,
         Logins: {
-          [this._idpUrl]: idToken,
+          [this._idpUrl]: oauthToken.id_token,
         },
       })
     );
@@ -191,7 +191,7 @@ export default class CognitoHelper {
           secretAccessKey: creds.SecretKey,
           sessionToken: creds.SessionToken,
         },
-        idToken,
+        oauthToken,
       ];
     } else {
       throw new Error('Failed to get credentials from the identity pool:');
@@ -205,8 +205,8 @@ export default class CognitoHelper {
         // try to remove the user from the db
         // NOTE: it won't be there unless you called
         // lambda using creds from the the user
-        const idToken = await this.getIdTokenForUser(username);
-        const tokenId = (await getTokenPayload(idToken, this._region)).sub;
+        const { id_token } = await this.getIdTokenForUser(username);
+        const tokenId = (await getTokenPayload(id_token, this._region)).sub;
         if (repositoryProvider) {
           const dbUser = await getUserByTokenId(tokenId, repositoryProvider);
           if (dbUser) {

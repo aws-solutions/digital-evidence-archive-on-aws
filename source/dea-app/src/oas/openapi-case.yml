@@ -176,7 +176,7 @@ paths:
                       $ref: '#/components/schemas/Users'
                   next:
                     type: string
-  /cases/{caseId}/userMemberships/{userId}:
+  /cases/{caseId}/users/{userId}/memberships:
     put:
       summary: Update case user
       description: Update the details on an existing case membership
@@ -253,7 +253,7 @@ paths:
                       $ref: '#/components/schemas/Cases'
                   next:
                     type: string
-  /cases/{caseId}:
+  /cases/{caseId}/details:
     get:
       summary: Return case details by case Id
       description: Get metadata for a specific case. return not found if user doesn’t have access
@@ -295,33 +295,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/Case'
   /cases/{caseId}/status:
-    put:
-      summary: Update case status
-      tags:
-        - cases
-      parameters:
-        - in: path
-          name: caseId
-          schema:
-            type: string
-          required: true
-      requestBody:
-        content:
-          application/json:
+      put:
+        summary: Update case status and optionally request deletion of case files
+        tags:
+          - cases
+        parameters:
+          - in: path
+            name: caseId
             schema:
-              $ref: '#/components/schemas/CaseStatusRequest'
-      responses:
-        200:
-          description: Success
+              type: string
+            required: true
+        requestBody:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Case'
-        304:
-          description: unchanged status
+                type: object
+                properties:
+                  name:
+                    type: string
+                  deleteFiles:
+                    type: boolean
+                    default: false
+                  status:
+                    $ref: '#/components/schemas/CaseStatus'
+        responses:
+          200:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Case'
   /cases/{caseId}/files:
     post:
-      summary: Upload files to a case
+      summary: Begin case file upload
       tags:
         - cases
       parameters:
@@ -344,7 +350,7 @@ paths:
                 $ref: '#/components/schemas/CaseUploadResponse'
     get:
       summary: list files by directory
-      description: List files within a case in a parent directory or case root
+      description: List files within a case in given file path or case root
       tags:
         - cases
       parameters:
@@ -354,7 +360,7 @@ paths:
             type: string
           required: true
         - in: query
-          name: parentDir
+          name: filePath
           schema:
             type: string
         - in: query
@@ -379,7 +385,7 @@ paths:
                       $ref: '#/components/schemas/CaseFiles'
                   next:
                     type: string
-  /cases/{caseId}/files/{fileId}:
+  /cases/{caseId}/files/{fileId}/info:
     get:
       summary: File details
       description: Get details for a file within a case
@@ -408,6 +414,33 @@ paths:
                     type: string
                   file:
                     $ref: '#/components/schemas/CaseFile'
+    put:
+      summary: Complete case file upload
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseFiles'
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseUploadResponse'
   /cases/{caseId}/files/{fileId}/contents:
     get:
       summary: Download file
@@ -485,6 +518,10 @@ components:
           type: number
         status:
           $ref: '#/components/schemas/CaseStatus'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseAction'
     Cases:
       type: array
       items:
@@ -553,9 +590,13 @@ components:
           type: string
         caseId:
           type: string
+        fileSizeBytes:
+          type: number
         sha256Hash:
           type: string
         ulid:
+          type: string
+        uploadId:
           type: string
         isFile:
           type: boolean
@@ -570,7 +611,11 @@ components:
       properties:
         caseId:
           type: string
-        uploadUrls:
+        uploadId:
+          type: string
+        versionId:
+          type: string
+        presignedUrls:
           type: array
           items:
             type: string

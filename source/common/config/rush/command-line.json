@@ -208,9 +208,25 @@
       "allowWarningsInSuccessfulBuild": true
     },
     {
+      "name": "test:noe2e",
+      "commandKind": "bulk",
+      "summary": "Used to only perform unit and integration tests on the packages",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
+    },
+    {
       "name": "e2e:only",
       "commandKind": "bulk",
       "summary": "Used to perform e2e tests only on the packages",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
+    },
+    {
+      "name": "audit:only",
+      "commandKind": "bulk",
+      "summary": "Used to perform audit e2e tests only on the packages",
       "safeForSimultaneousRushProcesses": true,
       "enableParallelism": true,
       "allowWarningsInSuccessfulBuild": true
@@ -252,13 +268,6 @@
       "safeForSimultaneousRushProcesses": true,
       "enableParallelism": true,
       "incremental": true
-    },
-    {
-      "name": "depcheck",
-      "commandKind": "bulk",
-      "summary": "Check unused dependecies and devDependencies",
-      "safeForSimultaneousRushProcesses": true,
-      "enableParallelism": true
     },
     {
       "name": "license-checker",

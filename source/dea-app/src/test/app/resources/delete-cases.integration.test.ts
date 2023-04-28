@@ -3,19 +3,17 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { fail } from 'assert';
 import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { deleteCase } from '../../../app/resources/delete-cases';
 import { getCase } from '../../../app/services/case-service';
 import { createCaseUserMembership } from '../../../app/services/case-user-service';
 import { createUser } from '../../../app/services/user-service';
-import { DeaCase } from '../../../models/case';
+import { DeaCaseInput } from '../../../models/case';
 import { CaseAction } from '../../../models/case-action';
-import { CaseStatus } from '../../../models/case-status';
 import { createCase } from '../../../persistence/case';
 import { listCaseUsersByCase } from '../../../persistence/case-user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -30,15 +28,11 @@ describe('delete cases resource', () => {
   });
 
   it('should respond with success if the target entity does not exist', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+      },
+    });
 
     const response = await deleteCase(event, dummyContext, repositoryProvider);
 
@@ -55,25 +49,17 @@ describe('delete cases resource', () => {
       repositoryProvider
     );
 
-    const theCase: DeaCase = {
+    const theCase: DeaCaseInput = {
       name: 'ACaseForDeleting',
-      status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
     const createdCase = await createCase(theCase, user, repositoryProvider);
-    if (!createdCase.ulid) {
-      fail();
-    }
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: createdCase.ulid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: createdCase.ulid,
+      },
+    });
 
     const response = await deleteCase(event, dummyContext, repositoryProvider);
 
@@ -93,16 +79,12 @@ describe('delete cases resource', () => {
       repositoryProvider
     );
 
-    const theCase: DeaCase = {
+    const theCase: DeaCaseInput = {
       name: 'ACaseWithMemberships',
-      status: CaseStatus.ACTIVE,
       description: 'An initial description',
     };
 
     const createdCase = await createCase(theCase, user, repositoryProvider);
-    if (!createdCase.ulid) {
-      fail();
-    }
 
     //create so many memberships
     for (let i = 0; i < 28; ++i) {
@@ -114,10 +96,6 @@ describe('delete cases resource', () => {
         },
         repositoryProvider
       );
-
-      if (!user.ulid) {
-        fail();
-      }
 
       await createCaseUserMembership(
         {
@@ -135,15 +113,11 @@ describe('delete cases resource', () => {
     const usersOnCase = await listCaseUsersByCase(createdCase.ulid, 30, undefined, repositoryProvider);
     expect(usersOnCase.length).toEqual(29);
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        pathParameters: {
-          caseId: createdCase.ulid,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: createdCase.ulid,
+      },
+    });
 
     const response = await deleteCase(event, dummyContext, repositoryProvider);
 
@@ -163,6 +137,8 @@ describe('delete cases resource', () => {
   }, 30000);
 
   it('should error if the path param is not provided', async () => {
-    await expect(deleteCase(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(ValidationError);
+    await expect(deleteCase(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(
+      ValidationError
+    );
   });
 });

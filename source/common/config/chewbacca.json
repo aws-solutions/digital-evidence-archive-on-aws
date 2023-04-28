@@ -1,49 +1,335 @@
 {
   "stage": "chewbacca",
   "testStack": true,
-  "userGroups": [
+  "deaRoleTypes": [
     {
-      "name": "CaseWorkerGroup",
-      "description": "containing users who need access to case APIs",
-      "precedence": 1,
+      "name": "CaseWorker",
+      "description": "users who need access to case APIs",
       "endpoints": [
-        {
-          "path": "/cases",
-          "method": "GET"
-        },
         {
           "path": "/cases",
           "method": "POST"
         },
         {
-          "path": "/cases/{caseId}",
+          "path": "/cases/{caseId}/details",
           "method": "GET"
         },
         {
-          "path": "/cases/{caseId}",
+          "path": "/cases/{caseId}/details",
           "method": "PUT"
         },
         {
-          "path": "/cases/{caseId}",
+          "path": "/cases/{caseId}/details",
           "method": "DELETE"
+        },
+        {
+          "path": "/cases/{caseId}/actions",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/owner",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/status",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships",
+          "method": "GET"
         },
         {
           "path": "/cases/{caseId}/userMemberships",
           "method": "POST"
         },
         {
+          "path": "/cases/{caseId}/users/{userId}/memberships",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/users/{userId}/memberships",
+          "method": "DELETE"
+        },
+        {
+          "path": "/auth/{authCode}/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/loginUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/logoutUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/refreshToken",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/revokeToken",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
+          "method": "GET"
+        },
+        {
           "path": "/users",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/files",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/contents",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/info",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/contents",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/my-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/availableEndpoints",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "name": "WorkingManager",
+      "description": "users who act as both case workers and managers",
+      "endpoints": [
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "DELETE"
+        },
+        {
+          "path": "/cases/{caseId}/actions",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/users/{userId}/memberships",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/users/{userId}/memberships",
+          "method": "DELETE"
+        },
+        {
+          "path": "/auth/{authCode}/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/loginUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/logoutUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/refreshToken",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/revokeToken",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
+          "method": "GET"
+        },
+        {
+          "path": "/users",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/files",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/contents",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/info",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/contents",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/my-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/all-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/availableEndpoints",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/scopedInformation",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/owner",
+          "method": "POST"
+        },
+        {
+          "path": "/users/{userId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/users/{userId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/system/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/system/audit/{auditId}/csv",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "name": "EvidenceManager",
+      "description": "Users with access to privileged endpoints",
+      "endpoints": [
+        {
+          "path": "/cases/{caseId}/actions",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/{authCode}/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/loginUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/logoutUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/refreshToken",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/revokeToken",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
+          "method": "GET"
+        },
+        {
+          "path": "/users",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/all-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/availableEndpoints",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/scopedInformation",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/owner",
+          "method": "POST"
+        },
+        {
+          "path": "/users/{userId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/users/{userId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/system/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/system/audit/{auditId}/csv",
           "method": "GET"
         }
       ]
     },
     {
       "name": "NoPermissionsGroup",
-      "description": "containing users who can't do anything in the system",
-      "precedence": 1,
+      "description": "users who can't do anything in the system",
       "endpoints": [
         {
-          "path": "/hi",
+          "path": "/availableEndpoints",
           "method": "GET"
         }
       ]
@@ -51,33 +337,63 @@
     {
       "name": "AuthTestGroup",
       "description": "used for auth e2e testing",
-      "precedence": 100,
       "endpoints": [
         {
-          "path": "/hi",
+          "path": "/cases/my-cases",
           "method": "GET"
         },
         {
-          "path": "/bye",
+          "path": "/auth/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
           "method": "GET"
+        },
+        {
+          "path": "/auth/loginUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/logoutUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/refreshToken",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/revokeToken",
+          "method": "POST"
         }
       ]
     },
     {
       "name": "CreateCasesTestGroup",
       "description": "used for create cases API e2e testing",
-      "precedence": 100,
       "endpoints": [
         {
           "path": "/cases",
           "method": "POST"
         },
         {
-          "path": "/cases/{caseId}",
+          "path": "/cases/{caseId}/details",
           "method": "DELETE"
         },
         {
           "path": "/cases/all-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/loginUrl",
           "method": "GET"
         }
       ]
@@ -85,37 +401,47 @@
     {
       "name": "GetCaseTestGroup",
       "description": "used for get cases API e2e testing",
-      "precedence": 100,
       "endpoints": [
         {
           "path": "/cases",
           "method": "POST"
         },
         {
-          "path": "/cases/{caseId}",
+          "path": "/cases/{caseId}/details",
           "method": "GET"
         },
         {
-          "path": "/cases/{caseId}",
+          "path": "/cases/{caseId}/details",
           "method": "DELETE"
+        },
+        {
+          "path": "/auth/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/loginUrl",
+          "method": "GET"
         }
       ]
     },
     {
       "name": "GetMyCasesTestGroup",
       "description": "used for get my cases API e2e testing",
-      "precedence": 100,
       "endpoints": [
         {
           "path": "/cases",
           "method": "POST"
         },
         {
-          "path": "/cases/{caseId}",
+          "path": "/cases/{caseId}/details",
           "method": "GET"
         },
         {
-          "path": "/cases/{caseId}",
+          "path": "/cases/{caseId}/details",
           "method": "DELETE"
         },
         {
@@ -132,5 +458,7 @@
         }
       ]
     }
-  ]
+  ],
+  "deaAllowedOrigins": "https://localhost:3001",
+  "deletionAllowed": true
 }

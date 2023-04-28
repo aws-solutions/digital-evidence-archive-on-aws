@@ -6,12 +6,13 @@
 import { Table } from 'dynamodb-onetable';
 import { DeaSchema } from '../../persistence/schema/dea-schema';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
+import { randomSuffix } from '../../test-e2e/resources/test-helpers';
 import { dynamoTestClient } from '../local-dynamo/setup';
 
-export const initLocalDb = async (tableName: string): Promise<Table> => {
+const initLocalDb = async (tableName: string): Promise<Table> => {
   const testTable = new Table({
     client: dynamoTestClient,
-    name: tableName,
+    name: `${tableName}${randomSuffix()}`,
     schema: DeaSchema,
     partial: false,
   });
@@ -28,6 +29,9 @@ export const getTestRepositoryProvider = async (tableName: string): Promise<Mode
     CaseModel: table.getModel('Case'),
     CaseUserModel: table.getModel('CaseUser'),
     CaseFileModel: table.getModel('CaseFile'),
+    SessionModel: table.getModel('Session'),
     UserModel: table.getModel('User'),
+    JobModel: table.getModel('Job'),
+    AuditJobModel: table.getModel('AuditJob'),
   };
 };

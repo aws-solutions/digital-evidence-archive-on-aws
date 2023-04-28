@@ -3,15 +3,19 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2, Context } from 'aws-lambda';
+import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
+import { DatasetsProvider } from '../../storage/datasets';
 
-export type LambdaEvent = APIGatewayProxyEventV2;
+export type LambdaEvent = APIGatewayProxyEvent;
 export type LambdaContext = Context;
 export type LambdaRepositoryProvider = ModelRepositoryProvider;
 
 export type DEAGatewayProxyHandler = (
-  event: APIGatewayProxyEventV2,
+  event: APIGatewayProxyEvent,
   context: Context,
   repositoryProvider?: ModelRepositoryProvider,
-) => Promise<APIGatewayProxyStructuredResultV2>;
+  datasetsProvider?: DatasetsProvider,
+  cloudwatchClientProvider?: CloudWatchLogsClient
+) => Promise<APIGatewayProxyResult>;

@@ -10,7 +10,6 @@
 
 ## Useful commands
 
-- `rushx compile` compile
 - `rushx build` compile and build this project
 - `rushx test` perform the jest unit, integration and CDK tests and update the coverage badge on readme
 - `rushx cdk:deploy` compile and deploy this stack to your default AWS account/region
@@ -20,21 +19,22 @@
 
 Parent Infrastructure stack for DEA
 
-### Setting Up Configuration
-
-The backend of this app get certain values from the configuration files. For each stage of your application (e.g. dev, alpha, gamma, prod), create a file named <STAGE>.yaml in the config folder underneath the src folder within the dea-backend directory. NOTE: each stage needs its separate yaml folder. Follow these steps:
-
-1. Copy and paste the contents of example.yaml into the new file
-2. Fill in the lines as specified.
-3. Save the file, and commit to your local branch if you have one
-4. Create a config file in the dea-ui folder, following the instructions in that folder's README under the section "Creating a stage file"
-
 ### Deployment
 
-1. Follow the steps in the previous section, "Setting Up Configuration"
-2. Navigate back to source directory to Update and Build rush if you have not already. Refer to Source directory readme.
-3. Run the following commands in this directory to deploy DEA
+1. Configure environment variables
 
-- `STAGE=<dev, prod, beta>
-- `STAGE=$STAGE rushx cdk bootstrap aws://{aws id}/{region}`
-- `STAGE=$STAGE rushx cdk deploy`
+```sh
+export DOMAIN_PREFIX={unique sub-domain for cognito hosted UI}
+```
+
+2. Run the following commands in this directory to deploy DEA
+
+- `rushx cdk bootstrap aws://{aws id}/{region}`
+- `rushx cdk deploy`
+
+#### Common issues
+
+| Command | Issue | Fix|
+| --- | ----------- | ----------- |
+| `rushx cdk bootstrap aws://{aws id}/{region}` | `Resolution error: ID components may not include unresolved tokens` | `export DOMAIN_PREFIX=<cognito-domain-prefix>` |
+| `rushx cdk deploy` | `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Cannot read properties of undefined (reading '...source/common/config/rush')` | `npm install -g pnpm@7.16.0`|

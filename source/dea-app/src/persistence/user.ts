@@ -5,22 +5,61 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { userFromEntity } from '../models/projections';
-import { DeaUser } from '../models/user';
+import { DeaUser, DeaUserInput } from '../models/user';
 import { isDefined } from './persistence-helpers';
-import { UserModel, UserModelRepositoryProvider } from './schema/entities';
+import { ModelRepositoryProvider, UserModel, UserModelRepositoryProvider, UserType } from './schema/entities';
+
+export const getUsers = async (
+  ulids: string[],
+  repositoryProvider: ModelRepositoryProvider
+): Promise<Map<string, DeaUser>> => {
+  // Build a batch object of get requests for the case in each membership
+  let userEntities: UserType[] = [];
+  let batch = {};
+  let batchSize = 0;
+  for (const userUlid of ulids) {
+    await getUser(userUlid, repositoryProvider, batch);
+    ++batchSize;
+    if (batchSize === 25) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const cases = (await repositoryProvider.table.batchGet(batch, {
+        parse: true,
+        hidden: false,
+        consistent: true,
+      })) as UserType[];
+      userEntities = userEntities.concat(cases);
+      batch = {};
+      batchSize = 0;
+    }
+  }
+
+  if (batchSize > 0) {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const cases = (await repositoryProvider.table.batchGet(batch, {
+      parse: true,
+      hidden: false,
+      consistent: true,
+    })) as UserType[];
+    userEntities = userEntities.concat(cases);
+  }
+
+  return new Map(userEntities.map((entity) => [entity.ulid, userFromEntity(entity)]));
+};
 
 export const getUser = async (
   ulid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: UserModelRepositoryProvider = {
-    UserModel: UserModel,
-  }
+  repositoryProvider: UserModelRepositoryProvider,
+  batch?: object
 ): Promise<DeaUser | undefined> => {
-  const userEntity = await repositoryProvider.UserModel.get({
-    PK: `USER#${ulid}#`,
-    SK: `USER#`,
-  });
+  const userEntity = await repositoryProvider.UserModel.get(
+    {
+      PK: `USER#${ulid}#`,
+      SK: `USER#`,
+    },
+    {
+      batch,
+    }
+  );
 
   if (!userEntity) {
     return undefined;
@@ -50,16 +89,15 @@ export const getUserByTokenId = async (
 
 export const listUsers = async (
   limit = 30,
-  nextToken?: object,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: UserModelRepositoryProvider = { UserModel: UserModel }
+  nextToken: object | undefined,
+  nameBeginsWith = '',
+  repositoryProvider: UserModelRepositoryProvider
 ): Promise<Paged<DeaUser>> => {
   const caseEntities = await repositoryProvider.UserModel.find(
     {
       GSI1PK: 'USER#',
       GSI1SK: {
-        begins_with: 'USER#',
+        begins_with: `USER#${nameBeginsWith.toLowerCase()}`,
       },
     },
     {
@@ -79,12 +117,8 @@ export const listUsers = async (
 };
 
 export const createUser = async (
-  deaUser: DeaUser,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: UserModelRepositoryProvider = {
-    UserModel: UserModel,
-  }
+  deaUser: DeaUserInput,
+  repositoryProvider: UserModelRepositoryProvider
 ): Promise<DeaUser> => {
   const newEntity = await repositoryProvider.UserModel.create({
     ...deaUser,
@@ -97,28 +131,29 @@ export const createUser = async (
 
 export const updateUser = async (
   deaUser: DeaUser,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: UserModelRepositoryProvider = {
-    UserModel: UserModel,
-  }
+  repositoryProvider: UserModelRepositoryProvider
 ): Promise<DeaUser> => {
-  const newEntity = await repositoryProvider.UserModel.update({
-    ...deaUser,
-    lowerFirstName: deaUser.firstName.toLowerCase(),
-    lowerLastName: deaUser.lastName.toLowerCase(),
-  });
+  const newEntity = await repositoryProvider.UserModel.update(
+    {
+      ...deaUser,
+      lowerFirstName: deaUser.firstName.toLowerCase(),
+      lowerLastName: deaUser.lastName.toLowerCase(),
+    },
+    {
+      // Normally, update() will return the updated item automatically,
+      //   however, it the item has unique attributes,
+      //   a transaction is used which does not return the updated item.
+      //   In this case, use {return: 'get'} to retrieve and return the updated item.
+      return: 'get',
+    }
+  );
 
   return userFromEntity(newEntity);
 };
 
 export const deleteUser = async (
   ulid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider: UserModelRepositoryProvider = {
-    UserModel: UserModel,
-  }
+  repositoryProvider: UserModelRepositoryProvider
 ): Promise<void> => {
   await repositoryProvider.UserModel.remove({
     PK: `USER#${ulid}#`,

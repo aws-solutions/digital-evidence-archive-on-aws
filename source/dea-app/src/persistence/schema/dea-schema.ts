@@ -4,8 +4,18 @@
  */
 
 import { CaseAction } from '../../models/case-action';
+import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
-import {allButDisallowed, ulidRegex, filePathSafeCharsRegex} from '../../models/validation/joi-common';
+import { allButDisallowed, ulidRegex, filePathSafeCharsRegex } from '../../models/validation/joi-common';
+
+const DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS = 43200; // 12 hours (e.g. expiry of the refresh token)
+
+export enum AuditType {
+  CASE = 'CASE',
+  CASEFILE = 'CASEFILE',
+  SYSTEM = 'SYSTEM',
+  USER = 'USER',
+}
 
 export const DeaSchema = {
   format: 'onetable:1.1.0',
@@ -26,7 +36,10 @@ export const DeaSchema = {
       lowerCaseName: { type: String, required: true, validate: allButDisallowed },
       status: { type: String, required: true, enum: Object.keys(CaseStatus) },
       description: { type: String, validate: allButDisallowed },
-      objectCount: { type: Number },
+      objectCount: { type: Number, required: true, default: 0 },
+      totalSizeBytes: { type: Number, required: true, default: 0 },
+      filesStatus: { type: String, required: true, enum: Object.keys(CaseFileStatus) },
+      s3BatchJobId: { type: String },
       //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },
@@ -63,19 +76,63 @@ export const DeaSchema = {
       GSI1SK: { type: String, value: 'FILE#${fileName}#', required: true },
 
       // Get specific file or folder by full path
-      GSI2PK: { type: String, value: 'CASE#${caseUlid}#${filePath}${fileName}#', required: true },
+      GSI2PK: {
+        type: String,
+        value: 'CASE#${caseUlid}#${filePath}${fileName}#',
+        required: true,
+        unique: true,
+      },
       GSI2SK: { type: String, value: 'FILE#${isFile}#', required: true },
 
       ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
       fileName: { type: String, required: true, validate: allButDisallowed },
       filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // whole s3 prefix within case dataset. ex: /meal/lunch/
       caseUlid: { type: String, validate: ulidRegex, required: true },
+      createdBy: { type: String, validate: ulidRegex, required: true },
       isFile: { type: Boolean, required: true },
-      contentPath: { type: String },
+      fileSizeBytes: { type: Number, required: true },
+      status: { type: String, required: true, enum: Object.keys(CaseFileStatus) },
+      ttl: { ttl: true, type: Number },
       uploadId: { type: String },
+      versionId: { type: String },
       sha256Hash: { type: String },
-      fileType: { type: String },
-      fileSizeMb: { type: Number },
+      contentType: { type: String },
+      tag: { type: String, validate: allButDisallowed },
+      details: { type: String, validate: allButDisallowed },
+      reason: { type: String, validate: allButDisallowed },
+
+      //managed by onetable - but included for entity generation
+      created: { type: Date },
+      updated: { type: Date },
+    },
+    Session: {
+      PK: { type: String, value: 'USER#${userUlid}#', required: true },
+      SK: { type: String, value: 'SESSION#${tokenId}#', required: true },
+      userUlid: { type: String, validate: ulidRegex, required: true },
+      // the tokenId here is separate from the User tokenId.
+      // the User tokenId is the "sub" field from the id token and is
+      // used to determine whether the user is a first time federated user
+      // this tokenId is the jti of the id token and is a unique identifier
+      tokenId: { type: String, required: true, unique: true },
+      ttl: {
+        ttl: true,
+        type: Number,
+        default: () => {
+          return Math.floor(Date.now() / 1000 + DEFAULT_SESSION_TTL_TIME_ADDITION_SECONDS);
+        },
+        required: true,
+      },
+      isRevoked: { type: Boolean, required: true },
+      created: { type: Date },
+      updated: { type: Date },
+    },
+    Job: {
+      PK: { type: String, value: 'JOB#${jobId}#', required: true },
+      SK: { type: String, value: 'JOB#', required: true },
+      GSI1PK: { type: String, value: 'CASE#' },
+      GSI1SK: { type: String, value: 'CASE#${lowerCaseName}#${ulid}#' },
+      jobId: { type: String, required: true },
+      caseUlid: { type: String, validate: ulidRegex, required: true },
       //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },
@@ -89,7 +146,10 @@ export const DeaSchema = {
       GSI2PK: { type: String, value: 'USER#${tokenId}#' },
       GSI2SK: { type: String, value: 'USER#' },
       ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
-      tokenId: { type: String, required: true },
+      // The following is the sub field from the identity token for the user
+      // is guaranteed to unique per user. This field is used to determine
+      // whether or not user has already been added to the DB
+      tokenId: { type: String, required: true, unique: true },
       firstName: { type: String, required: true, validate: allButDisallowed },
       lastName: { type: String, required: true, validate: allButDisallowed },
       lowerFirstName: { type: String, required: true, validate: allButDisallowed },
@@ -98,9 +158,18 @@ export const DeaSchema = {
       created: { type: Date },
       updated: { type: Date },
     },
+    AuditJob: {
+      PK: { type: String, value: 'AUDIT#${ulid}#', required: true },
+      SK: { type: String, value: '${auditType}#${resourceId}#' },
+      ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
+      queryId: { type: String, required: true },
+      resourceId: { type: String, required: true },
+      auditType: { type: String, required: true, enum: Object.keys(AuditType) },
+    },
   } as const,
   params: {
     isoDates: true,
     timestamps: true,
+    ttl: true,
   },
 };

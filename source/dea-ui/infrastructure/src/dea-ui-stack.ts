@@ -7,6 +7,7 @@ import * as path from 'path';
 import { deaConfig } from '@aws/dea-backend';
 import { StackProps } from 'aws-cdk-lib';
 import {
+  AuthorizationType,
   AwsIntegration,
   ContentHandling,
   MethodOptions,
@@ -16,7 +17,7 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { AnyPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { BlockPublicAccess, Bucket, BucketAccessControl, BucketEncryption } from 'aws-cdk-lib/aws-s3';
+import { BlockPublicAccess, Bucket, BucketEncryption, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 
@@ -32,7 +33,6 @@ export class DeaUiConstruct extends Construct {
     super(scope, 'DeaUiStack');
 
     const bucket = new Bucket(this, 'artifact-bucket', {
-      accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       websiteIndexDocument: 'index.html',
       encryption: BucketEncryption.S3_MANAGED,
@@ -40,6 +40,7 @@ export class DeaUiConstruct extends Construct {
       serverAccessLogsPrefix: props.accessLogPrefix,
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
+      objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
 
     this._addS3TLSSigV4BucketPolicy(bucket);
@@ -56,12 +57,41 @@ export class DeaUiConstruct extends Construct {
 
     bucket.grantReadWrite(executeRole);
 
+    this._routeHandler(props, bucket, executeRole);
+  }
+
+  private _routeHandler(props: IUiStackProps, bucket: Bucket, executeRole: Role) {
     // Integrate API with S3 bucket
+
+    // /ui - homepage
     const uiResource = props.restApi.root.addResource('ui');
     const rootS3Integration = this._getS3Integration('index.html', bucket, executeRole);
-
-    // GET to the root
     uiResource.addMethod('GET', rootS3Integration, this._getMethodOptions());
+
+    // /Login
+    const loginResource = uiResource.addResource('login');
+    const loginS3Integration = this._getS3Integration('login.html', bucket, executeRole);
+    loginResource.addMethod('GET', loginS3Integration, this._getMethodOptions());
+
+    // /case-detail
+    const caseDetailResource = uiResource.addResource('case-detail');
+    const caseDetailS3Integration = this._getS3Integration('case-detail.html', bucket, executeRole);
+    caseDetailResource.addMethod('GET', caseDetailS3Integration, this._getMethodOptions());
+
+    // /create-cases
+    const createCasesResource = uiResource.addResource('create-cases');
+    const createCasesS3Integration = this._getS3Integration('create-cases.html', bucket, executeRole);
+    createCasesResource.addMethod('GET', createCasesS3Integration, this._getMethodOptions());
+
+    // /upload-file
+    const uploadFilesResource = uiResource.addResource('upload-files');
+    const uploadFilesS3Integration = this._getS3Integration('upload-files.html', bucket, executeRole);
+    uploadFilesResource.addMethod('GET', uploadFilesS3Integration, this._getMethodOptions());
+
+    // /auth-test page
+    const authTestResource = uiResource.addResource('auth-test');
+    const authTestIntegration = this._getS3Integration('auth-test.html', bucket, executeRole);
+    authTestResource.addMethod('GET', authTestIntegration, this._getMethodOptions());
 
     // GET to /{proxy+}
     const proxy = uiResource.addProxy({ anyMethod: false });
@@ -86,6 +116,12 @@ export class DeaUiConstruct extends Construct {
             statusCode: '200',
             responseParameters: {
               'method.response.header.Content-Type': 'integration.response.header.Content-Type',
+              'method.response.header.Content-Security-Policy':
+                "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+              'method.response.header.Strict-Transport-Security': "'max-age=31540000; includeSubdomains'",
+              'method.response.header.X-Content-Type-Options': "'nosniff'",
+              'method.response.header.X-Frame-Options': "'DENY'",
+              'method.response.header.X-XSS-Protection': "'1; mode=block'",
             },
           },
         ],
@@ -111,9 +147,15 @@ export class DeaUiConstruct extends Construct {
           responseParameters: {
             'method.response.header.Content-Length': true,
             'method.response.header.Content-Type': true,
+            'method.response.header.Content-Security-Policy': true,
+            'method.response.header.Strict-Transport-Security': true,
+            'method.response.header.X-Content-Type-Options': true,
+            'method.response.header.X-Frame-Options': true,
+            'method.response.header.X-XSS-Protection': true,
           },
         },
       ],
+      authorizationType: AuthorizationType.NONE,
     };
   }
 

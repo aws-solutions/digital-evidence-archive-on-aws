@@ -7,13 +7,12 @@ import { fail } from 'assert';
 import { getMyCases } from '../../../app/resources/get-my-cases';
 import { DeaCase } from '../../../models/case';
 import { CaseAction } from '../../../models/case-action';
-import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
 import { createCase } from '../../../persistence/case';
 import { createCaseUser } from '../../../persistence/case-user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -39,10 +38,6 @@ describe('getMyCases', () => {
       )) ?? fail();
   });
 
-  afterEach(async () => {
-    delete dummyEvent.headers['userUlid'];
-  });
-
   afterAll(async () => {
     await repositoryProvider.table.deleteTable('DeleteTableForever');
   });
@@ -54,7 +49,6 @@ describe('getMyCases', () => {
       (await createCase(
         {
           name: 'getMyCases-1',
-          status: CaseStatus.ACTIVE,
         },
         caseOwner,
         repositoryProvider
@@ -64,7 +58,6 @@ describe('getMyCases', () => {
       (await createCase(
         {
           name: 'getMyCases-2',
-          status: CaseStatus.ACTIVE,
         },
         caseOwner,
         repositoryProvider
@@ -74,7 +67,6 @@ describe('getMyCases', () => {
       (await createCase(
         {
           name: 'getMyCases-3',
-          status: CaseStatus.ACTIVE,
         },
         caseOwner,
         repositoryProvider
@@ -118,15 +110,11 @@ describe('getMyCases', () => {
 
     // WHEN requesting the user's cases
     // test sut
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        queryStringParameters: {
-          limit: '20',
-        },
-      }
-    );
+    const event = getDummyEvent({
+      queryStringParameters: {
+        limit: '20',
+      },
+    });
     // simulate runLambdaPreChecks by adding the userUlid to the event
     // the integration between runLambdaPrechecks and this lambda handler
     // will be tested in the e2e tests
@@ -145,7 +133,7 @@ describe('getMyCases', () => {
     expect(cases.find((deacase) => deacase.name === case3.name)).toBeUndefined();
   });
 
-  it('should can fetch cases across pages', async () => {
+  it('should fetch cases across pages', async () => {
     // GIVEN a user with many memberships
     //create cases
     // create user
@@ -164,7 +152,6 @@ describe('getMyCases', () => {
         (await createCase(
           {
             name: `getMyCases-a${i}`,
-            status: CaseStatus.ACTIVE,
           },
           caseOwner,
           repositoryProvider
@@ -186,16 +173,11 @@ describe('getMyCases', () => {
 
     // WHEN requesting the first page user's cases
     // test sut
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        queryStringParameters: {
-          userUlid: user.ulid,
-          limit: '1',
-        },
-      }
-    );
+    const event = getDummyEvent({
+      queryStringParameters: {
+        limit: '1',
+      },
+    });
     // simulate runLambdaPreChecks by adding the userUlid to the event
     // the integration between runLambdaPrechecks and this lambda handler
     // will be tested in the e2e tests
@@ -212,16 +194,13 @@ describe('getMyCases', () => {
     expect(casesPage.cases.length).toEqual(1);
     expect(casesPage.next).toBeTruthy();
 
-    const event2 = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        queryStringParameters: {
-          userUlid: user.ulid,
-          next: casesPage.next,
-        },
-      }
-    );
+    const event2 = getDummyEvent({
+      queryStringParameters: {
+        next: casesPage.next,
+      },
+    });
+    event2.headers['userUlid'] = user.ulid;
+
     const response2 = await getMyCases(event2, dummyContext, repositoryProvider);
     if (!response2.body) {
       fail();
@@ -242,7 +221,6 @@ describe('getMyCases', () => {
       (await createCase(
         {
           name: 'getMyCases-1c',
-          status: CaseStatus.ACTIVE,
         },
         caseOwner,
         repositoryProvider
@@ -274,15 +252,11 @@ describe('getMyCases', () => {
 
     // WHEN requesting the user's cases
     // test sut
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        queryStringParameters: {
-          limit: '20',
-        },
-      }
-    );
+    const event = getDummyEvent({
+      queryStringParameters: {
+        limit: '20',
+      },
+    });
 
     await expect(getMyCases(event, dummyContext, repositoryProvider)).rejects.toThrowError(
       'userUlid was not present in the event header'

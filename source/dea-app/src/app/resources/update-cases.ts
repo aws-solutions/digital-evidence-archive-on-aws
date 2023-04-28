@@ -3,15 +3,15 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import Joi from 'joi';
-import { getRequiredPathParam } from '../../lambda-http-helpers';
-import { logger } from '../../logger';
+import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
 import { DeaCase } from '../../models/case';
 import { updateCaseSchema } from '../../models/validation/case';
+import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 
 export const updateCases: DEAGatewayProxyHandler = async (
   event,
@@ -20,26 +20,15 @@ export const updateCases: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
+  const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
 
-  const caseId = getRequiredPathParam(event, 'caseId');
-
-  if (!event.body) {
-    throw new ValidationError('Update cases payload missing.');
-  }
-
-  const deaCase: DeaCase = JSON.parse(event.body);
-
-  Joi.assert(deaCase, updateCaseSchema);
+  const deaCase: DeaCase = getRequiredPayload(event, 'Update cases', updateCaseSchema);
 
   if (caseId !== deaCase.ulid) {
     throw new ValidationError('Requested Case Ulid does not match resource');
   }
 
   const caseUpdateResult = await CaseService.updateCases(deaCase, repositoryProvider);
-  return {
-    statusCode: 200,
-    body: JSON.stringify(caseUpdateResult),
-  };
+
+  return responseOk(event, caseUpdateResult);
 };

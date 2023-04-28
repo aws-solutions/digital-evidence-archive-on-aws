@@ -6,9 +6,9 @@
 import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
+import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
-import { CaseStatus } from '../../models/case-status';
 import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
@@ -26,13 +26,23 @@ describe('get my cases api', () => {
   const user2FirstName = `Other${randomSuffix()}`;
   const deaApiUrl = testEnv.apiUrlOutput;
 
+  let creds: Credentials;
+  let idToken: Oauth2Token;
+  let creds2: Credentials;
+  let idToken2: Oauth2Token;
+
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'GetMyCasesTestGroup', user1FirstName, 'TestUser');
+    const credentials = await cognitoHelper.getCredentialsForUser(testUser);
+    creds = credentials[0];
+    idToken = credentials[1];
+    await cognitoHelper.createUser(otherTestUser, 'GetMyCasesTestGroup', user2FirstName, 'TestUser');
+    const credentials2 = await cognitoHelper.getCredentialsForUser(otherTestUser);
+    creds2 = credentials2[0];
+    idToken2 = credentials2[1];
   });
 
   afterAll(async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
-    const [creds2, idToken2] = await cognitoHelper.getCredentialsForUser(otherTestUser);
     // clean up any cases leftover during a failure
     await deleteCases(user1CaseIds, deaApiUrl, idToken, creds);
     await deleteCases(user2CaseIds, deaApiUrl, idToken2, creds2);
@@ -44,8 +54,6 @@ describe('get my cases api', () => {
     // then a case owned by another user who invites our user to it
     // Check that all 3 are returned for GetMyCases
 
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
-
     // Create 2 Cases owned by the user
     const caseNames = ['getMyCases-OwnedCase1', 'getMyCases-OwnedCase2'];
     const createdCases: DeaCase[] = [];
@@ -55,7 +63,6 @@ describe('get my cases api', () => {
           deaApiUrl,
           {
             name: caseName,
-            status: CaseStatus.ACTIVE,
             description: 'some case description',
           },
           idToken,
@@ -66,15 +73,11 @@ describe('get my cases api', () => {
     createdCases.forEach((createdCase) => user1CaseIds.push(createdCase.ulid ?? fail()));
 
     // Create cases owned by another user, then invite the test user to it
-    await cognitoHelper.createUser(otherTestUser, 'GetMyCasesTestGroup', user2FirstName, 'TestUser');
-    const [creds2, idToken2] = await cognitoHelper.getCredentialsForUser(otherTestUser);
-
     const invitedCaseName = 'getMyCases-InvitedCase';
     const invitedCase: DeaCase = await createCaseSuccess(
       deaApiUrl,
       {
         name: invitedCaseName,
-        status: CaseStatus.ACTIVE,
         description: 'case created by other user, which user will be invited to',
       },
       idToken2,
@@ -84,7 +87,12 @@ describe('get my cases api', () => {
     user2CaseIds.push(invitedCaseId);
 
     // Get the user ulid
-    const userResponse = await callDeaAPIWithCreds(`${deaApiUrl}users`, 'GET', idToken, creds);
+    const userResponse = await callDeaAPIWithCreds(
+      `${deaApiUrl}users?nameBeginsWith=${user1FirstName}`,
+      'GET',
+      idToken,
+      creds
+    );
 
     expect(userResponse.status).toEqual(200);
     const fetchedUsers: DeaUser[] = await userResponse.data.users;
@@ -150,7 +158,7 @@ describe('get my cases api', () => {
 const deleteCases = async (
   caseIdsToDelete: string[],
   deaApiUrl: string,
-  idToken: string,
+  idToken: Oauth2Token,
   creds: Credentials
 ) => {
   for (const caseId of caseIdsToDelete) {

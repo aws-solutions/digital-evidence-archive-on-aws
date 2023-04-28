@@ -4,6 +4,7 @@
  */
 
 import { Box } from '@cloudscape-design/components';
+import { commonLabels } from '../../common/labels';
 
 /**
  * Displays the empty state of any table
@@ -17,12 +18,12 @@ import { Box } from '@cloudscape-design/components';
  * ```
  * @returns empty table information and call to action
  */
-export function TableEmptyDisplay(itemType: string): JSX.Element {
+export function TableEmptyDisplay(noItemType: string, noItemTypeDisplay: string): JSX.Element {
   return (
     <Box textAlign="center" color="inherit">
-      <b>No {itemType}s</b>
+      <b>{noItemType}</b>
       <Box padding={{ bottom: 's' }} variant="p" color="inherit">
-        No {itemType}s to display.
+        {noItemTypeDisplay}
       </Box>
     </Box>
   );
@@ -38,12 +39,12 @@ export function TableEmptyDisplay(itemType: string): JSX.Element {
  * ```
  * @returns no match information
  */
-export function TableNoMatchDisplay(itemType: string): JSX.Element {
+export function TableNoMatchDisplay(noItemTypeMatch: string): JSX.Element {
   return (
     <Box textAlign="center" color="inherit">
-      <b>No matches</b>
+      <b>{commonLabels.noMatchesLabel}</b>
       <Box padding={{ bottom: 's' }} variant="p" color="inherit">
-        No {itemType}s match filter.
+        {noItemTypeMatch}
       </Box>
     </Box>
   );

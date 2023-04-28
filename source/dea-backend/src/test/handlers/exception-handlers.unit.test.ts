@@ -3,28 +3,72 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { NotFoundError } from '@aws/dea-app/lib/app/exceptions/not-found-exception';
-import { ValidationError } from '@aws/dea-app/lib/app/exceptions/validation-exception';
-import { APIGatewayProxyEventV2, Context } from 'aws-lambda';
+import {
+  dummyContext,
+  getDummyEvent,
+  ForbiddenError,
+  getTestAuditService,
+  NotFoundError,
+  ReauthenticationError,
+  ValidationError,
+} from '@aws/dea-app';
+import { TestAuditService } from '@aws/dea-app/lib/test/services/test-audit-service-provider';
+import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import Joi from 'joi';
-import { mock } from 'ts-mockito';
-import { createDeaHandler } from '../../handlers/create-dea-handler';
+import { createDeaHandler, NO_ACL } from '../../handlers/create-dea-handler';
 
 describe('exception handlers', () => {
+  const OLD_ENV = process.env;
+  let testAuditService: TestAuditService;
+  let dummyEvent: APIGatewayProxyEvent;
+
+  beforeAll(() => {
+    testAuditService = getTestAuditService();
+    dummyEvent = getDummyEvent();
+  });
+
+  beforeEach(() => {
+    jest.resetModules();
+    process.env = { ...OLD_ENV };
+    process.env.AUDIT_LOG_GROUP_NAME = 'TESTGROUP';
+  });
+
+  afterAll(() => {
+    process.env = OLD_ENV;
+  });
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const preExecutionChecks = async (event: APIGatewayProxyEventV2, context: Context) => {
+  const preExecutionChecks = async (event: APIGatewayProxyEvent, context: Context) => {
     return;
   };
 
+  it('should handle Forbidden errors', async () => {
+    const sut = createDeaHandler(
+      async () => {
+        throw new ForbiddenError('you shall not pass');
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    const actual = await sut(dummyEvent, dummyContext);
+    expect(actual).toEqual({
+      statusCode: 403,
+      body: 'Forbidden',
+    });
+  });
+
   it('should handle DEAValidation errors', async () => {
-    const sut = createDeaHandler(async () => {
-      throw new ValidationError('custom validation failed');
-    }, preExecutionChecks);
+    const sut = createDeaHandler(
+      async () => {
+        throw new ValidationError('custom validation failed');
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
 
     expect(actual).toEqual({
       statusCode: 400,
@@ -33,29 +77,52 @@ describe('exception handlers', () => {
   });
 
   it('should handle NotFound errors', async () => {
-    const sut = createDeaHandler(async () => {
-      throw new NotFoundError('something was not found');
-    }, preExecutionChecks);
+    const sut = createDeaHandler(
+      async () => {
+        throw new NotFoundError('something was not found');
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
     expect(actual).toEqual({
       statusCode: 404,
       body: 'something was not found',
     });
   });
 
-  it('should handle non-joi errors in the joi handler', async () => {
-    const sut = createDeaHandler(async () => {
-      const err = new ValidationError('no joi here');
-      err.name = 'ValidationError';
-      throw err;
-    }, preExecutionChecks);
+  it('should handle Reauthentication errors', async () => {
+    const sut = createDeaHandler(
+      async () => {
+        throw new ReauthenticationError('Go back to start and do not collect 200 dollars.');
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
+    expect(actual).toEqual({
+      statusCode: 412,
+      body: 'Reauthenticate',
+    });
+  });
+
+  it('should handle non-joi errors in the joi handler', async () => {
+    const sut = createDeaHandler(
+      async () => {
+        const err = new ValidationError('no joi here');
+        err.name = 'ValidationError';
+        throw err;
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    const actual = await sut(dummyEvent, dummyContext);
     expect(actual).toEqual({
       statusCode: 400,
       body: 'no joi here',
@@ -63,13 +130,16 @@ describe('exception handlers', () => {
   });
 
   it('should handle non custom Errors', async () => {
-    const sut = createDeaHandler(async () => {
-      throw new Error('some unexpected error');
-    }, preExecutionChecks);
+    const sut = createDeaHandler(
+      async () => {
+        throw new Error('some unexpected error');
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
     expect(actual).toEqual({
       statusCode: 500,
       body: 'An error occurred',
@@ -81,14 +151,17 @@ describe('exception handlers', () => {
       name: Joi.string().min(10).required(),
       addy: Joi.string().min(10).required(),
     });
-    const sut = createDeaHandler(async () => {
-      Joi.assert({ name: 'bogus' }, schemaObj);
-      return { statusCode: 200, body: '' };
-    }, preExecutionChecks);
+    const sut = createDeaHandler(
+      async () => {
+        Joi.assert({ name: 'bogus' }, schemaObj);
+        return { statusCode: 200, body: '' };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
 
     expect(actual).toEqual({
       statusCode: 400,
@@ -97,13 +170,16 @@ describe('exception handlers', () => {
   });
 
   it('should catch any thrown expression', async () => {
-    const sut = createDeaHandler(async () => {
-      throw 'ItInTheOcean';
-    }, preExecutionChecks);
+    const sut = createDeaHandler(
+      async () => {
+        throw 'ItInTheOcean';
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
 
-    const event: APIGatewayProxyEventV2 = mock();
-    const context: Context = mock();
-    const actual = await sut(event, context);
+    const actual = await sut(dummyEvent, dummyContext);
     expect(actual).toEqual({
       statusCode: 500,
       body: 'Server Error',

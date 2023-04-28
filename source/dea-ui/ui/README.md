@@ -8,39 +8,30 @@ This is a prototype app and you should expect to modify the source code to refle
 
 | Statements                                                                                   | Branches                                                                                 | Functions                                                                                  | Lines                                                                              |
 | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| ![Statements](https://img.shields.io/badge/statements-92.26%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-81.08%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-85.82%25-yellow.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-92.8%25-brightgreen.svg?style=flat) |
-
-## Creating a stage file
-
-First, you will need to create a stage file. An example stage file (demo.yaml) can be found under dea-ui/ui/src/config. Create a stage file for your deployment with the stage name of your choice. Supply the stage name and region short name of your choice along with the aws region where you will deploy the UI (this will need to the same region where the DEA backend is deployed).
-
-## Deploying the UI
-
-One you have created your stage file run
-
-```sh
-STAGE=<stagename> rushx deploy-ui
-```
+| ![Statements](https://img.shields.io/badge/statements-91.57%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-85.77%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-90.31%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-91.81%25-brightgreen.svg?style=flat) |
 
 ## Deploying code changes
 
-To deploy code changes without running the entire deployment script navigate to the infrastructure directory and run the deploy command directly:
-
-```sh
-cd infrastructure
-STAGE=<stagename> rushx cdk deploy
-```
+Navigate to DEA root directory and follow instructions in [README](../../../README.md)
 
 ## Running locally
 
-First, run the development server:
+First, run the https proxy so your cookies will work:
+```sh
+rushx dev:https
+```
+In a separate tab or process, run the development server:
 
 ```sh
-yarn dev
+rushx dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [https://localhost:3001](https://localhost:3001) with your browser to see the result. You'll need to navigate further to /{stage}/ui, e.g. [https://localhost:3001/chewbacca/ui](https://localhost:3001/chewbacca/ui)
 
+The UI running locally will be configured to point to your deployed backend via the DEA_API_URL environment variable, which will be copied into a generated [.env.local](.env.local) for use by Nextjs.
+
+You can generate cognito tests users by following the directions here:
+([Test User Generation for API requests](../../README.md)) you will be redirected to the UI which will now have credentials.
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
@@ -53,3 +44,9 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 ## Design system
 
 For the design system we are using Cloudscape. More information can be found [here](https://cloudscape.design/).
+
+#### Common issues
+
+If ports 3000 or 3001 are already in use. Use the `npx kill-port` command to clear the port before running the https proxy or development server
+
+example: `npx kill-port 3000`

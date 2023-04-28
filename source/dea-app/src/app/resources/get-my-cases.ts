@@ -3,11 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getUserUlid } from '../../lambda-http-helpers';
-import { logger } from '../../logger';
+import { getPaginationParameters, getUserUlid } from '../../lambda-http-helpers';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { listCasesForUser } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 import { getNextToken } from './get-next-token';
 
 export const getMyCases: DEAGatewayProxyHandler = async (
@@ -17,32 +17,19 @@ export const getMyCases: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
-  let limit: number | undefined;
-  let next: string | undefined;
-  if (event.queryStringParameters) {
-    if (event.queryStringParameters['limit']) {
-      limit = parseInt(event.queryStringParameters['limit']);
-    }
-    next = event.queryStringParameters['next'];
-  }
-
+  const paginationParams = getPaginationParameters(event);
   const userUlid = getUserUlid(event);
 
-  let nextToken: object | undefined = undefined;
-  if (next) {
-    nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
-  }
+  const pageOfCases = await listCasesForUser(
+    userUlid,
+    paginationParams.limit,
+    paginationParams.nextToken,
+    repositoryProvider
+  );
 
-  const pageOfCases = await listCasesForUser(userUlid, limit, nextToken, repositoryProvider);
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      cases: pageOfCases,
-      total: pageOfCases.count,
-      next: getNextToken(pageOfCases.next),
-    }),
-  };
+  return responseOk(event, {
+    cases: pageOfCases,
+    total: pageOfCases.count,
+    next: getNextToken(pageOfCases.next),
+  });
 };

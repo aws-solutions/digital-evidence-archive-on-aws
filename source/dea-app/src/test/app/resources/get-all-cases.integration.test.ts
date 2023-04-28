@@ -7,10 +7,9 @@ import { fail } from 'assert';
 import { getAllCases } from '../../../app/resources/get-all-cases';
 import { createUser } from '../../../app/services/user-service';
 import { DeaCase } from '../../../models/case';
-import { CaseStatus } from '../../../models/case-status';
 import { createCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -52,7 +51,6 @@ describe('get all cases resource', () => {
       (await createCase(
         {
           name: 'getMyCases-1a',
-          status: CaseStatus.ACTIVE,
         },
         user1,
         repositoryProvider
@@ -62,7 +60,6 @@ describe('get all cases resource', () => {
       (await createCase(
         {
           name: 'getMyCases-2a',
-          status: CaseStatus.ACTIVE,
         },
         user2,
         repositoryProvider
@@ -72,21 +69,16 @@ describe('get all cases resource', () => {
       (await createCase(
         {
           name: 'getMyCases-3a',
-          status: CaseStatus.ACTIVE,
         },
         user1,
         repositoryProvider
       )) ?? fail();
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        queryStringParameters: {
-          limit: '1',
-        },
-      }
-    );
+    const event = getDummyEvent({
+      queryStringParameters: {
+        limit: '1',
+      },
+    });
     const response = await getAllCases(event, dummyContext, repositoryProvider);
 
     if (!response.body) {
@@ -97,15 +89,11 @@ describe('get all cases resource', () => {
     expect(casesPage.cases.length).toEqual(1);
     expect(casesPage.next).toBeTruthy();
 
-    const event2 = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        queryStringParameters: {
-          next: casesPage.next,
-        },
-      }
-    );
+    const event2 = getDummyEvent({
+      queryStringParameters: {
+        next: casesPage.next,
+      },
+    });
     const response2 = await getAllCases(event2, dummyContext, repositoryProvider);
     if (!response2.body) {
       fail();

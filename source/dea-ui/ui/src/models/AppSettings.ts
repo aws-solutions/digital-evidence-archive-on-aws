@@ -25,7 +25,6 @@ export const defaultAppSettings: IAppSettings = {
   favicon: 'favicon.svg',
   name: 'Digital Evidence Archive on AWS',
   slogan: 'Better ingredients better evidence',
-  description:
-    'The Digital Evidence Archive is the perfect place to store all your evidence and pizza toppings.',
-  stage: process.env.STAGE ?? 'chewbacca',
+  description: 'Digital Evidence Archive is the perfect place to store all your evidence.',
+  stage: process.env.NEXT_PUBLIC_STAGE ?? 'chewbacca',
 };

@@ -19,7 +19,7 @@ const createUserAndOutputCreds = async (
   console.log(`----------- IAM Credentials for ${userName} -----------`);
   console.log({
     ...creds,
-    idToken,
+    ...idToken,
   });
   console.log(`----------- IAM Credentials end -----------`);
 };

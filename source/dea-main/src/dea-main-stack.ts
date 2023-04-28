@@ -6,10 +6,12 @@
 /* eslint-disable no-new */
 import {
   createCfnOutput,
+  DeaAuditTrail,
   DeaAuthConstruct,
   DeaBackendConstruct,
   deaConfig,
   DeaRestApiConstruct,
+  DeaEventHandlers,
 } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
@@ -45,19 +47,55 @@ export class DeaMainStack extends cdk.Stack {
 
     const region = this.region;
     const accountId = this.account;
+
+    const auditTrail = new DeaAuditTrail(this, 'DeaAudit', {
+      kmsKey,
+      deaDatasetsBucket: backendConstruct.datasetsBucket,
+      deaTableArn: backendConstruct.deaTable.tableArn,
+    });
+
+    const deaEventHandlers = new DeaEventHandlers(this, 'DeaEventHandlers', {
+      deaTableArn: backendConstruct.deaTable.tableArn,
+      deaDatasetsBucketArn: backendConstruct.datasetsBucket.bucketArn,
+      kmsKey,
+      lambdaEnv: {
+        AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
+        TABLE_NAME: backendConstruct.deaTable.tableName,
+        DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
+        AWS_USE_FIPS_ENDPOINT: 'true',
+      },
+    });
+
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
       deaTableArn: backendConstruct.deaTable.tableArn,
       deaTableName: backendConstruct.deaTable.tableName,
+      deaDatasetsBucketArn: backendConstruct.datasetsBucket.bucketArn,
+      deaDatasetsBucketName: backendConstruct.datasetsBucket.bucketName,
+      deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
+      deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
+      s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
       kmsKey,
       region,
       accountId,
+      lambdaEnv: {
+        AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
+        TABLE_NAME: backendConstruct.deaTable.tableName,
+        DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
+        DELETE_CASE_FILE_LAMBDA_ARN: deaEventHandlers.s3BatchDeleteCaseFileLambda.functionArn,
+        DELETE_CASE_FILE_ROLE: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
+        TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
+        AWS_USE_FIPS_ENDPOINT: 'true',
+      },
     });
 
-    new DeaAuthConstruct(this, 'DeaAuth', { apiEndpointArns: deaApi.apiEndpointArns });
+    new DeaAuthConstruct(this, 'DeaAuth', {
+      restApi: deaApi.deaRestApi,
+      apiEndpointArns: deaApi.apiEndpointArns,
+    });
 
     kmsKey.addToResourcePolicy(
       new PolicyStatement({
-        actions: ['kms:Decrypt', 'kms:Encrypt'],
+        actions: ['kms:Decrypt', 'kms:Encrypt', 'kms:GenerateDataKey'],
         principals: [new ServicePrincipal(`lambda.${this.region}.amazonaws.com`)],
         resources: [deaApi.lambdaBaseRole.roleArn],
         sid: 'main-key-share-statement',
@@ -105,13 +143,6 @@ export class DeaMainStack extends cdk.Stack {
       statements: [
         new PolicyStatement({
           effect: Effect.ALLOW,
-          actions: ['kms:*'],
-          principals: [new AccountPrincipal(this.account)],
-          resources: ['*'],
-          sid: 'main-key-share-statement',
-        }),
-        new PolicyStatement({
-          effect: Effect.ALLOW,
           actions: [
             'kms:Encrypt*',
             'kms:Decrypt*',
@@ -120,9 +151,16 @@ export class DeaMainStack extends cdk.Stack {
             'kms:Describe*',
           ],
           principals: [new ServicePrincipal(`logs.${this.region}.amazonaws.com`)],
-          // resources: [deaApi.accessLogGroup.logGroupArn],
           resources: ['*'],
           sid: 'main-key-share-statement',
+        }),
+        // prevent MalformedPolicyDocumentException - kms management can be granted
+        new PolicyStatement({
+          sid: 'Allow management',
+          effect: Effect.ALLOW,
+          principals: [new AccountPrincipal(this.account)],
+          actions: deaConfig.kmsAccountActions(),
+          resources: ['*'],
         }),
       ],
     });

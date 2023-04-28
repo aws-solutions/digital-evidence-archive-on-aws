@@ -15,4 +15,5 @@ export const testEnv = {
   identityPoolId: process.env.IDENTITY_POOL_ID ?? throwUnset('IDENTITY_POOL_ID'),
   userPoolId: process.env.USER_POOL_ID ?? throwUnset('USER_POOL_ID'),
   clientId: process.env.USER_POOL_CLIENT_ID ?? throwUnset('USER_POOL_CLIENT_ID'),
+  datasetsBucketName: process.env.DATASETS_BUCKET_NAME ?? throwUnset('DATASETS_BUCKET_NAME'),
 };

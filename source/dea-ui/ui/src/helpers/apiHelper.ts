@@ -2,83 +2,86 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+import { aws4Interceptor, Credentials } from 'aws4-axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
-import axios, { AxiosRequestConfig } from 'axios';
+let urlBase = process.env.NEXT_PUBLIC_DEA_API_URL;
+if (typeof window !== 'undefined' && !urlBase) {
+  urlBase = `https://${window.location.hostname}/${process.env.NEXT_PUBLIC_STAGE}/`;
+}
 
-// TODO: Use generics instead of using any for methods here
+const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
+  const accessKeyId = sessionStorage.getItem('accessKeyId');
+  const secretAccessKey = sessionStorage.getItem('secretAccessKey');
+  const sessionToken = sessionStorage.getItem('sessionToken');
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fetchData = async (options: AxiosRequestConfig): Promise<any> => {
-  //TODO add auth token and error handling
   options.headers = {
     ...options.headers,
-    authorization: 'allow',
   };
+  const client = axios.create({ withCredentials: true });
 
-  const { data } = await axios(options).catch(function (error: Error) {
+  if (accessKeyId && secretAccessKey && sessionToken) {
+    // create credentials
+    const credentials: Credentials = {
+      accessKeyId,
+      secretAccessKey,
+      sessionToken,
+    };
+    const interceptor = aws4Interceptor(
+      {
+        service: 'execute-api',
+      },
+      credentials
+    );
+
+    client.interceptors.request.use(interceptor);
+  }
+  const { data } = await client.request(options).catch((error: Error) => {
     console.log(error);
-    //TODO: call logger to capture exception
+    if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST') {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data);
+    }
+    // TODO: call logger to capture exception
     throw new Error('there was an error while trying to retrieve data');
   });
   return data;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpApiGet = async (urlPath: string, params: any): Promise<any> => {
+const httpApiGet = async <T>(urlPath: string, params: unknown): Promise<T> => {
   const options = {
     method: 'GET',
-    url: `${urlPath}`,
+    url: `${urlBase}${urlPath}`,
     data: params,
   };
   return await fetchData(options);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpApiPost = async (urlPath: string, params: any): Promise<any> => {
+const httpApiPost = async <T>(urlPath: string, params: unknown): Promise<T> => {
   const options = {
     method: 'POST',
-    url: `${urlPath}`,
+    url: `${urlBase}${urlPath}`,
     data: params,
   };
   return await fetchData(options);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpApiPut = async (urlPath: string, params: any): Promise<any> => {
+const httpApiPut = async <T>(urlPath: string, params: unknown): Promise<T> => {
   const options = {
     method: 'PUT',
-    url: `${urlPath}`,
+    url: `${urlBase}${urlPath}`,
     data: params,
   };
   return await fetchData(options);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const httpApiDelete = async (urlPath: string, params: any): Promise<any> => {
+const httpApiDelete = async <T>(urlPath: string, params: unknown): Promise<T> => {
   const options = {
     method: 'DELETE',
-    url: `${urlPath}`,
+    url: `${urlBase}${urlPath}`,
     data: params,
   };
   return await fetchData(options);
 };
-
-// Response interceptor for API calls
-axios.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  // eslint-disable-next-line @typescript-eslint/typedef
-  async function (error) {
-    const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const response = await httpApiGet('refresh', {});
-      localStorage.setItem('idToken', response.idToken);
-      return axios(originalRequest);
-    }
-    return Promise.reject(error);
-  }
-);
 
 export { httpApiGet, httpApiPost, httpApiPut, httpApiDelete };

@@ -3,39 +3,51 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import Joi from 'joi';
-import { logger } from '../../logger';
-import { DeaCaseFile } from '../../models/case-file';
+import { getRequiredPayload, getUserUlid } from '../../lambda-http-helpers';
+import { CompleteCaseFileUploadDTO } from '../../models/case-file';
 import { completeCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { defaultProvider } from '../../persistence/schema/entities';
-import { ValidationError } from '../exceptions/validation-exception';
+import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
 import * as CaseFileService from '../services/case-file-service';
+import { validateCompleteCaseFileRequirements } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 
 export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
-    event,
-    context,
-    /* the default case is handled in e2e tests */
-    /* istanbul ignore next */
-    repositoryProvider = defaultProvider
+  event,
+  context,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  repositoryProvider = defaultProvider,
+  /* istanbul ignore next */
+  datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {
-    logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-    logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
+  const requestCaseFile: CompleteCaseFileUploadDTO = getRequiredPayload(
+    event,
+    'Complete case file upload',
+    completeCaseFileUploadRequestSchema
+  );
 
-    if (!event.body) {
-        throw new ValidationError('Complete case file upload payload missing.');
+  const userUlid = getUserUlid(event);
+  const existingFile = await validateCompleteCaseFileRequirements(
+    requestCaseFile,
+    userUlid,
+    repositoryProvider
+  );
+  const patchedFile = Object.assign(
+    {},
+    {
+      ...existingFile,
+      uploadId: requestCaseFile.uploadId,
+      sha256Hash: requestCaseFile.sha256Hash,
     }
+  );
 
-    const deaCaseFile: DeaCaseFile = JSON.parse(event.body);
-    Joi.assert(deaCaseFile, completeCaseFileUploadRequestSchema);
+  const completeUploadResponse = await CaseFileService.completeCaseFileUpload(
+    patchedFile,
+    repositoryProvider,
+    datasetsProvider
+  );
 
-    const updateBody = await CaseFileService.completeCaseFileUpload(deaCaseFile, repositoryProvider);
-
-    return {
-        statusCode: 200,
-        body: JSON.stringify(updateBody),
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-        },
-    };
+  return responseOk(event, completeUploadResponse);
 };

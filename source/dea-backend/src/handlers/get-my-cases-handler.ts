@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getMyCases } from '@aws/dea-app';
-import { createDeaHandler } from './create-dea-handler';
+import { getMyCases } from '@aws/dea-app/lib/app/resources/get-my-cases';
+import { createDeaHandler, NO_ACL } from './create-dea-handler';
 
-export const handler = createDeaHandler(getMyCases);
+export const handler = createDeaHandler(getMyCases, NO_ACL);

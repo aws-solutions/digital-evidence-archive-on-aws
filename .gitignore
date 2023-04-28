@@ -3,6 +3,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.local
+
+# Ignore local pem files
+*.pem
 
 # Runtime data
 *.pid

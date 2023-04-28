@@ -4,41 +4,59 @@
  */
 
 import Joi from 'joi';
-import { joiUlid, fileName, filePath, fileType, sha256Hash, uploadId } from './joi-common';
+import {
+  joiUlid,
+  fileName,
+  filePath,
+  contentType,
+  sha256Hash,
+  s3Identifier,
+  caseFileStatus,
+  safeTag,
+  safeReason,
+  safeDetails,
+  safeFileSize,
+  safeChunkSize,
+} from './joi-common';
 
 export const initiateCaseFileUploadRequestSchema = Joi.object({
-    caseUlid: joiUlid,
-    fileName: fileName,
-    filePath: filePath,
-    fileType: fileType,
-    fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
-});
-
-export const initiateCaseFileUploadResponseSchema = Joi.object({
-    caseUlid: joiUlid,
-    uploadId: uploadId,
-    ulid: joiUlid,
-    fileName: fileName,
-    filePath: filePath,
-    fileType: fileType,
-    fileSizeMb: Joi.number().greater(0).less(5_000_000), // 0-5TB is the range supported by S3
-    preSignedUrls: Joi.array().items(Joi.string().uri()),
+  caseUlid: joiUlid,
+  fileName: fileName,
+  filePath: filePath,
+  contentType: contentType,
+  chunkSizeBytes: safeChunkSize,
+  fileSizeBytes: safeFileSize,
+  tag: safeTag,
+  reason: safeReason,
+  details: safeDetails,
 });
 
 export const completeCaseFileUploadRequestSchema = Joi.object({
-    caseUlid: joiUlid,
-    uploadId: uploadId,
-    ulid: joiUlid,
-    fileName: fileName,
-    filePath: filePath,
-    sha256Hash: sha256Hash
+  caseUlid: joiUlid,
+  ulid: joiUlid,
+  sha256Hash: sha256Hash,
+  uploadId: s3Identifier,
 });
 
-export const completeCaseFileUploadResponseSchema = Joi.object({
-    caseUlid: joiUlid,
-    uploadId: uploadId,
-    ulid: joiUlid,
-    fileName: fileName,
-    filePath: filePath,
-    sha256Hash: sha256Hash
+export const caseFileResponseSchema = Joi.object({
+  caseUlid: joiUlid,
+  uploadId: s3Identifier,
+  versionId: s3Identifier,
+  ulid: joiUlid,
+  fileName: fileName,
+  filePath: filePath,
+  contentType: contentType,
+  createdBy: joiUlid,
+  isFile: Joi.boolean(),
+  chunkSizeBytes: safeChunkSize,
+  fileSizeBytes: safeFileSize,
+  ttl: Joi.number().greater(0),
+  presignedUrls: Joi.array().items(Joi.string().uri()),
+  sha256Hash: sha256Hash,
+  status: caseFileStatus,
+  tag: safeTag,
+  reason: safeReason,
+  details: safeDetails,
+  created: Joi.date(),
+  updated: Joi.date(),
 });

@@ -8,7 +8,15 @@ import { Aws, StackProps, Duration } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { BlockPublicAccess, Bucket, BucketEncryption, CfnBucket, LifecycleRule } from 'aws-cdk-lib/aws-s3';
+import {
+  BlockPublicAccess,
+  Bucket,
+  BucketEncryption,
+  CfnBucket,
+  LifecycleRule,
+  HttpMethods,
+  ObjectOwnership,
+} from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
@@ -29,11 +37,11 @@ export class DeaBackendConstruct extends Construct {
     this.deaTable = this._createDeaTable(props.kmsKey);
     const datasetsPrefix = 'dea-datasets-access-log';
     const prefixes = props.accessLogsPrefixes.concat([datasetsPrefix]);
-    this.accessLogsBucket = this._createAccessLogsBucket(`${scope.node.id}-DeaS3AccessLogs`, prefixes);
+    this.accessLogsBucket = this._createAccessLogsBucket(`DeaS3AccessLogs`, prefixes);
     this.datasetsBucket = this._createDatasetsBucket(
       props.kmsKey,
       this.accessLogsBucket,
-      `${scope.node.id}-DeaS3Datasets`,
+      `DeaS3Datasets`,
       datasetsPrefix
     );
   }
@@ -47,6 +55,7 @@ export class DeaBackendConstruct extends Construct {
       encryption: TableEncryption.CUSTOMER_MANAGED,
       encryptionKey: key,
       pointInTimeRecovery: true,
+      timeToLiveAttribute: 'ttl',
     });
 
     deaTable.addGlobalSecondaryIndex({
@@ -77,7 +86,8 @@ export class DeaBackendConstruct extends Construct {
       publicReadAccess: false,
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
-      versioned: false, // https://github.com/awslabs/aws-solutions-constructs/issues/44
+      versioned: false, // https://github.com/awslabs/aws-solutions-constructs/issues/44,
+      objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
 
     const resources = accessLogPrefixes.map((prefix) => `${s3AccessLogsBucket.bucketArn}/${prefix}*`);
@@ -136,8 +146,14 @@ export class DeaBackendConstruct extends Construct {
       versioned: true,
       serverAccessLogsBucket: accessLogBucket,
       serverAccessLogsPrefix: accessLogPrefix,
-
-      // cors: TODO: we need to add cors and bucket policy for security/compliance
+      cors: [
+        {
+          allowedOrigins: ['*'],
+          allowedMethods: [HttpMethods.GET, HttpMethods.PUT, HttpMethods.HEAD],
+          allowedHeaders: ['*'],
+        },
+      ],
+      objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
 
     const datasetsBucketNode = datasetsBucket.node.defaultChild;

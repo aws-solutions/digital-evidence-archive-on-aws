@@ -3,26 +3,88 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
+import Joi from 'joi';
 import { ValidationError } from './app/exceptions/validation-exception';
 import { logger } from './logger';
+import { Oauth2Token } from './models/auth';
+import { Oauth2TokenSchema } from './models/validation/auth';
+import { base64String, paginationLimit } from './models/validation/joi-common';
 
-export const getRequiredPathParam = (event: APIGatewayProxyEventV2, paramName: string): string => {
+export interface PaginationParams {
+  limit: number | undefined;
+  nextToken: object | undefined;
+}
+
+export const getPaginationParameters = (event: APIGatewayProxyEvent): PaginationParams => {
+  let limit: number | undefined;
+  let next: string | undefined;
+  let nextToken: object | undefined = undefined;
+  if (event.queryStringParameters) {
+    if (event.queryStringParameters['limit']) {
+      limit = parseInt(event.queryStringParameters['limit']);
+      Joi.assert(limit, paginationLimit);
+    }
+    if (event.queryStringParameters['next']) {
+      next = event.queryStringParameters['next'];
+      Joi.assert(next, base64String);
+      nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
+    }
+  }
+  return { limit, nextToken };
+};
+
+export const getQueryParam = (
+  event: APIGatewayProxyEvent,
+  paramName: string,
+  defaultValue: string,
+  validationSchema: Joi.StringSchema | Joi.NumberSchema
+): string => {
+  let paramValue = defaultValue;
+  if (event.queryStringParameters) {
+    paramValue = event.queryStringParameters[paramName] ?? defaultValue;
+  }
+
+  Joi.assert(paramValue, validationSchema);
+
+  return paramValue;
+};
+
+export const getRequiredPathParam = (
+  event: APIGatewayProxyEvent,
+  paramName: string,
+  validationSchema: Joi.StringSchema
+): string => {
   if (event.pathParameters) {
     const value = event.pathParameters[paramName];
     if (value) {
+      Joi.assert(value, validationSchema);
       return value;
     }
   }
 
   logger.error('Required path param missing', {
-    rawPath: event.rawPath,
+    rawPath: event.path,
     pathParams: JSON.stringify(event.pathParameters),
   });
   throw new ValidationError(`Required path param '${paramName}' is missing.`);
 };
 
-export const getRequiredHeader = (event: APIGatewayProxyEventV2, headerName: string): string => {
+export function getRequiredPayload<T>(
+  event: APIGatewayProxyEvent,
+  typeName: string,
+  validationSchema: Joi.ObjectSchema
+): T {
+  if (!event.body) {
+    throw new ValidationError(`${typeName} payload missing.`);
+  }
+  const payload: T = JSON.parse(event.body);
+  Joi.assert(payload, validationSchema);
+
+  return payload;
+}
+
+export const getRequiredHeader = (event: APIGatewayProxyEvent, headerName: string): string => {
   let value = event.headers[headerName];
   if (value) {
     return value;
@@ -39,21 +101,48 @@ export const getRequiredHeader = (event: APIGatewayProxyEventV2, headerName: str
   }
 
   logger.error(`Required header missing: ${headerName}`, {
-    rawPath: event.rawPath,
+    rawPath: event.path,
     headers: JSON.stringify(event.headers),
   });
   throw new ValidationError(`Required header '${headerName}' is missing.`);
 };
 
-export const getUserUlid = (event: APIGatewayProxyEventV2): string => {
+export const getOauthToken = (event: APIGatewayProxyEvent): Oauth2Token => {
+  if (event.headers['cookie'] && event.headers['cookie'].includes('idToken=')) {
+    const token: Oauth2Token = JSON.parse(event.headers['cookie'].replace('idToken=', ''));
+    Joi.assert(token, Oauth2TokenSchema);
+    return token;
+  }
+
+  throw new ValidationError(`invalid oauth`);
+};
+
+export const getAllowedOrigins = (): string[] => {
+  const value = process.env['ALLOWED_ORIGINS']?.split(',') ?? [];
+
+  return value;
+};
+
+export const getUserUlid = (event: APIGatewayProxyEvent): string => {
   const maybeUserUlid = event.headers['userUlid'];
   if (maybeUserUlid) {
     return maybeUserUlid;
   }
 
   // runLambdaPreChecks should have added the userUlid, this is server error
-  logger.error('User Ulid missing from event');
+  logger.error('User Ulid missing from event', {});
   throw new Error('userUlid was not present in the event header');
+};
+
+export const getTokenId = (event: APIGatewayProxyEvent): string => {
+  const maybeTokenId = event.headers['tokenId'];
+  if (maybeTokenId) {
+    return maybeTokenId;
+  }
+
+  // runLambdaPreChecks should have added the tokenId, this is server error
+  logger.error('TokenId missing from event', {});
+  throw new Error('TokenId was not present in the event header');
 };
 
 export const getRequiredEnv = (envName: string, defaultValue?: string): string => {

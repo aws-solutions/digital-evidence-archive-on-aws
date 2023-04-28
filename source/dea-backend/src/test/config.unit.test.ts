@@ -4,6 +4,7 @@
  */
 
 import { RemovalPolicy } from 'aws-cdk-lib';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { convictConfig, deaConfig, loadConfig } from '../config';
 
 describe('convict based config', () => {
@@ -11,50 +12,32 @@ describe('convict based config', () => {
     expect(deaConfig.region()).toBeDefined();
     expect(deaConfig.retainPolicy()).toEqual(RemovalPolicy.DESTROY);
 
-    expect(deaConfig.userGroups()).toEqual(
+    expect(deaConfig.deaRoleTypes()).toEqual(
       expect.arrayContaining([
-        {
-          name: 'CaseWorkerGroup',
-          description: 'containing users who need access to case APIs',
-          precedence: 1,
-          endpoints: expect.arrayContaining([
-            { path: '/cases', method: 'GET' },
-            { path: '/cases', method: 'POST' },
-            { path: '/cases/{caseId}', method: 'GET' },
-            { path: '/cases/{caseId}', method: 'PUT' },
-            { path: '/cases/{caseId}', method: 'DELETE' },
-            { path: '/cases/{caseId}/userMemberships', method: 'POST' },
-          ]),
-        },
-        {
+        expect.objectContaining({
+          name: 'CaseWorker',
+          description: 'users who need access to case APIs',
+        }),
+        expect.objectContaining({
           name: 'AuthTestGroup',
           description: 'used for auth e2e testing',
-          precedence: 100,
-          endpoints: expect.arrayContaining([
-            { path: '/hi', method: 'GET' },
-            { path: '/bye', method: 'GET' },
-          ]),
-        },
-        {
+        }),
+        expect.objectContaining({
           name: 'CreateCasesTestGroup',
           description: 'used for create cases API e2e testing',
-          precedence: 100,
-          endpoints: expect.arrayContaining([
-            { path: '/cases', method: 'POST' },
-            { path: '/cases/{caseId}', method: 'DELETE' },
-            { path: '/cases/all-cases', method: 'GET' },
-          ]),
-        },
-        {
+        }),
+        expect.objectContaining({
           name: 'GetCaseTestGroup',
           description: 'used for get cases API e2e testing',
-          precedence: 100,
-          endpoints: expect.arrayContaining([
-            { path: '/cases', method: 'POST' },
-            { path: '/cases/{caseId}', method: 'DELETE' },
-            { path: '/cases/{caseId}', method: 'GET' },
-          ]),
-        },
+        }),
+        expect.objectContaining({
+          name: 'GetMyCasesTestGroup',
+          description: 'used for get my cases API e2e testing',
+        }),
+        expect.objectContaining({
+          name: 'NoPermissionsGroup',
+          description: "users who can't do anything in the system",
+        }),
       ])
     );
   });
@@ -62,7 +45,7 @@ describe('convict based config', () => {
   it('throws an error for invalid group config', () => {
     expect(() => {
       loadConfig('invalid1');
-    }).toThrow('userGroups: must be of type Array: value was "InvalidGroupConfig"');
+    }).toThrow('deaRoleTypes: must be of type Array: value was "InvalidGroupConfig"');
   });
 
   it('throws an error for invalid endpoint config', () => {
@@ -81,8 +64,37 @@ describe('convict based config', () => {
     }).toThrow('Cognito domain may only contain lowercase alphanumerics and hyphens.');
   });
 
-  it('returns a destroy policy when non-test', () => {
+  it('returns production policies when non-test', () => {
     convictConfig.set('testStack', false);
     expect(deaConfig.retainPolicy()).toEqual(RemovalPolicy.RETAIN);
+    expect(deaConfig.retentionDays()).toEqual(RetentionDays.INFINITE);
+  });
+
+  it('allows kms actions in a test stack', () => {
+    convictConfig.set('testStack', true);
+    const actions = deaConfig.kmsAccountActions();
+    const wildcard = actions.find((action) => action === 'kms:*');
+    expect(wildcard).toBeDefined();
+  });
+
+  it('disallows kms actions in a prod stack', () => {
+    convictConfig.set('testStack', false);
+    const actions = deaConfig.kmsAccountActions();
+    const wildcard = actions.find((action) => action === 'kms:*');
+    const decryptAction = actions.find((action) => action === 'kms:Decrypt*');
+    expect(wildcard).toBeUndefined();
+    expect(decryptAction).toBeUndefined();
+  });
+
+  it('returns default allowed origin configuration', () => {
+    convictConfig.set('deaAllowedOrigins', '');
+    expect(deaConfig.deaAllowedOrigins()).toEqual('');
+    expect(deaConfig.deaAllowedOriginsList()).toEqual([]);
+  });
+
+  it('returns allowed origin configuration', () => {
+    convictConfig.set('deaAllowedOrigins', 'https://localhost,https://test');
+    expect(deaConfig.deaAllowedOrigins()).toEqual('https://localhost,https://test');
+    expect(deaConfig.deaAllowedOriginsList()).toEqual(['https://localhost', 'https://test']);
   });
 });

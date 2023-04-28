@@ -4,6 +4,7 @@
  */
 
 import { fail } from 'assert';
+import { APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
 import { createCases } from '../../../app/resources/create-cases';
 import { getCaseUsersForUser } from '../../../app/services/case-user-service';
@@ -13,7 +14,7 @@ import { DeaUser } from '../../../models/user';
 import { caseResponseSchema } from '../../../models/validation/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, dummyEvent } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -33,10 +34,6 @@ describe('create cases resource', () => {
         },
         repositoryProvider
       )) ?? fail();
-  });
-
-  afterEach(async () => {
-    delete dummyEvent.headers['userUlid'];
   });
 
   afterAll(async () => {
@@ -101,20 +98,16 @@ describe('create cases resource', () => {
     const status = 'ACTIVE';
     await createAndValidateCase(name, description, user.ulid);
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        body: JSON.stringify({
-          name,
-          status,
-          description,
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      body: JSON.stringify({
+        name,
+        status,
+        description,
+      }),
+    });
     event.headers['userUlid'] = user.ulid;
     await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      'Transaction Cancelled'
+      `Case with name "${name}" is already in use`
     );
   });
 
@@ -122,28 +115,20 @@ describe('create cases resource', () => {
     const status = 'ACTIVE';
     const description = 'monday tuesday wednesday';
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        body: JSON.stringify({
-          status,
-          description,
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      body: JSON.stringify({
+        status,
+        description,
+      }),
+    });
     event.headers['userUlid'] = user.ulid;
     await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(`"name" is required`);
   });
 
   it('should throw a validation exception when no payload is provided', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        body: undefined,
-      }
-    );
+    const event = getDummyEvent({
+      body: null,
+    });
     event.headers['userUlid'] = user.ulid;
     await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
       'Create cases payload missing.'
@@ -156,42 +141,58 @@ describe('create cases resource', () => {
     const description = 'should ignore provided ulid';
     const ulid = '01ARZ3NDEKTSV4RRFFQ69G5FAV';
 
-    const event = Object.assign(
-      {},
-      {
-        ...dummyEvent,
-        body: JSON.stringify({
-          name,
-          status,
-          description,
-          ulid,
-        }),
-      }
-    );
+    const event = getDummyEvent({
+      body: JSON.stringify({
+        name,
+        status,
+        description,
+        ulid,
+      }),
+    });
     event.headers['userUlid'] = user.ulid;
     await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
       `"ulid" is not allowed`
     );
+  });
+
+  it('should create ACTIVE case when no status given', async () => {
+    const name = 'ACaseWithNoStatus';
+    const description = 'should create in active status';
+
+    const event = getDummyEvent({
+      body: JSON.stringify({
+        name,
+        description,
+      }),
+    });
+    event.headers['userUlid'] = user.ulid;
+    const response = await createCases(event, dummyContext, repositoryProvider);
+    await validateAndReturnCase(name, description, 'ACTIVE', response);
   });
 });
 
 async function createAndValidateCase(name: string, description: string, userUlid?: string): Promise<string> {
   const status = 'ACTIVE';
 
-  const event = Object.assign(
-    {},
-    {
-      ...dummyEvent,
-      body: JSON.stringify({
-        name,
-        status,
-        description,
-      }),
-    }
-  );
+  const event = getDummyEvent({
+    body: JSON.stringify({
+      name,
+      status,
+      description,
+    }),
+  });
   event.headers['userUlid'] = userUlid;
   const response = await createCases(event, dummyContext, repositoryProvider);
+  const newCase = await validateAndReturnCase(name, description, status, response);
+  return newCase.ulid ?? fail();
+}
 
+async function validateAndReturnCase(
+  name: string,
+  description: string,
+  status: string,
+  response: APIGatewayProxyResult
+): Promise<DeaCase> {
   expect(response.statusCode).toEqual(200);
 
   if (!response.body) {
@@ -205,5 +206,5 @@ async function createAndValidateCase(name: string, description: string, userUlid
   expect(newCase.status).toEqual(status);
   expect(newCase.description).toEqual(description);
 
-  return newCase.ulid ?? fail();
+  return newCase;
 }

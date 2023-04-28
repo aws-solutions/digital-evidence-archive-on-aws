@@ -3,22 +3,20 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Paged, Table } from 'dynamodb-onetable';
-import { DeaUser } from '../../models/user';
-import { UserModelRepositoryProvider } from '../../persistence/schema/entities';
+import { Paged } from 'dynamodb-onetable';
+import { DeaUser, DeaUserInput } from '../../models/user';
+import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { createUser, deleteUser, getUser, listUsers, updateUser } from '../../persistence/user';
-import { initLocalDb } from './local-db-table';
+import { getTestRepositoryProvider } from './local-db-table';
 
 describe('user persistence', () => {
-  let testTable: Table;
-  let modelProvider: UserModelRepositoryProvider;
+  let modelProvider: ModelRepositoryProvider;
   beforeAll(async () => {
-    testTable = await initLocalDb('userTestsTable');
-    modelProvider = { UserModel: testTable.getModel('User') };
+    modelProvider = await getTestRepositoryProvider('userTestsTable');
   });
 
   afterAll(async () => {
-    await testTable.deleteTable('DeleteTableForever');
+    await modelProvider.table.deleteTable('DeleteTableForever');
   });
 
   it('should create and get a user by id', async () => {
@@ -26,34 +24,30 @@ describe('user persistence', () => {
     const lastName = 'Zissou';
     const tokenId = 'stevezissou';
 
-    const expectedUser: DeaUser = {
+    const expectedUser: DeaUserInput = {
       tokenId,
       firstName,
       lastName,
     };
 
     const createdUser = await createUser(expectedUser, modelProvider);
-    if (!createdUser || !createdUser.ulid) {
-      fail();
-    } else {
-      expect(createdUser).toEqual({
-        ...expectedUser,
-        ulid: createdUser.ulid,
-        created: createdUser.created,
-        updated: createdUser.updated,
-      });
+    expect(createdUser).toEqual({
+      ...expectedUser,
+      ulid: createdUser.ulid,
+      created: createdUser.created,
+      updated: createdUser.updated,
+    });
 
-      const deaUser = await getUser(createdUser.ulid, modelProvider);
+    const deaUser = await getUser(createdUser.ulid, modelProvider);
 
-      expect(deaUser).toEqual({
-        ...expectedUser,
-        ulid: createdUser.ulid,
-        created: createdUser.created,
-        updated: createdUser.updated,
-      });
+    expect(deaUser).toEqual({
+      ...expectedUser,
+      ulid: createdUser.ulid,
+      created: createdUser.created,
+      updated: createdUser.updated,
+    });
 
-      await deleteAndVerifyUser(createdUser.ulid, modelProvider);
-    }
+    await deleteAndVerifyUser(createdUser.ulid, modelProvider);
   });
 
   it('should return undefined if a user is not found', async () => {
@@ -81,10 +75,6 @@ describe('user persistence', () => {
       modelProvider
     );
 
-    if (!user1 || !user2 || !user1.ulid || !user2.ulid) {
-      fail();
-    }
-
     const expectedUsers: Paged<DeaUser> = [
       {
         ulid: user1.ulid,
@@ -107,9 +97,9 @@ describe('user persistence', () => {
     expectedUsers.next = undefined;
     expectedUsers.prev = undefined;
 
-    const actualWithLimit1 = await listUsers(1, undefined, modelProvider);
+    const actualWithLimit1 = await listUsers(1, undefined, undefined, modelProvider);
     expect(actualWithLimit1).toHaveLength(1);
-    const actual = await listUsers(undefined, undefined, modelProvider);
+    const actual = await listUsers(undefined, undefined, undefined, modelProvider);
 
     expect(actual.values).toEqual(expectedUsers.values);
 
@@ -124,17 +114,13 @@ describe('user persistence', () => {
     const updatedFirstName = 'Rip';
     const updatedLastName = 'Van Winkle';
 
-    const deaUser: DeaUser = {
+    const deaUser: DeaUserInput = {
       tokenId,
       firstName,
       lastName,
     };
 
     const createdUser = await createUser(deaUser, modelProvider);
-    if (!createdUser || !createdUser.ulid) {
-      //truthy expectation doesn't update createdUser type
-      fail();
-    }
     expect(createdUser).toEqual({
       ...deaUser,
       ulid: createdUser.ulid,
@@ -150,17 +136,28 @@ describe('user persistence', () => {
     };
     const actual = await updateUser(updatedUser, modelProvider);
 
+    expect(actual.firstName).toStrictEqual(updatedFirstName);
+    expect(actual.lastName).toStrictEqual(updatedLastName);
+    expect(actual.tokenId).toStrictEqual(tokenId);
+    expect(actual.ulid).toStrictEqual(createdUser.ulid);
+    // const createDate = actual.created ?? fail();
+
+    // console.log(actual);
+    // expect(actual.updated?.getTime()).toBeGreaterThan(createDate.getTime());
+
     expect(actual).toEqual({
       ...updatedUser,
       created: createdUser.created,
       updated: actual?.updated,
     });
+    expect(actual.created).toBeDefined();
+    expect(actual.created).toStrictEqual(createdUser.created);
 
     await deleteAndVerifyUser(createdUser.ulid, modelProvider);
   });
 });
 
-const deleteAndVerifyUser = async (ulid: string, modelProvider: UserModelRepositoryProvider) => {
+const deleteAndVerifyUser = async (ulid: string, modelProvider: ModelRepositoryProvider) => {
   await deleteUser(ulid, modelProvider);
   const deletedUser1 = await getUser(ulid, modelProvider);
   expect(deletedUser1).toBeUndefined();

@@ -4,19 +4,29 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
+import { OWNER_ACTIONS } from '../../models/case-action';
 import { CaseUser } from '../../models/case-user';
-import { CaseUserDTO } from '../../models/dtos/case-user-dto';
+import { CaseOwnerDTO, CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { getCase } from '../../persistence/case';
 import * as CaseUserPersistence from '../../persistence/case-user';
-import { defaultProvider } from '../../persistence/schema/entities';
+import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getUser } from '../../persistence/user';
 import { NotFoundError } from '../exceptions/not-found-exception';
+import { ValidationError, VALIDATION_ERROR_NAME } from '../exceptions/validation-exception';
+
+export const getCaseUser = async (
+  caseUserIds: {
+    readonly caseUlid: string;
+    readonly userUlid: string;
+  },
+  repositoryProvider: ModelRepositoryProvider
+): Promise<CaseUser | undefined> => {
+  return CaseUserPersistence.getCaseUser(caseUserIds, repositoryProvider);
+};
 
 export const createCaseUserMembershipFromDTO = async (
   caseUserDto: CaseUserDTO,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<CaseUser> => {
   const user = await getUser(caseUserDto.userUlid, repositoryProvider);
   if (!user) {
@@ -28,21 +38,49 @@ export const createCaseUserMembershipFromDTO = async (
     throw new NotFoundError(`Case with ulid ${caseUserDto.caseUlid} not found.`);
   }
 
-  const caseUser: CaseUser = {
-    ...caseUserDto,
-    userFirstName: user.firstName,
-    userLastName: user.lastName,
-    caseName: deaCase.name,
-  };
+  try {
+    const caseUser: CaseUser = {
+      ...caseUserDto,
+      userFirstName: user.firstName,
+      userLastName: user.lastName,
+      caseName: deaCase.name,
+    };
+    return await createCaseUserMembership(caseUser, repositoryProvider);
+  } catch (error) {
+    // if ConditionalCheckFailedException  implies  <caseUlid,userUlid> already exists.
+    if (typeof error === 'object' && error['code'] === 'ConditionalCheckFailedException') {
+      throw new ValidationError('Requested Case-User Membership found');
+    }
+    throw error;
+  }
+};
 
-  return await createCaseUserMembership(caseUser, repositoryProvider);
+export const updateCaseUserMembershipFromDTO = async (
+  caseUserDTO: CaseUserDTO,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<CaseUser> => {
+  const existingMembership = await CaseUserPersistence.getCaseUser(
+    { caseUlid: caseUserDTO.caseUlid, userUlid: caseUserDTO.userUlid },
+    repositoryProvider
+  );
+  if (!existingMembership) {
+    throw new NotFoundError('Requested Case-User Membership not found');
+  }
+
+  const membershipForUpdate = Object.assign(
+    {},
+    {
+      ...existingMembership,
+      actions: caseUserDTO.actions,
+    }
+  );
+
+  return CaseUserPersistence.updateCaseUser(membershipForUpdate, repositoryProvider);
 };
 
 export const createCaseUserMembership = async (
   caseUser: CaseUser,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<CaseUser> => {
   return await CaseUserPersistence.createCaseUser(caseUser, repositoryProvider);
 };
@@ -50,15 +88,16 @@ export const createCaseUserMembership = async (
 export const getCaseUsersForUser = async (
   userUlid: string,
   limit = 30,
-  nextToken?: object,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  nextToken: object | undefined,
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<Paged<CaseUser>> => {
   return CaseUserPersistence.listCaseUsersByUser(userUlid, limit, nextToken, repositoryProvider);
 };
 
-export const deleteCaseUsersForCase = async (caseUlid: string, repositoryProvider = defaultProvider) => {
+export const deleteCaseUsersForCase = async (
+  caseUlid: string,
+  repositoryProvider: ModelRepositoryProvider
+) => {
   let batch = {};
   const caseUsers = await CaseUserPersistence.listCaseUsersByCase(
     caseUlid,
@@ -100,9 +139,32 @@ export const deleteCaseUsersForCase = async (caseUlid: string, repositoryProvide
 export const deleteCaseUser = async (
   userUlid: string,
   caseUlid: string,
-  /* the default case is handled in e2e tests */
-  /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<void> => {
   await CaseUserPersistence.deleteCaseUser({ userUlid, caseUlid }, repositoryProvider);
+};
+
+export const getCaseUsersForCase = async (
+  caseUlid: string,
+  limit = 30,
+  nextToken: object | undefined,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<Paged<CaseUser>> => {
+  return CaseUserPersistence.listCaseUsersByCase(caseUlid, limit, nextToken, repositoryProvider);
+};
+
+export const createCaseOwnerFromDTO = async (
+  caseOwnerDTO: CaseOwnerDTO,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<CaseUser> => {
+  const caseUserDto: CaseUserDTO = { ...caseOwnerDTO, actions: OWNER_ACTIONS };
+  try {
+    return await createCaseUserMembershipFromDTO(caseUserDto, repositoryProvider);
+  } catch (error) {
+    //if membership found then we proceed with the update.
+    if (typeof error === 'object' && error['name'] === VALIDATION_ERROR_NAME) {
+      return await updateCaseUserMembershipFromDTO(caseUserDto, repositoryProvider);
+    }
+    throw error;
+  }
 };

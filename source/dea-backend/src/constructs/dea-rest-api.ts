@@ -4,35 +4,56 @@
  */
 
 import path from 'path';
-import { Duration } from 'aws-cdk-lib';
+import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
+import { Duration, Fn } from 'aws-cdk-lib';
+
 import {
   AccessLogFormat,
   AuthorizationType,
-  Cors,
+  EndpointType,
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
-import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import {
+  ArnPrincipal,
+  Effect,
+  ManagedPolicy,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+} from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import { HttpMethods } from 'aws-cdk-lib/aws-s3';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway-route-config';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
 import { createCfnOutput } from './construct-support';
 
+interface LambdaEnvironment {
+  [key: string]: string;
+}
 interface DeaRestApiProps {
   deaTableArn: string;
   deaTableName: string;
+  deaDatasetsBucketArn: string;
+  deaDatasetsBucketName: string;
+  s3BatchDeleteCaseFileRoleArn: string;
+  deaAuditLogArn: string;
+  deaTrailLogArn: string;
   kmsKey: Key;
   region: string;
   accountId: string;
+  lambdaEnv: LambdaEnvironment;
 }
 
 export class DeaRestApiConstruct extends Construct {
+  public authLambdaRole: Role;
   public lambdaBaseRole: Role;
   public deaRestApi: RestApi;
   public apiEndpointArns: Map<string, string>;
@@ -45,8 +66,27 @@ export class DeaRestApiConstruct extends Construct {
     this.lambdaBaseRole = this._createLambdaBaseRole(
       props.kmsKey.keyArn,
       props.deaTableArn,
+      props.deaDatasetsBucketArn,
       props.region,
-      props.accountId
+      props.accountId,
+      props.deaAuditLogArn,
+      props.deaTrailLogArn,
+      props.s3BatchDeleteCaseFileRoleArn
+    );
+
+    this.authLambdaRole = this._createAuthLambdaRole(props.region, props.accountId);
+
+    props.kmsKey.addToResourcePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
+        principals: [
+          new ArnPrincipal(this.lambdaBaseRole.roleArn),
+          new ArnPrincipal(this.authLambdaRole.roleArn),
+        ],
+        resources: ['*'],
+        sid: 'main-key-share-statement',
+      })
     );
 
     const accessLogGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
@@ -57,6 +97,9 @@ export class DeaRestApiConstruct extends Construct {
 
     this.deaRestApi = new RestApi(this, `dea-api`, {
       description: 'Backend API',
+      endpointConfiguration: {
+        types: [EndpointType.REGIONAL],
+      },
       deployOptions: {
         stageName: STAGE,
         accessLogDestination: new LogGroupLogDestination(accessLogGroup),
@@ -77,25 +120,64 @@ export class DeaRestApiConstruct extends Construct {
         ),
       },
       defaultCorsPreflightOptions: {
-        allowHeaders: ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'CSRF-Token'],
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+          'CSRF-Token',
+          'x-amz-security-token',
+          'set-cookie',
+          'Host',
+          'Content-Length',
+        ],
         allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         allowCredentials: true,
-        allowOrigins: Cors.ALL_ORIGINS,
+        allowOrigins: deaConfig.deaAllowedOriginsList(),
       },
       defaultMethodOptions: {
         authorizationType: AuthorizationType.IAM,
       },
     });
 
-    this._configureApiGateway(props.deaTableArn, props.kmsKey, deaApiRouteConfig, props.deaTableName);
+    this._configureApiGateway(deaApiRouteConfig, props.lambdaEnv);
+
+    this._updateBucketCors(this.deaRestApi, props.deaDatasetsBucketName);
   }
 
-  private _configureApiGateway(
-    tableArn: string,
-    key: Key,
-    routeConfig: ApiGatewayRouteConfig,
-    deaTableName: string
-  ): void {
+  private _updateBucketCors(restApi: RestApi, bucketName: Readonly<string>) {
+    const allowedOrigins = deaConfig.deaAllowedOriginsList();
+    allowedOrigins.push(`https://${Fn.parseDomainName(restApi.url)}`);
+
+    const updateCorsCall = {
+      service: 'S3',
+      action: 'putBucketCors',
+      parameters: {
+        Bucket: bucketName,
+        CORSConfiguration: {
+          CORSRules: [
+            {
+              AllowedOrigins: allowedOrigins,
+              AllowedMethods: [HttpMethods.GET, HttpMethods.PUT, HttpMethods.HEAD],
+              AllowedHeaders: ['*'],
+            },
+          ],
+        },
+      },
+      physicalResourceId: PhysicalResourceId.of(restApi.restApiId),
+    };
+    const updateCors = new AwsCustomResource(this, 'UpdateBucketCORS', {
+      onCreate: updateCorsCall,
+      onUpdate: updateCorsCall,
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+      installLatestAwsSdk: false,
+    });
+    updateCors.node.addDependency(restApi);
+  }
+
+  private _configureApiGateway(routeConfig: ApiGatewayRouteConfig, lambdaEnv: LambdaEnvironment): void {
     const plan = this.deaRestApi.addUsagePlan('DEA Usage Plan', {
       name: 'dea-usage-plan',
       throttle: {
@@ -109,16 +191,29 @@ export class DeaRestApiConstruct extends Construct {
       stage: this.deaRestApi.deploymentStage,
     });
 
+    createCfnOutput(this, 'UiUrl', {
+      value: `${this.deaRestApi.url}ui`,
+    });
+
     createCfnOutput(this, 'deaApiUrl', {
       value: this.deaRestApi.url,
     });
 
-    routeConfig.routes.forEach((route) =>
-      this._addMethod(this.deaRestApi, route, this.lambdaBaseRole, deaTableName)
-    );
+    routeConfig.routes.forEach((route) => {
+      // Do NOT Deploy Delete Case Handler when 'deletionAllowed' Flag is NOT set in the config file.
+      if (!deaConfig.deletionAllowed() && route.eventName === AuditEventType.DELETE_CASE) {
+        return;
+      }
+      // If this is a non-Auth API, then we specify the auth method (Non-IAM)
+      // and we should give the lambda limited permissions
+      // otherwise it is a DEA execution API, which needs the
+      // full set of permissions
+      const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
+      this._addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv);
+    });
   }
 
-  private _addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, tableName: string): void {
+  private _addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, lambdaEnv: LambdaEnvironment): void {
     const urlParts = route.path.split('/').filter((str) => str);
     let parent = api.root;
     urlParts.forEach((part, index) => {
@@ -128,46 +223,75 @@ export class DeaRestApiConstruct extends Construct {
       }
 
       if (index === urlParts.length - 1) {
-        const lambda = this._createLambda(`${route.httpMethod}_${part}`, role, route.pathToSource, tableName);
+        const lambda = this._createLambda(
+          `${route.httpMethod}_${route.eventName}`,
+          role,
+          route.pathToSource,
+          lambdaEnv
+        );
 
-        const paginationParams = {
-          'integration.request.querystring.limit': 'method.request.querystring.limit',
-          'integration.request.querystring.next': 'method.request.querystring.next',
-        };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let queryParams: any = {};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let methodQueryParams: any = {};
 
-        const paginationMethodParams = {
-          'method.request.querystring.limit': false,
-          'method.request.querystring.next': false,
-        };
+        if (route.pagination) {
+          queryParams['integration.request.querystring.limit'] = 'method.request.querystring.limit';
+          queryParams['integration.request.querystring.next'] = 'method.request.querystring.next';
+          methodQueryParams['method.request.querystring.limit'] = false;
+          methodQueryParams['method.request.querystring.next'] = false;
+        }
+
+        if (route.queryParams) {
+          route.queryParams.forEach((param) => {
+            queryParams[`integration.request.querystring.${param}`] = `method.request.querystring.${param}`;
+            methodQueryParams[`method.request.querystring.${param}`] = false;
+          });
+        }
+
+        if (Object.keys(queryParams).length === 0) {
+          queryParams = undefined;
+          methodQueryParams = undefined;
+        }
 
         const methodIntegration = new LambdaIntegration(lambda, {
           proxy: true,
-          requestParameters: route.pagination ? paginationParams : undefined,
+          requestParameters: queryParams,
         });
         const method = resource.addMethod(route.httpMethod, methodIntegration, {
-          requestParameters: route.pagination ? paginationMethodParams : undefined,
-          authorizationType: AuthorizationType.IAM,
+          requestParameters: methodQueryParams,
+          // Custom auth type or None based on dea-route-config. Usually reserved for auth or ui methods
+          authorizationType: route.authMethod ?? AuthorizationType.IAM,
         });
 
+        if (method.methodArn.endsWith('*')) {
+          throw new Error('Resource paths must not end with a wildcard.');
+        }
         this.apiEndpointArns.set(route.path + route.httpMethod, method.methodArn);
       }
       parent = resource;
     });
   }
 
-  private _createLambda(id: string, role: Role, pathToSource: string, tableName: string): NodejsFunction {
+  private _createLambda(
+    id: string,
+    role: Role,
+    pathToSource: string,
+    lambdaEnv: LambdaEnvironment
+  ): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
       memorySize: 512,
       role: role,
-      timeout: Duration.seconds(30),
+      timeout: Duration.seconds(10),
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
       entry: path.join(__dirname, pathToSource),
       depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
       environment: {
         NODE_OPTIONS: '--enable-source-maps',
-        TABLE_NAME: tableName,
         STAGE: deaConfig.stage(),
+        ALLOWED_ORIGINS: deaConfig.deaAllowedOrigins(),
+        ...lambdaEnv,
       },
       bundling: {
         externalModules: ['aws-sdk'],
@@ -195,7 +319,7 @@ export class DeaRestApiConstruct extends Construct {
             id: 'W89',
             reason:
               'The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)\
-               indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC',
+               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC',
           },
         ],
       });
@@ -206,8 +330,12 @@ export class DeaRestApiConstruct extends Construct {
   private _createLambdaBaseRole(
     kmsKeyArn: string,
     tableArn: string,
+    datasetsBucketArn: string,
     region: string,
-    accountId: string
+    accountId: string,
+    auditLogArn: string,
+    trailLogArn: string,
+    s3BatchDeleteCaseFileRoleArn: string
   ): Role {
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
@@ -234,10 +362,65 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['kms:Encrypt', 'kms:Decrypt'],
+        actions: [
+          's3:AbortMultipartUpload',
+          's3:ListMultipartUploadParts',
+          's3:PutObject',
+          's3:GetObject',
+          's3:GetObjectVersion',
+          's3:GetObjectLegalHold',
+          's3:PutObjectLegalHold',
+        ],
+        resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['logs:StartQuery'],
+        resources: [auditLogArn, trailLogArn],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['logs:GetQueryResults', 's3:CreateJob'],
+        resources: ['*'],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [s3BatchDeleteCaseFileRoleArn],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
         resources: [kmsKeyArn],
       })
     );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
+        resources: [`arn:aws:ssm:${region}:${accountId}:parameter/dea/${region}/*`],
+      })
+    );
+
+    return role;
+  }
+
+  private _createAuthLambdaRole(region: string, accountId: string): Role {
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+    const role = new Role(this, 'dea-auth-lambda-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [basicExecutionPolicy],
+    });
 
     role.addToPolicy(
       new PolicyStatement({

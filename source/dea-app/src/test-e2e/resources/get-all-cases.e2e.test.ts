@@ -3,9 +3,10 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
+import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
-import { CaseStatus } from '../../models/case-status';
 import { caseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -19,12 +20,17 @@ describe('get all cases api', () => {
 
   const caseIdsToDelete: string[] = [];
 
+  let creds: Credentials;
+  let idToken: Oauth2Token;
+
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'CreateCasesTestGroup', 'GetAllCases', 'TestUser');
+    const credentials = await cognitoHelper.getCredentialsForUser(testUser);
+    creds = credentials[0];
+    idToken = credentials[1];
   });
 
   afterAll(async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
     for (const caseId of caseIdsToDelete) {
       await deleteCase(deaApiUrl, caseId, idToken, creds);
     }
@@ -32,8 +38,6 @@ describe('get all cases api', () => {
   }, 30000);
 
   it('should get all cases', async () => {
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
-
     const caseNames = ['getAllCases-Case1', 'getAllCases-Case2', 'getAllCases-Case3', 'getAllCases-Case4'];
     const createdCases: DeaCase[] = [];
     for (const caseName of caseNames) {
@@ -42,7 +46,6 @@ describe('get all cases api', () => {
           deaApiUrl,
           {
             name: caseName,
-            status: CaseStatus.ACTIVE,
             description: 'some case description',
           },
           idToken,

@@ -3,10 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { logger } from '../../logger';
+import { getPaginationParameters } from '../../lambda-http-helpers';
 import { defaultProvider } from '../../persistence/schema/entities';
 import * as UserService from '../services/user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 import { getNextToken } from './get-next-token';
 
 export const getUsers: DEAGatewayProxyHandler = async (
@@ -16,32 +17,24 @@ export const getUsers: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
-  let limit: number | undefined;
-  let next: string | undefined;
+  let nameBeginsWith: string | undefined;
   if (event.queryStringParameters) {
-    if (event.queryStringParameters['limit']) {
-      limit = parseInt(event.queryStringParameters['limit']);
-    }
-    next = event.queryStringParameters['next'];
+    nameBeginsWith = event.queryStringParameters['nameBeginsWith'];
   }
 
-  let nextToken: object | undefined = undefined;
-  if (next) {
-    nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
-  }
+  const paginationParams = getPaginationParameters(event);
+  const pageOfUsers = await UserService.getUsers(
+    paginationParams.limit,
+    paginationParams.nextToken,
+    nameBeginsWith,
+    repositoryProvider
+  );
 
-  const pageOfUsers = await UserService.getUsers(limit, nextToken, repositoryProvider);
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      //intentionally unused tokenId - this removes it during the map operation
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      users: pageOfUsers.map(({ tokenId, ...user }) => user),
-      total: pageOfUsers.count,
-      next: getNextToken(pageOfUsers.next),
-    }),
-  };
+  return responseOk(event, {
+    //intentionally unused tokenId - this removes it during the map operation
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    users: pageOfUsers.map(({ tokenId, ...user }) => user),
+    total: pageOfUsers.count,
+    next: getNextToken(pageOfUsers.next),
+  });
 };

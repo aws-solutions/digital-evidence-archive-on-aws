@@ -4,50 +4,50 @@
  */
 
 import {
-  Form,
-  SpaceBetween,
   Button,
-  Header,
   Container,
-  Input,
+  Form,
   FormField,
+  Header,
+  Input,
+  SpaceBetween,
   Textarea,
-  RadioGroup,
   TextContent,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
-import * as React from 'react';
 import { useState } from 'react';
 import { createCase } from '../../api/cases';
 import { commonLabels, createCaseLabels } from '../../common/labels';
+import { useNotifications } from '../../context/NotificationsContext';
 import { CreateCaseForm } from '../../models/Cases';
-import CreateCaseShareCaseForm from './CreateCaseShareCaseForm';
 
 function CreateCasesForm(): JSX.Element {
-  const [caseStatusValue, setCaseStatusValue] = React.useState('active');
-  const [, setIsSubmitLoading] = useState(false);
+  const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const router = useRouter();
   const [formData, setFormData] = useState<CreateCaseForm>({ name: '' });
+  const { pushNotification } = useNotifications();
 
   async function onSubmitHandler() {
     setIsSubmitLoading(true);
     try {
       await createCase(formData);
+      void router.push('/');
+    } catch (e) {
+      if (e instanceof Error) {
+        pushNotification('error', e.message);
+      }
     } finally {
       setIsSubmitLoading(false);
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      router.push('/');
     }
   }
 
   function onCancelHandler() {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    router.push('/');
+    void router.push('/');
   }
 
   return (
     <SpaceBetween data-testid="create-case-form-space" size="s">
-      <form onSubmit={(e) => e.preventDefault()} data-testid="create-case-form">
+      <form onSubmit={onSubmitHandler} data-testid="create-case-form">
         <Form>
           <Container header={<Header variant="h2">{createCaseLabels.enterCaseDetailsLabel}</Header>}>
             <SpaceBetween direction="vertical" size="l">
@@ -80,32 +80,10 @@ function CreateCasesForm(): JSX.Element {
                   }}
                 />
               </FormField>
-              <TextContent>
-                <p>
-                  <strong>{createCaseLabels.caseStatusLabel}</strong>
-                </p>
-              </TextContent>
-              <RadioGroup
-                onChange={({ detail }) => setCaseStatusValue(detail.value)}
-                value={caseStatusValue}
-                items={[
-                  {
-                    value: 'active',
-                    label: `${createCaseLabels.activeLabel}`,
-                    description: `${createCaseLabels.activeCaseDescription}`,
-                  },
-                  {
-                    value: 'archive',
-                    label: `${createCaseLabels.archivedLabel}`,
-                    description: `${createCaseLabels.archivedCaseDescription}`,
-                  },
-                ]}
-              />
             </SpaceBetween>
           </Container>
         </Form>
       </form>
-      <CreateCaseShareCaseForm></CreateCaseShareCaseForm>
       <SpaceBetween direction="horizontal" size="xs">
         <Button formAction="none" variant="link" data-testid="create-case-cancel" onClick={onCancelHandler}>
           {commonLabels.cancelButton}
@@ -115,6 +93,7 @@ function CreateCasesForm(): JSX.Element {
           iconAlign="right"
           data-testid="create-case-submit"
           onClick={onSubmitHandler}
+          disabled={IsSubmitLoading || !formData.name}
         >
           {commonLabels.createButton}
         </Button>

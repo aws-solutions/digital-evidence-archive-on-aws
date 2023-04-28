@@ -3,15 +3,15 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import Joi from 'joi';
-import { getRequiredPathParam } from '../../lambda-http-helpers';
-import { logger } from '../../logger';
+import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { caseUserSchema } from '../../models/validation/case-user';
+import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import { createCaseUserMembershipFromDTO } from '../services/case-user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
 
 export const createCaseMembership: DEAGatewayProxyHandler = async (
   event,
@@ -20,25 +20,14 @@ export const createCaseMembership: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
-  logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
+  const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
 
-  const caseId = getRequiredPathParam(event, 'caseId');
-
-  if (!event.body) {
-    throw new ValidationError('CaseUser payload missing.');
-  }
-
-  const caseUser: CaseUserDTO = JSON.parse(event.body);
-  Joi.assert(caseUser, caseUserSchema);
+  const caseUser: CaseUserDTO = getRequiredPayload(event, 'CaseUser', caseUserSchema);
 
   if (caseId !== caseUser.caseUlid) {
     throw new ValidationError('Requested Case Ulid does not match resource');
   }
 
   const caseUserResult = await createCaseUserMembershipFromDTO(caseUser, repositoryProvider);
-  return {
-    statusCode: 200,
-    body: JSON.stringify(caseUserResult),
-  };
+  return responseOk(event, caseUserResult);
 };
