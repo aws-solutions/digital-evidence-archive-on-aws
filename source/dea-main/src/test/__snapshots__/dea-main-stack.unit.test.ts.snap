@@ -11281,7 +11281,31 @@ Object {
                     Object {
                       "Ref": "AWS::Region",
                     },
-                    "/*",
+                    "/[STAGE-REMOVED]*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "secretsmanager:GetSecretValue",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:secretsmanager:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":secret:/dea/",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    "/[STAGE-REMOVED]/clientSecret-*",
                   ],
                 ],
               },
@@ -11479,7 +11503,7 @@ Object {
                     Object {
                       "Ref": "AWS::Region",
                     },
-                    "/*",
+                    "/[STAGE-REMOVED]*",
                   ],
                 ],
               },
@@ -16272,6 +16296,26 @@ Object {
       },
       "Type": "AWS::Cognito::UserPoolDomain",
     },
+    "DeaAuthdeauseast1[STAGE-REMOVED]clientSecret[HASH REMOVED]": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "KmsKeyId": Object {
+          "Fn::GetAtt": Array [
+            "primaryCustomerKey87EC2263",
+            "Arn",
+          ],
+        },
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]/clientSecret",
+        "SecretString": Object {
+          "Fn::GetAtt": Array [
+            "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientEFA99634",
+            "UserPoolClient.ClientSecret",
+          ],
+        },
+      },
+      "Type": "AWS::SecretsManager::Secret",
+      "UpdateReplacePolicy": "Delete",
+    },
     "DeaAuthidentitypoolidssmparam7012C429": Object {
       "Properties": Object {
         "AllowedPattern": ".*",
@@ -16294,22 +16338,6 @@ Object {
         "Type": "String",
         "Value": Object {
           "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
-        },
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthuserpoolclientsecretssmparam8F80B38C": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the user pool client id for use in token verification on the backend",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-client-secret-param",
-        "Tier": "Standard",
-        "Type": "String",
-        "Value": Object {
-          "Fn::GetAtt": Array [
-            "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientEFA99634",
-            "UserPoolClient.ClientSecret",
-          ],
         },
       },
       "Type": "AWS::SSM::Parameter",
@@ -17760,6 +17788,92 @@ Object {
               },
               "Resource": "*",
               "Sid": "main-key-share-statement",
+            },
+            Object {
+              "Action": Array [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "kms:ViaService": Object {
+                    "Fn::Join": Array [
+                      "",
+                      Array [
+                        "secretsmanager.",
+                        Object {
+                          "Ref": "AWS::Region",
+                        },
+                        ".amazonaws.com",
+                      ],
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "kms:CreateGrant",
+                "kms:DescribeKey",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "kms:ViaService": Object {
+                    "Fn::Join": Array [
+                      "",
+                      Array [
+                        "secretsmanager.",
+                        Object {
+                          "Ref": "AWS::Region",
+                        },
+                        ".amazonaws.com",
+                      ],
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
             },
             Object {
               "Action": Array [

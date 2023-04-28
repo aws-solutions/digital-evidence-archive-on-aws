@@ -21,6 +21,7 @@ import {
   InitiateAuthCommand,
   MessageActionType,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import { Credentials } from 'aws4-axios';
 import { getTokenPayload } from '../../cognito-token-helpers';
 import { Oauth2Token } from '../../models/auth';
@@ -33,20 +34,20 @@ export default class CognitoHelper {
   private _userPoolProvider: CognitoIdentityProviderClient;
   private _region: string;
   readonly _userPoolClientId: string;
-  readonly _userPoolClientSecret: string;
   readonly _userPoolId: string;
   private _identityPoolId: string;
   readonly _idpUrl: string;
 
   private _usersCreated: string[] = [];
   public testPassword: string;
+  private _stage: string;
 
   public constructor(globalPassword?: string) {
     this._region = testEnv.awsRegion;
     this._userPoolId = testEnv.userPoolId;
     this._userPoolClientId = testEnv.clientId;
-    this._userPoolClientSecret = testEnv.clientSecret;
     this._identityPoolId = testEnv.identityPoolId;
+    this._stage = testEnv.stage;
 
     this._idpUrl = `cognito-idp.${this._region}.amazonaws.com/${this._userPoolId}`;
 
@@ -124,8 +125,26 @@ export default class CognitoHelper {
     return (await this.getUser(userName)) ? true : false;
   }
 
+  getClientSecret = async () => {
+    const clientSecretId = `/dea/${this._region}/${this._stage}/clientSecret`;
+
+    const client = new SecretsManagerClient({ region: this._region });
+    const input = {
+      SecretId: clientSecretId,
+    };
+    const command = new GetSecretValueCommand(input);
+    const secretResponse = await client.send(command);
+
+    if (secretResponse.SecretString) {
+      return secretResponse.SecretString;
+    } else {
+      throw new Error(`Cognito secret ${clientSecretId} not found!`);
+    }
+  };
+
   private async getUserPoolAuthForUser(userName: string): Promise<AuthenticationResultType> {
-    const secretHash = this.generateSecretHash(this._userPoolClientId, this._userPoolClientSecret, userName);
+    const clientSecret = await this.getClientSecret();
+    const secretHash = this.generateSecretHash(this._userPoolClientId, clientSecret, userName);
 
     const result = await this._userPoolProvider.send(
       new InitiateAuthCommand({

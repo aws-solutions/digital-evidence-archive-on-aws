@@ -101,7 +101,11 @@ describe('DeaBackend constructs', () => {
       ['C', 'Carn'],
       ['D', 'Darn'],
     ]);
-    new DeaAuthConstruct(stack, 'DeaAuth', { restApi: restApi.deaRestApi, apiEndpointArns: apiEndpointArns });
+    new DeaAuthConstruct(stack, 'DeaAuth', {
+      restApi: restApi.deaRestApi,
+      kmsKey: key,
+      apiEndpointArns: apiEndpointArns,
+    });
 
     addSnapshotSerializers();
 
@@ -161,7 +165,11 @@ describe('DeaBackend constructs', () => {
       ['C', 'Carn'],
       ['D', 'Darn'],
     ]);
-    new DeaAuthConstruct(stack, 'DeaAuth', { restApi: restApi.deaRestApi, apiEndpointArns: apiEndpointArns });
+    new DeaAuthConstruct(stack, 'DeaAuth', {
+      restApi: restApi.deaRestApi,
+      kmsKey: key,
+      apiEndpointArns: apiEndpointArns,
+    });
 
     // throws due to unassigned parameter
     expect(() => {
@@ -227,7 +235,11 @@ describe('DeaBackend constructs', () => {
       ['C', 'Carn'],
       ['D', 'Darn'],
     ]);
-    new DeaAuthConstruct(stack, 'DeaAuth', { restApi: restApi.deaRestApi, apiEndpointArns: apiEndpointArns });
+    new DeaAuthConstruct(stack, 'DeaAuth', {
+      restApi: restApi.deaRestApi,
+      kmsKey: key,
+      apiEndpointArns: apiEndpointArns,
+    });
 
     // Prepare the stack for assertions.
     const template = Template.fromStack(stack);

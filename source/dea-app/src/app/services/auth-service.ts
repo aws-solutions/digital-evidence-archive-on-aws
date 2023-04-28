@@ -8,12 +8,14 @@ import {
   GetCredentialsForIdentityCommand,
   GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import axios from 'axios';
 import { getRequiredEnv, getRequiredHeader } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { Oauth2Token } from '../../models/auth';
+import { ValidationError } from '../exceptions/validation-exception';
 
 const stage = getRequiredEnv('STAGE', 'chewbacca');
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
@@ -23,7 +25,6 @@ export type AvailableEndpointsSignature = (event: APIGatewayProxyEvent) => Promi
 export interface CognitoSsmParams {
   cognitoDomainUrl: string;
   clientId: string;
-  clientSecret: string;
   callbackUrl: string;
   identityPoolId: string;
   userPoolId: string;
@@ -41,7 +42,6 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
 
   const cognitoDomainPath = `/dea/${region}/${stage}-userpool-cognito-domain-param`;
   const clientIdPath = `/dea/${region}/${stage}-userpool-client-id-param`;
-  const clientSecretPath = `/dea/${region}/${stage}-userpool-client-secret-param`;
   const callbackUrlPath = `/dea/${region}/${stage}-client-callback-url-param`;
   const identityPoolIdPath = `/dea/${region}/${stage}-identity-pool-id-param`;
   const userPoolIdPath = `/dea/${region}/${stage}-userpool-id-param`;
@@ -52,7 +52,6 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
       Names: [
         cognitoDomainPath,
         clientIdPath,
-        clientSecretPath,
         callbackUrlPath,
         identityPoolIdPath,
         userPoolIdPath,
@@ -63,13 +62,12 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
 
   if (!response.Parameters) {
     throw new Error(
-      `No parameters found for: ${cognitoDomainPath}, ${clientIdPath}, ${clientSecretPath}, ${callbackUrlPath}, ${identityPoolIdPath}, ${userPoolIdPath}, ${agencyIdpNamePath}`
+      `No parameters found for: ${cognitoDomainPath}, ${clientIdPath}, ${callbackUrlPath}, ${identityPoolIdPath}, ${userPoolIdPath}, ${agencyIdpNamePath}`
     );
   }
 
   let cognitoDomainUrl;
   let clientId;
-  let clientSecret;
   let callbackUrl;
   let identityPoolId;
   let userPoolId;
@@ -82,9 +80,6 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
         break;
       case clientIdPath:
         clientId = param.Value;
-        break;
-      case clientSecretPath:
-        clientSecret = param.Value;
         break;
       case callbackUrlPath:
         callbackUrl = param.Value;
@@ -101,11 +96,10 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
     }
   });
 
-  if (cognitoDomainUrl && clientId && clientSecret && callbackUrl && identityPoolId && userPoolId) {
+  if (cognitoDomainUrl && clientId && callbackUrl && identityPoolId && userPoolId) {
     cachedCognitoParams = {
       cognitoDomainUrl,
       clientId,
-      clientSecret,
       callbackUrl,
       identityPoolId,
       userPoolId,
@@ -170,6 +164,23 @@ export const getCredentialsByToken = async (idToken: string) => {
   return Credentials;
 };
 
+const getClientSecret = async () => {
+  const clientSecretId = `/dea/${region}/${stage}/clientSecret`;
+
+  const client = new SecretsManagerClient({ region: region });
+  const input = {
+    SecretId: clientSecretId,
+  };
+  const command = new GetSecretValueCommand(input);
+  const secretResponse = await client.send(command);
+
+  if (secretResponse.SecretString) {
+    return secretResponse.SecretString;
+  } else {
+    throw new ValidationError(`Cognito secret ${clientSecretId} not found!`);
+  }
+};
+
 export const exchangeAuthorizationCode = async (
   authorizationCode: string,
   codeVerifier: string,
@@ -189,15 +200,19 @@ export const exchangeAuthorizationCode = async (
     callbackUrl = callbackOverride;
   }
 
+  const clientSecret = await getClientSecret();
+
   const data = new URLSearchParams();
   data.append('grant_type', 'authorization_code');
   data.append('client_id', cognitoParams.clientId);
   data.append('code', authorizationCode);
   data.append('redirect_uri', callbackUrl);
-  data.append('client_secret', cognitoParams.clientSecret);
+  data.append('client_secret', clientSecret);
 
   if (codeVerifier) {
     data.append('code_verifier', codeVerifier);
+  } else {
+    throw new ValidationError(`Missing PKCE code verifier!`);
   }
 
   // make a request using the Axios instance
@@ -224,11 +239,13 @@ export const useRefreshToken = async (refreshToken: string): Promise<[Oauth2Toke
     baseURL: cognitoParams.cognitoDomainUrl,
   });
 
+  const clientSecret = await getClientSecret();
+
   const data = new URLSearchParams();
   data.append('grant_type', 'refresh_token');
   data.append('client_id', cognitoParams.clientId);
   data.append('refresh_token', refreshToken);
-  data.append('client_secret', cognitoParams.clientSecret);
+  data.append('client_secret', clientSecret);
 
   // make a request using the Axios instance
   const response = await axiosInstance.post('/oauth2/token', data, {
@@ -252,10 +269,10 @@ export const revokeRefreshToken = async (refreshToken: string) => {
     baseURL: cognitoParams.cognitoDomainUrl,
   });
 
+  const clientSecret = await getClientSecret();
+
   // Get encoded client ID for client secret support
-  const encodedClientId = Buffer.from(`${cognitoParams.clientId}:${cognitoParams.clientSecret}`).toString(
-    'base64'
-  );
+  const encodedClientId = Buffer.from(`${cognitoParams.clientId}:${clientSecret}`).toString('base64');
 
   const data = new URLSearchParams();
   data.append('grant_type', 'authorization_code');
