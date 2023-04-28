@@ -276,6 +276,10 @@ export class DeaAuthConstruct extends Construct {
       value: pool.userPoolProviderUrl,
     });
 
+    createCfnOutput(this, 'poolProviderName', {
+      value: pool.userPoolProviderName,
+    });
+
     createCfnOutput(this, 'userPoolClientId', {
       value: poolClient.userPoolClientId,
     });
