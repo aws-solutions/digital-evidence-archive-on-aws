@@ -19,7 +19,7 @@ import {
 } from '@aws/dea-app/lib/app/services/audit-service';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { logger } from '../logger';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
 import { exceptionHandlers } from './exception-handlers';
@@ -37,10 +37,15 @@ export const createDeaHandler = (
   deaAuditService = auditService,
   preExecutionVerifyCaseACLs = verifyCaseACLs
 ): DEAGatewayProxyHandler => {
-  const wrappedHandler: DEAGatewayProxyHandler = async (event, context) => {
+  const wrappedHandler: DEAGatewayProxyHandler = async (event: APIGatewayProxyEvent, context: Context) => {
     const auditEvent = initialAuditEvent(event);
     try {
-      logger.debug(`Event`, { Data: JSON.stringify(event, null, 2) });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { 'x-amz-security-token': _h, 'X-Amz-Security-Token': _h1, ...debugHeaders } = event.headers;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { headers: _, multiValueHeaders: _1, ...debugEvent } = event;
+      logger.debug(`Headers`, { Data: JSON.stringify(debugHeaders, null, 2) });
+      logger.debug(`Event`, { Data: JSON.stringify(debugEvent, null, 2) });
       logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
 
       if (auditEvent.eventType === AuditEventType.UNKNOWN) {

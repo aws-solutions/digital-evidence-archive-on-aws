@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { fail } from 'assert';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { convictConfig, deaConfig, loadConfig } from '../config';
@@ -92,9 +93,30 @@ describe('convict based config', () => {
     expect(deaConfig.deaAllowedOriginsList()).toEqual([]);
   });
 
+  it('returns samesite values for test and prod', () => {
+    convictConfig.set('testStack', true);
+    expect(deaConfig.sameSiteValue()).toEqual('None');
+    convictConfig.set('testStack', false);
+    expect(deaConfig.sameSiteValue()).toEqual('Strict');
+  });
+
   it('returns allowed origin configuration', () => {
     convictConfig.set('deaAllowedOrigins', 'https://localhost,https://test');
     expect(deaConfig.deaAllowedOrigins()).toEqual('https://localhost,https://test');
     expect(deaConfig.deaAllowedOriginsList()).toEqual(['https://localhost', 'https://test']);
+  });
+
+  it('returns preflight options for production', () => {
+    convictConfig.set('testStack', false);
+    expect(deaConfig.preflightOptions()).toBeUndefined();
+  });
+
+  it('returns preflight options for test stack', () => {
+    convictConfig.set('testStack', true);
+    const preflightOpt = deaConfig.preflightOptions();
+    if (!preflightOpt) {
+      fail();
+    }
+    expect(Object.keys(preflightOpt).length).toBeGreaterThan(0);
   });
 });

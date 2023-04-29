@@ -6,7 +6,7 @@
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { getDeaUserFromToken, getTokenPayload } from '../../cognito-token-helpers';
-import { getAllowedOrigins, getOauthToken } from '../../lambda-http-helpers';
+import { getAllowedOrigins, getOauthToken, getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { Oauth2Token } from '../../models/auth';
 import { DeaUser } from '../../models/user';
@@ -172,11 +172,12 @@ export const okSetIdTokenCookie = (
   idToken: Oauth2Token,
   body: string
 ): APIGatewayProxyResult => {
+  const sameSiteValue = getRequiredEnv('SAMESITE');
   return withAllowedOrigin(event, {
     statusCode: 200,
     body,
     headers: {
-      'Set-Cookie': `idToken=${JSON.stringify(idToken)}; Path=/; SameSite=None; Secure; HttpOnly`,
+      'Set-Cookie': `idToken=${JSON.stringify(idToken)}; Path=/; SameSite=${sameSiteValue}; Secure; HttpOnly`,
       'Access-Control-Allow-Credential': 'true',
     },
   });

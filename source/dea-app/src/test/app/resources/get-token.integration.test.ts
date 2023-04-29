@@ -16,6 +16,7 @@ let pkceStrings: PkceStrings;
 
 describe('get-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
+  const OLD_ENV = process.env;
 
   const suffix = randomSuffix(5);
   const testUser = `authCodeIntegrationTestUser${suffix}`;
@@ -29,8 +30,14 @@ describe('get-token', () => {
     pkceStrings = getPkceStrings();
   });
 
+  beforeEach(() => {
+    process.env = { ...OLD_ENV };
+    process.env.SAMESITE = 'Strict';
+  });
+
   afterAll(async () => {
     await cognitoHelper.cleanup();
+    process.env = OLD_ENV;
   });
 
   it('successfully get id token using auth code', async () => {
