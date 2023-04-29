@@ -65,7 +65,7 @@ export const generatePresignedUrlsForCaseFile = async (
   datasetsProvider: DatasetsProvider,
   chunkSizeBytes: number
 ): Promise<void> => {
-  const s3Key = _getS3KeyForCaseFile(caseFile);
+  const s3Key = getS3KeyForCaseFile(caseFile);
   logger.info('Initiating multipart upload.', { s3Key });
   const response = await datasetsProvider.s3Client.send(
     new CreateMultipartUploadCommand({
@@ -86,7 +86,7 @@ export const generatePresignedUrlsForCaseFile = async (
   logger.info('Generating presigned URLs.', { fileParts, s3Key });
   const presignedUrlPromises = [];
   for (let i = 0; i < fileParts; i++) {
-    presignedUrlPromises[i] = _getUploadPresignedUrlPromise(s3Key, uploadId, i + 1, datasetsProvider);
+    presignedUrlPromises[i] = getUploadPresignedUrlPromise(s3Key, uploadId, i + 1, datasetsProvider);
   }
   await Promise.all(presignedUrlPromises).then((presignedUrls) => {
     caseFile.presignedUrls = presignedUrls;
@@ -103,7 +103,7 @@ export const completeUploadForCaseFile = async (
   let uploadedParts: Part[] = [];
   let listPartsResponse: ListPartsOutput;
   let partNumberMarker;
-  const s3Key = _getS3KeyForCaseFile(caseFile);
+  const s3Key = getS3KeyForCaseFile(caseFile);
   logger.info('Collecting upload parts.', { s3Key });
 
   /* eslint-disable no-await-in-loop */
@@ -157,7 +157,7 @@ export const getPresignedUrlForDownload = async (
   caseFile: DeaCaseFile,
   datasetsProvider: DatasetsProvider
 ): Promise<string> => {
-  const s3Key = _getS3KeyForCaseFile(caseFile);
+  const s3Key = getS3KeyForCaseFile(caseFile);
 
   logger.info('Creating presigned URL for caseFile.', caseFile);
   const getObjectCommand = new GetObjectCommand({
@@ -184,9 +184,9 @@ export const startDeleteCaseFilesS3BatchJob = async (
   logger.info('Creating delete files batch job', { fileCount: s3Objects.length, caseId });
 
   const manifestFileName = `manifests/case-${caseId}-delete-files-job-${Date.now()}.csv`;
-  const manifestFileEtag = await _createJobManifestFile(s3Objects, manifestFileName, datasetsProvider);
+  const manifestFileEtag = await createJobManifestFile(s3Objects, manifestFileName, datasetsProvider);
   const etag = manifestFileEtag.replace(/^"(.*)"$/, '$1');
-  return _createDeleteCaseFileBatchJob(manifestFileName, etag, datasetsProvider);
+  return createDeleteCaseFileBatchJob(manifestFileName, etag, datasetsProvider);
 };
 
 export const deleteCaseFile = async (
@@ -217,7 +217,7 @@ export const describeS3BatchJob = async (JobId: string, AccountId: string): Prom
   return s3ControlClient.send(new DescribeJobCommand({ JobId, AccountId }));
 };
 
-async function _createJobManifestFile(
+async function createJobManifestFile(
   s3Objects: S3Object[],
   manifestFileName: string,
   datasetsProvider: DatasetsProvider
@@ -246,7 +246,7 @@ async function _createJobManifestFile(
   return response.ETag;
 }
 
-const _createDeleteCaseFileBatchJob = async (
+const createDeleteCaseFileBatchJob = async (
   manifestFileName: string,
   manifestFileEtag: string,
   datasetsProvider: DatasetsProvider
@@ -291,11 +291,11 @@ const _createDeleteCaseFileBatchJob = async (
   return result.JobId;
 };
 
-function _getS3KeyForCaseFile(caseFile: DeaCaseFile): string {
+function getS3KeyForCaseFile(caseFile: DeaCaseFile): string {
   return `${caseFile.caseUlid}/${caseFile.ulid}`;
 }
 
-async function _getUploadPresignedUrlPromise(
+async function getUploadPresignedUrlPromise(
   s3Key: string,
   uploadId: string,
   partNumber: number,

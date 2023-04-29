@@ -65,10 +65,10 @@ export class DeaAuthConstruct extends Construct {
     // For production deployments, follow the ImplementationGuide on how to setup
     // and connect your existing CJIS-compatible IdP for SSO and attribute mapping for the UserPool
     // and role mapping rules for the identity pool for authorization
-    this._createAuthStack(props.apiEndpointArns, loginUrl, region, props.kmsKey);
+    this.createAuthStack(props.apiEndpointArns, loginUrl, region, props.kmsKey);
   }
 
-  private _createIamRole(
+  private createIamRole(
     roleName: string,
     description: string,
     apiEndpoints: Array<string>,
@@ -109,7 +109,7 @@ export class DeaAuthConstruct extends Construct {
   // identity token is used and compared to the identity pool attached role mapping.
   // Thus from this function we send a mapping of DEARole values to the appropriate
   // IAM Role, which we will use to define the role mapping in cdk for the ID Pool.
-  private _createDEARoles(
+  private createDEARoles(
     apiEndpointArns: Map<string, string>,
     userPoolId: string,
     identityPoolId: string,
@@ -145,8 +145,8 @@ export class DeaAuthConstruct extends Construct {
     const deaRoleTypes = deaConfig.deaRoleTypes();
     deaRoleTypes.forEach((roleType) => {
       const endpointStrings = roleType.endpoints.map((endpoint) => `${endpoint.path}${endpoint.method}`);
-      const groupEndpoints = this._getEndpoints(apiEndpointArns, endpointStrings);
-      this._createDEARole(
+      const groupEndpoints = this.getEndpoints(apiEndpointArns, endpointStrings);
+      this.createDEARole(
         roleType.name,
         roleType.description,
         deaRolesMap,
@@ -186,7 +186,7 @@ export class DeaAuthConstruct extends Construct {
     return deaRolesMap;
   }
 
-  private _createAuthStack(
+  private createAuthStack(
     apiEndpointArns: Map<string, string>,
     callbackUrl: string,
     region: string,
@@ -194,7 +194,7 @@ export class DeaAuthConstruct extends Construct {
   ): void {
     // See Implementation Guide for how to integrate your existing
     // Identity Provider with Cognito User Pool for SSO
-    const [pool, poolClient, cognitoDomainUrl] = this._createCognitoIdP(callbackUrl, region, kmsKey);
+    const [pool, poolClient, cognitoDomainUrl] = this.createCognitoIdP(callbackUrl, region, kmsKey);
 
     const providerUrl = `cognito-idp.${region}.amazonaws.com/${pool.userPoolId}:${poolClient.userPoolClientId}`;
 
@@ -213,7 +213,7 @@ export class DeaAuthConstruct extends Construct {
     // Create the DEA IAM Roles
     // Then tell the IdPool to map the DEARole field from the id token
     // to the appropriate DEA IAM Role
-    const deaRoles: Map<string, Role> = this._createDEARoles(
+    const deaRoles: Map<string, Role> = this.createDEARoles(
       apiEndpointArns,
       pool.userPoolId,
       idPool.ref,
@@ -294,7 +294,7 @@ export class DeaAuthConstruct extends Construct {
     });
 
     // Add the user pool id and client id to SSM for use in the backend for verifying and decoding tokens
-    this._addCognitoInformationToSSM(
+    this.addCognitoInformationToSSM(
       pool.userPoolId,
       poolClient.userPoolClientId,
       cognitoDomainUrl,
@@ -313,7 +313,7 @@ export class DeaAuthConstruct extends Construct {
   // For production, the Cognito will simply act as a token vendor
   // and ONLY allow federation, no native auth
   // TODO: determine if Cognito is CJIS compatible
-  private _createCognitoIdP(
+  private createCognitoIdP(
     callbackUrl: string,
     region: string,
     kmsKey: Key
@@ -409,7 +409,7 @@ export class DeaAuthConstruct extends Construct {
     // integrate it into the user pool here
     const idpInfo = deaConfig.idpMetadata();
     if (idpInfo && idpInfo.metadataPath) {
-      const idpSamlMetadata = this._createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
+      const idpSamlMetadata = this.createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
       const idp = new UserPoolIdentityProviderSaml(this, 'AgencyIdP', {
         metadata: idpSamlMetadata,
         userPool: userPool,
@@ -466,7 +466,7 @@ export class DeaAuthConstruct extends Construct {
     return [userPool, poolClient, newDomain.baseUrl({ fips: true })];
   }
 
-  private _createDEARole(
+  private createDEARole(
     name: string,
     desc: string,
     deaRolesMap: Map<string, Role>,
@@ -474,11 +474,11 @@ export class DeaAuthConstruct extends Construct {
     principal: WebIdentityPrincipal,
     roleBoundary: ManagedPolicy
   ): void {
-    const deaRole = this._createIamRole(`${name}Role`, `Role ${desc}`, endpoints, principal, roleBoundary);
+    const deaRole = this.createIamRole(`${name}Role`, `Role ${desc}`, endpoints, principal, roleBoundary);
     deaRolesMap.set(name, deaRole);
   }
 
-  private _getEndpoints(apiEndpointArns: Map<string, string>, paths: string[]): string[] {
+  private getEndpoints(apiEndpointArns: Map<string, string>, paths: string[]): string[] {
     const endpoints = paths
       .map((path) => apiEndpointArns.get(path))
       .filter((endpoint): endpoint is string => endpoint !== null);
@@ -488,7 +488,7 @@ export class DeaAuthConstruct extends Construct {
 
   // Store the user pool id and client id in the parameter store so that we can verify
   // and decode tokens on the backend
-  private _addCognitoInformationToSSM(
+  private addCognitoInformationToSSM(
     userPoolId: string,
     userPoolClientId: string,
     cognitoDomain: string,
@@ -538,7 +538,7 @@ export class DeaAuthConstruct extends Construct {
     });
   }
 
-  private _createIdpSAMLMetadata(path: string, pathType: string): UserPoolIdentityProviderSamlMetadata {
+  private createIdpSAMLMetadata(path: string, pathType: string): UserPoolIdentityProviderSamlMetadata {
     if (pathType === 'URL') {
       return UserPoolIdentityProviderSamlMetadata.url(path);
     }

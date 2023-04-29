@@ -36,8 +36,8 @@ describe('exception handlers', () => {
   afterAll(() => {
     process.env = OLD_ENV;
   });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const preExecutionChecks = async (event: APIGatewayProxyEvent, context: Context) => {
+
+  const preExecutionChecks = async (_event: APIGatewayProxyEvent, _context: Context) => {
     return;
   };
 

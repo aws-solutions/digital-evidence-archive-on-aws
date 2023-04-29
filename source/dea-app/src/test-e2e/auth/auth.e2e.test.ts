@@ -45,8 +45,7 @@ describe('API authentication', () => {
   });
 
   it('should have the DEARole field in the id Token', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
+    const [_creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
     const payload = await getTokenPayload(idToken.id_token, region);
     expect(payload['custom:DEARole']).toStrictEqual('AuthTestGroup');

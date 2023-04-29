@@ -41,6 +41,7 @@ module.exports = {
     curly: ['error'],
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/await-thenable': 'error',
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
   },
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'security', 'import'],
