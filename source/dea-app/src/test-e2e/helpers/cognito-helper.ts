@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import crypto from 'crypto';
 import {
   CognitoIdentityClient,
   GetCredentialsForIdentityCommand,
@@ -20,6 +21,7 @@ import {
   InitiateAuthCommand,
   MessageActionType,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import { Credentials } from 'aws4-axios';
 import { getTokenPayload } from '../../cognito-token-helpers';
 import { Oauth2Token } from '../../models/auth';
@@ -38,12 +40,14 @@ export default class CognitoHelper {
 
   private _usersCreated: string[] = [];
   public testPassword: string;
+  private _stage: string;
 
   public constructor(globalPassword?: string) {
     this._region = testEnv.awsRegion;
     this._userPoolId = testEnv.userPoolId;
     this._userPoolClientId = testEnv.clientId;
     this._identityPoolId = testEnv.identityPoolId;
+    this._stage = testEnv.stage;
 
     this._idpUrl = `cognito-idp.${this._region}.amazonaws.com/${this._userPoolId}`;
 
@@ -121,13 +125,34 @@ export default class CognitoHelper {
     return (await this.getUser(userName)) ? true : false;
   }
 
+  getClientSecret = async () => {
+    const clientSecretId = `/dea/${this._region}/${this._stage}/clientSecret`;
+
+    const client = new SecretsManagerClient({ region: this._region });
+    const input = {
+      SecretId: clientSecretId,
+    };
+    const command = new GetSecretValueCommand(input);
+    const secretResponse = await client.send(command);
+
+    if (secretResponse.SecretString) {
+      return secretResponse.SecretString;
+    } else {
+      throw new Error(`Cognito secret ${clientSecretId} not found!`);
+    }
+  };
+
   private async getUserPoolAuthForUser(userName: string): Promise<AuthenticationResultType> {
+    const clientSecret = await this.getClientSecret();
+    const secretHash = this.generateSecretHash(this._userPoolClientId, clientSecret, userName);
+
     const result = await this._userPoolProvider.send(
       new InitiateAuthCommand({
         AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
         AuthParameters: {
           USERNAME: userName,
           PASSWORD: this.testPassword,
+          SECRET_HASH: secretHash,
         },
         ClientId: this._userPoolClientId,
       })
@@ -138,6 +163,15 @@ export default class CognitoHelper {
     }
 
     return result.AuthenticationResult;
+  }
+
+  private generateSecretHash(clientId: string, clientSecret: string, userName: string): string {
+    const secretHash = crypto
+      .createHmac('SHA256', clientSecret)
+      .update(userName + clientId)
+      .digest('base64');
+
+    return secretHash;
   }
 
   public async getIdTokenForUser(userName: string): Promise<Oauth2Token> {

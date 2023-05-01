@@ -30,6 +30,8 @@ import {
   Role,
   WebIdentityPrincipal,
 } from 'aws-cdk-lib/aws-iam';
+import { Key } from 'aws-cdk-lib/aws-kms';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { ParameterTier, StringListParameter, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
@@ -37,6 +39,7 @@ import { createCfnOutput } from './construct-support';
 
 interface DeaAuthProps {
   readonly restApi: RestApi;
+  readonly kmsKey: Key;
   // We need to create IAM Roles with what APIs the Role can call
   // therefore we need the API endpoint ARNs from the API Gateway construct
   apiEndpointArns: Map<string, string>;
@@ -62,7 +65,7 @@ export class DeaAuthConstruct extends Construct {
     // For production deployments, follow the ImplementationGuide on how to setup
     // and connect your existing CJIS-compatible IdP for SSO and attribute mapping for the UserPool
     // and role mapping rules for the identity pool for authorization
-    this._createAuthStack(props.apiEndpointArns, loginUrl, region);
+    this._createAuthStack(props.apiEndpointArns, loginUrl, region, props.kmsKey);
   }
 
   private _createIamRole(
@@ -183,10 +186,15 @@ export class DeaAuthConstruct extends Construct {
     return deaRolesMap;
   }
 
-  private _createAuthStack(apiEndpointArns: Map<string, string>, callbackUrl: string, region: string): void {
+  private _createAuthStack(
+    apiEndpointArns: Map<string, string>,
+    callbackUrl: string,
+    region: string,
+    kmsKey: Key
+  ): void {
     // See Implementation Guide for how to integrate your existing
     // Identity Provider with Cognito User Pool for SSO
-    const [pool, poolClient, cognitoDomainUrl] = this._createCognitoIdP(callbackUrl, region);
+    const [pool, poolClient, cognitoDomainUrl] = this._createCognitoIdP(callbackUrl, region, kmsKey);
 
     const providerUrl = `cognito-idp.${region}.amazonaws.com/${pool.userPoolId}:${poolClient.userPoolClientId}`;
 
@@ -281,6 +289,10 @@ export class DeaAuthConstruct extends Construct {
       value: poolClient.userPoolClientId,
     });
 
+    createCfnOutput(this, 'userPoolClientSecret', {
+      value: poolClient.userPoolClientSecret.unsafeUnwrap(),
+    });
+
     // Add the user pool id and client id to SSM for use in the backend for verifying and decoding tokens
     this._addCognitoInformationToSSM(
       pool.userPoolId,
@@ -301,7 +313,11 @@ export class DeaAuthConstruct extends Construct {
   // For production, the Cognito will simply act as a token vendor
   // and ONLY allow federation, no native auth
   // TODO: determine if Cognito is CJIS compatible
-  private _createCognitoIdP(callbackUrl: string, region: string): [UserPool, UserPoolClient, string] {
+  private _createCognitoIdP(
+    callbackUrl: string,
+    region: string,
+    kmsKey: Key
+  ): [UserPool, UserPoolClient, string] {
     const tempPasswordValidity = Duration.days(1);
     // must re-authenticate in every 12 hours
     // Note when inactive for 30+ minutes, you will also have to reauthenticate
@@ -310,6 +326,9 @@ export class DeaAuthConstruct extends Construct {
     const accessTokenValidity = Duration.hours(12);
     const idTokenValidity = Duration.hours(1);
     const refreshTokenValidity = Duration.hours(12);
+
+    // fetch stage
+    const stage = deaConfig.stage();
 
     const userPool = new UserPool(this, 'DEAUserPool', {
       accountRecovery: AccountRecovery.EMAIL_ONLY,
@@ -378,7 +397,7 @@ export class DeaAuthConstruct extends Construct {
 
     const callbackUrls = [callbackUrl];
     deaConfig.deaAllowedOriginsList().forEach((origin) => {
-      callbackUrls.push(`${origin}/${deaConfig.stage()}/ui/login`);
+      callbackUrls.push(`${origin}/${stage}/ui/login`);
     });
 
     if (deaConfig.isTestStack()) {
@@ -406,7 +425,7 @@ export class DeaAuthConstruct extends Construct {
       });
 
       // Put the name of the IdP in SSM so the hosted UI can automaticaly redirect to the IdP Signin page
-      const stage = deaConfig.stage();
+
       new StringParameter(this, 'agency-idp-name', {
         parameterName: `/dea/${region}/${stage}-agency-idp-name`,
         stringValue: idp.providerName,
@@ -424,7 +443,7 @@ export class DeaAuthConstruct extends Construct {
         userPassword: true,
       },
       enableTokenRevocation: true,
-      generateSecret: false,
+      generateSecret: true,
       idTokenValidity: idTokenValidity,
 
       oAuth: {
@@ -437,6 +456,11 @@ export class DeaAuthConstruct extends Construct {
       preventUserExistenceErrors: true,
       refreshTokenValidity: refreshTokenValidity,
       userPoolClientName: 'dea-app-client',
+    });
+    new Secret(this, `/dea/${region}/${stage}/clientSecret`, {
+      secretName: `/dea/${region}/${stage}/clientSecret`,
+      encryptionKey: kmsKey,
+      secretStringValue: poolClient.userPoolClientSecret,
     });
 
     return [userPool, poolClient, newDomain.baseUrl({ fips: true })];

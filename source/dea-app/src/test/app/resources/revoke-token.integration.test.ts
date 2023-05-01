@@ -24,6 +24,12 @@ describe('revoke-token', () => {
   const testUser = `RevokeCodeIntegrationTestUser${suffix}`;
   const firstName = 'CognitoTokenHelper';
   const lastName = 'TestUser';
+  const OLD_ENV = process.env;
+
+  beforeEach(() => {
+    process.env = { ...OLD_ENV };
+    process.env.SAMESITE = 'Strict';
+  });
 
   beforeAll(async () => {
     // Create user in test group
@@ -36,6 +42,7 @@ describe('revoke-token', () => {
   afterAll(async () => {
     await cognitoHelper.cleanup(repositoryProvider);
     await repositoryProvider.table.deleteTable('DeleteTableForever');
+    process.env = OLD_ENV;
   });
 
   it('successfully revoke an refresh token', async () => {

@@ -5,6 +5,7 @@
 
 import path from 'path';
 import { RemovalPolicy } from 'aws-cdk-lib';
+import { CorsOptions } from 'aws-cdk-lib/aws-apigateway';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import convict from 'convict';
 // https://www.npmjs.com/package/convict
@@ -215,6 +216,8 @@ interface DEAConfig {
   deaAllowedOriginsList(): string[];
   kmsAccountActions(): string[];
   deletionAllowed(): boolean;
+  sameSiteValue(): string;
+  preflightOptions(): CorsOptions | undefined;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -255,6 +258,26 @@ export const deaConfig: DEAConfig = {
           'kms:CancelKeyDeletion',
         ],
   deletionAllowed: () => convictConfig.get('deletionAllowed'),
+  sameSiteValue: () => (convictConfig.get('testStack') ? 'None' : 'Strict'),
+  preflightOptions: () =>
+    convictConfig.get('testStack')
+      ? {
+          allowHeaders: [
+            'Content-Type',
+            'X-Amz-Date',
+            'Authorization',
+            'X-Api-Key',
+            'CSRF-Token',
+            'x-amz-security-token',
+            'set-cookie',
+            'Host',
+            'Content-Length',
+          ],
+          allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+          allowCredentials: true,
+          allowOrigins: deaConfig.deaAllowedOriginsList(),
+        }
+      : undefined,
 };
 
 export const loadConfig = (stage: string): void => {
