@@ -65,7 +65,7 @@ export class DeaRestApiConstruct extends Construct {
 
     const partition = deaConfig.partition();
 
-    this.lambdaBaseRole = this._createLambdaBaseRole(
+    this.lambdaBaseRole = this.createLambdaBaseRole(
       props.kmsKey.keyArn,
       props.deaTableArn,
       props.deaDatasetsBucketArn,
