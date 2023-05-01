@@ -15,6 +15,7 @@
         "logs:*",
         "s3:*",
         "ssm:*",
+        "secretsmanager:*",
         "cloudtrail:*",
         "events:*"
       ],

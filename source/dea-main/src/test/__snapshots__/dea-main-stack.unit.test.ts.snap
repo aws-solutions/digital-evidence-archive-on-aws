@@ -114,6 +114,17 @@ Object {
         "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
       },
     },
+    "DeaAuthuserPoolClientSecretA2CBE3BE": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-userPoolClientSecret",
+      },
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientEFA99634",
+          "UserPoolClient.ClientSecret",
+        ],
+      },
+    },
     "DeaAuthuserPoolIdB0FAC1EB": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-userPoolId",
@@ -550,6 +561,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -626,6 +638,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -702,6 +715,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -778,6 +792,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -854,6 +869,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -930,6 +946,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1006,6 +1023,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1082,6 +1100,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1158,6 +1177,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1234,6 +1254,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1310,6 +1331,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1386,6 +1408,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1462,6 +1485,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1538,6 +1562,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1614,6 +1639,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1690,6 +1716,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1766,6 +1793,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1842,6 +1870,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1918,6 +1947,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1994,6 +2024,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2070,6 +2101,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2146,6 +2178,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2222,6 +2255,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2298,6 +2332,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2374,6 +2409,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2450,6 +2486,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2526,6 +2563,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2602,6 +2640,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2678,6 +2717,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2754,6 +2794,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2830,6 +2871,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2906,6 +2948,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2982,6 +3025,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -3058,6 +3102,7 @@ Object {
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -11270,7 +11315,31 @@ Object {
                     Object {
                       "Ref": "AWS::Region",
                     },
-                    "/*",
+                    "/[STAGE-REMOVED]*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "secretsmanager:GetSecretValue",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:secretsmanager:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":secret:/dea/",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    "/[STAGE-REMOVED]/clientSecret-*",
                   ],
                 ],
               },
@@ -11468,7 +11537,7 @@ Object {
                     Object {
                       "Ref": "AWS::Region",
                     },
-                    "/*",
+                    "/[STAGE-REMOVED]*",
                   ],
                 ],
               },
@@ -13008,7 +13077,7 @@ Object {
           "ALLOW_ADMIN_USER_PASSWORD_AUTH",
           "ALLOW_REFRESH_TOKEN_AUTH",
         ],
-        "GenerateSecret": false,
+        "GenerateSecret": true,
         "IdTokenValidity": 60,
         "PreventUserExistenceErrors": "ENABLED",
         "RefreshTokenValidity": 720,
@@ -13025,6 +13094,97 @@ Object {
         },
       },
       "Type": "AWS::Cognito::UserPoolClient",
+    },
+    "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicy67AC1E5A": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "cognito-idp:DescribeUserPoolClient",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaAuthDEAUserPool22DB2BAB",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicy67AC1E5A",
+        "Roles": Array [
+          Object {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientEFA99634": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicy67AC1E5A",
+      ],
+      "Properties": Object {
+        "Create": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"region\\":\\"",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "\\",\\"service\\":\\"CognitoIdentityServiceProvider\\",\\"action\\":\\"describeUserPoolClient\\",\\"parameters\\":{\\"UserPoolId\\":\\"",
+              Object {
+                "Ref": "DeaAuthDEAUserPool22DB2BAB",
+              },
+              "\\",\\"ClientId\\":\\"",
+              Object {
+                "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+              },
+              "\\"},\\"physicalResourceId\\":{\\"id\\":\\"",
+              Object {
+                "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+              },
+              "\\"}}",
+            ],
+          ],
+        },
+        "InstallLatestAwsSdk": false,
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"region\\":\\"",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "\\",\\"service\\":\\"CognitoIdentityServiceProvider\\",\\"action\\":\\"describeUserPoolClient\\",\\"parameters\\":{\\"UserPoolId\\":\\"",
+              Object {
+                "Ref": "DeaAuthDEAUserPool22DB2BAB",
+              },
+              "\\",\\"ClientId\\":\\"",
+              Object {
+                "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+              },
+              "\\"},\\"physicalResourceId\\":{\\"id\\":\\"",
+              Object {
+                "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+              },
+              "\\"}}",
+            ],
+          ],
+        },
+      },
+      "Type": "Custom::DescribeCognitoUserPoolClient",
+      "UpdateReplacePolicy": "Delete",
     },
     "DeaAuthEvidenceManagerRole778E476E": Object {
       "Properties": Object {
@@ -16170,6 +16330,26 @@ Object {
       },
       "Type": "AWS::Cognito::UserPoolDomain",
     },
+    "DeaAuthdeauseast1[STAGE-REMOVED]clientSecret[HASH REMOVED]": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "KmsKeyId": Object {
+          "Fn::GetAtt": Array [
+            "primaryCustomerKey87EC2263",
+            "Arn",
+          ],
+        },
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]/clientSecret",
+        "SecretString": Object {
+          "Fn::GetAtt": Array [
+            "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientEFA99634",
+            "UserPoolClient.ClientSecret",
+          ],
+        },
+      },
+      "Type": "AWS::SecretsManager::Secret",
+      "UpdateReplacePolicy": "Delete",
+    },
     "DeaAuthidentitypoolidssmparam7012C429": Object {
       "Properties": Object {
         "AllowedPattern": ".*",
@@ -17642,6 +17822,92 @@ Object {
               },
               "Resource": "*",
               "Sid": "main-key-share-statement",
+            },
+            Object {
+              "Action": Array [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "kms:ViaService": Object {
+                    "Fn::Join": Array [
+                      "",
+                      Array [
+                        "secretsmanager.",
+                        Object {
+                          "Ref": "AWS::Region",
+                        },
+                        ".amazonaws.com",
+                      ],
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "kms:CreateGrant",
+                "kms:DescribeKey",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "kms:ViaService": Object {
+                    "Fn::Join": Array [
+                      "",
+                      Array [
+                        "secretsmanager.",
+                        Object {
+                          "Ref": "AWS::Region",
+                        },
+                        ".amazonaws.com",
+                      ],
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
             },
             Object {
               "Action": Array [

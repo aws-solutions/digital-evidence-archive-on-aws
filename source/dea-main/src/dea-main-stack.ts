@@ -90,6 +90,7 @@ export class DeaMainStack extends cdk.Stack {
 
     new DeaAuthConstruct(this, 'DeaAuth', {
       restApi: deaApi.deaRestApi,
+      kmsKey,
       apiEndpointArns: deaApi.apiEndpointArns,
     });
 

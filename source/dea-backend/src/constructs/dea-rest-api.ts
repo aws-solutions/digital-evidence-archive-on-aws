@@ -119,22 +119,7 @@ export class DeaRestApiConstruct extends Construct {
           })
         ),
       },
-      defaultCorsPreflightOptions: {
-        allowHeaders: [
-          'Content-Type',
-          'X-Amz-Date',
-          'Authorization',
-          'X-Api-Key',
-          'CSRF-Token',
-          'x-amz-security-token',
-          'set-cookie',
-          'Host',
-          'Content-Length',
-        ],
-        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-        allowCredentials: true,
-        allowOrigins: deaConfig.deaAllowedOriginsList(),
-      },
+      defaultCorsPreflightOptions: deaConfig.preflightOptions(),
       defaultMethodOptions: {
         authorizationType: AuthorizationType.IAM,
       },
@@ -291,6 +276,7 @@ export class DeaRestApiConstruct extends Construct {
         NODE_OPTIONS: '--enable-source-maps',
         STAGE: deaConfig.stage(),
         ALLOWED_ORIGINS: deaConfig.deaAllowedOrigins(),
+        SAMESITE: deaConfig.sameSiteValue(),
         ...lambdaEnv,
       },
       bundling: {
@@ -337,6 +323,8 @@ export class DeaRestApiConstruct extends Construct {
     trailLogArn: string,
     s3BatchDeleteCaseFileRoleArn: string
   ): Role {
+    const STAGE = deaConfig.stage();
+
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
     );
@@ -406,7 +394,7 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:aws:ssm:${region}:${accountId}:parameter/dea/${region}/*`],
+        resources: [`arn:aws:ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
       })
     );
 
@@ -414,6 +402,8 @@ export class DeaRestApiConstruct extends Construct {
   }
 
   private _createAuthLambdaRole(region: string, accountId: string): Role {
+    const STAGE = deaConfig.stage();
+
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
     );
@@ -425,7 +415,16 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:aws:ssm:${region}:${accountId}:parameter/dea/${region}/*`],
+        resources: [`arn:aws:ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['secretsmanager:GetSecretValue'],
+        resources: [
+          `arn:aws:secretsmanager:${region}:${accountId}:secret:/dea/${region}/${STAGE}/clientSecret-*`,
+        ],
       })
     );
 
