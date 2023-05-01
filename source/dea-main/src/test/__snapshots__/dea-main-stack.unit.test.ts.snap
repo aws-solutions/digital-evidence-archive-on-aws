@@ -95,6 +95,17 @@ Object {
         "Ref": "DeaAuthDEAIdentityPool0B891C1B",
       },
     },
+    "DeaAuthpoolProviderName8DEEEFFC": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-poolProviderName",
+      },
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "DeaAuthDEAUserPool22DB2BAB",
+          "ProviderName",
+        ],
+      },
+    },
     "DeaAuthpoolProviderUrl9C814957": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-poolProviderUrl",
@@ -14172,9 +14183,11 @@ Object {
               "Fn::Join": Array [
                 "",
                 Array [
-                  "cognito-idp.us-east-1.amazonaws.com/",
                   Object {
-                    "Ref": "DeaAuthDEAUserPool22DB2BAB",
+                    "Fn::GetAtt": Array [
+                      "DeaAuthDEAUserPool22DB2BAB",
+                      "ProviderName",
+                    ],
                   },
                   ":",
                   Object {
@@ -17612,17 +17625,6 @@ Object {
           Object {
             "DataResources": Array [
               Object {
-                "Type": "AWS::DynamoDB::Table",
-                "Values": Array [
-                  Object {
-                    "Fn::GetAtt": Array [
-                      "DeaBackendStackDeaTableE9FE4A05",
-                      "Arn",
-                    ],
-                  },
-                ],
-              },
-              Object {
                 "Type": "AWS::S3::Object",
                 "Values": Array [
                   Object {
@@ -17637,6 +17639,17 @@ Object {
                         },
                         "/",
                       ],
+                    ],
+                  },
+                ],
+              },
+              Object {
+                "Type": "AWS::DynamoDB::Table",
+                "Values": Array [
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaBackendStackDeaTableE9FE4A05",
+                      "Arn",
                     ],
                   },
                 ],
