@@ -419,7 +419,7 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:${partition}::ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
+        resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
       })
     );
 
@@ -427,7 +427,7 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['secretsmanager:GetSecretValue'],
         resources: [
-          `arn:${partition}::secretsmanager:${region}:${accountId}:secret:/dea/${region}/${STAGE}/clientSecret-*`,
+          `arn:${partition}:secretsmanager:${region}:${accountId}:secret:/dea/${region}/${STAGE}/clientSecret-*`,
         ],
       })
     );
