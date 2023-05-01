@@ -20,8 +20,7 @@ export const initiateCaseFileUpload = async (
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFileResult> => {
   // strip out chunkSizeBytes before saving in dynamo-db
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { chunkSizeBytes, ...deaCaseFile } = uploadDTO;
+  const { chunkSizeBytes: _, ...deaCaseFile } = uploadDTO;
   const newEntity = await repositoryProvider.CaseFileModel.create({
     ...deaCaseFile,
     isFile: true,

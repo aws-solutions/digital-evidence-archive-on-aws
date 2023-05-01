@@ -34,11 +34,11 @@ export class DeaBackendConstruct extends Construct {
   public constructor(scope: Construct, id: string, props: IBackendStackProps) {
     super(scope, id);
 
-    this.deaTable = this._createDeaTable(props.kmsKey);
+    this.deaTable = this.createDeaTable(props.kmsKey);
     const datasetsPrefix = 'dea-datasets-access-log';
     const prefixes = props.accessLogsPrefixes.concat([datasetsPrefix]);
-    this.accessLogsBucket = this._createAccessLogsBucket(`DeaS3AccessLogs`, prefixes);
-    this.datasetsBucket = this._createDatasetsBucket(
+    this.accessLogsBucket = this.createAccessLogsBucket(`DeaS3AccessLogs`, prefixes);
+    this.datasetsBucket = this.createDatasetsBucket(
       props.kmsKey,
       this.accessLogsBucket,
       `DeaS3Datasets`,
@@ -46,7 +46,7 @@ export class DeaBackendConstruct extends Construct {
     );
   }
 
-  private _createDeaTable(key: Key): Table {
+  private createDeaTable(key: Key): Table {
     const deaTable = new Table(this, 'DeaTable', {
       billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: { name: 'PK', type: AttributeType.STRING },
@@ -75,7 +75,7 @@ export class DeaBackendConstruct extends Construct {
     return deaTable;
   }
 
-  private _createAccessLogsBucket(
+  private createAccessLogsBucket(
     bucketNameOutput: Readonly<string>,
     accessLogPrefixes: ReadonlyArray<string>
   ): Bucket {
@@ -127,7 +127,7 @@ export class DeaBackendConstruct extends Construct {
     return s3AccessLogsBucket;
   }
 
-  private _createDatasetsBucket(
+  private createDatasetsBucket(
     key: Readonly<Key>,
     accessLogBucket: Readonly<Bucket>,
     bucketNameOutput: Readonly<string>,
@@ -139,7 +139,7 @@ export class DeaBackendConstruct extends Construct {
       encryption: BucketEncryption.KMS,
       encryptionKey: key,
       enforceSSL: true,
-      lifecycleRules: this._getLifeCycleRules(),
+      lifecycleRules: this.getLifeCycleRules(),
       publicReadAccess: false,
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
@@ -167,7 +167,7 @@ export class DeaBackendConstruct extends Construct {
     return datasetsBucket;
   }
 
-  private _getLifeCycleRules(): LifecycleRule[] {
+  private getLifeCycleRules(): LifecycleRule[] {
     const deleteIncompleteUploadsRule: LifecycleRule = {
       abortIncompleteMultipartUploadAfter: Duration.days(1),
       enabled: true,

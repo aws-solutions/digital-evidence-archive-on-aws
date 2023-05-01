@@ -43,7 +43,7 @@ export class DeaUiConstruct extends Construct {
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
 
-    this._addS3TLSSigV4BucketPolicy(bucket);
+    this.addS3TLSSigV4BucketPolicy(bucket);
 
     // eslint-disable-next-line no-new
     new BucketDeployment(this, 'artifact-deployment-bucket', {
@@ -57,49 +57,49 @@ export class DeaUiConstruct extends Construct {
 
     bucket.grantReadWrite(executeRole);
 
-    this._routeHandler(props, bucket, executeRole);
+    this.routeHandler(props, bucket, executeRole);
   }
 
-  private _routeHandler(props: IUiStackProps, bucket: Bucket, executeRole: Role) {
+  private routeHandler(props: IUiStackProps, bucket: Bucket, executeRole: Role) {
     // Integrate API with S3 bucket
 
     // /ui - homepage
     const uiResource = props.restApi.root.addResource('ui');
-    const rootS3Integration = this._getS3Integration('index.html', bucket, executeRole);
-    uiResource.addMethod('GET', rootS3Integration, this._getMethodOptions());
+    const rootS3Integration = this.getS3Integration('index.html', bucket, executeRole);
+    uiResource.addMethod('GET', rootS3Integration, this.getMethodOptions());
 
     // /Login
     const loginResource = uiResource.addResource('login');
-    const loginS3Integration = this._getS3Integration('login.html', bucket, executeRole);
-    loginResource.addMethod('GET', loginS3Integration, this._getMethodOptions());
+    const loginS3Integration = this.getS3Integration('login.html', bucket, executeRole);
+    loginResource.addMethod('GET', loginS3Integration, this.getMethodOptions());
 
     // /case-detail
     const caseDetailResource = uiResource.addResource('case-detail');
-    const caseDetailS3Integration = this._getS3Integration('case-detail.html', bucket, executeRole);
-    caseDetailResource.addMethod('GET', caseDetailS3Integration, this._getMethodOptions());
+    const caseDetailS3Integration = this.getS3Integration('case-detail.html', bucket, executeRole);
+    caseDetailResource.addMethod('GET', caseDetailS3Integration, this.getMethodOptions());
 
     // /create-cases
     const createCasesResource = uiResource.addResource('create-cases');
-    const createCasesS3Integration = this._getS3Integration('create-cases.html', bucket, executeRole);
-    createCasesResource.addMethod('GET', createCasesS3Integration, this._getMethodOptions());
+    const createCasesS3Integration = this.getS3Integration('create-cases.html', bucket, executeRole);
+    createCasesResource.addMethod('GET', createCasesS3Integration, this.getMethodOptions());
 
     // /upload-file
     const uploadFilesResource = uiResource.addResource('upload-files');
-    const uploadFilesS3Integration = this._getS3Integration('upload-files.html', bucket, executeRole);
-    uploadFilesResource.addMethod('GET', uploadFilesS3Integration, this._getMethodOptions());
+    const uploadFilesS3Integration = this.getS3Integration('upload-files.html', bucket, executeRole);
+    uploadFilesResource.addMethod('GET', uploadFilesS3Integration, this.getMethodOptions());
 
     // /auth-test page
     const authTestResource = uiResource.addResource('auth-test');
-    const authTestIntegration = this._getS3Integration('auth-test.html', bucket, executeRole);
-    authTestResource.addMethod('GET', authTestIntegration, this._getMethodOptions());
+    const authTestIntegration = this.getS3Integration('auth-test.html', bucket, executeRole);
+    authTestResource.addMethod('GET', authTestIntegration, this.getMethodOptions());
 
     // GET to /{proxy+}
     const proxy = uiResource.addProxy({ anyMethod: false });
-    const proxyS3Integration = this._getS3Integration('{proxy}', bucket, executeRole);
-    proxy.addMethod('GET', proxyS3Integration, this._getMethodOptions());
+    const proxyS3Integration = this.getS3Integration('{proxy}', bucket, executeRole);
+    proxy.addMethod('GET', proxyS3Integration, this.getMethodOptions());
   }
 
-  private _getS3Integration(path: string, bucket: Bucket, executeRole: Role): AwsIntegration {
+  private getS3Integration(path: string, bucket: Bucket, executeRole: Role): AwsIntegration {
     return new AwsIntegration({
       service: 's3',
       integrationHttpMethod: 'GET',
@@ -131,7 +131,7 @@ export class DeaUiConstruct extends Construct {
     });
   }
 
-  private _getMethodOptions(): MethodOptions {
+  private getMethodOptions(): MethodOptions {
     return {
       requestParameters: {
         'method.request.path.proxy': true,
@@ -159,7 +159,7 @@ export class DeaUiConstruct extends Construct {
     };
   }
 
-  private _addS3TLSSigV4BucketPolicy(s3Bucket: Bucket): void {
+  private addS3TLSSigV4BucketPolicy(s3Bucket: Bucket): void {
     s3Bucket.addToResourcePolicy(
       new PolicyStatement({
         sid: 'Deny requests that do not use TLS/HTTPS',

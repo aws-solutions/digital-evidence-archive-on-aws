@@ -63,7 +63,7 @@ export class DeaRestApiConstruct extends Construct {
 
     this.apiEndpointArns = new Map<string, string>();
 
-    this.lambdaBaseRole = this._createLambdaBaseRole(
+    this.lambdaBaseRole = this.createLambdaBaseRole(
       props.kmsKey.keyArn,
       props.deaTableArn,
       props.deaDatasetsBucketArn,
@@ -74,7 +74,7 @@ export class DeaRestApiConstruct extends Construct {
       props.s3BatchDeleteCaseFileRoleArn
     );
 
-    this.authLambdaRole = this._createAuthLambdaRole(props.region, props.accountId);
+    this.authLambdaRole = this.createAuthLambdaRole(props.region, props.accountId);
 
     props.kmsKey.addToResourcePolicy(
       new PolicyStatement({
@@ -125,12 +125,12 @@ export class DeaRestApiConstruct extends Construct {
       },
     });
 
-    this._configureApiGateway(deaApiRouteConfig, props.lambdaEnv);
+    this.configureApiGateway(deaApiRouteConfig, props.lambdaEnv);
 
-    this._updateBucketCors(this.deaRestApi, props.deaDatasetsBucketName);
+    this.updateBucketCors(this.deaRestApi, props.deaDatasetsBucketName);
   }
 
-  private _updateBucketCors(restApi: RestApi, bucketName: Readonly<string>) {
+  private updateBucketCors(restApi: RestApi, bucketName: Readonly<string>) {
     const allowedOrigins = deaConfig.deaAllowedOriginsList();
     allowedOrigins.push(`https://${Fn.parseDomainName(restApi.url)}`);
 
@@ -162,7 +162,7 @@ export class DeaRestApiConstruct extends Construct {
     updateCors.node.addDependency(restApi);
   }
 
-  private _configureApiGateway(routeConfig: ApiGatewayRouteConfig, lambdaEnv: LambdaEnvironment): void {
+  private configureApiGateway(routeConfig: ApiGatewayRouteConfig, lambdaEnv: LambdaEnvironment): void {
     const plan = this.deaRestApi.addUsagePlan('DEA Usage Plan', {
       name: 'dea-usage-plan',
       throttle: {
@@ -194,11 +194,11 @@ export class DeaRestApiConstruct extends Construct {
       // otherwise it is a DEA execution API, which needs the
       // full set of permissions
       const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
-      this._addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv);
+      this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv);
     });
   }
 
-  private _addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, lambdaEnv: LambdaEnvironment): void {
+  private addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, lambdaEnv: LambdaEnvironment): void {
     const urlParts = route.path.split('/').filter((str) => str);
     let parent = api.root;
     urlParts.forEach((part, index) => {
@@ -208,7 +208,7 @@ export class DeaRestApiConstruct extends Construct {
       }
 
       if (index === urlParts.length - 1) {
-        const lambda = this._createLambda(
+        const lambda = this.createLambda(
           `${route.httpMethod}_${route.eventName}`,
           role,
           route.pathToSource,
@@ -258,7 +258,7 @@ export class DeaRestApiConstruct extends Construct {
     });
   }
 
-  private _createLambda(
+  private createLambda(
     id: string,
     role: Role,
     pathToSource: string,
@@ -313,7 +313,7 @@ export class DeaRestApiConstruct extends Construct {
     return lambda;
   }
 
-  private _createLambdaBaseRole(
+  private createLambdaBaseRole(
     kmsKeyArn: string,
     tableArn: string,
     datasetsBucketArn: string,
@@ -401,7 +401,7 @@ export class DeaRestApiConstruct extends Construct {
     return role;
   }
 
-  private _createAuthLambdaRole(region: string, accountId: string): Role {
+  private createAuthLambdaRole(region: string, accountId: string): Role {
     const STAGE = deaConfig.stage();
 
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(

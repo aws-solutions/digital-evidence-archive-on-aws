@@ -30,29 +30,29 @@ import { deleteUser, getUserByTokenId } from '../../persistence/user';
 import { testEnv } from './settings';
 
 export default class CognitoHelper {
-  private _identityPoolClient: CognitoIdentityClient;
-  private _userPoolProvider: CognitoIdentityProviderClient;
-  private _region: string;
-  readonly _userPoolClientId: string;
-  readonly _userPoolId: string;
-  private _identityPoolId: string;
-  readonly _idpUrl: string;
+  private identityPoolClient: CognitoIdentityClient;
+  private userPoolProvider: CognitoIdentityProviderClient;
+  private region: string;
+  readonly userPoolClientId: string;
+  readonly userPoolId: string;
+  private identityPoolId: string;
+  readonly idpUrl: string;
 
-  private _usersCreated: string[] = [];
+  private usersCreated: string[] = [];
   public testPassword: string;
-  private _stage: string;
+  private stage: string;
 
   public constructor(globalPassword?: string) {
-    this._region = testEnv.awsRegion;
-    this._userPoolId = testEnv.userPoolId;
-    this._userPoolClientId = testEnv.clientId;
-    this._identityPoolId = testEnv.identityPoolId;
-    this._stage = testEnv.stage;
+    this.region = testEnv.awsRegion;
+    this.userPoolId = testEnv.userPoolId;
+    this.userPoolClientId = testEnv.clientId;
+    this.identityPoolId = testEnv.identityPoolId;
+    this.stage = testEnv.stage;
 
-    this._idpUrl = `cognito-idp.${this._region}.amazonaws.com/${this._userPoolId}`;
+    this.idpUrl = `cognito-idp.${this.region}.amazonaws.com/${this.userPoolId}`;
 
-    this._identityPoolClient = new CognitoIdentityClient({ region: this._region });
-    this._userPoolProvider = new CognitoIdentityProviderClient({ region: this._region });
+    this.identityPoolClient = new CognitoIdentityClient({ region: this.region });
+    this.userPoolProvider = new CognitoIdentityProviderClient({ region: this.region });
 
     this.testPassword = globalPassword ?? generatePassword();
   }
@@ -65,9 +65,9 @@ export default class CognitoHelper {
   ): Promise<void> {
     // 1. Create User
     try {
-      const user = await this._userPoolProvider.send(
+      const user = await this.userPoolProvider.send(
         new AdminCreateUserCommand({
-          UserPoolId: this._userPoolId,
+          UserPoolId: this.userPoolId,
           MessageAction: MessageActionType.SUPPRESS,
           Username: userName,
           TemporaryPassword: generatePassword(),
@@ -88,16 +88,16 @@ export default class CognitoHelper {
         })
       );
       if (user.User?.Username) {
-        this._usersCreated.push(user.User.Username);
+        this.usersCreated.push(user.User.Username);
 
         // 2. Change Password
         const command = new AdminSetUserPasswordCommand({
           Password: this.testPassword,
           Permanent: true,
           Username: userName,
-          UserPoolId: this._userPoolId,
+          UserPoolId: this.userPoolId,
         });
-        await this._userPoolProvider.send(command);
+        await this.userPoolProvider.send(command);
       } else {
         throw new Error('Failed to create user with username: ' + user);
       }
@@ -109,10 +109,10 @@ export default class CognitoHelper {
 
   public async getUser(userName: string): Promise<AdminGetUserResponse | undefined> {
     try {
-      return await this._userPoolProvider.send(
+      return await this.userPoolProvider.send(
         new AdminGetUserCommand({
           Username: userName,
-          UserPoolId: this._userPoolId,
+          UserPoolId: this.userPoolId,
         })
       );
     } catch (error) {
@@ -126,9 +126,9 @@ export default class CognitoHelper {
   }
 
   getClientSecret = async () => {
-    const clientSecretId = `/dea/${this._region}/${this._stage}/clientSecret`;
+    const clientSecretId = `/dea/${this.region}/${this.stage}/clientSecret`;
 
-    const client = new SecretsManagerClient({ region: this._region });
+    const client = new SecretsManagerClient({ region: this.region });
     const input = {
       SecretId: clientSecretId,
     };
@@ -144,9 +144,9 @@ export default class CognitoHelper {
 
   private async getUserPoolAuthForUser(userName: string): Promise<AuthenticationResultType> {
     const clientSecret = await this.getClientSecret();
-    const secretHash = this.generateSecretHash(this._userPoolClientId, clientSecret, userName);
+    const secretHash = this.generateSecretHash(this.userPoolClientId, clientSecret, userName);
 
-    const result = await this._userPoolProvider.send(
+    const result = await this.userPoolProvider.send(
       new InitiateAuthCommand({
         AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
         AuthParameters: {
@@ -154,7 +154,7 @@ export default class CognitoHelper {
           PASSWORD: this.testPassword,
           SECRET_HASH: secretHash,
         },
-        ClientId: this._userPoolClientId,
+        ClientId: this.userPoolClientId,
       })
     );
 
@@ -195,21 +195,21 @@ export default class CognitoHelper {
     const oauthToken = await this.getIdTokenForUser(userName);
 
     // 2. Get Identity from Identity Pool
-    const identityId = await this._identityPoolClient.send(
+    const identityId = await this.identityPoolClient.send(
       new GetIdCommand({
-        IdentityPoolId: this._identityPoolId,
+        IdentityPoolId: this.identityPoolId,
         Logins: {
-          [this._idpUrl]: oauthToken.id_token,
+          [this.idpUrl]: oauthToken.id_token,
         },
       })
     );
 
     // 3. Get Credentials from the Identity Pool
-    const response = await this._identityPoolClient.send(
+    const response = await this.identityPoolClient.send(
       new GetCredentialsForIdentityCommand({
         IdentityId: identityId.IdentityId,
         Logins: {
-          [this._idpUrl]: oauthToken.id_token,
+          [this.idpUrl]: oauthToken.id_token,
         },
       })
     );
@@ -235,12 +235,12 @@ export default class CognitoHelper {
   public async cleanup(repositoryProvider?: ModelRepositoryProvider): Promise<void> {
     // Clean the users made
     await Promise.all(
-      this._usersCreated.map(async (username) => {
+      this.usersCreated.map(async (username) => {
         // try to remove the user from the db
         // NOTE: it won't be there unless you called
         // lambda using creds from the the user
         const { id_token } = await this.getIdTokenForUser(username);
-        const tokenId = (await getTokenPayload(id_token, this._region)).sub;
+        const tokenId = (await getTokenPayload(id_token, this.region)).sub;
         if (repositoryProvider) {
           const dbUser = await getUserByTokenId(tokenId, repositoryProvider);
           if (dbUser) {
@@ -249,31 +249,31 @@ export default class CognitoHelper {
         }
 
         // Now delete the user from the user pool
-        await this._userPoolProvider.send(
+        await this.userPoolProvider.send(
           new AdminDeleteUserCommand({
             Username: username,
-            UserPoolId: this._userPoolId,
+            UserPoolId: this.userPoolId,
           })
         );
       })
     );
 
-    this._usersCreated = []; // This way if the cleanup() method is called again, we don't need to cleanup again
+    this.usersCreated = []; // This way if the cleanup() method is called again, we don't need to cleanup again
 
-    if (this._identityPoolClient) {
-      this._identityPoolClient.destroy();
+    if (this.identityPoolClient) {
+      this.identityPoolClient.destroy();
     }
 
-    if (this._userPoolProvider) {
-      this._userPoolProvider.destroy();
+    if (this.userPoolProvider) {
+      this.userPoolProvider.destroy();
     }
   }
 
   public async deleteUser(username: string): Promise<void> {
-    await this._userPoolProvider.send(
+    await this.userPoolProvider.send(
       new AdminDeleteUserCommand({
         Username: username,
-        UserPoolId: this._userPoolId,
+        UserPoolId: this.userPoolId,
       })
     );
   }
