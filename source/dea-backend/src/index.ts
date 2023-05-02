@@ -8,17 +8,19 @@ import 'source-map-support/register';
 import { deaConfig } from './config';
 import { createCfnOutput } from './constructs/construct-support';
 import { DeaAuditTrail } from './constructs/dea-audit-trail';
-import { DeaAuthConstruct } from './constructs/dea-auth';
+import { DeaAuthStack } from './constructs/dea-auth';
 import { DeaBackendConstruct } from './constructs/dea-backend-stack';
 import { DeaEventHandlers } from './constructs/dea-event-handlers';
+import { DeaParametersStack } from './constructs/dea-parameters';
 import { DeaRestApiConstruct } from './constructs/dea-rest-api';
 import { addSnapshotSerializers } from './test/infra/dea-snapshot-serializers';
 import { validateBackendConstruct } from './test/infra/validate-backend-construct';
 
 export {
   DeaAuditTrail,
-  DeaAuthConstruct,
+  DeaAuthStack,
   DeaBackendConstruct,
+  DeaParametersStack,
   DeaRestApiConstruct,
   DeaEventHandlers,
   deaConfig,

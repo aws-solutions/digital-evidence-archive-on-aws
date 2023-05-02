@@ -7,15 +7,15 @@
 import {
   createCfnOutput,
   DeaAuditTrail,
-  DeaAuthConstruct,
+  DeaAuthStack,
   DeaBackendConstruct,
   deaConfig,
+  DeaParametersStack,
   DeaRestApiConstruct,
   DeaEventHandlers,
 } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
-
 import { CfnResource, Duration } from 'aws-cdk-lib';
 import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
 import {
@@ -45,7 +45,7 @@ export class DeaMainStack extends cdk.Stack {
       accessLogsPrefixes: [uiAccessLogPrefix],
     });
 
-    const region = this.region;
+    const region = deaConfig.region();
     const accountId = this.account;
 
     const auditTrail = new DeaAuditTrail(this, 'DeaAudit', {
@@ -88,11 +88,33 @@ export class DeaMainStack extends cdk.Stack {
       },
     });
 
-    new DeaAuthConstruct(this, 'DeaAuth', {
-      restApi: deaApi.deaRestApi,
-      kmsKey,
-      apiEndpointArns: deaApi.apiEndpointArns,
-    });
+    // Cognito is not available in us-gov-east-1, so we have to deploy
+    // Cognito in us-gov-west-1
+    const cognitoRegion = region === 'us-gov-east-1' ? 'us-gov-west-1' : region;
+    // Build the Cognito Stack (UserPool and IdentityPool)
+    // Along with the IAM Roles
+    const authConstruct = new DeaAuthStack(
+      this,
+      'DeaAuth',
+      {
+        region: cognitoRegion,
+        restApi: deaApi.deaRestApi,
+        apiEndpointArns: deaApi.apiEndpointArns,
+      },
+      props
+    );
+
+    // Store relevant parameters for the functioning of DEA
+    // in SSM Param Store and Secrets Manager
+    new DeaParametersStack(
+      this,
+      'DeaParameters',
+      {
+        deaAuthInfo: authConstruct.deaAuthInfo,
+        kmsKey,
+      },
+      props
+    );
 
     kmsKey.addToResourcePolicy(
       new PolicyStatement({
