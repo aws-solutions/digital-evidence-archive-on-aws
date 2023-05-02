@@ -17,9 +17,9 @@ export const startUserAudit: DEAGatewayProxyHandler = async (
   event,
   context,
   /* the default case is handled in e2e tests */
-  /* istanbul ignore next */ // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _repositoryProvider = defaultProvider,
-  /* istanbul ignore next */ // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  /* istanbul ignore next */
+  repositoryProvider = defaultProvider,
+  /* istanbul ignore next */
   _datasetsProvider = defaultDatasetsProvider,
   /* istanbul ignore next */
   cloudwatchClient = defaultCloudwatchClient
@@ -36,7 +36,7 @@ export const startUserAudit: DEAGatewayProxyHandler = async (
     endTime,
     userId,
     cloudwatchClient,
-    _repositoryProvider
+    repositoryProvider
   );
 
   return responseOk(event, { auditId: queryId });

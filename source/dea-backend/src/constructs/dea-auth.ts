@@ -52,6 +52,8 @@ export class DeaAuthConstruct extends Construct {
     const region = deaConfig.region();
     const loginUrl = `${props.restApi.url}ui/login`;
 
+    const partition = deaConfig.partition();
+
     // Auth Stack. Used to determine which APIs a user can access by assigning them
     // an IAM Role based on the DEARole specified by the Agency IdP during federation.
     // E.g. User federates with the auth stack, given credentials based on the DEARole in the id Token
@@ -65,10 +67,10 @@ export class DeaAuthConstruct extends Construct {
     // For production deployments, follow the ImplementationGuide on how to setup
     // and connect your existing CJIS-compatible IdP for SSO and attribute mapping for the UserPool
     // and role mapping rules for the identity pool for authorization
-    this._createAuthStack(props.apiEndpointArns, loginUrl, region, props.kmsKey);
+    this.createAuthStack(props.apiEndpointArns, loginUrl, region, props.kmsKey, partition);
   }
 
-  private _createIamRole(
+  private createIamRole(
     roleName: string,
     description: string,
     apiEndpoints: Array<string>,
@@ -109,25 +111,34 @@ export class DeaAuthConstruct extends Construct {
   // identity token is used and compared to the identity pool attached role mapping.
   // Thus from this function we send a mapping of DEARole values to the appropriate
   // IAM Role, which we will use to define the role mapping in cdk for the ID Pool.
-  private _createDEARoles(
+  private createDEARoles(
     apiEndpointArns: Map<string, string>,
     userPoolId: string,
     identityPoolId: string,
     region: string,
-    stage: string
+    stage: string,
+    partition: string
   ): Map<string, Role> {
     // Create IAM Roles that define what APIs are allowed to be called
-    // The groups we create {Auditor, CaseWorker, Admin} are just examples
+    // The role we create {Auditor, CaseWorker, Admin} are just examples
     // so customize to your agency's specific needs
 
-    const principal = new WebIdentityPrincipal('cognito-identity.amazonaws.com', {
-      StringEquals: { 'cognito-identity.amazonaws.com:aud': identityPoolId },
-      'ForAnyValue:StringLike': { 'cognito-identity.amazonaws.com:amr': 'authenticated' },
-    });
+    let principal: WebIdentityPrincipal;
+    if (partition === 'aws-us-gov') {
+      principal = new WebIdentityPrincipal('cognito-identity-us-gov.amazonaws.com', {
+        StringEquals: { 'cognito-identity-us-gov.amazonaws.com:aud': identityPoolId },
+        'ForAnyValue:StringLike': { 'cognito-identity-us-gov.amazonaws.com:amr': 'authenticated' },
+      });
+    } else {
+      principal = new WebIdentityPrincipal('cognito-identity.amazonaws.com', {
+        StringEquals: { 'cognito-identity.amazonaws.com:aud': identityPoolId },
+        'ForAnyValue:StringLike': { 'cognito-identity.amazonaws.com:amr': 'authenticated' },
+      });
+    }
 
     const deaRolesMap = new Map<string, Role>();
 
-    // 3 General Groups:
+    // 3 General Roles:
     // * Admins: can call APIs to change system settings like re-assign case, or list all cases
     // * Auditors: can call Audit APIs to generate reports
     // * Case Workers: can create cases, and upload/download to cases they have permissions to (case ACL)
@@ -145,8 +156,8 @@ export class DeaAuthConstruct extends Construct {
     const deaRoleTypes = deaConfig.deaRoleTypes();
     deaRoleTypes.forEach((roleType) => {
       const endpointStrings = roleType.endpoints.map((endpoint) => `${endpoint.path}${endpoint.method}`);
-      const groupEndpoints = this._getEndpoints(apiEndpointArns, endpointStrings);
-      this._createDEARole(
+      const groupEndpoints = this.getEndpoints(apiEndpointArns, endpointStrings);
+      this.createDEARole(
         roleType.name,
         roleType.description,
         deaRolesMap,
@@ -186,17 +197,20 @@ export class DeaAuthConstruct extends Construct {
     return deaRolesMap;
   }
 
-  private _createAuthStack(
+  private createAuthStack(
     apiEndpointArns: Map<string, string>,
     callbackUrl: string,
     region: string,
-    kmsKey: Key
+    kmsKey: Key,
+    partition: string
   ): void {
     // See Implementation Guide for how to integrate your existing
     // Identity Provider with Cognito User Pool for SSO
-    const [pool, poolClient, cognitoDomainUrl] = this._createCognitoIdP(callbackUrl, region, kmsKey);
+    const [pool, poolClient, cognitoDomainUrl] = this.createCognitoIdP(callbackUrl, region, kmsKey, partition);
 
-    const providerUrl = `cognito-idp.${region}.amazonaws.com/${pool.userPoolId}:${poolClient.userPoolClientId}`;
+    // For gov cloud, Cognito only uses FIPS endpoint, and the only FIPS endpoint
+    // is in us-gov-west-1. See https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-cog.html
+    // for more details
 
     const idPool = new CfnIdentityPool(this, 'DEAIdentityPool', {
       allowUnauthenticatedIdentities: false,
@@ -213,12 +227,13 @@ export class DeaAuthConstruct extends Construct {
     // Create the DEA IAM Roles
     // Then tell the IdPool to map the DEARole field from the id token
     // to the appropriate DEA IAM Role
-    const deaRoles: Map<string, Role> = this._createDEARoles(
+    const deaRoles: Map<string, Role> = this.createDEARoles(
       apiEndpointArns,
       pool.userPoolId,
       idPool.ref,
       region,
-      deaConfig.stage()
+      deaConfig.stage(),
+      partition
     );
     const rules: CfnIdentityPoolRoleAttachment.MappingRuleProperty[] = new Array(deaRoles.size);
     Array.from(deaRoles.entries()).forEach((entry) => {
@@ -229,12 +244,14 @@ export class DeaAuthConstruct extends Construct {
         roleArn: entry[1].roleArn,
       });
     });
+
+    const { authenticated, unauthenticated } = this._createIdPoolDefaultRoles(idPool.ref, partition);
     new CfnIdentityPoolRoleAttachment(this, 'IdentityPoolCognitoRoleAttachment', {
       identityPoolId: idPool.ref,
       roleMappings: {
         roleMappingsKey: {
           type: 'Rules',
-          identityProvider: providerUrl,
+          identityProvider: `${pool.userPoolProviderName}:${poolClient.userPoolClientId}`,
           ambiguousRoleResolution: 'AuthenticatedRole',
           rulesConfiguration: {
             rules: rules,
@@ -242,34 +259,8 @@ export class DeaAuthConstruct extends Construct {
         },
       },
       roles: {
-        authenticated: new Role(this, 'IdPoolAuthenticatedRole', {
-          assumedBy: new FederatedPrincipal(
-            'cognito-identity.amazonaws.com',
-            {
-              StringEquals: {
-                'cognito-identity.amazonaws.com:aud': idPool.ref,
-              },
-              'ForAnyValue:StringLike': {
-                'cognito-identity.amazonaws.com:amr': 'authenticated',
-              },
-            },
-            'sts:AssumeRoleWithWebIdentity'
-          ),
-        }).roleArn,
-        unauthenticated: new Role(this, 'IdPoolUnAuthenticatedRole', {
-          assumedBy: new FederatedPrincipal(
-            'cognito-identity.amazonaws.com',
-            {
-              StringEquals: {
-                'cognito-identity.amazonaws.com:aud': idPool.ref,
-              },
-              'ForAnyValue:StringLike': {
-                'cognito-identity.amazonaws.com:amr': 'unauthenticated',
-              },
-            },
-            'sts:AssumeRoleWithWebIdentity'
-          ),
-        }).roleArn,
+        authenticated,
+        unauthenticated,
       },
     });
 
@@ -285,6 +276,10 @@ export class DeaAuthConstruct extends Construct {
       value: pool.userPoolProviderUrl,
     });
 
+    createCfnOutput(this, 'poolProviderName', {
+      value: pool.userPoolProviderName,
+    });
+
     createCfnOutput(this, 'userPoolClientId', {
       value: poolClient.userPoolClientId,
     });
@@ -294,7 +289,7 @@ export class DeaAuthConstruct extends Construct {
     });
 
     // Add the user pool id and client id to SSM for use in the backend for verifying and decoding tokens
-    this._addCognitoInformationToSSM(
+    this.addCognitoInformationToSSM(
       pool.userPoolId,
       poolClient.userPoolClientId,
       cognitoDomainUrl,
@@ -313,10 +308,11 @@ export class DeaAuthConstruct extends Construct {
   // For production, the Cognito will simply act as a token vendor
   // and ONLY allow federation, no native auth
   // TODO: determine if Cognito is CJIS compatible
-  private _createCognitoIdP(
+  private createCognitoIdP(
     callbackUrl: string,
     region: string,
-    kmsKey: Key
+    kmsKey: Key,
+    partition: string
   ): [UserPool, UserPoolClient, string] {
     const tempPasswordValidity = Duration.days(1);
     // must re-authenticate in every 12 hours
@@ -409,7 +405,7 @@ export class DeaAuthConstruct extends Construct {
     // integrate it into the user pool here
     const idpInfo = deaConfig.idpMetadata();
     if (idpInfo && idpInfo.metadataPath) {
-      const idpSamlMetadata = this._createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
+      const idpSamlMetadata = this.createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
       const idp = new UserPoolIdentityProviderSaml(this, 'AgencyIdP', {
         metadata: idpSamlMetadata,
         userPool: userPool,
@@ -463,10 +459,15 @@ export class DeaAuthConstruct extends Construct {
       secretStringValue: poolClient.userPoolClientSecret,
     });
 
-    return [userPool, poolClient, newDomain.baseUrl({ fips: true })];
+    const cognitoDomain =
+      partition === 'aws-us-gov'
+        ? `https://${newDomain.domainName}.auth-fips.us-gov-west-1.amazoncognito.com`
+        : newDomain.baseUrl({ fips: true });
+
+    return [userPool, poolClient, cognitoDomain];
   }
 
-  private _createDEARole(
+  private createDEARole(
     name: string,
     desc: string,
     deaRolesMap: Map<string, Role>,
@@ -474,11 +475,11 @@ export class DeaAuthConstruct extends Construct {
     principal: WebIdentityPrincipal,
     roleBoundary: ManagedPolicy
   ): void {
-    const deaRole = this._createIamRole(`${name}Role`, `Role ${desc}`, endpoints, principal, roleBoundary);
+    const deaRole = this.createIamRole(`${name}Role`, `Role ${desc}`, endpoints, principal, roleBoundary);
     deaRolesMap.set(name, deaRole);
   }
 
-  private _getEndpoints(apiEndpointArns: Map<string, string>, paths: string[]): string[] {
+  private getEndpoints(apiEndpointArns: Map<string, string>, paths: string[]): string[] {
     const endpoints = paths
       .map((path) => apiEndpointArns.get(path))
       .filter((endpoint): endpoint is string => endpoint !== null);
@@ -488,7 +489,7 @@ export class DeaAuthConstruct extends Construct {
 
   // Store the user pool id and client id in the parameter store so that we can verify
   // and decode tokens on the backend
-  private _addCognitoInformationToSSM(
+  private addCognitoInformationToSSM(
     userPoolId: string,
     userPoolClientId: string,
     cognitoDomain: string,
@@ -538,7 +539,7 @@ export class DeaAuthConstruct extends Construct {
     });
   }
 
-  private _createIdpSAMLMetadata(path: string, pathType: string): UserPoolIdentityProviderSamlMetadata {
+  private createIdpSAMLMetadata(path: string, pathType: string): UserPoolIdentityProviderSamlMetadata {
     if (pathType === 'URL') {
       return UserPoolIdentityProviderSamlMetadata.url(path);
     }
@@ -546,5 +547,75 @@ export class DeaAuthConstruct extends Construct {
     // else its a file, read in the contents from the file
     const fileContent = fs.readFileSync(path, 'utf-8');
     return UserPoolIdentityProviderSamlMetadata.file(fileContent);
+  }
+
+  private _createIdPoolDefaultRoles(
+    idPoolRef: string,
+    partition: string
+  ): { authenticated: string; unauthenticated: string } {
+    let authenticated: string;
+    let unauthenticated: string;
+    if (partition === 'aws-us-gov') {
+      authenticated = new Role(this, 'IdPoolAuthenticatedRole', {
+        assumedBy: new FederatedPrincipal(
+          'cognito-identity-us-gov.amazonaws.com',
+          {
+            StringEquals: {
+              'cognito-identity-us-gov.amazonaws.com:aud': idPoolRef,
+            },
+            'ForAnyValue:StringLike': {
+              'cognito-identity-us-gov.amazonaws.com:amr': 'authenticated',
+            },
+          },
+          'sts:AssumeRoleWithWebIdentity'
+        ),
+      }).roleArn;
+
+      unauthenticated = new Role(this, 'IdPoolUnAuthenticatedRole', {
+        assumedBy: new FederatedPrincipal(
+          'cognito-identity-us-gov.amazonaws.com',
+          {
+            StringEquals: {
+              'cognito-identity-us-gov.amazonaws.com:aud': idPoolRef,
+            },
+            'ForAnyValue:StringLike': {
+              'cognito-identity-us-gov.amazonaws.com:amr': 'unauthenticated',
+            },
+          },
+          'sts:AssumeRoleWithWebIdentity'
+        ),
+      }).roleArn;
+    } else {
+      authenticated = new Role(this, 'IdPoolAuthenticatedRole', {
+        assumedBy: new FederatedPrincipal(
+          'cognito-identity.amazonaws.com',
+          {
+            StringEquals: {
+              'cognito-identity.amazonaws.com:aud': idPoolRef,
+            },
+            'ForAnyValue:StringLike': {
+              'cognito-identity.amazonaws.com:amr': 'authenticated',
+            },
+          },
+          'sts:AssumeRoleWithWebIdentity'
+        ),
+      }).roleArn;
+
+      unauthenticated = new Role(this, 'IdPoolUnAuthenticatedRole', {
+        assumedBy: new FederatedPrincipal(
+          'cognito-identity.amazonaws.com',
+          {
+            StringEquals: {
+              'cognito-identity.amazonaws.com:aud': idPoolRef,
+            },
+            'ForAnyValue:StringLike': {
+              'cognito-identity.amazonaws.com:amr': 'unauthenticated',
+            },
+          },
+          'sts:AssumeRoleWithWebIdentity'
+        ),
+      }).roleArn;
+    }
+    return { authenticated, unauthenticated };
   }
 }

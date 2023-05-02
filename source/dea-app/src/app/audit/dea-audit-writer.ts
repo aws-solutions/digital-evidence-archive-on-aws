@@ -25,17 +25,17 @@ const lambdaName = getRequiredEnv('AWS_LAMBDA_FUNCTION_NAME', 'NO_LAMBDA_NAME_FO
 const auditLogGroup = getRequiredEnv('AUDIT_LOG_GROUP_NAME', 'NO_AUDIT_LOG_GROUP');
 
 export default class DeaAuditWriter implements Writer {
-  private _isLogStreamReady: Promise<CreateLogGroupCommandOutput> | undefined;
-  private _logStreamName: string;
+  private isLogStreamReady: Promise<CreateLogGroupCommandOutput> | undefined;
+  private logStreamName: string;
 
   public constructor(private cloudwatchClient: CloudWatchLogsClient) {
-    this._logStreamName = `${lambdaName}-${ulid()}`.replaceAll(':', '');
+    this.logStreamName = `${lambdaName}-${ulid()}`.replaceAll(':', '');
     if (auditLogGroup !== 'NO_AUDIT_LOG_GROUP') {
       const createLogStreamCommand = new CreateLogStreamCommand({
         logGroupName: auditLogGroup,
-        logStreamName: this._logStreamName,
+        logStreamName: this.logStreamName,
       });
-      this._isLogStreamReady = this.cloudwatchClient.send(createLogStreamCommand);
+      this.isLogStreamReady = this.cloudwatchClient.send(createLogStreamCommand);
     }
   }
 
@@ -56,10 +56,10 @@ export default class DeaAuditWriter implements Writer {
   }
 
   public async write(metadata: Metadata, auditEntry: AuditEntry): Promise<void> {
-    await this._isLogStreamReady;
+    await this.isLogStreamReady;
     const putLogsCommand = new PutLogEventsCommand({
       logGroupName: auditLogGroup,
-      logStreamName: this._logStreamName,
+      logStreamName: this.logStreamName,
       logEvents: [{ timestamp: now(), message: JSON.stringify(auditEntry) }],
     });
 

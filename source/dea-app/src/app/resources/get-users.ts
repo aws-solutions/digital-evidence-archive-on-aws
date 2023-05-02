@@ -31,9 +31,8 @@ export const getUsers: DEAGatewayProxyHandler = async (
   );
 
   return responseOk(event, {
-    //intentionally unused tokenId - this removes it during the map operation
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    users: pageOfUsers.map(({ tokenId, ...user }) => user),
+    //remove tokenId
+    users: pageOfUsers.map(({ tokenId: _, ...user }) => user),
     total: pageOfUsers.count,
     next: getNextToken(pageOfUsers.next),
   });
