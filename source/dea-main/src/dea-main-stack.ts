@@ -151,7 +151,10 @@ export class DeaMainStack extends cdk.Stack {
             'kms:GenerateDataKey*',
             'kms:Describe*',
           ],
-          principals: [new ServicePrincipal(`logs.${this.region}.amazonaws.com`)],
+          principals: [
+            new ServicePrincipal(`logs.${this.region}.amazonaws.com`),
+            new AccountPrincipal(this.account),
+          ],
           resources: ['*'],
           sid: 'main-key-share-statement',
         }),
