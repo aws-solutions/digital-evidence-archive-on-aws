@@ -17756,6 +17756,22 @@ Object {
               ],
               "Effect": "Allow",
               "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
                 "Service": Object {
                   "Fn::Join": Array [
                     "",
