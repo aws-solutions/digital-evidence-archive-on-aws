@@ -27,9 +27,9 @@ export class DeaAuditTrail extends Construct {
   public constructor(scope: Construct, stackName: string, props: DeaAuditProps) {
     super(scope, stackName);
 
-    this.auditLogGroup = this._createLogGroup(scope, 'deaAuditLogs', props.kmsKey);
-    this.trailLogGroup = this._createLogGroup(scope, 'deaTrailLogs', props.kmsKey);
-    this.auditTrail = this._createAuditTrail(
+    this.auditLogGroup = this.createLogGroup(scope, 'deaAuditLogs', props.kmsKey);
+    this.trailLogGroup = this.createLogGroup(scope, 'deaTrailLogs', props.kmsKey);
+    this.auditTrail = this.createAuditTrail(
       scope,
       this.trailLogGroup,
       props.kmsKey,
@@ -39,7 +39,7 @@ export class DeaAuditTrail extends Construct {
     props.kmsKey.grantEncrypt(new ServicePrincipal('cloudtrail.amazonaws.com'));
   }
 
-  private _createAuditTrail(
+  private createAuditTrail(
     scope: Construct,
     trailLogGroup: LogGroup,
     kmsKey: Key,
@@ -64,29 +64,42 @@ export class DeaAuditTrail extends Construct {
       encryptionKey: kmsKey,
     });
 
+    // Currently, Amazon DDB API Activity Stream for CluodTrail Data Events
+    // Is not available in gov cloud. https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-ct.html
+    // TODO: to make up for the hole in auditing, create a permissions boundary
+    // that blocks access to the DDB table and the S3 evidence bucket
+    // and put in the implementation guide that they can add this to the
+    // IAM Roles for administrators/staff for the AWS account
+    const dataResources = [
+      {
+        type: 'AWS::S3::Object',
+        // data plane events for the datasets bucket only
+        values: [`${deaDatasetsBucket.bucketArn}/`],
+      },
+    ];
+    const partition = deaConfig.partition();
+    if (partition !== 'aws-us-gov') {
+      dataResources.push(
+        {
+          type: 'AWS::DynamoDB::Table',
+          // data plane events for the DEA dynamo table
+          values: [deaTableArn],
+        },
+        {
+          type: 'AWS::Lambda::Function',
+          // data plane events for our lambdas
+          values: ['arn:aws:lambda'],
+        }
+      );
+    }
+
     const cfnTrail = trail.node.defaultChild;
     if (cfnTrail instanceof CfnTrail) {
       cfnTrail.eventSelectors = [
         {
           includeManagementEvents: true,
           readWriteType: ReadWriteType.ALL,
-          dataResources: [
-            {
-              type: 'AWS::DynamoDB::Table',
-              // data plane events for the DEA dynamo table
-              values: [deaTableArn],
-            },
-            {
-              type: 'AWS::S3::Object',
-              // data plane events for the datasets bucket only
-              values: [`${deaDatasetsBucket.bucketArn}/`],
-            },
-            {
-              type: 'AWS::Lambda::Function',
-              // data plane events for our lambdas
-              values: ['arn:aws:lambda'],
-            },
-          ],
+          dataResources,
         },
       ];
     }
@@ -94,7 +107,7 @@ export class DeaAuditTrail extends Construct {
     return trail;
   }
 
-  private _createLogGroup(scope: Construct, id: string, kmsKey: Key) {
+  private createLogGroup(scope: Construct, id: string, kmsKey: Key) {
     return new LogGroup(scope, id, {
       encryptionKey: kmsKey,
       retention: deaConfig.retentionDays(),

@@ -36,7 +36,7 @@ export class DeaMainStack extends cdk.Stack {
     super(scope, id, props);
 
     // Create KMS key to pass into backend and UI
-    const kmsKey = this._createEncryptionKey();
+    const kmsKey = this.createEncryptionKey();
 
     const uiAccessLogPrefix = 'dea-ui-access-log';
     // DEA Backend Construct
@@ -115,14 +115,14 @@ export class DeaMainStack extends cdk.Stack {
     // ======================================
     // Suppress CFN issues with dea-main stack as the primary node here since we cannot access
     // resource node directly in the ui or backend construct
-    this._uiStackConstructNagSuppress();
+    this.uiStackConstructNagSuppress();
 
     // These are resources that will be configured in a future story. Please remove these suppressions or modify them to the specific resources as needed
     // when we tackle the particular story. Details in function below
-    this._apiGwAuthNagSuppresions();
+    this.apiGwAuthNagSuppresions();
   }
 
-  private _uiStackConstructNagSuppress(): void {
+  private uiStackConstructNagSuppress(): void {
     const cdkLambda = this.node.findChild('Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C').node
       .defaultChild;
     if (cdkLambda instanceof CfnFunction) {
@@ -139,7 +139,7 @@ export class DeaMainStack extends cdk.Stack {
     }
   }
 
-  private _createEncryptionKey(): Key {
+  private createEncryptionKey(): Key {
     const mainKeyPolicy = new PolicyDocument({
       statements: [
         new PolicyStatement({
@@ -151,7 +151,10 @@ export class DeaMainStack extends cdk.Stack {
             'kms:GenerateDataKey*',
             'kms:Describe*',
           ],
-          principals: [new ServicePrincipal(`logs.${this.region}.amazonaws.com`)],
+          principals: [
+            new ServicePrincipal(`logs.${this.region}.amazonaws.com`),
+            new AccountPrincipal(this.account),
+          ],
           resources: ['*'],
           sid: 'main-key-share-statement',
         }),
@@ -179,7 +182,7 @@ export class DeaMainStack extends cdk.Stack {
     return key;
   }
 
-  private _apiGwAuthNagSuppresions(): void {
+  private apiGwAuthNagSuppresions(): void {
     // Nag suppress on all authorizationType related warnings until our Auth implementation is complete
     const apiGwMethodArray = [];
     // Backend API GW

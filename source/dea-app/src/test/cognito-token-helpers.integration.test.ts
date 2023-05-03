@@ -31,8 +31,8 @@ describe('cognito helpers integration test', () => {
 
     const payload = await getTokenPayload(id_token, region);
 
-    expect(payload.iss).toStrictEqual('https://' + cognitoHelper._idpUrl);
-    expect(payload.aud).toStrictEqual(cognitoHelper._userPoolClientId);
+    expect(payload.iss).toStrictEqual('https://' + cognitoHelper.idpUrl);
+    expect(payload.aud).toStrictEqual(cognitoHelper.userPoolClientId);
     expect(refresh_token).toBeTruthy();
     expect(payload.token_use).toStrictEqual('id');
   });

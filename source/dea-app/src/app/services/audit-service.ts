@@ -231,7 +231,7 @@ export class DeaAuditService extends AuditService {
     return this.write(event);
   }
 
-  private async _startAuditQuery(
+  private async startAuditQuery(
     start: number,
     end: number,
     cloudwatchClient: CloudWatchLogsClient,
@@ -274,7 +274,7 @@ export class DeaAuditService extends AuditService {
   ) {
     const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME'), getRequiredEnv('TRAIL_LOG_GROUP_NAME')];
     const filterPredicate = `caseId = "${caseId}" or (@message like '"PK":"CASE#${caseId}#"' and @message like '"SK":"CASE#"')`;
-    return this._startAuditQuery(
+    return this.startAuditQuery(
       start,
       end,
       cloudwatchClient,
@@ -298,7 +298,7 @@ export class DeaAuditService extends AuditService {
     const s3Key = getS3KeyForCaseFile(caseId, fileId);
     const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME'), getRequiredEnv('TRAIL_LOG_GROUP_NAME')];
     const filterPredicate = `(caseId = "${caseId}" and fileId = "${fileId}") or (@message like '"PK":"CASE#${caseId}#"' and @message like '"SK":"FILE#${fileId}#"') or (@message like "${s3Key}")`;
-    return this._startAuditQuery(
+    return this.startAuditQuery(
       start,
       end,
       cloudwatchClient,
@@ -320,7 +320,7 @@ export class DeaAuditService extends AuditService {
   ) {
     const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME')];
     const filterPredicate = `actorIdentity.userUlid = '${userUlid}'`;
-    return this._startAuditQuery(
+    return this.startAuditQuery(
       start,
       end,
       cloudwatchClient,
@@ -339,7 +339,7 @@ export class DeaAuditService extends AuditService {
     repositoryProvider: ModelRepositoryProvider
   ) {
     const systemLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME'), getRequiredEnv('TRAIL_LOG_GROUP_NAME')];
-    return this._startAuditQuery(
+    return this.startAuditQuery(
       start,
       end,
       cloudwatchClient,
@@ -427,7 +427,7 @@ export class DeaAuditService extends AuditService {
     ) {
       return {
         status: QueryStatus.Complete,
-        csvFormattedData: this._formatResults(getResultsResponse.results),
+        csvFormattedData: this.formatResults(getResultsResponse.results),
       };
     } else {
       return {
@@ -437,7 +437,7 @@ export class DeaAuditService extends AuditService {
     }
   }
 
-  private _formatResults(results: ResultField[][]): string {
+  private formatResults(results: ResultField[][]): string {
     const separator = ', ';
     const newline = '\r\n';
     let csvData = '';

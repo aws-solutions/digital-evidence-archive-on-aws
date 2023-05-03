@@ -16,12 +16,10 @@ export interface INotificationsProps {
 
 const defaultAppNotification: INotificationsProps = {
   notifications: [],
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  pushNotification: (type: FlashbarProps.Type, content: string) => {
+  pushNotification: (_type: FlashbarProps.Type, _content: string) => {
     /*do nothing*/
   },
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  dismissNotification: (id: string) => {
+  dismissNotification: (_id: string) => {
     /*do nothing*/
   },
 };

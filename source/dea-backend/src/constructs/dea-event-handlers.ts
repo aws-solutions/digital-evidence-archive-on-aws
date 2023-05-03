@@ -32,14 +32,14 @@ export class DeaEventHandlers extends Construct {
   public constructor(scope: Construct, stackName: string, props: DeaEventHandlerProps) {
     super(scope, stackName);
 
-    const s3BatchDeleteCaseFileRole = this._createS3BatchDeleteCaseFileRole(
+    const s3BatchDeleteCaseFileRole = this.createS3BatchDeleteCaseFileRole(
       's3-batch-delete-case-file-handler-role',
       props.deaTableArn,
       props.deaDatasetsBucketArn,
       props.kmsKey.keyArn
     );
 
-    this.s3BatchDeleteCaseFileLambda = this._createLambda(
+    this.s3BatchDeleteCaseFileLambda = this.createLambda(
       `s3_batch_delete_case_file`,
       'S3BatchDeleteCaseFileLambda',
       '../../src/handlers/s3-batch-delete-case-file-handler.ts',
@@ -47,14 +47,14 @@ export class DeaEventHandlers extends Construct {
       s3BatchDeleteCaseFileRole
     );
 
-    const statusHandlerRole = this._createS3BatchStatusChangeHandlerRole(
+    const statusHandlerRole = this.createS3BatchStatusChangeHandlerRole(
       's3-batch-status-change-handler-role',
       props.deaTableArn,
       props.deaDatasetsBucketArn,
       props.kmsKey.keyArn
     );
 
-    const s3BatchJobStatusChangeHandlerLambda = this._createLambda(
+    const s3BatchJobStatusChangeHandlerLambda = this.createLambda(
       `s3_batch_status_handler`,
       'S3BatchJobStatusChangeLambda',
       '../../src/handlers/s3-batch-job-status-change-handler.ts',
@@ -62,13 +62,13 @@ export class DeaEventHandlers extends Construct {
       statusHandlerRole
     );
 
-    this.s3BatchDeleteCaseFileRole = this._createS3BatchRole(props.deaDatasetsBucketArn);
+    this.s3BatchDeleteCaseFileRole = this.createS3BatchRole(props.deaDatasetsBucketArn);
 
     // create event bridge rule
-    this._createEventBridgeRuleForS3BatchJobs(s3BatchJobStatusChangeHandlerLambda);
+    this.createEventBridgeRuleForS3BatchJobs(s3BatchJobStatusChangeHandlerLambda);
   }
 
-  private _createEventBridgeRuleForS3BatchJobs(targetLambda: NodejsFunction) {
+  private createEventBridgeRuleForS3BatchJobs(targetLambda: NodejsFunction) {
     new Rule(this, 'S3BatchJobStatusChangeRule', {
       enabled: true,
       eventPattern: {
@@ -82,7 +82,7 @@ export class DeaEventHandlers extends Construct {
     });
   }
 
-  private _createLambda(
+  private createLambda(
     id: string,
     cfnExportName: string,
     pathToSource: string,
@@ -116,7 +116,7 @@ export class DeaEventHandlers extends Construct {
     return lambda;
   }
 
-  private _createS3BatchRole(datasetsBucketArn: string): Role {
+  private createS3BatchRole(datasetsBucketArn: string): Role {
     const role = new Role(this, 's3-batch-delete-case-file-role', {
       assumedBy: new ServicePrincipal('batchoperations.s3.amazonaws.com'),
     });
@@ -138,7 +138,7 @@ export class DeaEventHandlers extends Construct {
     return role;
   }
 
-  private _createS3BatchDeleteCaseFileRole(
+  private createS3BatchDeleteCaseFileRole(
     id: string,
     tableArn: string,
     datasetsBucketArn: string,
@@ -188,7 +188,7 @@ export class DeaEventHandlers extends Construct {
     return role;
   }
 
-  private _createS3BatchStatusChangeHandlerRole(
+  private createS3BatchStatusChangeHandlerRole(
     id: string,
     tableArn: string,
     datasetsBucketArn: string,

@@ -40,9 +40,7 @@ export const createDeaHandler = (
   const wrappedHandler: DEAGatewayProxyHandler = async (event: APIGatewayProxyEvent, context: Context) => {
     const auditEvent = initialAuditEvent(event);
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { 'x-amz-security-token': _h, 'X-Amz-Security-Token': _h1, ...debugHeaders } = event.headers;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { headers: _, multiValueHeaders: _1, ...debugEvent } = event;
       logger.debug(`Headers`, { Data: JSON.stringify(debugHeaders, null, 2) });
       logger.debug(`Event`, { Data: JSON.stringify(debugEvent, null, 2) });

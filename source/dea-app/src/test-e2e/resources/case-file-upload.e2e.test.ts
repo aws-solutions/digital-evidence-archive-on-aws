@@ -170,7 +170,6 @@ describe('Test case file APIs', () => {
   });
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function createCase(idToken: Oauth2Token, creds: Credentials): Promise<DeaCase> {
   const caseName = `CASE with files_${randomSuffix()}`;
   return await createCaseSuccess(
