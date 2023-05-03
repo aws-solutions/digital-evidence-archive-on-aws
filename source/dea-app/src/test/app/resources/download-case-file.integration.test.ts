@@ -3,11 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import 'aws-sdk-client-mock-jest';
 import { fail } from 'assert';
-import { S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
+import { ArchiveStatus, S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
+import { DownloadCaseFileResult } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
@@ -66,13 +67,13 @@ describe('Test case file download', () => {
       caseToDownloadFrom,
       fileName
     );
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const fileId = caseFile.ulid as string;
+
+    const fileId = caseFile.ulid ?? fail();
     await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
     await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
   });
 
-  it('download should throw a validation exception when case-id path param missing', async () => {
+  it('should throw a validation exception when case-id path param missing', async () => {
     const event = Object.assign(
       {},
       {
@@ -87,7 +88,7 @@ describe('Test case file download', () => {
     ).rejects.toThrow(`Required path param 'caseId' is missing.`);
   });
 
-  it('download should throw a validation exception when file-id path param missing', async () => {
+  it('should throw a validation exception when file-id path param missing', async () => {
     const event = Object.assign(
       {},
       {
@@ -102,13 +103,13 @@ describe('Test case file download', () => {
     ).rejects.toThrow(`Required path param 'fileId' is missing.`);
   });
 
-  it("download should throw an exception when case-file doesn't exist", async () => {
+  it("should throw an exception when case-file doesn't exist", async () => {
     await expect(
       callDownloadCaseFile(EVENT, repositoryProvider, FILE_ULID, caseToDownloadFrom)
     ).rejects.toThrow(`Could not find file: ${FILE_ULID} in the DB`);
   });
 
-  it("download should throw an exception when case-file isn't active", async () => {
+  it("should throw an exception when case-file isn't active", async () => {
     const pendingFileName = 'downloadPendingFile';
     const caseFile = await callInitiateCaseFileUpload(
       EVENT,
@@ -122,10 +123,87 @@ describe('Test case file download', () => {
       callDownloadCaseFile(EVENT, repositoryProvider, caseFile.ulid as string, caseToDownloadFrom)
     ).rejects.toThrow(`Can't download a file in ${CaseFileStatus.PENDING} state`);
   });
+
+  it('should indicate when file is deep archived', async () => {
+    s3Mock = mockClient(S3Client);
+    s3Mock.resolves({
+      UploadId: UPLOAD_ID,
+      VersionId: VERSION_ID,
+      ArchiveStatus: ArchiveStatus.DEEP_ARCHIVE_ACCESS,
+    });
+
+    const fileName = 'deep archived file';
+    const caseFile = await callInitiateCaseFileUpload(
+      EVENT,
+      repositoryProvider,
+      caseToDownloadFrom,
+      fileName
+    );
+
+    const fileId = caseFile.ulid ?? fail();
+    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
+    expect(downloadResult.downloadUrl).toBeFalsy();
+    expect(downloadResult.isRestoring).toBeFalsy();
+    expect(downloadResult.isArchived).toBeTruthy();
+  });
+
+  it('should indicate when file is archived', async () => {
+    s3Mock = mockClient(S3Client);
+    s3Mock.resolves({
+      UploadId: UPLOAD_ID,
+      VersionId: VERSION_ID,
+      ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
+    });
+
+    const fileName = 'archived file';
+    const caseFile = await callInitiateCaseFileUpload(
+      EVENT,
+      repositoryProvider,
+      caseToDownloadFrom,
+      fileName
+    );
+
+    const fileId = caseFile.ulid ?? fail();
+    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
+    expect(downloadResult.downloadUrl).toBeFalsy();
+    expect(downloadResult.isRestoring).toBeFalsy();
+    expect(downloadResult.isArchived).toBeTruthy();
+  });
+
+  it('should indicate when file is being restored', async () => {
+    s3Mock = mockClient(S3Client);
+    s3Mock.resolves({
+      UploadId: UPLOAD_ID,
+      VersionId: VERSION_ID,
+      ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
+      Restore: 'hello',
+    });
+
+    const fileName = 'restoring file';
+    const caseFile = await callInitiateCaseFileUpload(
+      EVENT,
+      repositoryProvider,
+      caseToDownloadFrom,
+      fileName
+    );
+
+    const fileId = caseFile.ulid ?? fail();
+    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
+    expect(downloadResult.downloadUrl).toBeFalsy();
+    expect(downloadResult.isRestoring).toBeTruthy();
+    expect(downloadResult.isArchived).toBeTruthy();
+  });
 });
 
-async function downloadCaseFileAndValidate(fileId: string, caseId: string): Promise<string> {
-  const presignedUrl = await callDownloadCaseFile(EVENT, repositoryProvider, fileId, caseId);
-  expect(presignedUrl).toContain(`https://s3.us-east-1.amazonaws.com/${DATASETS_PROVIDER.bucketName}`);
-  return presignedUrl;
+async function downloadCaseFileAndValidate(fileId: string, caseId: string): Promise<DownloadCaseFileResult> {
+  const result = await callDownloadCaseFile(EVENT, repositoryProvider, fileId, caseId);
+  if (result.downloadUrl) {
+    expect(result.downloadUrl).toContain(
+      `https://s3.us-east-1.amazonaws.com/${DATASETS_PROVIDER.bucketName}`
+    );
+  }
+  return result;
 }
