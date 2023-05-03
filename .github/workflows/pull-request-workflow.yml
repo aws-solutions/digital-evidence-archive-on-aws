@@ -92,7 +92,7 @@ jobs:
       - name: cdk deploy
         run: |
           cd dea-main
-          npm run cdk deploy --all
+          npm run cdk deploy --all true
   E2E:
     needs: Deploy
     environment: dea-test
