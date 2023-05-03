@@ -1,0 +1,25 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
+@use '@cloudscape-design/design-tokens/index' as awsui;
+
+.upload-input {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: awsui.$space-static-xxs;
+  padding: awsui.$space-static-l;
+  border-radius: awsui.$border-radius-container;
+  color: awsui.$color-charts-threshold-neutral;
+  background-color: awsui.$color-text-interactive-inverted-hover;
+  border: 1px solid awsui.$color-border-button-normal-disabled;
+  min-height: 200px;
+}
