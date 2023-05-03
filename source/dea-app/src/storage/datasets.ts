@@ -16,6 +16,7 @@ import {
   ObjectLockLegalHoldStatus,
   GetObjectCommand,
   DeleteObjectCommand,
+  HeadObjectCommand,
 } from '@aws-sdk/client-s3';
 import {
   S3ControlClient,
@@ -28,7 +29,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
 import { getRequiredEnv } from '../lambda-http-helpers';
 import { logger } from '../logger';
-import { DeaCaseFile } from '../models/case-file';
+import { DeaCaseFile, DownloadCaseFileResult } from '../models/case-file';
 
 const region = process.env.AWS_REGION;
 
@@ -156,8 +157,30 @@ export const completeUploadForCaseFile = async (
 export const getPresignedUrlForDownload = async (
   caseFile: DeaCaseFile,
   datasetsProvider: DatasetsProvider
-): Promise<string> => {
+): Promise<DownloadCaseFileResult> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
+  logger.info('Checking if caseFile is archived', caseFile);
+  const headObjectResponse = await datasetsProvider.s3Client.send(
+    new HeadObjectCommand({
+      Bucket: datasetsProvider.bucketName,
+      Key: s3Key,
+      VersionId: caseFile.versionId,
+    })
+  );
+
+  const result: DownloadCaseFileResult = { isArchived: false, isRestoring: false };
+
+  if (
+    headObjectResponse.ArchiveStatus &&
+    ['DEEP_ARCHIVE_ACCESS', 'ARCHIVE_ACCESS'].includes(headObjectResponse.ArchiveStatus)
+  ) {
+    logger.info('CaseFile is archived. Not returning presigned URL');
+    result.isArchived = true;
+    if (headObjectResponse.Restore) {
+      result.isRestoring = true;
+    }
+    return result;
+  }
 
   logger.info('Creating presigned URL for caseFile.', caseFile);
   const getObjectCommand = new GetObjectCommand({
@@ -167,9 +190,10 @@ export const getPresignedUrlForDownload = async (
     ResponseContentType: caseFile.contentType,
     ResponseContentDisposition: `attachment; filename="${caseFile.fileName}"`,
   });
-  return getSignedUrl(datasetsProvider.s3Client, getObjectCommand, {
+  result.downloadUrl = await getSignedUrl(datasetsProvider.s3Client, getObjectCommand, {
     expiresIn: datasetsProvider.presignedCommandExpirySeconds,
   });
+  return result;
 };
 
 export const startDeleteCaseFilesS3BatchJob = async (

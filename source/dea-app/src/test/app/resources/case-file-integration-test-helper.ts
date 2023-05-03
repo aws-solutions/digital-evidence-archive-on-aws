@@ -16,7 +16,12 @@ import { listCaseFiles } from '../../../app/resources/list-case-files';
 import { updateCaseStatus } from '../../../app/resources/update-case-status';
 import * as CaseService from '../../../app/services/case-service';
 import { DeaCase } from '../../../models/case';
-import { CaseFileDTO, DeaCaseFile, DeaCaseFileResult } from '../../../models/case-file';
+import {
+  CaseFileDTO,
+  DeaCaseFile,
+  DeaCaseFileResult,
+  DownloadCaseFileResult,
+} from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
@@ -122,7 +127,7 @@ export const callDownloadCaseFile = async (
   repositoryProvider: ModelRepositoryProvider,
   fileId: string,
   caseId: string
-): Promise<string> => {
+): Promise<DownloadCaseFileResult> => {
   const event = Object.assign(
     {},
     {
@@ -137,7 +142,7 @@ export const callDownloadCaseFile = async (
   checkApiSucceeded(response);
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return JSON.parse(response.body as string).downloadUrl ?? fail();
+  return JSON.parse(response.body as string) ?? fail();
 };
 
 export const callCreateCase = async (
