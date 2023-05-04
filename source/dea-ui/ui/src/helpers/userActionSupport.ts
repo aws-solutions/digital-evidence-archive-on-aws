@@ -7,6 +7,7 @@ import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 
 const CREATE_CASE_PATH = '/casesPOST';
 const UPDATE_CASE_STATUS_PATH = '/cases/{caseId}/statusPUT';
+const RESTORE_CASE_FILE_PATH = '/cases/{caseId}/files/{fileId}/restorePUT';
 
 export const canInvite = (actions?: CaseAction[]): boolean => {
   return actions?.includes(CaseAction.INVITE) ?? false;
@@ -18,6 +19,10 @@ export const canDownloadFiles = (actions?: CaseAction[]): boolean => {
 
 export const canUploadFiles = (actions?: CaseAction[]): boolean => {
   return actions?.includes(CaseAction.UPLOAD) ?? false;
+};
+
+export const canRestoreFiles = (actions?: CaseAction[], endpoints?: string[]): boolean => {
+  return (actions?.includes(CaseAction.RESTORE) && endpoints?.includes(RESTORE_CASE_FILE_PATH)) ?? false;
 };
 
 export const canDownloadCaseAudit = (actions?: CaseAction[]): boolean => {

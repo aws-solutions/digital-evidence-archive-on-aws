@@ -12,6 +12,7 @@ export enum CaseAction {
   VIEW_FILES = 'VIEW_FILES',
   CASE_AUDIT = 'CASE_AUDIT',
   INVITE = 'INVITE',
+  RESTORE = 'RESTORE',
 }
 
 export const OWNER_ACTIONS: CaseAction[] = Object.values(CaseAction);

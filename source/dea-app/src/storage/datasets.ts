@@ -4,26 +4,29 @@
  */
 
 import {
-  S3Client,
-  CreateMultipartUploadCommand,
   CompleteMultipartUploadCommand,
-  UploadPartCommand,
+  CreateMultipartUploadCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  HeadObjectCommandOutput,
   ListPartsCommand,
   ListPartsOutput,
-  Part,
-  PutObjectLegalHoldCommand,
-  PutObjectCommand,
   ObjectLockLegalHoldStatus,
-  GetObjectCommand,
-  DeleteObjectCommand,
-  HeadObjectCommand,
+  Part,
+  PutObjectCommand,
+  PutObjectLegalHoldCommand,
+  RestoreObjectCommand,
+  S3Client,
+  StorageClass,
+  UploadPartCommand,
 } from '@aws-sdk/client-s3';
 import {
-  S3ControlClient,
   CreateJobCommand,
-  JobReportScope,
   DescribeJobCommand,
   DescribeJobResult,
+  JobReportScope,
+  S3ControlClient,
 } from '@aws-sdk/client-s3-control';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
@@ -159,7 +162,7 @@ export const getPresignedUrlForDownload = async (
   datasetsProvider: DatasetsProvider
 ): Promise<DownloadCaseFileResult> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
-  logger.info('Checking if caseFile is archived', caseFile);
+
   const headObjectResponse = await datasetsProvider.s3Client.send(
     new HeadObjectCommand({
       Bucket: datasetsProvider.bucketName,
@@ -168,12 +171,11 @@ export const getPresignedUrlForDownload = async (
     })
   );
 
+  logger.info('Checking if caseFile is archived', headObjectResponse);
+
   const result: DownloadCaseFileResult = { isArchived: false, isRestoring: false };
 
-  if (
-    headObjectResponse.ArchiveStatus &&
-    ['DEEP_ARCHIVE_ACCESS', 'ARCHIVE_ACCESS'].includes(headObjectResponse.ArchiveStatus)
-  ) {
+  if (isS3ObjectArchived(headObjectResponse)) {
     logger.info('CaseFile is archived. Not returning presigned URL');
     result.isArchived = true;
     if (headObjectResponse.Restore) {
@@ -195,6 +197,67 @@ export const getPresignedUrlForDownload = async (
   });
   return result;
 };
+
+export const restoreObject = async (
+  caseFile: DeaCaseFile,
+  datasetsProvider: DatasetsProvider
+): Promise<void> => {
+  const s3Key = _getS3KeyForCaseFile(caseFile);
+
+  const headObjectResponse = await datasetsProvider.s3Client.send(
+    new HeadObjectCommand({
+      Bucket: datasetsProvider.bucketName,
+      Key: s3Key,
+      VersionId: caseFile.versionId,
+    })
+  );
+
+  logger.info('Checking if caseFile is archived', headObjectResponse);
+
+  if (!isS3ObjectArchived(headObjectResponse)) {
+    logger.info('CaseFile is not archived. Do nothing');
+    return;
+  }
+
+  if (headObjectResponse.Restore) {
+    logger.info('CaseFile is already restoring. Do nothing');
+    return;
+  }
+
+  // Days param isn't accepted for intelligent-tier objects and is mandatory for other archive storage classes
+  // source: https://github.com/awsdocs/amazon-s3-developer-guide/blob/master/doc_source/restoring-objects.md?plain=1#L8
+  const RestoreRequest =
+    headObjectResponse.StorageClass === StorageClass.INTELLIGENT_TIERING ? undefined : { Days: 10 };
+
+  logger.info('Restoring caseFile..', caseFile);
+  await datasetsProvider.s3Client.send(
+    new RestoreObjectCommand({
+      Bucket: datasetsProvider.bucketName,
+      Key: s3Key,
+      VersionId: caseFile.versionId,
+      RestoreRequest,
+    })
+  );
+
+  return;
+};
+
+function isS3ObjectArchived(headObjectResponse: HeadObjectCommandOutput): boolean {
+  if (
+    headObjectResponse.ArchiveStatus &&
+    ['DEEP_ARCHIVE_ACCESS', 'ARCHIVE_ACCESS'].includes(headObjectResponse.ArchiveStatus)
+  ) {
+    return true;
+  }
+  if (
+    headObjectResponse.StorageClass &&
+    ['DEEP_ARCHIVE', 'GLACIER'].includes(headObjectResponse.StorageClass)
+  ) {
+    return true;
+  }
+
+  return false;
+}
 
 export const startDeleteCaseFilesS3BatchJob = async (
   caseId: string,

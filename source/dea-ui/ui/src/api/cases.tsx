@@ -12,7 +12,7 @@ import {
   CompleteUploadForm,
   DownloadFileForm,
   DownloadFileResult,
-  InitiateUploadForm,
+  InitiateUploadForm, RestoreFileForm,
 } from '../models/CaseFiles';
 import {CreateCaseForm, UpdateCaseStatusForm} from '../models/Cases';
 import { CaseUserForm } from '../models/CaseUser';
@@ -95,6 +95,10 @@ export const completeUpload = async (apiInput: CompleteUploadForm): Promise<DeaC
 
 export const getPresignedUrl = async (apiInput: DownloadFileForm): Promise<DownloadFileResult> => {
   return httpApiGet(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}/contents`, undefined);
+};
+
+export const restoreFile = async (apiInput: RestoreFileForm): Promise<void> => {
+  return httpApiPut(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}/restore`, undefined);
 };
 
 export const useGetUsers = (nameBeginsWith: string): DeaListResult<DeaUser> => {
