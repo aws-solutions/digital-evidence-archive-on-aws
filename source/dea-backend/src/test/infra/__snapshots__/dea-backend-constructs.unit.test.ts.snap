@@ -10877,17 +10877,6 @@ Object {
           Object {
             "DataResources": Array [
               Object {
-                "Type": "AWS::DynamoDB::Table",
-                "Values": Array [
-                  Object {
-                    "Fn::GetAtt": Array [
-                      "DeaBackendConstructDeaTableB48721A0",
-                      "Arn",
-                    ],
-                  },
-                ],
-              },
-              Object {
                 "Type": "AWS::S3::Object",
                 "Values": Array [
                   Object {
@@ -10902,6 +10891,17 @@ Object {
                         },
                         "/",
                       ],
+                    ],
+                  },
+                ],
+              },
+              Object {
+                "Type": "AWS::DynamoDB::Table",
+                "Values": Array [
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaBackendConstructDeaTableB48721A0",
+                      "Arn",
                     ],
                   },
                 ],

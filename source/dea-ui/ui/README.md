@@ -6,8 +6,8 @@ This is a prototype app and you should expect to modify the source code to refle
 
 ## Code Coverage
 
-| Statements                                                                                   | Branches                                                                                 | Functions                                                                                  | Lines                                                                              |
-| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Statements                                                                                 | Branches                                                                          | Functions                                                                                | Lines                                                                            |
+| ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | ![Statements](https://img.shields.io/badge/statements-92.33%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-83.51%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-91.07%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-92.68%25-brightgreen.svg?style=flat) |
 
 ## Deploying code changes
@@ -17,9 +17,11 @@ Navigate to DEA root directory and follow instructions in [README](../../../READ
 ## Running locally
 
 First, run the https proxy so your cookies will work:
+
 ```sh
 rushx dev:https
 ```
+
 In a separate tab or process, run the development server:
 
 ```sh
@@ -32,6 +34,7 @@ The UI running locally will be configured to point to your deployed backend via 
 
 You can generate cognito tests users by following the directions here:
 ([Test User Generation for API requests](../../README.md)) you will be redirected to the UI which will now have credentials.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

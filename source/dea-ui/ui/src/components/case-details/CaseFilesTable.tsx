@@ -25,9 +25,9 @@ import { getCaseFileAuditCSV, getPresignedUrl, useGetCaseActions, useListCaseFil
 import { auditLogLabels, commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDate } from '../../helpers/dateHelper';
+import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadCaseAudit, canDownloadFiles, canUploadFiles } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
-import { ONE_MB } from '../upload-files/UploadFilesForm';
 import { CaseDetailsTabsProps } from './CaseDetailsTabs';
 
 function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
@@ -301,7 +301,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         {
           id: 'size',
           header: commonTableLabels.fileSizeHeader,
-          cell: (e) => `${Math.ceil(e.fileSizeBytes / ONE_MB)}MB`,
+          cell: (e) => formatFileSize(e.fileSizeBytes),
           width: 170,
           minWidth: 165,
           sortingField: 'fileType',

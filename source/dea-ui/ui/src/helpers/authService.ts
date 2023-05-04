@@ -10,7 +10,7 @@ import {
 } from '@aws-sdk/client-cognito-identity';
 import { getLogoutUrl, refreshToken, revokeToken } from '../api/auth';
 
-const region = process.env.REGION ?? 'us-east-1';
+const region = process.env.NEXT_PUBLIC_REGION ?? 'us-east-1';
 
 export interface Credentials {
   AccessKeyId: string;
@@ -69,11 +69,21 @@ export const getCredentialsByToken = async (idToken: string, identityPoolId: str
   });
 
   // Set up the request parameters
+  let Logins: Record<string, string>;
+  if (region.includes('gov')) {
+    // In us-gov-east, we have to redirect to us-gov-west because
+    // Cognito is not available there
+    Logins = {
+      [`cognito-idp.us-gov-west-1.amazonaws.com/${userPoolId}`]: idToken,
+    };
+  } else {
+    Logins = {
+      [`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: idToken,
+    };
+  }
   const getIdCommand = new GetIdCommand({
     IdentityPoolId: identityPoolId,
-    Logins: {
-      [`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: idToken,
-    },
+    Logins,
   });
 
   // Call the GetIdCommand to obtain the Cognito identity ID for the user
@@ -82,9 +92,7 @@ export const getCredentialsByToken = async (idToken: string, identityPoolId: str
   // Set up the request parameters for the GetCredentialsForIdentityCommand
   const getCredentialsCommand = new GetCredentialsForIdentityCommand({
     IdentityId,
-    Logins: {
-      [`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: idToken,
-    },
+    Logins,
   });
 
   // Call the GetCredentialsForIdentityCommand to obtain temporary AWS credentials for the user
