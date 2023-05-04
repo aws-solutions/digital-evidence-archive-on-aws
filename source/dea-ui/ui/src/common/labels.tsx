@@ -270,7 +270,9 @@ export const navigationLabels = {
 };
 
 export const fileUploadLabels = {
-  chooseFilesLabel: 'Choose folder(s)/file(s)',
+  dragAndDropFolderLabel: 'Drag and drop folder(s)/file(s) or',
+  chooseFolderLabel: 'Select folder',
+  chooseFilesLabel: 'Upload files',
   limitShowFewerLabel: 'Show fewer files',
   limitShowMoreLabel: 'Show more files',
   errorIconAriaLabel: 'Error',

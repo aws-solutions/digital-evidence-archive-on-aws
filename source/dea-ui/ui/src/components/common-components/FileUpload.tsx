@@ -3,10 +3,15 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
-import { Button, TokenGroup } from '@cloudscape-design/components';
-import { ChangeEvent, useEffect, useRef } from 'react';
+import { Button, Link, TokenGroup } from '@cloudscape-design/components';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { fileOperationsLabels, fileUploadLabels } from '../../common/labels';
-import { FileWithPath, formatFileSize, toFileWithPath } from '../../helpers/fileHelper';
+import {
+  FileWithPath,
+  formatFileSize,
+  removeFileNameFromPath,
+  toFileWithPath,
+} from '../../helpers/fileHelper';
 import styles from '../../styles/FileUpload.module.scss';
 
 export interface FileUploadProps {
@@ -17,18 +22,25 @@ export interface FileUploadProps {
 
 function FileUpload(props: FileUploadProps) {
   const { onChange, value, disabled } = props;
-  const uploadInputRef = useRef<HTMLInputElement>(null);
+  const [isDropzoneHovered, setDropzoneHovered] = useState(false);
+  const uploadFilesInputRef = useRef<HTMLInputElement>(null);
+  const uploadFolderInputRef = useRef<HTMLInputElement>(null);
   // Set HTMLInputElement: webkitdirectory property
   useEffect(() => {
-    if (uploadInputRef.current !== null) {
-      uploadInputRef.current.setAttribute('directory', '');
-      uploadInputRef.current.setAttribute('webkitdirectory', '');
+    if (uploadFolderInputRef.current !== null) {
+      uploadFolderInputRef.current.setAttribute('directory', '');
+      uploadFolderInputRef.current.setAttribute('webkitdirectory', '');
     }
-  }, [uploadInputRef]);
+  }, [uploadFolderInputRef]);
 
-  const onUploadButtonClick = () => uploadInputRef.current?.click();
   const onUploadInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
-    onChange(target.files ? Array.from(target.files).map((file) => toFileWithPath(file)) : []);
+    onChange(
+      target.files
+        ? Array.from(target.files).map((file) =>
+            toFileWithPath(file, removeFileNameFromPath(file.webkitRelativePath))
+          )
+        : []
+    );
   };
   const onFileRemove = (removeFileIndex: number) => {
     const newValue = value.filter((_, fileIndex) => fileIndex !== removeFileIndex);
@@ -37,18 +49,21 @@ function FileUpload(props: FileUploadProps) {
 
   const onDragOver = (event: React.DragEvent) => {
     event.preventDefault();
+    setDropzoneHovered(true);
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = 'copy';
     }
   };
   const onDragLeave = (event: React.DragEvent) => {
     event.preventDefault();
+    setDropzoneHovered(false);
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = 'none';
     }
   };
   const onDrop = async (event: React.DragEvent) => {
     event.preventDefault();
+    setDropzoneHovered(false);
     const files = await getFilesDataTransferItems(event.dataTransfer.items);
     onChange(Array.from(files));
   };
@@ -57,7 +72,7 @@ function FileUpload(props: FileUploadProps) {
     return new Promise((resolve) => {
       if (item.isFile) {
         (item as FileSystemFileEntry).file((file: File) => {
-          const relativePath = path + '/' + file.name;
+          const relativePath = path + '/';
           files.push(toFileWithPath(file, relativePath));
           resolve(file);
         });
@@ -102,27 +117,53 @@ function FileUpload(props: FileUploadProps) {
       onDragLeave={onDragLeave}
       onDrop={onDrop}
       data-testid="dropzone"
-      className={styles['dropzone']}
+      className={
+        isDropzoneHovered ? `${styles['dropzone']} ${styles['dropzone-hovered']}` : styles['dropzone']
+      }
     >
-      <span>{fileOperationsLabels.selectFileSubtext}</span>
-      <input
-        ref={uploadInputRef}
-        type="file"
-        data-testid="file-select"
-        onChange={onUploadInputChange}
-        disabled={disabled}
-        multiple
-        className={styles['upload-input']}
-      />
-      <Button iconName="upload" formAction="none" onClick={onUploadButtonClick}>
-        {fileUploadLabels.chooseFilesLabel}
-      </Button>
+      <span>{fileUploadLabels.dragAndDropFolderLabel}</span>
+      <div>
+        <input
+          ref={uploadFilesInputRef}
+          type="file"
+          data-testid="file-select"
+          onChange={onUploadInputChange}
+          disabled={disabled}
+          multiple
+          className={styles['upload-input']}
+        />
+        <Button
+          data-testid="multiple-files-button"
+          iconName="upload"
+          formAction="none"
+          onClick={() => uploadFilesInputRef.current?.click()}
+        >
+          {fileUploadLabels.chooseFilesLabel}
+        </Button>
+      </div>
+      <div>
+        <input
+          ref={uploadFolderInputRef}
+          type="file"
+          data-testid="folder-select"
+          onChange={onUploadInputChange}
+          disabled={disabled}
+          className={styles['upload-input']}
+        />
+        <Link data-testid="single-folder-button" onFollow={() => uploadFolderInputRef.current?.click()}>
+          {fileUploadLabels.chooseFolderLabel}
+        </Link>
+      </div>
       <TokenGroup
         onDismiss={({ detail: { itemIndex } }) => onFileRemove(itemIndex)}
-        items={value.map((file) => ({ label: file.relativePath, tags: [formatFileSize(file.size)] }))}
+        items={value.map((file) => ({
+          label: file.relativePath + file.name,
+          tags: [formatFileSize(file.size)],
+        }))}
         alignment="vertical"
         limit={3}
       />
+      <span>{fileOperationsLabels.selectFileSubtext}</span>
     </div>
   );
 }

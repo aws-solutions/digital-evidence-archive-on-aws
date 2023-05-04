@@ -23,7 +23,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
-import { FileWithPath } from '../../helpers/fileHelper';
+import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import FileUpload from '../common-components/FileUpload';
 import { UploadFilesProps } from './UploadFilesBody';
 
@@ -74,7 +74,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           const initiatedCaseFilePromise = initiateUpload({
             caseUlid: props.caseId,
             fileName: selectedFile.name,
-            filePath: props.filePath,
+            filePath: selectedFile.relativePath,
             fileSizeBytes,
             chunkSizeBytes,
             contentType,
@@ -302,7 +302,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             {
               id: 'size',
               header: commonTableLabels.fileSizeHeader,
-              cell: (e) => `${Math.ceil(e.fileSizeBytes / ONE_MB)}MB`,
+              cell: (e) => formatFileSize(e.fileSizeBytes),
               width: 170,
               minWidth: 165,
               sortingField: 'fileSizeBytes',
