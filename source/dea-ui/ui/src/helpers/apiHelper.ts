@@ -4,6 +4,7 @@
  */
 import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import { refreshCredentials, signOutProcess } from './authService';
 
 let urlBase = process.env.NEXT_PUBLIC_DEA_API_URL;
 if (typeof window !== 'undefined' && !urlBase) {
@@ -36,11 +37,35 @@ const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
 
     client.interceptors.request.use(interceptor);
   }
-  const { data } = await client.request(options).catch((error: Error) => {
+  const { data } = await client.request(options).catch(async (error: Error) => {
     console.log(error);
-    if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST') {
-      console.log(error.response?.data);
-      throw new Error(error.response?.data);
+
+    let statusCode;
+    let endpointUrl;
+    if (error instanceof AxiosError) {
+      statusCode = error.response && error.response.status ? error.response.status : 0;
+      endpointUrl = error.response && error.config.url ? error.config.url : '';
+
+      // Attempt to refresh credentials on 400's
+      // Do not refresh on POST /refreshToken or /available-endpoints
+      if (!endpointUrl.includes('availableEndpoints')) {
+        if (endpointUrl.includes('refresh') || statusCode === 412) {
+          const logoutUrl = await signOutProcess();
+          window.location.assign(logoutUrl);
+        } else {
+          if (statusCode >= 400 && statusCode < 500) {
+            await refreshCredentials();
+          } else if (statusCode >= 500) {
+            const logoutUrl = await signOutProcess();
+            window.location.assign(logoutUrl);
+          }
+        }
+      }
+
+      if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST') {
+        console.log(error.response?.data);
+        throw new Error(error.response?.data);
+      }
     }
     // TODO: call logger to capture exception
     throw new Error('there was an error while trying to retrieve data');

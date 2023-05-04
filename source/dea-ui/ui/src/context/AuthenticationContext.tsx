@@ -6,7 +6,8 @@
 import { useRouter } from 'next/router';
 import pkceChallenge from 'pkce-challenge';
 import { Context, createContext, useContext, useEffect, useState } from 'react';
-import { getLoginUrl, getLogoutUrl, revokeToken } from '../api/auth';
+import { getLoginUrl } from '../api/auth';
+import { getCallbackUrl, signOutProcess } from '../helpers/authService';
 import { IUser, unknownUser } from '../models/User';
 
 export interface IAuthenticationProps {
@@ -69,36 +70,10 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
     }
   };
   const signOut = async (): Promise<void> => {
-    try {
-      await revokeToken();
-    } catch (e) {
-      console.log('Error revoking token, refresh token may be expired already:', e);
-    }
-
-    clearStorage();
+    const logoutUrl = await signOutProcess();
     setUser(unknownUser);
-
-    // Logout of cognito session and redirect to login page
-    const callbackUrl = getCallbackUrl();
-    const logoutUrl = await getLogoutUrl(callbackUrl);
     await router.push(logoutUrl);
   };
-
-  function clearStorage() {
-    sessionStorage.removeItem('accessKeyId');
-    sessionStorage.removeItem('secretAccessKey');
-    sessionStorage.removeItem('sessionToken');
-    sessionStorage.removeItem('pkceVerifier');
-    localStorage.removeItem('username');
-  }
-
-  function getCallbackUrl() {
-    let callbackUrl = '';
-    if (typeof window !== 'undefined') {
-      callbackUrl = `${window.location}`.replace(/\/ui(.*)/, '/ui/login');
-    }
-    return callbackUrl;
-  }
 
   const isLoggedIn = user !== unknownUser;
 

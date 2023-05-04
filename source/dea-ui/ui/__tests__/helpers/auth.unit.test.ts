@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import axios from 'axios';
-import { getToken, getLoginUrl, getLogoutUrl, revokeToken } from '../../src/api/auth';
+import { getToken, getLoginUrl, getLogoutUrl, revokeToken, refreshToken } from '../../src/api/auth';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -17,6 +17,20 @@ describe('auth helper', () => {
       config: {},
     });
     const dummyToken = await getToken('DUMMYAUTHCODE');
+    expect(dummyToken).toEqual('123456');
+  });
+
+  it('should refresh token', async () => {
+    // id token mock
+    mockedAxios.create.mockReturnThis();
+    mockedAxios.request.mockResolvedValue({
+      data: '123456',
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+    const dummyToken = await refreshToken();
     expect(dummyToken).toEqual('123456');
   });
 
