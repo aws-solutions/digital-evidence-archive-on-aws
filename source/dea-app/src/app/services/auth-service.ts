@@ -137,22 +137,15 @@ export const getCredentialsByToken = async (idToken: string) => {
   const cognitoParams = await getCognitoSsmParams();
 
   // Set up the Cognito Identity client
+  const cognitoRegion = region.includes('gov') ? 'us-gov-west-1' : region;
   const cognitoIdentityClient = new CognitoIdentityClient({
-    region: region,
+    region: cognitoRegion,
   });
 
-  let Logins: Record<string, string>;
-  if (region.includes('gov')) {
-    // In us-gov-east, we have to redirect to us-gov-west because
-    // Cognito is not available there
-    Logins = {
-      [`cognito-idp.us-gov-west-1.amazonaws.com/${cognitoParams.userPoolId}`]: idToken,
-    };
-  } else {
-    Logins = {
-      [`cognito-idp.${region}.amazonaws.com/${cognitoParams.userPoolId}`]: idToken,
-    };
-  }
+  const Logins = {
+    [`cognito-idp.${cognitoRegion}.amazonaws.com/${cognitoParams.userPoolId}`]: idToken,
+  };
+
   // Set up the request parameters
   const getIdCommand = new GetIdCommand({
     IdentityPoolId: cognitoParams.identityPoolId,

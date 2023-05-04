@@ -20,7 +20,13 @@ describe('DeaMainStack', () => {
     const app = new cdk.App();
 
     // Create the DeaMainStack
-    const deaMainStack = new DeaMainStack(app, 'DeaMainStack', {});
+    const props = {
+      env: {
+        region: 'us-east-1',
+      },
+      crossRegionReferences: true,
+    };
+    const deaMainStack = new DeaMainStack(app, 'DeaMainStack', props);
 
     const template = Template.fromStack(deaMainStack);
 

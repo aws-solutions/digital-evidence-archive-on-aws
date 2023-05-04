@@ -13,4 +13,13 @@ import { DeaMainStack } from './dea-main-stack';
 
 const app: cdk.App = new cdk.App();
 const stage = deaConfig.stage();
-new DeaMainStack(app, `${stage}-DeaMainStack`, {});
+const region = deaConfig.region();
+
+const props = {
+  env: {
+    region,
+  },
+  crossRegionReferences: true,
+};
+
+new DeaMainStack(app, `${stage}-DeaMainStack`, props);

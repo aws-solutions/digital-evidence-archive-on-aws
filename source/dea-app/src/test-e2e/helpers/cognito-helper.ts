@@ -33,6 +33,8 @@ export default class CognitoHelper {
   private identityPoolClient: CognitoIdentityClient;
   private userPoolProvider: CognitoIdentityProviderClient;
   private region: string;
+  // region and cognitoRegion are only different in us-gov-east-1, since Cognito is unavailable
+  private cognitoRegion: string;
   readonly userPoolClientId: string;
   readonly userPoolId: string;
   private identityPoolId: string;
@@ -43,16 +45,18 @@ export default class CognitoHelper {
   private stage: string;
 
   public constructor(globalPassword?: string) {
+    // If regionis us gov east, the cognito stack is in us-gov-west due to cognito inavailability
     this.region = testEnv.awsRegion;
+    this.cognitoRegion = this.region === 'us-gov-east-1' ? 'us-gov-west-1' : testEnv.awsRegion;
     this.userPoolId = testEnv.userPoolId;
     this.userPoolClientId = testEnv.clientId;
     this.identityPoolId = testEnv.identityPoolId;
     this.stage = testEnv.stage;
 
-    this.idpUrl = `cognito-idp.${this.region}.amazonaws.com/${this.userPoolId}`;
+    this.idpUrl = `cognito-idp.${this.cognitoRegion}.amazonaws.com/${this.userPoolId}`;
 
-    this.identityPoolClient = new CognitoIdentityClient({ region: this.region });
-    this.userPoolProvider = new CognitoIdentityProviderClient({ region: this.region });
+    this.identityPoolClient = new CognitoIdentityClient({ region: this.cognitoRegion });
+    this.userPoolProvider = new CognitoIdentityProviderClient({ region: this.cognitoRegion });
 
     this.testPassword = globalPassword ?? generatePassword();
   }

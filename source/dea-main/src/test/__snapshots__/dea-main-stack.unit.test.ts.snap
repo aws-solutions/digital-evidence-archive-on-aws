@@ -15,11 +15,7 @@ Object {
             Object {
               "Ref": "DeaApiGatewaydeaapi822A9228",
             },
-            ".execute-api.",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            ".",
+            ".execute-api.us-east-1.",
             Object {
               "Ref": "AWS::URLSuffix",
             },
@@ -44,11 +40,7 @@ Object {
             Object {
               "Ref": "DeaApiGatewaydeaapi822A9228",
             },
-            ".execute-api.",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            ".",
+            ".execute-api.us-east-1.",
             Object {
               "Ref": "AWS::URLSuffix",
             },
@@ -70,11 +62,7 @@ Object {
             Object {
               "Ref": "DeaApiGatewaydeaapi822A9228",
             },
-            ".execute-api.",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            ".",
+            ".execute-api.us-east-1.",
             Object {
               "Ref": "AWS::URLSuffix",
             },
@@ -87,61 +75,61 @@ Object {
         ],
       },
     },
-    "DeaAuthidentityPoolIdEBA0D0C1": Object {
+    "DeaAuthConstructidentityPoolId6E7852F3": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-identityPoolId",
       },
       "Value": Object {
-        "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+        "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
       },
     },
-    "DeaAuthpoolProviderName8DEEEFFC": Object {
+    "DeaAuthConstructpoolProviderName5DC6702A": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-poolProviderName",
       },
       "Value": Object {
         "Fn::GetAtt": Array [
-          "DeaAuthDEAUserPool22DB2BAB",
+          "DeaAuthConstructDEAUserPool522C8769",
           "ProviderName",
         ],
       },
     },
-    "DeaAuthpoolProviderUrl9C814957": Object {
+    "DeaAuthConstructpoolProviderUrlB7C6FD41": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-poolProviderUrl",
       },
       "Value": Object {
         "Fn::GetAtt": Array [
-          "DeaAuthDEAUserPool22DB2BAB",
+          "DeaAuthConstructDEAUserPool522C8769",
           "ProviderURL",
         ],
       },
     },
-    "DeaAuthuserPoolClientId8B436482": Object {
+    "DeaAuthConstructuserPoolClientId3A0959B6": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-userPoolClientId",
       },
       "Value": Object {
-        "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+        "Ref": "DeaAuthConstructDEAUserPooldeaappclient08A0AC35",
       },
     },
-    "DeaAuthuserPoolClientSecretA2CBE3BE": Object {
+    "DeaAuthConstructuserPoolClientSecret117D9C26": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-userPoolClientSecret",
       },
       "Value": Object {
         "Fn::GetAtt": Array [
-          "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientEFA99634",
+          "DeaAuthConstructDEAUserPooldeaappclientDescribeCognitoUserPoolClientC581C332",
           "UserPoolClient.ClientSecret",
         ],
       },
     },
-    "DeaAuthuserPoolIdB0FAC1EB": Object {
+    "DeaAuthConstructuserPoolIdCDC81245": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-userPoolId",
       },
       "Value": Object {
-        "Ref": "DeaAuthDEAUserPool22DB2BAB",
+        "Ref": "DeaAuthConstructDEAUserPool522C8769",
       },
     },
     "DeaBackendStackDeaS3AccessLogs7805BEF5": Object {
@@ -209,7 +197,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -282,7 +270,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -356,7 +344,7 @@ Object {
                       },
                       ":s3:::",
                       Object {
-                        "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+                        "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
                       },
                     ],
                   ],
@@ -371,7 +359,7 @@ Object {
                       },
                       ":s3:::",
                       Object {
-                        "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+                        "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
                       },
                       "/*",
                     ],
@@ -453,7 +441,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -544,7 +532,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -621,7 +609,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -698,7 +686,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -775,7 +763,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -852,7 +840,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -929,7 +917,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1006,7 +994,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1083,7 +1071,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1160,7 +1148,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1237,7 +1225,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1314,7 +1302,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1391,7 +1379,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1468,7 +1456,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1545,7 +1533,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1622,7 +1610,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1699,7 +1687,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1776,7 +1764,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1853,7 +1841,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -1930,7 +1918,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2007,7 +1995,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2084,7 +2072,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2161,7 +2149,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2238,7 +2226,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2315,7 +2303,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2392,7 +2380,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2469,7 +2457,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2546,7 +2534,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2623,7 +2611,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2700,7 +2688,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2777,7 +2765,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2854,7 +2842,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -2931,7 +2919,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -3008,7 +2996,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -3085,7 +3073,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -3346,7 +3334,7 @@ Object {
         "DeaApiGatewaydeaapiusersGETDBF3AD6C",
         "DeaApiGatewaydeaapiusersOPTIONS330C13A7",
         "DeaApiGatewaydeaapiusersCC765E55",
-        "DeaApiGatewaydeaapiDeployment99E77629f6b6114eb74cf2a2e5080a203dc83be8",
+        "DeaApiGatewaydeaapiDeployment99E7762971c821942fd2070f464f0aa8b8f5870b",
         "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaApiGatewaydeaapi822A9228",
         "DeaApiGatewayUpdateBucketCORSCustomResourcePolicy9EC0AABC",
@@ -3381,11 +3369,7 @@ Object {
                                     Object {
                                       "Ref": "DeaApiGatewaydeaapi822A9228",
                                     },
-                                    ".execute-api.",
-                                    Object {
-                                      "Ref": "AWS::Region",
-                                    },
-                                    ".",
+                                    ".execute-api.us-east-1.",
                                     Object {
                                       "Ref": "AWS::URLSuffix",
                                     },
@@ -3449,11 +3433,7 @@ Object {
                                     Object {
                                       "Ref": "DeaApiGatewaydeaapi822A9228",
                                     },
-                                    ".execute-api.",
-                                    Object {
-                                      "Ref": "AWS::Region",
-                                    },
-                                    ".",
+                                    ".execute-api.us-east-1.",
                                     Object {
                                       "Ref": "AWS::URLSuffix",
                                     },
@@ -3694,7 +3674,7 @@ Object {
         "DeaApiGatewaydeaapiusersGETDBF3AD6C",
         "DeaApiGatewaydeaapiusersOPTIONS330C13A7",
         "DeaApiGatewaydeaapiusersCC765E55",
-        "DeaApiGatewaydeaapiDeployment99E77629f6b6114eb74cf2a2e5080a203dc83be8",
+        "DeaApiGatewaydeaapiDeployment99E7762971c821942fd2070f464f0aa8b8f5870b",
         "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaApiGatewaydeaapi822A9228",
       ],
@@ -3800,7 +3780,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E77629f6b6114eb74cf2a2e5080a203dc83be8": Object {
+    "DeaApiGatewaydeaapiDeployment99E7762971c821942fd2070f464f0aa8b8f5870b": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiauthauthCodeOPTIONS8EA9BA0F",
         "DeaApiGatewaydeaapiauthauthCodeFC92ADBD",
@@ -3962,7 +3942,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E77629f6b6114eb74cf2a2e5080a203dc83be8",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E7762971c821942fd2070f464f0aa8b8f5870b",
         },
         "RestApiId": Object {
           "Ref": "DeaApiGatewaydeaapi822A9228",
@@ -4200,11 +4180,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPOSTGetAuthenticationToken5718D484",
@@ -4243,11 +4219,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -4284,11 +4256,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -4330,11 +4298,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetLoginUrl6676EA3E",
@@ -4373,11 +4337,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -4414,11 +4374,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -4503,11 +4459,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetLogoutUrl36676722",
@@ -4546,11 +4498,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -4587,11 +4535,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -4719,11 +4663,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPOSTRefreshIdToken92226CFF",
@@ -4762,11 +4702,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -4803,11 +4739,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -4895,11 +4827,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -4936,11 +4864,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -4970,11 +4894,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPOSTRevokeAuthTokenFC739416",
@@ -5025,11 +4945,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetAvailableEndpoints3D87F8A4",
@@ -5068,11 +4984,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -5109,11 +5021,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -5244,11 +5152,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPOSTCreateCaseFBDDC364",
@@ -5287,11 +5191,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -5328,11 +5228,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -5378,11 +5274,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetAllCases83536312",
@@ -5425,11 +5317,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -5466,11 +5354,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -5610,11 +5494,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetCaseActions00B0B2FE",
@@ -5653,11 +5533,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -5694,11 +5570,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -5826,11 +5698,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPOSTRequestCaseAuditA90E8214",
@@ -5869,11 +5737,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -5910,11 +5774,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6014,11 +5874,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6055,11 +5911,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6089,11 +5941,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetCaseAudit536E35D4",
@@ -6175,11 +6023,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6216,11 +6060,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6250,11 +6090,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayDELETEDeleteCase91CB5F89",
@@ -6302,11 +6138,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetCaseDetails2DAE602F",
@@ -6345,11 +6177,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6386,11 +6214,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6463,11 +6287,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPUTUpdateCaseDetails69D719BE",
@@ -6506,11 +6326,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6547,11 +6363,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6593,11 +6405,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetCaseFiles5D776CE0",
@@ -6636,11 +6444,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6677,11 +6481,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6754,11 +6554,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPOSTInitiateCaseFileUpload060E0D60",
@@ -6797,11 +6593,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6838,11 +6630,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -6985,11 +6773,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -7026,11 +6810,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -7060,11 +6840,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPOSTRequestCaseFileAuditF232F8F9",
@@ -7170,11 +6946,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -7211,11 +6983,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -7245,11 +7013,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetCaseFileAuditED868E5A",
@@ -7343,11 +7107,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -7384,11 +7144,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -7418,11 +7174,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETDownloadCaseFile32575192",
@@ -7504,11 +7256,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -7545,11 +7293,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -7579,11 +7323,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPUTCompleteCaseFileUploadF4BF98F1",
@@ -7631,11 +7371,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetCaseFileDetail9C46D770",
@@ -7674,11 +7410,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -7715,11 +7447,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -7850,11 +7578,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -7891,11 +7615,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -7925,11 +7645,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPOSTCreateCaseOwner21613ABD",
@@ -7980,11 +7696,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -8021,11 +7733,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -8055,11 +7763,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetScopedCaseInformation4A196540",
@@ -8196,11 +7900,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -8237,11 +7937,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -8271,11 +7967,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPUTUpdateCaseStatus1BB3B9FE",
@@ -8323,11 +8015,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetUsersFromCaseDF0ABA41",
@@ -8366,11 +8054,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -8407,11 +8091,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -8484,11 +8164,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPOSTInviteUserToCaseB26DE4D4",
@@ -8527,11 +8203,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -8568,11 +8240,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -8724,11 +8392,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayDELETERemoveUserFromCaseD22CC76C",
@@ -8767,11 +8431,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -8808,11 +8468,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -8885,11 +8541,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPUTModifyUserCasePermissionsABF0FB7A",
@@ -8928,11 +8580,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -8969,11 +8617,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -9019,11 +8663,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetMyCases60A3BAE4",
@@ -9066,11 +8706,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -9107,11 +8743,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -9297,11 +8929,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPOSTRequestSystemAudit1876CDAF",
@@ -9340,11 +8968,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -9381,11 +9005,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -9482,11 +9102,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetSystemAuditAD3F46B8",
@@ -9525,11 +9141,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -9566,11 +9178,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -9694,11 +9302,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":s3:path/",
+                ":apigateway:us-east-1:s3:path/",
                 Object {
                   "Ref": "DeaUiStackartifactbucketFFC87A37",
                 },
@@ -9834,11 +9438,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":s3:path/",
+                ":apigateway:us-east-1:s3:path/",
                 Object {
                   "Ref": "DeaUiStackartifactbucketFFC87A37",
                 },
@@ -9974,11 +9574,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":s3:path/",
+                ":apigateway:us-east-1:s3:path/",
                 Object {
                   "Ref": "DeaUiStackartifactbucketFFC87A37",
                 },
@@ -10114,11 +9710,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":s3:path/",
+                ":apigateway:us-east-1:s3:path/",
                 Object {
                   "Ref": "DeaUiStackartifactbucketFFC87A37",
                 },
@@ -10254,11 +9846,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":s3:path/",
+                ":apigateway:us-east-1:s3:path/",
                 Object {
                   "Ref": "DeaUiStackartifactbucketFFC87A37",
                 },
@@ -10404,11 +9992,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":s3:path/",
+                ":apigateway:us-east-1:s3:path/",
                 Object {
                   "Ref": "DeaUiStackartifactbucketFFC87A37",
                 },
@@ -10544,11 +10128,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":s3:path/",
+                ":apigateway:us-east-1:s3:path/",
                 Object {
                   "Ref": "DeaUiStackartifactbucketFFC87A37",
                 },
@@ -10664,11 +10244,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -10705,11 +10281,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -10742,11 +10314,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetAllUsersD6F48F6E",
@@ -10938,11 +10506,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayPOSTRequestUserAudit56ED13A5",
@@ -10981,11 +10545,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -11022,11 +10582,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -11126,11 +10682,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -11167,11 +10719,7 @@ Object {
               Object {
                 "Ref": "AWS::Partition",
               },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
+              ":execute-api:us-east-1:",
               Object {
                 "Ref": "AWS::AccountId",
               },
@@ -11201,11 +10749,7 @@ Object {
                 Object {
                   "Ref": "AWS::Partition",
                 },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
+                ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaApiGatewayGETGetUserAudit98646799",
@@ -11314,19 +10858,11 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:ssm:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
+                    "arn:aws:ssm:us-east-1:",
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/dea/",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    "/[STAGE-REMOVED]*",
+                    ":parameter/dea/us-east-1/[STAGE-REMOVED]*",
                   ],
                 ],
               },
@@ -11338,19 +10874,11 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:secretsmanager:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
+                    "arn:aws:secretsmanager:us-east-1:",
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":secret:/dea/",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    "/[STAGE-REMOVED]/clientSecret-*",
+                    ":secret:/dea/us-east-1/[STAGE-REMOVED]/clientSecret-*",
                   ],
                 ],
               },
@@ -11536,19 +11064,11 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:ssm:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
+                    "arn:aws:ssm:us-east-1:",
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/dea/",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    "/[STAGE-REMOVED]*",
+                    ":parameter/dea/us-east-1/[STAGE-REMOVED]*",
                   ],
                 ],
               },
@@ -11753,7 +11273,7 @@ Object {
       },
       "Type": "AWS::S3::BucketPolicy",
     },
-    "DeaAuthAuthTestGroupRole23D2E7FA": Object {
+    "DeaAuthConstructAuthTestGroupRole238CB12C": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -11765,7 +11285,7 @@ Object {
                 },
                 "StringEquals": Object {
                   "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
                   },
                 },
               },
@@ -11779,12 +11299,12 @@ Object {
         },
         "Description": "Role used for auth e2e testing",
         "PermissionsBoundary": Object {
-          "Ref": "DeaAuthdeaRoleBoundaryB4C5D62F",
+          "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeaAuthAuthTestGroupRolePolicy8F41C7CD": Object {
+    "DeaAuthConstructAuthTestGroupRolePolicy4AA0FA97": Object {
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -11800,11 +11320,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -11828,11 +11344,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -11856,11 +11368,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -11884,11 +11392,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -11912,11 +11416,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -11937,27 +11437,16 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "DeaAuthAuthTestGroupRolePolicy8F41C7CD",
+        "PolicyName": "DeaAuthConstructAuthTestGroupRolePolicy4AA0FA97",
         "Roles": Array [
           Object {
-            "Ref": "DeaAuthAuthTestGroupRole23D2E7FA",
+            "Ref": "DeaAuthConstructAuthTestGroupRole238CB12C",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DeaAuthAuthTestGroupactionsD42A0A54": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-AuthTestGroup-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/cases/my-casesGET,/auth/tokenPOST,/auth/credentials/{idToken}/exchangeGET,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthCaseWorkerRole14C530E5": Object {
+    "DeaAuthConstructCaseWorkerRoleF4B7631E": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -11969,7 +11458,7 @@ Object {
                 },
                 "StringEquals": Object {
                   "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
                   },
                 },
               },
@@ -11983,12 +11472,12 @@ Object {
         },
         "Description": "Role users who need access to case APIs",
         "PermissionsBoundary": Object {
-          "Ref": "DeaAuthdeaRoleBoundaryB4C5D62F",
+          "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeaAuthCaseWorkerRolePolicy755235A6": Object {
+    "DeaAuthConstructCaseWorkerRolePolicy574BF88A": Object {
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -12004,11 +11493,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12032,11 +11517,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12060,11 +11541,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12088,11 +11565,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12116,11 +11589,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12144,11 +11613,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12172,11 +11637,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12200,11 +11661,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12228,11 +11685,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12256,11 +11709,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12284,11 +11733,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12312,11 +11757,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12340,11 +11781,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12368,11 +11805,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12396,11 +11829,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12424,11 +11853,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12452,11 +11877,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12480,11 +11901,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12508,11 +11925,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12536,11 +11949,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12564,11 +11973,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12592,11 +11997,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12620,11 +12021,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12648,11 +12045,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12676,11 +12069,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12704,11 +12093,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12729,27 +12114,16 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "DeaAuthCaseWorkerRolePolicy755235A6",
+        "PolicyName": "DeaAuthConstructCaseWorkerRolePolicy574BF88A",
         "Roles": Array [
           Object {
-            "Ref": "DeaAuthCaseWorkerRole14C530E5",
+            "Ref": "DeaAuthConstructCaseWorkerRoleF4B7631E",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DeaAuthCaseWorkeractions55E2D177": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-CaseWorker-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsPUT,/cases/{caseId}/detailsDELETE,/cases/{caseId}/actionsGET,/cases/{caseId}/ownerPOST,/cases/{caseId}/statusPUT,/cases/{caseId}/userMembershipsGET,/cases/{caseId}/userMembershipsPOST,/cases/{caseId}/users/{userId}/membershipsPUT,/cases/{caseId}/users/{userId}/membershipsDELETE,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/{caseId}/filesPOST,/cases/{caseId}/filesGET,/cases/{caseId}/files/{fileId}/contentsPUT,/cases/{caseId}/files/{fileId}/infoGET,/cases/{caseId}/files/{fileId}/contentsGET,/cases/my-casesGET,/cases/{caseId}/audit/{auditId}/csvGET,/cases/{caseId}/auditPOST,/availableEndpointsGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthCreateCasesTestGroupRoleB1D8969D": Object {
+    "DeaAuthConstructCreateCasesTestGroupRoleA44EF3D8": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -12761,7 +12135,7 @@ Object {
                 },
                 "StringEquals": Object {
                   "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
                   },
                 },
               },
@@ -12775,12 +12149,12 @@ Object {
         },
         "Description": "Role used for create cases API e2e testing",
         "PermissionsBoundary": Object {
-          "Ref": "DeaAuthdeaRoleBoundaryB4C5D62F",
+          "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeaAuthCreateCasesTestGroupRolePolicy933145EF": Object {
+    "DeaAuthConstructCreateCasesTestGroupRolePolicyE91C2239": Object {
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -12796,11 +12170,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12824,11 +12194,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12852,11 +12218,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12880,11 +12242,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -12905,38 +12263,27 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "DeaAuthCreateCasesTestGroupRolePolicy933145EF",
+        "PolicyName": "DeaAuthConstructCreateCasesTestGroupRolePolicyE91C2239",
         "Roles": Array [
           Object {
-            "Ref": "DeaAuthCreateCasesTestGroupRoleB1D8969D",
+            "Ref": "DeaAuthConstructCreateCasesTestGroupRoleA44EF3D8",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DeaAuthCreateCasesTestGroupactions3BE4E13C": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-CreateCasesTestGroup-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/casesPOST,/cases/{caseId}/detailsDELETE,/cases/all-casesGET,/auth/tokenPOST,/auth/credentials/{idToken}/exchangeGET,/auth/loginUrlGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthDEAIdentityPool0B891C1B": Object {
+    "DeaAuthConstructDEAIdentityPoolBA60681C": Object {
       "Properties": Object {
         "AllowClassicFlow": false,
         "AllowUnauthenticatedIdentities": false,
         "CognitoIdentityProviders": Array [
           Object {
             "ClientId": Object {
-              "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+              "Ref": "DeaAuthConstructDEAUserPooldeaappclient08A0AC35",
             },
             "ProviderName": Object {
               "Fn::GetAtt": Array [
-                "DeaAuthDEAUserPool22DB2BAB",
+                "DeaAuthConstructDEAUserPool522C8769",
                 "ProviderName",
               ],
             },
@@ -12946,7 +12293,7 @@ Object {
       },
       "Type": "AWS::Cognito::IdentityPool",
     },
-    "DeaAuthDEAUserPool22DB2BAB": Object {
+    "DeaAuthConstructDEAUserPool522C8769": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
         "AccountRecoverySetting": Object {
@@ -13005,18 +12352,18 @@ Object {
       "Type": "AWS::Cognito::UserPool",
       "UpdateReplacePolicy": "Delete",
     },
-    "DeaAuthDEAUserPoolCognitoDomainAB9C904A": Object {
+    "DeaAuthConstructDEAUserPoolCognitoDomain472B1BE4": Object {
       "Properties": Object {
         "Domain": Object {
-          "Ref": "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]",
+          "Ref": "DeaAuthConstruct[DOMAIN-REMOVED][HASH REMOVED]",
         },
         "UserPoolId": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+          "Ref": "DeaAuthConstructDEAUserPool522C8769",
         },
       },
       "Type": "AWS::Cognito::UserPoolDomain",
     },
-    "DeaAuthDEAUserPooldeaappclient3742F9D7": Object {
+    "DeaAuthConstructDEAUserPooldeaappclient08A0AC35": Object {
       "Properties": Object {
         "AccessTokenValidity": 720,
         "AllowedOAuthFlows": Array [
@@ -13039,11 +12386,7 @@ Object {
                 Object {
                   "Ref": "DeaApiGatewaydeaapi822A9228",
                 },
-                ".execute-api.",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ".",
+                ".execute-api.us-east-1.",
                 Object {
                   "Ref": "AWS::URLSuffix",
                 },
@@ -13064,11 +12407,7 @@ Object {
                 Object {
                   "Ref": "DeaApiGatewaydeaapi822A9228",
                 },
-                ".execute-api.",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ".",
+                ".execute-api.us-east-1.",
                 Object {
                   "Ref": "AWS::URLSuffix",
                 },
@@ -13101,62 +12440,32 @@ Object {
           "RefreshToken": "minutes",
         },
         "UserPoolId": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+          "Ref": "DeaAuthConstructDEAUserPool522C8769",
         },
       },
       "Type": "AWS::Cognito::UserPoolClient",
     },
-    "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicy67AC1E5A": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "cognito-idp:DescribeUserPoolClient",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "DeaAuthDEAUserPool22DB2BAB",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicy67AC1E5A",
-        "Roles": Array [
-          Object {
-            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientEFA99634": Object {
+    "DeaAuthConstructDEAUserPooldeaappclientDescribeCognitoUserPoolClientC581C332": Object {
       "DeletionPolicy": "Delete",
       "DependsOn": Array [
-        "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicy67AC1E5A",
+        "DeaAuthConstructDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicyDA8474CC",
       ],
       "Properties": Object {
         "Create": Object {
           "Fn::Join": Array [
             "",
             Array [
-              "{\\"region\\":\\"",
+              "{\\"region\\":\\"us-east-1\\",\\"service\\":\\"CognitoIdentityServiceProvider\\",\\"action\\":\\"describeUserPoolClient\\",\\"parameters\\":{\\"UserPoolId\\":\\"",
               Object {
-                "Ref": "AWS::Region",
-              },
-              "\\",\\"service\\":\\"CognitoIdentityServiceProvider\\",\\"action\\":\\"describeUserPoolClient\\",\\"parameters\\":{\\"UserPoolId\\":\\"",
-              Object {
-                "Ref": "DeaAuthDEAUserPool22DB2BAB",
+                "Ref": "DeaAuthConstructDEAUserPool522C8769",
               },
               "\\",\\"ClientId\\":\\"",
               Object {
-                "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+                "Ref": "DeaAuthConstructDEAUserPooldeaappclient08A0AC35",
               },
               "\\"},\\"physicalResourceId\\":{\\"id\\":\\"",
               Object {
-                "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+                "Ref": "DeaAuthConstructDEAUserPooldeaappclient08A0AC35",
               },
               "\\"}}",
             ],
@@ -13173,21 +12482,17 @@ Object {
           "Fn::Join": Array [
             "",
             Array [
-              "{\\"region\\":\\"",
+              "{\\"region\\":\\"us-east-1\\",\\"service\\":\\"CognitoIdentityServiceProvider\\",\\"action\\":\\"describeUserPoolClient\\",\\"parameters\\":{\\"UserPoolId\\":\\"",
               Object {
-                "Ref": "AWS::Region",
-              },
-              "\\",\\"service\\":\\"CognitoIdentityServiceProvider\\",\\"action\\":\\"describeUserPoolClient\\",\\"parameters\\":{\\"UserPoolId\\":\\"",
-              Object {
-                "Ref": "DeaAuthDEAUserPool22DB2BAB",
+                "Ref": "DeaAuthConstructDEAUserPool522C8769",
               },
               "\\",\\"ClientId\\":\\"",
               Object {
-                "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+                "Ref": "DeaAuthConstructDEAUserPooldeaappclient08A0AC35",
               },
               "\\"},\\"physicalResourceId\\":{\\"id\\":\\"",
               Object {
-                "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+                "Ref": "DeaAuthConstructDEAUserPooldeaappclient08A0AC35",
               },
               "\\"}}",
             ],
@@ -13197,7 +12502,33 @@ Object {
       "Type": "Custom::DescribeCognitoUserPoolClient",
       "UpdateReplacePolicy": "Delete",
     },
-    "DeaAuthEvidenceManagerRole778E476E": Object {
+    "DeaAuthConstructDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicyDA8474CC": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "cognito-idp:DescribeUserPoolClient",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaAuthConstructDEAUserPool522C8769",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaAuthConstructDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicyDA8474CC",
+        "Roles": Array [
+          Object {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeaAuthConstructEvidenceManagerRole126B1CAE": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -13209,7 +12540,7 @@ Object {
                 },
                 "StringEquals": Object {
                   "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
                   },
                 },
               },
@@ -13223,12 +12554,12 @@ Object {
         },
         "Description": "Role Users with access to privileged endpoints",
         "PermissionsBoundary": Object {
-          "Ref": "DeaAuthdeaRoleBoundaryB4C5D62F",
+          "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeaAuthEvidenceManagerRolePolicyEF591148": Object {
+    "DeaAuthConstructEvidenceManagerRolePolicy0FCBBE9E": Object {
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -13244,11 +12575,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13272,11 +12599,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13300,11 +12623,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13328,11 +12647,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13356,11 +12671,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13384,11 +12695,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13412,11 +12719,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13440,11 +12743,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13468,11 +12767,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13496,11 +12791,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13524,11 +12815,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13552,11 +12839,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13580,11 +12863,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13608,11 +12887,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13636,11 +12911,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13664,11 +12935,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13689,27 +12956,16 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "DeaAuthEvidenceManagerRolePolicyEF591148",
+        "PolicyName": "DeaAuthConstructEvidenceManagerRolePolicy0FCBBE9E",
         "Roles": Array [
           Object {
-            "Ref": "DeaAuthEvidenceManagerRole778E476E",
+            "Ref": "DeaAuthConstructEvidenceManagerRole126B1CAE",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DeaAuthEvidenceManageractions23EDE1D4": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-EvidenceManager-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/cases/{caseId}/actionsGET,/cases/{caseId}/userMembershipsGET,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/all-casesGET,/availableEndpointsGET,/cases/{caseId}/scopedInformationGET,/cases/{caseId}/ownerPOST,/users/{userId}/auditPOST,/users/{userId}/audit/{auditId}/csvGET,/system/auditPOST,/system/audit/{auditId}/csvGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthGetCaseTestGroupRoleF15B4661": Object {
+    "DeaAuthConstructGetCaseTestGroupRoleB93A43C9": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -13721,7 +12977,7 @@ Object {
                 },
                 "StringEquals": Object {
                   "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
                   },
                 },
               },
@@ -13735,12 +12991,12 @@ Object {
         },
         "Description": "Role used for get cases API e2e testing",
         "PermissionsBoundary": Object {
-          "Ref": "DeaAuthdeaRoleBoundaryB4C5D62F",
+          "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeaAuthGetCaseTestGroupRolePolicy852A4EA7": Object {
+    "DeaAuthConstructGetCaseTestGroupRolePolicyF8D062BD": Object {
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -13756,11 +13012,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13784,11 +13036,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13812,11 +13060,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13840,11 +13084,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13865,27 +13105,16 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "DeaAuthGetCaseTestGroupRolePolicy852A4EA7",
+        "PolicyName": "DeaAuthConstructGetCaseTestGroupRolePolicyF8D062BD",
         "Roles": Array [
           Object {
-            "Ref": "DeaAuthGetCaseTestGroupRoleF15B4661",
+            "Ref": "DeaAuthConstructGetCaseTestGroupRoleB93A43C9",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DeaAuthGetCaseTestGroupactions11259DD5": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-GetCaseTestGroup-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsDELETE,/auth/tokenPOST,/auth/credentials/{idToken}/exchangeGET,/auth/loginUrlGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthGetMyCasesTestGroupRoleBDF3089F": Object {
+    "DeaAuthConstructGetMyCasesTestGroupRoleE55F2036": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -13897,7 +13126,7 @@ Object {
                 },
                 "StringEquals": Object {
                   "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
                   },
                 },
               },
@@ -13911,12 +13140,12 @@ Object {
         },
         "Description": "Role used for get my cases API e2e testing",
         "PermissionsBoundary": Object {
-          "Ref": "DeaAuthdeaRoleBoundaryB4C5D62F",
+          "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeaAuthGetMyCasesTestGroupRolePolicy5E863018": Object {
+    "DeaAuthConstructGetMyCasesTestGroupRolePolicy48BD620D": Object {
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -13932,11 +13161,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13960,11 +13185,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -13988,11 +13209,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14016,11 +13233,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14044,11 +13257,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14072,11 +13281,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14097,27 +13302,16 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "DeaAuthGetMyCasesTestGroupRolePolicy5E863018",
+        "PolicyName": "DeaAuthConstructGetMyCasesTestGroupRolePolicy48BD620D",
         "Roles": Array [
           Object {
-            "Ref": "DeaAuthGetMyCasesTestGroupRoleBDF3089F",
+            "Ref": "DeaAuthConstructGetMyCasesTestGroupRoleE55F2036",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DeaAuthGetMyCasesTestGroupactionsB69CEAE3": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-GetMyCasesTestGroup-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsDELETE,/cases/my-casesGET,/cases/{caseId}/userMembershipsPOST,/usersGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthIdPoolAuthenticatedRole3AD16775": Object {
+    "DeaAuthConstructIdPoolAuthenticatedRole4A0EB3EB": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -14129,7 +13323,7 @@ Object {
                 },
                 "StringEquals": Object {
                   "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
                   },
                 },
               },
@@ -14144,7 +13338,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeaAuthIdPoolUnAuthenticatedRoleA427A1FB": Object {
+    "DeaAuthConstructIdPoolUnAuthenticatedRole729B2FE1": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -14156,7 +13350,7 @@ Object {
                 },
                 "StringEquals": Object {
                   "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
                   },
                 },
               },
@@ -14171,10 +13365,10 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeaAuthIdentityPoolCognitoRoleAttachment914C22D9": Object {
+    "DeaAuthConstructIdentityPoolCognitoRoleAttachment8F201F0C": Object {
       "Properties": Object {
         "IdentityPoolId": Object {
-          "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+          "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
         },
         "RoleMappings": Object {
           "roleMappingsKey": Object {
@@ -14185,13 +13379,13 @@ Object {
                 Array [
                   Object {
                     "Fn::GetAtt": Array [
-                      "DeaAuthDEAUserPool22DB2BAB",
+                      "DeaAuthConstructDEAUserPool522C8769",
                       "ProviderName",
                     ],
                   },
                   ":",
                   Object {
-                    "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
+                    "Ref": "DeaAuthConstructDEAUserPooldeaappclient08A0AC35",
                   },
                 ],
               ],
@@ -14203,7 +13397,7 @@ Object {
                   "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
-                      "DeaAuthCaseWorkerRole14C530E5",
+                      "DeaAuthConstructCaseWorkerRoleF4B7631E",
                       "Arn",
                     ],
                   },
@@ -14214,7 +13408,7 @@ Object {
                   "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
-                      "DeaAuthWorkingManagerRole85E3C255",
+                      "DeaAuthConstructWorkingManagerRoleD81849AB",
                       "Arn",
                     ],
                   },
@@ -14225,7 +13419,7 @@ Object {
                   "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
-                      "DeaAuthEvidenceManagerRole778E476E",
+                      "DeaAuthConstructEvidenceManagerRole126B1CAE",
                       "Arn",
                     ],
                   },
@@ -14236,7 +13430,7 @@ Object {
                   "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
-                      "DeaAuthNoPermissionsGroupRole1E0F8CCF",
+                      "DeaAuthConstructNoPermissionsGroupRoleE403EB55",
                       "Arn",
                     ],
                   },
@@ -14247,7 +13441,7 @@ Object {
                   "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
-                      "DeaAuthAuthTestGroupRole23D2E7FA",
+                      "DeaAuthConstructAuthTestGroupRole238CB12C",
                       "Arn",
                     ],
                   },
@@ -14258,7 +13452,7 @@ Object {
                   "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
-                      "DeaAuthCreateCasesTestGroupRoleB1D8969D",
+                      "DeaAuthConstructCreateCasesTestGroupRoleA44EF3D8",
                       "Arn",
                     ],
                   },
@@ -14269,7 +13463,7 @@ Object {
                   "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
-                      "DeaAuthGetCaseTestGroupRoleF15B4661",
+                      "DeaAuthConstructGetCaseTestGroupRoleB93A43C9",
                       "Arn",
                     ],
                   },
@@ -14280,7 +13474,7 @@ Object {
                   "MatchType": "Equals",
                   "RoleARN": Object {
                     "Fn::GetAtt": Array [
-                      "DeaAuthGetMyCasesTestGroupRoleBDF3089F",
+                      "DeaAuthConstructGetMyCasesTestGroupRoleE55F2036",
                       "Arn",
                     ],
                   },
@@ -14294,13 +13488,13 @@ Object {
         "Roles": Object {
           "authenticated": Object {
             "Fn::GetAtt": Array [
-              "DeaAuthIdPoolAuthenticatedRole3AD16775",
+              "DeaAuthConstructIdPoolAuthenticatedRole4A0EB3EB",
               "Arn",
             ],
           },
           "unauthenticated": Object {
             "Fn::GetAtt": Array [
-              "DeaAuthIdPoolUnAuthenticatedRoleA427A1FB",
+              "DeaAuthConstructIdPoolUnAuthenticatedRole729B2FE1",
               "Arn",
             ],
           },
@@ -14308,7 +13502,7 @@ Object {
       },
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
     },
-    "DeaAuthNoPermissionsGroupRole1E0F8CCF": Object {
+    "DeaAuthConstructNoPermissionsGroupRoleE403EB55": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -14320,7 +13514,7 @@ Object {
                 },
                 "StringEquals": Object {
                   "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
                   },
                 },
               },
@@ -14334,12 +13528,12 @@ Object {
         },
         "Description": "Role users who can't do anything in the system",
         "PermissionsBoundary": Object {
-          "Ref": "DeaAuthdeaRoleBoundaryB4C5D62F",
+          "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeaAuthNoPermissionsGroupRolePolicy8475E5D3": Object {
+    "DeaAuthConstructNoPermissionsGroupRolePolicy596889D9": Object {
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -14354,11 +13548,7 @@ Object {
                     Object {
                       "Ref": "AWS::Partition",
                     },
-                    ":execute-api:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
+                    ":execute-api:us-east-1:",
                     Object {
                       "Ref": "AWS::AccountId",
                     },
@@ -14378,27 +13568,16 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "DeaAuthNoPermissionsGroupRolePolicy8475E5D3",
+        "PolicyName": "DeaAuthConstructNoPermissionsGroupRolePolicy596889D9",
         "Roles": Array [
           Object {
-            "Ref": "DeaAuthNoPermissionsGroupRole1E0F8CCF",
+            "Ref": "DeaAuthConstructNoPermissionsGroupRoleE403EB55",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DeaAuthNoPermissionsGroupactionsF8AAA07E": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-NoPermissionsGroup-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/availableEndpointsGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthWorkingManagerRole85E3C255": Object {
+    "DeaAuthConstructWorkingManagerRoleD81849AB": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -14410,7 +13589,7 @@ Object {
                 },
                 "StringEquals": Object {
                   "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthDEAIdentityPool0B891C1B",
+                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
                   },
                 },
               },
@@ -14424,12 +13603,12 @@ Object {
         },
         "Description": "Role users who act as both case workers and managers",
         "PermissionsBoundary": Object {
-          "Ref": "DeaAuthdeaRoleBoundaryB4C5D62F",
+          "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
       },
       "Type": "AWS::IAM::Role",
     },
-    "DeaAuthWorkingManagerRolePolicy232DC198": Object {
+    "DeaAuthConstructWorkingManagerRolePolicy7C8AECFF": Object {
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -14445,11 +13624,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14473,11 +13648,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14501,11 +13672,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14529,11 +13696,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14557,11 +13720,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14585,11 +13744,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14613,11 +13768,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14641,11 +13792,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14669,11 +13816,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14697,11 +13840,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14725,11 +13864,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14753,11 +13888,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14781,11 +13912,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14809,11 +13936,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14837,11 +13960,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14865,11 +13984,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14893,11 +14008,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14921,11 +14032,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14949,11 +14056,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -14977,11 +14080,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15005,11 +14104,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15033,11 +14128,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15061,11 +14152,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15089,11 +14176,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15117,11 +14200,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15145,11 +14224,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15173,11 +14248,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15201,11 +14272,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15229,11 +14296,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15257,11 +14320,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15285,11 +14344,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15310,61 +14365,16 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "DeaAuthWorkingManagerRolePolicy232DC198",
+        "PolicyName": "DeaAuthConstructWorkingManagerRolePolicy7C8AECFF",
         "Roles": Array [
           Object {
-            "Ref": "DeaAuthWorkingManagerRole85E3C255",
+            "Ref": "DeaAuthConstructWorkingManagerRoleD81849AB",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
     },
-    "DeaAuthWorkingManageractions6503873F": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-WorkingManager-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsPUT,/cases/{caseId}/detailsDELETE,/cases/{caseId}/actionsGET,/cases/{caseId}/userMembershipsGET,/cases/{caseId}/userMembershipsPOST,/cases/{caseId}/users/{userId}/membershipsPUT,/cases/{caseId}/users/{userId}/membershipsDELETE,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/{caseId}/filesPOST,/cases/{caseId}/filesGET,/cases/{caseId}/files/{fileId}/contentsPUT,/cases/{caseId}/files/{fileId}/infoGET,/cases/{caseId}/files/{fileId}/contentsGET,/cases/my-casesGET,/cases/all-casesGET,/cases/{caseId}/audit/{auditId}/csvGET,/cases/{caseId}/auditPOST,/availableEndpointsGET,/cases/{caseId}/scopedInformationGET,/cases/{caseId}/ownerPOST,/users/{userId}/auditPOST,/users/{userId}/audit/{auditId}/csvGET,/system/auditPOST,/system/audit/{auditId}/csvGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthclientcallbackurlssmparam21EED1EB": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the app client callback url for use in token verification on the backend",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-client-callback-url-param",
-        "Tier": "Standard",
-        "Type": "String",
-        "Value": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "https://",
-              Object {
-                "Ref": "DeaApiGatewaydeaapi822A9228",
-              },
-              ".execute-api.",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ".",
-              Object {
-                "Ref": "AWS::URLSuffix",
-              },
-              "/",
-              Object {
-                "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "/ui/login",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthdeaRoleBoundaryB4C5D62F": Object {
+    "DeaAuthConstructdeaRoleBoundaryF9AC80F7": Object {
       "Properties": Object {
         "Description": "",
         "Path": "/",
@@ -15382,11 +14392,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15410,11 +14416,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15438,11 +14440,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15466,11 +14464,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15494,11 +14488,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15522,11 +14512,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15550,11 +14536,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15578,11 +14560,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15606,11 +14584,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15634,11 +14608,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15662,11 +14632,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15690,11 +14656,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15718,11 +14680,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15746,11 +14704,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15774,11 +14728,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15802,11 +14752,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15830,11 +14776,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15858,11 +14800,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15886,11 +14824,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15914,11 +14848,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15942,11 +14872,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15970,11 +14896,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -15998,11 +14920,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -16026,11 +14944,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -16054,11 +14968,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -16082,11 +14992,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -16110,11 +15016,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -16138,11 +15040,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -16166,11 +15064,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -16194,11 +15088,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -16222,11 +15112,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -16250,11 +15136,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -16278,11 +15160,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -16306,11 +15184,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":execute-api:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
+                      ":execute-api:us-east-1:",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
@@ -16334,99 +15208,14 @@ Object {
       },
       "Type": "AWS::IAM::ManagedPolicy",
     },
-    "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]": Object {
+    "DeaAuthConstruct[DOMAIN-REMOVED][HASH REMOVED]": Object {
       "Properties": Object {
         "Domain": "[DOMAIN-REMOVED]",
         "UserPoolId": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
+          "Ref": "DeaAuthConstructDEAUserPool522C8769",
         },
       },
       "Type": "AWS::Cognito::UserPoolDomain",
-    },
-    "DeaAuthdeauseast1[STAGE-REMOVED]clientSecret[HASH REMOVED]": Object {
-      "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "KmsKeyId": Object {
-          "Fn::GetAtt": Array [
-            "primaryCustomerKey87EC2263",
-            "Arn",
-          ],
-        },
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]/clientSecret",
-        "SecretString": Object {
-          "Fn::GetAtt": Array [
-            "DeaAuthDEAUserPooldeaappclientDescribeCognitoUserPoolClientEFA99634",
-            "UserPoolClient.ClientSecret",
-          ],
-        },
-      },
-      "Type": "AWS::SecretsManager::Secret",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DeaAuthidentitypoolidssmparam7012C429": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the identity pool id for use in user verification on the backend",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-identity-pool-id-param",
-        "Tier": "Standard",
-        "Type": "String",
-        "Value": Object {
-          "Ref": "DeaAuthDEAIdentityPool0B891C1B",
-        },
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthuserpoolclientidssmparam605B45CC": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the user pool client id for use in token verification on the backend",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-client-id-param",
-        "Tier": "Standard",
-        "Type": "String",
-        "Value": Object {
-          "Ref": "DeaAuthDEAUserPooldeaappclient3742F9D7",
-        },
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthuserpoolcognitodomainssmparam743ADBBC": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the user pool cognito domain for use in token verification on the backend",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-cognito-domain-param",
-        "Tier": "Standard",
-        "Type": "String",
-        "Value": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "https://",
-              Object {
-                "Ref": "DeaAuth[DOMAIN-REMOVED][HASH REMOVED]",
-              },
-              ".auth-fips.",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ".amazoncognito.com",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaAuthuserpoolidssmparamE2094B6A": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the user pool id for use in token verification on the backend",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-id-param",
-        "Tier": "Standard",
-        "Type": "String",
-        "Value": Object {
-          "Ref": "DeaAuthDEAUserPool22DB2BAB",
-        },
-      },
-      "Type": "AWS::SSM::Parameter",
     },
     "DeaBackendStackDeaTableE9FE4A05": Object {
       "DeletionPolicy": "Delete",
@@ -16958,7 +15747,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -17266,7 +16055,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -17299,6 +16088,205 @@ Object {
         "Timeout": 60,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaParametersConstructAuthTestGroupactions584EA34A": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the available endpoints for a role",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-AuthTestGroup-actions",
+        "Tier": "Standard",
+        "Type": "StringList",
+        "Value": "/cases/my-casesGET,/auth/tokenPOST,/auth/credentials/{idToken}/exchangeGET,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST",
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaParametersConstructCaseWorkeractionsBE9D52BE": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the available endpoints for a role",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-CaseWorker-actions",
+        "Tier": "Standard",
+        "Type": "StringList",
+        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsPUT,/cases/{caseId}/detailsDELETE,/cases/{caseId}/actionsGET,/cases/{caseId}/ownerPOST,/cases/{caseId}/statusPUT,/cases/{caseId}/userMembershipsGET,/cases/{caseId}/userMembershipsPOST,/cases/{caseId}/users/{userId}/membershipsPUT,/cases/{caseId}/users/{userId}/membershipsDELETE,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/{caseId}/filesPOST,/cases/{caseId}/filesGET,/cases/{caseId}/files/{fileId}/contentsPUT,/cases/{caseId}/files/{fileId}/infoGET,/cases/{caseId}/files/{fileId}/contentsGET,/cases/my-casesGET,/cases/{caseId}/audit/{auditId}/csvGET,/cases/{caseId}/auditPOST,/availableEndpointsGET",
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaParametersConstructCreateCasesTestGroupactionsAEADA4CB": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the available endpoints for a role",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-CreateCasesTestGroup-actions",
+        "Tier": "Standard",
+        "Type": "StringList",
+        "Value": "/casesPOST,/cases/{caseId}/detailsDELETE,/cases/all-casesGET,/auth/tokenPOST,/auth/credentials/{idToken}/exchangeGET,/auth/loginUrlGET",
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaParametersConstructEvidenceManageractionsC107F87D": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the available endpoints for a role",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-EvidenceManager-actions",
+        "Tier": "Standard",
+        "Type": "StringList",
+        "Value": "/cases/{caseId}/actionsGET,/cases/{caseId}/userMembershipsGET,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/all-casesGET,/availableEndpointsGET,/cases/{caseId}/scopedInformationGET,/cases/{caseId}/ownerPOST,/users/{userId}/auditPOST,/users/{userId}/audit/{auditId}/csvGET,/system/auditPOST,/system/audit/{auditId}/csvGET",
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaParametersConstructGetCaseTestGroupactions0AC8C56D": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the available endpoints for a role",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-GetCaseTestGroup-actions",
+        "Tier": "Standard",
+        "Type": "StringList",
+        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsDELETE,/auth/tokenPOST,/auth/credentials/{idToken}/exchangeGET,/auth/loginUrlGET",
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaParametersConstructGetMyCasesTestGroupactions68DF22F7": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the available endpoints for a role",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-GetMyCasesTestGroup-actions",
+        "Tier": "Standard",
+        "Type": "StringList",
+        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsDELETE,/cases/my-casesGET,/cases/{caseId}/userMembershipsPOST,/usersGET",
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaParametersConstructNoPermissionsGroupactions2641487C": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the available endpoints for a role",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-NoPermissionsGroup-actions",
+        "Tier": "Standard",
+        "Type": "StringList",
+        "Value": "/availableEndpointsGET",
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaParametersConstructWorkingManageractions5D91AA95": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the available endpoints for a role",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-WorkingManager-actions",
+        "Tier": "Standard",
+        "Type": "StringList",
+        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsPUT,/cases/{caseId}/detailsDELETE,/cases/{caseId}/actionsGET,/cases/{caseId}/userMembershipsGET,/cases/{caseId}/userMembershipsPOST,/cases/{caseId}/users/{userId}/membershipsPUT,/cases/{caseId}/users/{userId}/membershipsDELETE,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/{caseId}/filesPOST,/cases/{caseId}/filesGET,/cases/{caseId}/files/{fileId}/contentsPUT,/cases/{caseId}/files/{fileId}/infoGET,/cases/{caseId}/files/{fileId}/contentsGET,/cases/my-casesGET,/cases/all-casesGET,/cases/{caseId}/audit/{auditId}/csvGET,/cases/{caseId}/auditPOST,/availableEndpointsGET,/cases/{caseId}/scopedInformationGET,/cases/{caseId}/ownerPOST,/users/{userId}/auditPOST,/users/{userId}/audit/{auditId}/csvGET,/system/auditPOST,/system/audit/{auditId}/csvGET",
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaParametersConstructclientcallbackurlssmparam3E7C82AF": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the app client callback url for use in token verification on the backend",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-client-callback-url-param",
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "https://",
+              Object {
+                "Ref": "DeaApiGatewaydeaapi822A9228",
+              },
+              ".execute-api.us-east-1.",
+              Object {
+                "Ref": "AWS::URLSuffix",
+              },
+              "/",
+              Object {
+                "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/ui/login",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaParametersConstructdeauseast1[STAGE-REMOVED]clientSecret[HASH REMOVED]": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "KmsKeyId": Object {
+          "Fn::GetAtt": Array [
+            "primaryCustomerKey87EC2263",
+            "Arn",
+          ],
+        },
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]/clientSecret",
+        "SecretString": Object {
+          "Fn::GetAtt": Array [
+            "DeaAuthConstructDEAUserPooldeaappclientDescribeCognitoUserPoolClientC581C332",
+            "UserPoolClient.ClientSecret",
+          ],
+        },
+      },
+      "Type": "AWS::SecretsManager::Secret",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaParametersConstructidentitypoolidssmparam1198CBD1": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the identity pool id for use in user verification on the backend",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-identity-pool-id-param",
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": Object {
+          "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaParametersConstructuserpoolclientidssmparam92523026": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the user pool client id for use in token verification on the backend",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-client-id-param",
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": Object {
+          "Ref": "DeaAuthConstructDEAUserPooldeaappclient08A0AC35",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaParametersConstructuserpoolcognitodomainssmparamC0CE290C": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the user pool cognito domain for use in token verification on the backend",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-cognito-domain-param",
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "https://",
+              Object {
+                "Ref": "DeaAuthConstruct[DOMAIN-REMOVED][HASH REMOVED]",
+              },
+              ".auth-fips.us-east-1.amazoncognito.com",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "DeaParametersConstructuserpoolidssmparam884C48E3": Object {
+      "Properties": Object {
+        "AllowedPattern": ".*",
+        "Description": "stores the user pool id for use in token verification on the backend",
+        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-id-param",
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": Object {
+          "Ref": "DeaAuthConstructDEAUserPool522C8769",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
     },
     "DeaUiStackartifactbucketAutoDeleteObjectsCustomResource3D6F178A": Object {
       "DeletionPolicy": "Delete",
@@ -17484,7 +16472,7 @@ Object {
       "Properties": Object {
         "Content": Object {
           "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
           "S3Key": "[HASH REMOVED].zip",
         },
@@ -17507,7 +16495,7 @@ Object {
         },
         "SourceBucketNames": Array [
           Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
           },
         ],
         "SourceObjectKeys": Array [
@@ -17772,18 +16760,7 @@ Object {
                     ],
                   ],
                 },
-                "Service": Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "logs.",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ".amazonaws.com",
-                    ],
-                  ],
-                },
+                "Service": "logs.us-east-1.amazonaws.com",
               },
               "Resource": "*",
               "Sid": "main-key-share-statement",
@@ -17861,18 +16838,7 @@ Object {
               ],
               "Condition": Object {
                 "StringEquals": Object {
-                  "kms:ViaService": Object {
-                    "Fn::Join": Array [
-                      "",
-                      Array [
-                        "secretsmanager.",
-                        Object {
-                          "Ref": "AWS::Region",
-                        },
-                        ".amazonaws.com",
-                      ],
-                    ],
-                  },
+                  "kms:ViaService": "secretsmanager.us-east-1.amazonaws.com",
                 },
               },
               "Effect": "Allow",
@@ -17903,18 +16869,7 @@ Object {
               ],
               "Condition": Object {
                 "StringEquals": Object {
-                  "kms:ViaService": Object {
-                    "Fn::Join": Array [
-                      "",
-                      Array [
-                        "secretsmanager.",
-                        Object {
-                          "Ref": "AWS::Region",
-                        },
-                        ".amazonaws.com",
-                      ],
-                    ],
-                  },
+                  "kms:ViaService": "secretsmanager.us-east-1.amazonaws.com",
                 },
               },
               "Effect": "Allow",
@@ -17946,18 +16901,7 @@ Object {
               ],
               "Effect": "Allow",
               "Principal": Object {
-                "Service": Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "lambda.",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ".amazonaws.com",
-                    ],
-                  ],
-                },
+                "Service": "lambda.us-east-1.amazonaws.com",
               },
               "Resource": Object {
                 "Fn::GetAtt": Array [

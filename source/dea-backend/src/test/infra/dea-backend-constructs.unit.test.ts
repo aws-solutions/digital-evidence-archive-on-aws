@@ -10,9 +10,10 @@ import { Key } from 'aws-cdk-lib/aws-kms';
 import 'source-map-support/register';
 import { convictConfig } from '../../config';
 import { DeaAuditTrail } from '../../constructs/dea-audit-trail';
-import { DeaAuthConstruct } from '../../constructs/dea-auth';
+import { DeaAuth } from '../../constructs/dea-auth';
 import { DeaBackendConstruct } from '../../constructs/dea-backend-stack';
 import { DeaEventHandlers } from '../../constructs/dea-event-handlers';
+import { DeaParameters } from '../../constructs/dea-parameters';
 import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
 import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
@@ -101,10 +102,15 @@ describe('DeaBackend constructs', () => {
       ['C', 'Carn'],
       ['D', 'Darn'],
     ]);
-    new DeaAuthConstruct(stack, 'DeaAuth', {
+    const authStack = new DeaAuth(stack, 'DeaAuth', {
+      region: stack.region,
       restApi: restApi.deaRestApi,
-      kmsKey: key,
       apiEndpointArns: apiEndpointArns,
+    });
+
+    new DeaParameters(stack, 'DeaParameters', {
+      deaAuthInfo: authStack.deaAuthInfo,
+      kmsKey: key,
     });
 
     addSnapshotSerializers();
@@ -165,10 +171,15 @@ describe('DeaBackend constructs', () => {
       ['C', 'Carn'],
       ['D', 'Darn'],
     ]);
-    new DeaAuthConstruct(stack, 'DeaAuth', {
+    const authStack = new DeaAuth(stack, 'DeaAuth', {
+      region: stack.region,
       restApi: restApi.deaRestApi,
-      kmsKey: key,
       apiEndpointArns: apiEndpointArns,
+    });
+
+    new DeaParameters(stack, 'DeaParameters', {
+      deaAuthInfo: authStack.deaAuthInfo,
+      kmsKey: key,
     });
 
     // throws due to unassigned parameter
@@ -235,10 +246,15 @@ describe('DeaBackend constructs', () => {
       ['C', 'Carn'],
       ['D', 'Darn'],
     ]);
-    new DeaAuthConstruct(stack, 'DeaAuth', {
+    const authStack = new DeaAuth(stack, 'DeaAuth', {
+      region: stack.region,
       restApi: restApi.deaRestApi,
-      kmsKey: key,
       apiEndpointArns: apiEndpointArns,
+    });
+
+    new DeaParameters(stack, 'DeaParameters', {
+      deaAuthInfo: authStack.deaAuthInfo,
+      kmsKey: key,
     });
 
     // Prepare the stack for assertions.
