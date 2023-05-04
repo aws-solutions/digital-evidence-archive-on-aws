@@ -16,6 +16,13 @@ import { DeaAuthInfo } from './dea-auth';
    For example, we store auth urls and variables, as well
    as available endpoints per role. */
 
+// NOTE: Due to Cognito inavailability in us-gov-east-1, we have to deploy
+// DEA in a parent stack and two nested stacks. One for the Auth stack
+// and this DeaParameters (to break a dependency cycle b/w main and auth).
+// In other regions, we need to have only one Cfn template for OneClick, so we'll
+// deploy DeaAuth and DeaParameters as a construct.
+// See comment in dea-auth for more context.
+
 interface DeaParametersProps {
   readonly deaAuthInfo: DeaAuthInfo;
   readonly kmsKey: Key;
@@ -24,6 +31,14 @@ interface DeaParametersProps {
 export class DeaParametersStack extends Stack {
   public constructor(scope: Construct, stackName: string, deaProps: DeaParametersProps, props?: StackProps) {
     super(scope, stackName, props);
+
+    new DeaParameters(this, stackName, deaProps);
+  }
+}
+
+export class DeaParameters extends Construct {
+  public constructor(scope: Construct, stackName: string, deaProps: DeaParametersProps) {
+    super(scope, stackName + 'Construct');
 
     const deaAuthInfo = deaProps.deaAuthInfo;
 

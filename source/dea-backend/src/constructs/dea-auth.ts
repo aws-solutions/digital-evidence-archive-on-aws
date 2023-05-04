@@ -44,6 +44,16 @@ import { createCfnOutput } from './construct-support';
 // so whatever you place in here will also be deployed in us-gov-west-1
 // IAM is fine since its an AWS global service for the account, not regional
 
+// NOTE: Since CloudFormation is regional not global, we have to deploy
+// cognito and the rest of DEA in different stacks for us-gov-east-1.
+// However, we also have the requirement for OneClick, which requires that
+// there be only ONE Cfn template. Obviously, Gov East will not be compatible
+// for OneClick, but for the rest of the regions we need one template.
+// Therefore, for the normal case we will use DeaAuth as a construct
+// and for us-gov-east-1, we will use it as a Stack. Its hacky, but we get
+// the best of both worlds; OneClick for everything else, and a single deployment
+// for us-gov-east-1
+
 interface DeaAuthProps {
   readonly region: string;
   readonly restApi: RestApi;
@@ -76,6 +86,16 @@ export class DeaAuthStack extends Stack {
       },
       crossRegionReferences: true,
     });
+
+    this.deaAuthInfo = new DeaAuth(this, 'DeaAuth', deaProps).deaAuthInfo;
+  }
+}
+
+export class DeaAuth extends Construct {
+  public deaAuthInfo: DeaAuthInfo;
+
+  public constructor(scope: Construct, stackName: string, deaProps: DeaAuthProps) {
+    super(scope, stackName + 'Construct');
 
     const loginUrl = `${deaProps.restApi.url}ui/login`;
 

@@ -10,10 +10,10 @@ import { Key } from 'aws-cdk-lib/aws-kms';
 import 'source-map-support/register';
 import { convictConfig } from '../../config';
 import { DeaAuditTrail } from '../../constructs/dea-audit-trail';
-import { DeaAuthStack } from '../../constructs/dea-auth';
+import { DeaAuth } from '../../constructs/dea-auth';
 import { DeaBackendConstruct } from '../../constructs/dea-backend-stack';
 import { DeaEventHandlers } from '../../constructs/dea-event-handlers';
-import { DeaParametersStack } from '../../constructs/dea-parameters';
+import { DeaParameters } from '../../constructs/dea-parameters';
 import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
 import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
@@ -102,13 +102,13 @@ describe('DeaBackend constructs', () => {
       ['C', 'Carn'],
       ['D', 'Darn'],
     ]);
-    const authStack = new DeaAuthStack(stack, 'DeaAuth', {
+    const authStack = new DeaAuth(stack, 'DeaAuth', {
       region: stack.region,
       restApi: restApi.deaRestApi,
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParametersStack(stack, 'DeaParameters', {
+    new DeaParameters(stack, 'DeaParameters', {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
@@ -171,13 +171,13 @@ describe('DeaBackend constructs', () => {
       ['C', 'Carn'],
       ['D', 'Darn'],
     ]);
-    const authStack = new DeaAuthStack(stack, 'DeaAuth', {
+    const authStack = new DeaAuth(stack, 'DeaAuth', {
       region: stack.region,
       restApi: restApi.deaRestApi,
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParametersStack(stack, 'DeaParameters', {
+    new DeaParameters(stack, 'DeaParameters', {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
@@ -246,13 +246,13 @@ describe('DeaBackend constructs', () => {
       ['C', 'Carn'],
       ['D', 'Darn'],
     ]);
-    const authStack = new DeaAuthStack(stack, 'DeaAuth', {
+    const authStack = new DeaAuth(stack, 'DeaAuth', {
       region: stack.region,
       restApi: restApi.deaRestApi,
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParametersStack(stack, 'DeaParameters', {
+    new DeaParameters(stack, 'DeaParameters', {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });

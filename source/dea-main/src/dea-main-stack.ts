@@ -7,9 +7,11 @@
 import {
   createCfnOutput,
   DeaAuditTrail,
+  DeaAuth,
   DeaAuthStack,
   DeaBackendConstruct,
   deaConfig,
+  DeaParameters,
   DeaParametersStack,
   DeaRestApiConstruct,
   DeaEventHandlers,
@@ -88,33 +90,55 @@ export class DeaMainStack extends cdk.Stack {
       },
     });
 
-    // Cognito is not available in us-gov-east-1, so we have to deploy
-    // Cognito in us-gov-west-1
-    const cognitoRegion = region === 'us-gov-east-1' ? 'us-gov-west-1' : region;
-    // Build the Cognito Stack (UserPool and IdentityPool)
-    // Along with the IAM Roles
-    const authConstruct = new DeaAuthStack(
-      this,
-      'DeaAuth',
-      {
-        region: cognitoRegion,
+    // For OneClick we need to have one Cfn template, so we will
+    // deploy DeaAuth and DeaParameters as constructs
+    // However for us-gov-east-1, we need to deploy DeaAuth in
+    // us-gov-west-1 since Cognito is not available, so we have to
+    // deploy DeaAuth as a stack, and DeaParameters as a stack as
+    // well to break the cyclic dependency between main stack and deaauth stack
+    if (region === 'us-gov-east-1') {
+      // Build the Cognito Stack (UserPool and IdentityPool)
+      // Along with the IAM Roles
+      const authConstruct = new DeaAuthStack(
+        scope,
+        'DeaAuth',
+        {
+          // Cognito is not available in us-gov-east-1, so we have to deploy
+          // Cognito in us-gov-west-1
+          region: 'us-gov-west-1',
+          restApi: deaApi.deaRestApi,
+          apiEndpointArns: deaApi.apiEndpointArns,
+        },
+        props
+      );
+
+      // Store relevant parameters for the functioning of DEA
+      // in SSM Param Store and Secrets Manager
+      new DeaParametersStack(
+        scope,
+        'DeaParameters',
+        {
+          deaAuthInfo: authConstruct.deaAuthInfo,
+          kmsKey,
+        },
+        props
+      );
+    } else {
+      // Build the Cognito Stack (UserPool and IdentityPool)
+      // Along with the IAM Roles
+      const authConstruct = new DeaAuth(this, 'DeaAuth', {
+        region: region,
         restApi: deaApi.deaRestApi,
         apiEndpointArns: deaApi.apiEndpointArns,
-      },
-      props
-    );
+      });
 
-    // Store relevant parameters for the functioning of DEA
-    // in SSM Param Store and Secrets Manager
-    new DeaParametersStack(
-      this,
-      'DeaParameters',
-      {
+      // Store relevant parameters for the functioning of DEA
+      // in SSM Param Store and Secrets Manager
+      new DeaParameters(this, 'DeaParameters', {
         deaAuthInfo: authConstruct.deaAuthInfo,
         kmsKey,
-      },
-      props
-    );
+      });
+    }
 
     kmsKey.addToResourcePolicy(
       new PolicyStatement({
