@@ -21,17 +21,31 @@ import {
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
-import { getCaseFileAuditCSV, getPresignedUrl, useGetCaseActions, useListCaseFiles } from '../../api/cases';
+import { useAvailableEndpoints } from '../../api/auth';
+import {
+  getCaseFileAuditCSV,
+  getPresignedUrl,
+  restoreFile,
+  useGetCaseActions,
+  useListCaseFiles,
+} from '../../api/cases';
 import { auditLogLabels, commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDate } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
-import { canDownloadCaseAudit, canDownloadFiles, canUploadFiles } from '../../helpers/userActionSupport';
+import {
+  canDownloadCaseAudit,
+  canDownloadFiles,
+  canRestoreFiles,
+  canUploadFiles,
+} from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
+import { ConfirmModal } from '../common-components/ConfirmModal';
 import { CaseDetailsTabsProps } from './CaseDetailsTabs';
 
 function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const router = useRouter();
+  const availableEndpoints = useAvailableEndpoints();
   const userActions = useGetCaseActions(props.caseId);
   // Property and date filter collections
   const [filesTableState, setFilesTableState] = React.useState({
@@ -42,6 +56,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = React.useState<DeaCaseFile[]>([]);
   const [downloadInProgress, setDownloadInProgress] = React.useState(false);
   const [caseFileAuditDownloadInProgress, setCaseFileAuditDownloadInProgress] = React.useState(false);
+  const [filesToRestore, setFilesToRestore] = React.useState<DeaCaseFile[]>([]);
   const { pushNotification } = useNotifications();
 
   const filteringProperties: readonly PropertyFilterProperty[] = [
@@ -114,10 +129,44 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     );
   };
 
+  async function restoreFiles() {
+    try {
+      const restorePromises: Promise<void>[] = [];
+      for (const file of filesToRestore) {
+        restorePromises.push(restoreFile({ caseUlid: file.caseUlid, ulid: file.ulid }));
+      }
+      setFilesToRestore([]);
+      await Promise.all(restorePromises);
+      pushNotification('success', 'Successfully restored selected files');
+    } catch (e) {
+      console.log('Failed to restore files', e);
+      pushNotification('error', 'Failed to restore selected files');
+    } finally {
+      setFilesToRestore([]);
+    }
+  }
+
+  function cancelRestore() {
+    setFilesToRestore([]);
+  }
+
   function tableActions() {
     if (props.caseStatus === CaseStatus.ACTIVE) {
       return (
         <SpaceBetween direction="horizontal" size="xs">
+          <ConfirmModal
+            testid="restore-modal"
+            isOpen={
+              canRestoreFiles(userActions?.data?.actions, availableEndpoints.data) &&
+              filesToRestore.length !== 0
+            }
+            title={'Restore files'}
+            message={'Are you sure you want to restore the selected files'}
+            confirmAction={restoreFiles}
+            confirmButtonText={'Restore'}
+            cancelAction={cancelRestore}
+            cancelButtonText={'Cancel'}
+          />
           <Button
             data-testid="upload-file-button"
             onClick={uploadFilesHandler}
@@ -257,6 +306,24 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       for (const file of selectedFiles) {
         try {
           const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
+          if (!downloadResponse.downloadUrl) {
+            if (downloadResponse.isRestoring) {
+              pushNotification(
+                'info',
+                `${file.fileName} is currently being restored. It will be ready to download in up to 12 hours`
+              );
+            } else if (downloadResponse.isArchived) {
+              if (canRestoreFiles(userActions?.data?.actions, availableEndpoints.data)) {
+                filesToRestore.push(file);
+              } else {
+                pushNotification(
+                  'error',
+                  `${file.fileName} is archived. Please contact case owner to restore file for access.`
+                );
+              }
+            }
+            continue;
+          }
           const alink = document.createElement('a');
           alink.href = downloadResponse.downloadUrl;
           alink.download = file.fileName;

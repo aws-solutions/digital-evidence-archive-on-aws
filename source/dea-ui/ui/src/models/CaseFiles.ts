@@ -27,6 +27,13 @@ export interface DownloadFileForm {
   ulid?: string;
 }
 
+export interface RestoreFileForm {
+  caseUlid: string;
+  ulid?: string;
+}
+
 export interface DownloadFileResult {
-  downloadUrl: string;
+  downloadUrl?: string;
+  isArchived?: boolean;
+  isRestoring?: boolean;
 }

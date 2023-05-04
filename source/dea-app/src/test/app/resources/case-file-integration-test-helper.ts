@@ -13,6 +13,7 @@ import { downloadCaseFile } from '../../../app/resources/download-case-file';
 import { getCaseFileDetails } from '../../../app/resources/get-case-file-details';
 import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
 import { listCaseFiles } from '../../../app/resources/list-case-files';
+import { restoreCaseFile } from '../../../app/resources/restore-case-file';
 import { updateCaseStatus } from '../../../app/resources/update-case-status';
 import * as CaseService from '../../../app/services/case-service';
 import { DeaCase } from '../../../models/case';
@@ -143,6 +144,26 @@ export const callDownloadCaseFile = async (
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return JSON.parse(response.body as string) ?? fail();
+};
+
+export const callRestoreCaseFile = async (
+  baseEvent: APIGatewayProxyEvent,
+  repositoryProvider: ModelRepositoryProvider,
+  fileId: string,
+  caseId: string
+): Promise<void> => {
+  const event = Object.assign(
+    {},
+    {
+      ...baseEvent,
+      pathParameters: {
+        caseId,
+        fileId,
+      },
+    }
+  );
+  const response = await restoreCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
+  expect(response.statusCode).toEqual(204);
 };
 
 export const callCreateCase = async (

@@ -384,6 +384,7 @@ export class DeaRestApiConstruct extends Construct {
           's3:GetObjectVersion',
           's3:GetObjectLegalHold',
           's3:PutObjectLegalHold',
+          's3:RestoreObject',
         ],
         resources: [`${datasetsBucketArn}/*`],
       })
