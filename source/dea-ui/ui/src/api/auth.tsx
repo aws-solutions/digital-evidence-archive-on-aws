@@ -23,6 +23,16 @@ export const getToken = async (authCode: string, codeVerifier: string): Promise<
   }
 };
 
+export const refreshToken = async (): Promise<TokenResponse> => {
+  try {
+    const response: TokenResponse = await httpApiPost(`auth/refreshToken`, {});
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 export const getLoginUrl = async (callbackUrl: string) => {
   try {
     const response: string = await httpApiGet(`auth/loginUrl?callbackUrl=${callbackUrl}`, {});

@@ -268,6 +268,10 @@ export const useRefreshToken = async (refreshToken: string): Promise<[Oauth2Toke
     throw new Error(`Request failed with status code ${response.status}`);
   }
 
+  // Oauth2/Token does not return refresh token when grant_type is refresh
+  // Append refresh token so response.data can be used to update oauth cookie
+  response.data['refresh_token'] = refreshToken;
+
   return [response.data, cognitoParams.identityPoolId, cognitoParams.userPoolId];
 };
 

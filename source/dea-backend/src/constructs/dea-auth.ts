@@ -206,7 +206,12 @@ export class DeaAuthConstruct extends Construct {
   ): void {
     // See Implementation Guide for how to integrate your existing
     // Identity Provider with Cognito User Pool for SSO
-    const [pool, poolClient, cognitoDomainUrl] = this.createCognitoIdP(callbackUrl, region, kmsKey, partition);
+    const [pool, poolClient, cognitoDomainUrl] = this.createCognitoIdP(
+      callbackUrl,
+      region,
+      kmsKey,
+      partition
+    );
 
     // For gov cloud, Cognito only uses FIPS endpoint, and the only FIPS endpoint
     // is in us-gov-west-1. See https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-cog.html
