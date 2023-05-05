@@ -7,6 +7,7 @@ import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
 import { AuditEventType } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
+import { CaseAction } from '../../models/case-action';
 import { joiUlid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -16,7 +17,9 @@ import {
   createCaseSuccess,
   delay,
   deleteCase,
+  inviteUserToCase,
   parseCaseAuditCsv,
+  parseTrailEventsFromAuditQuery,
   randomSuffix,
 } from './test-helpers';
 
@@ -92,6 +95,25 @@ describe('case audit e2e', () => {
     );
     expect(membershipsResponse.status).toEqual(200);
 
+    // Create a case user with certain permissions, and have them try
+    // to do something outside the permissions, should show up as failure in the
+    // audit log
+    const failedCaseUser = `caseAuditFailedListFilesTestUser${suffix}`;
+    await inviteUserToCase(
+      deaApiUrl,
+      cognitoHelper,
+      caseUlid,
+      [CaseAction.CASE_AUDIT],
+      idToken,
+      creds,
+      failedCaseUser,
+      true
+    );
+    const [inviteeCreds, inviteeToken] = await cognitoHelper.getCredentialsForUser(failedCaseUser);
+    await expect(
+      callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/files`, 'GET', inviteeToken, inviteeCreds)
+    ).rejects.toThrow();
+
     // allow some time so the events show up in CW logs
     await delay(25000);
 
@@ -152,13 +174,14 @@ describe('case audit e2e', () => {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const entries = parseCaseAuditCsv(csvData!).filter(
       (entry) =>
         entry.eventType != AuditEventType.GET_CASE_AUDIT &&
-        entry.eventType != AuditEventType.REQUEST_CASE_AUDIT
+        entry.eventType != AuditEventType.REQUEST_CASE_AUDIT &&
+        entry.eventDetails != 'StartQuery'
     );
 
-    expect(entries.length).toBe(10);
     // 1. CreateCase
     // 2. TransactWriteItems
     // 3. UpdateCaseDetails
@@ -169,21 +192,19 @@ describe('case audit e2e', () => {
     // 8. DB Get
     // 9. GetUsersFromCase
     // 10. DB Get
-
-    const dbGetItems = entries.filter((entry) => entry.eventDetails === 'GetItem');
-    expect(dbGetItems).toHaveLength(4);
-    const dbTransactItems = entries.filter((entry) => entry.eventDetails === 'TransactWriteItems');
-    expect(dbTransactItems).toHaveLength(2);
+    // 11. GetCaseDeatils (failure, unauthorized user)
 
     function verifyCaseAuditEntry(
       entry: CaseAuditEventEntry | undefined,
       expectedEventType: AuditEventType,
-      expectedUsername: string
+      expectedUsername: string,
+      shouldSucceed = true
     ) {
       if (!entry) {
         fail('Entry does not exist');
       }
       expect(entry.eventType).toStrictEqual(expectedEventType);
+      expect(entry.result).toStrictEqual(shouldSucceed);
       expect(entry.username).toStrictEqual(expectedUsername);
       expect(entry.caseId).toStrictEqual(caseUlid);
     }
@@ -201,6 +222,26 @@ describe('case audit e2e', () => {
       (entry) => entry.eventType === AuditEventType.GET_USERS_FROM_CASE
     );
     verifyCaseAuditEntry(getUsersFromCaseEntry, AuditEventType.GET_USERS_FROM_CASE, testUser);
+
+    const failedListCaseFilesEntry = entries.find(
+      (entry) => entry.eventType === AuditEventType.GET_CASE_FILES && entry.username === failedCaseUser
+    );
+    verifyCaseAuditEntry(failedListCaseFilesEntry, AuditEventType.GET_CASE_FILES, failedCaseUser, false);
+
+    expect(entries.length).toBe(5);
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const cloudtrailEntries = parseTrailEventsFromAuditQuery(csvData!);
+
+    // TODO: remove
+    cloudtrailEntries.forEach((entry) => console.log(entry));
+
+    const dbGetItems = cloudtrailEntries.filter((entry) => entry.eventType === 'GetItem');
+    expect(dbGetItems).toHaveLength(4);
+    const dbTransactItems = cloudtrailEntries.filter((entry) => entry.eventType === 'TransactWriteItems');
+    expect(dbTransactItems).toHaveLength(2);
+
+    expect(cloudtrailEntries.length).toBe(6);
   }, 720000);
 
   it('should prevent retrieval by an unauthorized user', async () => {

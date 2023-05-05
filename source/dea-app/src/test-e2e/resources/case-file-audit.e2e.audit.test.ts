@@ -8,6 +8,7 @@ import sha256 from 'crypto-js/sha256';
 import Joi from 'joi';
 import { AuditEventType } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
+import { CaseAction } from '../../models/case-action';
 import { DeaCaseFile } from '../../models/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
@@ -24,11 +25,13 @@ import {
   getCaseFileDownloadUrl,
   initiateCaseFileUploadSuccess,
   parseCaseFileAuditCsv,
+  parseTrailEventsFromAuditQuery,
   randomSuffix,
   uploadContentToS3,
   s3Cleanup,
   s3Object,
   CaseFileAuditEventEntry,
+  inviteUserToCase,
 } from './test-helpers';
 
 const FILE_PATH = '/important/investigation/';
@@ -146,9 +149,23 @@ describe('case file audit e2e', () => {
       OTHER_FILE_CONTENT
     );
 
-    // TODO: create a case user who DOES not have permission to download the file
+    // Create a case user who DOES not have permission to download the file
     // and have them try to download, will show up in audit log as failure
-    // Will do this next PR when I string AuditEventResult through the Audit Queries
+    const failedDownloadTestUser = `caseFileAuditFailedDownloadTestUser${randomSuffix()}`;
+    await inviteUserToCase(
+      deaApiUrl,
+      cognitoHelper,
+      caseUlid,
+      [CaseAction.VIEW_CASE_DETAILS],
+      idToken,
+      creds,
+      failedDownloadTestUser,
+      true
+    );
+    const [inviteeCreds, inviteeToken] = await cognitoHelper.getCredentialsForUser(failedDownloadTestUser);
+    await expect(
+      getCaseFileDownloadUrl(deaApiUrl, inviteeToken, inviteeCreds, caseUlid, fileUlid)
+    ).rejects.toThrow();
 
     // allow some time so the events show up in CW logs
     await delay(25000);
@@ -222,12 +239,14 @@ describe('case file audit e2e', () => {
       entry: CaseFileAuditEventEntry | undefined,
       expectedEventType: AuditEventType,
       expectedUsername: string,
+      shouldBeSuccess = true,
       expectedFileHash?: string
     ) {
       if (!entry) {
         fail('Entry does not exist');
       }
       expect(entry.eventType).toStrictEqual(expectedEventType);
+      expect(entry.result).toStrictEqual(shouldBeSuccess);
       expect(entry.username).toStrictEqual(expectedUsername);
       expect(entry.caseId).toStrictEqual(caseUlid);
       expect(entry.fileId).toStrictEqual(fileUlid);
@@ -250,29 +269,12 @@ describe('case file audit e2e', () => {
     // DownloadCaseFileUpload (By Owner)
     // DB Get
     // GetObject
-    // x. TODO: DownloadCaseFileUpload (By CaseUser Without Permissions) (When we add event result to audit queries)
+    // DownloadCaseFileUpload (By CaseUser Without Permissions)
 
     // Expect that the other created file does NOT show up in the entries
     expect(entries.find((entry) => entry.fileId === otherFileUlid)).toBeUndefined();
 
-    expect(entries.length).toBe(15);
-
-    const dbGetItems = entries.filter((entry) => entry.eventDetails === 'GetItem');
-    expect(dbGetItems).toHaveLength(3);
-    const dbTransactItems = entries.filter((entry) => entry.eventDetails === 'TransactWriteItems');
-    expect(dbTransactItems).toHaveLength(2);
-    const createUploadItems = entries.filter((entry) => entry.eventDetails === 'CreateMultipartUpload');
-    expect(createUploadItems).toHaveLength(1);
-    const uploadPartItems = entries.filter((entry) => entry.eventDetails === 'UploadPart');
-    expect(uploadPartItems).toHaveLength(1);
-    const listPartItems = entries.filter((entry) => entry.eventDetails === 'ListParts');
-    expect(listPartItems).toHaveLength(1);
-    const completeUploadItems = entries.filter((entry) => entry.eventDetails === 'CompleteMultipartUpload');
-    expect(completeUploadItems).toHaveLength(1);
-    const objectLockItems = entries.filter((entry) => entry.eventDetails === 'PutObjectLockLegalHold');
-    expect(objectLockItems).toHaveLength(1);
-    const getObjectItems = entries.filter((entry) => entry.eventDetails === 'GetObject');
-    expect(getObjectItems).toHaveLength(1);
+    expect(entries.length).toBe(5);
 
     // Now verify each of the event entries
     const initiateUploadEntry = entries.find(
@@ -287,6 +289,7 @@ describe('case file audit e2e', () => {
       completeUploadEntry,
       AuditEventType.COMPLETE_CASE_FILE_UPLOAD,
       testUser,
+      true, // shouldBeSuccess
       fileHash
     );
 
@@ -295,8 +298,48 @@ describe('case file audit e2e', () => {
     );
     verifyCaseFileAuditEntry(getFileDetailsEntry, AuditEventType.GET_CASE_FILE_DETAIL, testUser);
 
-    const downloadEntry = entries.find((entry) => entry.eventType === AuditEventType.DOWNLOAD_CASE_FILE);
+    const downloadEntry = entries.find(
+      (entry) => entry.eventType === AuditEventType.DOWNLOAD_CASE_FILE && entry.username === testUser
+    );
     verifyCaseFileAuditEntry(downloadEntry, AuditEventType.DOWNLOAD_CASE_FILE, testUser);
+
+    const failedDownloadEntry = entries.find(
+      (entry) =>
+        entry.eventType === AuditEventType.DOWNLOAD_CASE_FILE && entry.username === failedDownloadTestUser
+    );
+    verifyCaseFileAuditEntry(
+      failedDownloadEntry,
+      AuditEventType.DOWNLOAD_CASE_FILE,
+      failedDownloadTestUser,
+      false
+    );
+
+    // Verify Cloudtrail audit trail events
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const cloudtrailEntries = parseTrailEventsFromAuditQuery(csvData!);
+
+    const dbGetItems = cloudtrailEntries.filter((entry) => entry.eventType === 'GetItem');
+    expect(dbGetItems).toHaveLength(3);
+    const dbTransactItems = cloudtrailEntries.filter((entry) => entry.eventType === 'TransactWriteItems');
+    expect(dbTransactItems).toHaveLength(2);
+    const createUploadItems = cloudtrailEntries.filter(
+      (entry) => entry.eventType === 'CreateMultipartUpload'
+    );
+    expect(createUploadItems).toHaveLength(1);
+    const uploadPartItems = cloudtrailEntries.filter((entry) => entry.eventType === 'UploadPart');
+    expect(uploadPartItems).toHaveLength(1);
+    const listPartItems = cloudtrailEntries.filter((entry) => entry.eventType === 'ListParts');
+    expect(listPartItems).toHaveLength(1);
+    const completeUploadItems = cloudtrailEntries.filter(
+      (entry) => entry.eventType === 'CompleteMultipartUpload'
+    );
+    expect(completeUploadItems).toHaveLength(1);
+    const objectLockItems = cloudtrailEntries.filter((entry) => entry.eventType === 'PutObjectLockLegalHold');
+    expect(objectLockItems).toHaveLength(1);
+    const getObjectItems = cloudtrailEntries.filter((entry) => entry.eventType === 'GetObject');
+    expect(getObjectItems).toHaveLength(1);
+
+    expect(cloudtrailEntries.length).toBe(11);
 
     // Case Cleanup
     await deleteCaseFiles(deaApiUrl, caseUlid, createdCase.name, FILE_PATH, idToken, creds);
