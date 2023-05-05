@@ -86,7 +86,7 @@ export const DeaSchema = {
 
       ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
       fileName: { type: String, required: true, validate: allButDisallowed },
-      filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // whole s3 prefix within case dataset. ex: /meal/lunch/
+      filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // relative path at upload time.
       caseUlid: { type: String, validate: ulidRegex, required: true },
       createdBy: { type: String, validate: ulidRegex, required: true },
       isFile: { type: Boolean, required: true },

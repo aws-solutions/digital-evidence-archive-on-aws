@@ -3,10 +3,10 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-const KB = 1000;
-const MB = 1000 ** 2;
-const GB = 1000 ** 3;
-const TB = 1000 ** 4;
+const KB = 1024;
+const MB = KB * 1024;
+const GB = MB * 1024;
+const TB = GB * 1024;
 
 export function formatFileSize(size: number): string {
   if (!size) {
@@ -25,18 +25,24 @@ export function formatFileSize(size: number): string {
 }
 
 export interface FileWithPath extends File {
-  readonly relativePath?: string;
+  readonly relativePath: string;
 }
 
-export function toFileWithPath(file: FileWithPath, relativePath?: string): FileWithPath {
+export function toFileWithPath(file: File, relativePath: string): FileWithPath {
   const fileWithPath = file;
-  const { webkitRelativePath } = file;
   Object.defineProperty(fileWithPath, 'relativePath', {
-    value: webkitRelativePath || relativePath,
+    value: relativePath,
     writable: false,
     configurable: false,
     enumerable: true,
   });
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return fileWithPath as FileWithPath;
+}
 
-  return fileWithPath;
+export function removeFileNameFromPath(localPath: string): string {
+  if (!localPath) {
+    return '/';
+  }
+  return `/${localPath.substring(0, localPath.lastIndexOf('/') + 1)}`;
 }
