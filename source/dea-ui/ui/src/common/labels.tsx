@@ -16,6 +16,7 @@ export const commonLabels = {
   addButton: 'Add',
   removeButton: 'Remove',
   downloadButton: 'Download',
+  restoreButton: 'Recover',
   saveButton: 'Save',
   loadingLabel: 'Loading...',
   statusLabel: 'Status',
@@ -110,6 +111,9 @@ export const fileOperationsLabels = {
   uploadStatusDescription: 'Uploaded files associated with this case.',
   uploadDetailsLabel: 'Upload details',
   selectFileDescription: 'Choose files',
+  restoreFilesModalLabel: (count: number) =>
+    `${count} of the files you tried to download was archived due to inactivity`,
+  restoreFilesModalDescription: 'The restored files will become available for download within 12 hours',
   evidenceTagLabel: 'Evidence tag',
   evidenceTagDescription:
     'Specify the type of device where the evidence is copied from such as mobile, laptop, or hard drive.',

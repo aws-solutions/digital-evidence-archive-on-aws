@@ -29,7 +29,14 @@ import {
   useGetCaseActions,
   useListCaseFiles,
 } from '../../api/cases';
-import { auditLogLabels, commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
+import {
+  auditLogLabels,
+  caseListLabels,
+  commonLabels,
+  commonTableLabels,
+  fileOperationsLabels,
+  filesListLabels,
+} from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDate } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
@@ -160,12 +167,12 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
               canRestoreFiles(userActions?.data?.actions, availableEndpoints.data) &&
               filesToRestore.length !== 0
             }
-            title={'Restore files'}
-            message={'Are you sure you want to restore the selected files'}
+            title={fileOperationsLabels.restoreFilesModalLabel(filesToRestore.length)}
+            message={fileOperationsLabels.restoreFilesModalDescription}
             confirmAction={restoreFiles}
-            confirmButtonText={'Restore'}
+            confirmButtonText={commonLabels.restoreButton}
             cancelAction={cancelRestore}
-            cancelButtonText={'Cancel'}
+            cancelButtonText={commonLabels.cancelButton}
           />
           <Button
             data-testid="upload-file-button"

@@ -202,7 +202,7 @@ export const restoreObject = async (
   caseFile: DeaCaseFile,
   datasetsProvider: DatasetsProvider
 ): Promise<void> => {
-  const s3Key = _getS3KeyForCaseFile(caseFile);
+  const s3Key = getS3KeyForCaseFile(caseFile);
 
   const headObjectResponse = await datasetsProvider.s3Client.send(
     new HeadObjectCommand({
