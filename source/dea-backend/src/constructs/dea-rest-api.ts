@@ -27,8 +27,13 @@ import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
-import { HttpMethods } from 'aws-cdk-lib/aws-s3';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
+import { Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3';
+import {
+  AwsCustomResource,
+  AwsCustomResourcePolicy,
+  AwsSdkCall,
+  PhysicalResourceId,
+} from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway-route-config';
@@ -41,8 +46,7 @@ interface LambdaEnvironment {
 interface DeaRestApiProps {
   deaTableArn: string;
   deaTableName: string;
-  deaDatasetsBucketArn: string;
-  deaDatasetsBucketName: string;
+  deaDatasetsBucket: Bucket;
   s3BatchDeleteCaseFileRoleArn: string;
   deaAuditLogArn: string;
   deaTrailLogArn: string;
@@ -68,7 +72,7 @@ export class DeaRestApiConstruct extends Construct {
     this.lambdaBaseRole = this.createLambdaBaseRole(
       props.kmsKey.keyArn,
       props.deaTableArn,
-      props.deaDatasetsBucketArn,
+      props.deaDatasetsBucket.bucketArn,
       props.region,
       props.accountId,
       partition,
@@ -128,16 +132,16 @@ export class DeaRestApiConstruct extends Construct {
       },
     });
 
-    this.configureApiGateway(deaApiRouteConfig, props.lambdaEnv);
+    this.configureApiGateway(deaApiRouteConfig, props.lambdaEnv, props.accountId);
 
-    this.updateBucketCors(this.deaRestApi, props.deaDatasetsBucketName);
+    this.updateBucketCors(this.deaRestApi, props.deaDatasetsBucket.bucketName);
   }
 
   private updateBucketCors(restApi: RestApi, bucketName: Readonly<string>) {
     const allowedOrigins = deaConfig.deaAllowedOriginsList();
     allowedOrigins.push(`https://${Fn.parseDomainName(restApi.url)}`);
 
-    const updateCorsCall = {
+    const updateCorsCall: AwsSdkCall = {
       service: 'S3',
       action: 'putBucketCors',
       parameters: {
@@ -165,7 +169,11 @@ export class DeaRestApiConstruct extends Construct {
     updateCors.node.addDependency(restApi);
   }
 
-  private configureApiGateway(routeConfig: ApiGatewayRouteConfig, lambdaEnv: LambdaEnvironment): void {
+  private configureApiGateway(
+    routeConfig: ApiGatewayRouteConfig,
+    lambdaEnv: LambdaEnvironment,
+    accountId: string
+  ): void {
     const plan = this.deaRestApi.addUsagePlan('DEA Usage Plan', {
       name: 'dea-usage-plan',
       throttle: {
@@ -197,11 +205,17 @@ export class DeaRestApiConstruct extends Construct {
       // otherwise it is a DEA execution API, which needs the
       // full set of permissions
       const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
-      this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv);
+      this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv, accountId);
     });
   }
 
-  private addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, lambdaEnv: LambdaEnvironment): void {
+  private addMethod(
+    api: RestApi,
+    route: ApiGatewayRoute,
+    role: Role,
+    lambdaEnv: LambdaEnvironment,
+    accountId: string
+  ): void {
     const urlParts = route.path.split('/').filter((str) => str);
     let parent = api.root;
     urlParts.forEach((part, index) => {
@@ -215,7 +229,8 @@ export class DeaRestApiConstruct extends Construct {
           `${route.httpMethod}_${route.eventName}`,
           role,
           route.pathToSource,
-          lambdaEnv
+          lambdaEnv,
+          accountId
         );
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -265,7 +280,8 @@ export class DeaRestApiConstruct extends Construct {
     id: string,
     role: Role,
     pathToSource: string,
-    lambdaEnv: LambdaEnvironment
+    lambdaEnv: LambdaEnvironment,
+    accountId: string
   ): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
       memorySize: 512,
@@ -287,6 +303,12 @@ export class DeaRestApiConstruct extends Construct {
         minify: true,
         sourceMap: true,
       },
+    });
+
+    lambda.addPermission('InvokeLambdaPermission', {
+      action: 'lambda:InvokeFunction',
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+      sourceAccount: accountId,
     });
 
     //CFN NAG Suppression

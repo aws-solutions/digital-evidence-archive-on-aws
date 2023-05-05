@@ -64,8 +64,7 @@ describe('DeaBackend constructs', () => {
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
-      deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
-      deaDatasetsBucketName: backend.datasetsBucket.bucketName,
+      deaDatasetsBucket: backend.datasetsBucket,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
@@ -149,8 +148,7 @@ describe('DeaBackend constructs', () => {
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
-      deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
-      deaDatasetsBucketName: backend.datasetsBucket.bucketName,
+      deaDatasetsBucket: backend.datasetsBucket,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
@@ -223,8 +221,7 @@ describe('DeaBackend constructs', () => {
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
-      deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
-      deaDatasetsBucketName: backend.datasetsBucket.bucketName,
+      deaDatasetsBucket: backend.datasetsBucket,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
