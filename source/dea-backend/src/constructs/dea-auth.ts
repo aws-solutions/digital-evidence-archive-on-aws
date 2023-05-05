@@ -347,13 +347,13 @@ export class DeaAuth extends Construct {
     partition: string
   ): [UserPool, UserPoolClient, string, SecretValue, string?] {
     const tempPasswordValidity = Duration.days(1);
-    // must re-authenticate in every 12 hours
+    // must re-authenticate in every 12 hours (so we make expiry 11 hours, so they can't refresh at 11:59)
     // Note when inactive for 30+ minutes, you will also have to reauthenticate
     // due to session lock requirements. This is handled by session management code
     // IdToken validity is max 1 hour for federated users
-    const accessTokenValidity = Duration.hours(12);
+    const accessTokenValidity = Duration.hours(11);
     const idTokenValidity = Duration.hours(1);
-    const refreshTokenValidity = Duration.hours(12);
+    const refreshTokenValidity = Duration.hours(11);
 
     // fetch stage
     const stage = deaConfig.stage();
