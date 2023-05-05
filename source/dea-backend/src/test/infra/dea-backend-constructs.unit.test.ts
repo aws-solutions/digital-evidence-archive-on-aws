@@ -19,8 +19,8 @@ import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
 
 describe('DeaBackend constructs', () => {
-  const expectedLambdaCount = 38;
-  const expectedMethodCount = 75;
+  const expectedLambdaCount = 39;
+  const expectedMethodCount = 77;
 
   beforeAll(() => {
     process.env.STAGE = 'RUN1';
