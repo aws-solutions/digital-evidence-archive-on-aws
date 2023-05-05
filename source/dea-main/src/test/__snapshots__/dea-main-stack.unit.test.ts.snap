@@ -12365,7 +12365,7 @@ Object {
     },
     "DeaAuthConstructDEAUserPooldeaappclient08A0AC35": Object {
       "Properties": Object {
-        "AccessTokenValidity": 720,
+        "AccessTokenValidity": 660,
         "AllowedOAuthFlows": Array [
           "code",
         ],
@@ -12430,7 +12430,7 @@ Object {
         "GenerateSecret": true,
         "IdTokenValidity": 60,
         "PreventUserExistenceErrors": "ENABLED",
-        "RefreshTokenValidity": 720,
+        "RefreshTokenValidity": 660,
         "SupportedIdentityProviders": Array [
           "COGNITO",
         ],
