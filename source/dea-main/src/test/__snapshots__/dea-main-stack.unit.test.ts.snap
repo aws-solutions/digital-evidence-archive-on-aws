@@ -583,6 +583,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayDELETEDeleteCaseInvokeLambdaPermission640A6577": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayDELETEDeleteCase91CB5F89",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayDELETERemoveUserFromCaseD22CC76C": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -659,6 +675,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayDELETERemoveUserFromCaseInvokeLambdaPermissionC004B488": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayDELETERemoveUserFromCaseD22CC76C",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayGETDownloadCaseFile32575192": Object {
       "DependsOn": Array [
@@ -737,6 +769,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayGETDownloadCaseFileInvokeLambdaPermission22E3B350": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETDownloadCaseFile32575192",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayGETGetAllCases83536312": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -813,6 +861,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayGETGetAllCasesInvokeLambdaPermissionDD55FC2E": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetAllCases83536312",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayGETGetAllUsersD6F48F6E": Object {
       "DependsOn": Array [
@@ -891,6 +955,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayGETGetAllUsersInvokeLambdaPermission8444CF3C": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetAllUsersD6F48F6E",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayGETGetAvailableEndpoints3D87F8A4": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -967,6 +1047,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayGETGetAvailableEndpointsInvokeLambdaPermission0CBFD10E": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetAvailableEndpoints3D87F8A4",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayGETGetCaseActions00B0B2FE": Object {
       "DependsOn": Array [
@@ -1045,6 +1141,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayGETGetCaseActionsInvokeLambdaPermissionC94D069D": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetCaseActions00B0B2FE",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayGETGetCaseAudit536E35D4": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -1121,6 +1233,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayGETGetCaseAuditInvokeLambdaPermission6D27F02B": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetCaseAudit536E35D4",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayGETGetCaseDetails2DAE602F": Object {
       "DependsOn": Array [
@@ -1199,6 +1327,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayGETGetCaseDetailsInvokeLambdaPermission1E45739D": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetCaseDetails2DAE602F",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayGETGetCaseFileAuditED868E5A": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -1275,6 +1419,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayGETGetCaseFileAuditInvokeLambdaPermission2898DD43": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetCaseFileAuditED868E5A",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayGETGetCaseFileDetail9C46D770": Object {
       "DependsOn": Array [
@@ -1353,6 +1513,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayGETGetCaseFileDetailInvokeLambdaPermissionF6AABFD5": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetCaseFileDetail9C46D770",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayGETGetCaseFiles5D776CE0": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -1429,6 +1605,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayGETGetCaseFilesInvokeLambdaPermissionECF57483": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetCaseFiles5D776CE0",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayGETGetLoginUrl6676EA3E": Object {
       "DependsOn": Array [
@@ -1507,6 +1699,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayGETGetLoginUrlInvokeLambdaPermission53C83FDD": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetLoginUrl6676EA3E",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayGETGetLogoutUrl36676722": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
@@ -1583,6 +1791,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayGETGetLogoutUrlInvokeLambdaPermissionD0595C86": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetLogoutUrl36676722",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayGETGetMyCases60A3BAE4": Object {
       "DependsOn": Array [
@@ -1661,6 +1885,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayGETGetMyCasesInvokeLambdaPermissionE5A654B2": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetMyCases60A3BAE4",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayGETGetScopedCaseInformation4A196540": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -1737,6 +1977,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayGETGetScopedCaseInformationInvokeLambdaPermission0FD92501": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetScopedCaseInformation4A196540",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayGETGetSystemAuditAD3F46B8": Object {
       "DependsOn": Array [
@@ -1815,6 +2071,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayGETGetSystemAuditInvokeLambdaPermission39BB8143": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetSystemAuditAD3F46B8",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayGETGetUserAudit98646799": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -1891,6 +2163,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayGETGetUserAuditInvokeLambdaPermissionE8B7A408": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetUserAudit98646799",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayGETGetUsersFromCaseDF0ABA41": Object {
       "DependsOn": Array [
@@ -1969,6 +2257,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayGETGetUsersFromCaseInvokeLambdaPermission2C77ACBC": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayGETGetUsersFromCaseDF0ABA41",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayPOSTCreateCaseFBDDC364": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -2045,6 +2349,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayPOSTCreateCaseInvokeLambdaPermission8030698D": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTCreateCaseFBDDC364",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayPOSTCreateCaseOwner21613ABD": Object {
       "DependsOn": Array [
@@ -2123,6 +2443,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayPOSTCreateCaseOwnerInvokeLambdaPermissionFE2A0CAA": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTCreateCaseOwner21613ABD",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayPOSTGetAuthenticationToken5718D484": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
@@ -2199,6 +2535,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayPOSTGetAuthenticationTokenInvokeLambdaPermission5D91267D": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTGetAuthenticationToken5718D484",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayPOSTInitiateCaseFileUpload060E0D60": Object {
       "DependsOn": Array [
@@ -2277,6 +2629,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayPOSTInitiateCaseFileUploadInvokeLambdaPermission496221C9": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTInitiateCaseFileUpload060E0D60",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayPOSTInviteUserToCaseB26DE4D4": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -2353,6 +2721,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayPOSTInviteUserToCaseInvokeLambdaPermission7B6F4708": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTInviteUserToCaseB26DE4D4",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayPOSTRefreshIdToken92226CFF": Object {
       "DependsOn": Array [
@@ -2431,6 +2815,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayPOSTRefreshIdTokenInvokeLambdaPermission0D25ED2C": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTRefreshIdToken92226CFF",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayPOSTRequestCaseAuditA90E8214": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -2507,6 +2907,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayPOSTRequestCaseAuditInvokeLambdaPermission20A093C1": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTRequestCaseAuditA90E8214",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayPOSTRequestCaseFileAuditF232F8F9": Object {
       "DependsOn": Array [
@@ -2585,6 +3001,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayPOSTRequestCaseFileAuditInvokeLambdaPermission48CF22ED": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTRequestCaseFileAuditF232F8F9",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayPOSTRequestSystemAudit1876CDAF": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -2661,6 +3093,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayPOSTRequestSystemAuditInvokeLambdaPermissionAFDB1C82": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTRequestSystemAudit1876CDAF",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayPOSTRequestUserAudit56ED13A5": Object {
       "DependsOn": Array [
@@ -2739,6 +3187,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayPOSTRequestUserAuditInvokeLambdaPermission298C7FED": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTRequestUserAudit56ED13A5",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayPOSTRevokeAuthTokenFC739416": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5",
@@ -2815,6 +3279,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayPOSTRevokeAuthTokenInvokeLambdaPermissionD5A5DBC7": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPOSTRevokeAuthTokenFC739416",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayPUTCompleteCaseFileUploadF4BF98F1": Object {
       "DependsOn": Array [
@@ -2893,6 +3373,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayPUTCompleteCaseFileUploadInvokeLambdaPermissionB041A5CB": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPUTCompleteCaseFileUploadF4BF98F1",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayPUTModifyUserCasePermissionsABF0FB7A": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -2969,6 +3465,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayPUTModifyUserCasePermissionsInvokeLambdaPermission8AE5B746": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPUTModifyUserCasePermissionsABF0FB7A",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayPUTUpdateCaseDetails69D719BE": Object {
       "DependsOn": Array [
@@ -3047,6 +3559,22 @@ Object {
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayPUTUpdateCaseDetailsInvokeLambdaPermission8FF01130": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPUTUpdateCaseDetails69D719BE",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayPUTUpdateCaseStatus1BB3B9FE": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
@@ -3123,6 +3651,22 @@ Object {
         "Timeout": 10,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayPUTUpdateCaseStatusInvokeLambdaPermissionAD166590": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPUTUpdateCaseStatus1BB3B9FE",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewayUpdateBucketCORS2D79DACA": Object {
       "DeletionPolicy": "Delete",
@@ -15457,7 +16001,10 @@ Object {
               ],
             },
             Object {
-              "Action": "s3:PutObject",
+              "Action": Array [
+                "s3:PutObject",
+                "s3:PutObjectAcl",
+              ],
               "Condition": Object {
                 "StringEquals": Object {
                   "aws:SourceAccount": Object {
@@ -16760,7 +17307,12 @@ Object {
                     ],
                   ],
                 },
-                "Service": "logs.us-east-1.amazonaws.com",
+                "Service": Array [
+                  "logs.us-east-1.amazonaws.com",
+                  "lambda.us-east-1.amazonaws.com",
+                  "cloudformation.amazonaws.com",
+                  "dynamodb.amazonaws.com",
+                ],
               },
               "Resource": "*",
               "Sid": "main-key-share-statement",
@@ -16892,24 +17444,6 @@ Object {
                 },
               },
               "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:GenerateDataKey",
-              ],
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "lambda.us-east-1.amazonaws.com",
-              },
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "DeaApiGatewaydeabaselambdarole91512884",
-                  "Arn",
-                ],
-              },
-              "Sid": "main-key-share-statement",
             },
           ],
           "Version": "2012-10-17",

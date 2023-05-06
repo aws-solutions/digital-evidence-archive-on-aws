@@ -6,7 +6,7 @@
 import { StackProps } from 'aws-cdk-lib';
 import * as CloudTrail from 'aws-cdk-lib/aws-cloudtrail';
 import { CfnTrail, ReadWriteType } from 'aws-cdk-lib/aws-cloudtrail';
-import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyStatement, ServicePrincipal, StarPrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { BlockPublicAccess, Bucket, BucketEncryption, IBucket, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
@@ -56,6 +56,28 @@ export class DeaAuditTrail extends Construct {
       autoDeleteObjects: deaConfig.isTestStack(),
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
+
+    if (!deaConfig.isTestStack()) {
+      trailBucket.addToResourcePolicy(
+        new PolicyStatement({
+          effect: Effect.DENY,
+          actions: ['s3:DeleteObject', 's3:DeleteObjectVersion'],
+          resources: [`${trailBucket.bucketArn}/*`],
+          principals: [new StarPrincipal()],
+          sid: 'accesslogs-deny-bucket-policy',
+        })
+      );
+
+      trailBucket.addToResourcePolicy(
+        new PolicyStatement({
+          effect: Effect.DENY,
+          actions: ['s3:PutLifecycleConfiguration'],
+          resources: [trailBucket.bucketArn],
+          principals: [new StarPrincipal()],
+          sid: 'accesslogs-deny-bucket-policy',
+        })
+      );
+    }
 
     const trail = new CloudTrail.Trail(scope, 'deaTrail', {
       bucket: trailBucket,

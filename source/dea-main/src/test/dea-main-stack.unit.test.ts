@@ -39,4 +39,26 @@ describe('DeaMainStack', () => {
 
     expect(template).toMatchSnapshot();
   });
+
+  it('restricts resource policies in production', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const domain: any = 'deatestenv';
+    convictConfig.set('cognito.domain', domain);
+    convictConfig.set('testStack', false);
+
+    const app = new cdk.App();
+
+    // Create the DeaMainStack
+    const props = {
+      env: {
+        region: 'us-east-1',
+      },
+      crossRegionReferences: true,
+    };
+    const deaMainStack = new DeaMainStack(app, 'DeaMainStack', props);
+
+    const template = Template.fromStack(deaMainStack);
+
+    template.resourceCountIs('AWS::S3::BucketPolicy', 4);
+  });
 });
