@@ -31,7 +31,6 @@ import {
 } from '../../api/cases';
 import {
   auditLogLabels,
-  caseListLabels,
   commonLabels,
   commonTableLabels,
   fileOperationsLabels,
@@ -313,6 +312,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       for (const file of selectedFiles) {
         try {
           const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
+          console.log('yolo', downloadResponse);
           if (!downloadResponse.downloadUrl) {
             if (downloadResponse.isRestoring) {
               pushNotification(
