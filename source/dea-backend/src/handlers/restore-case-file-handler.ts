@@ -7,4 +7,4 @@ import { restoreCaseFile } from '@aws/dea-app/lib/app/resources/restore-case-fil
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { createDeaHandler } from './create-dea-handler';
 
-export const handler = createDeaHandler(restoreCaseFile, [CaseAction.RESTORE]);
+export const handler = createDeaHandler(restoreCaseFile, [CaseAction.RESTORE_FILES]);

@@ -22,7 +22,9 @@ export const canUploadFiles = (actions?: CaseAction[]): boolean => {
 };
 
 export const canRestoreFiles = (actions?: CaseAction[], endpoints?: string[]): boolean => {
-  return (actions?.includes(CaseAction.RESTORE) && endpoints?.includes(RESTORE_CASE_FILE_PATH)) ?? false;
+  return (
+    (actions?.includes(CaseAction.RESTORE_FILES) && endpoints?.includes(RESTORE_CASE_FILE_PATH)) ?? false
+  );
 };
 
 export const canDownloadCaseAudit = (actions?: CaseAction[]): boolean => {
