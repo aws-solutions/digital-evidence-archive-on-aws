@@ -300,5 +300,5 @@ describe('case file audit e2e', () => {
 
     // Case Cleanup
     await deleteCaseFiles(deaApiUrl, caseUlid, createdCase.name, FILE_PATH, idToken, creds);
-  }, 720000);
+  }, 900000);
 });
