@@ -16,6 +16,18 @@ const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
   const secretAccessKey = sessionStorage.getItem('secretAccessKey');
   const sessionToken = sessionStorage.getItem('sessionToken');
 
+  // Get date/expiration and check if we need update id token
+  if (!options.url?.includes('/auth')) {
+    const dateString = sessionStorage.getItem('tokenExpirationTime');
+    if (dateString) {
+      const dateNum = parseFloat(dateString);
+      const currentTime = new Date().getTime() + 180 * 1000;
+      if (currentTime >= dateNum) {
+        await refreshCredentials();
+      }
+    }
+  }
+
   options.headers = {
     ...options.headers,
   };
@@ -46,20 +58,11 @@ const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
       statusCode = error.response && error.response.status ? error.response.status : 0;
       endpointUrl = error.response && error.config.url ? error.config.url : '';
 
-      // Attempt to refresh credentials on 400's
-      // Do not refresh on POST /refreshToken or /available-endpoints
-      if (!endpointUrl.includes('availableEndpoints')) {
-        if (endpointUrl.includes('refresh') || statusCode === 412) {
-          const logoutUrl = await signOutProcess();
-          window.location.assign(logoutUrl);
-        } else {
-          if (statusCode >= 400 && statusCode < 500) {
-            await refreshCredentials();
-          } else if (statusCode >= 500) {
-            const logoutUrl = await signOutProcess();
-            window.location.assign(logoutUrl);
-          }
-        }
+      // Logout if refresh failed (refresh token expired)
+      // Logout if 412 (session lock)
+      if (endpointUrl.includes('auth/refreshToken') || statusCode === 412) {
+        const logoutUrl = await signOutProcess();
+        window.location.assign(logoutUrl);
       }
 
       if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST') {

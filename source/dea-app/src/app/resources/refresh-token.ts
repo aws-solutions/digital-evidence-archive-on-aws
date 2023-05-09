@@ -19,6 +19,7 @@ export const refreshToken: DEAGatewayProxyHandler = async (event) => {
       idToken: refreshTokenResult.id_token,
       identityPoolId: identityPoolId,
       userPoolId: userPoolId,
+      expiresIn: refreshTokenResult.expires_in,
     })
   );
 };

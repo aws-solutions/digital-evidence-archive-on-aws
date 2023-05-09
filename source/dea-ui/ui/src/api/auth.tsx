@@ -11,6 +11,7 @@ export interface TokenResponse {
   idToken: string;
   identityPoolId: string;
   userPoolId: string;
+  expiresIn: number;
 }
 
 export const getToken = async (authCode: string, codeVerifier: string): Promise<TokenResponse> => {
