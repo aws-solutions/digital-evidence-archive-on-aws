@@ -181,7 +181,7 @@ export default class CognitoHelper {
   public async getIdTokenForUser(userName: string): Promise<Oauth2Token> {
     const result = await this.getUserPoolAuthForUser(userName);
 
-    if (!result.IdToken || !result.RefreshToken || !result.AccessToken) {
+    if (!result.IdToken || !result.RefreshToken) {
       throw new Error('Unable to get id token and refresh token from user pool.');
     }
 
@@ -189,7 +189,6 @@ export default class CognitoHelper {
       id_token: result.IdToken,
       refresh_token: result.RefreshToken,
       expires_in: result.ExpiresIn ?? 4000,
-      access_token: result.AccessToken,
       token_type: result.TokenType ?? 'Bearer',
     };
   }
