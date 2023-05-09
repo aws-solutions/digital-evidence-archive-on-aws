@@ -176,12 +176,21 @@ export const getPresignedUrlForDownload = async (
   const result: DownloadCaseFileResult = { isArchived: false, isRestoring: false };
 
   if (isS3ObjectArchived(headObjectResponse)) {
-    logger.info('CaseFile is archived. Not returning presigned URL');
+    logger.info('CaseFile is archived.');
     result.isArchived = true;
-    if (headObjectResponse.Restore) {
+    if (headObjectResponse.Restore === 'ongoing-request="true"') {
+      logger.info('CaseFile is archived and has an active restore job');
       result.isRestoring = true;
+      return result;
     }
-    return result;
+
+    if (!headObjectResponse.Restore) {
+      logger.info('CaseFile is archived and is not being restored');
+      result.isRestoring = false;
+      return result;
+    }
+
+    logger.info('CaseFile is archived, but has a restored object available for download');
   }
 
   logger.info('Creating presigned URL for caseFile.', caseFile);

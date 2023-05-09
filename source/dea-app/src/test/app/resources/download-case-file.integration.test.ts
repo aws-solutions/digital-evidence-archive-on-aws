@@ -232,7 +232,7 @@ describe('Test case file download', () => {
       UploadId: UPLOAD_ID,
       VersionId: VERSION_ID,
       ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
-      Restore: 'hello',
+      Restore: 'ongoing-request="true"',
     });
 
     const fileName = 'restoring file';
@@ -248,6 +248,31 @@ describe('Test case file download', () => {
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
     expect(downloadResult.downloadUrl).toBeFalsy();
     expect(downloadResult.isRestoring).toBeTruthy();
+    expect(downloadResult.isArchived).toBeTruthy();
+  });
+
+  it('should work when archived file is restored', async () => {
+    s3Mock = mockClient(S3Client);
+    s3Mock.resolves({
+      UploadId: UPLOAD_ID,
+      VersionId: VERSION_ID,
+      ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
+      Restore: 'ongoing-request="false"',
+    });
+
+    const fileName = 'restored file';
+    const caseFile = await callInitiateCaseFileUpload(
+      EVENT,
+      repositoryProvider,
+      caseToDownloadFrom,
+      fileName
+    );
+
+    const fileId = caseFile.ulid ?? fail();
+    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
+    expect(downloadResult.downloadUrl).toBeTruthy();
+    expect(downloadResult.isRestoring).toBeFalsy();
     expect(downloadResult.isArchived).toBeTruthy();
   });
 });
