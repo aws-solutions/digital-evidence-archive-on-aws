@@ -97,6 +97,10 @@
           "method": "GET"
         },
         {
+          "path": "/cases/{caseId}/files/{fileId}/restore",
+          "method": "PUT"
+        },
+        {
           "path": "/cases/my-cases",
           "method": "GET"
         },
@@ -192,6 +196,10 @@
         },
         {
           "path": "/cases/{caseId}/files/{fileId}/contents",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/restore",
           "method": "PUT"
         },
         {
