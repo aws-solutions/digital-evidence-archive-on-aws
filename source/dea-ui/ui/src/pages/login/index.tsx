@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import { getToken } from '../../api/auth';
 import { commonLabels } from '../../common/labels';
 import { useAuthentication } from '../../context/AuthenticationContext';
-import { getCredentialsByToken } from '../../helpers/authService';
+import { calculateExpirationDate, getCredentialsByToken } from '../../helpers/authService';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,6 +39,10 @@ export default function LoginPage() {
           sessionStorage.setItem('accessKeyId', credentials.AccessKeyId);
           sessionStorage.setItem('secretAccessKey', credentials.SecretKey);
           sessionStorage.setItem('sessionToken', credentials.SessionToken);
+          sessionStorage.setItem(
+            'tokenExpirationTime',
+            calculateExpirationDate(response.expiresIn).toString()
+          );
           await router.push('/');
         } catch (e) {
           console.log(e);

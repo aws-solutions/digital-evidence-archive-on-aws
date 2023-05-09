@@ -27,10 +27,7 @@ export const getCallbackUrl = () => {
 };
 
 function clearStorage() {
-  sessionStorage.removeItem('accessKeyId');
-  sessionStorage.removeItem('secretAccessKey');
-  sessionStorage.removeItem('sessionToken');
-  sessionStorage.removeItem('pkceVerifier');
+  sessionStorage.clear();
   localStorage.removeItem('username');
 }
 
@@ -60,6 +57,7 @@ export const refreshCredentials = async () => {
   sessionStorage.setItem('accessKeyId', credentials.AccessKeyId);
   sessionStorage.setItem('secretAccessKey', credentials.SecretKey);
   sessionStorage.setItem('sessionToken', credentials.SessionToken);
+  sessionStorage.setItem('tokenExpirationTime', calculateExpirationDate(response.expiresIn).toString());
 };
 
 export const getCredentialsByToken = async (idToken: string, identityPoolId: string, userPoolId: string) => {
@@ -102,4 +100,10 @@ export const getCredentialsByToken = async (idToken: string, identityPoolId: str
   };
 
   return credentials;
+};
+
+export const calculateExpirationDate = (expirationTime: number) => {
+  // expiration time is in seconds, we add time by milliseconds so multiply by 1000
+  const timestamp = new Date().getTime() + expirationTime * 1000;
+  return timestamp;
 };
