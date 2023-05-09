@@ -95,8 +95,6 @@ describe('case audit e2e', () => {
     );
     expect(membershipsResponse.status).toEqual(200);
 
-    console.log('INVITING');
-
     // Create a case user with certain permissions, and have them try
     // to do something outside the permissions, should show up as failure in the
     // audit log
@@ -111,18 +109,9 @@ describe('case audit e2e', () => {
       failedCaseUser,
       true
     );
-
-    console.log('GET CREDS');
     const [inviteeCreds, inviteeToken] = await cognitoHelper.getCredentialsForUser(failedCaseUser);
-
-    console.log('CALL API');
-
     await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/files`, 'GET', inviteeToken, inviteeCreds);
-    // await expect(
-    //   callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/files`, 'GET', inviteeToken, inviteeCreds)
-    // ).rejects.toThrow();
 
-    console.log('SLEEPING');
     // allow some time so the events show up in CW logs
     await delay(25000);
 
@@ -141,7 +130,6 @@ describe('case audit e2e', () => {
       Joi.assert(auditId, joiUlid);
 
       let retries = 10;
-      console.log('DELAYIN');
       await delay(5000);
       let getQueryReponse = await callDeaAPIWithCreds(
         `${deaApiUrl}cases/${caseUlid}/audit/${auditId}/csv`,
@@ -157,7 +145,6 @@ describe('case audit e2e', () => {
         if (getQueryReponse.status !== 200) {
           fail();
         }
-        console.log('2000');
         await delay(2000);
 
         getQueryReponse = await callDeaAPIWithCreds(
@@ -176,12 +163,10 @@ describe('case audit e2e', () => {
         potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
         potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
         potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE) &&
-        (potentialCsvData.match(/dynamodb.amazonaws.com/g)?.length ?? 0) > 0
+        potentialCsvData.match(/dynamodb.amazonaws.com/g)?.length === 7
       ) {
         csvData = getQueryReponse.data;
       } else {
-        console.log('100000');
-        console.log(potentialCsvData);
         await delay(10000);
       }
     }
@@ -241,20 +226,22 @@ describe('case audit e2e', () => {
     );
     verifyCaseAuditEntry(failedListCaseFilesEntry, AuditEventType.GET_CASE_FILES, failedCaseUser, false);
 
-    expect(entries.length).toBe(5);
+    const caseInviteEntry = entries.find((entry) => entry.eventType === AuditEventType.INVITE_USER_TO_CASE);
+    verifyCaseAuditEntry(caseInviteEntry, AuditEventType.INVITE_USER_TO_CASE, testUser);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(caseInviteEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
+
+    expect(entries.length).toBe(6);
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const cloudtrailEntries = parseTrailEventsFromAuditQuery(csvData!);
 
-    // TODO: remove
-    cloudtrailEntries.forEach((entry) => console.log(entry));
-
     const dbGetItems = cloudtrailEntries.filter((entry) => entry.eventType === 'GetItem');
-    expect(dbGetItems).toHaveLength(4);
+    expect(dbGetItems).toHaveLength(5);
     const dbTransactItems = cloudtrailEntries.filter((entry) => entry.eventType === 'TransactWriteItems');
     expect(dbTransactItems).toHaveLength(2);
 
-    expect(cloudtrailEntries.length).toBe(6);
+    expect(cloudtrailEntries.length).toBe(7);
   }, 10000000);
 
   it('should prevent retrieval by an unauthorized user', async () => {

@@ -548,6 +548,7 @@ export type CaseFileAuditEventEntry = {
   result: boolean;
   eventDetails: string;
   username: string;
+  userUlid: string;
   caseId: string;
   fileId: string;
   fileHash?: string;
@@ -558,9 +559,11 @@ export type CaseAuditEventEntry = {
   result: boolean;
   eventDetails: string;
   username: string;
+  userUlid: string;
   caseId: string;
   fileId?: string;
   fileHash?: string;
+  targetUser?: string;
 };
 
 const parseAuditCsv = (csvData: string, parseFn: (entry: string) => AuditEventEntry): AuditEventEntry[] => {
@@ -623,6 +626,7 @@ function parseCaseFileAuditEvent(entry: string): CaseAuditEventEntry {
     result: fields[2] === AuditEventResult.SUCCESS,
     eventDetails: fields[3],
     username: fields[7],
+    userUlid: fields[9],
     caseId: fields[14],
     fileId: fields[15],
     fileHash,
@@ -640,14 +644,25 @@ function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
     fail(`Unrecognized Event Type in Case Level Audit ${eventType}`);
   }
 
+  let targetUser: string | undefined;
+  if (
+    eventType === AuditEventType.INVITE_USER_TO_CASE ||
+    eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE ||
+    eventType === AuditEventType.REMOVE_USER_FROM_CASE
+  ) {
+    targetUser = fields[15];
+  }
+
   return {
     eventType,
     result: fields[2] === AuditEventResult.SUCCESS,
     eventDetails: fields[3],
     username: fields[7],
+    userUlid: fields[9],
     caseId: fields[14],
     fileId: fields[15],
     fileHash: fields[16],
+    targetUser,
   };
 }
 
