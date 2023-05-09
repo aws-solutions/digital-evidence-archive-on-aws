@@ -278,14 +278,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           const alink = document.createElement('a');
           alink.href = fileUrl;
           alink.download = `${file.fileName}_Audit_${new Date().toLocaleString()}`;
-          try {
-            console.log('before click');
-            alink.click();
-            console.log('after click');
-          } catch (e) {
-            console.log('catch block');
-          }
-          console.log('outside catch block');
+          alink.click();
 
           // sleep 2ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
           // long term we should consider zipping the files in the backend and then downloading as a single file
@@ -312,7 +305,6 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       for (const file of selectedFiles) {
         try {
           const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
-          console.log('yolo', downloadResponse);
           if (!downloadResponse.downloadUrl) {
             if (downloadResponse.isRestoring) {
               pushNotification(
