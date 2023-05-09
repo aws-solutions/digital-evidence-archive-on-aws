@@ -21,7 +21,7 @@ const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
     const dateString = sessionStorage.getItem('tokenExpirationTime');
     if (dateString) {
       const dateNum = parseFloat(dateString);
-      const currentTime = new Date().getTime();
+      const currentTime = new Date().getTime() + 180 * 1000;
       if (currentTime >= dateNum) {
         await refreshCredentials();
       }
