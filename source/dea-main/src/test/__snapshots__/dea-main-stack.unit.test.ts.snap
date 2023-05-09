@@ -2,7 +2,31 @@
 
 exports[`DeaMainStack synthesizes the way we expect 1`] = `
 Object {
+  "Mappings": Object {
+    "Solution": Object {
+      "Data": Object {
+        "AppRegistryApplicationName": "digital-evidence-archive",
+        "ApplicationType": "AWS-Solutions",
+        "AttributeGroupName": "Solution-Metadata",
+        "ID": "SO0224",
+        "SolutionName": "Digital Evidence Archive",
+        "SolutionVersion": "1.0.0",
+      },
+    },
+  },
   "Outputs": Object {
+    "AppRegistryArn": Object {
+      "Description": "ARN of the application registry",
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-AppRegistryArn",
+      },
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "AppRegistry968496A3",
+          "Arn",
+        ],
+      },
+    },
     "DeaApiGatewayUiUrl17F784E2": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-UiUrl",
@@ -243,6 +267,170 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "AppRegistry968496A3": Object {
+      "Properties": Object {
+        "Description": "Service Catalog application to track and manage all your resources for the solution",
+        "Name": Object {
+          "Fn::Join": Array [
+            "-",
+            Array [
+              Object {
+                "Fn::FindInMap": Array [
+                  "Solution",
+                  "Data",
+                  "AppRegistryApplicationName",
+                ],
+              },
+              Object {
+                "Ref": "AWS::Region",
+              },
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              Object {
+                "Ref": "AWS::StackName",
+              },
+            ],
+          ],
+        },
+        "Tags": Object {
+          "Solutions:ApplicationType": Object {
+            "Fn::FindInMap": Array [
+              "Solution",
+              "Data",
+              "ApplicationType",
+            ],
+          },
+          "Solutions:SolutionID": Object {
+            "Fn::FindInMap": Array [
+              "Solution",
+              "Data",
+              "ID",
+            ],
+          },
+          "Solutions:SolutionName": Object {
+            "Fn::FindInMap": Array [
+              "Solution",
+              "Data",
+              "SolutionName",
+            ],
+          },
+          "Solutions:SolutionVersion": Object {
+            "Fn::FindInMap": Array [
+              "Solution",
+              "Data",
+              "SolutionVersion",
+            ],
+          },
+        },
+      },
+      "Type": "AWS::ServiceCatalogAppRegistry::Application",
+    },
+    "AppRegistryAssociation": Object {
+      "Properties": Object {
+        "Application": Object {
+          "Fn::GetAtt": Array [
+            "AppRegistry968496A3",
+            "Id",
+          ],
+        },
+        "Resource": Object {
+          "Ref": "AWS::StackId",
+        },
+        "ResourceType": "CFN_STACK",
+      },
+      "Type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
+    },
+    "AppRegistryAttributeGroupAssociation6a6c78132183E2948A85": Object {
+      "Properties": Object {
+        "Application": Object {
+          "Fn::GetAtt": Array [
+            "AppRegistry968496A3",
+            "Id",
+          ],
+        },
+        "AttributeGroup": Object {
+          "Fn::GetAtt": Array [
+            "AppRegistryDefaultApplicationAttributes15279635",
+            "Id",
+          ],
+        },
+      },
+      "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
+    },
+    "AppRegistryDefaultApplicationAttributes15279635": Object {
+      "Properties": Object {
+        "Attributes": Object {
+          "applicationType": Object {
+            "Fn::FindInMap": Array [
+              "Solution",
+              "Data",
+              "ApplicationType",
+            ],
+          },
+          "solutionID": Object {
+            "Fn::FindInMap": Array [
+              "Solution",
+              "Data",
+              "ID",
+            ],
+          },
+          "solutionName": Object {
+            "Fn::FindInMap": Array [
+              "Solution",
+              "Data",
+              "SolutionName",
+            ],
+          },
+          "version": Object {
+            "Fn::FindInMap": Array [
+              "Solution",
+              "Data",
+              "SolutionVersion",
+            ],
+          },
+        },
+        "Description": "Attribute group for solution information",
+        "Name": Object {
+          "Fn::FindInMap": Array [
+            "Solution",
+            "Data",
+            "AttributeGroupName",
+          ],
+        },
+        "Tags": Object {
+          "Solutions:ApplicationType": Object {
+            "Fn::FindInMap": Array [
+              "Solution",
+              "Data",
+              "ApplicationType",
+            ],
+          },
+          "Solutions:SolutionID": Object {
+            "Fn::FindInMap": Array [
+              "Solution",
+              "Data",
+              "ID",
+            ],
+          },
+          "Solutions:SolutionName": Object {
+            "Fn::FindInMap": Array [
+              "Solution",
+              "Data",
+              "SolutionName",
+            ],
+          },
+          "Solutions:SolutionVersion": Object {
+            "Fn::FindInMap": Array [
+              "Solution",
+              "Data",
+              "SolutionVersion",
+            ],
+          },
+        },
+      },
+      "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
     },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": Object {
       "DependsOn": Array [

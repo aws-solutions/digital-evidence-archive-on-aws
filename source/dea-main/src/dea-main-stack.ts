@@ -5,16 +5,17 @@
 
 /* eslint-disable no-new */
 import {
-  createCfnOutput,
+  DeaAppRegisterConstruct,
   DeaAuditTrail,
   DeaAuth,
   DeaAuthStack,
   DeaBackendConstruct,
-  deaConfig,
+  DeaEventHandlers,
   DeaParameters,
   DeaParametersStack,
   DeaRestApiConstruct,
-  DeaEventHandlers,
+  createCfnOutput,
+  deaConfig,
 } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
@@ -36,6 +37,9 @@ import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { addLambdaSuppressions } from './nag-suppressions';
 
+// DEA AppRegistry Constants
+export const SOLUTION_VERSION = '1.0.0';
+
 interface ApplicationResources {
   kmsKey: Key;
   datasetsBucket: Bucket;
@@ -43,9 +47,24 @@ interface ApplicationResources {
 }
 
 export class DeaMainStack extends cdk.Stack {
+  private readonly appRegistry: DeaAppRegisterConstruct;
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    // DEA App Register Construct
+    this.appRegistry = new DeaAppRegisterConstruct(this, this.stackId, {
+      solutionId: 'SO0224',
+      solutionName: 'Digital Evidence Archive',
+      solutionVersion: SOLUTION_VERSION,
+      appRegistryApplicationName: 'digital-evidence-archive',
+      applicationType: 'AWS-Solutions',
+      attributeGroupName: 'Solution-Metadata',
+    });
+    createCfnOutput(this, 'AppRegistryArn', {
+      description: 'ARN of the application registry',
+      value: this.appRegistry.registryApplication.applicationArn,
+    });
 
     // Create KMS key to pass into backend and UI
     const kmsKey = this.createEncryptionKey();
