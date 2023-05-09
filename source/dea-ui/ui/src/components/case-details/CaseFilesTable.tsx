@@ -143,10 +143,10 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       }
       setFilesToRestore([]);
       await Promise.all(restorePromises);
-      pushNotification('success', 'Successfully restored selected files');
+      pushNotification('success', fileOperationsLabels.restoreSuccessful);
     } catch (e) {
       console.log('Failed to restore files', e);
-      pushNotification('error', 'Failed to restore selected files');
+      pushNotification('error', fileOperationsLabels.restoreFail);
     } finally {
       setFilesToRestore([]);
     }
@@ -268,7 +268,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       for (const file of selectedFiles) {
         try {
           if (!file.ulid) {
-            pushNotification('error', `Failed to download case file audit for ${file.fileName}`);
+            pushNotification('error', auditLogLabels.downloadCaseAuditFail(file.fileName));
             console.log(`failed to download case file audit for ${file.fileName}`);
             continue;
           }
@@ -284,7 +284,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           // long term we should consider zipping the files in the backend and then downloading as a single file
           await sleep(2);
         } catch (e) {
-          pushNotification('error', `Failed to download case file audit for ${file.fileName}`);
+          pushNotification('error', auditLogLabels.downloadCaseAuditFail(file.fileName));
           console.log(`failed to download case file audit for ${file.fileName}`, e);
         }
       }
@@ -307,18 +307,12 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
           if (!downloadResponse.downloadUrl) {
             if (downloadResponse.isRestoring) {
-              pushNotification(
-                'info',
-                `${file.fileName} is currently being restored. It will be ready to download in up to 12 hours`
-              );
+              pushNotification('info', fileOperationsLabels.restoreInProgress(file.fileName));
             } else if (downloadResponse.isArchived) {
               if (canRestoreFiles(userActions?.data?.actions, availableEndpoints.data)) {
                 filesToRestore.push(file);
               } else {
-                pushNotification(
-                  'error',
-                  `${file.fileName} is archived. Please contact case owner to restore file for access.`
-                );
+                pushNotification('error', fileOperationsLabels.archivedFileNoPermissionError(file.fileName));
               }
             }
             continue;
@@ -331,7 +325,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           // long term we should consider zipping the files in the backend and then downloading as a single file
           await sleep(5);
         } catch (e) {
-          pushNotification('error', `Failed to download ${file.fileName}`);
+          pushNotification('error', fileOperationsLabels.downloadFailed(file.fileName));
           console.log(`failed to download ${file.fileName}`, e);
         }
       }
