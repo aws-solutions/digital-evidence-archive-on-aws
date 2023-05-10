@@ -3863,6 +3863,86 @@ Object {
       },
       "Type": "AWS::Lambda::Permission",
     },
+    "DeaRestApiConstructPUTRestoreCaseFile94160087": Object {
+      "DependsOn": Array [
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendConstructDeaTableB48721A0",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 10,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaRestApiConstructPUTRestoreCaseFileInvokeLambdaPermissionE8916967": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructPUTRestoreCaseFile94160087",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaRestApiConstructPUTUpdateCaseDetailsCAA16781": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",

@@ -3675,6 +3675,99 @@ Object {
       },
       "Type": "AWS::Lambda::Permission",
     },
+    "DeaApiGatewayPUTRestoreCaseFileF6DB175B": Object {
+      "DependsOn": Array [
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_USE_FIPS_ENDPOINT": "true",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
+            },
+            "DELETE_CASE_FILE_LAMBDA_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
+                "Arn",
+              ],
+            },
+            "DELETE_CASE_FILE_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaEventHandlerss3batchdeletecasefileroleBAD7A58C",
+                "Arn",
+              ],
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewaydeabaselambdarole91512884",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 10,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayPUTRestoreCaseFileInvokeLambdaPermission1561F820": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayPUTRestoreCaseFileF6DB175B",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayPUTUpdateCaseDetails69D719BE": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",

@@ -337,12 +337,13 @@ describe('case file audit e2e', () => {
     const objectLockItems = cloudtrailEntries.filter((entry) => entry.eventType === 'PutObjectLockLegalHold');
     expect(objectLockItems).toHaveLength(1);
     const getObjectItems = cloudtrailEntries.filter((entry) => entry.eventType === 'GetObject');
-    expect(getObjectItems).toHaveLength(1);     const headObjectItems = cloudtrailEntries.filter((entry) => entry.eventDetails === 'HeadObject');
+    expect(getObjectItems).toHaveLength(1);
+    const headObjectItems = cloudtrailEntries.filter((entry) => entry.eventType === 'HeadObject');
     expect(headObjectItems).toHaveLength(1);
 
     expect(cloudtrailEntries.length).toBe(12);
 
     // Case Cleanup
     await deleteCaseFiles(deaApiUrl, caseUlid, createdCase.name, FILE_PATH, idToken, creds);
-  }, 900000);
+  }, 720000);
 });
