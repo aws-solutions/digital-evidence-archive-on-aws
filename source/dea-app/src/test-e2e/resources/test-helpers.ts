@@ -16,12 +16,14 @@ import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios, { AxiosResponse } from 'axios';
 import sha256 from 'crypto-js/sha256';
 import Joi from 'joi';
-import { AuditEventType } from '../../app/services/audit-service';
+import { AuditEventResult, AuditEventType } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase, DeaCaseInput } from '../../models/case';
+import { CaseAction } from '../../models/case-action';
 import { DeaCaseFile } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
+import { CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
 import { caseFileResponseSchema } from '../../models/validation/case-file';
@@ -207,6 +209,45 @@ export const getSpecificUserByFirstName = async (
   }
 
   return user;
+};
+
+export const inviteUserToCase = async (
+  deaApiUrl: string,
+  cognitoHelper: CognitoHelper,
+  targetCaseUlid: string,
+  actions: CaseAction[],
+  ownerToken: Oauth2Token,
+  ownerCreds: Credentials,
+  testInvitee: string,
+  createUser = false
+) => {
+  if (createUser) {
+    await cognitoHelper.createUser(testInvitee, 'CaseWorker', testInvitee, 'TestUser');
+  }
+
+  // initialize the invitee into the DB
+  const [inviteeCreds, inviteeToken] = await cognitoHelper.getCredentialsForUser(testInvitee);
+  await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', inviteeToken, inviteeCreds);
+
+  // get invitee ulid
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const inviteeUlid = (await getSpecificUserByFirstName(deaApiUrl, testInvitee, ownerToken, ownerCreds))
+    .ulid!;
+
+  // invite the user
+  const newMembership: CaseUserDTO = {
+    userUlid: inviteeUlid,
+    caseUlid: targetCaseUlid,
+    actions,
+  };
+  const inviteResponse = await callDeaAPIWithCreds(
+    `${deaApiUrl}cases/${targetCaseUlid}/userMemberships`,
+    'POST',
+    ownerToken,
+    ownerCreds,
+    newMembership
+  );
+  expect(inviteResponse.status).toEqual(200);
 };
 
 export const initiateCaseFileUploadSuccess = async (
@@ -473,14 +514,43 @@ export const parseOauthTokenFromCookies = (response: AxiosResponse): Oauth2Token
   return cookieData;
 };
 
+export type CloudTrailEventEntry = {
+  eventType: string;
+  service: string;
+  caseId?: string;
+  fileId?: string;
+};
+
+export const parseTrailEventsFromAuditQuery = (csvData: string): CloudTrailEventEntry[] => {
+  function parseFn(event: string): CloudTrailEventEntry {
+    const fields = event.split(', ').map((field) => field.trimEnd());
+    return {
+      eventType: fields[2],
+      service: fields[3],
+      caseId: fields[7],
+      fileId: fields[8],
+    };
+  }
+
+  return csvData
+    .trimEnd()
+    .split('\n')
+    .filter((entry) => !entry.includes('eventDateTime'))
+    .filter((entry) => !entry.includes('StartQuery'))
+    .filter((entry) => entry.includes('AwsApiCall'))
+    .map((entry) => parseFn(entry));
+};
+
 // TODO: make it so we do the same for CaseAudit and UserAudit, and
 // extend the E2E tests to do the same checks as the CaseFileAudit
 export type AuditEventEntry = CaseFileAuditEventEntry | CaseAuditEventEntry;
 
 export type CaseFileAuditEventEntry = {
   eventType: AuditEventType;
+  result: boolean;
   eventDetails: string;
   username: string;
+  userUlid: string;
   caseId: string;
   fileId: string;
   fileHash?: string;
@@ -488,11 +558,14 @@ export type CaseFileAuditEventEntry = {
 
 export type CaseAuditEventEntry = {
   eventType: AuditEventType;
+  result: boolean;
   eventDetails: string;
   username: string;
+  userUlid: string;
   caseId: string;
   fileId?: string;
   fileHash?: string;
+  targetUser?: string;
 };
 
 const parseAuditCsv = (csvData: string, parseFn: (entry: string) => AuditEventEntry): AuditEventEntry[] => {
@@ -501,6 +574,7 @@ const parseAuditCsv = (csvData: string, parseFn: (entry: string) => AuditEventEn
     .trimEnd()
     .split('\n')
     .filter((entry) => !entry.includes('eventDateTime'))
+    .filter((entry) => !entry.includes('AwsApiCall'))
     .map((entry) => parseFn(entry));
 };
 
@@ -546,15 +620,17 @@ function parseCaseFileAuditEvent(entry: string): CaseAuditEventEntry {
   expect(CASE_FILE_EVENT_TYPES.has(eventType));
   let fileHash: string | undefined;
   if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD) {
-    expect(fields[15]).toBeDefined();
-    fileHash = fields[15];
+    expect(fields[16]).toBeDefined();
+    fileHash = fields[16];
   }
   return {
     eventType,
-    eventDetails: fields[2],
-    username: fields[6],
-    caseId: fields[13],
-    fileId: fields[14],
+    result: fields[2] === AuditEventResult.SUCCESS,
+    eventDetails: fields[3],
+    username: fields[7],
+    userUlid: fields[9],
+    caseId: fields[14],
+    fileId: fields[15],
     fileHash,
   };
 }
@@ -570,13 +646,25 @@ function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
     fail(`Unrecognized Event Type in Case Level Audit ${eventType}`);
   }
 
+  let targetUser: string | undefined;
+  if (
+    eventType === AuditEventType.INVITE_USER_TO_CASE ||
+    eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE ||
+    eventType === AuditEventType.REMOVE_USER_FROM_CASE
+  ) {
+    targetUser = fields[15];
+  }
+
   return {
     eventType,
-    eventDetails: fields[2],
-    username: fields[6],
-    caseId: fields[13],
-    fileId: fields[14],
-    fileHash: fields[15],
+    result: fields[2] === AuditEventResult.SUCCESS,
+    eventDetails: fields[3],
+    username: fields[7],
+    userUlid: fields[9],
+    caseId: fields[14],
+    fileId: fields[15],
+    fileHash: fields[16],
+    targetUser,
   };
 }
 

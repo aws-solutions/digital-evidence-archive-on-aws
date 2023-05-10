@@ -182,6 +182,7 @@ export type CJISAuditEventBody = {
 const queryFields = [
   'coalesce(dateTime, eventTime) as eventDateTime',
   'eventType',
+  'result',
   'coalesce(requestPath, eventName) as eventDetails',
   'coalesce(sourceComponent, eventSource) as source',
   'coalesce(sourceIPAddress, actorIdentity.sourceIp) as sourceIp',
