@@ -79,22 +79,50 @@ export const getAllCaseFileS3Objects = async (
   });
 };
 
-export const updateCaseFileStatus = async (
-  caseUlid: string,
-  ulid: string,
-  status: CaseFileStatus,
+export const setCaseFileStatusDeleteFailed = async (
+  casefile: DeaCaseFile,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFile> => {
   const caseFileEntity = await repositoryProvider.CaseFileModel.update(
     {
-      PK: `CASE#${caseUlid}#`,
-      SK: `FILE#${ulid}#`,
+      PK: `CASE#${casefile.caseUlid}#`,
+      SK: `FILE#${casefile.ulid}#`,
     },
     {
-      set: { status },
+      set: { status: CaseFileStatus.DELETE_FAILED },
     }
   );
 
+  return caseFileEntity ? caseFileFromEntity(caseFileEntity) : caseFileEntity;
+};
+
+export const setCaseFileStatusDeleted = async (
+  casefile: DeaCaseFile,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCaseFile> => {
+  const transaction = {};
+  const caseFileEntity = await repositoryProvider.CaseFileModel.update(
+    {
+      PK: `CASE#${casefile.caseUlid}#`,
+      SK: `FILE#${casefile.ulid}#`,
+    },
+    {
+      set: { status: CaseFileStatus.DELETED },
+      transaction,
+    }
+  );
+
+  await repositoryProvider.CaseModel.update(
+    {
+      PK: `CASE#${casefile.caseUlid}#`,
+      SK: 'CASE#',
+    },
+    {
+      add: { objectCount: -1, totalSizeBytes: -casefile.fileSizeBytes },
+      transaction,
+    }
+  );
+  await repositoryProvider.table.transact('write', transaction);
   return caseFileEntity ? caseFileFromEntity(caseFileEntity) : caseFileEntity;
 };
 

@@ -4728,8 +4728,8 @@ Object {
           },
         ],
         "Throttle": Object {
-          "BurstLimit": 50,
-          "RateLimit": 25,
+          "BurstLimit": 10,
+          "RateLimit": 10,
         },
         "UsagePlanName": "dea-usage-plan",
       },
@@ -4881,6 +4881,15 @@ Object {
         "DeploymentId": Object {
           "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB1006d6f5158255a9680a6a67388133212",
         },
+        "MethodSettings": Array [
+          Object {
+            "DataTraceEnabled": false,
+            "HttpMethod": "*",
+            "ResourcePath": "/*",
+            "ThrottlingBurstLimit": 50,
+            "ThrottlingRateLimit": 50,
+          },
+        ],
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },

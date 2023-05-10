@@ -109,6 +109,15 @@ export class DeaRestApiConstruct extends Construct {
       },
       deployOptions: {
         stageName: STAGE,
+        // Per method throttling limit. Conservative setting based on fact that we have 35 APIs and Lambda concurrency is 1000
+        // Worst case this setting could potentially initiate up to 1750 API calls running at any moment (which is over lambda limit),
+        // but it is unlikely that all the APIs are going to be used at the 50TPS limit
+        methodOptions: {
+          '/*/*': {
+            throttlingBurstLimit: 50,
+            throttlingRateLimit: 50,
+          },
+        },
         accessLogDestination: new LogGroupLogDestination(accessLogGroup),
         accessLogFormat: AccessLogFormat.custom(
           JSON.stringify({
@@ -177,8 +186,8 @@ export class DeaRestApiConstruct extends Construct {
     const plan = this.deaRestApi.addUsagePlan('DEA Usage Plan', {
       name: 'dea-usage-plan',
       throttle: {
-        rateLimit: 25,
-        burstLimit: 50,
+        rateLimit: 10,
+        burstLimit: 10,
       },
     });
 
