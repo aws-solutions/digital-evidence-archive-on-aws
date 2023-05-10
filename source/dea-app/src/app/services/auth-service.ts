@@ -231,6 +231,12 @@ export const exchangeAuthorizationCode = async (
     throw new Error(`Request failed with status code ${response.status}`);
   }
 
+  // Access token unused, removed for cookie size limit
+  if (response.data.access_token && response.data.token_type) {
+    delete response.data.access_token;
+    delete response.data.token_type;
+  }
+
   return [response.data, cognitoParams.identityPoolId, cognitoParams.userPoolId];
 };
 
@@ -264,6 +270,12 @@ export const useRefreshToken = async (refreshToken: string): Promise<[Oauth2Toke
   // Oauth2/Token does not return refresh token when grant_type is refresh
   // Append refresh token so response.data can be used to update oauth cookie
   response.data['refresh_token'] = refreshToken;
+
+  // Access token unused, removed for cookie size limit
+  if (response.data.access_token && response.data.token_type) {
+    delete response.data.access_token;
+    delete response.data.token_type;
+  }
 
   return [response.data, cognitoParams.identityPoolId, cognitoParams.userPoolId];
 };

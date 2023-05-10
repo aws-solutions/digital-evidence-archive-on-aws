@@ -204,7 +204,7 @@ describe('dea lambda audits', () => {
     const theEvent = getDummyEvent({
       headers: {
         cookie:
-          'idToken={"id_token": "fake.fake.fake","access_token": "fake.fake.fake","refresh_token": "fake.fake.fake","expires_in": 43200,"token_type": "Bearer"}',
+          'idToken={"id_token": "fake.fake.fake","refresh_token": "fake.fake.fake","expires_in": 43200}',
       },
     });
     theEvent.requestContext.identity.cognitoIdentityId = null;

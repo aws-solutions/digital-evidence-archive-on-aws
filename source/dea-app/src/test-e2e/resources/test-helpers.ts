@@ -461,7 +461,14 @@ export const useRefreshToken = async (deaApiUrl: string, oauthToken: Oauth2Token
 export const parseOauthTokenFromCookies = (response: AxiosResponse): Oauth2Token => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const cookie = response.headers['set-cookie']![0]!.replace('idToken=', '').split(';')[0];
-  return JSON.parse(cookie);
+
+  // Access token unused, remove
+  const cookieData = JSON.parse(cookie);
+  if (cookieData.access_token && cookieData.token_type) {
+    delete cookieData.access_token;
+    delete cookieData.token_type;
+  }
+  return cookieData;
 };
 
 // TODO: make it so we do the same for CaseAudit and UserAudit, and
