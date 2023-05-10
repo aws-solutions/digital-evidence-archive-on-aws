@@ -195,9 +195,6 @@ describe('case file audit e2e', () => {
 
       const potentialCsvData: string = getQueryReponse.data;
 
-      console.log(getQueryReponse.data);
-      console.log(potentialCsvData);
-
       if (
         getQueryReponse.data &&
         !getQueryReponse.data.status &&
