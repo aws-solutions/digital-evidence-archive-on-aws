@@ -10,7 +10,6 @@ export const Oauth2TokenSchema = Joi.object({
   id_token: idToken,
   refresh_token: refreshToken,
   expires_in: Joi.number(),
-  token_type: Joi.string(),
 });
 
 export const ExchangeTokenSchema = Joi.object({
