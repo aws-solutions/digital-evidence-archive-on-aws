@@ -7,7 +7,6 @@ Object {
       "Data": Object {
         "AppRegistryApplicationName": "digital-evidence-archive",
         "ApplicationType": "AWS-Solutions",
-        "AttributeGroupName": "Solution-Metadata",
         "ID": "SO0224",
         "SolutionName": "Digital Evidence Archive",
         "SolutionVersion": "1.0.0",
@@ -393,10 +392,16 @@ Object {
         },
         "Description": "Attribute group for solution information",
         "Name": Object {
-          "Fn::FindInMap": Array [
-            "Solution",
-            "Data",
-            "AttributeGroupName",
+          "Fn::Join": Array [
+            "-",
+            Array [
+              Object {
+                "Ref": "AWS::Region",
+              },
+              Object {
+                "Ref": "AWS::StackName",
+              },
+            ],
           ],
         },
         "Tags": Object {

@@ -13,7 +13,6 @@ export interface DeaAppRegisterProps {
   solutionVersion: string;
   appRegistryApplicationName: string;
   applicationType: string;
-  attributeGroupName: string;
 }
 
 export class DeaAppRegisterConstruct extends Construct {
@@ -45,7 +44,7 @@ export class DeaAppRegisterConstruct extends Construct {
 
   private createAttributeGroup() {
     this.registryApplication.addAttributeGroup('DefaultApplicationAttributes', {
-      attributeGroupName: this.appRegMap.findInMap('Data', 'AttributeGroupName'),
+      attributeGroupName: Fn.join('-', [Aws.REGION, Aws.STACK_NAME]),
       description: 'Attribute group for solution information',
       attributes: {
         applicationType: this.appRegMap.findInMap('Data', 'ApplicationType'),
@@ -63,7 +62,6 @@ export class DeaAppRegisterConstruct extends Construct {
     map.setValue('Data', 'AppRegistryApplicationName', props.appRegistryApplicationName);
     map.setValue('Data', 'SolutionName', props.solutionName);
     map.setValue('Data', 'ApplicationType', props.applicationType);
-    map.setValue('Data', 'AttributeGroupName', props.attributeGroupName);
 
     return map;
   }
