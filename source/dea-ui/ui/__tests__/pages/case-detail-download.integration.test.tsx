@@ -114,7 +114,7 @@ describe('case detail file download', () => {
         });
       } else if (eventObj.url?.endsWith('contents')) {
         return Promise.resolve({
-          data: {},
+          data: { downloadUrl: 'hello' },
           status: 200,
           statusText: 'Ok',
           headers: {},

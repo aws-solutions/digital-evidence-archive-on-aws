@@ -217,7 +217,7 @@ describe('case file audit e2e', () => {
         !getQueryReponse.data.status &&
         potentialCsvData.includes(AuditEventType.COMPLETE_CASE_FILE_UPLOAD) &&
         potentialCsvData.match(/dynamodb.amazonaws.com/g)?.length === 5 &&
-        potentialCsvData.match(/s3.amazonaws.com/g)?.length === 6 &&
+        potentialCsvData.match(/s3.amazonaws.com/g)?.length === 7 &&
         potentialCsvData.includes(AuditEventType.GET_CASE_FILE_DETAIL) &&
         potentialCsvData.includes(AuditEventType.DOWNLOAD_CASE_FILE)
       ) {
@@ -338,8 +338,10 @@ describe('case file audit e2e', () => {
     expect(objectLockItems).toHaveLength(1);
     const getObjectItems = cloudtrailEntries.filter((entry) => entry.eventType === 'GetObject');
     expect(getObjectItems).toHaveLength(1);
+    const headObjectItems = cloudtrailEntries.filter((entry) => entry.eventType === 'HeadObject');
+    expect(headObjectItems).toHaveLength(1);
 
-    expect(cloudtrailEntries.length).toBe(11);
+    expect(cloudtrailEntries.length).toBe(12);
 
     // Case Cleanup
     await deleteCaseFiles(deaApiUrl, caseUlid, createdCase.name, FILE_PATH, idToken, creds);

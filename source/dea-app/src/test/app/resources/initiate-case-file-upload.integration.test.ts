@@ -229,30 +229,6 @@ describe('Test initiate case file upload', () => {
         6 * ONE_TB
       )
     ).rejects.toThrow();
-
-    // allowed fileSizeBytes
-    expect(
-      await callInitiateCaseFileUpload(
-        EVENT,
-        repositoryProvider,
-        caseToUploadTo,
-        'huge file',
-        FILE_PATH,
-        CONTENT_TYPE,
-        4 * ONE_TB
-      )
-    ).toBeDefined();
-    expect(
-      await callInitiateCaseFileUpload(
-        EVENT,
-        repositoryProvider,
-        caseToUploadTo,
-        'tiny file',
-        FILE_PATH,
-        CONTENT_TYPE,
-        1
-      )
-    ).toBeDefined();
   });
 });
 

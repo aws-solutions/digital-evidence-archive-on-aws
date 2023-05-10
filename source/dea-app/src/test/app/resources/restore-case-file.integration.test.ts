@@ -6,6 +6,7 @@
 import { fail } from 'assert';
 import {
   ArchiveStatus,
+  RestoreObjectCommand,
   S3Client,
   ServiceInputTypes,
   ServiceOutputTypes,
@@ -13,8 +14,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
-import { downloadCaseFile } from '../../../app/resources/download-case-file';
-import { DownloadCaseFileResult } from '../../../models/case-file';
+import { restoreCaseFile } from '../../../app/resources/restore-case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
@@ -24,8 +24,8 @@ import {
   callCompleteCaseFileUpload,
   callCreateCase,
   callCreateUser,
-  callDownloadCaseFile,
   callInitiateCaseFileUpload,
+  callRestoreCaseFile,
   DATASETS_PROVIDER,
 } from './case-file-integration-test-helper';
 
@@ -42,9 +42,9 @@ const EVENT = getDummyEvent();
 
 jest.setTimeout(20000);
 
-describe('Test case file download', () => {
+describe('Test case file restore', () => {
   beforeAll(async () => {
-    repositoryProvider = await getTestRepositoryProvider('CaseFileDownloadTest');
+    repositoryProvider = await getTestRepositoryProvider('CaseFileRestoreTest');
 
     fileUploader = await callCreateUser(repositoryProvider);
     EVENT.headers['userUlid'] = fileUploader.ulid;
@@ -56,16 +56,16 @@ describe('Test case file download', () => {
   });
 
   beforeEach(() => {
+    EVENT.headers['userUlid'] = fileUploader.ulid;
+  });
+
+  it('should successfully restore a file', async () => {
     s3Mock = mockClient(S3Client);
     s3Mock.resolves({
       UploadId: UPLOAD_ID,
       VersionId: VERSION_ID,
+      ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
     });
-
-    EVENT.headers['userUlid'] = fileUploader.ulid;
-  });
-
-  it('should successfully download a file', async () => {
     const fileName = 'positive test';
     const caseFile = await callInitiateCaseFileUpload(
       EVENT,
@@ -76,7 +76,7 @@ describe('Test case file download', () => {
 
     const fileId = caseFile.ulid ?? fail();
     await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
-    await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
+    await callRestoreCaseFile(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
   });
 
   it('should throw a validation exception when case-id path param missing', async () => {
@@ -89,9 +89,9 @@ describe('Test case file download', () => {
         },
       }
     );
-    await expect(
-      downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
-    ).rejects.toThrow(`Required path param 'caseId' is missing.`);
+    await expect(restoreCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)).rejects.toThrow(
+      `Required path param 'caseId' is missing.`
+    );
   });
 
   it('should throw a validation exception when file-id path param missing', async () => {
@@ -104,14 +104,14 @@ describe('Test case file download', () => {
         },
       }
     );
-    await expect(
-      downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
-    ).rejects.toThrow(`Required path param 'fileId' is missing.`);
+    await expect(restoreCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)).rejects.toThrow(
+      `Required path param 'fileId' is missing.`
+    );
   });
 
   it("should throw an exception when case-file doesn't exist", async () => {
     await expect(
-      callDownloadCaseFile(EVENT, repositoryProvider, FILE_ULID, caseToDownloadFrom)
+      callRestoreCaseFile(EVENT, repositoryProvider, FILE_ULID, caseToDownloadFrom)
     ).rejects.toThrow(`Could not find file: ${FILE_ULID} in the DB`);
   });
 
@@ -126,11 +126,11 @@ describe('Test case file download', () => {
 
     await expect(
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      callDownloadCaseFile(EVENT, repositoryProvider, caseFile.ulid as string, caseToDownloadFrom)
-    ).rejects.toThrow(`Can't download a file in ${CaseFileStatus.PENDING} state`);
+      callRestoreCaseFile(EVENT, repositoryProvider, caseFile.ulid as string, caseToDownloadFrom)
+    ).rejects.toThrow(`Can't restore a file in ${CaseFileStatus.PENDING} state`);
   });
 
-  it('should indicate when file is intelligent-tier: deep archived', async () => {
+  it('should work when file is intelligent-tier: deep archived', async () => {
     s3Mock = mockClient(S3Client);
     s3Mock.resolves({
       UploadId: UPLOAD_ID,
@@ -148,13 +148,16 @@ describe('Test case file download', () => {
 
     const fileId = caseFile.ulid ?? fail();
     await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
-    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
-    expect(downloadResult.downloadUrl).toBeFalsy();
-    expect(downloadResult.isRestoring).toBeFalsy();
-    expect(downloadResult.isArchived).toBeTruthy();
+    await callRestoreCaseFile(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    expect(s3Mock).toHaveReceivedCommandTimes(RestoreObjectCommand, 1);
+    expect(s3Mock).toHaveReceivedCommandWith(RestoreObjectCommand, {
+      Bucket: DATASETS_PROVIDER.bucketName,
+      Key: `${caseToDownloadFrom}/${caseFile.ulid}`,
+      VersionId: VERSION_ID,
+    });
   });
 
-  it('should indicate when file is intelligent-tier: archived', async () => {
+  it('should work when file is intelligent-tier: archived', async () => {
     s3Mock = mockClient(S3Client);
     s3Mock.resolves({
       UploadId: UPLOAD_ID,
@@ -172,13 +175,16 @@ describe('Test case file download', () => {
 
     const fileId = caseFile.ulid ?? fail();
     await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
-    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
-    expect(downloadResult.downloadUrl).toBeFalsy();
-    expect(downloadResult.isRestoring).toBeFalsy();
-    expect(downloadResult.isArchived).toBeTruthy();
+    await callRestoreCaseFile(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    expect(s3Mock).toHaveReceivedCommandTimes(RestoreObjectCommand, 1);
+    expect(s3Mock).toHaveReceivedCommandWith(RestoreObjectCommand, {
+      Bucket: DATASETS_PROVIDER.bucketName,
+      Key: `${caseToDownloadFrom}/${caseFile.ulid}`,
+      VersionId: VERSION_ID,
+    });
   });
 
-  it('should indicate when file is deep archived', async () => {
+  it('should work when file is deep archived', async () => {
     s3Mock = mockClient(S3Client);
     s3Mock.resolves({
       UploadId: UPLOAD_ID,
@@ -196,13 +202,20 @@ describe('Test case file download', () => {
 
     const fileId = caseFile.ulid ?? fail();
     await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
-    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
-    expect(downloadResult.downloadUrl).toBeFalsy();
-    expect(downloadResult.isRestoring).toBeFalsy();
-    expect(downloadResult.isArchived).toBeTruthy();
+    await callRestoreCaseFile(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+
+    expect(s3Mock).toHaveReceivedCommandTimes(RestoreObjectCommand, 1);
+    expect(s3Mock).toHaveReceivedCommandWith(RestoreObjectCommand, {
+      Bucket: DATASETS_PROVIDER.bucketName,
+      Key: `${caseToDownloadFrom}/${caseFile.ulid}`,
+      VersionId: VERSION_ID,
+      RestoreRequest: {
+        Days: 10,
+      },
+    });
   });
 
-  it('should indicate when file is archived', async () => {
+  it('should work when file is archived', async () => {
     s3Mock = mockClient(S3Client);
     s3Mock.resolves({
       UploadId: UPLOAD_ID,
@@ -220,19 +233,26 @@ describe('Test case file download', () => {
 
     const fileId = caseFile.ulid ?? fail();
     await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
-    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
-    expect(downloadResult.downloadUrl).toBeFalsy();
-    expect(downloadResult.isRestoring).toBeFalsy();
-    expect(downloadResult.isArchived).toBeTruthy();
+    await callRestoreCaseFile(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+
+    expect(s3Mock).toHaveReceivedCommandTimes(RestoreObjectCommand, 1);
+    expect(s3Mock).toHaveReceivedCommandWith(RestoreObjectCommand, {
+      Bucket: DATASETS_PROVIDER.bucketName,
+      Key: `${caseToDownloadFrom}/${caseFile.ulid}`,
+      VersionId: VERSION_ID,
+      RestoreRequest: {
+        Days: 10,
+      },
+    });
   });
 
-  it('should indicate when file is being restored', async () => {
+  it('should do nothing when file is being restored', async () => {
     s3Mock = mockClient(S3Client);
     s3Mock.resolves({
       UploadId: UPLOAD_ID,
       VersionId: VERSION_ID,
       ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
-      Restore: 'ongoing-request="true"',
+      Restore: 'hello',
     });
 
     const fileName = 'restoring file';
@@ -245,22 +265,19 @@ describe('Test case file download', () => {
 
     const fileId = caseFile.ulid ?? fail();
     await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
-    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
-    expect(downloadResult.downloadUrl).toBeFalsy();
-    expect(downloadResult.isRestoring).toBeTruthy();
-    expect(downloadResult.isArchived).toBeTruthy();
+    await callRestoreCaseFile(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+
+    expect(s3Mock).toHaveReceivedCommandTimes(RestoreObjectCommand, 0);
   });
 
-  it('should work when archived file is restored', async () => {
+  it('should do nothing when file is not archived', async () => {
     s3Mock = mockClient(S3Client);
     s3Mock.resolves({
       UploadId: UPLOAD_ID,
       VersionId: VERSION_ID,
-      ArchiveStatus: ArchiveStatus.ARCHIVE_ACCESS,
-      Restore: 'ongoing-request="false"',
     });
 
-    const fileName = 'restored file';
+    const fileName = 'not archived file';
     const caseFile = await callInitiateCaseFileUpload(
       EVENT,
       repositoryProvider,
@@ -270,19 +287,8 @@ describe('Test case file download', () => {
 
     const fileId = caseFile.ulid ?? fail();
     await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
-    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
-    expect(downloadResult.downloadUrl).toBeTruthy();
-    expect(downloadResult.isRestoring).toBeFalsy();
-    expect(downloadResult.isArchived).toBeTruthy();
+    await callRestoreCaseFile(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+
+    expect(s3Mock).toHaveReceivedCommandTimes(RestoreObjectCommand, 0);
   });
 });
-
-async function downloadCaseFileAndValidate(fileId: string, caseId: string): Promise<DownloadCaseFileResult> {
-  const result = await callDownloadCaseFile(EVENT, repositoryProvider, fileId, caseId);
-  if (result.downloadUrl) {
-    expect(result.downloadUrl).toContain(
-      `https://s3.us-east-1.amazonaws.com/${DATASETS_PROVIDER.bucketName}`
-    );
-  }
-  return result;
-}

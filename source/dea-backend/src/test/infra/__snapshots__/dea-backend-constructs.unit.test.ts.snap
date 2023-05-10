@@ -3863,6 +3863,86 @@ Object {
       },
       "Type": "AWS::Lambda::Permission",
     },
+    "DeaRestApiConstructPUTRestoreCaseFile94160087": Object {
+      "DependsOn": Array [
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendConstructDeaTableB48721A0",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 10,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaRestApiConstructPUTRestoreCaseFileInvokeLambdaPermissionE8916967": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructPUTRestoreCaseFile94160087",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaRestApiConstructPUTUpdateCaseDetailsCAA16781": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
@@ -4118,6 +4198,11 @@ Object {
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore06D2657C",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTA4D1AB12",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreE48E6E5F",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesF013B694",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesA389BD7D",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETB7EECD96",
@@ -4212,7 +4297,7 @@ Object {
         "DeaRestApiConstructdeaapiusersGET45E97005",
         "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
         "DeaRestApiConstructdeaapiusers95152658",
-        "DeaRestApiConstructdeaapiDeploymentC27C6CB159b0149ff99e8c58eb64df3485436dbd",
+        "DeaRestApiConstructdeaapiDeploymentC27C6CB1006d6f5158255a9680a6a67388133212",
         "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaRestApiConstructdeaapi6587DDA1",
         "DeaRestApiConstructUpdateBucketCORSCustomResourcePolicyAECBED94",
@@ -4445,6 +4530,11 @@ Object {
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore06D2657C",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTA4D1AB12",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreE48E6E5F",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesF013B694",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesA389BD7D",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETB7EECD96",
@@ -4539,7 +4629,7 @@ Object {
         "DeaRestApiConstructdeaapiusersGET45E97005",
         "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
         "DeaRestApiConstructdeaapiusers95152658",
-        "DeaRestApiConstructdeaapiDeploymentC27C6CB159b0149ff99e8c58eb64df3485436dbd",
+        "DeaRestApiConstructdeaapiDeploymentC27C6CB1006d6f5158255a9680a6a67388133212",
         "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaRestApiConstructdeaapi6587DDA1",
       ],
@@ -4645,7 +4735,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaRestApiConstructdeaapiDeploymentC27C6CB159b0149ff99e8c58eb64df3485436dbd": Object {
+    "DeaRestApiConstructdeaapiDeploymentC27C6CB1006d6f5158255a9680a6a67388133212": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8",
         "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
@@ -4702,6 +4792,9 @@ Object {
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTA4D1AB12",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreE48E6E5F",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETB7EECD96",
         "DeaRestApiConstructdeaapicasescaseIdfilesOPTIONS18C09E02",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
@@ -4786,7 +4879,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB159b0149ff99e8c58eb64df3485436dbd",
+          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB1006d6f5158255a9680a6a67388133212",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -8601,6 +8694,179 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreE48E6E5F": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
+        },
+        "PathPart": "restore",
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": Object {
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Access-Control-Allow-Credentials": "'true'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
+                "method.response.header.Vary": "'Origin'",
+              },
+              "StatusCode": "204",
+            },
+          ],
+          "RequestTemplates": Object {
+            "application/json": "{ statusCode: 200 }",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseParameters": Object {
+              "method.response.header.Access-Control-Allow-Credentials": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Vary": true,
+            },
+            "StatusCode": "204",
+          },
+        ],
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreE48E6E5F",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTA4D1AB12": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "PUT",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructPUTRestoreCaseFile94160087",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreE48E6E5F",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructPUTRestoreCaseFile94160087",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/test-invoke-stage/PUT/cases/*/files/*/restore",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore06D2657C": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructPUTRestoreCaseFile94160087",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/PUT/cases/*/files/*/restore",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F": Object {
       "Properties": Object {
         "ParentId": Object {
@@ -11280,6 +11546,7 @@ Object {
                 "s3:GetObjectVersion",
                 "s3:GetObjectLegalHold",
                 "s3:PutObjectLegalHold",
+                "s3:RestoreObject",
               ],
               "Effect": "Allow",
               "Resource": Object {
@@ -11294,6 +11561,16 @@ Object {
                     },
                     "/*",
                   ],
+                ],
+              },
+            },
+            Object {
+              "Action": "s3:ListBucket",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                  "Arn",
                 ],
               },
             },

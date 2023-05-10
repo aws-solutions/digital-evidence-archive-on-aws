@@ -7,14 +7,14 @@ import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
-import { defaultDatasetsProvider, getPresignedUrlForDownload } from '../../storage/datasets';
+import { defaultDatasetsProvider, restoreObject } from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getCaseFile } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
-import { responseOk } from './dea-lambda-utils';
+import { responseNoContent } from './dea-lambda-utils';
 
-export const downloadCaseFile: DEAGatewayProxyHandler = async (
+export const restoreCaseFile: DEAGatewayProxyHandler = async (
   event,
   context,
   /* the default case is handled in e2e tests */
@@ -31,10 +31,10 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
     throw new NotFoundError(`Could not find file: ${fileId} in the DB`);
   }
   if (retrievedCaseFile.status !== CaseFileStatus.ACTIVE) {
-    throw new ValidationError(`Can't download a file in ${retrievedCaseFile.status} state`);
+    throw new ValidationError(`Can't restore a file in ${retrievedCaseFile.status} state`);
   }
 
-  const downloadResult = await getPresignedUrlForDownload(retrievedCaseFile, datasetsProvider);
+  await restoreObject(retrievedCaseFile, datasetsProvider);
 
-  return responseOk(event, downloadResult);
+  return responseNoContent(event);
 };
