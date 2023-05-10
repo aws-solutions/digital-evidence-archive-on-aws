@@ -27,12 +27,13 @@ interface DeaEventHandlerProps {
 
 export class DeaEventHandlers extends Construct {
   public s3BatchDeleteCaseFileLambda: NodejsFunction;
-  public s3BatchDeleteCaseFileRole: Role;
+  public s3BatchDeleteCaseFileBatchJobRole: Role;
+  public s3BatchDeleteCaseFileLambdaRole: Role;
 
   public constructor(scope: Construct, stackName: string, props: DeaEventHandlerProps) {
     super(scope, stackName);
 
-    const s3BatchDeleteCaseFileRole = this.createS3BatchDeleteCaseFileRole(
+    this.s3BatchDeleteCaseFileLambdaRole = this.createS3BatchDeleteCaseFileRole(
       's3-batch-delete-case-file-handler-role',
       props.deaTableArn,
       props.deaDatasetsBucketArn,
@@ -44,7 +45,7 @@ export class DeaEventHandlers extends Construct {
       'S3BatchDeleteCaseFileLambda',
       '../../src/handlers/s3-batch-delete-case-file-handler.ts',
       props.lambdaEnv,
-      s3BatchDeleteCaseFileRole
+      this.s3BatchDeleteCaseFileLambdaRole
     );
 
     const statusHandlerRole = this.createS3BatchStatusChangeHandlerRole(
@@ -62,7 +63,7 @@ export class DeaEventHandlers extends Construct {
       statusHandlerRole
     );
 
-    this.s3BatchDeleteCaseFileRole = this.createS3BatchRole(props.deaDatasetsBucketArn);
+    this.s3BatchDeleteCaseFileBatchJobRole = this.createS3BatchRole(props.deaDatasetsBucketArn);
 
     // create event bridge rule
     this.createEventBridgeRuleForS3BatchJobs(s3BatchJobStatusChangeHandlerLambda);

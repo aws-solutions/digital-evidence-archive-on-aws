@@ -23,28 +23,19 @@ import { CfnResource, Duration } from 'aws-cdk-lib';
 import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountPrincipal,
-  ArnPrincipal,
   Effect,
   PolicyDocument,
   PolicyStatement,
-  Role,
   ServicePrincipal,
-  StarPrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
+import { restrictResourcePolicies } from './apply-bucket-policies';
 import { addLambdaSuppressions } from './nag-suppressions';
 
 // DEA AppRegistry Constants
 export const SOLUTION_VERSION = '1.0.0';
-
-interface ApplicationResources {
-  kmsKey: Key;
-  datasetsBucket: Bucket;
-  accessLogsBucket: Bucket;
-}
 
 export class DeaMainStack extends cdk.Stack {
   private readonly appRegistry: DeaAppRegisterConstruct;
@@ -102,7 +93,7 @@ export class DeaMainStack extends cdk.Stack {
       deaDatasetsBucket: backendConstruct.datasetsBucket,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
-      s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
+      s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey,
       region,
       accountId,
@@ -111,7 +102,7 @@ export class DeaMainStack extends cdk.Stack {
         TABLE_NAME: backendConstruct.deaTable.tableName,
         DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
         DELETE_CASE_FILE_LAMBDA_ARN: deaEventHandlers.s3BatchDeleteCaseFileLambda.functionArn,
-        DELETE_CASE_FILE_ROLE: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
+        DELETE_CASE_FILE_ROLE: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
         AWS_USE_FIPS_ENDPOINT: 'true',
       },
@@ -167,13 +158,16 @@ export class DeaMainStack extends cdk.Stack {
       });
     }
 
-    this.restrictResourcePolicies(
+    restrictResourcePolicies(
       {
         kmsKey,
         accessLogsBucket: backendConstruct.accessLogsBucket,
         datasetsBucket: backendConstruct.datasetsBucket,
       },
-      deaApi.lambdaBaseRole
+      deaApi.lambdaBaseRole,
+      deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole,
+      deaEventHandlers.s3BatchDeleteCaseFileLambdaRole,
+      deaApi.customResourceRole
     );
 
     // DEA UI Construct
@@ -193,60 +187,6 @@ export class DeaMainStack extends cdk.Stack {
     // These are resources that will be configured in a future story. Please remove these suppressions or modify them to the specific resources as needed
     // when we tackle the particular story. Details in function below
     this.apiGwAuthNagSuppresions();
-  }
-
-  private restrictResourcePolicies(resources: ApplicationResources, applicationRole: Role) {
-    if (!deaConfig.isTestStack()) {
-      resources.datasetsBucket.addToResourcePolicy(
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          actions: [
-            's3:AbortMultipartUpload',
-            's3:ListMultipartUploadParts',
-            's3:DeleteObject',
-            's3:DeleteObjectVersion',
-            's3:PutObject',
-            's3:GetObject',
-            's3:GetObjectVersion',
-            's3:GetObjectLegalHold',
-            's3:PutObjectLegalHold',
-          ],
-          resources: [`${resources.datasetsBucket.bucketArn}/*`],
-          principals: [new ArnPrincipal(applicationRole.roleArn)],
-          sid: 'datasets-bucket-policy',
-        })
-      );
-
-      resources.accessLogsBucket.addToResourcePolicy(
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          actions: ['s3:GetObject', 's3:GetObjectVersion'],
-          resources: [`${resources.accessLogsBucket.bucketArn}/*`],
-          principals: [new ArnPrincipal(applicationRole.roleArn)],
-          sid: 'accesslogs-bucket-policy',
-        })
-      );
-
-      resources.accessLogsBucket.addToResourcePolicy(
-        new PolicyStatement({
-          effect: Effect.DENY,
-          actions: ['s3:DeleteObject', 's3:DeleteObjectVersion'],
-          resources: [`${resources.accessLogsBucket.bucketArn}/*`],
-          principals: [new StarPrincipal()],
-          sid: 'accesslogs-deny-bucket-policy',
-        })
-      );
-
-      resources.accessLogsBucket.addToResourcePolicy(
-        new PolicyStatement({
-          effect: Effect.DENY,
-          actions: ['s3:PutLifecycleConfiguration'],
-          resources: [resources.accessLogsBucket.bucketArn],
-          principals: [new StarPrincipal()],
-          sid: 'accesslogs-deny-bucket-policy',
-        })
-      );
-    }
   }
 
   private uiStackConstructNagSuppress(): void {

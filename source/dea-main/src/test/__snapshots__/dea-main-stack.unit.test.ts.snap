@@ -215,7 +215,7 @@ Object {
   "Resources": Object {
     "AWS679f53fac002430cb0da5b7982bd22872D164C4C": Object {
       "DependsOn": Array [
-        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+        "DeaApiGatewaycustomresourceroleABCB85DD",
       ],
       "Properties": Object {
         "Code": Object {
@@ -227,7 +227,7 @@ Object {
         "Handler": "index.handler",
         "Role": Object {
           "Fn::GetAtt": Array [
-            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "DeaApiGatewaycustomresourceroleABCB85DD",
             "Arn",
           ],
         },
@@ -235,37 +235,6 @@ Object {
         "Timeout": 120,
       },
       "Type": "AWS::Lambda::Function",
-    },
-    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
     },
     "AppRegistry968496A3": Object {
       "Properties": Object {
@@ -4532,11 +4501,28 @@ Object {
         "PolicyName": "DeaApiGatewayUpdateBucketCORSCustomResourcePolicy9EC0AABC",
         "Roles": Array [
           Object {
-            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Ref": "DeaApiGatewaycustomresourceroleABCB85DD",
           },
         ],
       },
       "Type": "AWS::IAM::Policy",
+    },
+    "DeaApiGatewaycustomresourceroleABCB85DD": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
     },
     "DeaApiGatewaydeaapi822A9228": Object {
       "Properties": Object {
@@ -13570,7 +13556,7 @@ Object {
         "PolicyName": "DeaAuthConstructDEAUserPooldeaappclientDescribeCognitoUserPoolClientCustomResourcePolicyDA8474CC",
         "Roles": Array [
           Object {
-            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Ref": "DeaApiGatewaycustomresourceroleABCB85DD",
           },
         ],
       },

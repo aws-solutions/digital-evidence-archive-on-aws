@@ -59,6 +59,7 @@ interface DeaRestApiProps {
 export class DeaRestApiConstruct extends Construct {
   public authLambdaRole: Role;
   public lambdaBaseRole: Role;
+  public customResourceRole: Role;
   public deaRestApi: RestApi;
   public apiEndpointArns: Map<string, string>;
 
@@ -82,6 +83,10 @@ export class DeaRestApiConstruct extends Construct {
     );
 
     this.authLambdaRole = this.createAuthLambdaRole(props.region, props.accountId, partition);
+
+    this.customResourceRole = new Role(this, 'custom-resource-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+    });
 
     props.kmsKey.addToResourcePolicy(
       new PolicyStatement({
@@ -167,12 +172,18 @@ export class DeaRestApiConstruct extends Construct {
       },
       physicalResourceId: PhysicalResourceId.of(restApi.restApiId),
     };
+
+    const customResourcePolicy = AwsCustomResourcePolicy.fromSdkCalls({
+      resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+    });
+
+    customResourcePolicy.statements.forEach((statement) => this.customResourceRole.addToPolicy(statement));
+
     const updateCors = new AwsCustomResource(this, 'UpdateBucketCORS', {
       onCreate: updateCorsCall,
       onUpdate: updateCorsCall,
-      policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
+      role: this.customResourceRole,
+      policy: customResourcePolicy,
       installLatestAwsSdk: false,
     });
     updateCors.node.addDependency(restApi);
