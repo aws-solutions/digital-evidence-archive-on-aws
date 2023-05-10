@@ -195,12 +195,15 @@ describe('case file audit e2e', () => {
 
       const potentialCsvData: string = getQueryReponse.data;
 
+      console.log(getQueryReponse.data);
+      console.log(potentialCsvData);
+
       if (
         getQueryReponse.data &&
         !getQueryReponse.data.status &&
         potentialCsvData.includes(AuditEventType.COMPLETE_CASE_FILE_UPLOAD) &&
         potentialCsvData.match(/dynamodb.amazonaws.com/g)?.length === 5 &&
-        potentialCsvData.match(/s3.amazonaws.com/g)?.length === 6 &&
+        potentialCsvData.match(/s3.amazonaws.com/g)?.length === 7 &&
         potentialCsvData.includes(AuditEventType.GET_CASE_FILE_DETAIL) &&
         potentialCsvData.includes(AuditEventType.DOWNLOAD_CASE_FILE)
       ) {
@@ -255,7 +258,7 @@ describe('case file audit e2e', () => {
     // Expect that the other created file does NOT show up in the entries
     expect(entries.find((entry) => entry.fileId === otherFileUlid)).toBeUndefined();
 
-    expect(entries.length).toBe(15);
+    expect(entries.length).toBe(16);
 
     const dbGetItems = entries.filter((entry) => entry.eventDetails === 'GetItem');
     expect(dbGetItems).toHaveLength(3);
@@ -273,6 +276,8 @@ describe('case file audit e2e', () => {
     expect(objectLockItems).toHaveLength(1);
     const getObjectItems = entries.filter((entry) => entry.eventDetails === 'GetObject');
     expect(getObjectItems).toHaveLength(1);
+    const headObjectItems = entries.filter((entry) => entry.eventDetails === 'HeadObject');
+    expect(headObjectItems).toHaveLength(1);
 
     // Now verify each of the event entries
     const initiateUploadEntry = entries.find(
