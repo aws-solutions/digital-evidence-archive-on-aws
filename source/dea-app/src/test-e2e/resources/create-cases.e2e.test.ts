@@ -77,6 +77,6 @@ describe('create cases api', () => {
       description: 'any description',
     });
     expect(response.status).toEqual(400);
-    expect(response.data).toBe(`Case with name "${caseName}" is already in use`);
+    expect(response.data).toBe('Case name is already in use');
   }, 30000);
 });
