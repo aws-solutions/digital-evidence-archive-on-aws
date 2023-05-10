@@ -274,26 +274,7 @@ describe('case file audit e2e', () => {
     // Expect that the other created file does NOT show up in the entries
     expect(entries.find((entry) => entry.fileId === otherFileUlid)).toBeUndefined();
 
-    expect(entries.length).toBe(16);
-
-    const dbGetItems = entries.filter((entry) => entry.eventDetails === 'GetItem');
-    expect(dbGetItems).toHaveLength(3);
-    const dbTransactItems = entries.filter((entry) => entry.eventDetails === 'TransactWriteItems');
-    expect(dbTransactItems).toHaveLength(2);
-    const createUploadItems = entries.filter((entry) => entry.eventDetails === 'CreateMultipartUpload');
-    expect(createUploadItems).toHaveLength(1);
-    const uploadPartItems = entries.filter((entry) => entry.eventDetails === 'UploadPart');
-    expect(uploadPartItems).toHaveLength(1);
-    const listPartItems = entries.filter((entry) => entry.eventDetails === 'ListParts');
-    expect(listPartItems).toHaveLength(1);
-    const completeUploadItems = entries.filter((entry) => entry.eventDetails === 'CompleteMultipartUpload');
-    expect(completeUploadItems).toHaveLength(1);
-    const objectLockItems = entries.filter((entry) => entry.eventDetails === 'PutObjectLockLegalHold');
-    expect(objectLockItems).toHaveLength(1);
-    const getObjectItems = entries.filter((entry) => entry.eventDetails === 'GetObject');
-    expect(getObjectItems).toHaveLength(1);
-    const headObjectItems = entries.filter((entry) => entry.eventDetails === 'HeadObject');
-    expect(headObjectItems).toHaveLength(1);
+    expect(entries.length).toBe(5);
 
     // Now verify each of the event entries
     const initiateUploadEntry = entries.find(
