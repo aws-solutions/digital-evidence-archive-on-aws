@@ -59,7 +59,6 @@ export class DeaMainStack extends cdk.Stack {
       solutionVersion: SOLUTION_VERSION,
       appRegistryApplicationName: 'digital-evidence-archive',
       applicationType: 'AWS-Solutions',
-      attributeGroupName: 'Solution-Metadata',
     });
     createCfnOutput(this, 'AppRegistryArn', {
       description: 'ARN of the application registry',

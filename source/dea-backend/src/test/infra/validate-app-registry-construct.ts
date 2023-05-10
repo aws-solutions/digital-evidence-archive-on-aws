@@ -18,7 +18,6 @@ export const validateAppRegistryConstruct = (template: Template, solutionVersion
       AppRegistryApplicationName: 'digital-evidence-archive',
       SolutionName: 'Digital Evidence Archive',
       ApplicationType: 'AWS-Solutions',
-      AttributeGroupName: 'Solution-Metadata',
     },
   });
 
