@@ -5,8 +5,11 @@
 
 import { Context, S3BatchEvent, S3BatchResult, S3BatchResultResult } from 'aws-lambda';
 import { logger } from '../logger';
-import { CaseFileStatus } from '../models/case-file-status';
-import { updateCaseFileStatus } from '../persistence/case-file';
+import {
+  getCaseFileByUlid,
+  setCaseFileStatusDeleteFailed,
+  setCaseFileStatusDeleted,
+} from '../persistence/case-file';
 import { defaultProvider } from '../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider, deleteCaseFile } from './datasets';
 
@@ -41,10 +44,22 @@ export const deleteCaseFileHandler = async (
       logger.info('Missing Version ID, skipping delete and marking failure', { s3Key, s3VersionId });
       continue;
     }
+
+    const caseFile = await getCaseFileByUlid(fileId, caseId, repositoryProvider);
+    if (!caseFile) {
+      results.push({
+        taskId: task.taskId,
+        resultCode: 'PermanentFailure',
+        resultString: `Could not find case file: fileId: ${fileId}, caseId: ${caseId}`,
+      });
+      logger.info('Could not find case file, skipping delete and marking failure');
+      continue;
+    }
+
     try {
       await deleteCaseFile(s3Key, s3VersionId, datasetsProvider);
       logger.info('Successfully deleted object', { s3Key, s3VersionId });
-      await updateCaseFileStatus(caseId, fileId, CaseFileStatus.DELETED, repositoryProvider);
+      await setCaseFileStatusDeleted(caseFile, repositoryProvider);
       results.push({
         taskId: task.taskId,
         resultCode: 'Succeeded',
@@ -53,7 +68,7 @@ export const deleteCaseFileHandler = async (
     } catch (e) {
       logger.error(`Unexpected failure`, e);
       try {
-        await updateCaseFileStatus(caseId, fileId, CaseFileStatus.DELETE_FAILED, repositoryProvider);
+        await setCaseFileStatusDeleteFailed(caseFile, repositoryProvider);
       } catch (e) {
         logger.error(`Failed to update DDB: ${s3Key}`, e);
       }

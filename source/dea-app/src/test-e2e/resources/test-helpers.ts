@@ -96,6 +96,8 @@ export async function deleteCaseFiles(
   }
 
   expect(updatedCase.filesStatus).toEqual(CaseFileStatus.DELETED);
+  expect(updatedCase.totalSizeBytes).toEqual(0);
+  expect(updatedCase.objectCount).toEqual(0);
   const listCaseFilesResponse = await listCaseFilesSuccess(baseUrl, idToken, creds, caseUlid, filePath);
   for (const file of listCaseFilesResponse.files) {
     expect(file.status).toEqual(CaseFileStatus.DELETED);
