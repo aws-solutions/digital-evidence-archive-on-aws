@@ -7,7 +7,6 @@ export interface Oauth2Token {
   readonly id_token: string;
   readonly refresh_token: string;
   readonly expires_in: number;
-  readonly token_type: string;
 }
 
 export interface RefreshToken {

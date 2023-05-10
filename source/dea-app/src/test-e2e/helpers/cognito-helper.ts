@@ -189,7 +189,6 @@ export default class CognitoHelper {
       id_token: result.IdToken,
       refresh_token: result.RefreshToken,
       expires_in: result.ExpiresIn ?? 4000,
-      token_type: result.TokenType ?? 'Bearer',
     };
   }
 
