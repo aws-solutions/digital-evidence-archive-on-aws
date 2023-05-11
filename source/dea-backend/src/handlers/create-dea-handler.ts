@@ -112,6 +112,7 @@ const getErrorName = (error: any): string => {
 };
 
 const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
+  const [targetUserId, caseActions] = getTargetUserId(event);
   return {
     dateTime: new Date().toISOString(),
     requestPath: event.resource,
@@ -121,7 +122,8 @@ const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
     result: AuditEventResult.FAILURE,
     caseId: event.pathParameters?.caseId,
     fileId: event.pathParameters?.fileId,
-    targetUserId: getTargetUserId(event),
+    targetUserId,
+    caseActions,
   };
 };
 
@@ -188,20 +190,24 @@ const getEventType = (event: APIGatewayProxyEvent): AuditEventType => {
   return route.eventName;
 };
 
-const getTargetUserId = (event: APIGatewayProxyEvent): string | undefined => {
+const getTargetUserId = (event: APIGatewayProxyEvent): [string | undefined, string | undefined] => {
   const eventType = getEventType(event);
-  if (eventType === AuditEventType.INVITE_USER_TO_CASE && event.body) {
+  const isCaseInviteAPI =
+    eventType === AuditEventType.INVITE_USER_TO_CASE ||
+    eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE ||
+    eventType === AuditEventType.REMOVE_USER_FROM_CASE;
+  if (isCaseInviteAPI && event.body) {
     try {
       const caseUser: CaseUserDTO = JSON.parse(event.body);
-      return caseUser?.userUlid;
+      return [caseUser?.userUlid, caseUser?.actions.join(':')]; // join with ":" instead of "," because audit returns a csv file
     } catch {
       // It means `JSON.parse` has thrown a SyntaxError.
       // The target endpoint will handle appropriately the payload issues.
       // We do nothing at this point we are trying our best to retrieve the `targetUserId` value from the body.
-      return undefined;
+      return [undefined, undefined];
     }
   }
-  return event.pathParameters?.userId;
+  return [event.pathParameters?.userId, undefined];
 };
 
 const parseEventForExtendedAuditFields = (
