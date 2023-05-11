@@ -97,7 +97,7 @@ export class DeaRestApiConstruct extends Construct {
           new ArnPrincipal(this.authLambdaRole.roleArn),
         ],
         resources: ['*'],
-        sid: 'main-key-share-statement',
+        sid: 'lambda-roles-key-share-statement',
       })
     );
 
