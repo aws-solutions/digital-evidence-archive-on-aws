@@ -13,10 +13,11 @@ import {
   AuditEventResult,
   AuditEventSource,
   AuditEventType,
-  auditService,
   CJISAuditEventBody,
   IdentityType,
+  auditService,
 } from '@aws/dea-app/lib/app/services/audit-service';
+import { removeSensitiveHeaders } from '@aws/dea-app/lib/lambda-http-helpers';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
@@ -40,7 +41,7 @@ export const createDeaHandler = (
   const wrappedHandler: DEAGatewayProxyHandler = async (event: APIGatewayProxyEvent, context: Context) => {
     const auditEvent = initialAuditEvent(event);
     try {
-      const { 'x-amz-security-token': _h, 'X-Amz-Security-Token': _h1, ...debugHeaders } = event.headers;
+      const debugHeaders = removeSensitiveHeaders(event.headers);
       const { headers: _, multiValueHeaders: _1, ...debugEvent } = event;
       logger.debug(`Headers`, { Data: JSON.stringify(debugHeaders, null, 2) });
       logger.debug(`Event`, { Data: JSON.stringify(debugEvent, null, 2) });
