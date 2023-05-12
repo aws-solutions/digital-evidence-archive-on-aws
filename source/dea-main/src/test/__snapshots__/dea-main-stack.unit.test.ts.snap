@@ -17092,6 +17092,7 @@ Object {
                 "dynamodb:PutItem",
                 "dynamodb:Query",
                 "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
               ],
               "Effect": "Allow",
               "Resource": Object {
@@ -17829,28 +17830,7 @@ Object {
               ],
               "Effect": "Allow",
               "Principal": Object {
-                "AWS": Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":iam::",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":root",
-                    ],
-                  ],
-                },
-                "Service": Array [
-                  "logs.us-east-1.amazonaws.com",
-                  "lambda.us-east-1.amazonaws.com",
-                  "cloudformation.amazonaws.com",
-                  "dynamodb.amazonaws.com",
-                ],
+                "Service": "logs.us-east-1.amazonaws.com",
               },
               "Resource": "*",
               "Sid": "main-key-share-statement",
@@ -17880,6 +17860,37 @@ Object {
               "Sid": "Allow management",
             },
             Object {
+              "Action": "kms:Decrypt*",
+              "Condition": Object {
+                "ForAnyValue:StringEquals": Object {
+                  "aws:CalledVia": Array [
+                    "dynamodb.amazonaws.com",
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+              "Sid": "cfn-key-share-statement",
+            },
+            Object {
               "Action": Array [
                 "kms:Encrypt",
                 "kms:ReEncrypt*",
@@ -17890,6 +17901,38 @@ Object {
                 "Service": "cloudtrail.amazonaws.com",
               },
               "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt*",
+                "kms:Decrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Array [
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaEventHandlerss3batchdeletecasefileroleBAD7A58C",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaEventHandlerss3batchdeletecasefilehandlerrole23FFF03E",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaEventHandlerss3batchstatuschangehandlerrole897AED05",
+                      "Arn",
+                    ],
+                  },
+                ],
+              },
+              "Resource": "*",
+              "Sid": "dea-event-handlers-key-share-statement",
             },
             Object {
               "Action": Array [
@@ -17917,7 +17960,7 @@ Object {
                 ],
               },
               "Resource": "*",
-              "Sid": "main-key-share-statement",
+              "Sid": "lambda-roles-key-share-statement",
             },
             Object {
               "Action": Array [
