@@ -74,7 +74,7 @@ export const deleteCaseFileHandler = async (
       }
       results.push({
         taskId: task.taskId,
-        resultCode: 'PermanentFailure',
+        resultCode: 'TemporaryFailure',
         resultString: `Failed to delete object: ${s3Key}`,
       });
     }

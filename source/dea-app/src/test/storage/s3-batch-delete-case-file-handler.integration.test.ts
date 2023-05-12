@@ -191,7 +191,7 @@ describe('S3 batch delete case-file lambda', () => {
 
     const expectedResult = `Failed to delete object: ${caseId}/${fileId}`;
 
-    expect(response).toEqual(getS3BatchResult(caseId, fileId, 'PermanentFailure', expectedResult));
+    expect(response).toEqual(getS3BatchResult(caseId, fileId, 'TemporaryFailure', expectedResult));
     expect(notDeletedCaseFile.status).toEqual(CaseFileStatus.DELETE_FAILED);
   });
 });
