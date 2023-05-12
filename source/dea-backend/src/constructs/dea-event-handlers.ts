@@ -6,7 +6,14 @@
 import path from 'path';
 import { Duration, aws_events_targets } from 'aws-cdk-lib';
 import { Rule } from 'aws-cdk-lib/aws-events';
-import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import {
+  ArnPrincipal,
+  Effect,
+  ManagedPolicy,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+} from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -64,6 +71,20 @@ export class DeaEventHandlers extends Construct {
     );
 
     this.s3BatchDeleteCaseFileBatchJobRole = this.createS3BatchRole(props.deaDatasetsBucketArn);
+
+    props.kmsKey.addToResourcePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:GenerateDataKey*'],
+        principals: [
+          new ArnPrincipal(this.s3BatchDeleteCaseFileBatchJobRole.roleArn),
+          new ArnPrincipal(this.s3BatchDeleteCaseFileLambdaRole.roleArn),
+          new ArnPrincipal(statusHandlerRole.roleArn),
+        ],
+        resources: ['*'],
+        sid: 'dea-event-handlers-key-share-statement',
+      })
+    );
 
     // create event bridge rule
     this.createEventBridgeRuleForS3BatchJobs(s3BatchJobStatusChangeHandlerLambda);
@@ -205,7 +226,13 @@ export class DeaEventHandlers extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query', 'dynamodb:UpdateItem'],
+        actions: [
+          'dynamodb:GetItem',
+          'dynamodb:PutItem',
+          'dynamodb:Query',
+          'dynamodb:UpdateItem',
+          'dynamodb:DeleteItem',
+        ],
         resources: [tableArn],
       })
     );

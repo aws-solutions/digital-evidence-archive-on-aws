@@ -1186,6 +1186,7 @@ Object {
                 "dynamodb:PutItem",
                 "dynamodb:Query",
                 "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
               ],
               "Effect": "Allow",
               "Resource": Object {
@@ -11856,6 +11857,38 @@ Object {
               "Action": Array [
                 "kms:Encrypt*",
                 "kms:Decrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Array [
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaEventHandlerss3batchdeletecasefileroleBAD7A58C",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaEventHandlerss3batchdeletecasefilehandlerrole23FFF03E",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaEventHandlerss3batchstatuschangehandlerrole897AED05",
+                      "Arn",
+                    ],
+                  },
+                ],
+              },
+              "Resource": "*",
+              "Sid": "dea-event-handlers-key-share-statement",
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt*",
+                "kms:Decrypt*",
                 "kms:ReEncrypt*",
                 "kms:GenerateDataKey*",
                 "kms:Describe*",
@@ -11878,7 +11911,7 @@ Object {
                 ],
               },
               "Resource": "*",
-              "Sid": "main-key-share-statement",
+              "Sid": "lambda-roles-key-share-statement",
             },
           ],
           "Version": "2012-10-17",

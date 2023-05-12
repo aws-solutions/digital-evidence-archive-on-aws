@@ -218,13 +218,7 @@ export class DeaMainStack extends cdk.Stack {
             'kms:GenerateDataKey*',
             'kms:Describe*',
           ],
-          principals: [
-            new ServicePrincipal(`logs.${this.region}.amazonaws.com`),
-            new ServicePrincipal(`lambda.${this.region}.amazonaws.com`),
-            new ServicePrincipal(`cloudformation.amazonaws.com`),
-            new ServicePrincipal(`dynamodb.amazonaws.com`),
-            new AccountPrincipal(this.account),
-          ],
+          principals: [new ServicePrincipal(`logs.${this.region}.amazonaws.com`)],
           resources: ['*'],
           sid: 'main-key-share-statement',
         }),
@@ -245,6 +239,21 @@ export class DeaMainStack extends cdk.Stack {
       removalPolicy: deaConfig.retainPolicy(),
       pendingWindow: Duration.days(7),
     });
+
+    key.addToResourcePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['kms:Decrypt*'],
+        principals: [new AccountPrincipal(this.account)],
+        conditions: {
+          'ForAnyValue:StringEquals': {
+            'aws:CalledVia': ['dynamodb.amazonaws.com'],
+          },
+        },
+        resources: ['*'],
+        sid: 'cfn-key-share-statement',
+      })
+    );
 
     createCfnOutput(this, 'mainAccountKmsKey', {
       value: key.keyArn,
