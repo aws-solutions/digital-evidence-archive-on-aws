@@ -63,10 +63,11 @@ export const filePath = Joi.string()
   .pattern(filePathSafeCharsRegex)
   .required()
   .min(1)
+  .max(500)
   .required()
   .messages(customMessages);
 
-export const contentType = Joi.string().pattern(htmlSafeCharsRegex).messages(customMessages);
+export const contentType = Joi.string().pattern(htmlSafeCharsRegex).max(200).messages(customMessages);
 
 export const caseStatus = Joi.string().valid(...Object.keys(CaseStatus));
 
