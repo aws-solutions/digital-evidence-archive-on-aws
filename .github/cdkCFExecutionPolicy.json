@@ -17,7 +17,9 @@
         "ssm:*",
         "secretsmanager:*",
         "cloudtrail:*",
-        "events:*"
+        "events:*",
+        "servicecatalog:*",
+        "cloudformation:DescribeStacks"
       ],
       "Resource": "*"
     },
