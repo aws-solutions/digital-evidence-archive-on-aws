@@ -252,6 +252,11 @@ export const caseActionOptions = {
           value: CaseAction.INVITE,
           label: 'Invite members',
         };
+      case CaseAction.RESTORE_FILES:
+        return {
+          value: CaseAction.RESTORE_FILES,
+          label: 'Restore files',
+        };
       default:
         // default CaseAction.VIEW_CASE_DETAILS least privilege principle.
         return {
