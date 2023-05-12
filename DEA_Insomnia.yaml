@@ -1,6 +1,6 @@
 _type: export
 __export_format: 4
-__export_date: 2023-05-12T15:26:20.334Z
+__export_date: 2023-05-12T15:29:18.763Z
 __export_source: insomnia.desktop.app:v2023.2.0
 resources:
   - _id: req_122229204ba345e88213c2738cf28dba
@@ -1300,12 +1300,12 @@ resources:
     _type: request
   - _id: env_0e5768d545714880bfd8bc082f1f2bcc
     parentId: wrk_7437d703f247472a99bcf6cec662ae83
-    modified: 1683904635322
+    modified: 1683905348789
     created: 1683865436192
     name: Base Environment
     data:
-      region: somevalue
-      deaApiUrl: somevalue
+      region: us-east-1
+      deaApiUrl: https://someurl/stage/
       cognitoClientId: somevalue
       cognitoDomainName: somevalue
       authCode: somevalue
