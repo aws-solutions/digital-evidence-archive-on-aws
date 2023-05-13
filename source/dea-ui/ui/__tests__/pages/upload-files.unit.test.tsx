@@ -45,7 +45,7 @@ describe('UploadFiles page', () => {
     const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
     expect(breadcrumbLinks.length).toEqual(3);
     expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
-    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(`${breadcrumbLabels.caseLabel} ${CASE_ID}`);
+    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.caseDetailsLabel);
     expect(breadcrumbLinks[2].getElement()).toHaveTextContent(breadcrumbLabels.uploadFilesAndFoldersLabel);
   });
   it('responds to cancel', () => {
