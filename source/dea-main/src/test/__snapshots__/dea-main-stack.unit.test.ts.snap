@@ -13399,7 +13399,7 @@ Object {
     },
     "DeaAuthConstructDEAUserPooldeaappclient08A0AC35": Object {
       "Properties": Object {
-        "AccessTokenValidity": 660,
+        "AccessTokenValidity": 60,
         "AllowedOAuthFlows": Array [
           "code",
         ],

@@ -351,7 +351,7 @@ export class DeaAuth extends Construct {
     // Note when inactive for 30+ minutes, you will also have to reauthenticate
     // due to session lock requirements. This is handled by session management code
     // IdToken validity is max 1 hour for federated users
-    const accessTokenValidity = Duration.hours(11);
+    const accessTokenValidity = Duration.hours(1);
     const idTokenValidity = Duration.hours(1);
     const refreshTokenValidity = Duration.hours(11);
 
