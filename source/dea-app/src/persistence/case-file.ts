@@ -142,6 +142,7 @@ const createCaseFilePaths = async (deaCaseFile: DeaCaseFile, repositoryProvider:
         fileName: nextFileName,
         filePath: nextPath,
         ulid: undefined,
+        ttl: undefined,
       }
     );
 
