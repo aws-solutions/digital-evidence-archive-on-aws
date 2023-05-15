@@ -466,11 +466,33 @@ paths:
               schema:
                 type: object
                 properties:
-                  caseId:
-                    type: string
-                  fileContents_presignedUrl:
+                  isArchived:
+                    type: boolean
+                  downloadUrl:
                     type: string
                     format: uri
+                  isRestoring:
+                    type: boolean
+  /cases/{caseId}/files/{fileId}/restore:
+    put:
+      summary: Restore archived file
+      description: Restore archived file by moving it to frequent access tier (if archived in intelligent-tier) or creating a restored copy (if archived in glacier)
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+      responses:
+        204:
+          description: No content, restore successful
   /users:
     get:
       summary: Get all users
