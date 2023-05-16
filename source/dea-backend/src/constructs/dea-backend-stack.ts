@@ -20,10 +20,12 @@ import {
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
+import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 interface IBackendStackProps extends StackProps {
   readonly kmsKey: Key;
   readonly accessLogsPrefixes: ReadonlyArray<string>;
+  readonly opsDashboard: DeaOperationalDashboard;
 }
 
 export class DeaBackendConstruct extends Construct {
@@ -44,6 +46,8 @@ export class DeaBackendConstruct extends Construct {
       `DeaS3Datasets`,
       datasetsPrefix
     );
+
+    props.opsDashboard.addDynamoTableOperationalComponents(this.deaTable);
   }
 
   private createDeaTable(key: Key): Table {

@@ -6,7 +6,6 @@
 import path from 'path';
 import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
 import { Duration, Fn } from 'aws-cdk-lib';
-
 import {
   AccessLogFormat,
   AuthorizationType,
@@ -39,6 +38,7 @@ import { deaConfig } from '../config';
 import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway-route-config';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
 import { createCfnOutput } from './construct-support';
+import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 interface LambdaEnvironment {
   [key: string]: string;
@@ -54,6 +54,7 @@ interface DeaRestApiProps {
   region: string;
   accountId: string;
   lambdaEnv: LambdaEnvironment;
+  opsDashboard: DeaOperationalDashboard;
 }
 
 export class DeaRestApiConstruct extends Construct {
@@ -62,6 +63,7 @@ export class DeaRestApiConstruct extends Construct {
   public customResourceRole: Role;
   public deaRestApi: RestApi;
   public apiEndpointArns: Map<string, string>;
+  private opsDashboard: DeaOperationalDashboard;
 
   public constructor(scope: Construct, stackName: string, props: DeaRestApiProps) {
     super(scope, stackName);
@@ -107,6 +109,8 @@ export class DeaRestApiConstruct extends Construct {
 
     const STAGE = deaConfig.stage();
 
+    this.opsDashboard = props.opsDashboard;
+
     this.deaRestApi = new RestApi(this, `dea-api`, {
       description: 'Backend API',
       endpointConfiguration: {
@@ -114,6 +118,7 @@ export class DeaRestApiConstruct extends Construct {
       },
       deployOptions: {
         stageName: STAGE,
+        metricsEnabled: true,
         // Per method throttling limit. Conservative setting based on fact that we have 35 APIs and Lambda concurrency is 1000
         // Worst case this setting could potentially initiate up to 1750 API calls running at any moment (which is over lambda limit),
         // but it is unlikely that all the APIs are going to be used at the 50TPS limit
@@ -121,6 +126,7 @@ export class DeaRestApiConstruct extends Construct {
           '/*/*': {
             throttlingBurstLimit: 50,
             throttlingRateLimit: 50,
+            metricsEnabled: true,
           },
         },
         accessLogDestination: new LogGroupLogDestination(accessLogGroup),
@@ -137,6 +143,8 @@ export class DeaRestApiConstruct extends Construct {
             httpMethod: '$context.httpMethod',
             sourceIp: '$context.identity.sourceIp',
             userAgent: '$context.identity.userAgent',
+            integrationLatency: '$context.integrationLatency',
+            responseLatency: '$context.responseLatency',
           })
         ),
       },
@@ -226,6 +234,7 @@ export class DeaRestApiConstruct extends Construct {
       // full set of permissions
       const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
       this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv, accountId);
+      this.opsDashboard.addMethodOperationalComponents(this.deaRestApi, route);
     });
   }
 
@@ -252,6 +261,7 @@ export class DeaRestApiConstruct extends Construct {
           lambdaEnv,
           accountId
         );
+        this.opsDashboard.addLambdaOperationalComponents(lambda, route.eventName, route);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let queryParams: any = {};

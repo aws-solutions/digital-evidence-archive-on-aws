@@ -9,6 +9,7 @@ import { Key } from 'aws-cdk-lib/aws-kms';
 import { convictConfig } from '../../config';
 import { DeaAuditTrail } from '../../constructs/dea-audit-trail';
 import { DeaBackendConstruct } from '../../constructs/dea-backend-stack';
+import { DeaOperationalDashboard } from '../../constructs/dea-ops-dashboard';
 
 describe('dea audit trail', () => {
   it('synthesizes with additional bucket policy restrictions in production', () => {
@@ -27,10 +28,13 @@ describe('dea audit trail', () => {
       pendingWindow: Duration.days(7),
     });
 
+    const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
+
     // Create the DeaBackendConstruct
     const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', {
       kmsKey: key,
       accessLogsPrefixes: ['dea-ui-access-log'],
+      opsDashboard: dashboard,
     });
 
     new DeaAuditTrail(stack, 'DeaAudit', {

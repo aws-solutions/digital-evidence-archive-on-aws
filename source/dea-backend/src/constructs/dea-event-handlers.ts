@@ -20,6 +20,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
+import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 interface LambdaEnvironment {
   [key: string]: string;
@@ -30,6 +31,7 @@ interface DeaEventHandlerProps {
   deaDatasetsBucketArn: string;
   lambdaEnv: LambdaEnvironment;
   kmsKey: Key;
+  opsDashboard: DeaOperationalDashboard;
 }
 
 export class DeaEventHandlers extends Construct {
@@ -88,6 +90,19 @@ export class DeaEventHandlers extends Construct {
 
     // create event bridge rule
     this.createEventBridgeRuleForS3BatchJobs(s3BatchJobStatusChangeHandlerLambda);
+
+    props.opsDashboard.addLambdaOperationalComponents(
+      this.s3BatchDeleteCaseFileLambda,
+      'S3BatchDeleteCaseFileLambda',
+      undefined,
+      true
+    );
+    props.opsDashboard.addLambdaOperationalComponents(
+      s3BatchJobStatusChangeHandlerLambda,
+      'S3BatchJobStatusChangeLambda',
+      undefined,
+      true
+    );
   }
 
   private createEventBridgeRuleForS3BatchJobs(targetLambda: NodejsFunction) {
