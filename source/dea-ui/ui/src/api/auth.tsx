@@ -11,11 +11,22 @@ export interface TokenResponse {
   idToken: string;
   identityPoolId: string;
   userPoolId: string;
+  expiresIn: number;
 }
 
 export const getToken = async (authCode: string, codeVerifier: string): Promise<TokenResponse> => {
   try {
     const response: TokenResponse = await httpApiPost(`auth/${authCode}/token`, { codeVerifier });
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const refreshToken = async (): Promise<TokenResponse> => {
+  try {
+    const response: TokenResponse = await httpApiPost(`auth/refreshToken`, {});
     return response;
   } catch (error) {
     console.error(error);

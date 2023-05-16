@@ -13,6 +13,7 @@ import {
 import { S3BatchEvent, S3BatchResult, S3BatchResultResultCode } from 'aws-lambda';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
+import { getCase } from '../../app/services/case-service';
 import { DeaCaseInput } from '../../models/case';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { DeaUser } from '../../models/user';
@@ -98,11 +99,14 @@ describe('S3 batch delete case-file lambda', () => {
       DATASETS_PROVIDER
     );
     const deletedCaseFile = await callGetCaseFileDetails(apiEvent, repositoryProvider, fileId, caseId);
+    expect(deletedCaseFile.status).toEqual(CaseFileStatus.DELETED);
 
     const expectedResult = `Successfully deleted object: ${caseId}/${fileId}`;
-
     expect(response).toEqual(getS3BatchResult(caseId, fileId, 'Succeeded', expectedResult));
-    expect(deletedCaseFile.status).toEqual(CaseFileStatus.DELETED);
+
+    const updatedCase = (await getCase(caseId, repositoryProvider)) ?? fail();
+    expect(updatedCase.objectCount).toEqual(0);
+    expect(updatedCase.totalSizeBytes).toEqual(0);
 
     expect(s3Mock).toHaveReceivedCommandTimes(DeleteObjectCommand, 1);
     expect(s3Mock).toHaveReceivedCommandWith(DeleteObjectCommand, {
@@ -141,6 +145,27 @@ describe('S3 batch delete case-file lambda', () => {
     expect(s3Mock).toHaveReceivedCommandTimes(DeleteObjectCommand, 0);
   });
 
+  it('should mark as failed when no case file exists', async () => {
+    const theCase: DeaCaseInput = {
+      name: 'no case file',
+      description: 'description',
+    };
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+    const caseId = createdCase.ulid;
+
+    const response = await deleteCaseFileHandler(
+      getS3BatchDeleteCaseFileEvent(caseId, caseId, 'version-id'),
+      dummyContext,
+      CALLBACK_FN,
+      repositoryProvider,
+      DATASETS_PROVIDER
+    );
+
+    const expectedResult = `Could not find case file: fileId: ${caseId}, caseId: ${caseId}`;
+    expect(response).toEqual(getS3BatchResult(caseId, caseId, 'PermanentFailure', expectedResult));
+    expect(s3Mock).toHaveReceivedCommandTimes(DeleteObjectCommand, 0);
+  });
+
   it('should mark as failed when delete-object fails', async () => {
     const theCase: DeaCaseInput = {
       name: 's3 client failure',
@@ -166,7 +191,7 @@ describe('S3 batch delete case-file lambda', () => {
 
     const expectedResult = `Failed to delete object: ${caseId}/${fileId}`;
 
-    expect(response).toEqual(getS3BatchResult(caseId, fileId, 'PermanentFailure', expectedResult));
+    expect(response).toEqual(getS3BatchResult(caseId, fileId, 'TemporaryFailure', expectedResult));
     expect(notDeletedCaseFile.status).toEqual(CaseFileStatus.DELETE_FAILED);
   });
 });

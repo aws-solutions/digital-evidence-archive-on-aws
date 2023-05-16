@@ -8,7 +8,7 @@ This is a prototype app and you should expect to modify the source code to refle
 
 | Statements                                                                                   | Branches                                                                                 | Functions                                                                                  | Lines                                                                              |
 | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| ![Statements](https://img.shields.io/badge/statements-91.35%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-85.43%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-89.96%25-yellow.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-91.72%25-brightgreen.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-91.73%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-84.51%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-89.97%25-yellow.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-92.1%25-brightgreen.svg?style=flat) |
 
 ## Deploying code changes
 

@@ -19,6 +19,7 @@ const Home: NextPage = () => {
   const router = useRouter();
   const { settings } = useSettings();
   const { caseId, filePath } = router.query;
+
   if (!caseId || typeof caseId !== 'string' || !filePath || typeof filePath !== 'string') {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
@@ -29,7 +30,7 @@ const Home: NextPage = () => {
       href: `/${settings.stage}/ui`,
     },
     {
-      text: `${breadcrumbLabels.caseLabel} ${caseId}`,
+      text: breadcrumbLabels.caseDetailsLabel,
       href: `/${settings.stage}/ui/case-detail?caseId=${caseId}`,
     },
     {

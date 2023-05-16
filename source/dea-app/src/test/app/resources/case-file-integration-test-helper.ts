@@ -13,10 +13,16 @@ import { downloadCaseFile } from '../../../app/resources/download-case-file';
 import { getCaseFileDetails } from '../../../app/resources/get-case-file-details';
 import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
 import { listCaseFiles } from '../../../app/resources/list-case-files';
+import { restoreCaseFile } from '../../../app/resources/restore-case-file';
 import { updateCaseStatus } from '../../../app/resources/update-case-status';
 import * as CaseService from '../../../app/services/case-service';
 import { DeaCase } from '../../../models/case';
-import { CaseFileDTO, DeaCaseFile, DeaCaseFileResult } from '../../../models/case-file';
+import {
+  CaseFileDTO,
+  DeaCaseFile,
+  DeaCaseFileResult,
+  DownloadCaseFileResult,
+} from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
@@ -122,7 +128,7 @@ export const callDownloadCaseFile = async (
   repositoryProvider: ModelRepositoryProvider,
   fileId: string,
   caseId: string
-): Promise<string> => {
+): Promise<DownloadCaseFileResult> => {
   const event = Object.assign(
     {},
     {
@@ -137,7 +143,27 @@ export const callDownloadCaseFile = async (
   checkApiSucceeded(response);
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return JSON.parse(response.body as string).downloadUrl ?? fail();
+  return JSON.parse(response.body as string) ?? fail();
+};
+
+export const callRestoreCaseFile = async (
+  baseEvent: APIGatewayProxyEvent,
+  repositoryProvider: ModelRepositoryProvider,
+  fileId: string,
+  caseId: string
+): Promise<void> => {
+  const event = Object.assign(
+    {},
+    {
+      ...baseEvent,
+      pathParameters: {
+        caseId,
+        fileId,
+      },
+    }
+  );
+  const response = await restoreCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
+  expect(response.statusCode).toEqual(204);
 };
 
 export const callCreateCase = async (

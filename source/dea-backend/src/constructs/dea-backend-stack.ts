@@ -96,7 +96,7 @@ export class DeaBackendConstruct extends Construct {
       new PolicyStatement({
         effect: Effect.ALLOW,
         principals: [new ServicePrincipal('logging.s3.amazonaws.com')],
-        actions: ['s3:PutObject'],
+        actions: ['s3:PutObject', 's3:PutObjectAcl'],
         resources,
         conditions: {
           StringEquals: {

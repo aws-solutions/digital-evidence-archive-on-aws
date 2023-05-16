@@ -40,6 +40,7 @@ import { getUsers } from './app/resources/get-users';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
 import { listCaseFiles } from './app/resources/list-case-files';
 import { refreshToken } from './app/resources/refresh-token';
+import { restoreCaseFile } from './app/resources/restore-case-file';
 import { revokeToken } from './app/resources/revoke-token';
 import { startCaseAudit } from './app/resources/start-case-audit';
 import { startCaseFileAudit } from './app/resources/start-case-file-audit';
@@ -132,4 +133,5 @@ export {
   s3BatchJobStatusChangeHandler,
   S3BatchEventBridgeDetail,
   withAllowedOrigin,
+  restoreCaseFile,
 };

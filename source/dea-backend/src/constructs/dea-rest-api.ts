@@ -27,8 +27,13 @@ import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
-import { HttpMethods } from 'aws-cdk-lib/aws-s3';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
+import { Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3';
+import {
+  AwsCustomResource,
+  AwsCustomResourcePolicy,
+  AwsSdkCall,
+  PhysicalResourceId,
+} from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway-route-config';
@@ -41,8 +46,7 @@ interface LambdaEnvironment {
 interface DeaRestApiProps {
   deaTableArn: string;
   deaTableName: string;
-  deaDatasetsBucketArn: string;
-  deaDatasetsBucketName: string;
+  deaDatasetsBucket: Bucket;
   s3BatchDeleteCaseFileRoleArn: string;
   deaAuditLogArn: string;
   deaTrailLogArn: string;
@@ -55,6 +59,7 @@ interface DeaRestApiProps {
 export class DeaRestApiConstruct extends Construct {
   public authLambdaRole: Role;
   public lambdaBaseRole: Role;
+  public customResourceRole: Role;
   public deaRestApi: RestApi;
   public apiEndpointArns: Map<string, string>;
 
@@ -68,7 +73,7 @@ export class DeaRestApiConstruct extends Construct {
     this.lambdaBaseRole = this.createLambdaBaseRole(
       props.kmsKey.keyArn,
       props.deaTableArn,
-      props.deaDatasetsBucketArn,
+      props.deaDatasetsBucket.bucketArn,
       props.region,
       props.accountId,
       partition,
@@ -79,6 +84,10 @@ export class DeaRestApiConstruct extends Construct {
 
     this.authLambdaRole = this.createAuthLambdaRole(props.region, props.accountId, partition);
 
+    this.customResourceRole = new Role(this, 'custom-resource-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+    });
+
     props.kmsKey.addToResourcePolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
@@ -88,7 +97,7 @@ export class DeaRestApiConstruct extends Construct {
           new ArnPrincipal(this.authLambdaRole.roleArn),
         ],
         resources: ['*'],
-        sid: 'main-key-share-statement',
+        sid: 'lambda-roles-key-share-statement',
       })
     );
 
@@ -105,6 +114,15 @@ export class DeaRestApiConstruct extends Construct {
       },
       deployOptions: {
         stageName: STAGE,
+        // Per method throttling limit. Conservative setting based on fact that we have 35 APIs and Lambda concurrency is 1000
+        // Worst case this setting could potentially initiate up to 1750 API calls running at any moment (which is over lambda limit),
+        // but it is unlikely that all the APIs are going to be used at the 50TPS limit
+        methodOptions: {
+          '/*/*': {
+            throttlingBurstLimit: 50,
+            throttlingRateLimit: 50,
+          },
+        },
         accessLogDestination: new LogGroupLogDestination(accessLogGroup),
         accessLogFormat: AccessLogFormat.custom(
           JSON.stringify({
@@ -128,16 +146,16 @@ export class DeaRestApiConstruct extends Construct {
       },
     });
 
-    this.configureApiGateway(deaApiRouteConfig, props.lambdaEnv);
+    this.configureApiGateway(deaApiRouteConfig, props.lambdaEnv, props.accountId);
 
-    this.updateBucketCors(this.deaRestApi, props.deaDatasetsBucketName);
+    this.updateBucketCors(this.deaRestApi, props.deaDatasetsBucket.bucketName);
   }
 
   private updateBucketCors(restApi: RestApi, bucketName: Readonly<string>) {
     const allowedOrigins = deaConfig.deaAllowedOriginsList();
     allowedOrigins.push(`https://${Fn.parseDomainName(restApi.url)}`);
 
-    const updateCorsCall = {
+    const updateCorsCall: AwsSdkCall = {
       service: 'S3',
       action: 'putBucketCors',
       parameters: {
@@ -154,23 +172,33 @@ export class DeaRestApiConstruct extends Construct {
       },
       physicalResourceId: PhysicalResourceId.of(restApi.restApiId),
     };
+
+    const customResourcePolicy = AwsCustomResourcePolicy.fromSdkCalls({
+      resources: AwsCustomResourcePolicy.ANY_RESOURCE,
+    });
+
+    customResourcePolicy.statements.forEach((statement) => this.customResourceRole.addToPolicy(statement));
+
     const updateCors = new AwsCustomResource(this, 'UpdateBucketCORS', {
       onCreate: updateCorsCall,
       onUpdate: updateCorsCall,
-      policy: AwsCustomResourcePolicy.fromSdkCalls({
-        resources: AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
+      role: this.customResourceRole,
+      policy: customResourcePolicy,
       installLatestAwsSdk: false,
     });
     updateCors.node.addDependency(restApi);
   }
 
-  private configureApiGateway(routeConfig: ApiGatewayRouteConfig, lambdaEnv: LambdaEnvironment): void {
+  private configureApiGateway(
+    routeConfig: ApiGatewayRouteConfig,
+    lambdaEnv: LambdaEnvironment,
+    accountId: string
+  ): void {
     const plan = this.deaRestApi.addUsagePlan('DEA Usage Plan', {
       name: 'dea-usage-plan',
       throttle: {
-        rateLimit: 25,
-        burstLimit: 50,
+        rateLimit: 10,
+        burstLimit: 10,
       },
     });
 
@@ -197,11 +225,17 @@ export class DeaRestApiConstruct extends Construct {
       // otherwise it is a DEA execution API, which needs the
       // full set of permissions
       const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
-      this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv);
+      this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv, accountId);
     });
   }
 
-  private addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, lambdaEnv: LambdaEnvironment): void {
+  private addMethod(
+    api: RestApi,
+    route: ApiGatewayRoute,
+    role: Role,
+    lambdaEnv: LambdaEnvironment,
+    accountId: string
+  ): void {
     const urlParts = route.path.split('/').filter((str) => str);
     let parent = api.root;
     urlParts.forEach((part, index) => {
@@ -215,7 +249,8 @@ export class DeaRestApiConstruct extends Construct {
           `${route.httpMethod}_${route.eventName}`,
           role,
           route.pathToSource,
-          lambdaEnv
+          lambdaEnv,
+          accountId
         );
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -265,7 +300,8 @@ export class DeaRestApiConstruct extends Construct {
     id: string,
     role: Role,
     pathToSource: string,
-    lambdaEnv: LambdaEnvironment
+    lambdaEnv: LambdaEnvironment,
+    accountId: string
   ): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
       memorySize: 512,
@@ -287,6 +323,12 @@ export class DeaRestApiConstruct extends Construct {
         minify: true,
         sourceMap: true,
       },
+    });
+
+    lambda.addPermission('InvokeLambdaPermission', {
+      action: 'lambda:InvokeFunction',
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+      sourceAccount: accountId,
     });
 
     //CFN NAG Suppression
@@ -362,8 +404,16 @@ export class DeaRestApiConstruct extends Construct {
           's3:GetObjectVersion',
           's3:GetObjectLegalHold',
           's3:PutObjectLegalHold',
+          's3:RestoreObject',
         ],
         resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:ListBucket'],
+        resources: [`${datasetsBucketArn}`],
       })
     );
 

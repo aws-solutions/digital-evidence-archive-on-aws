@@ -45,7 +45,7 @@ describe('UploadFiles page', () => {
     const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
     expect(breadcrumbLinks.length).toEqual(3);
     expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
-    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(`${breadcrumbLabels.caseLabel} ${CASE_ID}`);
+    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.caseDetailsLabel);
     expect(breadcrumbLinks[2].getElement()).toHaveTextContent(breadcrumbLabels.uploadFilesAndFoldersLabel);
   });
   it('responds to cancel', () => {
@@ -59,9 +59,10 @@ describe('UploadFiles page', () => {
   });
 
   it('responds to form submit', async () => {
-    render(<Home />);
+    const page = render(<Home />);
 
     const selectFileInput = screen.getByTestId('file-select');
+    expect(selectFileInput).toBeTruthy();
     const testFile = new File(['hello'], 'hello.world', { type: 'text/plain' });
     File.prototype.text = jest.fn().mockResolvedValueOnce('hello');
     await userEvent.upload(selectFileInput, [testFile]);

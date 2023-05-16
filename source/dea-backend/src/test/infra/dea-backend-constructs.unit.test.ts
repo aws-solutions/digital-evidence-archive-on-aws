@@ -10,16 +10,17 @@ import { Key } from 'aws-cdk-lib/aws-kms';
 import 'source-map-support/register';
 import { convictConfig } from '../../config';
 import { DeaAuditTrail } from '../../constructs/dea-audit-trail';
-import { DeaAuthConstruct } from '../../constructs/dea-auth';
+import { DeaAuth } from '../../constructs/dea-auth';
 import { DeaBackendConstruct } from '../../constructs/dea-backend-stack';
 import { DeaEventHandlers } from '../../constructs/dea-event-handlers';
+import { DeaParameters } from '../../constructs/dea-parameters';
 import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
 import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
 
 describe('DeaBackend constructs', () => {
-  const expectedLambdaCount = 38;
-  const expectedMethodCount = 75;
+  const expectedLambdaCount = 39;
+  const expectedMethodCount = 77;
 
   beforeAll(() => {
     process.env.STAGE = 'RUN1';
@@ -63,9 +64,8 @@ describe('DeaBackend constructs', () => {
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
-      deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
-      deaDatasetsBucketName: backend.datasetsBucket.bucketName,
-      s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
+      deaDatasetsBucket: backend.datasetsBucket,
+      s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
@@ -101,10 +101,15 @@ describe('DeaBackend constructs', () => {
       ['C', 'Carn'],
       ['D', 'Darn'],
     ]);
-    new DeaAuthConstruct(stack, 'DeaAuth', {
+    const authStack = new DeaAuth(stack, 'DeaAuth', {
+      region: stack.region,
       restApi: restApi.deaRestApi,
-      kmsKey: key,
       apiEndpointArns: apiEndpointArns,
+    });
+
+    new DeaParameters(stack, 'DeaParameters', {
+      deaAuthInfo: authStack.deaAuthInfo,
+      kmsKey: key,
     });
 
     addSnapshotSerializers();
@@ -143,11 +148,10 @@ describe('DeaBackend constructs', () => {
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
-      deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
-      deaDatasetsBucketName: backend.datasetsBucket.bucketName,
+      deaDatasetsBucket: backend.datasetsBucket,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
-      s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
+      s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey: key,
       region: stack.region,
       accountId: stack.account,
@@ -165,10 +169,15 @@ describe('DeaBackend constructs', () => {
       ['C', 'Carn'],
       ['D', 'Darn'],
     ]);
-    new DeaAuthConstruct(stack, 'DeaAuth', {
+    const authStack = new DeaAuth(stack, 'DeaAuth', {
+      region: stack.region,
       restApi: restApi.deaRestApi,
-      kmsKey: key,
       apiEndpointArns: apiEndpointArns,
+    });
+
+    new DeaParameters(stack, 'DeaParameters', {
+      deaAuthInfo: authStack.deaAuthInfo,
+      kmsKey: key,
     });
 
     // throws due to unassigned parameter
@@ -212,9 +221,8 @@ describe('DeaBackend constructs', () => {
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
-      deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
-      deaDatasetsBucketName: backend.datasetsBucket.bucketName,
-      s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileRole.roleArn,
+      deaDatasetsBucket: backend.datasetsBucket,
+      s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
@@ -235,10 +243,15 @@ describe('DeaBackend constructs', () => {
       ['C', 'Carn'],
       ['D', 'Darn'],
     ]);
-    new DeaAuthConstruct(stack, 'DeaAuth', {
+    const authStack = new DeaAuth(stack, 'DeaAuth', {
+      region: stack.region,
       restApi: restApi.deaRestApi,
-      kmsKey: key,
       apiEndpointArns: apiEndpointArns,
+    });
+
+    new DeaParameters(stack, 'DeaParameters', {
+      deaAuthInfo: authStack.deaAuthInfo,
+      kmsKey: key,
     });
 
     // Prepare the stack for assertions.

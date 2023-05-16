@@ -50,6 +50,12 @@ export interface DeaCaseFileResult {
   details?: string;
 }
 
+export interface DownloadCaseFileResult {
+  downloadUrl?: string;
+  isArchived?: boolean;
+  isRestoring?: boolean;
+}
+
 export interface CaseFileDTO {
   readonly ulid: string;
   readonly caseUlid: string;
