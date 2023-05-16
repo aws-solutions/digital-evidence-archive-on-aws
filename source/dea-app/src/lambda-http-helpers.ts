@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { APIGatewayProxyEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyEventHeaders } from 'aws-lambda';
 import Joi from 'joi';
 import { ValidationError } from './app/exceptions/validation-exception';
 import { logger } from './logger';
@@ -102,7 +102,7 @@ export const getRequiredHeader = (event: APIGatewayProxyEvent, headerName: strin
 
   logger.error(`Required header missing: ${headerName}`, {
     rawPath: event.path,
-    headers: JSON.stringify(event.headers),
+    headers: JSON.stringify(removeSensitiveHeaders(event.headers)),
   });
   throw new ValidationError(`Required header '${headerName}' is missing.`);
 };
@@ -152,4 +152,14 @@ export const getRequiredEnv = (envName: string, defaultValue?: string): string =
   }
 
   return value;
+};
+
+export const removeSensitiveHeaders = (headers: APIGatewayProxyEventHeaders): APIGatewayProxyEventHeaders => {
+  const {
+    'x-amz-security-token': _h,
+    'X-Amz-Security-Token': _h1,
+    authorization: _h2,
+    ...debugHeaders
+  } = headers;
+  return debugHeaders;
 };

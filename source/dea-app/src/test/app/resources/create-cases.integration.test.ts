@@ -107,7 +107,7 @@ describe('create cases resource', () => {
     });
     event.headers['userUlid'] = user.ulid;
     await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      `Case with name "${name}" is already in use`
+      'Case name is already in use'
     );
   });
 

@@ -21,17 +21,37 @@ import {
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
-import { getCaseFileAuditCSV, getPresignedUrl, useGetCaseActions, useListCaseFiles } from '../../api/cases';
-import { auditLogLabels, commonLabels, commonTableLabels, filesListLabels } from '../../common/labels';
+import { useAvailableEndpoints } from '../../api/auth';
+import {
+  getCaseFileAuditCSV,
+  getPresignedUrl,
+  restoreFile,
+  useGetCaseActions,
+  useListCaseFiles,
+} from '../../api/cases';
+import {
+  auditLogLabels,
+  commonLabels,
+  commonTableLabels,
+  fileOperationsLabels,
+  filesListLabels,
+} from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDate } from '../../helpers/dateHelper';
-import { canDownloadCaseAudit, canDownloadFiles, canUploadFiles } from '../../helpers/userActionSupport';
+import { formatFileSize } from '../../helpers/fileHelper';
+import {
+  canDownloadCaseAudit,
+  canDownloadFiles,
+  canRestoreFiles,
+  canUploadFiles,
+} from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
-import { ONE_MB } from '../upload-files/UploadFilesForm';
+import { ConfirmModal } from '../common-components/ConfirmModal';
 import { CaseDetailsTabsProps } from './CaseDetailsTabs';
 
 function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const router = useRouter();
+  const availableEndpoints = useAvailableEndpoints();
   const userActions = useGetCaseActions(props.caseId);
   // Property and date filter collections
   const [filesTableState, setFilesTableState] = React.useState({
@@ -42,6 +62,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = React.useState<DeaCaseFile[]>([]);
   const [downloadInProgress, setDownloadInProgress] = React.useState(false);
   const [caseFileAuditDownloadInProgress, setCaseFileAuditDownloadInProgress] = React.useState(false);
+  const [filesToRestore, setFilesToRestore] = React.useState<DeaCaseFile[]>([]);
   const { pushNotification } = useNotifications();
 
   const filteringProperties: readonly PropertyFilterProperty[] = [
@@ -114,10 +135,44 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     );
   };
 
+  async function restoreFiles() {
+    try {
+      const restorePromises: Promise<void>[] = [];
+      for (const file of filesToRestore) {
+        restorePromises.push(restoreFile({ caseUlid: file.caseUlid, ulid: file.ulid }));
+      }
+      setFilesToRestore([]);
+      await Promise.all(restorePromises);
+      pushNotification('success', fileOperationsLabels.restoreSuccessful);
+    } catch (e) {
+      console.log('Failed to restore files', e);
+      pushNotification('error', fileOperationsLabels.restoreFail);
+    } finally {
+      setFilesToRestore([]);
+    }
+  }
+
+  function cancelRestore() {
+    setFilesToRestore([]);
+  }
+
   function tableActions() {
     if (props.caseStatus === CaseStatus.ACTIVE) {
       return (
         <SpaceBetween direction="horizontal" size="xs">
+          <ConfirmModal
+            testid="restore-modal"
+            isOpen={
+              canRestoreFiles(userActions?.data?.actions, availableEndpoints.data) &&
+              filesToRestore.length !== 0
+            }
+            title={fileOperationsLabels.restoreFilesModalLabel(filesToRestore.length)}
+            message={fileOperationsLabels.restoreFilesModalDescription}
+            confirmAction={restoreFiles}
+            confirmButtonText={commonLabels.restoreButton}
+            cancelAction={cancelRestore}
+            cancelButtonText={commonLabels.cancelButton}
+          />
           <Button
             data-testid="upload-file-button"
             onClick={uploadFilesHandler}
@@ -213,7 +268,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       for (const file of selectedFiles) {
         try {
           if (!file.ulid) {
-            pushNotification('error', `Failed to download case file audit for ${file.fileName}`);
+            pushNotification('error', auditLogLabels.downloadCaseAuditFail(file.fileName));
             console.log(`failed to download case file audit for ${file.fileName}`);
             continue;
           }
@@ -224,11 +279,12 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           alink.href = fileUrl;
           alink.download = `${file.fileName}_Audit_${new Date().toLocaleString()}`;
           alink.click();
+
           // sleep 2ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
           // long term we should consider zipping the files in the backend and then downloading as a single file
           await sleep(2);
         } catch (e) {
-          pushNotification('error', `Failed to download case file audit for ${file.fileName}`);
+          pushNotification('error', auditLogLabels.downloadCaseAuditFail(file.fileName));
           console.log(`failed to download case file audit for ${file.fileName}`, e);
         }
       }
@@ -249,6 +305,18 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       for (const file of selectedFiles) {
         try {
           const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
+          if (!downloadResponse.downloadUrl) {
+            if (downloadResponse.isRestoring) {
+              pushNotification('info', fileOperationsLabels.restoreInProgress(file.fileName));
+            } else if (downloadResponse.isArchived) {
+              if (canRestoreFiles(userActions?.data?.actions, availableEndpoints.data)) {
+                filesToRestore.push(file);
+              } else {
+                pushNotification('error', fileOperationsLabels.archivedFileNoPermissionError(file.fileName));
+              }
+            }
+            continue;
+          }
           const alink = document.createElement('a');
           alink.href = downloadResponse.downloadUrl;
           alink.download = file.fileName;
@@ -257,7 +325,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           // long term we should consider zipping the files in the backend and then downloading as a single file
           await sleep(5);
         } catch (e) {
-          pushNotification('error', `Failed to download ${file.fileName}`);
+          pushNotification('error', fileOperationsLabels.downloadFailed(file.fileName));
           console.log(`failed to download ${file.fileName}`, e);
         }
       }
@@ -301,7 +369,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         {
           id: 'size',
           header: commonTableLabels.fileSizeHeader,
-          cell: (e) => `${Math.ceil(e.fileSizeBytes / ONE_MB)}MB`,
+          cell: (e) => formatFileSize(e.fileSizeBytes),
           width: 170,
           minWidth: 165,
           sortingField: 'fileType',

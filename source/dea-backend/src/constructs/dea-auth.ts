@@ -6,7 +6,7 @@
 import { assert } from 'console';
 import * as fs from 'fs';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
-import { CfnParameter, Duration } from 'aws-cdk-lib';
+import { CfnParameter, Duration, SecretValue, Stack, StackProps } from 'aws-cdk-lib';
 import { RestApi } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountRecovery,
@@ -30,27 +30,74 @@ import {
   Role,
   WebIdentityPrincipal,
 } from 'aws-cdk-lib/aws-iam';
-import { Key } from 'aws-cdk-lib/aws-kms';
-import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { ParameterTier, StringListParameter, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 
+// Gov Region us-gov-east-1 does NOT have Cognito
+// therefore for that region we will launch the Cognito UserPool and IdPool
+// in us-gov-west-1, and the rest of dea in us-gov-east-1.
+// This may lead to higher latencies, due to regional network travel.
+// This class MAY ONLY contain Cognito constructs, because when launching
+// in us-gov-east-1, we do a 2-phase deployment, the first with Cognito
+// in gov-west, then the rest. To do that, we launch only this construct,
+// so whatever you place in here will also be deployed in us-gov-west-1
+// IAM is fine since its an AWS global service for the account, not regional
+
+// NOTE: Since CloudFormation is regional not global, we have to deploy
+// cognito and the rest of DEA in different stacks for us-gov-east-1.
+// However, we also have the requirement for OneClick, which requires that
+// there be only ONE Cfn template. Obviously, Gov East will not be compatible
+// for OneClick, but for the rest of the regions we need one template.
+// Therefore, for the normal case we will use DeaAuth as a construct
+// and for us-gov-east-1, we will use it as a Stack. Its hacky, but we get
+// the best of both worlds; OneClick for everything else, and a single deployment
+// for us-gov-east-1
+
 interface DeaAuthProps {
+  readonly region: string;
   readonly restApi: RestApi;
-  readonly kmsKey: Key;
   // We need to create IAM Roles with what APIs the Role can call
   // therefore we need the API endpoint ARNs from the API Gateway construct
   apiEndpointArns: Map<string, string>;
 }
 
-export class DeaAuthConstruct extends Construct {
-  public constructor(scope: Construct, stackName: string, props: DeaAuthProps) {
-    super(scope, stackName);
+export interface DeaAuthInfo {
+  readonly availableEndpointsPerRole: Map<string, string[]>;
+  readonly userPoolId: string;
+  readonly userPoolClientId: string;
+  readonly cognitoDomain: string;
+  readonly callbackUrl: string;
+  readonly identityPoolId: string;
+  readonly clientSecret: SecretValue;
+  readonly agencyIdpName?: string;
+}
 
-    const region = deaConfig.region();
-    const loginUrl = `${props.restApi.url}ui/login`;
+export class DeaAuthStack extends Stack {
+  public deaAuthInfo: DeaAuthInfo;
+
+  public constructor(scope: Construct, stackName: string, deaProps: DeaAuthProps, props?: StackProps) {
+    super(scope, stackName, {
+      ...props,
+      env: {
+        ...props?.env,
+        region: deaProps.region, // Note: for us-gov-east-1, we change the region
+        // to us-gov-west-1 since Cognito is not available in that region
+      },
+      crossRegionReferences: true,
+    });
+
+    this.deaAuthInfo = new DeaAuth(this, 'DeaAuth', deaProps).deaAuthInfo;
+  }
+}
+
+export class DeaAuth extends Construct {
+  public deaAuthInfo: DeaAuthInfo;
+
+  public constructor(scope: Construct, stackName: string, deaProps: DeaAuthProps) {
+    super(scope, stackName + 'Construct');
+
+    const loginUrl = `${deaProps.restApi.url}ui/login`;
 
     const partition = deaConfig.partition();
 
@@ -67,7 +114,7 @@ export class DeaAuthConstruct extends Construct {
     // For production deployments, follow the ImplementationGuide on how to setup
     // and connect your existing CJIS-compatible IdP for SSO and attribute mapping for the UserPool
     // and role mapping rules for the identity pool for authorization
-    this.createAuthStack(props.apiEndpointArns, loginUrl, region, props.kmsKey, partition);
+    this.deaAuthInfo = this.createAuthStack(deaProps.apiEndpointArns, loginUrl, partition);
   }
 
   private createIamRole(
@@ -113,12 +160,9 @@ export class DeaAuthConstruct extends Construct {
   // IAM Role, which we will use to define the role mapping in cdk for the ID Pool.
   private createDEARoles(
     apiEndpointArns: Map<string, string>,
-    userPoolId: string,
     identityPoolId: string,
-    region: string,
-    stage: string,
     partition: string
-  ): Map<string, Role> {
+  ): [Map<string, Role>, Map<string, string[]>] {
     // Create IAM Roles that define what APIs are allowed to be called
     // The role we create {Auditor, CaseWorker, Admin} are just examples
     // so customize to your agency's specific needs
@@ -137,6 +181,7 @@ export class DeaAuthConstruct extends Construct {
     }
 
     const deaRolesMap = new Map<string, Role>();
+    const availableEndpointsPerRole = new Map<string, string[]>();
 
     // 3 General Roles:
     // * Admins: can call APIs to change system settings like re-assign case, or list all cases
@@ -165,13 +210,7 @@ export class DeaAuthConstruct extends Construct {
         principal,
         roleBoundary
       );
-      new StringListParameter(this, `${roleType.name}_actions`, {
-        parameterName: `/dea/${region}/${stage}-${roleType.name}-actions`,
-        stringListValue: endpointStrings,
-        description: 'stores the available endpoints for a role',
-        tier: ParameterTier.STANDARD,
-        allowedPattern: '.*',
-      });
+      availableEndpointsPerRole.set(roleType.name, endpointStrings);
     });
 
     /* 
@@ -194,19 +233,20 @@ export class DeaAuthConstruct extends Construct {
     }
     */
 
-    return deaRolesMap;
+    return [deaRolesMap, availableEndpointsPerRole];
   }
 
   private createAuthStack(
     apiEndpointArns: Map<string, string>,
     callbackUrl: string,
-    region: string,
-    kmsKey: Key,
     partition: string
-  ): void {
+  ): DeaAuthInfo {
     // See Implementation Guide for how to integrate your existing
     // Identity Provider with Cognito User Pool for SSO
-    const [pool, poolClient, cognitoDomainUrl] = this.createCognitoIdP(callbackUrl, region, kmsKey, partition);
+    const [pool, poolClient, cognitoDomainUrl, clientSecret, agencyIdpName] = this.createCognitoIdP(
+      callbackUrl,
+      partition
+    );
 
     // For gov cloud, Cognito only uses FIPS endpoint, and the only FIPS endpoint
     // is in us-gov-west-1. See https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-cog.html
@@ -227,14 +267,7 @@ export class DeaAuthConstruct extends Construct {
     // Create the DEA IAM Roles
     // Then tell the IdPool to map the DEARole field from the id token
     // to the appropriate DEA IAM Role
-    const deaRoles: Map<string, Role> = this.createDEARoles(
-      apiEndpointArns,
-      pool.userPoolId,
-      idPool.ref,
-      region,
-      deaConfig.stage(),
-      partition
-    );
+    const [deaRoles, availableEndpointsPerRole] = this.createDEARoles(apiEndpointArns, idPool.ref, partition);
     const rules: CfnIdentityPoolRoleAttachment.MappingRuleProperty[] = new Array(deaRoles.size);
     Array.from(deaRoles.entries()).forEach((entry) => {
       rules.push({
@@ -288,15 +321,16 @@ export class DeaAuthConstruct extends Construct {
       value: poolClient.userPoolClientSecret.unsafeUnwrap(),
     });
 
-    // Add the user pool id and client id to SSM for use in the backend for verifying and decoding tokens
-    this.addCognitoInformationToSSM(
-      pool.userPoolId,
-      poolClient.userPoolClientId,
-      cognitoDomainUrl,
+    return {
+      availableEndpointsPerRole,
+      userPoolId: pool.userPoolId,
+      userPoolClientId: poolClient.userPoolClientId,
+      cognitoDomain: cognitoDomainUrl,
       callbackUrl,
-      idPool.ref,
-      region
-    );
+      identityPoolId: idPool.ref,
+      clientSecret,
+      agencyIdpName,
+    };
   }
 
   // TODO add function for creating the IAM SAML IdP, which
@@ -310,18 +344,16 @@ export class DeaAuthConstruct extends Construct {
   // TODO: determine if Cognito is CJIS compatible
   private createCognitoIdP(
     callbackUrl: string,
-    region: string,
-    kmsKey: Key,
     partition: string
-  ): [UserPool, UserPoolClient, string] {
+  ): [UserPool, UserPoolClient, string, SecretValue, string?] {
     const tempPasswordValidity = Duration.days(1);
-    // must re-authenticate in every 12 hours
+    // must re-authenticate in every 12 hours (so we make expiry 11 hours, so they can't refresh at 11:59)
     // Note when inactive for 30+ minutes, you will also have to reauthenticate
     // due to session lock requirements. This is handled by session management code
     // IdToken validity is max 1 hour for federated users
-    const accessTokenValidity = Duration.hours(12);
+    const accessTokenValidity = Duration.hours(1);
     const idTokenValidity = Duration.hours(1);
-    const refreshTokenValidity = Duration.hours(12);
+    const refreshTokenValidity = Duration.hours(11);
 
     // fetch stage
     const stage = deaConfig.stage();
@@ -404,6 +436,7 @@ export class DeaAuthConstruct extends Construct {
     // If external IDP information was provided in the config,
     // integrate it into the user pool here
     const idpInfo = deaConfig.idpMetadata();
+    let agencyIdpName: string | undefined;
     if (idpInfo && idpInfo.metadataPath) {
       const idpSamlMetadata = this.createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
       const idp = new UserPoolIdentityProviderSaml(this, 'AgencyIdP', {
@@ -420,15 +453,8 @@ export class DeaAuthConstruct extends Construct {
         },
       });
 
-      // Put the name of the IdP in SSM so the hosted UI can automaticaly redirect to the IdP Signin page
-
-      new StringParameter(this, 'agency-idp-name', {
-        parameterName: `/dea/${region}/${stage}-agency-idp-name`,
-        stringValue: idp.providerName,
-        description: 'stores the agency idp name for redirection during login with hosted ui',
-        tier: ParameterTier.STANDARD,
-        allowedPattern: '.*',
-      });
+      // Will be placed in SSM so the hosted UI can automaticaly redirect to the IdP Signin page
+      agencyIdpName = idp.providerName;
     }
 
     const poolClient = userPool.addClient('dea-app-client', {
@@ -453,18 +479,13 @@ export class DeaAuthConstruct extends Construct {
       refreshTokenValidity: refreshTokenValidity,
       userPoolClientName: 'dea-app-client',
     });
-    new Secret(this, `/dea/${region}/${stage}/clientSecret`, {
-      secretName: `/dea/${region}/${stage}/clientSecret`,
-      encryptionKey: kmsKey,
-      secretStringValue: poolClient.userPoolClientSecret,
-    });
 
     const cognitoDomain =
       partition === 'aws-us-gov'
         ? `https://${newDomain.domainName}.auth-fips.us-gov-west-1.amazoncognito.com`
         : newDomain.baseUrl({ fips: true });
 
-    return [userPool, poolClient, cognitoDomain];
+    return [userPool, poolClient, cognitoDomain, poolClient.userPoolClientSecret, agencyIdpName];
   }
 
   private createDEARole(
@@ -485,58 +506,6 @@ export class DeaAuthConstruct extends Construct {
       .filter((endpoint): endpoint is string => endpoint !== null);
     assert(endpoints.length == paths.length);
     return endpoints;
-  }
-
-  // Store the user pool id and client id in the parameter store so that we can verify
-  // and decode tokens on the backend
-  private addCognitoInformationToSSM(
-    userPoolId: string,
-    userPoolClientId: string,
-    cognitoDomain: string,
-    callbackUrl: string,
-    identityPoolId: string,
-    region: string
-  ) {
-    const stage = deaConfig.stage();
-    new StringParameter(this, 'user-pool-id-ssm-param', {
-      parameterName: `/dea/${region}/${stage}-userpool-id-param`,
-      stringValue: userPoolId,
-      description: 'stores the user pool id for use in token verification on the backend',
-      tier: ParameterTier.STANDARD,
-      allowedPattern: '.*',
-    });
-
-    new StringParameter(this, 'user-pool-client-id-ssm-param', {
-      parameterName: `/dea/${region}/${stage}-userpool-client-id-param`,
-      stringValue: userPoolClientId,
-      description: 'stores the user pool client id for use in token verification on the backend',
-      tier: ParameterTier.STANDARD,
-      allowedPattern: '.*',
-    });
-
-    new StringParameter(this, 'user-pool-cognito-domain-ssm-param', {
-      parameterName: `/dea/${region}/${stage}-userpool-cognito-domain-param`,
-      stringValue: cognitoDomain,
-      description: 'stores the user pool cognito domain for use in token verification on the backend',
-      tier: ParameterTier.STANDARD,
-      allowedPattern: '.*',
-    });
-
-    new StringParameter(this, 'identity-pool-id-ssm-param', {
-      parameterName: `/dea/${region}/${stage}-identity-pool-id-param`,
-      stringValue: identityPoolId,
-      description: 'stores the identity pool id for use in user verification on the backend',
-      tier: ParameterTier.STANDARD,
-      allowedPattern: '.*',
-    });
-
-    new StringParameter(this, 'client-callback-url-ssm-param', {
-      parameterName: `/dea/${region}/${stage}-client-callback-url-param`,
-      stringValue: callbackUrl,
-      description: 'stores the app client callback url for use in token verification on the backend',
-      tier: ParameterTier.STANDARD,
-      allowedPattern: '.*',
-    });
   }
 
   private createIdpSAMLMetadata(path: string, pathType: string): UserPoolIdentityProviderSamlMetadata {

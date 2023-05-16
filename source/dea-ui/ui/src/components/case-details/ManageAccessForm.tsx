@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { CaseUser } from '@aws/dea-app/lib/models/case-user';
 import { DeaUser } from '@aws/dea-app/lib/models/user';
 import { Button, Container, Form, Header, SpaceBetween } from '@cloudscape-design/components';
@@ -27,7 +28,11 @@ function ManageAccessForm(props: ManageAccessFormProps): JSX.Element {
   async function addCaseMemberHandler(user: DeaUser) {
     const givenName = `${user.firstName} ${user.lastName}`;
     try {
-      await addCaseMember({ caseUlid: props.caseId, userUlid: user.ulid, actions: [] });
+      await addCaseMember({
+        caseUlid: props.caseId,
+        userUlid: user.ulid,
+        actions: [CaseAction.VIEW_CASE_DETAILS],
+      });
       pushNotification('success', manageCaseAccessLabels.addCaseMemberSuccessMessage(givenName));
     } catch {
       pushNotification('error', manageCaseAccessLabels.addCaseMemberFailMessage(givenName));

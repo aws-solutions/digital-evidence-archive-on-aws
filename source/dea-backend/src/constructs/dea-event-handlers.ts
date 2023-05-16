@@ -6,7 +6,14 @@
 import path from 'path';
 import { Duration, aws_events_targets } from 'aws-cdk-lib';
 import { Rule } from 'aws-cdk-lib/aws-events';
-import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import {
+  ArnPrincipal,
+  Effect,
+  ManagedPolicy,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+} from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -27,12 +34,13 @@ interface DeaEventHandlerProps {
 
 export class DeaEventHandlers extends Construct {
   public s3BatchDeleteCaseFileLambda: NodejsFunction;
-  public s3BatchDeleteCaseFileRole: Role;
+  public s3BatchDeleteCaseFileBatchJobRole: Role;
+  public s3BatchDeleteCaseFileLambdaRole: Role;
 
   public constructor(scope: Construct, stackName: string, props: DeaEventHandlerProps) {
     super(scope, stackName);
 
-    const s3BatchDeleteCaseFileRole = this.createS3BatchDeleteCaseFileRole(
+    this.s3BatchDeleteCaseFileLambdaRole = this.createS3BatchDeleteCaseFileRole(
       's3-batch-delete-case-file-handler-role',
       props.deaTableArn,
       props.deaDatasetsBucketArn,
@@ -44,7 +52,7 @@ export class DeaEventHandlers extends Construct {
       'S3BatchDeleteCaseFileLambda',
       '../../src/handlers/s3-batch-delete-case-file-handler.ts',
       props.lambdaEnv,
-      s3BatchDeleteCaseFileRole
+      this.s3BatchDeleteCaseFileLambdaRole
     );
 
     const statusHandlerRole = this.createS3BatchStatusChangeHandlerRole(
@@ -62,7 +70,21 @@ export class DeaEventHandlers extends Construct {
       statusHandlerRole
     );
 
-    this.s3BatchDeleteCaseFileRole = this.createS3BatchRole(props.deaDatasetsBucketArn);
+    this.s3BatchDeleteCaseFileBatchJobRole = this.createS3BatchRole(props.deaDatasetsBucketArn);
+
+    props.kmsKey.addToResourcePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:GenerateDataKey*'],
+        principals: [
+          new ArnPrincipal(this.s3BatchDeleteCaseFileBatchJobRole.roleArn),
+          new ArnPrincipal(this.s3BatchDeleteCaseFileLambdaRole.roleArn),
+          new ArnPrincipal(statusHandlerRole.roleArn),
+        ],
+        resources: ['*'],
+        sid: 'dea-event-handlers-key-share-statement',
+      })
+    );
 
     // create event bridge rule
     this.createEventBridgeRuleForS3BatchJobs(s3BatchJobStatusChangeHandlerLambda);
@@ -204,7 +226,13 @@ export class DeaEventHandlers extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:Query', 'dynamodb:UpdateItem'],
+        actions: [
+          'dynamodb:GetItem',
+          'dynamodb:PutItem',
+          'dynamodb:Query',
+          'dynamodb:UpdateItem',
+          'dynamodb:DeleteItem',
+        ],
         resources: [tableArn],
       })
     );

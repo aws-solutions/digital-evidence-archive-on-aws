@@ -101,6 +101,12 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/download-case-file-handler.ts',
     },
     {
+      eventName: AuditEventType.RESTORE_CASE_FILE,
+      path: '/cases/{caseId}/files/{fileId}/restore',
+      httpMethod: ApiGatewayMethod.PUT,
+      pathToSource: '../../src/handlers/restore-case-file-handler.ts',
+    },
+    {
       eventName: AuditEventType.GET_AUTH_TOKEN,
       path: '/auth/{authCode}/token',
       httpMethod: ApiGatewayMethod.POST,

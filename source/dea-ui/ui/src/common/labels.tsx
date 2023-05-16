@@ -16,6 +16,7 @@ export const commonLabels = {
   addButton: 'Add',
   removeButton: 'Remove',
   downloadButton: 'Download',
+  restoreButton: 'Recover',
   saveButton: 'Save',
   loadingLabel: 'Loading...',
   statusLabel: 'Status',
@@ -110,6 +111,9 @@ export const fileOperationsLabels = {
   uploadStatusDescription: 'Uploaded files associated with this case.',
   uploadDetailsLabel: 'Upload details',
   selectFileDescription: 'Choose files',
+  restoreFilesModalLabel: (count: number) =>
+    `${count} of the files you tried to download was archived due to inactivity`,
+  restoreFilesModalDescription: 'The restored files will become available for download within 12 hours',
   evidenceTagLabel: 'Evidence tag',
   evidenceTagDescription:
     'Specify the type of device where the evidence is copied from such as mobile, laptop, or hard drive.',
@@ -120,6 +124,13 @@ export const fileOperationsLabels = {
   uploadReasonDescription: 'Specify why you are accessing the case files.',
   selectFileSubtext: 'All file types accepted. 5TB max file size.',
   auditLogLabel: 'Case File Audit Log',
+  restoreSuccessful: 'Successfully initiated restore for selected files',
+  restoreFail: 'Failed to restore selected files',
+  restoreInProgress: (fileName: string) =>
+    `${fileName} is currently being restored. It will be ready to download in up to 12 hours`,
+  archivedFileNoPermissionError: (fileName: string) =>
+    `${fileName} is archived. Please contact case owner to restore file for access.`,
+  downloadFailed: (fileName: string) => `Failed to download ${fileName}`,
 };
 
 export const caseDetailLabels = {
@@ -138,6 +149,7 @@ export const auditLogLabels = {
   noDisplayAuditLabel: 'No audit to display.',
   loadingLabel: 'loading audit log',
   errorLabel: 'Error downloading audit logs. Audit query is empty or encountered an error or cancellation.',
+  downloadCaseAuditFail: (fileName: string) => `Failed to download case file audit for ${fileName}`,
 };
 
 export const manageCaseAccessLabels = {
@@ -240,6 +252,11 @@ export const caseActionOptions = {
           value: CaseAction.INVITE,
           label: 'Invite members',
         };
+      case CaseAction.RESTORE_FILES:
+        return {
+          value: CaseAction.RESTORE_FILES,
+          label: 'Restore files',
+        };
       default:
         // default CaseAction.VIEW_CASE_DETAILS least privilege principle.
         return {
@@ -267,4 +284,14 @@ export const navigationLabels = {
   myCasesLabel: 'My Cases',
   allSystemCasesLabel: 'All System Cases',
   systemAuditLogsLabel: 'Download System Audit Log',
+};
+
+export const fileUploadLabels = {
+  dragAndDropFolderLabel: 'Drag and drop folder(s)/file(s) or',
+  chooseFolderLabel: 'Select folder',
+  chooseFilesLabel: 'Upload files',
+  limitShowFewerLabel: 'Show fewer files',
+  limitShowMoreLabel: 'Show more files',
+  errorIconAriaLabel: 'Error',
+  removeFileAriaLabel: (e: number) => `Remove file ${e + 1}`,
 };

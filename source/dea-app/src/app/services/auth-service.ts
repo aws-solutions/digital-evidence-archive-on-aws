@@ -137,22 +137,15 @@ export const getCredentialsByToken = async (idToken: string) => {
   const cognitoParams = await getCognitoSsmParams();
 
   // Set up the Cognito Identity client
+  const cognitoRegion = region.includes('gov') ? 'us-gov-west-1' : region;
   const cognitoIdentityClient = new CognitoIdentityClient({
-    region: region,
+    region: cognitoRegion,
   });
 
-  let Logins: Record<string, string>;
-  if (region.includes('gov')) {
-    // In us-gov-east, we have to redirect to us-gov-west because
-    // Cognito is not available there
-    Logins = {
-      [`cognito-idp.us-gov-west-1.amazonaws.com/${cognitoParams.userPoolId}`]: idToken,
-    };
-  } else {
-    Logins = {
-      [`cognito-idp.${region}.amazonaws.com/${cognitoParams.userPoolId}`]: idToken,
-    };
-  }
+  const Logins = {
+    [`cognito-idp.${cognitoRegion}.amazonaws.com/${cognitoParams.userPoolId}`]: idToken,
+  };
+
   // Set up the request parameters
   const getIdCommand = new GetIdCommand({
     IdentityPoolId: cognitoParams.identityPoolId,
@@ -238,6 +231,12 @@ export const exchangeAuthorizationCode = async (
     throw new Error(`Request failed with status code ${response.status}`);
   }
 
+  // Access token unused, removed for cookie size limit
+  if (response.data.access_token && response.data.token_type) {
+    delete response.data.access_token;
+    delete response.data.token_type;
+  }
+
   return [response.data, cognitoParams.identityPoolId, cognitoParams.userPoolId];
 };
 
@@ -266,6 +265,16 @@ export const useRefreshToken = async (refreshToken: string): Promise<[Oauth2Toke
   if (response.status !== 200) {
     logger.error(`Unable to use refresh token for new id token: ${response.statusText}`);
     throw new Error(`Request failed with status code ${response.status}`);
+  }
+
+  // Oauth2/Token does not return refresh token when grant_type is refresh
+  // Append refresh token so response.data can be used to update oauth cookie
+  response.data['refresh_token'] = refreshToken;
+
+  // Access token unused, removed for cookie size limit
+  if (response.data.access_token && response.data.token_type) {
+    delete response.data.access_token;
+    delete response.data.token_type;
   }
 
   return [response.data, cognitoParams.identityPoolId, cognitoParams.userPoolId];

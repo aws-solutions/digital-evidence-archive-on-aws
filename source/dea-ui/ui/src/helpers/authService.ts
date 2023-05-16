@@ -8,6 +8,7 @@ import {
   GetCredentialsForIdentityCommand,
   GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
+import { getLogoutUrl, refreshToken, revokeToken } from '../api/auth';
 
 const region = process.env.NEXT_PUBLIC_REGION ?? 'us-east-1';
 
@@ -17,25 +18,60 @@ export interface Credentials {
   SessionToken: string;
 }
 
+export const getCallbackUrl = () => {
+  let callbackUrl = '';
+  if (typeof window !== 'undefined') {
+    callbackUrl = `${window.location}`.replace(/\/ui(.*)/, '/ui/login');
+  }
+  return callbackUrl;
+};
+
+function clearStorage() {
+  sessionStorage.clear();
+  localStorage.removeItem('username');
+}
+
+export const signOutProcess = async () => {
+  try {
+    await revokeToken();
+  } catch (e) {
+    console.log('Error revoking token, refresh token may be expired already:', e);
+  }
+
+  clearStorage();
+
+  // Logout of cognito session and redirect to login page
+  const callbackUrl = getCallbackUrl();
+  const logoutUrl = await getLogoutUrl(callbackUrl);
+
+  return logoutUrl;
+};
+
+export const refreshCredentials = async () => {
+  const response = await refreshToken();
+  const credentials = await getCredentialsByToken(
+    response.idToken,
+    response.identityPoolId,
+    response.userPoolId
+  );
+  sessionStorage.setItem('accessKeyId', credentials.AccessKeyId);
+  sessionStorage.setItem('secretAccessKey', credentials.SecretKey);
+  sessionStorage.setItem('sessionToken', credentials.SessionToken);
+  sessionStorage.setItem('tokenExpirationTime', calculateExpirationDate(response.expiresIn).toString());
+};
+
 export const getCredentialsByToken = async (idToken: string, identityPoolId: string, userPoolId: string) => {
+  const cognitoRegion = region.includes('gov') ? 'us-gov-west-1' : region;
   // Set up the Cognito Identity client
   const cognitoIdentityClient = new CognitoIdentityClient({
-    region: region,
+    region: cognitoRegion,
   });
 
   // Set up the request parameters
-  let Logins: Record<string, string>;
-  if (region.includes('gov')) {
-    // In us-gov-east, we have to redirect to us-gov-west because
-    // Cognito is not available there
-    Logins = {
-      [`cognito-idp.us-gov-west-1.amazonaws.com/${userPoolId}`]: idToken,
-    };
-  } else {
-    Logins = {
-      [`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: idToken,
-    };
-  }
+  const Logins: Record<string, string> = {
+    [`cognito-idp.${cognitoRegion}.amazonaws.com/${userPoolId}`]: idToken,
+  };
+
   const getIdCommand = new GetIdCommand({
     IdentityPoolId: identityPoolId,
     Logins,
@@ -64,4 +100,10 @@ export const getCredentialsByToken = async (idToken: string, identityPoolId: str
   };
 
   return credentials;
+};
+
+export const calculateExpirationDate = (expirationTime: number) => {
+  // expiration time is in seconds, we add time by milliseconds so multiply by 1000
+  const timestamp = new Date().getTime() + expirationTime * 1000;
+  return timestamp;
 };

@@ -33,6 +33,7 @@ import * as StartCaseAuditHandler from '../../handlers/request-case-audit-handle
 import * as StartCaseFileAuditHandler from '../../handlers/request-case-file-audit-handler';
 import * as StartSystemAuditHandler from '../../handlers/request-system-audit-handler';
 import * as StartUserAuditHandler from '../../handlers/request-user-audit-handler';
+import * as RestoreCaseFileHandler from '../../handlers/restore-case-file-handler';
 import * as RevokeTokenHandler from '../../handlers/revoke-token-handler';
 import * as S3BatchDeleteCaseFileHandler from '../../handlers/s3-batch-delete-case-file-handler';
 import * as S3BatchJobStatusChangeHandler from '../../handlers/s3-batch-job-status-change-handler';
@@ -77,6 +78,7 @@ describe('lambda handlers', () => {
       GetAvailableEndpoints.handler,
       UpdateCaseStatusHandler.handler,
       GetScopedCaseInformation.handler,
+      RestoreCaseFileHandler.handler,
     ];
 
     handlers.forEach((handler) => {

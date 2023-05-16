@@ -5,25 +5,26 @@
 
 import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
 import {
-  Form,
-  SpaceBetween,
+  Box,
   Button,
-  Header,
   Container,
+  Form,
   FormField,
+  Header,
+  Icon,
   Input,
-  Textarea,
+  SpaceBetween,
   Spinner,
   Table,
-  Box,
-  Icon,
+  Textarea,
 } from '@cloudscape-design/components';
 import cryptoJS from 'crypto-js';
 import { useRouter } from 'next/router';
-import * as React from 'react';
 import { useState } from 'react';
-import { initiateUpload, completeUpload } from '../../api/cases';
+import { completeUpload, initiateUpload } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
+import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
+import FileUpload from '../common-components/FileUpload';
 import { UploadFilesProps } from './UploadFilesBody';
 
 interface FileUploadProgressRow {
@@ -47,7 +48,7 @@ interface ActiveFileUpload {
 export const ONE_MB = 1024 * 1024;
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
   const [uploadedFiles] = useState<FileUploadProgressRow[]>([]);
   const [tag, setTag] = useState('');
   const [details, setDetails] = useState('');
@@ -73,7 +74,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           const initiatedCaseFilePromise = initiateUpload({
             caseUlid: props.caseId,
             fileName: selectedFile.name,
-            filePath: props.filePath,
+            filePath: selectedFile.relativePath,
             fileSizeBytes,
             chunkSizeBytes,
             contentType,
@@ -256,24 +257,11 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
                 }}
               />
             </FormField>
-            <Container>
-              <FormField
-                label={fileOperationsLabels.selectFileDescription}
-                description={fileOperationsLabels.selectFileSubtext}
-              >
-                <input
-                  type="file"
-                  multiple
-                  data-testid="file-select"
-                  onChange={(event) => {
-                    if (event.currentTarget && event.currentTarget.files) {
-                      selectedFiles.push(...event.currentTarget.files);
-                    }
-                  }}
-                  disabled={uploadInProgress}
-                />
-              </FormField>
-            </Container>
+            <FileUpload
+              onChange={(files: FileWithPath[]) => setSelectedFiles(files)}
+              value={selectedFiles}
+              disabled={uploadInProgress}
+            />
           </SpaceBetween>
         </Container>
       </Form>
@@ -314,7 +302,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             {
               id: 'size',
               header: commonTableLabels.fileSizeHeader,
-              cell: (e) => `${Math.ceil(e.fileSizeBytes / ONE_MB)}MB`,
+              cell: (e) => formatFileSize(e.fileSizeBytes),
               width: 170,
               minWidth: 165,
               sortingField: 'fileSizeBytes',

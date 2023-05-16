@@ -36,7 +36,7 @@ export const createCases = async (
         (reason: { Code: string }) => reason.Code === 'ConditionalCheckFailed'
       );
       if (oneTableError.code === 'TransactionCanceledException' && conditionalcheckfailed) {
-        throw new ValidationError(`Case with name "${deaCase.name}" is already in use`);
+        throw new ValidationError(`Case name is already in use`);
       }
     }
     throw error;
