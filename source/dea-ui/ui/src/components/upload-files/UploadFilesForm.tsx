@@ -44,6 +44,8 @@ interface ActiveFileUpload {
   fileUploadProgress: FileUploadProgressRow;
   file: File;
   initiatedCaseFilePromise: Promise<DeaCaseFile>;
+  partsChecksum: string[];
+  sha256Hash: string;
 }
 
 export const ONE_MB = 1024 * 1024;
@@ -105,6 +107,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             file: selectedFile,
             fileUploadProgress: uploadingFile,
             initiatedCaseFilePromise,
+            partsChecksum,
+            sha256Hash,
           });
         } catch (e) {
           uploadingFile.status = UploadStatus.failed;
@@ -119,7 +123,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         try {
           const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
           const uploadPromises: Promise<Response>[] = [];
-          const hash = cryptoJS.algo.SHA256.create();
           if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
             const numberOfUrls = initiatedCaseFile.presignedUrls.length;
             const chunkSizeBytes = initiatedCaseFile.chunkSizeBytes
@@ -129,15 +132,13 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               const url = initiatedCaseFile.presignedUrls[index];
               const start = index * chunkSizeBytes;
               const end = (index + 1) * chunkSizeBytes;
-              const filePartPointer =
+              const filePart =
                 index === numberOfUrls - 1
                   ? activeFileUpload.file.slice(start)
                   : activeFileUpload.file.slice(start, end);
-              const loadedFilePart = await readFileSlice(filePartPointer);
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
-              hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
-              uploadPromises[index] = fetch(url, { method: 'PUT', body: loadedFilePart });
+              const headers: HeadersInit = new Headers();
+              headers.set('x-amz-checksum-sha256', activeFileUpload.partsChecksum[index]);
+              uploadPromises[index] = fetch(url, { method: 'PUT', body: filePart, headers });
             }
             await Promise.all(uploadPromises);
 
@@ -145,7 +146,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               caseUlid: props.caseId,
               ulid: initiatedCaseFile.ulid,
               uploadId: initiatedCaseFile.uploadId,
-              sha256Hash: hash.finalize().toString(),
+              sha256Hash: activeFileUpload.sha256Hash,
             });
           }
           activeFileUpload.fileUploadProgress.status = UploadStatus.complete;

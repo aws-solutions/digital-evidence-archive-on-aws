@@ -151,6 +151,7 @@ export const completeUploadForCaseFile = async (
       Key: s3Key,
       UploadId: caseFile.uploadId,
       MultipartUpload: { Parts: uploadedParts },
+      ChecksumSHA256: caseFile.sha256Hash,
     })
   );
   caseFile.versionId = uploadResponse.VersionId;
