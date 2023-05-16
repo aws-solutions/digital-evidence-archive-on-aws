@@ -91,6 +91,8 @@ export interface InitiateCaseFileUploadDTO {
   readonly details?: string;
   readonly reason?: string;
   readonly chunkSizeBytes: number;
+  readonly partsChecksum: string[];
+  readonly sha256Hash: string;
 }
 
 export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;

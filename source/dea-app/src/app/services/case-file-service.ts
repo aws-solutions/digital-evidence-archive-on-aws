@@ -43,7 +43,12 @@ export const initiateCaseFileUpload = async (
     repositoryProvider
   );
 
-  await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider, uploadDTO.chunkSizeBytes);
+  await generatePresignedUrlsForCaseFile(
+    caseFile,
+    datasetsProvider,
+    uploadDTO.chunkSizeBytes,
+    uploadDTO.partsChecksum
+  );
   return { ...caseFile, chunkSizeBytes: uploadDTO.chunkSizeBytes };
 };
 

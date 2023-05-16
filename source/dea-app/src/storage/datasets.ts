@@ -4,6 +4,7 @@
  */
 
 import {
+  ChecksumAlgorithm,
   CompleteMultipartUploadCommand,
   CreateMultipartUploadCommand,
   DeleteObjectCommand,
@@ -67,7 +68,8 @@ export const defaultDatasetsProvider = {
 export const generatePresignedUrlsForCaseFile = async (
   caseFile: DeaCaseFile,
   datasetsProvider: DatasetsProvider,
-  chunkSizeBytes: number
+  chunkSizeBytes: number,
+  partsChecksum: string[]
 ): Promise<void> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
   logger.info('Initiating multipart upload.', { s3Key });
@@ -79,6 +81,7 @@ export const generatePresignedUrlsForCaseFile = async (
       ServerSideEncryption: 'aws:kms',
       ContentType: caseFile.contentType,
       StorageClass: 'INTELLIGENT_TIERING',
+      ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
     })
   );
 
@@ -90,7 +93,13 @@ export const generatePresignedUrlsForCaseFile = async (
   logger.info('Generating presigned URLs.', { fileParts, s3Key });
   const presignedUrlPromises = [];
   for (let i = 0; i < fileParts; i++) {
-    presignedUrlPromises[i] = getUploadPresignedUrlPromise(s3Key, uploadId, i + 1, datasetsProvider);
+    presignedUrlPromises[i] = getUploadPresignedUrlPromise(
+      s3Key,
+      uploadId,
+      i + 1,
+      partsChecksum[i],
+      datasetsProvider
+    );
   }
   await Promise.all(presignedUrlPromises).then((presignedUrls) => {
     caseFile.presignedUrls = presignedUrls;
@@ -395,6 +404,7 @@ async function getUploadPresignedUrlPromise(
   s3Key: string,
   uploadId: string,
   partNumber: number,
+  partChecksum: string,
   datasetsProvider: DatasetsProvider
 ): Promise<string> {
   const uploadPartCommand = new UploadPartCommand({
@@ -402,8 +412,10 @@ async function getUploadPresignedUrlPromise(
     Key: s3Key,
     UploadId: uploadId,
     PartNumber: partNumber,
+    ChecksumSHA256: partChecksum,
   });
   return getSignedUrl(datasetsProvider.s3Client, uploadPartCommand, {
     expiresIn: datasetsProvider.presignedCommandExpirySeconds,
+    unhoistableHeaders: new Set(['x-amz-sdk-checksum-algorithm', 'x-amz-checksum-sha256']),
   });
 }

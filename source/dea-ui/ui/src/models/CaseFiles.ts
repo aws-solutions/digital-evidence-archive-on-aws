@@ -13,6 +13,8 @@ export interface InitiateUploadForm {
   details: string;
   reason: string;
   chunkSizeBytes: number;
+  sha256Hash: string;
+  partsChecksum: string[];
 }
 
 export interface CompleteUploadForm {

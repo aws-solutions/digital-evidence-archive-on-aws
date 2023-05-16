@@ -19,6 +19,7 @@ import {
   Textarea,
 } from '@cloudscape-design/components';
 import cryptoJS from 'crypto-js';
+import sha256 from 'crypto-js/sha256';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
@@ -66,6 +67,22 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         // Trying to use small chunk size (50MB) to reduce memory use.
         // However, since S3 allows a max of 10,000 parts for multipart uploads, we will increase chunk size for larger files
         const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
+        const fileParts = Math.max(Math.ceil(fileSizeBytes / chunkSizeBytes), 1);
+        const hash = cryptoJS.algo.SHA256.create();
+        const partsChecksum: string[] = [];
+        for (let index = 0; index < fileParts; index += 1) {
+          const start = index * chunkSizeBytes;
+          const end = (index + 1) * chunkSizeBytes;
+          const filePartPointer =
+            index === fileParts - 1 ? selectedFile.slice(start) : selectedFile.slice(start, end);
+          const loadedFilePart = await readFileSlice(filePartPointer);
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
+          const wordArray = cryptoJS.lib.WordArray.create(loadedFilePart);
+          hash.update(wordArray);
+          partsChecksum.push(sha256(wordArray).toString());
+        }
+        const sha256Hash = hash.finalize().toString();
         const uploadingFile = { fileName: selectedFile.name, fileSizeBytes, status: UploadStatus.progress };
         // per file try/finally state to initiate uploads
         try {
@@ -81,6 +98,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             tag,
             reason,
             details,
+            sha256Hash,
+            partsChecksum,
           });
           activeFileUploads.push({
             file: selectedFile,

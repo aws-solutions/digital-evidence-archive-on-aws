@@ -29,6 +29,8 @@ export const initiateCaseFileUploadRequestSchema = Joi.object({
   tag: safeTag,
   reason: safeReason,
   details: safeDetails,
+  sha256Hash: sha256Hash,
+  partsChecksum: Joi.array().items(sha256Hash),
 });
 
 export const completeCaseFileUploadRequestSchema = Joi.object({
