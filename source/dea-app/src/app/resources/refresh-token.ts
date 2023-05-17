@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { getExpirationTimeFromToken, getTokenPayload } from '../../cognito-token-helpers';
 import { getOauthToken } from '../../lambda-http-helpers';
 import { useRefreshToken } from '../services/auth-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -12,6 +13,13 @@ export const refreshToken: DEAGatewayProxyHandler = async (event) => {
   const oauthToken = getOauthToken(event);
   const [refreshTokenResult, identityPoolId, userPoolId] = await useRefreshToken(oauthToken.refresh_token);
 
+  const idTokenPayload = await getTokenPayload(
+    refreshTokenResult.id_token,
+    process.env.AWS_REGION ?? 'us-east-1'
+  );
+
+  const expirationTime = getExpirationTimeFromToken(idTokenPayload);
+
   return okSetIdTokenCookie(
     event,
     refreshTokenResult,
@@ -19,7 +27,7 @@ export const refreshToken: DEAGatewayProxyHandler = async (event) => {
       idToken: refreshTokenResult.id_token,
       identityPoolId: identityPoolId,
       userPoolId: userPoolId,
-      expiresIn: refreshTokenResult.expires_in,
+      expiresIn: expirationTime,
     })
   );
 };

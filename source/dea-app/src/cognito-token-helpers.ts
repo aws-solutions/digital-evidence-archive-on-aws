@@ -64,3 +64,12 @@ export const getDeaUserFromToken = async (idTokenPayload: CognitoIdTokenPayload)
 
   return deaUser;
 };
+
+export const getExpirationTimeFromToken = (idTokenPayload: CognitoIdTokenPayload): number => {
+  if (!idTokenPayload['iat'] || !idTokenPayload['exp']) {
+    throw new ValidationError('Missing expiration and auth time');
+  }
+  const expirationTime = idTokenPayload['exp'] - idTokenPayload['iat'];
+
+  return expirationTime;
+};
