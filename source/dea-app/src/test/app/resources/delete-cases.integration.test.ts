@@ -110,7 +110,12 @@ describe('delete cases resource', () => {
       );
     }
 
-    const usersOnCase = await listCaseUsersByCase(createdCase.ulid, 30, undefined, repositoryProvider);
+    const usersOnCase = await listCaseUsersByCase(
+      createdCase.ulid,
+      repositoryProvider,
+      /*next=*/ undefined,
+      30
+    );
     expect(usersOnCase.length).toEqual(29);
 
     const event = getDummyEvent({
@@ -124,9 +129,9 @@ describe('delete cases resource', () => {
     // All memberships should be gone
     const usersOnCaseAfterDelete = await listCaseUsersByCase(
       createdCase.ulid,
-      30,
-      undefined,
-      repositoryProvider
+      repositoryProvider,
+      /*next=*/ undefined,
+      30
     );
     expect(usersOnCaseAfterDelete.length).toEqual(0);
 

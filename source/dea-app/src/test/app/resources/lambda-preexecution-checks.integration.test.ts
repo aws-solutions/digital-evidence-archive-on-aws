@@ -133,10 +133,10 @@ describe('lambda pre-execution checks', () => {
 
     // Check only user is in the db:
     const users: Paged<DeaUser> = await listUsers(
-      /*limit=*/ 100,
-      /*next=*/ undefined,
       /*nameBeginsWith=*/ undefined,
-      repositoryProvider
+      repositoryProvider,
+      /*next=*/ undefined,
+      /*limit=*/ 100
     );
     expect(users.length).toBe(1);
     expect(users[0].tokenId).toStrictEqual(tokenId);

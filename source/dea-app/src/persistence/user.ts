@@ -88,16 +88,17 @@ export const getUserByTokenId = async (
 };
 
 export const listUsers = async (
-  limit = 30,
+  nameBeginsWith: string | undefined,
+  repositoryProvider: UserModelRepositoryProvider,
   nextToken: object | undefined,
-  nameBeginsWith = '',
-  repositoryProvider: UserModelRepositoryProvider
+  limit = 30
 ): Promise<Paged<DeaUser>> => {
+  const namePrefix = nameBeginsWith?.toLowerCase() ?? '';
   const caseEntities = await repositoryProvider.UserModel.find(
     {
       GSI1PK: 'USER#',
       GSI1SK: {
-        begins_with: `USER#${nameBeginsWith.toLowerCase()}`,
+        begins_with: `USER#${namePrefix}`,
       },
     },
     {

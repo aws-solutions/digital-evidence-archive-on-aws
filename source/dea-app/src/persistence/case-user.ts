@@ -29,9 +29,9 @@ export const getCaseUser = async (
 
 export const listCaseUsersByCase = async (
   caseUlid: string,
-  limit = 30,
+  repositoryProvider: CaseUserModelRepositoryProvider,
   nextToken: object | undefined,
-  repositoryProvider: CaseUserModelRepositoryProvider
+  limit = 30
 ): Promise<Paged<CaseUser>> => {
   const caseEntities = await repositoryProvider.CaseUserModel.find(
     {
@@ -56,9 +56,9 @@ export const listCaseUsersByCase = async (
 
 export const listCaseUsersByUser = async (
   userUlid: string,
-  limit = 30,
+  repositoryProvider: CaseUserModelRepositoryProvider,
   nextToken: object | undefined,
-  repositoryProvider: CaseUserModelRepositoryProvider
+  limit = 30
 ): Promise<Paged<CaseUser>> => {
   const caseEntities = await repositoryProvider.CaseUserModel.find(
     {

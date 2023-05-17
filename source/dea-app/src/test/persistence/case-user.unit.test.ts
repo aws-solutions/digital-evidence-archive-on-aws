@@ -136,9 +136,14 @@ describe('caseUser persistence', () => {
     expectedCaseUsers.next = undefined;
     expectedCaseUsers.prev = undefined;
 
-    const actualWithLimit1 = await listCaseUsersByCase(listCase1Ulid, 1, undefined, repositoryProvider);
+    const actualWithLimit1 = await listCaseUsersByCase(
+      listCase1Ulid,
+      repositoryProvider,
+      /*next=*/ undefined,
+      1
+    );
     expect(actualWithLimit1.length).toEqual(1);
-    const actual = await listCaseUsersByCase(listCase1Ulid, undefined, undefined, repositoryProvider);
+    const actual = await listCaseUsersByCase(listCase1Ulid, repositoryProvider, /*next=*/ undefined);
 
     expect(actual.values).toEqual(expectedCaseUsers.values);
   });
@@ -170,9 +175,14 @@ describe('caseUser persistence', () => {
     expectedCaseUsers.next = undefined;
     expectedCaseUsers.prev = undefined;
 
-    const actualWithLimit1 = await listCaseUsersByUser(listUser1Ulid, 1, undefined, repositoryProvider);
+    const actualWithLimit1 = await listCaseUsersByUser(
+      listUser1Ulid,
+      repositoryProvider,
+      /* next */ undefined,
+      1
+    );
     expect(actualWithLimit1.length).toEqual(1);
-    const actual = await listCaseUsersByUser(listUser1Ulid, undefined, undefined, repositoryProvider);
+    const actual = await listCaseUsersByUser(listUser1Ulid, repositoryProvider, /* next */ undefined);
 
     expect(actual.values).toEqual(expectedCaseUsers.values);
   });

@@ -24,10 +24,10 @@ export const getUsers: DEAGatewayProxyHandler = async (
 
   const paginationParams = getPaginationParameters(event);
   const pageOfUsers = await UserService.getUsers(
-    paginationParams.limit,
-    paginationParams.nextToken,
     nameBeginsWith,
-    repositoryProvider
+    repositoryProvider,
+    paginationParams.nextToken,
+    paginationParams.limit
   );
 
   return responseOk(event, {

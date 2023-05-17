@@ -39,9 +39,9 @@ export const listCaseFiles: DEAGatewayProxyHandler = async (
   const pageOfCaseFiles = await listCaseFilesByFilePath(
     caseId,
     filePath,
-    paginationParams.limit,
     repositoryProvider,
-    paginationParams.nextToken
+    paginationParams.nextToken,
+    paginationParams.limit
   );
 
   const hydratedFiles = await hydrateUsersForFiles(pageOfCaseFiles, repositoryProvider);
