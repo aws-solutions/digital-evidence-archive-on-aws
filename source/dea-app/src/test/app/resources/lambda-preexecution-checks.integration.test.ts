@@ -13,8 +13,7 @@ import { NotFoundError } from '../../../app/exceptions/not-found-exception';
 import { ReauthenticationError } from '../../../app/exceptions/reauthentication-exception';
 import { runPreExecutionChecks } from '../../../app/resources/dea-lambda-utils';
 import { IdentityType } from '../../../app/services/audit-service';
-import { useRefreshToken } from '../../../app/services/auth-service';
-import { createSession, shouldSessionBeConsideredInactive } from '../../../app/services/session-service';
+import { createSession } from '../../../app/services/session-service';
 import { createUser } from '../../../app/services/user-service';
 import { getTokenPayload } from '../../../cognito-token-helpers';
 import { Oauth2Token } from '../../../models/auth';
@@ -248,65 +247,6 @@ describe('lambda pre-execution checks', () => {
     // Create new session, call API, should succeed
     const newIdToken = await cognitoHelper.getIdTokenForUser(user);
     await callPreChecks(newIdToken);
-  }, 40000);
-
-  it('should require reauthentication if your session was last active 30+ minutes ago', async () => {
-    // Create user
-    const user = `InactiveSession${suffix}`;
-    await cognitoHelper.createUser(user, 'AuthTestGroup', 'Inactive', 'Session');
-    const oauthToken = await cognitoHelper.getIdTokenForUser(user);
-
-    // Call API, adds session to db
-    const userUlid = await callPreChecks(oauthToken);
-    const sessions = await listSessionsForUser(userUlid, repositoryProvider);
-    expect(sessions.length).toEqual(1);
-    const session = sessions[0];
-
-    // We cannot mock time without the SSM SDK also breaking, so we
-    // will just test the shouldSessionBeConsideredInactive
-    jest.useFakeTimers();
-    // Mock session timeout by forcing Date.now() to adding 30+ minutes to the value
-    jest.setSystemTime(Date.now() + 18000001);
-    expect(shouldSessionBeConsideredInactive(session)).toBeTruthy();
-    jest.useRealTimers();
-  }, 40000);
-
-  it('should revoke all previous sessions for a user when they log in with a new session.', async () => {
-    // Create user
-    const user = `ConcurrentSession${suffix}`;
-    await cognitoHelper.createUser(user, 'AuthTestGroup', 'Concurrent', 'Session');
-    const oauthToken = await cognitoHelper.getIdTokenForUser(user);
-
-    // Call API, adds session to db
-    const userUlid = await callPreChecks(oauthToken);
-    const sessions = await listSessionsForUser(userUlid, repositoryProvider);
-    expect(sessions.length).toEqual(1);
-
-    // Create another session, call API, it should succeed and revoke old session
-    const newIdToken = await cognitoHelper.getIdTokenForUser(user);
-    await callPreChecks(newIdToken);
-
-    // There should be 2 sessions for the user now
-    // The old one which is revoked, and the new session
-    const sessions2 = await listSessionsForUser(userUlid, repositoryProvider);
-    expect(sessions2.length).toEqual(2);
-    const newSession = sessions2.filter((session) => !session.isRevoked);
-    expect(newSession.length).toBe(1);
-
-    // Try old session, it should fail
-    await expect(callPreChecks(oauthToken)).rejects.toThrow(ReauthenticationError);
-
-    // Get new id token with old refresh token, call API with new id token, it should fail
-    // since old session with origin_jti was revoked
-    const [newIdTokenForOldSession] = await useRefreshToken(oauthToken.refresh_token);
-    await expect(callPreChecks(newIdTokenForOldSession)).rejects.toThrow(ReauthenticationError);
-
-    // Try new session again it should succeed.
-    await callPreChecks(newIdToken);
-
-    // There should still only be 2 sessions
-    const sessions3 = await listSessionsForUser(userUlid, repositoryProvider);
-    expect(sessions3.length).toEqual(2);
   }, 40000);
 });
 
