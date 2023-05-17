@@ -119,7 +119,7 @@ describe('case persistence', () => {
     expectedCases.next = undefined;
     expectedCases.prev = undefined;
 
-    const actual = await listCases(undefined, undefined, repositoryProvider);
+    const actual = await listCases(repositoryProvider, /*next=*/ undefined);
 
     expect(actual.values).toEqual(expectedCases.values);
   });
