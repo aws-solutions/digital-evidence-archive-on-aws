@@ -25,10 +25,6 @@
           "method": "GET"
         },
         {
-          "path": "/cases/{caseId}/owner",
-          "method": "POST"
-        },
-        {
           "path": "/cases/{caseId}/status",
           "method": "PUT"
         },
