@@ -33,7 +33,7 @@ normal=$(tput sgr0)
 # SETTINGS
 #------------------------------------------------------------------------------
 # Important: CDK global version number
-cdk_version=2.46.0
+cdk_version=2.76.0
 # Note: should match package.json
 template_format="json"
 run_helper="true"
@@ -266,7 +266,7 @@ echo "--------------------------------------------------------------------------
 # Note: do not install using global (-g) option. This makes build-s3-dist.sh difficult
 # for customers and developers to use, as it globally changes their environment.
 
-STAGE=demo
+STAGE=chewbacca
 echo Stage set to $STAGE
 
 # Add local install to PATH
