@@ -18,6 +18,7 @@ export interface ApiGatewayRoute {
   readonly pagination?: boolean;
   readonly queryParams?: string[];
   readonly authMethod?: AuthorizationType; //Override authorization type if auth type should be custom or none
+  readonly latencyAlarmThreshold?: number; //Threshold in ms for latency alarm
 }
 
 export enum ApiGatewayMethod {
