@@ -33,7 +33,12 @@ export class DeaBackendConstruct extends Construct {
   public datasetsBucket: Bucket;
   public accessLogsBucket: Bucket;
 
-  public constructor(scope: Construct, id: string, props: IBackendStackProps) {
+  public constructor(
+    scope: Construct,
+    id: string,
+    protectedDeaResourceArns: string[],
+    props: IBackendStackProps
+  ) {
     super(scope, id);
 
     this.deaTable = this.createDeaTable(props.kmsKey);
@@ -48,6 +53,12 @@ export class DeaBackendConstruct extends Construct {
     );
 
     props.opsDashboard.addDynamoTableOperationalComponents(this.deaTable);
+  
+    protectedDeaResourceArns.push(this.deaTable.tableArn);
+    protectedDeaResourceArns.push(this.datasetsBucket.bucketArn);
+    protectedDeaResourceArns.push(this.datasetsBucket.arnForObjects('*'));
+    protectedDeaResourceArns.push(this.accessLogsBucket.bucketArn);
+    protectedDeaResourceArns.push(this.accessLogsBucket.arnForObjects('*'));
   }
 
   private createDeaTable(key: Key): Table {
