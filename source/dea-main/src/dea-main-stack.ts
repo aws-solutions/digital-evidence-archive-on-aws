@@ -16,6 +16,7 @@ import {
   DeaRestApiConstruct,
   createCfnOutput,
   deaConfig,
+  DeaOperationalDashboard,
 } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
@@ -43,6 +44,8 @@ export class DeaMainStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const dashboard = new DeaOperationalDashboard(this, 'DeaApiOpsDashboard');
+
     // DEA App Register Construct
     this.appRegistry = new DeaAppRegisterConstruct(this, this.stackId, {
       solutionId: 'SO0224',
@@ -64,6 +67,7 @@ export class DeaMainStack extends cdk.Stack {
     const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', {
       kmsKey: kmsKey,
       accessLogsPrefixes: [uiAccessLogPrefix],
+      opsDashboard: dashboard,
     });
 
     const region = deaConfig.region();
@@ -85,6 +89,7 @@ export class DeaMainStack extends cdk.Stack {
         DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
         AWS_USE_FIPS_ENDPOINT: 'true',
       },
+      opsDashboard: dashboard,
     });
 
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
@@ -106,6 +111,7 @@ export class DeaMainStack extends cdk.Stack {
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
         AWS_USE_FIPS_ENDPOINT: 'true',
       },
+      opsDashboard: dashboard,
     });
 
     // For OneClick we need to have one Cfn template, so we will
