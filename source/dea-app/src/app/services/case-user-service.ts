@@ -87,11 +87,11 @@ export const createCaseUserMembership = async (
 
 export const getCaseUsersForUser = async (
   userUlid: string,
-  limit = 30,
+  repositoryProvider: ModelRepositoryProvider,
   nextToken: object | undefined,
-  repositoryProvider: ModelRepositoryProvider
+  limit = 30
 ): Promise<Paged<CaseUser>> => {
-  return CaseUserPersistence.listCaseUsersByUser(userUlid, limit, nextToken, repositoryProvider);
+  return CaseUserPersistence.listCaseUsersByUser(userUlid, repositoryProvider, nextToken, limit);
 };
 
 export const deleteCaseUsersForCase = async (
@@ -101,9 +101,9 @@ export const deleteCaseUsersForCase = async (
   let batch = {};
   const caseUsers = await CaseUserPersistence.listCaseUsersByCase(
     caseUlid,
-    /* limit */ 25,
-    undefined,
-    repositoryProvider
+    repositoryProvider,
+    /*next=*/ undefined,
+    /*limit=*/ 25
   );
   for (const caseUser of caseUsers) {
     await CaseUserPersistence.deleteCaseUser(
@@ -112,7 +112,6 @@ export const deleteCaseUsersForCase = async (
       batch
     );
   }
-
   await repositoryProvider.table.batchWrite(batch);
 
   let next = caseUsers.next;
@@ -120,9 +119,9 @@ export const deleteCaseUsersForCase = async (
     batch = {};
     const additionalCaseUsers = await CaseUserPersistence.listCaseUsersByCase(
       caseUlid,
-      /* limit */ 25,
+      repositoryProvider,
       next,
-      repositoryProvider
+      /* limit */ 25
     );
     for (const caseUser of additionalCaseUsers) {
       await CaseUserPersistence.deleteCaseUser(
@@ -146,11 +145,11 @@ export const deleteCaseUser = async (
 
 export const getCaseUsersForCase = async (
   caseUlid: string,
-  limit = 30,
+  repositoryProvider: ModelRepositoryProvider,
   nextToken: object | undefined,
-  repositoryProvider: ModelRepositoryProvider
+  limit = 30
 ): Promise<Paged<CaseUser>> => {
-  return CaseUserPersistence.listCaseUsersByCase(caseUlid, limit, nextToken, repositoryProvider);
+  return CaseUserPersistence.listCaseUsersByCase(caseUlid, repositoryProvider, nextToken, limit);
 };
 
 export const createCaseOwnerFromDTO = async (

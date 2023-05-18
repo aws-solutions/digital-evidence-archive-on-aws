@@ -44,25 +44,25 @@ export const createCases = async (
 };
 
 export const listAllCases = async (
-  limit = 30,
+  repositoryProvider: ModelRepositoryProvider,
   nextToken: object | undefined,
-  repositoryProvider: ModelRepositoryProvider
+  limit = 30
 ): Promise<Paged<DeaCase>> => {
-  return CasePersistence.listCases(limit, nextToken, repositoryProvider);
+  return CasePersistence.listCases(repositoryProvider, nextToken, limit);
 };
 
 export const listCasesForUser = async (
   userUlid: string,
-  limit = 30,
+  repositoryProvider: ModelRepositoryProvider,
   nextToken: object | undefined,
-  repositoryProvider: ModelRepositoryProvider
+  limit = 30
 ): Promise<Paged<MyCase>> => {
   // Get all memberships for the user
   const caseMemberships = await CaseUserPersistence.listCaseUsersByUser(
     userUlid,
-    limit,
+    repositoryProvider,
     nextToken,
-    repositoryProvider
+    limit
   );
 
   const caseActionsMap = new Map<string, CaseAction[]>();
