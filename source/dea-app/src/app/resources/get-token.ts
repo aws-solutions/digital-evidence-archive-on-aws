@@ -2,7 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-import { getTokenPayload } from '../../cognito-token-helpers';
+import { getExpirationTimeFromToken, getTokenPayload } from '../../cognito-token-helpers';
 import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
 import { ExchangeToken } from '../../models/auth';
 import { ExchangeTokenSchema } from '../../models/validation/auth';
@@ -31,6 +31,8 @@ export const getToken: DEAGatewayProxyHandler = async (event) => {
     username = `${idTokenPayload['given_name']} ${idTokenPayload['family_name']}`;
   }
 
+  const expirationTime = getExpirationTimeFromToken(idTokenPayload);
+
   return okSetIdTokenCookie(
     event,
     getTokenResult,
@@ -39,7 +41,7 @@ export const getToken: DEAGatewayProxyHandler = async (event) => {
       idToken: getTokenResult.id_token,
       identityPoolId: identityPoolId,
       userPoolId: userPoolId,
-      expiresIn: getTokenResult.expires_in,
+      expiresIn: expirationTime,
     })
   );
 };
