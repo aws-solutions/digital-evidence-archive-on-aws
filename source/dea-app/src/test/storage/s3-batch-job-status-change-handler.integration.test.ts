@@ -32,7 +32,7 @@ import {
   FILE_SIZE_BYTES,
   validateCaseStatusUpdatedAsExpected,
 } from '../app/resources/case-file-integration-test-helper';
-import { dummyContext, getDummyEvent } from '../integration-objects';
+import { dummyContext } from '../integration-objects';
 import { getTestRepositoryProvider } from '../persistence/local-db-table';
 import {
   CALLBACK_FN,
@@ -45,7 +45,6 @@ let caseOwner: DeaUser;
 let s3Mock: AwsStub<S3Input, S3Output>;
 let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput>;
 
-const apiEvent = getDummyEvent();
 const ETAG = 'hehe';
 const VERSION_ID = 'haha';
 
@@ -62,7 +61,6 @@ describe('S3 batch job status change handler', () => {
         },
         repositoryProvider
       )) ?? fail();
-    apiEvent.headers['userUlid'] = caseOwner.ulid;
   });
 
   afterAll(async () => {
@@ -253,9 +251,14 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
   const caseId = createdCase.ulid;
 
   // setup file
-  let caseFile = await callInitiateCaseFileUpload(apiEvent, repositoryProvider, createdCase.ulid, 'file1');
+  let caseFile = await callInitiateCaseFileUpload(
+    caseOwner.ulid,
+    repositoryProvider,
+    createdCase.ulid,
+    'file1'
+  );
   const fileId = caseFile.ulid ?? fail();
-  caseFile = await callCompleteCaseFileUpload(apiEvent, repositoryProvider, fileId, createdCase.ulid);
+  caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, createdCase.ulid);
 
   const jobId = uuidv4();
   s3ControlMock.resolves({
@@ -269,7 +272,7 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
 
   // setup job and case in ddb
   const updatedCase = await callUpdateCaseStatusAndValidate(
-    apiEvent,
+    caseOwner.ulid,
     createdCase,
     true,
     CaseStatus.INACTIVE,
@@ -295,7 +298,7 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
       repositoryProvider,
       DATASETS_PROVIDER
     );
-    const deletedCaseFile = await callGetCaseFileDetails(apiEvent, repositoryProvider, fileId, caseId);
+    const deletedCaseFile = await callGetCaseFileDetails(caseOwner.ulid, repositoryProvider, fileId, caseId);
     const expectedResult = `Successfully deleted object: ${caseId}/${fileId}`;
     expect(deleteFileResponse).toEqual(getS3BatchResult(caseId, fileId, 'Succeeded', expectedResult));
     expect(deletedCaseFile.status).toEqual(CaseFileStatus.DELETED);
