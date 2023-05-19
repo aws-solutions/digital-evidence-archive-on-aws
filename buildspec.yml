@@ -1,10 +1,20 @@
 version: 0.2
 
+env:
+  variables:
+    STAGE: chewbacca
+    DOMAIN_PREFIX: deaplayground
+    DEA_API_URL: dummyApiUrl
+    IDENTITY_POOL_ID: dummyIdentityPoolId
+    USER_POOL_ID: dummyUserPoolId
+    USER_POOL_CLIENT_ID: dummyUserPoolClientId
+    DATASETS_BUCKET_NAME: dummyDatasetsBucket
+
 phases:
   install:
     runtime-versions:
-      nodejs: 14
-      python: 3.8
+      nodejs: 16
+      python: 3.10
     commands:
       - echo "nothing to do in install"
   pre_build:

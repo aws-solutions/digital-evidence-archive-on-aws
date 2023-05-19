@@ -15,8 +15,8 @@ echo "--------------------------------------------------------------------------
 echo "Install packages"
 echo "------------------------------------------------------------------------------"
 npm install -g @microsoft/rush
-npm install -g pnpm
-npm install -g aws-cdk@2.46.0
+npm install -g pnpm@7.16.0
+npm install -g aws-cdk@2.76.0
 git submodule update --init --recursive --remote
 echo "------------------------------------------------------------------------------"
 echo "Install Run Unit Tests"
@@ -24,5 +24,6 @@ echo "--------------------------------------------------------------------------
 cd $source_dir
 rush purge
 rush update
-rush build:test
+rush build
+rush unit:only
 echo "Test Complete"
