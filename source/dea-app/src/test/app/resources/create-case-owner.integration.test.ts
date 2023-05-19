@@ -179,6 +179,22 @@ describe('create case owner resource', () => {
     );
   });
 
+  it('should error if payload does include valid JSON', async () => {
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+      },
+      body: {
+        invalidJSON: 'invalidJSON',
+        invalidJSON2: 'invalidJSON2',
+      },
+    });
+
+    await expect(createCaseOwner(event, dummyContext, repositoryProvider)).rejects.toThrow(
+      'CaseOwner payload is malformed. Failed to parse.'
+    );
+  });
+
   it('should error if the resource and path ids do not match', async () => {
     const ulid1 = '01ARZ3NDEKTSV4RRFFQ69G5FAV';
     const ulid2 = '02ARZ3NDEKTSV4RRFFQ69G5FAV';

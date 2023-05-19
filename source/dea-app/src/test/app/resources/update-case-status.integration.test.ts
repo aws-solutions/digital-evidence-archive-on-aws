@@ -401,6 +401,26 @@ describe('update case status', () => {
     expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
   });
 
+  it('should error if payload does include valid JSON', async () => {
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+      },
+      body: {
+        invalidJSON: 'invalidJSON',
+        invalidJSON2: 'invalidJSON2',
+      },
+    });
+
+    await expect(updateCaseStatus(event, dummyContext, repositoryProvider)).rejects.toThrow(
+      'Update case status payload is malformed. Failed to parse.'
+    );
+
+    //ensure no job was created
+    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
+    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
+  });
+
   it('should error if caseId is not provided', async () => {
     const event = getDummyEvent({
       body: JSON.stringify({
