@@ -5,7 +5,7 @@
 
 import { useRouter } from 'next/router';
 import pkceChallenge from 'pkce-challenge';
-import { Context, createContext, useContext, useEffect, useState } from 'react';
+import { Context, createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { getLoginUrl } from '../api/auth';
 import { getCallbackUrl, signOutProcess } from '../helpers/authService';
 import { IUser, unknownUser } from '../models/User';
@@ -77,11 +77,9 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
 
   const isLoggedIn = user !== unknownUser;
 
-  return (
-    <AuthenticationContext.Provider value={{ user, signIn, signOut, isLoggedIn }}>
-      {children}
-    </AuthenticationContext.Provider>
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const props = useMemo(() => ({ user, signIn, signOut, isLoggedIn }), [user, isLoggedIn]);
+  return <AuthenticationContext.Provider value={props}>{children}</AuthenticationContext.Provider>;
 }
 
 export function useAuthentication(): IAuthenticationProps {

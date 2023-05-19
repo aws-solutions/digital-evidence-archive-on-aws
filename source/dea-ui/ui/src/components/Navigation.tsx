@@ -98,7 +98,7 @@ export default function Navigation({ initialHref, header }: NavigationProps): JS
             await downloadSystemAudit();
           }
           setActiveHref(event.detail.href);
-          void router.push(event.detail.href);
+          return router.push(event.detail.href);
         }
       }}
       items={navItems}

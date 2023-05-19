@@ -295,7 +295,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   }
 
   function uploadFilesHandler() {
-    void router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
+    return router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
   }
 
   async function downloadFilesHandler() {
