@@ -31,7 +31,7 @@ function CreateCasesForm(): JSX.Element {
     setIsSubmitLoading(true);
     try {
       await createCase(formData);
-      void router.push('/');
+      return router.push('/');
     } catch (e) {
       if (e instanceof Error) {
         pushNotification('error', e.message);
@@ -42,7 +42,7 @@ function CreateCasesForm(): JSX.Element {
   }
 
   function onCancelHandler() {
-    void router.push('/');
+    return router.push('/');
   }
 
   return (

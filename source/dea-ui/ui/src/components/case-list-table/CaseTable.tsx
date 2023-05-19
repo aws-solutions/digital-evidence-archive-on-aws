@@ -81,7 +81,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
     selection: {},
   });
   function createNewCaseHandler() {
-    void router.push('/create-cases');
+    return router.push('/create-cases');
   }
 
   function canActivateCase(): boolean {
@@ -300,7 +300,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
               href={`${e.ulid}`}
               onFollow={(e) => {
                 e.preventDefault();
-                void router.push(`/${props.detailPage}?caseId=${e.detail.href}`);
+                return router.push(`/${props.detailPage}?caseId=${e.detail.href}`);
               }}
             >
               {e.name}

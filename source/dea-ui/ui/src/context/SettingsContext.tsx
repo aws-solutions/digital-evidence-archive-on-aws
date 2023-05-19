@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Context, createContext, useContext, useState } from 'react';
+import { Context, createContext, useContext, useMemo, useState } from 'react';
 import { IAppSettings, defaultAppSettings } from '../models/AppSettings';
 
 export interface ISettingsProps {
@@ -13,14 +13,24 @@ export interface ISettingsProps {
 
 const SettingsContext: Context<ISettingsProps> = createContext<ISettingsProps>({
   settings: defaultAppSettings,
-  reload: () => { /*do nothing*/ },
+  reload: () => {
+    /*do nothing*/
+  },
 });
 
 export function SettingsProvider({ children }: { children: React.ReactNode }): JSX.Element {
   const [settings] = useState<IAppSettings>(defaultAppSettings);
-  return (
-    <SettingsContext.Provider value={{ settings, reload: () => { /*do nothing*/ } }}>{children}</SettingsContext.Provider>
+
+  const props = useMemo(
+    () => ({
+      settings,
+      reload: () => {
+        /*do nothing*/
+      },
+    }),
+    [settings]
   );
+  return <SettingsContext.Provider value={props}>{children}</SettingsContext.Provider>;
 }
 
 export function useSettings(): ISettingsProps {
