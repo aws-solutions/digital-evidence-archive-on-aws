@@ -43,6 +43,7 @@ export type DeaHttpMethod = 'PUT' | 'POST' | 'GET' | 'DELETE';
 
 const CONTENT_TYPE = 'application/octet-stream';
 export const bogusUlid = 'SVPERCA11FRAG111ST1CETCETC';
+export const fakeUlid = 'SVPERCA22FRAG111ST2CETCETC';
 
 export const randomSuffix = (length = 10) => {
   return randomBytes(10).toString('hex').substring(0, length);

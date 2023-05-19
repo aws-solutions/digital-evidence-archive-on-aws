@@ -27,10 +27,9 @@ import {
   callInitiateCaseFileUpload,
   DATASETS_PROVIDER,
 } from '../app/resources/case-file-integration-test-helper';
-import { dummyContext, getDummyEvent } from '../integration-objects';
+import { dummyContext } from '../integration-objects';
 import { getTestRepositoryProvider } from '../persistence/local-db-table';
 
-const apiEvent = getDummyEvent();
 export const CALLBACK_FN = () => {
   return 'dummy';
 };
@@ -56,7 +55,6 @@ describe('S3 batch delete case-file lambda', () => {
         },
         repositoryProvider
       )) ?? fail();
-    apiEvent.headers['userUlid'] = caseOwner.ulid;
   });
 
   afterAll(async () => {
@@ -87,9 +85,9 @@ describe('S3 batch delete case-file lambda', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
     const caseId = createdCase.ulid;
 
-    let caseFile = await callInitiateCaseFileUpload(apiEvent, repositoryProvider, caseId, 'file1');
+    let caseFile = await callInitiateCaseFileUpload(caseOwner.ulid, repositoryProvider, caseId, 'file1');
     const fileId = caseFile.ulid ?? fail();
-    caseFile = await callCompleteCaseFileUpload(apiEvent, repositoryProvider, fileId, caseId);
+    caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, caseId);
 
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, caseFile.versionId ?? null),
@@ -98,7 +96,7 @@ describe('S3 batch delete case-file lambda', () => {
       repositoryProvider,
       DATASETS_PROVIDER
     );
-    const deletedCaseFile = await callGetCaseFileDetails(apiEvent, repositoryProvider, fileId, caseId);
+    const deletedCaseFile = await callGetCaseFileDetails(caseOwner.ulid, repositoryProvider, fileId, caseId);
     expect(deletedCaseFile.status).toEqual(CaseFileStatus.DELETED);
 
     const expectedResult = `Successfully deleted object: ${caseId}/${fileId}`;
@@ -124,9 +122,9 @@ describe('S3 batch delete case-file lambda', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
     const caseId = createdCase.ulid;
 
-    const caseFile = await callInitiateCaseFileUpload(apiEvent, repositoryProvider, caseId, 'file1');
+    const caseFile = await callInitiateCaseFileUpload(caseOwner.ulid, repositoryProvider, caseId, 'file1');
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(apiEvent, repositoryProvider, fileId, caseId);
+    await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, caseId);
 
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, null),
@@ -135,7 +133,12 @@ describe('S3 batch delete case-file lambda', () => {
       repositoryProvider,
       DATASETS_PROVIDER
     );
-    const notDeletedCaseFile = await callGetCaseFileDetails(apiEvent, repositoryProvider, fileId, caseId);
+    const notDeletedCaseFile = await callGetCaseFileDetails(
+      caseOwner.ulid,
+      repositoryProvider,
+      fileId,
+      caseId
+    );
 
     const expectedResult = `Missing Version ID for key: ${caseId}/${fileId}`;
 
@@ -174,9 +177,9 @@ describe('S3 batch delete case-file lambda', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
     const caseId = createdCase.ulid;
 
-    let caseFile = await callInitiateCaseFileUpload(apiEvent, repositoryProvider, caseId, 'file1');
+    let caseFile = await callInitiateCaseFileUpload(caseOwner.ulid, repositoryProvider, caseId, 'file1');
     const fileId = caseFile.ulid ?? fail();
-    caseFile = await callCompleteCaseFileUpload(apiEvent, repositoryProvider, fileId, caseId);
+    caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, caseId);
 
     s3Mock.rejects('failure time!!');
 
@@ -187,7 +190,12 @@ describe('S3 batch delete case-file lambda', () => {
       repositoryProvider,
       DATASETS_PROVIDER
     );
-    const notDeletedCaseFile = await callGetCaseFileDetails(apiEvent, repositoryProvider, fileId, caseId);
+    const notDeletedCaseFile = await callGetCaseFileDetails(
+      caseOwner.ulid,
+      repositoryProvider,
+      fileId,
+      caseId
+    );
 
     const expectedResult = `Failed to delete object: ${caseId}/${fileId}`;
 

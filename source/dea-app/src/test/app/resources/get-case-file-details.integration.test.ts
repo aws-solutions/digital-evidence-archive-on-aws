@@ -31,7 +31,6 @@ let caseToDescribe = '';
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
 const UPLOAD_ID = '123456';
 const VERSION_ID = '543210';
-const EVENT = getDummyEvent();
 
 jest.setTimeout(20000);
 
@@ -40,7 +39,6 @@ describe('Test get case file details', () => {
     repositoryProvider = await getTestRepositoryProvider('GetCaseFileDetailsTest');
 
     fileDescriber = await callCreateUser(repositoryProvider);
-    EVENT.headers['userUlid'] = fileDescriber.ulid;
 
     caseToDescribe = (await callCreateCase(fileDescriber, repositoryProvider)).ulid ?? fail();
   });
@@ -58,10 +56,19 @@ describe('Test get case file details', () => {
   });
 
   it('Get-file-details should successfully get file details', async () => {
-    const caseFileUpload = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToDescribe);
+    const caseFileUpload = await callInitiateCaseFileUpload(
+      fileDescriber.ulid,
+      repositoryProvider,
+      caseToDescribe
+    );
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const fileId = caseFileUpload.ulid as string;
-    let caseFile = await callGetCaseFileDetails(EVENT, repositoryProvider, fileId, caseToDescribe);
+    let caseFile = await callGetCaseFileDetails(
+      fileDescriber.ulid,
+      repositoryProvider,
+      fileId,
+      caseToDescribe
+    );
     await validateCaseFile(
       caseFile,
       fileId,
@@ -70,8 +77,8 @@ describe('Test get case file details', () => {
       CaseFileStatus.PENDING
     );
 
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDescribe);
-    caseFile = await callGetCaseFileDetails(EVENT, repositoryProvider, fileId, caseToDescribe);
+    await callCompleteCaseFileUpload(fileDescriber.ulid, repositoryProvider, fileId, caseToDescribe);
+    caseFile = await callGetCaseFileDetails(fileDescriber.ulid, repositoryProvider, fileId, caseToDescribe);
     await validateCaseFile(
       caseFile,
       fileId,
@@ -82,30 +89,28 @@ describe('Test get case file details', () => {
   });
 
   it('Get-file-details should throw a validation exception when case-id path param missing', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...EVENT,
-        pathParameters: {
-          fileId: FILE_ULID,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      headers: {
+        userUlid: fileDescriber.ulid,
+      },
+      pathParameters: {
+        fileId: FILE_ULID,
+      },
+    });
     await expect(getCaseFileDetails(event, dummyContext, repositoryProvider)).rejects.toThrow(
       `Required path param 'caseId' is missing.`
     );
   });
 
   it('Get-file-details should throw a validation exception when file-id path param missing', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...EVENT,
-        pathParameters: {
-          caseId: FILE_ULID,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      headers: {
+        userUlid: fileDescriber.ulid,
+      },
+      pathParameters: {
+        caseId: FILE_ULID,
+      },
+    });
     await expect(getCaseFileDetails(event, dummyContext, repositoryProvider)).rejects.toThrow(
       `Required path param 'fileId' is missing.`
     );
@@ -113,7 +118,7 @@ describe('Test get case file details', () => {
 
   it("Get-file-details should throw an exception when case-file doesn't exist", async () => {
     await expect(
-      callGetCaseFileDetails(EVENT, repositoryProvider, FILE_ULID, caseToDescribe)
+      callGetCaseFileDetails(fileDescriber.ulid, repositoryProvider, FILE_ULID, caseToDescribe)
     ).rejects.toThrow(`Could not find file: ${FILE_ULID} in the DB`);
   });
 });

@@ -6,7 +6,7 @@
 import { fail } from 'assert';
 import { S3Client } from '@aws-sdk/client-s3';
 import { S3ControlClient } from '@aws-sdk/client-s3-control';
-import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda';
+import { APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
@@ -32,7 +32,7 @@ import { jsonParseWithDates } from '../../../models/validation/json-parse-with-d
 import { getJob } from '../../../persistence/job';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext } from '../../integration-objects';
+import { dummyContext, getDummyEvent } from '../../integration-objects';
 
 export type ResponseCaseFilePage = {
   files: CaseFileDTO[];
@@ -65,7 +65,7 @@ export const DATASETS_PROVIDER = {
 jest.setTimeout(20000);
 
 export const callInitiateCaseFileUpload = async (
-  baseEvent: APIGatewayProxyEvent,
+  uploaderId: string | undefined,
   repositoryProvider: ModelRepositoryProvider,
   caseUlid: string,
   fileName = FILE_NAME,
@@ -77,46 +77,50 @@ export const callInitiateCaseFileUpload = async (
   details = DETAILS,
   chunkSizeBytes = CHUNK_SIZE_BYTES
 ): Promise<DeaCaseFile> => {
-  const event = Object.assign(
-    {},
-    {
-      ...baseEvent,
-      body: JSON.stringify({
-        caseUlid,
-        fileName,
-        filePath,
-        contentType,
-        fileSizeBytes,
-        tag,
-        reason,
-        details,
-        chunkSizeBytes,
-      }),
-    }
-  );
+  const event = getDummyEvent({
+    headers: {
+      userUlid: uploaderId,
+    },
+    pathParameters: {
+      caseId: caseUlid,
+    },
+    body: JSON.stringify({
+      caseUlid,
+      fileName,
+      filePath,
+      contentType,
+      fileSizeBytes,
+      tag,
+      reason,
+      details,
+      chunkSizeBytes,
+    }),
+  });
   const response = await initiateCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   checkApiSucceeded(response);
   return JSON.parse(response.body);
 };
 
 export const callCompleteCaseFileUpload = async (
-  baseEvent: APIGatewayProxyEvent,
+  uploaderId: string | undefined,
   repositoryProvider: ModelRepositoryProvider,
   ulid: string,
   caseUlid: string,
   sha256Hash: string = SHA256_HASH
 ): Promise<DeaCaseFileResult> => {
-  const event = Object.assign(
-    {},
-    {
-      ...baseEvent,
-      body: JSON.stringify({
-        caseUlid,
-        sha256Hash,
-        ulid,
-      }),
-    }
-  );
+  const event = getDummyEvent({
+    headers: {
+      userUlid: uploaderId,
+    },
+    pathParameters: {
+      caseId: caseUlid,
+    },
+    body: JSON.stringify({
+      caseUlid,
+      sha256Hash,
+      ulid,
+    }),
+  });
   const response = await completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
 
   checkApiSucceeded(response);
@@ -124,21 +128,20 @@ export const callCompleteCaseFileUpload = async (
 };
 
 export const callDownloadCaseFile = async (
-  baseEvent: APIGatewayProxyEvent,
+  requesterUlid: string | undefined,
   repositoryProvider: ModelRepositoryProvider,
   fileId: string,
   caseId: string
 ): Promise<DownloadCaseFileResult> => {
-  const event = Object.assign(
-    {},
-    {
-      ...baseEvent,
-      pathParameters: {
-        caseId,
-        fileId,
-      },
-    }
-  );
+  const event = getDummyEvent({
+    headers: {
+      userUlid: requesterUlid,
+    },
+    pathParameters: {
+      caseId,
+      fileId,
+    },
+  });
   const response = await downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   checkApiSucceeded(response);
 
@@ -147,21 +150,20 @@ export const callDownloadCaseFile = async (
 };
 
 export const callRestoreCaseFile = async (
-  baseEvent: APIGatewayProxyEvent,
+  requesterUlid: string | undefined,
   repositoryProvider: ModelRepositoryProvider,
   fileId: string,
   caseId: string
 ): Promise<void> => {
-  const event = Object.assign(
-    {},
-    {
-      ...baseEvent,
-      pathParameters: {
-        caseId,
-        fileId,
-      },
-    }
-  );
+  const event = getDummyEvent({
+    headers: {
+      userUlid: requesterUlid,
+    },
+    pathParameters: {
+      caseId,
+      fileId,
+    },
+  });
   const response = await restoreCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   expect(response.statusCode).toEqual(204);
 };
@@ -188,21 +190,20 @@ export const callCreateCase = async (
 };
 
 export const callGetCaseFileDetails = async (
-  baseEvent: APIGatewayProxyEvent,
+  requesterUlid: string | undefined,
   repositoryProvider: ModelRepositoryProvider,
   fileId: string,
   caseId: string
 ): Promise<CaseFileDTO> => {
-  const event = Object.assign(
-    {},
-    {
-      ...baseEvent,
-      pathParameters: {
-        caseId,
-        fileId,
-      },
-    }
-  );
+  const event = getDummyEvent({
+    headers: {
+      userUlid: requesterUlid,
+    },
+    pathParameters: {
+      caseId,
+      fileId,
+    },
+  });
   const response = await getCaseFileDetails(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   checkApiSucceeded(response);
 
@@ -211,27 +212,26 @@ export const callGetCaseFileDetails = async (
 };
 
 export const callListCaseFiles = async (
-  baseEvent: APIGatewayProxyEvent,
+  requesterUlid: string | undefined,
   repositoryProvider: ModelRepositoryProvider,
   caseId: string,
   limit = '30',
   filePath: string = FILE_PATH,
   next?: string
 ): Promise<ResponseCaseFilePage> => {
-  const event = Object.assign(
-    {},
-    {
-      ...baseEvent,
-      pathParameters: {
-        caseId,
-      },
-      queryStringParameters: {
-        limit,
-        filePath,
-        next,
-      },
-    }
-  );
+  const event = getDummyEvent({
+    headers: {
+      userUlid: requesterUlid,
+    },
+    pathParameters: {
+      caseId,
+    },
+    queryStringParameters: {
+      limit,
+      filePath,
+      next,
+    },
+  });
   const response = await listCaseFiles(event, dummyContext, repositoryProvider);
   checkApiSucceeded(response);
   return JSON.parse(response.body);
@@ -254,14 +254,16 @@ export const callCreateUser = async (
 };
 
 export const callUpdateCaseStatusAndValidate = async (
-  baseEvent: APIGatewayProxyEvent,
+  requesterUlid: string | undefined,
   createdCase: DeaCase,
   deleteFiles: boolean,
   status: CaseStatus,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCase> => {
-  const event = {
-    ...baseEvent,
+  const event = getDummyEvent({
+    headers: {
+      userUlid: requesterUlid,
+    },
     pathParameters: {
       caseId: createdCase.ulid,
     },
@@ -270,7 +272,7 @@ export const callUpdateCaseStatusAndValidate = async (
       deleteFiles,
       status,
     }),
-  };
+  });
   const response = await updateCaseStatus(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   checkApiSucceeded(response);
 
