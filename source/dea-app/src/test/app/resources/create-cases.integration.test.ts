@@ -135,6 +135,19 @@ describe('create cases resource', () => {
     );
   });
 
+  it('should error if payload does include valid JSON', async () => {
+    const event = getDummyEvent({
+      body: {
+        invalidJSON: 'invalidJSON',
+        invalidJSON2: 'invalidJSON2',
+      },
+    });
+    event.headers['userUlid'] = user.ulid;
+    await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+      'Create cases payload is malformed. Failed to parse.'
+    );
+  });
+
   it('should enforce a strict payload', async () => {
     const status = 'ACTIVE';
     const name = 'ACaseWithGeneratedUlid';
