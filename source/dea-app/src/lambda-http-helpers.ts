@@ -78,7 +78,14 @@ export function getRequiredPayload<T>(
   if (!event.body) {
     throw new ValidationError(`${typeName} payload missing.`);
   }
-  const payload: T = JSON.parse(event.body);
+
+  let payload: T;
+  try {
+    payload = JSON.parse(event.body);
+  } catch (error) {
+    throw new ValidationError(`${typeName} payload is malformed. Failed to parse.`);
+  }
+
   Joi.assert(payload, validationSchema);
 
   return payload;

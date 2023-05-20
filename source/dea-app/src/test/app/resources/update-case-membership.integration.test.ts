@@ -166,6 +166,23 @@ describe('delete case membership resource', () => {
     );
   });
 
+  it('should error if payload does include valid JSON', async () => {
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: targetMembership.caseUlid,
+        userId: bogusUlid,
+      },
+      body: {
+        invalidJSON: 'invalidJSON',
+        invalidJSON2: 'invalidJSON2',
+      },
+    });
+
+    await expect(updateCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
+      'CaseUser payload is malformed. Failed to parse.'
+    );
+  });
+
   it('should error if path params are missing', async () => {
     const event = getDummyEvent({
       pathParameters: {
