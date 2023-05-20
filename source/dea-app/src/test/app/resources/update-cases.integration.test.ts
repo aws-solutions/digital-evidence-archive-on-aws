@@ -115,6 +115,22 @@ describe('update cases resource', () => {
     );
   });
 
+  it('should error if payload does include valid JSON', async () => {
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: '01ARZ3NDEKTSV4RRFFQ69G5FAV',
+      },
+      body: {
+        invalidJSON: 'invalidJSON',
+        invalidJSON2: 'invalidJSON2',
+      },
+    });
+
+    await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+      'Update cases payload is malformed. Failed to parse.'
+    );
+  });
+
   it('should error if a path parameter specifying caseId is not found', async () => {
     const ulid = '02ARZ3NDEKTSV4RRFFQ69G5FAV';
     const event = getDummyEvent({
