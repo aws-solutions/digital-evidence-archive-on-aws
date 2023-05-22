@@ -11,6 +11,8 @@ import { DeaAuditTrail } from '../../constructs/dea-audit-trail';
 import { DeaBackendConstruct } from '../../constructs/dea-backend-stack';
 import { DeaOperationalDashboard } from '../../constructs/dea-ops-dashboard';
 
+const PROTECTED_DEA_RESOURCES: string[] = [];
+
 describe('dea audit trail', () => {
   it('synthesizes with additional bucket policy restrictions in production', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -31,13 +33,13 @@ describe('dea audit trail', () => {
     const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
 
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', {
+    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       accessLogsPrefixes: ['dea-ui-access-log'],
       opsDashboard: dashboard,
     });
 
-    new DeaAuditTrail(stack, 'DeaAudit', {
+    new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,

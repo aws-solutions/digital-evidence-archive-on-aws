@@ -24,7 +24,12 @@ export class DeaAuditTrail extends Construct {
   public auditLogGroup: LogGroup;
   public trailLogGroup: LogGroup;
 
-  public constructor(scope: Construct, stackName: string, props: DeaAuditProps) {
+  public constructor(
+    scope: Construct,
+    stackName: string,
+    protectedDeaResourceArns: string[],
+    props: DeaAuditProps
+  ) {
     super(scope, stackName);
 
     this.auditLogGroup = this.createLogGroup(scope, 'deaAuditLogs', props.kmsKey);
@@ -37,6 +42,10 @@ export class DeaAuditTrail extends Construct {
       props.deaTableArn
     );
     props.kmsKey.grantEncrypt(new ServicePrincipal('cloudtrail.amazonaws.com'));
+
+    protectedDeaResourceArns.push(this.auditLogGroup.logGroupArn);
+    protectedDeaResourceArns.push(this.trailLogGroup.logGroupArn);
+    protectedDeaResourceArns.push(this.auditTrail.trailArn);
   }
 
   private createAuditTrail(

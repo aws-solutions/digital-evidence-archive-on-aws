@@ -25,6 +25,7 @@ import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountPrincipal,
   Effect,
+  ManagedPolicy,
   PolicyDocument,
   PolicyStatement,
   ServicePrincipal,
@@ -59,12 +60,14 @@ export class DeaMainStack extends cdk.Stack {
       value: this.appRegistry.registryApplication.applicationArn,
     });
 
+    const protectedDeaResourceArns: string[] = [];
+
     // Create KMS key to pass into backend and UI
     const kmsKey = this.createEncryptionKey();
 
     const uiAccessLogPrefix = 'dea-ui-access-log';
     // DEA Backend Construct
-    const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', {
+    const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', protectedDeaResourceArns, {
       kmsKey: kmsKey,
       accessLogsPrefixes: [uiAccessLogPrefix],
       opsDashboard: dashboard,
@@ -73,7 +76,7 @@ export class DeaMainStack extends cdk.Stack {
     const region = deaConfig.region();
     const accountId = this.account;
 
-    const auditTrail = new DeaAuditTrail(this, 'DeaAudit', {
+    const auditTrail = new DeaAuditTrail(this, 'DeaAudit', protectedDeaResourceArns, {
       kmsKey,
       deaDatasetsBucket: backendConstruct.datasetsBucket,
       deaTableArn: backendConstruct.deaTable.tableArn,
@@ -92,7 +95,7 @@ export class DeaMainStack extends cdk.Stack {
       opsDashboard: dashboard,
     });
 
-    const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
+    const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', protectedDeaResourceArns, {
       deaTableArn: backendConstruct.deaTable.tableArn,
       deaTableName: backendConstruct.deaTable.tableName,
       deaDatasetsBucket: backendConstruct.datasetsBucket,
@@ -141,6 +144,7 @@ export class DeaMainStack extends cdk.Stack {
       new DeaParametersStack(
         scope,
         'DeaParameters',
+        protectedDeaResourceArns,
         {
           deaAuthInfo: authConstruct.deaAuthInfo,
           kmsKey,
@@ -158,7 +162,7 @@ export class DeaMainStack extends cdk.Stack {
 
       // Store relevant parameters for the functioning of DEA
       // in SSM Param Store and Secrets Manager
-      new DeaParameters(this, 'DeaParameters', {
+      new DeaParameters(this, 'DeaParameters', protectedDeaResourceArns, {
         deaAuthInfo: authConstruct.deaAuthInfo,
         kmsKey,
       });
@@ -175,6 +179,13 @@ export class DeaMainStack extends cdk.Stack {
       deaEventHandlers.s3BatchDeleteCaseFileLambdaRole,
       deaApi.customResourceRole
     );
+
+    const permissionBoundaryOnDeaResources =
+      this.createPermissionsBoundaryOnDeaResources(protectedDeaResourceArns);
+
+    createCfnOutput(this, 'PermissionsBoundary', {
+      value: `${permissionBoundaryOnDeaResources.managedPolicyArn}`,
+    });
 
     // DEA UI Construct
     new DeaUiConstruct(this, 'DeaUiConstruct', {
@@ -265,6 +276,23 @@ export class DeaMainStack extends cdk.Stack {
       value: key.keyArn,
     });
     return key;
+  }
+
+  // Creates a deny all access to DEA resources that customers
+  // can attach to existing user IAM roles for the accounts
+  // to block sdk/cli/console access to DEA resources outside DEA
+  // Details will be added to the Implementation Guide
+  private createPermissionsBoundaryOnDeaResources(deaResourceArns: string[]) {
+    const statements: PolicyStatement[] = [
+      new PolicyStatement({
+        effect: Effect.DENY,
+        actions: ['*'],
+        resources: deaResourceArns,
+      }),
+    ];
+    return new ManagedPolicy(this, 'deaResourcesPermissionsBoundary', {
+      statements,
+    });
   }
 
   private apiGwAuthNagSuppresions(): void {
