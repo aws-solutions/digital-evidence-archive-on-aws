@@ -127,7 +127,7 @@ describe('Test complete case file upload', () => {
   it('Complete upload should throw an exception when user does not exist in DB', async () => {
     EVENT.headers['userUlid'] = FILE_ULID; // use a fake ulid
     await expect(callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, CASE_ULID)).rejects.toThrow(
-      'Could not find case-file uploader as a user in the DB'
+      'Could not find case-file upload user'
     );
   });
 
@@ -140,7 +140,7 @@ describe('Test complete case file upload', () => {
 
   it('Complete upload should throw an exception when case does not exist in DB', async () => {
     await expect(callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, CASE_ULID)).rejects.toThrow(
-      `Could not find case: ${CASE_ULID} in the DB`
+      'Could not find case'
     );
   });
 
@@ -150,13 +150,13 @@ describe('Test complete case file upload', () => {
         .ulid ?? fail();
     await expect(
       callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, inactiveCaseUlid)
-    ).rejects.toThrow("Can't upload a file to case in INACTIVE state");
+    ).rejects.toThrow('Case is in an invalid state for uploading files');
   });
 
   it("Complete upload should throw an exception when case-file doesn't exist", async () => {
     await expect(
       callCompleteCaseFileUpload(EVENT, repositoryProvider, FILE_ULID, caseToUploadTo)
-    ).rejects.toThrow(`Could not find file: ${FILE_ULID} in the DB`);
+    ).rejects.toThrow('Could not find file');
   });
 
   it("Complete upload should throw an exception when case-file isn't pending", async () => {
@@ -173,7 +173,7 @@ describe('Test complete case file upload', () => {
 
     await expect(
       callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToUploadTo)
-    ).rejects.toThrow(`Can't complete upload for a file in ${CaseFileStatus.ACTIVE} state`);
+    ).rejects.toThrow('File is in incorrect state for upload');
   });
 
   it('Complete upload should throw an exception when caller is different user', async () => {

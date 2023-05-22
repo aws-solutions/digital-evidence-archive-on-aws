@@ -5,11 +5,17 @@
 
 import { APIGatewayProxyEvent, APIGatewayProxyEventHeaders } from 'aws-lambda';
 import Joi from 'joi';
+import { NotFoundError } from './app/exceptions/not-found-exception';
 import { ValidationError } from './app/exceptions/validation-exception';
+import { getCase } from './app/services/case-service';
 import { logger } from './logger';
 import { Oauth2Token } from './models/auth';
+import { DeaCase } from './models/case';
+import { DeaCaseFile } from './models/case-file';
 import { Oauth2TokenSchema } from './models/validation/auth';
 import { base64String, paginationLimit } from './models/validation/joi-common';
+import { getCaseFileByUlid } from './persistence/case-file';
+import { ModelRepositoryProvider } from './persistence/schema/entities';
 
 export interface PaginationParams {
   limit: number | undefined;
@@ -169,4 +175,27 @@ export const removeSensitiveHeaders = (headers: APIGatewayProxyEventHeaders): AP
     ...debugHeaders
   } = headers;
   return debugHeaders;
+};
+
+export const getRequiredCase = async (
+  caseId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCase> => {
+  const deaCase = await getCase(caseId, repositoryProvider);
+  if (!deaCase) {
+    throw new NotFoundError('Could not find case');
+  }
+  return deaCase;
+};
+
+export const getRequiredCaseFile = async (
+  caseId: string,
+  fileId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCaseFile> => {
+  const caseFile = await getCaseFileByUlid(fileId, caseId, repositoryProvider);
+  if (!caseFile) {
+    throw new NotFoundError('Could not find file');
+  }
+  return caseFile;
 };

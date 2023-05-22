@@ -4,7 +4,7 @@
  */
 
 import Joi from 'joi';
-import { getQueryParam, getRequiredPathParam } from '../../lambda-http-helpers';
+import { getQueryParam, getRequiredCase, getRequiredPathParam } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
@@ -30,6 +30,9 @@ export const startCaseAudit: DEAGatewayProxyHandler = async (
   const end = getQueryParam(event, 'to', now.toString(), Joi.number().integer());
   const startTime = Number.parseInt(start);
   const endTime = Number.parseInt(end);
+
+  await getRequiredCase(caseId, repositoryProvider);
+
   const queryId = await auditService.requestAuditForCase(
     caseId,
     startTime,

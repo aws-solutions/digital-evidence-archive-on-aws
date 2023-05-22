@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getRequiredPathParam } from '../../lambda-http-helpers';
+import { getRequiredCase, getRequiredCaseFile, getRequiredPathParam } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
@@ -32,6 +32,9 @@ export const getCaseFileAudit: DEAGatewayProxyHandler = async (
     cloudwatchClient,
     repositoryProvider
   );
+
+  await getRequiredCase(caseId, repositoryProvider);
+  await getRequiredCaseFile(caseId, fileId, repositoryProvider);
 
   if (result.csvFormattedData) {
     return csvResponse(event, result.csvFormattedData);
