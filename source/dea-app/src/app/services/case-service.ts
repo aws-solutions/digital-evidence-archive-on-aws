@@ -18,6 +18,7 @@ import { createJob } from '../../persistence/job';
 import { isDefined } from '../../persistence/persistence-helpers';
 import { CaseType, ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, startDeleteCaseFilesS3BatchJob } from '../../storage/datasets';
+import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseUserService from './case-user-service';
 
@@ -171,4 +172,15 @@ export const deleteCase = async (
 ): Promise<void> => {
   await CasePersistence.deleteCase(caseUlid, repositoryProvider);
   await CaseUserService.deleteCaseUsersForCase(caseUlid, repositoryProvider);
+};
+
+export const getRequiredCase = async (
+  caseId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCase> => {
+  const deaCase = await getCase(caseId, repositoryProvider);
+  if (!deaCase) {
+    throw new NotFoundError('Could not find case');
+  }
+  return deaCase;
 };

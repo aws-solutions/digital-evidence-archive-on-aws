@@ -3,12 +3,13 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getRequiredCase, getRequiredPathParam } from '../../lambda-http-helpers';
+import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
 import { defaultCloudwatchClient } from '../audit/dea-audit-plugin';
 import { auditService } from '../services/audit-service';
+import { getRequiredCase } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { csvResponse, responseOk } from './dea-lambda-utils';
 

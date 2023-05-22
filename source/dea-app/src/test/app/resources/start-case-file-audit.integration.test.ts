@@ -3,7 +3,10 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { fail } from 'assert';
 import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
+import { S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import Joi from 'joi';
 import { anything, instance, mock, when } from 'ts-mockito';
 import { startCaseFileAudit } from '../../../app/resources/start-case-file-audit';
@@ -12,13 +15,36 @@ import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
+import {
+  callCreateCase,
+  callCreateUser,
+  callInitiateCaseFileUpload,
+} from './case-file-integration-test-helper';
+
+let caseId = '';
+let fileId = '';
+let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
 
 describe('start case file audit', () => {
   const OLD_ENV = process.env;
 
   let modelProvider: ModelRepositoryProvider;
   beforeAll(async () => {
+    s3Mock = mockClient(S3Client);
+    s3Mock.resolves({
+      UploadId: 'hi',
+      VersionId: 'hello',
+    });
+
     modelProvider = await getTestRepositoryProvider('startCaseFileAuditIntegration');
+
+    const user = await callCreateUser(modelProvider);
+
+    caseId = (await callCreateCase(user, modelProvider)).ulid ?? fail();
+
+    const event = getDummyEvent();
+    event.headers['userUlid'] = user.ulid;
+    fileId = (await callInitiateCaseFileUpload(event, modelProvider, caseId, 'file1')).ulid ?? fail();
   });
 
   beforeEach(() => {
@@ -39,8 +65,8 @@ describe('start case file audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        caseId: bogusUlid,
-        fileId: bogusUlid,
+        caseId,
+        fileId,
       },
     });
     const result = await startCaseFileAudit(
@@ -63,12 +89,44 @@ describe('start case file audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        caseId: bogusUlid,
-        fileId: bogusUlid,
+        caseId,
+        fileId,
       },
     });
     await expect(
       startCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
     ).rejects.toThrow('Unknown error starting Cloudwatch Logs Query.');
+  });
+
+  it('throws an error if case does not exist', async () => {
+    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    const clientMockInstance = instance(clientMock);
+    when(clientMock.send(anything())).thenResolve({ $metadata: {}, queryId: 'hello' });
+
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: bogusUlid,
+        fileId,
+      },
+    });
+    await expect(
+      startCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+    ).rejects.toThrow('Could not find case');
+  });
+
+  it('throws an error if case-file does not exist', async () => {
+    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    const clientMockInstance = instance(clientMock);
+    when(clientMock.send(anything())).thenResolve({ $metadata: {}, queryId: 'hello' });
+
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId,
+        fileId: bogusUlid,
+      },
+    });
+    await expect(
+      startCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+    ).rejects.toThrow('Could not find file');
   });
 });

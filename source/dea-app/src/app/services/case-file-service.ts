@@ -4,7 +4,6 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
-import { getRequiredCase, getRequiredCaseFile } from '../../lambda-http-helpers';
 import {
   CaseFileDTO,
   CompleteCaseFileUploadDTO,
@@ -17,7 +16,7 @@ import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { DeaUser } from '../../models/user';
 import * as CaseFilePersistence from '../../persistence/case-file';
-import { getCaseFileByFileLocation } from '../../persistence/case-file';
+import { getCaseFileByFileLocation, getCaseFileByUlid } from '../../persistence/case-file';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getUsers } from '../../persistence/user';
 import {
@@ -25,7 +24,9 @@ import {
   DatasetsProvider,
   generatePresignedUrlsForCaseFile,
 } from '../../storage/datasets';
+import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
+import { getRequiredCase } from './case-service';
 import { getUser } from './user-service';
 
 export const initiateCaseFileUpload = async (
@@ -185,4 +186,16 @@ export const getCaseFile = async (
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFileResult | undefined> => {
   return await CaseFilePersistence.getCaseFileByUlid(ulid, caseId, repositoryProvider);
+};
+
+export const getRequiredCaseFile = async (
+  caseId: string,
+  fileId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCaseFile> => {
+  const caseFile = await getCaseFileByUlid(fileId, caseId, repositoryProvider);
+  if (!caseFile) {
+    throw new NotFoundError('Could not find file');
+  }
+  return caseFile;
 };
