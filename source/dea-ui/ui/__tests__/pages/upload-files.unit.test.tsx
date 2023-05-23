@@ -48,12 +48,12 @@ describe('UploadFiles page', () => {
     expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.caseDetailsLabel);
     expect(breadcrumbLinks[2].getElement()).toHaveTextContent(breadcrumbLabels.uploadFilesAndFoldersLabel);
   });
-  it('responds to cancel', () => {
+  it('responds to done', () => {
     render(<Home />);
 
-    const cancelButton = screen.getByText(commonLabels.cancelButton);
+    const doneButton = screen.getByText(commonLabels.doneButton);
 
-    const btn = wrapper(cancelButton);
+    const btn = wrapper(doneButton);
     btn.click();
     expect(push).toHaveBeenCalledWith(`/case-detail?caseId=${CASE_ID}`);
   });
@@ -88,7 +88,7 @@ describe('UploadFiles page', () => {
     }
     wrappedReason.setInputValue('reason');
 
-    const uploadButton = screen.getByText(commonLabels.uploadButton);
+    const uploadButton = screen.getByText(commonLabels.uploadAndSaveButton);
     const uploadButtonWrapper = wrapper(uploadButton);
     uploadButtonWrapper.click();
 

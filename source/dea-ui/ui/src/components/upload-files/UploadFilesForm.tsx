@@ -198,7 +198,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     }
   }
 
-  function onCancelHandler() {
+  function onDoneHandler() {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     router.push(`/case-detail?caseId=${props.caseId}`);
   }
@@ -267,8 +267,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       </Form>
 
       <SpaceBetween direction="horizontal" size="xs">
-        <Button formAction="none" variant="link" data-testid="upload-file-cancel" onClick={onCancelHandler}>
-          {commonLabels.cancelButton}
+        <Button formAction="none" variant="link" onClick={onDoneHandler}>
+          {commonLabels.doneButton}
         </Button>
         <Button
           variant="primary"
@@ -277,7 +277,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           onClick={onSubmitHandler}
           disabled={uploadInProgress || !validateFields()}
         >
-          {commonLabels.uploadButton}
+          {commonLabels.uploadAndSaveButton}
         </Button>
         {uploadInProgress ? <Spinner size="big" variant="disabled" /> : null}
       </SpaceBetween>
