@@ -3,11 +3,13 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getRequiredPayload, getUserUlid } from '../../lambda-http-helpers';
+import { getRequiredPathParam, getRequiredPayload, getUserUlid } from '../../lambda-http-helpers';
 import { CompleteCaseFileUploadDTO } from '../../models/case-file';
 import { completeCaseFileUploadRequestSchema } from '../../models/validation/case-file';
+import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
+import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseFileService from '../services/case-file-service';
 import { validateCompleteCaseFileRequirements } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -22,11 +24,15 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {
+  const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const requestCaseFile: CompleteCaseFileUploadDTO = getRequiredPayload(
     event,
     'Complete case file upload',
     completeCaseFileUploadRequestSchema
   );
+  if (caseId !== requestCaseFile.caseUlid) {
+    throw new ValidationError('Requested Case Ulid does not match resource');
+  }
 
   const userUlid = getUserUlid(event);
   const existingFile = await validateCompleteCaseFileRequirements(
