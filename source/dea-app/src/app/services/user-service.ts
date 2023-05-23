@@ -7,6 +7,7 @@ import { Paged } from 'dynamodb-onetable';
 import { DeaUser, DeaUserInput } from '../../models/user';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import * as UserPersistence from '../../persistence/user';
+import { NotFoundError } from '../exceptions/not-found-exception';
 import { retry } from './service-helpers';
 
 export const createUser = async (
@@ -57,4 +58,11 @@ export const getUsers = async (
   repositoryProvider: ModelRepositoryProvider
 ): Promise<Paged<DeaUser>> => {
   return UserPersistence.listUsers(limit, nextToken, nameBeginsWith, repositoryProvider);
+};
+
+export const validateUser = async (userUlid: string, repositoryProvider: ModelRepositoryProvider) => {
+  const maybeUser = await UserPersistence.getUser(userUlid, repositoryProvider);
+  if (!maybeUser) {
+    throw new NotFoundError('Could not find user');
+  }
 };
