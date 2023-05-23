@@ -48,7 +48,29 @@ function CreateCasesForm(): JSX.Element {
   return (
     <SpaceBetween data-testid="create-case-form-space" size="s">
       <form onSubmit={onSubmitHandler} data-testid="create-case-form">
-        <Form>
+        <Form
+          actions={
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button
+                formAction="none"
+                variant="link"
+                data-testid="create-case-cancel"
+                onClick={onCancelHandler}
+              >
+                {commonLabels.cancelButton}
+              </Button>
+              <Button
+                variant="primary"
+                iconAlign="right"
+                data-testid="create-case-submit"
+                onClick={onSubmitHandler}
+                disabled={IsSubmitLoading || !formData.name}
+              >
+                {commonLabels.createButton}
+              </Button>
+            </SpaceBetween>
+          }
+        >
           <Container header={<Header variant="h2">{createCaseLabels.enterCaseDetailsLabel}</Header>}>
             <SpaceBetween direction="vertical" size="l">
               <FormField
@@ -84,20 +106,6 @@ function CreateCasesForm(): JSX.Element {
           </Container>
         </Form>
       </form>
-      <SpaceBetween direction="horizontal" size="xs">
-        <Button formAction="none" variant="link" data-testid="create-case-cancel" onClick={onCancelHandler}>
-          {commonLabels.cancelButton}
-        </Button>
-        <Button
-          variant="primary"
-          iconAlign="right"
-          data-testid="create-case-submit"
-          onClick={onSubmitHandler}
-          disabled={IsSubmitLoading || !formData.name}
-        >
-          {commonLabels.createButton}
-        </Button>
-      </SpaceBetween>
     </SpaceBetween>
   );
 }

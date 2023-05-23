@@ -21,7 +21,6 @@ import { DeaCaseDTO } from '../../api/models/case';
 import { commonLabels, createCaseLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { EditCaseForm } from '../../models/Cases';
-import styles from '../../styles/EditCasesForm.module.scss';
 
 export interface EditCasesFormProps {
   readonly case: DeaCaseDTO;
@@ -55,7 +54,29 @@ function EditCasesForm(props: EditCasesFormProps): JSX.Element {
   return (
     <SpaceBetween data-testid="edit-case-form-space" size="s">
       <form onSubmit={onSubmitHandler} data-testid="edit-case-form">
-        <Form>
+        <Form
+          actions={
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button
+                formAction="none"
+                variant="link"
+                data-testid="edit-case-cancel"
+                onClick={onCancelHandler}
+              >
+                {commonLabels.cancelButton}
+              </Button>
+              <Button
+                variant="primary"
+                iconAlign="right"
+                data-testid="edit-case-submit"
+                onClick={onSubmitHandler}
+                disabled={IsSubmitLoading || !formData.name}
+              >
+                {commonLabels.saveButton}
+              </Button>
+            </SpaceBetween>
+          }
+        >
           <Container header={<Header variant="h2">{createCaseLabels.enterCaseDetailsLabel}</Header>}>
             <SpaceBetween direction="vertical" size="l">
               <FormField
@@ -91,22 +112,6 @@ function EditCasesForm(props: EditCasesFormProps): JSX.Element {
           </Container>
         </Form>
       </form>
-      <div className={styles['form-actions-container']}>
-        <SpaceBetween direction="horizontal" size="xs">
-          <Button formAction="none" variant="link" data-testid="edit-case-cancel" onClick={onCancelHandler}>
-            {commonLabels.cancelButton}
-          </Button>
-          <Button
-            variant="primary"
-            iconAlign="right"
-            data-testid="edit-case-submit"
-            onClick={onSubmitHandler}
-            disabled={IsSubmitLoading || !formData.name}
-          >
-            {commonLabels.saveButton}
-          </Button>
-        </SpaceBetween>
-      </div>
     </SpaceBetween>
   );
 }
