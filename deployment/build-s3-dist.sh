@@ -113,6 +113,15 @@ create_template_json()
     done
 }
 
+handle_ui_assets_output()
+{
+    # create ui directory
+    do_cmd mkdir -p "$staging_dist_dir/ui"
+
+    # copy artifacts from /ui/out to build_dist
+    do_cmd cp -r "$template_dir/../source/dea-ui/ui/out"/* "$staging_dist_dir/ui"
+}
+
 create_template_yaml() 
 {
     # Assumes current working directory is where the CDK is defined
@@ -294,6 +303,14 @@ if fn_exists create_template_${template_format}; then
 else
     echo "Invalid setting for \$template_format: $template_format"
     exit 255
+fi
+
+echo "------------------------------------------------------------------------------"
+echo "${bold}[UI] Artifacts${normal}"
+echo "------------------------------------------------------------------------------"
+
+if fn_exists handle_ui_assets_output; then
+    handle_ui_assets_output
 fi
 
 echo "------------------------------------------------------------------------------"
