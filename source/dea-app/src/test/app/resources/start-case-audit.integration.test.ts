@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { fail } from 'assert';
 import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
 import Joi from 'joi';
 import { anything, instance, mock, when } from 'ts-mockito';
@@ -12,6 +13,9 @@ import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
+import { callCreateCase, callCreateUser } from './case-file-integration-test-helper';
+
+let caseId = '';
 
 describe('start case audit', () => {
   const OLD_ENV = process.env;
@@ -19,6 +23,9 @@ describe('start case audit', () => {
   let modelProvider: ModelRepositoryProvider;
   beforeAll(async () => {
     modelProvider = await getTestRepositoryProvider('startCaseAuditIntegration');
+
+    const user = await callCreateUser(modelProvider);
+    caseId = (await callCreateCase(user, modelProvider)).ulid ?? fail();
   });
 
   beforeEach(() => {
@@ -39,7 +46,7 @@ describe('start case audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        caseId: bogusUlid,
+        caseId,
       },
     });
     const result = await startCaseAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
@@ -56,11 +63,26 @@ describe('start case audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        caseId: bogusUlid,
+        caseId,
       },
     });
     await expect(
       startCaseAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
     ).rejects.toThrow('Unknown error starting Cloudwatch Logs Query.');
+  });
+
+  it('throws an error if case does not exist', async () => {
+    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    const clientMockInstance = instance(clientMock);
+    when(clientMock.send(anything())).thenResolve({ $metadata: {}, queryId: 'hello' });
+
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: bogusUlid,
+      },
+    });
+    await expect(
+      startCaseAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+    ).rejects.toThrow('Could not find case');
   });
 });

@@ -86,7 +86,7 @@ describe('Test initiate case file upload', () => {
 
   it('Initiate upload should throw an exception when user does not exist in DB', async () => {
     await expect(callInitiateCaseFileUpload(FILE_ULID, repositoryProvider, caseToUploadTo)).rejects.toThrow(
-      'Could not find case-file uploader as a user in the DB'
+      'Could not find case-file upload user'
     );
   });
 
@@ -100,7 +100,7 @@ describe('Test initiate case file upload', () => {
     // use a bogus ULID
     await expect(
       callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, CASE_ULID)
-    ).rejects.toThrow(`Could not find case: ${CASE_ULID} in the DB`);
+    ).rejects.toThrow(`Could not find case`);
   });
 
   it('Initiate upload should throw an exception when case is inactive', async () => {
@@ -109,7 +109,7 @@ describe('Test initiate case file upload', () => {
         .ulid ?? fail();
     await expect(
       callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, inactiveCaseUlid)
-    ).rejects.toThrow("Can't upload a file to case in INACTIVE state");
+    ).rejects.toThrow('Case is in an invalid state for uploading files');
   });
 
   it('Initiate upload should throw an exception when case-file is PENDING', async () => {
@@ -135,7 +135,7 @@ describe('Test initiate case file upload', () => {
 
     await expect(
       callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, activeFileName)
-    ).rejects.toThrow(`${FILE_PATH}${activeFileName} already exists in the DB`);
+    ).rejects.toThrow('File already exists in the DB');
   });
 
   it('Initiate upload should enforce a strict payload', async () => {
