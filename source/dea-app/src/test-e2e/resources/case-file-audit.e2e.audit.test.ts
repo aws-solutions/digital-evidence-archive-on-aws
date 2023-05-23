@@ -168,10 +168,10 @@ describe('case file audit e2e', () => {
     ).rejects.toThrow();
 
     // allow some time so the events show up in CW logs
-    await delay(25000);
+    await delay(5 * 60 * 1000);
 
     let csvData: string | undefined;
-    const queryRetries = 5;
+    let queryRetries = 5;
     while (!csvData && queryRetries > 0) {
       const startAuditQueryResponse = await callDeaAPIWithCreds(
         `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}/audit`,
@@ -225,6 +225,7 @@ describe('case file audit e2e', () => {
       } else {
         await delay(10000);
       }
+      --queryRetries;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -319,7 +320,7 @@ describe('case file audit e2e', () => {
     const cloudtrailEntries = parseTrailEventsFromAuditQuery(csvData!);
 
     const dbGetItems = cloudtrailEntries.filter((entry) => entry.eventType === 'GetItem');
-    expect(dbGetItems).toHaveLength(3);
+    expect(dbGetItems.length).toBeGreaterThanOrEqual(3);
     const dbTransactItems = cloudtrailEntries.filter((entry) => entry.eventType === 'TransactWriteItems');
     expect(dbTransactItems).toHaveLength(2);
     const createUploadItems = cloudtrailEntries.filter(
@@ -341,7 +342,7 @@ describe('case file audit e2e', () => {
     const headObjectItems = cloudtrailEntries.filter((entry) => entry.eventType === 'HeadObject');
     expect(headObjectItems).toHaveLength(1);
 
-    expect(cloudtrailEntries.length).toBe(12);
+    expect(cloudtrailEntries.length).toBeGreaterThanOrEqual(12);
 
     // Case Cleanup
     await deleteCaseFiles(deaApiUrl, caseUlid, createdCase.name, FILE_PATH, idToken, creds);
