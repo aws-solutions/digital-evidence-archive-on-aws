@@ -7,13 +7,15 @@ import { Spinner } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { getToken } from '../../api/auth';
-import { commonLabels } from '../../common/labels';
+import { commonLabels, systemUseNotificationText } from '../../common/labels';
 import { useAuthentication } from '../../context/AuthenticationContext';
+import { useNotifications } from '../../context/NotificationsContext';
 import { calculateExpirationDate, getCredentialsByToken } from '../../helpers/authService';
 
 export default function LoginPage() {
   const router = useRouter();
   const { signIn } = useAuthentication();
+  const { pushNotification } = useNotifications();
 
   useEffect(() => {
     const login = async () => {
@@ -44,6 +46,7 @@ export default function LoginPage() {
             calculateExpirationDate(response.expiresIn).toString()
           );
           await router.push('/');
+          pushNotification('info', systemUseNotificationText);
         } catch (e) {
           console.log(e);
           signIn();
@@ -53,7 +56,7 @@ export default function LoginPage() {
     };
 
     login().catch((e) => console.log(e));
-  }, [router, signIn]);
+  }, [router, signIn, pushNotification]);
 
   return (
     <div>

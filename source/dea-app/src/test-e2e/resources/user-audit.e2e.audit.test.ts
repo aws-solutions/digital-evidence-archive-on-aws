@@ -102,7 +102,7 @@ describe('user audit e2e', () => {
     await delay(25000);
 
     let csvData: string | undefined;
-    const queryRetries = 5;
+    let queryRetries = 50;
     while (!csvData && queryRetries > 0) {
       const startAuditQueryResponse = await callDeaAPIWithCreds(
         `${deaApiUrl}users/${userUlid}/audit`,
@@ -151,6 +151,7 @@ describe('user audit e2e', () => {
       ) {
         csvData = getQueryReponse.data;
       }
+      --queryRetries;
     }
 
     expect(csvData).toContain('/cases/{caseId}/details');

@@ -64,8 +64,14 @@ export class DeaRestApiConstruct extends Construct {
   public deaRestApi: RestApi;
   public apiEndpointArns: Map<string, string>;
   private opsDashboard: DeaOperationalDashboard;
+  public accessLogGroup: LogGroup;
 
-  public constructor(scope: Construct, stackName: string, props: DeaRestApiProps) {
+  public constructor(
+    scope: Construct,
+    stackName: string,
+    protectedDeaResourceArns: string[],
+    props: DeaRestApiProps
+  ) {
     super(scope, stackName);
 
     this.apiEndpointArns = new Map<string, string>();
@@ -103,9 +109,11 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
-    const accessLogGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
+    this.accessLogGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
       encryptionKey: props.kmsKey,
     });
+
+    protectedDeaResourceArns.push(this.accessLogGroup.logGroupArn);
 
     const STAGE = deaConfig.stage();
 
@@ -129,7 +137,7 @@ export class DeaRestApiConstruct extends Construct {
             metricsEnabled: true,
           },
         },
-        accessLogDestination: new LogGroupLogDestination(accessLogGroup),
+        accessLogDestination: new LogGroupLogDestination(this.accessLogGroup),
         accessLogFormat: AccessLogFormat.custom(
           JSON.stringify({
             stage: '$context.stage',

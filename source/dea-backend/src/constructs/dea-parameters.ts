@@ -29,26 +29,37 @@ interface DeaParametersProps {
 }
 
 export class DeaParametersStack extends Stack {
-  public constructor(scope: Construct, stackName: string, deaProps: DeaParametersProps, props?: StackProps) {
+  public constructor(
+    scope: Construct,
+    stackName: string,
+    protectedDeaResourceArns: string[],
+    deaProps: DeaParametersProps,
+    props?: StackProps
+  ) {
     super(scope, stackName, props);
 
-    new DeaParameters(this, stackName, deaProps);
+    new DeaParameters(this, stackName, protectedDeaResourceArns, deaProps);
   }
 }
 
 export class DeaParameters extends Construct {
-  public constructor(scope: Construct, stackName: string, deaProps: DeaParametersProps) {
+  public constructor(
+    scope: Construct,
+    stackName: string,
+    protectedDeaResourceArns: string[],
+    deaProps: DeaParametersProps
+  ) {
     super(scope, stackName + 'Construct');
 
     const deaAuthInfo = deaProps.deaAuthInfo;
 
     // The front end will query for available endpoints for the user's role
     // to determine which buttons/functionality should be displayed/activated
-    this.storeAvailableEndpointsPerRole(deaAuthInfo.availableEndpointsPerRole);
+    this.storeAvailableEndpointsPerRole(protectedDeaResourceArns, deaAuthInfo.availableEndpointsPerRole);
 
     // We store the client secret for Cognito in secrets manager
     // used in backend auth APIs for machine to machine communications with Cognito
-    this.storeSecrets(deaAuthInfo.clientSecret, deaProps.kmsKey);
+    this.storeSecrets(protectedDeaResourceArns, deaAuthInfo.clientSecret, deaProps.kmsKey);
 
     // We need various cognito information during authentication/authorization
     // in DEA. Store that (excepting client secret) in SSM Param Store
@@ -62,28 +73,35 @@ export class DeaParameters extends Construct {
     );
   }
 
-  private storeAvailableEndpointsPerRole(availableEndpointsPerRole: Map<string, string[]>) {
+  private storeAvailableEndpointsPerRole(
+    protectedDeaResourceArns: string[],
+    availableEndpointsPerRole: Map<string, string[]>
+  ) {
     const region = deaConfig.region();
     const stage = deaConfig.stage();
     availableEndpointsPerRole.forEach((endpointStrings: string[], roleName: string) => {
-      new StringListParameter(this, `${roleName}_actions`, {
+      const param = new StringListParameter(this, `${roleName}_actions`, {
         parameterName: `/dea/${region}/${stage}-${roleName}-actions`,
         stringListValue: endpointStrings,
         description: 'stores the available endpoints for a role',
         tier: ParameterTier.STANDARD,
         allowedPattern: '.*',
       });
+
+      protectedDeaResourceArns.push(param.parameterArn);
     });
   }
 
-  private storeSecrets(clientSecret: SecretValue, kmsKey: Key) {
+  private storeSecrets(protectedDeaResourceArns: string[], clientSecret: SecretValue, kmsKey: Key) {
     const region = deaConfig.region();
     const stage = deaConfig.stage();
-    new Secret(this, `/dea/${region}/${stage}/clientSecret`, {
+    const secret = new Secret(this, `/dea/${region}/${stage}/clientSecret`, {
       secretName: `/dea/${region}/${stage}/clientSecret`,
       encryptionKey: kmsKey,
       secretStringValue: clientSecret,
     });
+
+    protectedDeaResourceArns.push(secret.secretArn);
   }
 
   // Store the user pool id and client id in the parameter store so that we can verify

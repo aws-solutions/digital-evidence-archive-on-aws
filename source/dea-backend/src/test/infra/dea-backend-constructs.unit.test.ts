@@ -19,6 +19,8 @@ import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
 import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
 
+const PROTECTED_DEA_RESOURCES: string[] = [];
+
 describe('DeaBackend constructs', () => {
   const expectedLambdaCount = 39;
   const expectedMethodCount = 77;
@@ -49,12 +51,12 @@ describe('DeaBackend constructs', () => {
     const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
 
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', {
+    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       accessLogsPrefixes: ['dea-ui-access-log'],
       opsDashboard: dashboard,
     });
-    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
+    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
@@ -66,7 +68,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       opsDashboard: dashboard,
     });
-    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
+    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', PROTECTED_DEA_RESOURCES, {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
       deaDatasetsBucket: backend.datasetsBucket,
@@ -113,7 +115,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', {
+    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
@@ -138,12 +140,12 @@ describe('DeaBackend constructs', () => {
     const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
 
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', {
+    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       accessLogsPrefixes: ['dea-ui-access-log'],
       opsDashboard: dashboard,
     });
-    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
+    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
@@ -155,7 +157,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       opsDashboard: dashboard,
     });
-    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
+    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', PROTECTED_DEA_RESOURCES, {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
       deaDatasetsBucket: backend.datasetsBucket,
@@ -186,7 +188,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', {
+    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
@@ -216,12 +218,12 @@ describe('DeaBackend constructs', () => {
     const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
 
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', {
+    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       accessLogsPrefixes: ['dea-ui-access-log'],
       opsDashboard: dashboard,
     });
-    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
+    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
@@ -233,7 +235,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       opsDashboard: dashboard,
     });
-    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
+    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', PROTECTED_DEA_RESOURCES, {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
       deaDatasetsBucket: backend.datasetsBucket,
@@ -265,7 +267,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', {
+    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });

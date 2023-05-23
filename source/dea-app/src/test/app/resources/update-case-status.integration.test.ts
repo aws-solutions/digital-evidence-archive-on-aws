@@ -44,7 +44,6 @@ let caseOwner: DeaUser;
 let s3Mock: AwsStub<S3Input, S3Output>;
 let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput>;
 
-const EVENT = getDummyEvent();
 const ETAG = 'hehe';
 const VERSION_ID = 'haha';
 
@@ -60,7 +59,6 @@ describe('update case status', () => {
         },
         repositoryProvider
       )) ?? fail();
-    EVENT.headers['userUlid'] = caseOwner.ulid;
   });
 
   afterAll(async () => {
@@ -92,8 +90,18 @@ describe('update case status', () => {
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
-    const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, createdCase.ulid, 'file1');
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, caseFile.ulid ?? fail(), createdCase.ulid);
+    const caseFile = await callInitiateCaseFileUpload(
+      caseOwner.ulid,
+      repositoryProvider,
+      createdCase.ulid,
+      'file1'
+    );
+    await callCompleteCaseFileUpload(
+      caseOwner.ulid,
+      repositoryProvider,
+      caseFile.ulid ?? fail(),
+      createdCase.ulid
+    );
 
     const jobId = uuidv4();
     s3ControlMock.resolves({
@@ -101,7 +109,7 @@ describe('update case status', () => {
     });
 
     const updatedCase = await callUpdateCaseStatusAndValidate(
-      EVENT,
+      caseOwner.ulid,
       createdCase,
       true,
       CaseStatus.INACTIVE,
@@ -129,7 +137,7 @@ describe('update case status', () => {
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
     const updatedCase = await callUpdateCaseStatusAndValidate(
-      EVENT,
+      caseOwner.ulid,
       createdCase,
       true,
       CaseStatus.INACTIVE,
@@ -161,7 +169,7 @@ describe('update case status', () => {
     await updateCaseStatusInDb(createdCase, CaseStatus.INACTIVE, CaseFileStatus.DELETED, repositoryProvider);
 
     const updatedCase = await callUpdateCaseStatusAndValidate(
-      EVENT,
+      caseOwner.ulid,
       createdCase,
       false,
       CaseStatus.ACTIVE,
@@ -188,8 +196,18 @@ describe('update case status', () => {
       description: 'description',
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
-    const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, createdCase.ulid, 'file1');
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, caseFile.ulid ?? fail(), createdCase.ulid);
+    const caseFile = await callInitiateCaseFileUpload(
+      caseOwner.ulid,
+      repositoryProvider,
+      createdCase.ulid,
+      'file1'
+    );
+    await callCompleteCaseFileUpload(
+      caseOwner.ulid,
+      repositoryProvider,
+      caseFile.ulid ?? fail(),
+      createdCase.ulid
+    );
 
     const jobId = uuidv4();
     s3ControlMock.resolves({
@@ -197,7 +215,7 @@ describe('update case status', () => {
     });
 
     const inactivatedCase = await callUpdateCaseStatusAndValidate(
-      EVENT,
+      caseOwner.ulid,
       createdCase,
       true,
       CaseStatus.INACTIVE,
@@ -215,7 +233,13 @@ describe('update case status', () => {
     );
 
     await expect(
-      callUpdateCaseStatusAndValidate(EVENT, inactivatedCase, false, CaseStatus.ACTIVE, repositoryProvider)
+      callUpdateCaseStatusAndValidate(
+        caseOwner.ulid,
+        inactivatedCase,
+        false,
+        CaseStatus.ACTIVE,
+        repositoryProvider
+      )
     ).rejects.toThrow("Case status can't be changed to ACTIVE when its files are being deleted");
   });
 
@@ -227,7 +251,7 @@ describe('update case status', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     const updatedCase = await callUpdateCaseStatusAndValidate(
-      EVENT,
+      caseOwner.ulid,
       createdCase,
       true,
       CaseStatus.INACTIVE,
@@ -236,7 +260,7 @@ describe('update case status', () => {
 
     // update case status again. expect case without updates
     const notUpdatedCase = await callUpdateCaseStatusAndValidate(
-      EVENT,
+      caseOwner.ulid,
       createdCase,
       true,
       CaseStatus.INACTIVE,
@@ -282,7 +306,7 @@ describe('update case status', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     const notUpdatedCase = await callUpdateCaseStatusAndValidate(
-      EVENT,
+      caseOwner.ulid,
       createdCase,
       false,
       CaseStatus.ACTIVE,
@@ -310,7 +334,13 @@ describe('update case status', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     await expect(
-      callUpdateCaseStatusAndValidate(EVENT, createdCase, true, CaseStatus.ACTIVE, repositoryProvider)
+      callUpdateCaseStatusAndValidate(
+        caseOwner.ulid,
+        createdCase,
+        true,
+        CaseStatus.ACTIVE,
+        repositoryProvider
+      )
     ).rejects.toThrow('Delete files can only be requested when inactivating a case');
 
     //ensure no job was created
@@ -325,14 +355,30 @@ describe('update case status', () => {
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
-    const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, createdCase.ulid, 'file1');
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, caseFile.ulid ?? fail(), createdCase.ulid);
+    const caseFile = await callInitiateCaseFileUpload(
+      caseOwner.ulid,
+      repositoryProvider,
+      createdCase.ulid,
+      'file1'
+    );
+    await callCompleteCaseFileUpload(
+      caseOwner.ulid,
+      repositoryProvider,
+      caseFile.ulid ?? fail(),
+      createdCase.ulid
+    );
 
     s3Mock.resolves({
       ETag: undefined,
     });
     await expect(
-      callUpdateCaseStatusAndValidate(EVENT, createdCase, true, CaseStatus.INACTIVE, repositoryProvider)
+      callUpdateCaseStatusAndValidate(
+        caseOwner.ulid,
+        createdCase,
+        true,
+        CaseStatus.INACTIVE,
+        repositoryProvider
+      )
     ).rejects.toThrow('Failed to delete files. Please retry.');
 
     const updatedCase = (await getCase(createdCase.ulid, undefined, repositoryProvider)) ?? fail();
@@ -358,14 +404,30 @@ describe('update case status', () => {
     };
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
-    const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, createdCase.ulid, 'file1');
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, caseFile.ulid ?? fail(), createdCase.ulid);
+    const caseFile = await callInitiateCaseFileUpload(
+      caseOwner.ulid,
+      repositoryProvider,
+      createdCase.ulid,
+      'file1'
+    );
+    await callCompleteCaseFileUpload(
+      caseOwner.ulid,
+      repositoryProvider,
+      caseFile.ulid ?? fail(),
+      createdCase.ulid
+    );
 
     s3ControlMock.resolves({
       JobId: undefined,
     });
     await expect(
-      callUpdateCaseStatusAndValidate(EVENT, createdCase, true, CaseStatus.INACTIVE, repositoryProvider)
+      callUpdateCaseStatusAndValidate(
+        caseOwner.ulid,
+        createdCase,
+        true,
+        CaseStatus.INACTIVE,
+        repositoryProvider
+      )
     ).rejects.toThrow('Failed to delete files. Please retry.');
 
     const updatedCase = (await getCase(createdCase.ulid, undefined, repositoryProvider)) ?? fail();
