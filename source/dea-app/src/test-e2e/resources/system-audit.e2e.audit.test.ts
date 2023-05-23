@@ -93,7 +93,7 @@ describe('system audit e2e', () => {
     await delay(25000);
 
     let csvData: string | undefined;
-    const queryRetries = 20;
+    let queryRetries = 50;
     while (!csvData && queryRetries > 0) {
       const startAuditQueryResponse = await callDeaAPIWithCreds(
         `${deaApiUrl}system/audit`,
@@ -152,6 +152,7 @@ describe('system audit e2e', () => {
       } else {
         await delay(2000);
       }
+      --queryRetries;
     }
     expect(csvData).toContain('/cases/{caseId}/details');
     expect(csvData).toContain(testUser);

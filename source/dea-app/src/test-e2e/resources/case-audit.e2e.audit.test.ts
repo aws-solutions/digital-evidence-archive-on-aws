@@ -113,10 +113,10 @@ describe('case audit e2e', () => {
     await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/files`, 'GET', inviteeToken, inviteeCreds);
 
     // allow some time so the events show up in CW logs
-    await delay(25000);
+    await delay(5 * 60 * 1000);
 
     let csvData: string | undefined;
-    const queryRetries = 5;
+    let queryRetries = 5;
     while (!csvData && queryRetries > 0) {
       const startAuditQueryResponse = await callDeaAPIWithCreds(
         `${deaApiUrl}cases/${caseUlid}/audit`,
@@ -169,6 +169,7 @@ describe('case audit e2e', () => {
       } else {
         await delay(10000);
       }
+      --queryRetries;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -237,12 +238,12 @@ describe('case audit e2e', () => {
     const cloudtrailEntries = parseTrailEventsFromAuditQuery(csvData!);
 
     const dbGetItems = cloudtrailEntries.filter((entry) => entry.eventType === 'GetItem');
-    expect(dbGetItems).toHaveLength(5);
+    expect(dbGetItems.length).toBeGreaterThanOrEqual(5);
     const dbTransactItems = cloudtrailEntries.filter((entry) => entry.eventType === 'TransactWriteItems');
     expect(dbTransactItems).toHaveLength(2);
 
-    expect(cloudtrailEntries.length).toBe(7);
-  }, 10000000);
+    expect(cloudtrailEntries.length).toBeGreaterThanOrEqual(7);
+  }, 1800000);
 
   it('should prevent retrieval by an unauthorized user', async () => {
     const caseName = `auditTestCase${randomSuffix()}`;

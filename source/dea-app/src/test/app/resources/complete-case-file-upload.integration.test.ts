@@ -138,7 +138,7 @@ describe('Test complete case file upload', () => {
   it('Complete upload should throw an exception when user does not exist in DB', async () => {
     await expect(
       callCompleteCaseFileUpload(FILE_ULID, repositoryProvider, FILE_ULID, CASE_ULID)
-    ).rejects.toThrow('Could not find case-file uploader as a user in the DB');
+    ).rejects.toThrow('Could not find case-file upload user');
   });
 
   it('Complete upload should throw an exception when userId not present in headers', async () => {
@@ -150,7 +150,7 @@ describe('Test complete case file upload', () => {
   it('Complete upload should throw an exception when case does not exist in DB', async () => {
     await expect(
       callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, CASE_ULID)
-    ).rejects.toThrow(`Could not find case: ${CASE_ULID} in the DB`);
+    ).rejects.toThrow('Could not find case');
   });
 
   it('Complete upload should throw an exception when case is inactive', async () => {
@@ -159,13 +159,13 @@ describe('Test complete case file upload', () => {
         .ulid ?? fail();
     await expect(
       callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, inactiveCaseUlid)
-    ).rejects.toThrow("Can't upload a file to case in INACTIVE state");
+    ).rejects.toThrow('Case is in an invalid state for uploading files');
   });
 
   it("Complete upload should throw an exception when case-file doesn't exist", async () => {
     await expect(
       callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToUploadTo)
-    ).rejects.toThrow(`Could not find file: ${FILE_ULID} in the DB`);
+    ).rejects.toThrow('Could not find file');
   });
 
   it("Complete upload should throw an exception when case-file isn't pending", async () => {
@@ -182,7 +182,7 @@ describe('Test complete case file upload', () => {
 
     await expect(
       callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToUploadTo)
-    ).rejects.toThrow(`Can't complete upload for a file in ${CaseFileStatus.ACTIVE} state`);
+    ).rejects.toThrow('File is in incorrect state for upload');
   });
 
   it('Complete upload should throw an exception when caller is different user', async () => {

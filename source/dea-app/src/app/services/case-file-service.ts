@@ -24,11 +24,9 @@ import {
   DatasetsProvider,
   generatePresignedUrlsForCaseFile,
 } from '../../storage/datasets';
-import { ForbiddenError } from '../exceptions/forbidden-exception';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
-
-import { getCase } from './case-service';
+import { getRequiredCase } from './case-service';
 import { getUser } from './user-service';
 
 export const initiateCaseFileUpload = async (
@@ -69,9 +67,7 @@ export const validateInitiateUploadRequirements = async (
         `${existingCaseFile.filePath}${existingCaseFile.fileName} is currently being uploaded. Check again in 60 minutes`
       );
     }
-    throw new ValidationError(
-      `${existingCaseFile.filePath}${existingCaseFile.fileName} already exists in the DB`
-    );
+    throw new ValidationError('File already exists in the DB');
   }
 };
 
@@ -81,21 +77,18 @@ export const validateCompleteCaseFileRequirements = async (
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFile> => {
   await validateUploadRequirements(completeCaseFileUploadDTO, userUlid, repositoryProvider);
-  const existingCaseFile = await getCaseFileByUlid(
-    completeCaseFileUploadDTO.ulid,
+  const existingCaseFile = await getRequiredCaseFile(
     completeCaseFileUploadDTO.caseUlid,
+    completeCaseFileUploadDTO.ulid,
     repositoryProvider
   );
-  if (!existingCaseFile) {
-    throw new NotFoundError(`Could not find file: ${completeCaseFileUploadDTO.ulid} in the DB`);
-  }
 
   if (existingCaseFile.status != CaseFileStatus.PENDING) {
-    throw new ValidationError(`Can't complete upload for a file in ${existingCaseFile.status} state`);
+    throw new ValidationError('File is in incorrect state for upload');
   }
 
   if (existingCaseFile.createdBy !== userUlid) {
-    throw new ForbiddenError('Mismatch in user creating and completing file upload');
+    throw new ValidationError('Mismatch in user creating and completing file upload');
   }
 
   return existingCaseFile;
@@ -111,16 +104,13 @@ async function validateUploadRequirements(
     // Note: before every lambda checks are run to add first time
     // federated users to the db. If the caller is not in the db
     // a server error has occurred
-    throw new Error('Could not find case-file uploader as a user in the DB');
+    throw new Error('Could not find case-file upload user');
   }
 
-  const deaCase = await getCase(caseFileUploadRequest.caseUlid, repositoryProvider);
-  if (!deaCase) {
-    throw new NotFoundError(`Could not find case: ${caseFileUploadRequest.caseUlid} in the DB`);
-  }
+  const deaCase = await getRequiredCase(caseFileUploadRequest.caseUlid, repositoryProvider);
 
   if (deaCase.status != CaseStatus.ACTIVE) {
-    throw new ValidationError(`Can't upload a file to case in ${deaCase.status} state`);
+    throw new ValidationError('Case is in an invalid state for uploading files');
   }
 }
 
@@ -196,4 +186,16 @@ export const getCaseFile = async (
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFileResult | undefined> => {
   return await CaseFilePersistence.getCaseFileByUlid(ulid, caseId, repositoryProvider);
+};
+
+export const getRequiredCaseFile = async (
+  caseId: string,
+  fileId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCaseFile> => {
+  const caseFile = await getCaseFileByUlid(fileId, caseId, repositoryProvider);
+  if (!caseFile) {
+    throw new NotFoundError('Could not find file');
+  }
+  return caseFile;
 };
