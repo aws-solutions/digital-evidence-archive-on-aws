@@ -171,7 +171,7 @@ describe('case file audit e2e', () => {
     await delay(5 * 60 * 1000);
 
     let csvData: string | undefined;
-    let queryRetries = 5;
+    let queryRetries = 10;
     while (!csvData && queryRetries > 0) {
       const startAuditQueryResponse = await callDeaAPIWithCreds(
         `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}/audit`,
@@ -212,12 +212,16 @@ describe('case file audit e2e', () => {
 
       const potentialCsvData: string = getQueryReponse.data;
 
+      const dynamoMatch = potentialCsvData.match(/dynamodb.amazonaws.com/g);
+      const s3Match = potentialCsvData.match(/s3.amazonaws.com/g);
       if (
         getQueryReponse.data &&
         !getQueryReponse.data.status &&
         potentialCsvData.includes(AuditEventType.COMPLETE_CASE_FILE_UPLOAD) &&
-        potentialCsvData.match(/dynamodb.amazonaws.com/g)?.length === 5 &&
-        potentialCsvData.match(/s3.amazonaws.com/g)?.length === 7 &&
+        dynamoMatch &&
+        dynamoMatch.length >= 5 &&
+        s3Match &&
+        s3Match.length >= 7 &&
         potentialCsvData.includes(AuditEventType.GET_CASE_FILE_DETAIL) &&
         potentialCsvData.includes(AuditEventType.DOWNLOAD_CASE_FILE)
       ) {

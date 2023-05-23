@@ -128,6 +128,8 @@ export const fileOperationsLabels = {
   auditLogLabel: 'Case File Audit Log',
   restoreSuccessful: 'Successfully initiated restore for selected files',
   restoreFail: 'Failed to restore selected files',
+  modalTitle: 'Confirm you want to upload these files',
+  modalBody: 'Once uploaded case files cannot be individually removed',
   restoreInProgress: (fileName: string) =>
     `${fileName} is currently being restored. It will be ready to download in up to 12 hours`,
   archivedFileNoPermissionError: (fileName: string) =>

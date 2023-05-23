@@ -5,6 +5,7 @@
 
 import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -13,6 +14,7 @@ import {
   Header,
   Icon,
   Input,
+  Modal,
   SpaceBetween,
   Spinner,
   Table,
@@ -54,6 +56,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [details, setDetails] = useState('');
   const [reason, setReason] = useState('');
   const [uploadInProgress, setUploadInProgress] = useState(false);
+  const [confirmationVisible, setConfirmationVisible] = useState(false);
   const router = useRouter();
 
   async function onSubmitHandler() {
@@ -209,6 +212,36 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
   return (
     <SpaceBetween data-testid="upload-file-form-space" size="s">
+      <Modal
+        data-testid="upload-file-form-modal"
+        onDismiss={() => setConfirmationVisible(false)}
+        visible={confirmationVisible}
+        closeAriaLabel="Close modal"
+        footer={
+          <Box float="right">
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button variant="link" onClick={() => setConfirmationVisible(false)}>
+                Go back
+              </Button>
+              <Button
+                data-testid="confirm-upload-button"
+                variant="primary"
+                onClick={() => {
+                  void onSubmitHandler();
+                  setConfirmationVisible(false);
+                }}
+              >
+                Confirm
+              </Button>
+            </SpaceBetween>
+          </Box>
+        }
+        header={fileOperationsLabels.modalTitle}
+      >
+        <Alert statusIconAriaLabel="Warning" type="warning">
+          {fileOperationsLabels.modalBody}
+        </Alert>
+      </Modal>
       <Form>
         <Container
           header={
@@ -274,7 +307,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           variant="primary"
           iconAlign="right"
           data-testid="upload-file-submit"
-          onClick={onSubmitHandler}
+          onClick={() => setConfirmationVisible(true)}
           disabled={uploadInProgress || !validateFields()}
         >
           {commonLabels.uploadAndSaveButton}

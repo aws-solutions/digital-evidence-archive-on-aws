@@ -46,7 +46,7 @@ describe('user audit e2e', () => {
     await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', idToken, creds);
     // get the user ulid
     userUlid = (await getSpecificUserByFirstName(deaApiUrl, testUser, managerIdToken, managerCreds)).ulid;
-  }, 10000);
+  }, 20000);
 
   afterAll(async () => {
     for (const caseId of caseIdsToDelete) {

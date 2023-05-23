@@ -88,9 +88,18 @@ describe('UploadFiles page', () => {
     }
     wrappedReason.setInputValue('reason');
 
+    // modal is not visible initially
+    expect(wrapper(document.body).findModal()?.isVisible()).toBe(false);
+
     const uploadButton = screen.getByText(commonLabels.uploadAndSaveButton);
     const uploadButtonWrapper = wrapper(uploadButton);
     uploadButtonWrapper.click();
+
+    await waitFor(() => expect(wrapper(document.body).findModal()?.isVisible()).toBe(true));
+    const submitButton = screen.getByTestId('confirm-upload-button');
+    const submitButtonWrapper = wrapper(submitButton);
+    submitButtonWrapper.click();
+    await waitFor(() => expect(wrapper(document.body).findModal()?.isVisible()).toBe(false));
 
     // upload button will be disabled while in progress and then re-enabled when done
     await waitFor(() => expect(screen.queryByTestId('upload-file-submit')).toBeDisabled());
