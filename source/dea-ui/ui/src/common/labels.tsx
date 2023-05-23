@@ -8,9 +8,11 @@ import { AppLayoutProps, SelectProps } from '@cloudscape-design/components';
 
 export const commonLabels = {
   cancelButton: 'Cancel',
+  doneButton: 'Done',
   submitButton: 'Submit',
   createButton: 'Create',
   uploadButton: 'Upload',
+  uploadAndSaveButton: 'Upload and save',
   activateButton: 'Activate',
   deactivateButton: 'Deactivate',
   addButton: 'Add',
