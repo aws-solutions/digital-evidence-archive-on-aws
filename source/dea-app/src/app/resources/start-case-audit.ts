@@ -10,6 +10,7 @@ import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
 import { defaultCloudwatchClient } from '../audit/dea-audit-plugin';
 import { auditService } from '../services/audit-service';
+import { getRequiredCase } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
@@ -30,6 +31,9 @@ export const startCaseAudit: DEAGatewayProxyHandler = async (
   const end = getQueryParam(event, 'to', now.toString(), Joi.number().integer());
   const startTime = Number.parseInt(start);
   const endTime = Number.parseInt(end);
+
+  await getRequiredCase(caseId, repositoryProvider);
+
   const queryId = await auditService.requestAuditForCase(
     caseId,
     startTime,

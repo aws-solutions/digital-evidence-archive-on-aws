@@ -1,4 +1,5 @@
 {
+  "deletionAllowed": false,
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
@@ -17,16 +18,8 @@
           "method": "PUT"
         },
         {
-          "path": "/cases/{caseId}/details",
-          "method": "DELETE"
-        },
-        {
           "path": "/cases/{caseId}/actions",
           "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/owner",
-          "method": "POST"
         },
         {
           "path": "/cases/{caseId}/status",

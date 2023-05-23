@@ -9,6 +9,7 @@ import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
 import { defaultCloudwatchClient } from '../audit/dea-audit-plugin';
 import { auditService } from '../services/audit-service';
+import { getRequiredCase } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { csvResponse, responseOk } from './dea-lambda-utils';
 
@@ -25,6 +26,9 @@ export const getCaseAudit: DEAGatewayProxyHandler = async (
 ) => {
   const auditId = getRequiredPathParam(event, 'auditId', joiUlid);
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
+
+  await getRequiredCase(caseId, repositoryProvider);
+
   const result = await auditService.getCaseAuditResult(auditId, caseId, cloudwatchClient, repositoryProvider);
 
   if (result.csvFormattedData) {

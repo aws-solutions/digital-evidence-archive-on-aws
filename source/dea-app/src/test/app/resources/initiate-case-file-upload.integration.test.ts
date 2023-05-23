@@ -19,6 +19,7 @@ import { CaseStatus } from '../../../models/case-status';
 import { DeaUser } from '../../../models/user';
 import { ONE_TB } from '../../../models/validation/joi-common';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
+import { bogusUlid, fakeUlid } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
@@ -44,8 +45,6 @@ const UPLOAD_ID = '123456';
 const VERSION_ID = '543210';
 const CONTENT_TYPE = 'image/jpeg';
 
-const EVENT = getDummyEvent();
-
 jest.setTimeout(30000);
 
 describe('Test initiate case file upload', () => {
@@ -53,7 +52,6 @@ describe('Test initiate case file upload', () => {
     repositoryProvider = await getTestRepositoryProvider('InitiateCaseFileUploadTest');
 
     fileUploader = await callCreateUser(repositoryProvider);
-    EVENT.headers['userUlid'] = fileUploader.ulid;
     caseToUploadTo = (await callCreateCase(fileUploader, repositoryProvider)).ulid ?? fail();
   });
 
@@ -68,8 +66,6 @@ describe('Test initiate case file upload', () => {
       UploadId: UPLOAD_ID,
       VersionId: VERSION_ID,
     });
-
-    EVENT.headers['userUlid'] = fileUploader.ulid;
   });
 
   it('should successfully initiate a file upload', async () => {
@@ -78,46 +74,49 @@ describe('Test initiate case file upload', () => {
   });
 
   it('Initiate upload should throw a validation exception when no payload is provided', async () => {
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: bogusUlid,
+      },
+    });
     await expect(
-      initiateCaseFileUpload(EVENT, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+      initiateCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
     ).rejects.toThrow('Initiate case file upload payload missing.');
   });
 
   it('Initiate upload should throw an exception when user does not exist in DB', async () => {
-    EVENT.headers['userUlid'] = FILE_ULID; // use a fake ulid
-    await expect(callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo)).rejects.toThrow(
-      'Could not find case-file uploader as a user in the DB'
+    await expect(callInitiateCaseFileUpload(FILE_ULID, repositoryProvider, caseToUploadTo)).rejects.toThrow(
+      'Could not find case-file upload user'
     );
   });
 
   it('Initiate upload should throw an exception when no user provided in header', async () => {
-    delete EVENT.headers['userUlid'];
-    await expect(callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo)).rejects.toThrow(
+    await expect(callInitiateCaseFileUpload(undefined, repositoryProvider, caseToUploadTo)).rejects.toThrow(
       'userUlid was not present in the event header'
     );
   });
 
   it('Initiate upload should throw an exception when case does not exist in DB', async () => {
     // use a bogus ULID
-    await expect(callInitiateCaseFileUpload(EVENT, repositoryProvider, CASE_ULID)).rejects.toThrow(
-      `Could not find case: ${CASE_ULID} in the DB`
-    );
+    await expect(
+      callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, CASE_ULID)
+    ).rejects.toThrow(`Could not find case`);
   });
 
   it('Initiate upload should throw an exception when case is inactive', async () => {
     const inactiveCaseUlid =
       (await callCreateCase(fileUploader, repositoryProvider, 'inactive', 'inactive', CaseStatus.INACTIVE))
         .ulid ?? fail();
-    await expect(callInitiateCaseFileUpload(EVENT, repositoryProvider, inactiveCaseUlid)).rejects.toThrow(
-      "Can't upload a file to case in INACTIVE state"
-    );
+    await expect(
+      callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, inactiveCaseUlid)
+    ).rejects.toThrow('Case is in an invalid state for uploading files');
   });
 
   it('Initiate upload should throw an exception when case-file is PENDING', async () => {
     const pendingFileName = 'initiatePendingFile';
     await initiateCaseFileUploadAndValidate(caseToUploadTo, pendingFileName);
     await expect(
-      callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, pendingFileName)
+      callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, pendingFileName)
     ).rejects.toThrow(
       `${FILE_PATH}${pendingFileName} is currently being uploaded. Check again in 60 minutes`
     );
@@ -127,7 +126,7 @@ describe('Test initiate case file upload', () => {
     const activeFileName = 'initiateActiveFile';
     const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate(caseToUploadTo, activeFileName);
     await callCompleteCaseFileUpload(
-      EVENT,
+      fileUploader.ulid,
       repositoryProvider,
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       caseFile.ulid as string,
@@ -135,70 +134,84 @@ describe('Test initiate case file upload', () => {
     );
 
     await expect(
-      callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, activeFileName)
-    ).rejects.toThrow(`${FILE_PATH}${activeFileName} already exists in the DB`);
+      callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, activeFileName)
+    ).rejects.toThrow('File already exists in the DB');
   });
 
   it('Initiate upload should enforce a strict payload', async () => {
     // validate caseUlid
-    await expect(callInitiateCaseFileUpload(EVENT, repositoryProvider, 'ABCD')).rejects.toThrow();
-    await expect(callInitiateCaseFileUpload(EVENT, repositoryProvider, '')).rejects.toThrow();
+    await expect(callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, 'ABCD')).rejects.toThrow();
+    await expect(callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, '')).rejects.toThrow();
 
     // validate fileName
-    await expect(callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, '')).rejects.toThrow();
     await expect(
-      callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, '/food/ramen.jpg')
+      callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, '')
     ).rejects.toThrow();
     await expect(
-      callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, 'hello\0')
+      callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, '/food/ramen.jpg')
+    ).rejects.toThrow();
+    await expect(
+      callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, 'hello\0')
     ).rejects.toThrow();
 
     // allowed fileNames
     expect(
-      await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, 'ramen.jpg')
+      await callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, 'ramen.jpg')
     ).toBeDefined();
     expect(
-      await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, '01234')
+      await callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, '01234')
     ).toBeDefined();
     expect(
-      await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, 'ramen-jpg')
+      await callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, 'ramen-jpg')
     ).toBeDefined();
     expect(
-      await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, 'ramen_jpg')
+      await callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, 'ramen_jpg')
     ).toBeDefined();
     expect(
-      await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, 'ramen jpg')
+      await callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, 'ramen jpg')
     ).toBeDefined();
 
     // validate filePath
     await expect(
-      callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, FILE_NAME, 'foo')
+      callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, FILE_NAME, 'foo')
     ).rejects.toThrow();
     await expect(
-      callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, FILE_NAME, '')
+      callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, FILE_NAME, '')
     ).rejects.toThrow();
     await expect(
-      callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, FILE_NAME, 'foo\\')
+      callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, FILE_NAME, 'foo\\')
     ).rejects.toThrow();
     await expect(
-      callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, FILE_NAME, 'foo&&')
+      callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, FILE_NAME, 'foo&&')
     ).rejects.toThrow();
 
     // allowed filePaths
     expect(
-      await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, FILE_NAME, '/')
+      await callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, FILE_NAME, '/')
     ).toBeDefined();
     expect(
-      await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, FILE_NAME, '/foo/')
+      await callInitiateCaseFileUpload(
+        fileUploader.ulid,
+        repositoryProvider,
+        caseToUploadTo,
+        FILE_NAME,
+        '/foo/'
+      )
     ).toBeDefined();
     expect(
-      await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToUploadTo, FILE_NAME, '/foo/bar/')
+      await callInitiateCaseFileUpload(
+        fileUploader.ulid,
+        repositoryProvider,
+        caseToUploadTo,
+        FILE_NAME,
+        '/foo/bar/'
+      )
     ).toBeDefined();
 
     // validate fileSizeBytes
     await expect(
       callInitiateCaseFileUpload(
-        EVENT,
+        fileUploader.ulid,
         repositoryProvider,
         caseToUploadTo,
         FILE_NAME,
@@ -209,7 +222,7 @@ describe('Test initiate case file upload', () => {
     ).rejects.toThrow();
     await expect(
       callInitiateCaseFileUpload(
-        EVENT,
+        fileUploader.ulid,
         repositoryProvider,
         caseToUploadTo,
         FILE_NAME,
@@ -220,7 +233,7 @@ describe('Test initiate case file upload', () => {
     ).rejects.toThrow();
     await expect(
       callInitiateCaseFileUpload(
-        EVENT,
+        fileUploader.ulid,
         repositoryProvider,
         caseToUploadTo,
         FILE_NAME,
@@ -230,10 +243,37 @@ describe('Test initiate case file upload', () => {
       )
     ).rejects.toThrow();
   });
+
+  it('should error if the payload and resource ids do not match', async () => {
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: bogusUlid,
+      },
+      body: JSON.stringify({
+        caseUlid: fakeUlid,
+        fileName: 'bogus',
+        filePath: '/',
+        contentType: 'image/jpeg',
+        fileSizeBytes: 1,
+        tag: 'abc',
+        reason: '123',
+        details: 'u&me',
+        chunkSizeBytes: 5242881,
+      }),
+    });
+    await expect(
+      initiateCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+    ).rejects.toThrow('Requested Case Ulid does not match resource');
+  });
 });
 
 async function initiateCaseFileUploadAndValidate(caseUlid: string, fileName: string): Promise<DeaCaseFile> {
-  const deaCaseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseUlid, fileName);
+  const deaCaseFile = await callInitiateCaseFileUpload(
+    fileUploader.ulid,
+    repositoryProvider,
+    caseUlid,
+    fileName
+  );
   await validateCaseFile(
     deaCaseFile,
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

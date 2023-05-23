@@ -31,7 +31,6 @@ let caseToList = '';
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
 const UPLOAD_ID = '123456';
 const VERSION_ID = '543210';
-const EVENT = getDummyEvent();
 
 jest.setTimeout(20000);
 
@@ -40,7 +39,6 @@ describe('Test list case files', () => {
     repositoryProvider = await getTestRepositoryProvider('ListCaseFilesTest');
 
     fileDescriber = await callCreateUser(repositoryProvider);
-    EVENT.headers['userUlid'] = fileDescriber.ulid;
 
     caseToList = (await callCreateCase(fileDescriber, repositoryProvider)).ulid ?? fail();
   });
@@ -58,8 +56,12 @@ describe('Test list case files', () => {
   });
 
   it('List case-files should successfully get case-files', async () => {
-    const caseFile = await callInitiateCaseFileUpload(EVENT, repositoryProvider, caseToList);
-    const caseFileList: ResponseCaseFilePage = await callListCaseFiles(EVENT, repositoryProvider, caseToList);
+    const caseFile = await callInitiateCaseFileUpload(fileDescriber.ulid, repositoryProvider, caseToList);
+    const caseFileList: ResponseCaseFilePage = await callListCaseFiles(
+      fileDescriber.ulid,
+      repositoryProvider,
+      caseToList
+    );
     expect(caseFileList.files.length).toEqual(1);
     expect(caseFileList.next).toBeUndefined();
     await validateCaseFile(
@@ -74,21 +76,21 @@ describe('Test list case files', () => {
   it('List case-files should successfully get case-files with pagination', async () => {
     const filePath = '/';
     const caseFile1 = await callInitiateCaseFileUpload(
-      EVENT,
+      fileDescriber.ulid,
       repositoryProvider,
       caseToList,
       'file1',
       filePath
     );
     const caseFile2 = await callInitiateCaseFileUpload(
-      EVENT,
+      fileDescriber.ulid,
       repositoryProvider,
       caseToList,
       'file2',
       filePath
     );
     const caseFileList1: ResponseCaseFilePage = await callListCaseFiles(
-      EVENT,
+      fileDescriber.ulid,
       repositoryProvider,
       caseToList,
       '1',
@@ -98,7 +100,7 @@ describe('Test list case files', () => {
     expect(caseFileList1.next).toBeDefined();
 
     const caseFileList2: ResponseCaseFilePage = await callListCaseFiles(
-      EVENT,
+      fileDescriber.ulid,
       repositoryProvider,
       caseToList,
       '30',
@@ -134,7 +136,7 @@ describe('Test list case files', () => {
 
   it('List case-files should successfully get case-files with no results', async () => {
     const caseFileList: ResponseCaseFilePage = await callListCaseFiles(
-      EVENT,
+      fileDescriber.ulid,
       repositoryProvider,
       caseToList,
       '30',
@@ -145,15 +147,14 @@ describe('Test list case files', () => {
   });
 
   it('List case-files should throw a validation exception when case-id path param missing', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...EVENT,
-        pathParameters: {
-          fileId: FILE_ULID,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      headers: {
+        userUlid: fileDescriber.ulid,
+      },
+      pathParameters: {
+        fileId: FILE_ULID,
+      },
+    });
     await expect(getCaseFileDetails(event, dummyContext, repositoryProvider)).rejects.toThrow(
       `Required path param 'caseId' is missing.`
     );
@@ -161,7 +162,7 @@ describe('Test list case files', () => {
 
   it('List case-files should throw an exception when case does not exist in DB', async () => {
     // use a bogus ULID
-    await expect(callListCaseFiles(EVENT, repositoryProvider, FILE_ULID)).rejects.toThrow(
+    await expect(callListCaseFiles(fileDescriber.ulid, repositoryProvider, FILE_ULID)).rejects.toThrow(
       `Could not find case: ${FILE_ULID} in the DB`
     );
   });

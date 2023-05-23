@@ -38,8 +38,6 @@ const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
 const UPLOAD_ID = '123456';
 const VERSION_ID = '543210';
 
-const EVENT = getDummyEvent();
-
 jest.setTimeout(20000);
 
 describe('Test case file download', () => {
@@ -47,7 +45,6 @@ describe('Test case file download', () => {
     repositoryProvider = await getTestRepositoryProvider('CaseFileDownloadTest');
 
     fileUploader = await callCreateUser(repositoryProvider);
-    EVENT.headers['userUlid'] = fileUploader.ulid;
     caseToDownloadFrom = (await callCreateCase(fileUploader, repositoryProvider)).ulid ?? fail();
   });
 
@@ -61,49 +58,45 @@ describe('Test case file download', () => {
       UploadId: UPLOAD_ID,
       VersionId: VERSION_ID,
     });
-
-    EVENT.headers['userUlid'] = fileUploader.ulid;
   });
 
   it('should successfully download a file', async () => {
     const fileName = 'positive test';
     const caseFile = await callInitiateCaseFileUpload(
-      EVENT,
+      fileUploader.ulid,
       repositoryProvider,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
     await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
   });
 
   it('should throw a validation exception when case-id path param missing', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...EVENT,
-        pathParameters: {
-          fileId: FILE_ULID,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      headers: {
+        userUlid: fileUploader.ulid,
+      },
+      pathParameters: {
+        fileId: FILE_ULID,
+      },
+    });
     await expect(
       downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
     ).rejects.toThrow(`Required path param 'caseId' is missing.`);
   });
 
   it('should throw a validation exception when file-id path param missing', async () => {
-    const event = Object.assign(
-      {},
-      {
-        ...EVENT,
-        pathParameters: {
-          caseId: FILE_ULID,
-        },
-      }
-    );
+    const event = getDummyEvent({
+      headers: {
+        userUlid: fileUploader.ulid,
+      },
+      pathParameters: {
+        caseId: FILE_ULID,
+      },
+    });
     await expect(
       downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
     ).rejects.toThrow(`Required path param 'fileId' is missing.`);
@@ -111,14 +104,14 @@ describe('Test case file download', () => {
 
   it("should throw an exception when case-file doesn't exist", async () => {
     await expect(
-      callDownloadCaseFile(EVENT, repositoryProvider, FILE_ULID, caseToDownloadFrom)
+      callDownloadCaseFile(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToDownloadFrom)
     ).rejects.toThrow(`Could not find file: ${FILE_ULID} in the DB`);
   });
 
   it("should throw an exception when case-file isn't active", async () => {
     const pendingFileName = 'downloadPendingFile';
     const caseFile = await callInitiateCaseFileUpload(
-      EVENT,
+      fileUploader.ulid,
       repositoryProvider,
       caseToDownloadFrom,
       pendingFileName
@@ -126,7 +119,7 @@ describe('Test case file download', () => {
 
     await expect(
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      callDownloadCaseFile(EVENT, repositoryProvider, caseFile.ulid as string, caseToDownloadFrom)
+      callDownloadCaseFile(fileUploader.ulid, repositoryProvider, caseFile.ulid as string, caseToDownloadFrom)
     ).rejects.toThrow(`Can't download a file in ${CaseFileStatus.PENDING} state`);
   });
 
@@ -140,14 +133,14 @@ describe('Test case file download', () => {
 
     const fileName = 'IT deep archived file';
     const caseFile = await callInitiateCaseFileUpload(
-      EVENT,
+      fileUploader.ulid,
       repositoryProvider,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
     expect(downloadResult.downloadUrl).toBeFalsy();
     expect(downloadResult.isRestoring).toBeFalsy();
@@ -164,14 +157,14 @@ describe('Test case file download', () => {
 
     const fileName = 'IT archived file';
     const caseFile = await callInitiateCaseFileUpload(
-      EVENT,
+      fileUploader.ulid,
       repositoryProvider,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
     expect(downloadResult.downloadUrl).toBeFalsy();
     expect(downloadResult.isRestoring).toBeFalsy();
@@ -188,14 +181,14 @@ describe('Test case file download', () => {
 
     const fileName = 'deep archived file';
     const caseFile = await callInitiateCaseFileUpload(
-      EVENT,
+      fileUploader.ulid,
       repositoryProvider,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
     expect(downloadResult.downloadUrl).toBeFalsy();
     expect(downloadResult.isRestoring).toBeFalsy();
@@ -212,14 +205,14 @@ describe('Test case file download', () => {
 
     const fileName = 'archived file';
     const caseFile = await callInitiateCaseFileUpload(
-      EVENT,
+      fileUploader.ulid,
       repositoryProvider,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
     expect(downloadResult.downloadUrl).toBeFalsy();
     expect(downloadResult.isRestoring).toBeFalsy();
@@ -237,14 +230,14 @@ describe('Test case file download', () => {
 
     const fileName = 'restoring file';
     const caseFile = await callInitiateCaseFileUpload(
-      EVENT,
+      fileUploader.ulid,
       repositoryProvider,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
     expect(downloadResult.downloadUrl).toBeFalsy();
     expect(downloadResult.isRestoring).toBeTruthy();
@@ -262,14 +255,14 @@ describe('Test case file download', () => {
 
     const fileName = 'restored file';
     const caseFile = await callInitiateCaseFileUpload(
-      EVENT,
+      fileUploader.ulid,
       repositoryProvider,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(EVENT, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
     expect(downloadResult.downloadUrl).toBeTruthy();
     expect(downloadResult.isRestoring).toBeFalsy();
@@ -278,7 +271,7 @@ describe('Test case file download', () => {
 });
 
 async function downloadCaseFileAndValidate(fileId: string, caseId: string): Promise<DownloadCaseFileResult> {
-  const result = await callDownloadCaseFile(EVENT, repositoryProvider, fileId, caseId);
+  const result = await callDownloadCaseFile(fileUploader.ulid, repositoryProvider, fileId, caseId);
   if (result.downloadUrl) {
     expect(result.downloadUrl).toContain(
       `https://s3.us-east-1.amazonaws.com/${DATASETS_PROVIDER.bucketName}`
