@@ -16,3 +16,9 @@ export interface UpdateCaseStatusForm {
   status: CaseStatus;
   deleteFiles: boolean;
 }
+
+export interface EditCaseForm {
+  ulid: string;
+  name: string;
+  description?: string;
+}

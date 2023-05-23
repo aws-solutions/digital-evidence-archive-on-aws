@@ -14,7 +14,7 @@ import {
   DownloadFileResult,
   InitiateUploadForm, RestoreFileForm,
 } from '../models/CaseFiles';
-import {CreateCaseForm, UpdateCaseStatusForm} from '../models/Cases';
+import {CreateCaseForm, EditCaseForm, UpdateCaseStatusForm} from '../models/Cases';
 import { CaseUserForm } from '../models/CaseUser';
 import { CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
 
@@ -77,6 +77,10 @@ export const useGetScopedCaseInfoById = (id: string): DeaSingleResult<ScopedDeaC
 
 export const createCase = async (createCaseForm: CreateCaseForm): Promise<void> => {
   await httpApiPost(`cases`, { ...createCaseForm });
+};
+
+export const updateCase = async (editCaseForm: EditCaseForm): Promise<void> => {
+  await httpApiPut(`/cases/${editCaseForm.ulid}/details`, { ...editCaseForm });
 };
 
 export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DeaCaseFile> => {
