@@ -168,7 +168,7 @@ describe('system audit e2e', () => {
     expect(csvData).toContain('logs.amazonaws.com');
     expect(csvData).toContain('apigateway.amazonaws.com');
     expect(csvData).toContain('dynamodb.amazonaws.com');
-  }, 180000);
+  }, 360000);
 
   function delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));

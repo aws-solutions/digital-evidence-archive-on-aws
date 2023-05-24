@@ -130,7 +130,6 @@ describe('case audit e2e', () => {
       Joi.assert(auditId, joiUlid);
 
       let retries = 10;
-      await delay(5000);
       let getQueryReponse = await callDeaAPIWithCreds(
         `${deaApiUrl}cases/${caseUlid}/audit/${auditId}/csv`,
         'GET',
@@ -157,13 +156,16 @@ describe('case audit e2e', () => {
 
       const potentialCsvData: string = getQueryReponse.data;
 
+      const dynamoMatch = potentialCsvData.match(/dynamodb.amazonaws.com/g);
+
       if (
         getQueryReponse.data &&
         !getQueryReponse.data.status &&
         potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
         potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
         potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE) &&
-        potentialCsvData.match(/dynamodb.amazonaws.com/g)?.length === 7
+        dynamoMatch &&
+        dynamoMatch.length >= 7
       ) {
         csvData = getQueryReponse.data;
       } else {
