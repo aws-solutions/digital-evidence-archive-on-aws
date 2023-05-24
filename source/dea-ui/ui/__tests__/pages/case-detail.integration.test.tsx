@@ -61,6 +61,23 @@ const mockFilesRoot = {
       updated: '2023-03-10T01:30:14.326Z',
       isFile: true,
     },
+    {
+      ulid: '01GV4J7C6D18WQVCBA7RAPXTT2',
+      caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
+      fileName: 'rootFile2',
+      contentType: 'application/octet-stream',
+      createdBy: '01GV13XRYZE1VKY7TY88Y7RPH0',
+      filePath: '/',
+      fileSizeMb: 50,
+      uploadId:
+        'OEQeZM6D6jYzdHm6nnpXggWDlDhSZbZ1mcUe7JKdpfHP5zSnWlQ3kU.iz5v6zyOiQVvPqS9BfFixgBQgxRaa242L6XQyT2MwzUw7Nizk1pvXQJR_anulhvuvjGH_hpQ1x7ciO5yEDWEKTaxBF5vtxSryncXAFpHfBWBzSQi01Eou9I8PzadqnirZU0PBlN.3DxFuJP8pG2FTMHlBQSlEcB--',
+      sha256Hash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
+      versionId: 'mwXq6KDGPfw8qD3oUeDNjh2dsSGWWHad',
+      status: 'INACTIVE',
+      created: '2023-03-10T01:30:04.877Z',
+      updated: '2023-03-10T01:30:14.326Z',
+      isFile: true,
+    },
   ],
   total: 2,
 };
@@ -167,7 +184,6 @@ const OTHER_USER_ID = mockedUsers.users[1].ulid;
 
 mockedAxios.create.mockReturnThis();
 mockedAxios.request.mockImplementation((eventObj) => {
-  console.log(eventObj.url);
   if (eventObj.url?.endsWith(`${CASE_ID}/details`)) {
     return Promise.resolve({
       data: mockedCaseDetail,
@@ -265,7 +281,6 @@ mockedAxios.request.mockImplementation((eventObj) => {
 
 describe('CaseDetailsPage', () => {
   it('renders a case details page', async () => {
-    console.log('renders a case details page');
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 

@@ -29,24 +29,6 @@ const mockedAxios = Axios as jest.Mocked<typeof Axios>;
 const mockFilesRoot = {
   files: [
     {
-      ulid: '01GV3NH93AX2GYHBQNVR27NEMJ',
-      caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
-      fileName: 'food',
-      contentType: 'application/octet-stream',
-      createdBy: '01GV13XRYZE1VKY7TY88Y7RPH0',
-      filePath: '/',
-      fileSizeMb: 50,
-      uploadId:
-        'aiV5S5CTX6FSWerMkYsVw9vXDp8Xes2gyEDQPPxI4b7LZjk8fKPOFrX7cn_bOupAE.xZ9M0d2HkB_075dVSYsAOKhixAN987_YXJbyUulyWgW8ORp93oRO1U0WMwhmxTE7o5gWoiJlHuVIZptds8Thgpac.4K9ChEeh2Sac35kNGH43XoSFadbzzcWCB9ZKFGP9P0gxfxRlSg4YdTyXIaw--',
-      sha256Hash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
-      versionId: '8pXrPWVxZoRiCszVYB2lShmCoxWH9Fca',
-      status: 'ACTIVE',
-      created: '2023-03-09T17:08:40.682Z',
-      updated: '2023-03-09T17:08:40.682Z',
-      isFile: false,
-      ttl: 1678385311,
-    },
-    {
       ulid: '01GV4J7C6D18WQVCBA7RAPXTT1',
       caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
       fileName: 'rootFile',
@@ -65,30 +47,6 @@ const mockFilesRoot = {
     },
   ],
   total: 2,
-};
-
-const mockFilesFood = {
-  files: [
-    {
-      ulid: '01GV3NH93AX2GYHBQNVR27NEMJ',
-      caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
-      fileName: 'sushi.png',
-      contentType: 'application/octet-stream',
-      createdBy: '01GV13XRYZE1VKY7TY88Y7RPH0',
-      filePath: '/food',
-      fileSizeMb: 50,
-      uploadId:
-        'aiV5S5CTX6FSWerMkYsVw9vXDp8Xes2gyEDQPPxI4b7LZjk8fKPOFrX7cn_bOupAE.xZ9M0d2HkB_075dVSYsAOKhixAN987_YXJbyUulyWgW8ORp93oRO1U0WMwhmxTE7o5gWoiJlHuVIZptds8Thgpac.4K9ChEeh2Sac35kNGH43XoSFadbzzcWCB9ZKFGP9P0gxfxRlSg4YdTyXIaw--',
-      sha256Hash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
-      versionId: '8pXrPWVxZoRiCszVYB2lShmCoxWH9Fca',
-      status: 'ACTIVE',
-      created: '2023-03-09T17:08:40.682Z',
-      updated: '2023-03-09T17:08:40.682Z',
-      isFile: true,
-      ttl: 1678385311,
-    },
-  ],
-  total: 1,
 };
 
 const mockedCaseDetail = {

@@ -352,7 +352,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         setSelectedFiles(detail.selectedItems);
       }}
       selectedItems={selectedFiles}
-      isItemDisabled={(item) => item.status !== CaseFileStatus.ACTIVE && item.isFile === true}
+      isItemDisabled={(item) => item.status !== CaseFileStatus.ACTIVE || !item.isFile}
       columnDefinitions={[
         {
           id: 'name',
