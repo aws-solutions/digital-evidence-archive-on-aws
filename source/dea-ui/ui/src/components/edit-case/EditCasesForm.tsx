@@ -16,22 +16,28 @@ import {
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { createCase } from '../../api/cases';
+import { updateCase } from '../../api/cases';
+import { DeaCaseDTO } from '../../api/models/case';
 import { commonLabels, createCaseLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
-import { CreateCaseForm } from '../../models/Cases';
+import { EditCaseForm } from '../../models/Cases';
 
-function CreateCasesForm(): JSX.Element {
+export interface EditCasesFormProps {
+  readonly case: DeaCaseDTO;
+}
+
+function EditCasesForm(props: EditCasesFormProps): JSX.Element {
+  const { ulid, name, description } = props.case;
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const router = useRouter();
-  const [formData, setFormData] = useState<CreateCaseForm>({ name: '' });
+  const [formData, setFormData] = useState<EditCaseForm>({ ulid, name, description });
   const { pushNotification } = useNotifications();
-
+  const caseDetailsRoute = `/case-detail?caseId=${ulid}`;
   async function onSubmitHandler() {
     setIsSubmitLoading(true);
     try {
-      await createCase(formData);
-      return router.push('/');
+      await updateCase(formData);
+      return router.push(caseDetailsRoute);
     } catch (e) {
       if (e instanceof Error) {
         pushNotification('error', e.message);
@@ -42,19 +48,19 @@ function CreateCasesForm(): JSX.Element {
   }
 
   function onCancelHandler() {
-    return router.push('/');
+    return router.push(caseDetailsRoute);
   }
 
   return (
-    <SpaceBetween data-testid="create-case-form-space" size="s">
-      <form onSubmit={onSubmitHandler} data-testid="create-case-form">
+    <SpaceBetween data-testid="edit-case-form-space" size="s">
+      <form onSubmit={onSubmitHandler} data-testid="edit-case-form">
         <Form
           actions={
             <SpaceBetween direction="horizontal" size="xs">
               <Button
                 formAction="none"
                 variant="link"
-                data-testid="create-case-cancel"
+                data-testid="edit-case-cancel"
                 onClick={onCancelHandler}
               >
                 {commonLabels.cancelButton}
@@ -62,11 +68,11 @@ function CreateCasesForm(): JSX.Element {
               <Button
                 variant="primary"
                 iconAlign="right"
-                data-testid="create-case-submit"
+                data-testid="edit-case-submit"
                 onClick={onSubmitHandler}
                 disabled={IsSubmitLoading || !formData.name}
               >
-                {commonLabels.createButton}
+                {commonLabels.saveButton}
               </Button>
             </SpaceBetween>
           }
@@ -79,7 +85,7 @@ function CreateCasesForm(): JSX.Element {
                 description={createCaseLabels.caseNameDescription}
               >
                 <Input
-                  value={formData?.name || ''}
+                  value={formData?.name}
                   onChange={({ detail: { value } }) => {
                     setFormData({ ...formData, name: value });
                   }}
@@ -110,4 +116,4 @@ function CreateCasesForm(): JSX.Element {
   );
 }
 
-export default CreateCasesForm;
+export default EditCasesForm;

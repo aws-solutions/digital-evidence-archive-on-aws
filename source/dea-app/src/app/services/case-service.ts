@@ -117,7 +117,15 @@ export const updateCases = async (
   deaCase: DeaCase,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCase> => {
-  return await CasePersistence.updateCase(deaCase, repositoryProvider);
+  try {
+    return await CasePersistence.updateCase(deaCase, repositoryProvider);
+  } catch (error) {
+    // Check if OneTableError happened because the case name is already in use.
+    if ('code' in error && error.code === 'UniqueError') {
+      throw new ValidationError('Case name is already in use');
+    }
+    throw error;
+  }
 };
 
 export const updateCaseStatus = async (

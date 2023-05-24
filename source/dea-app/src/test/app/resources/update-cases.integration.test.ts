@@ -234,7 +234,7 @@ describe('update cases resource', () => {
     });
 
     await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      'Cannot update unique attributes "name" for "Case". An item of the same name already exists.'
+      'Case name is already in use'
     );
   });
 

@@ -14,13 +14,13 @@ import {
   SpaceBetween,
   Spinner,
 } from '@cloudscape-design/components';
-import * as React from 'react';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { getCaseAuditCSV, useGetCaseActions, useGetCaseById } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
 import { auditLogLabels, commonLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
-import { canDownloadCaseAudit } from '../../helpers/userActionSupport';
+import { canDownloadCaseAudit, canUpdateCaseDetails } from '../../helpers/userActionSupport';
 import CaseDetailsTabs from './CaseDetailsTabs';
 
 export interface CaseDetailsBodyProps {
@@ -28,6 +28,7 @@ export interface CaseDetailsBodyProps {
 }
 
 function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
+  const router = useRouter();
   const [downloadInProgress, setDownloadInProgress] = useState(false);
   const userActions = useGetCaseActions(props.caseId);
   const { data, isLoading } = useGetCaseById(props.caseId);
@@ -39,6 +40,10 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
     } else {
       return <Icon name="status-stopped" variant="disabled" />;
     }
+  }
+
+  function editCaseHandler() {
+    return router.push(`/edit-case?caseId=${props.caseId}`);
   }
 
   if (isLoading) {
@@ -55,7 +60,25 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
           </SpaceBetween>
         }
       >
-        <Container header={<Header variant="h2">Case Details</Header>}>
+        <Container
+          header={
+            <Header
+              variant="h2"
+              actions={
+                <SpaceBetween direction="horizontal" size="xs">
+                  <Button
+                    disabled={!canUpdateCaseDetails(userActions.data?.actions)}
+                    onClick={editCaseHandler}
+                  >
+                    {commonLabels.editButton}
+                  </Button>
+                </SpaceBetween>
+              }
+            >
+              Case Details
+            </Header>
+          }
+        >
           <ColumnLayout columns={3} variant="text-grid">
             <div>
               {' '}

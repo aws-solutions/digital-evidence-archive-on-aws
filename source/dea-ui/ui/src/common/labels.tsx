@@ -11,6 +11,7 @@ export const commonLabels = {
   doneButton: 'Done',
   submitButton: 'Submit',
   createButton: 'Create',
+  editButton: 'Edit',
   uploadButton: 'Upload',
   uploadAndSaveButton: 'Upload and save',
   activateButton: 'Activate',
@@ -281,6 +282,7 @@ export const breadcrumbLabels = {
   caseDetailsLabel: 'Case Details',
   manageCaseLabel: 'Manage Case',
   uploadFilesAndFoldersLabel: 'Upload folders/files',
+  editCaseLabel: 'Edit Case',
 };
 
 export const navigationLabels = {
