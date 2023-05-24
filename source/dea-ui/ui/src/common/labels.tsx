@@ -148,6 +148,7 @@ export const auditLogLabels = {
   downloadCSVLabel: 'Download Case Audit Log CSV',
   caseAuditLogLabel: 'Audit Log',
   caseFileAuditLogLabel: 'Case File Audit Log',
+  downloadFileAuditLabel: 'Download File Audit Log CSV',
   descriptionLabel:
     'This table records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file',
   emptyAuditLabel: 'No audit',
@@ -283,6 +284,7 @@ export const breadcrumbLabels = {
   manageCaseLabel: 'Manage Case',
   uploadFilesAndFoldersLabel: 'Upload folders/files',
   editCaseLabel: 'Edit Case',
+  fileDetailsLabel: 'File Details',
 };
 
 export const navigationLabels = {
@@ -300,6 +302,12 @@ export const fileUploadLabels = {
   limitShowMoreLabel: 'Show more files',
   errorIconAriaLabel: 'Error',
   removeFileAriaLabel: (e: number) => `Remove file ${e + 1}`,
+};
+
+export const fileDetailLabels = {
+  uploadDateLabel: 'Upload date/time',
+  fileSizeLabel: 'File size',
+  shaHashLabel: 'SHA 256 hash',
 };
 
 export const systemUseNotificationText =

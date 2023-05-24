@@ -12,7 +12,6 @@ import {
   BreadcrumbGroup,
   Button,
   Header,
-  Icon,
   Pagination,
   SpaceBetween,
   Spinner,
@@ -126,12 +125,17 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         {caseFile.fileName}
       </Button>
     ) : (
-      <Box padding={{ left: 'm' }} data-testid={`${caseFile.fileName}-box`}>
-        <SpaceBetween direction="horizontal" size="xs" key={caseFile.fileName}>
-          <Icon name="file" />
-          <span>{caseFile.fileName}</span>
-        </SpaceBetween>
-      </Box>
+      <Button
+        data-testid={`${caseFile.fileName}-file-button`}
+        iconName="file"
+        variant="link"
+        onClick={(e: { preventDefault: () => void }) => {
+          e.preventDefault();
+          return router.push(`/file-detail?caseId=${caseFile.caseUlid}&fileId=${caseFile.ulid}`);
+        }}
+      >
+        {caseFile.fileName}
+      </Button>
     );
   };
 
@@ -348,7 +352,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         setSelectedFiles(detail.selectedItems);
       }}
       selectedItems={selectedFiles}
-      isItemDisabled={(item) => item.status !== CaseFileStatus.ACTIVE}
+      isItemDisabled={(item) => item.status !== CaseFileStatus.ACTIVE && item.isFile === true}
       columnDefinitions={[
         {
           id: 'name',
