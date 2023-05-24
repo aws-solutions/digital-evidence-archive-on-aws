@@ -101,38 +101,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       for (const activeFileUpload of activeFileUploads) {
         // per file try/finally state to upload to s3
         try {
-          const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
-          const uploadPromises: Promise<Response>[] = [];
-          const hash = cryptoJS.algo.SHA256.create();
-          if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
-            const numberOfUrls = initiatedCaseFile.presignedUrls.length;
-            const chunkSizeBytes = initiatedCaseFile.chunkSizeBytes
-              ? initiatedCaseFile.chunkSizeBytes
-              : 50 * ONE_MB;
-            for (let index = 0; index < initiatedCaseFile.presignedUrls.length; index += 1) {
-              const url = initiatedCaseFile.presignedUrls[index];
-              const start = index * chunkSizeBytes;
-              const end = (index + 1) * chunkSizeBytes;
-              const filePartPointer =
-                index === numberOfUrls - 1
-                  ? activeFileUpload.file.slice(start)
-                  : activeFileUpload.file.slice(start, end);
-              const loadedFilePart = await readFileSlice(filePartPointer);
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
-              hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
-              uploadPromises[index] = fetch(url, { method: 'PUT', body: loadedFilePart });
-            }
-            await Promise.all(uploadPromises);
-
-            await completeUpload({
-              caseUlid: props.caseId,
-              ulid: initiatedCaseFile.ulid,
-              uploadId: initiatedCaseFile.uploadId,
-              sha256Hash: hash.finalize().toString(),
-            });
-          }
-          activeFileUpload.fileUploadProgress.status = UploadStatus.complete;
+          await finalizeFileUpload(activeFileUpload);
         } catch (e) {
           activeFileUpload.fileUploadProgress.status = UploadStatus.failed;
           console.log('Upload failed', e);
@@ -141,6 +110,41 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     } finally {
       setUploadInProgress(false);
     }
+  }
+
+  async function finalizeFileUpload(activeFileUpload: ActiveFileUpload) {
+    const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
+    const uploadPromises: Promise<Response>[] = [];
+    const hash = cryptoJS.algo.SHA256.create();
+    if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
+      const numberOfUrls = initiatedCaseFile.presignedUrls.length;
+      const chunkSizeBytes = initiatedCaseFile.chunkSizeBytes
+        ? initiatedCaseFile.chunkSizeBytes
+        : 50 * ONE_MB;
+      for (let index = 0; index < initiatedCaseFile.presignedUrls.length; index += 1) {
+        const url = initiatedCaseFile.presignedUrls[index];
+        const start = index * chunkSizeBytes;
+        const end = (index + 1) * chunkSizeBytes;
+        const filePartPointer =
+          index === numberOfUrls - 1
+            ? activeFileUpload.file.slice(start)
+            : activeFileUpload.file.slice(start, end);
+        const loadedFilePart = await readFileSlice(filePartPointer);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
+        hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
+        uploadPromises[index] = fetch(url, { method: 'PUT', body: loadedFilePart });
+      }
+      await Promise.all(uploadPromises);
+
+      await completeUpload({
+        caseUlid: props.caseId,
+        ulid: initiatedCaseFile.ulid,
+        uploadId: initiatedCaseFile.uploadId,
+        sha256Hash: hash.finalize().toString(),
+      });
+    }
+    activeFileUpload.fileUploadProgress.status = UploadStatus.complete;
   }
 
   async function readFileSlice(blob: Blob): Promise<Uint8Array> {

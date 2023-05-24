@@ -218,6 +218,20 @@ function CaseTable(props: CaseTableProps): JSX.Element {
     );
   }
 
+  function nameCell(deaCase: DeaCaseDTO) {
+    return (
+      <Link
+        href={`${deaCase.ulid}`}
+        onFollow={(e) => {
+          e.preventDefault();
+          return router.push(`/${props.detailPage}?caseId=${e.detail.href}`);
+        }}
+      >
+        {deaCase.name}
+      </Link>
+    );
+  }
+
   return (
     <Table
       {...collectionProps}
@@ -295,17 +309,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
         {
           id: 'name',
           header: commonTableLabels.caseNameHeader,
-          cell: (e) => (
-            <Link
-              href={`${e.ulid}`}
-              onFollow={(e) => {
-                e.preventDefault();
-                return router.push(`/${props.detailPage}?caseId=${e.detail.href}`);
-              }}
-            >
-              {e.name}
-            </Link>
-          ),
+          cell: nameCell,
           width: 350,
           minWidth: 220,
           sortingField: 'name',
