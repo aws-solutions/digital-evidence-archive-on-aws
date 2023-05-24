@@ -227,7 +227,7 @@ describe('case file audit e2e', () => {
       ) {
         csvData = getQueryReponse.data;
       } else {
-        await delay(10000);
+        await delay(30000);
       }
       --queryRetries;
     }

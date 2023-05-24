@@ -16,7 +16,7 @@ import {
 } from '../models/CaseFiles';
 import {CreateCaseForm, EditCaseForm, UpdateCaseStatusForm} from '../models/Cases';
 import { CaseUserForm } from '../models/CaseUser';
-import { CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
+import { CaseFileDTO, CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
 
 export interface DeaListResult<T> {
   data: T[];
@@ -69,6 +69,11 @@ export const useGetCaseById = (id: string): DeaSingleResult<DeaCaseDTO | undefin
   const { data, error } = useSWR(() => `cases/${id}/details`, httpApiGet<DeaCaseDTO>);
   return { data, isLoading: !data && !error };
 };
+
+export const useGetFileDetailsById = (caseId: string, fileId: string): DeaSingleResult<CaseFileDTO | undefined> => {
+  const { data, error } = useSWR(() => `cases/${caseId}/files/${fileId}/info`, httpApiGet<CaseFileDTO>);
+  return { data, isLoading: !data && !error };
+}
 
 export const useGetScopedCaseInfoById = (id: string): DeaSingleResult<ScopedDeaCaseDTO | undefined> => {
   const { data, error } = useSWR(() => `cases/${id}/scopedInformation`, httpApiGet<ScopedDeaCaseDTO>);

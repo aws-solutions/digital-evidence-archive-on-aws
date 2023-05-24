@@ -1,12 +1,14 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { act, fireEvent, getByRole, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, getByRole, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import Axios from 'axios';
 import { auditLogLabels, caseDetailLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
+
+afterEach(cleanup);
 
 const push = jest.fn();
 const CASE_ID = '100';
@@ -158,16 +160,12 @@ const mockedCaseUsers = {
   ],
 };
 
-let csvCall = -1;
+let failingCall = -1;
 
-const csvResult = [{ status: 'Running' }, { status: 'Running' }, 'csvresults'];
-
-const ACTIVE_USER_ID = mockedUsers.users[0].ulid;
-const OTHER_USER_ID = mockedUsers.users[1].ulid;
+const failingCsvResult = [{ status: 'Running' }, { status: 'Running' }, { status: 'Cancelled' }];
 
 mockedAxios.create.mockReturnThis();
 mockedAxios.request.mockImplementation((eventObj) => {
-  console.log(eventObj.url);
   if (eventObj.url?.endsWith(`${CASE_ID}/details`)) {
     return Promise.resolve({
       data: mockedCaseDetail,
@@ -201,32 +199,6 @@ mockedAxios.request.mockImplementation((eventObj) => {
       headers: {},
       config: {},
     });
-  } else if (eventObj.url?.endsWith(`${CASE_ID}/users/${ACTIVE_USER_ID}/memberships`)) {
-    if (eventObj.method === 'DELETE') {
-      return Promise.resolve({
-        data: {},
-        status: 200,
-        statusText: 'Ok',
-        headers: {},
-        config: {},
-      });
-    }
-    // put
-    return Promise.resolve({
-      data: {},
-      status: 200,
-      statusText: 'Ok',
-      headers: {},
-      config: {},
-    });
-  } else if (eventObj.url?.endsWith('files?filePath=/food/')) {
-    return Promise.resolve({
-      data: mockFilesFood,
-      status: 200,
-      statusText: 'Ok',
-      headers: {},
-      config: {},
-    });
   } else if (eventObj.url?.endsWith('files?filePath=/')) {
     return Promise.resolve({
       data: mockFilesRoot,
@@ -245,7 +217,7 @@ mockedAxios.request.mockImplementation((eventObj) => {
     });
   } else if (eventObj.url?.endsWith('csv')) {
     return Promise.resolve({
-      data: csvResult[++csvCall],
+      data: failingCsvResult[++failingCall],
       status: 200,
       statusText: 'Ok',
       headers: {},
@@ -264,160 +236,7 @@ mockedAxios.request.mockImplementation((eventObj) => {
 });
 
 describe('CaseDetailsPage', () => {
-  it('renders a case details page', async () => {
-    console.log('renders a case details page');
-    const page = render(<CaseDetailsPage />);
-    expect(page).toBeTruthy();
-
-    const mockedCaseInfo = await screen.findByText('mocked case');
-    expect(mockedCaseInfo).toBeTruthy();
-
-    const table = await screen.findByTestId('file-table');
-    const tableWrapper = wrapper(table);
-    // the table exists
-    expect(table).toBeTruthy();
-
-    const folderEntry = await screen.findByTestId('food-button');
-    const fileEntry = await screen.findByTestId('rootFile-file-button');
-    // the folder button exists
-    expect(folderEntry).toBeTruthy();
-    // the file exists as a box
-    expect(fileEntry).toBeTruthy();
-
-    const textFilter = tableWrapper.findTextFilter();
-    if (!textFilter) {
-      fail();
-    }
-    const textFilterInput = textFilter.findInput();
-    textFilterInput.setInputValue('food');
-
-    // after filtering, rootFile will not be visible
-    await waitFor(() => expect(screen.queryByTestId('rootFile-file-button')).toBeNull());
-
-    // clear the filter
-    textFilterInput.setInputValue('');
-    await waitFor(() => expect(screen.queryByTestId('rootFile-file-button')).toBeDefined());
-
-    // click on the folder to navigate
-    fireEvent.click(folderEntry);
-
-    // we should now see the new file "sushi.png"
-    await waitFor(() => expect(screen.getByTestId('sushi.png-file-button')).toBeDefined());
-
-    const breadcrumb = wrapper(page.container).findBreadcrumbGroup();
-
-    await waitFor(() => expect(breadcrumb?.findBreadcrumbLinks().length).toEqual(2));
-
-    // click the breadcrumb to return to the root
-    const rootLink = await screen.findByText('/');
-    fireEvent.click(rootLink);
-
-    // should find the original rows again
-    await screen.findByTestId('food-button');
-    await screen.findByTestId('rootFile-file-button');
-  });
-
-  it('navigates to manage access page', async () => {
-    const page = render(
-      <NotificationsProvider>
-        <CaseDetailsPage />
-      </NotificationsProvider>
-    );
-    expect(page).toBeTruthy();
-
-    const tab = await screen.findByText(caseDetailLabels.manageAccessLabel);
-    fireEvent.click(tab);
-
-    // assert autosuggest component
-    const searchUserInput = await screen.findByTestId('user-search-input');
-    const searchUserInputWrapper = wrapper(page.container).findAutosuggest()!;
-    expect(searchUserInput).toBeTruthy();
-
-    searchUserInputWrapper.focus();
-
-    for (let index = 0; index < mockedUsers.users.length; index++) {
-      const user = mockedUsers.users[index];
-      const optionValue = `${user.firstName} ${user.lastName}`;
-      expect(searchUserInputWrapper.findDropdown().findOptionByValue(optionValue)!.getElement()).toBeTruthy();
-    }
-
-    const textToInput = 'Bee Dalton';
-    const searchInput = await screen.findByRole('combobox', {
-      description:
-        'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
-    });
-    await act(async () => {
-      await userEvent.type(searchInput, textToInput);
-      searchUserInputWrapper.selectSuggestionByValue(textToInput);
-    });
-
-    const addCaseMemberButton = await screen.findByRole('button', { name: 'Add' });
-    await act(async () => {
-      addCaseMemberButton.click();
-    });
-
-    // assert multiselect component
-    const permissionsWrapper = wrapper(page.container).findMultiselect()!;
-    expect(permissionsWrapper).toBeTruthy();
-    expect(permissionsWrapper.findTokens()).toHaveLength(1);
-    permissionsWrapper.openDropdown();
-    permissionsWrapper.selectOption(1);
-
-    //assert save button
-    const saveButton = await screen.findByRole('button', { name: 'Save' });
-    expect(saveButton).toBeTruthy();
-    await act(async () => {
-      saveButton.click();
-    });
-
-    // assert remove button
-    await waitFor(() => expect(screen.queryByTestId(`${ACTIVE_USER_ID}-remove-button`)).toBeDisabled());
-    const removeButton = await screen.queryByTestId(`${OTHER_USER_ID}-remove-button`);
-    expect(removeButton).toBeEnabled();
-    await act(async () => {
-      removeButton.click();
-    });
-
-    // assert remove modal
-    const removeModalWrapper = wrapper(document.body).findModal()!;
-    expect(removeModalWrapper).toBeTruthy();
-    expect(removeModalWrapper.isVisible()).toBeTruthy();
-    // click on dismiss button should close the modal.
-    await act(async () => {
-      removeModalWrapper.findDismissButton().click();
-    });
-    expect(removeModalWrapper.isVisible()).toBeFalsy();
-    // asert modal submit button
-    await act(async () => {
-      removeButton.click();
-    });
-    const modalSubmitButton = await getByRole(removeModalWrapper.getElement(), 'button', { name: 'Remove' });
-    await act(async () => {
-      modalSubmitButton.click();
-    });
-    expect(removeModalWrapper.isVisible()).toBeFalsy();
-
-    //assert notifications
-    const notificationsWrapper = wrapper(page.container).findFlashbar()!;
-    expect(notificationsWrapper).toBeTruthy();
-    waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(3));
-    const item = notificationsWrapper.findItems()[0];
-    await act(async () => {
-      item.findDismissButton()!.click();
-    });
-  });
-
-  it('navigates to upload files page', async () => {
-    const page = render(<CaseDetailsPage />);
-    expect(page).toBeTruthy();
-
-    const uploadButton = await page.findByTestId('upload-file-button');
-    fireEvent.click(uploadButton);
-
-    expect(push).toHaveBeenCalledWith(`/upload-files?caseId=${CASE_ID}&filePath=/`);
-  });
-
-  it('downloads a case audit', async () => {
+  it('recovers from a from a csv download failure', async () => {
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
@@ -429,17 +248,8 @@ describe('CaseDetailsPage', () => {
     await waitFor(() => expect(screen.queryByTestId('download-case-audit-csv-button')).toBeEnabled(), {
       timeout: 4000,
     });
-  });
-
-  it('navigates to file details page', async () => {
-    const page = render(<CaseDetailsPage />);
-    expect(page).toBeTruthy();
-
-    const fileEntry = await screen.findByTestId('rootFile-file-button');
-    fireEvent.click(fileEntry);
-
-    expect(push).toHaveBeenCalledWith(
-      `/file-detail?caseId=${mockFilesRoot.files[1].caseUlid}&fileId=${mockFilesRoot.files[1].ulid}`
-    );
+    // error notification is visible
+    const notificationsWrapper = wrapper(page.container).findFlashbar()!;
+    expect(notificationsWrapper).toBeTruthy();
   });
 });
