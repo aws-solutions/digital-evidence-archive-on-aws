@@ -31,10 +31,9 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { restrictResourcePolicies } from './apply-bucket-policies';
-import { addLambdaSuppressions } from './nag-suppressions';
+import { addLambdaSuppressions, addResourcePolicySuppressions } from './nag-suppressions';
 
 // DEA AppRegistry Constants
 export const SOLUTION_VERSION = '1.0.0';
@@ -204,23 +203,31 @@ export class DeaMainStack extends cdk.Stack {
     // These are resources that will be configured in a future story. Please remove these suppressions or modify them to the specific resources as needed
     // when we tackle the particular story. Details in function below
     this.apiGwAuthNagSuppresions();
+
+    this.policyNagSuppresions();
   }
 
   private uiStackConstructNagSuppress(): void {
-    const cdkLambda = this.node.findChild('Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C').node
-      .defaultChild;
-    if (cdkLambda instanceof CfnFunction) {
-      addLambdaSuppressions(cdkLambda);
-    }
+    const lambdaSuppresionList = [];
+
+    lambdaSuppresionList.push(
+      this.node.findChild('Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C').node.defaultChild
+    );
+
+    // custom resource role
+    lambdaSuppresionList.push(this.node.findChild('AWS679f53fac002430cb0da5b7982bd2287').node.defaultChild);
 
     // This will not exist in non-test deploys
     const lambdaChild = this.node.tryFindChild('Custom::S3AutoDeleteObjectsCustomResourceProvider');
     if (lambdaChild) {
-      const autoDeleteLambda = lambdaChild.node.findChild('Handler');
-      if (autoDeleteLambda instanceof CfnResource) {
-        addLambdaSuppressions(autoDeleteLambda);
-      }
+      lambdaSuppresionList.push(lambdaChild.node.findChild('Handler'));
     }
+
+    lambdaSuppresionList.forEach((lambdaToSuppress) => {
+      if (lambdaToSuppress instanceof CfnResource) {
+        addLambdaSuppressions(lambdaToSuppress);
+      }
+    });
   }
 
   private createEncryptionKey(): Key {
@@ -292,6 +299,44 @@ export class DeaMainStack extends cdk.Stack {
     ];
     return new ManagedPolicy(this, 'deaResourcesPermissionsBoundary', {
       statements,
+    });
+  }
+
+  private policyNagSuppresions(): void {
+    const cfnResources = [];
+
+    cfnResources.push(
+      this.node
+        .findChild('DeaEventHandlers')
+        .node.findChild('s3-batch-delete-case-file-handler-role')
+        .node.findChild('DefaultPolicy').node.defaultChild
+    );
+
+    cfnResources.push(
+      this.node
+        .findChild('DeaEventHandlers')
+        .node.findChild('s3-batch-status-change-handler-role')
+        .node.findChild('DefaultPolicy').node.defaultChild
+    );
+
+    cfnResources.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('dea-base-lambda-role')
+        .node.findChild('DefaultPolicy').node.defaultChild
+    );
+
+    cfnResources.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('UpdateBucketCORS')
+        .node.findChild('CustomResourcePolicy').node.defaultChild
+    );
+
+    cfnResources.forEach((cfnResource) => {
+      if (cfnResource instanceof CfnResource) {
+        return addResourcePolicySuppressions(cfnResource);
+      }
     });
   }
 
