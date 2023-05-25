@@ -60,6 +60,8 @@ export const DATASETS_PROVIDER = {
   presignedCommandExpirySeconds: 3600,
   s3BatchDeleteCaseFileLambdaArn: 'arn:aws:lambda:us-east-1:1234:function:foo',
   s3BatchDeleteCaseFileRole: 'arn:aws:iam::1234:role/foo',
+  sourceIpValidationEnabled: true,
+  datasetsRole: 'arn:aws:iam::1234:role/bar',
 };
 
 jest.setTimeout(20000);

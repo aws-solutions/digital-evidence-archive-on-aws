@@ -1,6 +1,7 @@
 {
   "stage": "chewbacca",
   "testStack": true,
+  "sourceIpValidation": false,
   "deaRoleTypes": [
     {
       "name": "CaseWorker",

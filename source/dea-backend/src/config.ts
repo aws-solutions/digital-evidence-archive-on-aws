@@ -140,6 +140,11 @@ const convictSchema = {
     format: Boolean,
     default: false,
   },
+  sourceIpValidation: {
+    doc: 'Boolean to indicate if pre-signed url access should be ip-restricted',
+    format: Boolean,
+    default: true,
+  },
   deaRoleTypes: {
     doc: 'DEA Role Types config',
     format: deaRoleTypesFormat.name,
@@ -225,6 +230,7 @@ interface DEAConfig {
   partition(): string;
   cognitoDomain(): string | undefined;
   isTestStack(): boolean;
+  sourceIpValidationEnabled(): boolean;
   deaRoleTypes(): DEARoleTypeDefinition[];
   retainPolicy(): RemovalPolicy;
   retentionDays(): RetentionDays;
@@ -247,6 +253,7 @@ export const deaConfig: DEAConfig = {
   partition: () => convictConfig.get('awsPartition'),
   cognitoDomain: () => convictConfig.get('cognito.domain'),
   isTestStack: () => convictConfig.get('testStack'),
+  sourceIpValidationEnabled: () => convictConfig.get('sourceIpValidation') ?? true,
   deaRoleTypes: () => convictConfig.get('deaRoleTypes'),
   retainPolicy: () => (convictConfig.get('testStack') ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN),
   retentionDays: () => (convictConfig.get('testStack') ? RetentionDays.TWO_WEEKS : RetentionDays.INFINITE),

@@ -59,6 +59,8 @@ interface DeaRestApiProps {
 export class DeaRestApiConstruct extends Construct {
   public authLambdaRole: Role;
   public lambdaBaseRole: Role;
+  // this role is needed to create session credentials to restrict pre-signed URL access parameters such as ip-address
+  public datasetsRole: Role;
   public customResourceRole: Role;
   public deaRestApi: RestApi;
   public apiEndpointArns: Map<string, string>;
@@ -84,6 +86,10 @@ export class DeaRestApiConstruct extends Construct {
 
     this.authLambdaRole = this.createAuthLambdaRole(props.region, props.accountId, partition);
 
+    this.datasetsRole = this.createDatasetsRole(props.kmsKey.keyArn, props.deaDatasetsBucket.bucketArn);
+
+    props.lambdaEnv['DATASETS_ROLE'] = this.datasetsRole.roleArn;
+
     this.customResourceRole = new Role(this, 'custom-resource-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     });
@@ -95,6 +101,7 @@ export class DeaRestApiConstruct extends Construct {
         principals: [
           new ArnPrincipal(this.lambdaBaseRole.roleArn),
           new ArnPrincipal(this.authLambdaRole.roleArn),
+          new ArnPrincipal(this.datasetsRole.roleArn),
         ],
         resources: ['*'],
         sid: 'lambda-roles-key-share-statement',
@@ -449,6 +456,28 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
         resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
+      })
+    );
+
+    return role;
+  }
+
+  private createDatasetsRole(kmsKeyArn: string, datasetsBucketArn: string): Role {
+    const role = new Role(this, 'dea-datasets-role', {
+      assumedBy: this.lambdaBaseRole,
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject', 's3:GetObject', 's3:GetObjectVersion'],
+        resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [kmsKeyArn],
       })
     );
 

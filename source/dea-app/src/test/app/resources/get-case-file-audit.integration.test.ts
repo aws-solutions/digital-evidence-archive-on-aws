@@ -6,6 +6,11 @@
 import { fail } from 'assert';
 import { CloudWatchLogsClient, GetQueryResultsCommand, QueryStatus } from '@aws-sdk/client-cloudwatch-logs';
 import { S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
+import {
+  STSClient,
+  ServiceInputTypes as STSInputs,
+  ServiceOutputTypes as STSOutputs,
+} from '@aws-sdk/client-sts';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { anyOfClass, anything, instance, mock, when } from 'ts-mockito';
 import { getCaseFileAudit } from '../../../app/resources/get-case-file-audit';
@@ -24,6 +29,7 @@ import {
 let caseId = '';
 let fileId = '';
 let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+let stsMock: AwsStub<STSInputs, STSOutputs>;
 
 describe('get case file audit', () => {
   const OLD_ENV = process.env;
@@ -34,6 +40,16 @@ describe('get case file audit', () => {
     s3Mock.resolves({
       UploadId: 'hi',
       VersionId: 'hello',
+    });
+
+    stsMock = mockClient(STSClient);
+    stsMock.resolves({
+      Credentials: {
+        AccessKeyId: 'hi',
+        SecretAccessKey: 'hello',
+        SessionToken: 'foo',
+        Expiration: new Date(),
+      },
     });
 
     modelProvider = await getTestRepositoryProvider('getCaseFileAuditIntegration');

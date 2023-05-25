@@ -28,6 +28,7 @@ import {
   JobReportScope,
   S3ControlClient,
 } from '@aws-sdk/client-s3-control';
+import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
 import { getRequiredEnv } from '../lambda-http-helpers';
@@ -42,6 +43,8 @@ export interface DatasetsProvider {
   presignedCommandExpirySeconds: number;
   s3BatchDeleteCaseFileLambdaArn: string;
   s3BatchDeleteCaseFileRole: string;
+  sourceIpValidationEnabled: boolean;
+  datasetsRole: string;
 }
 
 export interface S3Object {
@@ -61,13 +64,16 @@ export const defaultDatasetsProvider = {
     'DELETE_CASE_FILE_ROLE',
     'DELETE_CASE_FILE_ROLE is not set in your lambda!'
   ),
+  sourceIpValidationEnabled: getRequiredEnv('SOURCE_IP_VALIDATION_ENABLED', 'true') === 'true',
+  datasetsRole: getRequiredEnv('DATASETS_ROLE', 'DATASETS_ROLE is not set in your lambda!'),
   presignedCommandExpirySeconds: 3600,
 };
 
 export const generatePresignedUrlsForCaseFile = async (
   caseFile: DeaCaseFile,
   datasetsProvider: DatasetsProvider,
-  chunkSizeBytes: number
+  chunkSizeBytes: number,
+  sourceIp: string
 ): Promise<void> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
   logger.info('Initiating multipart upload.', { s3Key });
@@ -84,13 +90,19 @@ export const generatePresignedUrlsForCaseFile = async (
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const uploadId = response.UploadId as string;
-
+  const presignedUrlClient = await getUploadPresignedUrlClient(s3Key, sourceIp, datasetsProvider);
   const fileParts = Math.max(Math.ceil(caseFile.fileSizeBytes / chunkSizeBytes), 1);
 
   logger.info('Generating presigned URLs.', { fileParts, s3Key });
   const presignedUrlPromises = [];
   for (let i = 0; i < fileParts; i++) {
-    presignedUrlPromises[i] = getUploadPresignedUrlPromise(s3Key, uploadId, i + 1, datasetsProvider);
+    presignedUrlPromises[i] = getUploadPresignedUrlPromise(
+      s3Key,
+      uploadId,
+      i + 1,
+      presignedUrlClient,
+      datasetsProvider
+    );
   }
   await Promise.all(presignedUrlPromises).then((presignedUrls) => {
     caseFile.presignedUrls = presignedUrls;
@@ -159,6 +171,7 @@ export const completeUploadForCaseFile = async (
 
 export const getPresignedUrlForDownload = async (
   caseFile: DeaCaseFile,
+  sourceIp: string,
   datasetsProvider: DatasetsProvider
 ): Promise<DownloadCaseFileResult> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
@@ -194,6 +207,7 @@ export const getPresignedUrlForDownload = async (
   }
 
   logger.info('Creating presigned URL for caseFile.', caseFile);
+  const presignedUrlS3Client = await getDownloadPresignedUrlClient(s3Key, sourceIp, datasetsProvider);
   const getObjectCommand = new GetObjectCommand({
     Bucket: datasetsProvider.bucketName,
     Key: s3Key,
@@ -201,7 +215,7 @@ export const getPresignedUrlForDownload = async (
     ResponseContentType: caseFile.contentType,
     ResponseContentDisposition: `attachment; filename="${caseFile.fileName}"`,
   });
-  result.downloadUrl = await getSignedUrl(datasetsProvider.s3Client, getObjectCommand, {
+  result.downloadUrl = await getSignedUrl(presignedUrlS3Client, getObjectCommand, {
     expiresIn: datasetsProvider.presignedCommandExpirySeconds,
   });
   return result;
@@ -395,6 +409,7 @@ async function getUploadPresignedUrlPromise(
   s3Key: string,
   uploadId: string,
   partNumber: number,
+  presignedUrlClient: S3Client,
   datasetsProvider: DatasetsProvider
 ): Promise<string> {
   const uploadPartCommand = new UploadPartCommand({
@@ -403,7 +418,143 @@ async function getUploadPresignedUrlPromise(
     UploadId: uploadId,
     PartNumber: partNumber,
   });
-  return getSignedUrl(datasetsProvider.s3Client, uploadPartCommand, {
+  return getSignedUrl(presignedUrlClient, uploadPartCommand, {
     expiresIn: datasetsProvider.presignedCommandExpirySeconds,
+  });
+}
+
+async function getDownloadPresignedUrlClient(
+  objectKey: string,
+  sourceIp: string,
+  datasetsProvider: DatasetsProvider
+): Promise<S3Client> {
+  const client = new STSClient({ region });
+  const credentials = (
+    await client.send(
+      new AssumeRoleCommand({
+        RoleArn: datasetsProvider.datasetsRole,
+        RoleSessionName: objectKey.replace('/', '-'),
+        DurationSeconds: datasetsProvider.presignedCommandExpirySeconds,
+        Policy: getPolicyForDownload(objectKey, sourceIp, datasetsProvider),
+      })
+    )
+  ).Credentials;
+
+  if (!credentials || !credentials.SecretAccessKey || !credentials.AccessKeyId) {
+    logger.error('Failed to assume datasets role', { datasetsRole: datasetsProvider.datasetsRole });
+    throw new Error('Failed to assume role');
+  }
+
+  return new S3Client({
+    region,
+    credentials: {
+      accessKeyId: credentials.AccessKeyId,
+      secretAccessKey: credentials.SecretAccessKey,
+      sessionToken: credentials.SessionToken,
+      expiration: credentials.Expiration,
+    },
+  });
+}
+
+async function getUploadPresignedUrlClient(
+  objectKey: string,
+  sourceIp: string,
+  datasetsProvider: DatasetsProvider
+): Promise<S3Client> {
+  const client = new STSClient({ region });
+  const credentials = (
+    await client.send(
+      new AssumeRoleCommand({
+        RoleArn: datasetsProvider.datasetsRole,
+        RoleSessionName: objectKey.replace('/', '-'),
+        DurationSeconds: datasetsProvider.presignedCommandExpirySeconds,
+        Policy: getPolicyForUpload(objectKey, sourceIp, datasetsProvider),
+      })
+    )
+  ).Credentials;
+
+  if (!credentials || !credentials.SecretAccessKey || !credentials.AccessKeyId) {
+    logger.error('Failed to assume datasets role', { datasetsRole: datasetsProvider.datasetsRole });
+    throw new Error('Failed to assume role');
+  }
+
+  return new S3Client({
+    region,
+    credentials: {
+      accessKeyId: credentials.AccessKeyId,
+      secretAccessKey: credentials.SecretAccessKey,
+      sessionToken: credentials.SessionToken,
+      expiration: credentials.Expiration,
+    },
+  });
+}
+
+function getPolicyForUpload(objectKey: string, sourceIp: string, datasetsProvider: DatasetsProvider): string {
+  if (!datasetsProvider.sourceIpValidationEnabled) {
+    return JSON.stringify({
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Sid: 'AllowS3PutObject',
+          Effect: 'Allow',
+          Action: ['s3:PutObject'],
+          Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        },
+      ],
+    });
+  }
+
+  return JSON.stringify({
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Sid: 'AllowS3PutObject',
+        Effect: 'Allow',
+        Action: ['s3:PutObject'],
+        Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        Condition: {
+          IpAddress: {
+            'aws:SourceIp': sourceIp,
+          },
+        },
+      },
+    ],
+  });
+}
+
+function getPolicyForDownload(
+  objectKey: string,
+  sourceIp: string,
+  datasetsProvider: DatasetsProvider
+): string {
+  if (!datasetsProvider.sourceIpValidationEnabled) {
+    return JSON.stringify({
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Sid: 'AllowS3GetObject',
+          Effect: 'Allow',
+          Action: ['s3:GetObject', 's3:GetObjectVersion'],
+          Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        },
+      ],
+    });
+  }
+
+  return JSON.stringify({
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Sid: 'AllowS3GetObject',
+        Effect: 'Allow',
+        Action: ['s3:GetObject', 's3:GetObjectVersion'],
+        Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        Condition: {
+          IpAddress: {
+            'aws:SourceIp': sourceIp,
+          },
+        },
+      },
+    ],
   });
 }

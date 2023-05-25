@@ -13,6 +13,11 @@ import {
   ServiceInputTypes,
   ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
+import {
+  STSClient,
+  ServiceInputTypes as STSInputs,
+  ServiceOutputTypes as STSOutputs,
+} from '@aws-sdk/client-sts';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
@@ -38,6 +43,7 @@ import {
 
 let repositoryProvider: ModelRepositoryProvider;
 let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+let stsMock: AwsStub<STSInputs, STSOutputs>;
 let fileUploader: DeaUser;
 let caseToUploadTo = '';
 
@@ -54,6 +60,16 @@ describe('Test complete case file upload', () => {
 
     fileUploader = await callCreateUser(repositoryProvider);
     caseToUploadTo = (await callCreateCase(fileUploader, repositoryProvider)).ulid ?? fail();
+
+    stsMock = mockClient(STSClient);
+    stsMock.resolves({
+      Credentials: {
+        AccessKeyId: 'hi',
+        SecretAccessKey: 'hello',
+        SessionToken: 'foo',
+        Expiration: new Date(),
+      },
+    });
   });
 
   afterAll(async () => {

@@ -17,6 +17,11 @@ import {
   CreateJobCommand,
   JobReportScope,
 } from '@aws-sdk/client-s3-control';
+import {
+  STSClient,
+  ServiceInputTypes as STSInputs,
+  ServiceOutputTypes as STSOutputs,
+} from '@aws-sdk/client-sts';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { v4 as uuidv4 } from 'uuid';
@@ -43,6 +48,7 @@ let repositoryProvider: ModelRepositoryProvider;
 let caseOwner: DeaUser;
 let s3Mock: AwsStub<S3Input, S3Output>;
 let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput>;
+let stsMock: AwsStub<STSInputs, STSOutputs>;
 
 const ETAG = 'hehe';
 const VERSION_ID = 'haha';
@@ -59,6 +65,16 @@ describe('update case status', () => {
         },
         repositoryProvider
       )) ?? fail();
+
+    stsMock = mockClient(STSClient);
+    stsMock.resolves({
+      Credentials: {
+        AccessKeyId: 'hi',
+        SecretAccessKey: 'hello',
+        SessionToken: 'foo',
+        Expiration: new Date(),
+      },
+    });
   });
 
   afterAll(async () => {
