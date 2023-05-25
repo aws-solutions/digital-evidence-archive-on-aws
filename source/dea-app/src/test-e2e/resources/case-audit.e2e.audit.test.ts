@@ -129,7 +129,7 @@ describe('case audit e2e', () => {
       const auditId: string = startAuditQueryResponse.data.auditId;
       Joi.assert(auditId, joiUlid);
 
-      let retries = 10;
+      let retries = 20;
       let getQueryReponse = await callDeaAPIWithCreds(
         `${deaApiUrl}cases/${caseUlid}/audit/${auditId}/csv`,
         'GET',
@@ -154,27 +154,26 @@ describe('case audit e2e', () => {
         );
       }
 
-      const potentialCsvData: string = getQueryReponse.data;
+      if (getQueryReponse.data && !getQueryReponse.data.status) {
+        const potentialCsvData: string = getQueryReponse.data;
 
-      const dynamoMatch = potentialCsvData.match(/dynamodb.amazonaws.com/g);
+        const dynamoMatch = potentialCsvData.match(/dynamodb.amazonaws.com/g);
 
-      if (
-        getQueryReponse.data &&
-        !getQueryReponse.data.status &&
-        potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
-        potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
-        potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE) &&
-        dynamoMatch &&
-        dynamoMatch.length >= 7
-      ) {
-        csvData = getQueryReponse.data;
-      } else {
-        await delay(10000);
+        if (
+          potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
+          potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
+          potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE) &&
+          dynamoMatch &&
+          dynamoMatch.length >= 7
+        ) {
+          csvData = getQueryReponse.data;
+        } else {
+          await delay(10000);
+        }
       }
       --queryRetries;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const entries = parseCaseAuditCsv(csvData!).filter(
       (entry) =>

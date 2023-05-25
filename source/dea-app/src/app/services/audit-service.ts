@@ -180,28 +180,27 @@ export type CJISAuditEventBody = {
  * coalesce: Returns the first non-null value from the list.
  */
 const queryFields = [
-  'coalesce(dateTime, eventTime) as eventDateTime',
-  'eventType',
-  'result',
-  'coalesce(requestPath, eventName) as eventDetails',
-  'coalesce(sourceComponent, eventSource) as source',
-  'coalesce(sourceIPAddress, actorIdentity.sourceIp) as sourceIp',
-  'coalesce(actorIdentity.idType, userIdentity.type) as userType',
-  'coalesce(actorIdentity.username, userIdentity.userName, userIdentity.sessionContext.sessionIssuer.userName) as username',
-  'actorIdentity.deaRole',
-  'actorIdentity.userUlid',
-  'actorIdentity.firstName',
-  'actorIdentity.lastName',
-  'actorIdentity.idPoolUserId',
-  'actorIdentity.userPoolUserId',
-  'actorIdentity.authCode',
-  'actorIdentity.idToken',
-  'caseId',
-  'fileId',
-  'fileHash',
-  'targetUserId',
-  'requestParameters.key.PK as PrimaryKey',
-  'requestParameters.key.SK as SortKey',
+  'coalesce(dateTime, eventTime) as DateTimeUTC',
+  'coalesce(eventType, " ") as Event_Type',
+  'coalesce(result, " ") as Result',
+  'coalesce(requestPath, eventName) as Request_Path',
+  'coalesce(sourceComponent, eventSource) as Source_Component',
+  'coalesce(sourceIPAddress, actorIdentity.sourceIp) as Source_IP_Address',
+  'coalesce(actorIdentity.idType, userIdentity.type) as Identity_ID_Type',
+  'coalesce(actorIdentity.username, userIdentity.userName, userIdentity.sessionContext.sessionIssuer.userName) as Username',
+  'coalesce(actorIdentity.deaRole, " ") as Role',
+  'coalesce(actorIdentity.userUlid, " ") as DEA_User_ID',
+  'coalesce(actorIdentity.firstName, " ") as First_Name',
+  'coalesce(actorIdentity.lastName, " ") as Last_Name',
+  'coalesce(actorIdentity.idPoolUserId, " ") as Identity_Pool_User_ID',
+  'coalesce(actorIdentity.authCode, " ") as Auth_Code',
+  'coalesce(actorIdentity.idToken, " ") as ID_Token',
+  'coalesce(caseId, " ") as Case_ID',
+  'coalesce(fileId, " ") as File_ID',
+  'coalesce(fileHash, " ") as File_SHA_256',
+  'coalesce(targetUserId, " ") as Target_User_ID',
+  'coalesce(requestParameters.key.PK, " ") as PrimaryKey',
+  'coalesce(requestParameters.key.SK, " ") as SortKey',
 ];
 
 export interface AuditResult {
@@ -440,21 +439,22 @@ export class DeaAuditService extends AuditService {
   }
 
   private formatResults(results: ResultField[][]): string {
+    if (results.length === 0) {
+      return '';
+    }
+
     const separator = ', ';
     const newline = '\r\n';
     let csvData = '';
-    let csvHeaders = '';
+    const csvHeaders =
+      results[0]
+        .map((column) => column.field?.replaceAll('_', ' ').replaceAll('DateTimeUTC', 'Date/Time (UTC)'))
+        .join(separator) + newline;
     results.forEach((row) => {
       // Excluding @ptr field from the csv output.
       // Only the fields requested in the query are returned, along with a @ptr field, which is the identifier for the log record.
       const csvFields = row.filter((column) => column.field !== '@ptr');
       csvData += csvFields.map((column) => column.value).join(separator) + newline;
-      // csv headers come from the row with more fields.
-      // All the rows not necessarily have the same amount of fields, only fields with values are returned for each row.
-      const rowHeader = csvFields.map((column) => column.field).join(separator) + newline;
-      if (csvHeaders.length < rowHeader.length) {
-        csvHeaders = rowHeader;
-      }
     });
     const csvContent = csvHeaders + csvData;
     return csvContent;
