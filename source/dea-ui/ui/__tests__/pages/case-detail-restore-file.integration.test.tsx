@@ -39,7 +39,7 @@ const mockFilesRoot = {
       status: 'ACTIVE',
       created: '2023-03-09T17:08:40.682Z',
       updated: '2023-03-09T17:08:40.682Z',
-      isFile: false,
+      isFile: true,
       ttl: 1678385311,
     },
   ],
