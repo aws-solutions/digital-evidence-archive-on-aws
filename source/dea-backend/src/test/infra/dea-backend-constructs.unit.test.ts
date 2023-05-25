@@ -193,10 +193,10 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
     });
 
-    // throws due to unassigned parameter
-    expect(() => {
-      Template.fromStack(stack);
-    }).toThrow('ID components may not include unresolved tokens');
+    const template = Template.fromStack(stack);
+    template.hasParameter('*', {
+      Type: 'String',
+    });
   });
 
   it('synthesizes without Delete Case Handler when `deletionAllowed` Flag is NOT set', () => {
