@@ -235,9 +235,9 @@ describe('case file audit e2e', () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const entries = parseCaseFileAuditCsv(csvData!).filter(
       (entry) =>
-        entry.eventType != AuditEventType.GET_CASE_FILE_AUDIT &&
-        entry.eventType != AuditEventType.REQUEST_CASE_FILE_AUDIT &&
-        entry.eventDetails != 'StartQuery'
+        entry.eventType !== AuditEventType.GET_CASE_FILE_AUDIT &&
+        entry.eventType !== AuditEventType.REQUEST_CASE_FILE_AUDIT &&
+        entry.eventDetails !== 'StartQuery'
     );
 
     function verifyCaseFileAuditEntry(

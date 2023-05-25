@@ -526,17 +526,17 @@ export const parseTrailEventsFromAuditQuery = (csvData: string): CloudTrailEvent
   function parseFn(event: string): CloudTrailEventEntry {
     const fields = event.split(', ').map((field) => field.trimEnd());
     return {
-      eventType: fields[2],
-      service: fields[3],
-      caseId: fields[7],
-      fileId: fields[8],
+      eventType: fields[3],
+      service: fields[4],
+      caseId: fields[15],
+      fileId: fields[16],
     };
   }
 
   return csvData
     .trimEnd()
     .split('\n')
-    .filter((entry) => !entry.includes('eventDateTime'))
+    .filter((entry) => !entry.includes('Date/Time (UTC)'))
     .filter((entry) => !entry.includes('StartQuery'))
     .filter((entry) => entry.includes('AwsApiCall'))
     .map((entry) => parseFn(entry));
@@ -574,7 +574,7 @@ const parseAuditCsv = (csvData: string, parseFn: (entry: string) => AuditEventEn
   return csvData
     .trimEnd()
     .split('\n')
-    .filter((entry) => !entry.includes('eventDateTime'))
+    .filter((entry) => !entry.includes('Date/Time (UTC)'))
     .filter((entry) => !entry.includes('AwsApiCall'))
     .map((entry) => parseFn(entry));
 };
@@ -621,8 +621,8 @@ function parseCaseFileAuditEvent(entry: string): CaseAuditEventEntry {
   expect(CASE_FILE_EVENT_TYPES.has(eventType));
   let fileHash: string | undefined;
   if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD) {
-    expect(fields[16]).toBeDefined();
-    fileHash = fields[16];
+    expect(fields[17]).toBeDefined();
+    fileHash = fields[17];
   }
   return {
     eventType,
@@ -630,8 +630,8 @@ function parseCaseFileAuditEvent(entry: string): CaseAuditEventEntry {
     eventDetails: fields[3],
     username: fields[7],
     userUlid: fields[9],
-    caseId: fields[14],
-    fileId: fields[15],
+    caseId: fields[15],
+    fileId: fields[16],
     fileHash,
   };
 }
@@ -653,7 +653,7 @@ function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
     eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE ||
     eventType === AuditEventType.REMOVE_USER_FROM_CASE
   ) {
-    targetUser = fields[15];
+    targetUser = fields[18];
   }
 
   return {
@@ -662,9 +662,9 @@ function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
     eventDetails: fields[3],
     username: fields[7],
     userUlid: fields[9],
-    caseId: fields[14],
-    fileId: fields[15],
-    fileHash: fields[16],
+    caseId: fields[15],
+    fileId: fields[16],
+    fileHash: fields[17],
     targetUser,
   };
 }
