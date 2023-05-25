@@ -410,7 +410,7 @@ export class DeaAuth extends Construct {
       domainPrefix = cognitoPrefixParam.valueAsString;
     }
 
-    const newDomain = new UserPoolDomain(this, domainPrefix, {
+    const newDomain = new UserPoolDomain(this, 'dea-user-pool-domain', {
       userPool,
       cognitoDomain: {
         domainPrefix,
