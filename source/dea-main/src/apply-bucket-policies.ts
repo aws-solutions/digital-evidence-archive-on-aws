@@ -45,7 +45,7 @@ export const restrictResourcePolicies = (
           applicationRole.roleArn,
           batchDeleteRole.roleArn,
           batchDeleteLambdaRole.roleArn,
-          datasetsRole,
+          datasetsRole.roleArn,
         ],
       },
     };
@@ -56,7 +56,7 @@ export const restrictResourcePolicies = (
           applicationRole.roleArn,
           batchDeleteRole.roleArn,
           batchDeleteLambdaRole.roleArn,
-          datasetsRole,
+          datasetsRole.roleArn,
         ],
       },
     };
