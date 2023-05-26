@@ -7669,6 +7669,16 @@ Object {
     },
     "DeaAuditdeaTrailBucket4819FF43": Object {
       "DeletionPolicy": "Delete",
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W35",
+              "reason": "This is an access log bucket, we don't need to configure access logging for access log buckets",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "BucketEncryption": Object {
           "ServerSideEncryptionConfiguration": Array [

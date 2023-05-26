@@ -225,6 +225,24 @@ Object {
       "DependsOn": Array [
         "DeaApiGatewaycustomresourceroleABCB85DD",
       ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)             indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
@@ -4495,6 +4513,20 @@ Object {
         "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaApiGatewaydeaapi822A9228",
       ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -11941,6 +11973,20 @@ Object {
       "Type": "AWS::IAM::Role",
     },
     "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -19564,6 +19610,16 @@ Object {
     },
     "DeaAuditdeaTrailBucket4819FF43": Object {
       "DeletionPolicy": "Delete",
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W35",
+              "reason": "This is an access log bucket, we don't need to configure access logging for access log buckets",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "BucketEncryption": Object {
           "ServerSideEncryptionConfiguration": Array [
@@ -24341,6 +24397,20 @@ Object {
       "Type": "AWS::IAM::Role",
     },
     "DeaEventHandlerss3batchdeletecasefilehandlerroleDefaultPolicyEED28940": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -24526,6 +24596,20 @@ Object {
       "Type": "AWS::IAM::Role",
     },
     "DeaEventHandlerss3batchstatuschangehandlerroleDefaultPolicy14D56A34": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
