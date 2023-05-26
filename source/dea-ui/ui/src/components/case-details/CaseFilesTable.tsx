@@ -175,7 +175,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
             confirmAction={restoreFiles}
             confirmButtonText={commonLabels.restoreButton}
             cancelAction={cancelRestore}
-            cancelButtonText={commonLabels.cancelButton}
+            cancelButtonText={fileOperationsLabels.cancelRestoringLabel}
           />
           <Button
             data-testid="upload-file-button"
