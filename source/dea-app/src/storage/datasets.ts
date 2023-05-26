@@ -491,6 +491,7 @@ async function getUploadPresignedUrlClient(
 
 function getPolicyForUpload(objectKey: string, sourceIp: string, datasetsProvider: DatasetsProvider): string {
   if (!datasetsProvider.sourceIpValidationEnabled) {
+    logger.info('Not restricting presigned-url by source ip');
     return JSON.stringify({
       Version: '2012-10-17',
       Statement: [
@@ -503,6 +504,7 @@ function getPolicyForUpload(objectKey: string, sourceIp: string, datasetsProvide
       ],
     });
   }
+  logger.info('Restricting presigned-url by source ip', { sourceIp });
 
   return JSON.stringify({
     Version: '2012-10-17',
@@ -518,6 +520,17 @@ function getPolicyForUpload(objectKey: string, sourceIp: string, datasetsProvide
           },
         },
       },
+      {
+        Sid: 'DenyRequestsFromOtherIpAddresses',
+        Effect: 'Deny',
+        Action: ['s3:GetObject', 's3:GetObjectVersion'],
+        Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        Condition: {
+          NotIpAddress: {
+            'aws:SourceIp': sourceIp,
+          },
+        },
+      },
     ],
   });
 }
@@ -528,6 +541,7 @@ function getPolicyForDownload(
   datasetsProvider: DatasetsProvider
 ): string {
   if (!datasetsProvider.sourceIpValidationEnabled) {
+    logger.info('Not restricting presigned-url by source ip');
     return JSON.stringify({
       Version: '2012-10-17',
       Statement: [
@@ -540,7 +554,7 @@ function getPolicyForDownload(
       ],
     });
   }
-
+  logger.info('Restricting presigned-url by source ip', { sourceIp });
   return JSON.stringify({
     Version: '2012-10-17',
     Statement: [
@@ -551,6 +565,17 @@ function getPolicyForDownload(
         Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
         Condition: {
           IpAddress: {
+            'aws:SourceIp': sourceIp,
+          },
+        },
+      },
+      {
+        Sid: 'DenyRequestsFromOtherIpAddresses',
+        Effect: 'Deny',
+        Action: ['s3:GetObject', 's3:GetObjectVersion'],
+        Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        Condition: {
+          NotIpAddress: {
             'aws:SourceIp': sourceIp,
           },
         },

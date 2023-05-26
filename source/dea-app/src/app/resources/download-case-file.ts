@@ -36,7 +36,7 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
 
   const downloadResult = await getPresignedUrlForDownload(
     retrievedCaseFile,
-    event.requestContext.identity.sourceIp,
+    `${event.requestContext.identity.sourceIp}/32`,
     datasetsProvider
   );
 
