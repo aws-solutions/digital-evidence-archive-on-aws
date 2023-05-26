@@ -5051,6 +5051,16 @@ Object {
       "Type": "AWS::ApiGateway::Method",
     },
     "DeaApiGatewaydeaapiauthauthCodetokenPOST7CE36F34": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "POST",
@@ -5169,6 +5179,16 @@ Object {
       "Type": "AWS::ApiGateway::Resource",
     },
     "DeaApiGatewaydeaapiauthloginUrlGETA4078375": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
@@ -5330,6 +5350,16 @@ Object {
       "Type": "AWS::ApiGateway::Resource",
     },
     "DeaApiGatewaydeaapiauthlogoutUrlGET44834196": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
@@ -5534,6 +5564,16 @@ Object {
       "Type": "AWS::ApiGateway::Method",
     },
     "DeaApiGatewaydeaapiauthrefreshTokenPOST0744B2BB": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "POST",
@@ -5765,6 +5805,16 @@ Object {
       "Type": "AWS::Lambda::Permission",
     },
     "DeaApiGatewaydeaapiauthrevokeTokenPOSTE5A8C6B9": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "POST",
@@ -10444,6 +10494,16 @@ Object {
       "Type": "AWS::ApiGateway::Resource",
     },
     "DeaApiGatewaydeaapiuiauthtestGET744C7E45": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
@@ -10580,6 +10640,16 @@ Object {
       "Type": "AWS::ApiGateway::Resource",
     },
     "DeaApiGatewaydeaapiuicasedetailGETD21EB4EB": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
@@ -10716,6 +10786,16 @@ Object {
       "Type": "AWS::ApiGateway::Resource",
     },
     "DeaApiGatewaydeaapiuicreatecasesGET6E1F559E": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
@@ -10852,6 +10932,16 @@ Object {
       "Type": "AWS::ApiGateway::Resource",
     },
     "DeaApiGatewaydeaapiuiloginGETF8B1569E": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
@@ -11134,6 +11224,16 @@ Object {
       "Type": "AWS::ApiGateway::Resource",
     },
     "DeaApiGatewaydeaapiuiuploadfilesGET18F68E99": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W59",
+              "reason": "Auth not implemented yet, will revisit",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
@@ -24328,6 +24428,24 @@ Object {
         "DeaEventHandlerss3batchdeletecasefilehandlerroleDefaultPolicyEED28940",
         "DeaEventHandlerss3batchdeletecasefilehandlerrole23FFF03E",
       ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
@@ -24665,6 +24783,24 @@ Object {
         "DeaEventHandlerss3batchstatuschangehandlerroleDefaultPolicy14D56A34",
         "DeaEventHandlerss3batchstatuschangehandlerrole897AED05",
       ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
