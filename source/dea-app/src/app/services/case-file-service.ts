@@ -32,6 +32,7 @@ import { getUser } from './user-service';
 export const initiateCaseFileUpload = async (
   uploadDTO: InitiateCaseFileUploadDTO,
   userUlid: string,
+  sourceIp: string,
   repositoryProvider: ModelRepositoryProvider,
   datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFile> => {
@@ -41,7 +42,7 @@ export const initiateCaseFileUpload = async (
     repositoryProvider
   );
 
-  await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider, uploadDTO.chunkSizeBytes);
+  await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider, uploadDTO.chunkSizeBytes, sourceIp);
   return { ...caseFile, chunkSizeBytes: uploadDTO.chunkSizeBytes };
 };
 

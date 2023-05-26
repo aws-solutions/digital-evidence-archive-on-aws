@@ -10,6 +10,11 @@ import {
   ServiceOutputTypes as S3Output,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
+import {
+  STSClient,
+  ServiceInputTypes as STSInputs,
+  ServiceOutputTypes as STSOutputs,
+} from '@aws-sdk/client-sts';
 import { S3BatchEvent, S3BatchResult, S3BatchResultResultCode } from 'aws-lambda';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
@@ -41,6 +46,7 @@ const INVOCATION_SCHEMA = '1.0';
 let repositoryProvider: ModelRepositoryProvider;
 let caseOwner: DeaUser;
 let s3Mock: AwsStub<S3Input, S3Output>;
+let stsMock: AwsStub<STSInputs, STSOutputs>;
 
 describe('S3 batch delete case-file lambda', () => {
   beforeAll(async () => {
@@ -55,6 +61,16 @@ describe('S3 batch delete case-file lambda', () => {
         },
         repositoryProvider
       )) ?? fail();
+
+    stsMock = mockClient(STSClient);
+    stsMock.resolves({
+      Credentials: {
+        AccessKeyId: 'hi',
+        SecretAccessKey: 'hello',
+        SessionToken: 'foo',
+        Expiration: new Date(),
+      },
+    });
   });
 
   afterAll(async () => {

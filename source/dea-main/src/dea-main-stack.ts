@@ -105,6 +105,7 @@ export class DeaMainStack extends cdk.Stack {
         DELETE_CASE_FILE_ROLE: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
         AWS_USE_FIPS_ENDPOINT: 'true',
+        SOURCE_IP_VALIDATION_ENABLED: deaConfig.sourceIpValidationEnabled().toString(),
       },
     });
 
@@ -167,7 +168,8 @@ export class DeaMainStack extends cdk.Stack {
       deaApi.lambdaBaseRole,
       deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole,
       deaEventHandlers.s3BatchDeleteCaseFileLambdaRole,
-      deaApi.customResourceRole
+      deaApi.customResourceRole,
+      deaApi.datasetsRole
     );
 
     // DEA UI Construct
