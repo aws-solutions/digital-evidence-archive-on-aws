@@ -23,6 +23,7 @@ export default function AllCasesPage() {
         useCaseFetcher={useListAllCases}
         canCreate={false}
         headerLabel={caseListLabels.systemCasesLabel}
+        headerDescription={caseListLabels.systemCasesPageDescription}
       ></CaseTable>
     </BaseLayout>
   );

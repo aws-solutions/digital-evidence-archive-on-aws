@@ -41,6 +41,7 @@ export interface CaseTableProps {
   canCreate: boolean;
   detailPage: string;
   headerLabel: string;
+  headerDescription: string;
 }
 
 function CaseTable(props: CaseTableProps): JSX.Element {
@@ -252,7 +253,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
           data-testid="case-table-header"
           variant="awsui-h1-sticky"
           title={props.headerLabel}
-          description={caseListLabels.casesPageDescription}
+          description={props.headerDescription}
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
               {deactivateCaseModal()}

@@ -343,9 +343,11 @@ export class DeaMainStack extends cdk.Stack {
   private apiGwAuthNagSuppresions(): void {
     // Nag suppress on all authorizationType related warnings until our Auth implementation is complete
     const apiGwMethodArray = [];
-    // Backend API GW
 
-    // UI API GW
+    // API GW - UI Suppressions
+    const uiPages = ['login', 'case-detail', 'create-cases', 'upload-files', 'auth-test'];
+
+    //Home page
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
@@ -355,14 +357,79 @@ export class DeaMainStack extends cdk.Stack {
         .node.findChild('GET').node.defaultChild
     );
 
-    // UI API GW Proxy
+    // Other pages
+    uiPages.forEach((page) => {
+      apiGwMethodArray.push(
+        this.node
+          .findChild('DeaApiGateway')
+          .node.findChild('dea-api')
+          .node.findChild('Default')
+          .node.findChild('ui')
+          .node.findChild(page)
+          .node.findChild('GET').node.defaultChild
+      );
+
+      // UI API GW Proxy
+      apiGwMethodArray.push(
+        this.node
+          .findChild('DeaApiGateway')
+          .node.findChild('dea-api')
+          .node.findChild('Default')
+          .node.findChild('ui')
+          .node.findChild('{proxy+}')
+          .node.findChild('GET').node.defaultChild
+      );
+    });
+
+    // Auth endpoints
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
         .node.findChild('dea-api')
         .node.findChild('Default')
-        .node.findChild('ui')
-        .node.findChild('{proxy+}')
+        .node.findChild('auth')
+        .node.findChild('{authCode}')
+        .node.findChild('token')
+        .node.findChild('POST').node.defaultChild
+    );
+
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('dea-api')
+        .node.findChild('Default')
+        .node.findChild('auth')
+        .node.findChild('refreshToken')
+        .node.findChild('POST').node.defaultChild
+    );
+
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('dea-api')
+        .node.findChild('Default')
+        .node.findChild('auth')
+        .node.findChild('revokeToken')
+        .node.findChild('POST').node.defaultChild
+    );
+
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('dea-api')
+        .node.findChild('Default')
+        .node.findChild('auth')
+        .node.findChild('loginUrl')
+        .node.findChild('GET').node.defaultChild
+    );
+
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('dea-api')
+        .node.findChild('Default')
+        .node.findChild('auth')
+        .node.findChild('logoutUrl')
         .node.findChild('GET').node.defaultChild
     );
 
