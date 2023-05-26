@@ -27,3 +27,19 @@ export const addLambdaSuppressions = (cdkLambda: CfnResource): void => {
     ],
   });
 };
+
+export const addResourcePolicySuppressions = (cdkPolicy: CfnResource): void => {
+  cdkPolicy.addMetadata('cfn_nag', {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    rules_to_suppress: [
+      {
+        id: 'W12',
+        reason: 'Star resource is required for the action',
+      },
+      {
+        id: 'W76',
+        reason: 'Complexity generated via CDK environment',
+      },
+    ],
+  });
+};

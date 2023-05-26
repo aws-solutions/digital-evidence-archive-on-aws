@@ -29,6 +29,7 @@ const Home: NextPage = () => {
         useCaseFetcher={useListMyCases}
         canCreate={true}
         headerLabel={caseListLabels.casesLabel}
+        headerDescription={caseListLabels.casesPageDescription}
       ></CaseTable>
     </BaseLayout>
   );

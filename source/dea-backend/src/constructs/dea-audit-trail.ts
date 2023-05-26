@@ -9,7 +9,14 @@ import { CfnTrail, ReadWriteType } from 'aws-cdk-lib/aws-cloudtrail';
 import { Effect, PolicyStatement, ServicePrincipal, StarPrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
-import { BlockPublicAccess, Bucket, BucketEncryption, IBucket, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
+import {
+  BlockPublicAccess,
+  Bucket,
+  BucketEncryption,
+  CfnBucket,
+  IBucket,
+  ObjectOwnership,
+} from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 
@@ -86,6 +93,21 @@ export class DeaAuditTrail extends Construct {
           sid: 'accesslogs-deny-bucket-policy',
         })
       );
+    }
+
+    //CFN NAG Suppression
+    const trailBucketNode = trailBucket.node.defaultChild;
+    if (trailBucketNode instanceof CfnBucket) {
+      trailBucketNode.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W35',
+            reason:
+              "This is an access log bucket, we don't need to configure access logging for access log buckets",
+          },
+        ],
+      });
     }
 
     const trail = new CloudTrail.Trail(scope, 'deaTrail', {
