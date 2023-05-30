@@ -48,7 +48,6 @@ export const safeName = Joi.string()
   .max(50)
   .messages(customMessages);
 
-export const safeTag = Joi.string().pattern(allButDisallowed).min(2).max(200).messages(customMessages);
 export const safeReason = Joi.string().pattern(allButDisallowed).min(2).max(250).messages(customMessages);
 export const safeDetails = Joi.string().pattern(allButDisallowed).min(2).max(250).messages(customMessages);
 

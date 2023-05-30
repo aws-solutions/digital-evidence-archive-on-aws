@@ -52,7 +52,6 @@ export const ONE_MB = 1024 * 1024;
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
   const [uploadedFiles] = useState<FileUploadProgressRow[]>([]);
-  const [tag, setTag] = useState('');
   const [details, setDetails] = useState('');
   const [reason, setReason] = useState('');
   const [uploadInProgress, setUploadInProgress] = useState(false);
@@ -81,7 +80,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             fileSizeBytes,
             chunkSizeBytes,
             contentType,
-            tag,
             reason,
             details,
           });
@@ -211,7 +209,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   }
 
   function validateFields(): boolean {
-    return reason.length > 1 && tag.length > 1 && details.length > 1;
+    return reason.length > 1 && details.length > 1;
   }
 
   return (
@@ -255,19 +253,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           }
         >
           <SpaceBetween direction="vertical" size="l">
-            <FormField
-              data-testid="input-tag"
-              label={fileOperationsLabels.evidenceTagLabel}
-              description={fileOperationsLabels.evidenceTagDescription}
-              errorText={tag.length > 1 ? '' : commonLabels.requiredLength}
-            >
-              <Input
-                value={tag}
-                onChange={({ detail: { value } }) => {
-                  setTag(value);
-                }}
-              />
-            </FormField>
             <FormField
               data-testid="input-details"
               label={fileOperationsLabels.evidenceDetailsLabel}

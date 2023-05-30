@@ -12,7 +12,6 @@ import {
   sha256Hash,
   s3Identifier,
   caseFileStatus,
-  safeTag,
   safeReason,
   safeDetails,
   safeFileSize,
@@ -26,7 +25,6 @@ export const initiateCaseFileUploadRequestSchema = Joi.object({
   contentType: contentType,
   chunkSizeBytes: safeChunkSize,
   fileSizeBytes: safeFileSize,
-  tag: safeTag,
   reason: safeReason,
   details: safeDetails,
 });
@@ -54,7 +52,6 @@ export const caseFileResponseSchema = Joi.object({
   presignedUrls: Joi.array().items(Joi.string().uri()),
   sha256Hash: sha256Hash,
   status: caseFileStatus,
-  tag: safeTag,
   reason: safeReason,
   details: safeDetails,
   created: Joi.date(),

@@ -116,7 +116,6 @@ export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFileRes
     isFile: caseFileEntity.isFile,
     ttl: caseFileEntity.ttl,
     reason: caseFileEntity.reason,
-    tag: caseFileEntity.tag,
     details: caseFileEntity.details,
   };
 };

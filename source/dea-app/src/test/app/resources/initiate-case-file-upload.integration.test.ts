@@ -255,7 +255,6 @@ describe('Test initiate case file upload', () => {
         filePath: '/',
         contentType: 'image/jpeg',
         fileSizeBytes: 1,
-        tag: 'abc',
         reason: '123',
         details: 'u&me',
         chunkSizeBytes: 5242881,

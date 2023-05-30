@@ -97,7 +97,6 @@ export const DeaSchema = {
       versionId: { type: String },
       sha256Hash: { type: String },
       contentType: { type: String },
-      tag: { type: String, validate: allButDisallowed },
       details: { type: String, validate: allButDisallowed },
       reason: { type: String, validate: allButDisallowed },
 
