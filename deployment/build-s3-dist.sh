@@ -94,7 +94,7 @@ do_replace()
 create_template_json() 
 {
     # Run 'cdk synth' to generate raw solution outputs
-    do_cmd rushx cdk context --clear && STAGE=$STAGE rushx cdk synth -q --output=$staging_dist_dir
+    do_cmd rushx cdk context --clear && STAGE=$STAGE CONFIGNAME=$CONFIGNAME rushx cdk synth -q --output=$staging_dist_dir
 
     # Remove unnecessary output files
     do_cmd cd $staging_dist_dir
@@ -275,8 +275,18 @@ echo "--------------------------------------------------------------------------
 # Note: do not install using global (-g) option. This makes build-s3-dist.sh difficult
 # for customers and developers to use, as it globally changes their environment.
 
-STAGE=chewbacca
+# Prepare DEA for build and clear environment variables for one-click
+STAGE=dea-one-click
 echo Stage set to $STAGE
+CONFIGNAME=ashoka
+echo config name set to $CONFIGNAME
+
+do_cmd cd $source_dir
+do_cmd unset DOMAIN_PREFIX && unset DEA_API_URL && unset IDENTITY_POOL_ID && unset USER_POOL_ID && unset USER_POOL_CLIENT_ID && unset DATASETS_BUCKET_NAME && unset S3_BATCH_DELETE_CASE_FILE_LAMBDA_ARN
+do_cmd rush rebuild
+
+# return to previous directory
+do_cmd cd $template_dir/cdk-solution-helper
 
 # Add local install to PATH
 export PATH=$(npm bin):$PATH

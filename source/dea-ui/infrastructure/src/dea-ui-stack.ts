@@ -45,10 +45,19 @@ export class DeaUiConstruct extends Construct {
 
     this.addS3TLSSigV4BucketPolicy(bucket);
 
+    let sources = [Source.asset(path.resolve(__dirname, '../../ui/out'))];
+    if (deaConfig.isOneClick()) {
+      const solutionsBucketName = 'solutions-features';
+
+      const solutionsBucket = Bucket.fromBucketName(this, 'solutions-bucket', solutionsBucketName);
+
+      sources = [Source.bucket(solutionsBucket, 'digital-evidence-archive/v1.0.0/ui.zip')];
+    }
     // eslint-disable-next-line no-new
     new BucketDeployment(this, 'artifact-deployment-bucket', {
       destinationBucket: bucket,
-      sources: [Source.asset(path.resolve(__dirname, '../../ui/out'))],
+      extract: deaConfig.isOneClick(),
+      sources,
     });
 
     const executeRole = new Role(this, 'role', {
