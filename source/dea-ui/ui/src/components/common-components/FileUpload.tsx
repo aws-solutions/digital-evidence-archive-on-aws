@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
-import { Button, Link, TokenGroup } from '@cloudscape-design/components';
+import { Button, SpaceBetween, TokenGroup } from '@cloudscape-design/components';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { fileOperationsLabels, fileUploadLabels } from '../../common/labels';
 import {
@@ -122,38 +122,46 @@ function FileUpload(props: FileUploadProps) {
       }
     >
       <span>{fileUploadLabels.dragAndDropFolderLabel}</span>
-      <div>
-        <input
-          ref={uploadFilesInputRef}
-          type="file"
-          data-testid="file-select"
-          onChange={onUploadInputChange}
-          disabled={disabled}
-          multiple
-          className={styles['upload-input']}
-        />
-        <Button
-          data-testid="multiple-files-button"
-          iconName="upload"
-          formAction="none"
-          onClick={() => uploadFilesInputRef.current?.click()}
-        >
-          {fileUploadLabels.chooseFilesLabel}
-        </Button>
-      </div>
-      <div>
-        <input
-          ref={uploadFolderInputRef}
-          type="file"
-          data-testid="folder-select"
-          onChange={onUploadInputChange}
-          disabled={disabled}
-          className={styles['upload-input']}
-        />
-        <Link data-testid="single-folder-button" onFollow={() => uploadFolderInputRef.current?.click()}>
-          {fileUploadLabels.chooseFolderLabel}
-        </Link>
-      </div>
+      <SpaceBetween direction="horizontal" size="xs">
+        <div>
+          <input
+            ref={uploadFolderInputRef}
+            type="file"
+            data-testid="folder-select"
+            onChange={onUploadInputChange}
+            disabled={disabled}
+            className={styles['upload-input']}
+          />
+          <Button
+            data-testid="single-folder-button"
+            iconName="folder"
+            formAction="none"
+            onClick={() => uploadFolderInputRef.current?.click()}
+          >
+            {fileUploadLabels.chooseFolderLabel}
+          </Button>
+        </div>
+        <div>
+          <input
+            ref={uploadFilesInputRef}
+            type="file"
+            data-testid="file-select"
+            onChange={onUploadInputChange}
+            disabled={disabled}
+            multiple
+            className={styles['upload-input']}
+          />
+          <Button
+            data-testid="multiple-files-button"
+            iconName="file"
+            formAction="none"
+            onClick={() => uploadFilesInputRef.current?.click()}
+          >
+            {fileUploadLabels.chooseFilesLabel}
+          </Button>
+        </div>
+      </SpaceBetween>
+
       <TokenGroup
         onDismiss={({ detail: { itemIndex } }) => onFileRemove(itemIndex)}
         items={value.map((file) => ({
