@@ -8026,6 +8026,16 @@ Object {
       "UpdateReplacePolicy": "Delete",
     },
     "DeaBackendConstructS3AccessLogsBucketPolicy55BD9984": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "F16",
+              "reason": "S3 Bucket Policy * is used on Deny",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Bucket": Object {
           "Ref": "DeaBackendConstructS3AccessLogsBucket2074272F",
@@ -8257,6 +8267,16 @@ Object {
       "UpdateReplacePolicy": "Delete",
     },
     "DeaBackendConstructS3DatasetsBucketPolicyA1DF7E5A": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "F16",
+              "reason": "S3 Bucket Policy * is used on Deny",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Bucket": Object {
           "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -19166,6 +19186,16 @@ Object {
     },
     "deaAuditLogs7B75D3F1": Object {
       "DeletionPolicy": "Delete",
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W86",
+              "reason": "Should not retain on test stacks",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "KmsKeyId": Object {
           "Fn::GetAtt": Array [
@@ -19259,6 +19289,16 @@ Object {
     },
     "deaTrailLogs0A0531F5": Object {
       "DeletionPolicy": "Delete",
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W86",
+              "reason": "Should not retain on test stacks",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "KmsKeyId": Object {
           "Fn::GetAtt": Array [
@@ -19272,6 +19312,16 @@ Object {
       "UpdateReplacePolicy": "Delete",
     },
     "deaTrailLogsRole13472204": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W86",
+              "reason": "Should not retain on test stacks",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
