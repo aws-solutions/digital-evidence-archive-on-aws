@@ -448,6 +448,7 @@ Object {
         "DestinationBucketName": Object {
           "Ref": "DeaUiStackartifactbucketFFC87A37",
         },
+        "Extract": false,
         "Prune": true,
         "ServiceToken": Object {
           "Fn::GetAtt": Array [
