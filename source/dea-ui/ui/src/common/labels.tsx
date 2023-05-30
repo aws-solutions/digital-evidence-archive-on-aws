@@ -134,7 +134,7 @@ export const fileOperationsLabels = {
   modalTitle: 'Confirm you want to upload these files',
   modalBody: 'Once uploaded case files cannot be individually removed',
   restoreInProgress: (fileName: string) =>
-    `The recovery of file ${fileName} has been successfully started. The file will become viewable within 48 hours.`,
+    `The recovery of file ${fileName} has been successfully started. The file will become viewable within 12 hours.`,
   archivedFileNoPermissionError: (fileName: string) =>
     `${fileName} is archived. Please contact case owner to restore file for access.`,
   downloadFailed: (fileName: string) => `Failed to download ${fileName}`,
@@ -297,9 +297,9 @@ export const navigationLabels = {
 };
 
 export const fileUploadLabels = {
-  dragAndDropFolderLabel: 'Drag and drop folder(s)/file(s) or',
-  chooseFolderLabel: 'Select folder',
-  chooseFilesLabel: 'Upload files',
+  dragAndDropFolderLabel: 'Drag and drop files or',
+  chooseFolderLabel: 'Choose folder',
+  chooseFilesLabel: 'Choose files',
   limitShowFewerLabel: 'Show fewer files',
   limitShowMoreLabel: 'Show more files',
   errorIconAriaLabel: 'Error',
