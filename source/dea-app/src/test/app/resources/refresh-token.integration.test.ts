@@ -2,6 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { runPreExecutionChecks } from '../../../app/resources/dea-lambda-utils';
 import { getToken } from '../../../app/resources/get-token';
 import { refreshToken } from '../../../app/resources/refresh-token';
@@ -10,7 +11,7 @@ import { getSessionsForUser } from '../../../app/services/session-service';
 import { Oauth2Token } from '../../../models/auth';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { getSession } from '../../../persistence/session';
-import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../../test-e2e/helpers/auth-helper';
+import { PkceStrings, getAuthorizationCode, getPkceStrings } from '../../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
 import {
@@ -132,5 +133,67 @@ describe('refresh-token', () => {
     expect(session2?.updated).toBeDefined();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(session2?.updated?.getTime()).toBeGreaterThan(session2!.created!.getTime());
+  }, 40000);
+
+  it('should throw a validation error if the refreshToken is not valid', async () => {
+    const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
+
+    const authCode = await getAuthorizationCode(
+      cognitoParams.cognitoDomainUrl,
+      authTestUrl,
+      testUser,
+      cognitoHelper.testPassword,
+      pkceStrings.code_challenge
+    );
+
+    const event = getDummyEvent({
+      body: JSON.stringify({
+        codeVerifier: pkceStrings.code_verifier,
+      }),
+      pathParameters: {
+        authCode: authCode,
+      },
+      headers: {
+        'callback-override': authTestUrl,
+      },
+    });
+
+    const response = await getToken(event, dummyContext);
+    expect(response.statusCode).toEqual(200);
+
+    if (!response.body) {
+      fail();
+    }
+
+    // Override the refresh_token with id_token value.
+    const jsonBody = JSON.parse(response.body);
+    const idToken: Oauth2Token = {
+      id_token: jsonBody.idToken,
+      refresh_token: jsonBody.idToken,
+      expires_in: jsonBody.expiresIn,
+    };
+    const cookie = `idToken=${JSON.stringify(idToken)}`;
+
+    const dummyEvent = getDummyEvent({
+      headers: {
+        cookie,
+      },
+    });
+    const auditEvent = getDummyAuditEvent();
+
+    // call runLambdaPrechecks to add session to database
+    await runPreExecutionChecks(dummyEvent, dummyContext, auditEvent, repositoryProvider);
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const userUlid = dummyEvent.headers['userUlid']!;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const tokenId = dummyEvent.headers['tokenId']!;
+
+    // assert session exists
+    const session = await getSession(userUlid, tokenId, repositoryProvider);
+    expect(session).toBeDefined();
+    expect(session?.isRevoked).toBeFalsy();
+
+    await expect(refreshToken(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(ValidationError);
   }, 40000);
 });

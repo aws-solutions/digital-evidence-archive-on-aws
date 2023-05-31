@@ -4,6 +4,7 @@
  */
 
 import Joi from 'joi';
+import { ValidationError } from '../../app/exceptions/validation-exception';
 import {
   CognitoSsmParams,
   exchangeAuthorizationCode,
@@ -14,7 +15,7 @@ import {
   useRefreshToken,
 } from '../../app/services/auth-service';
 import { Oauth2TokenSchema } from '../../models/validation/auth';
-import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../test-e2e/helpers/auth-helper';
+import { PkceStrings, getAuthorizationCode, getPkceStrings } from '../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../test-e2e/resources/test-helpers';
 
@@ -105,7 +106,7 @@ describe('auth service', () => {
   }, 40000);
 
   it('revoke token should fail when trying to revoke id Token', async () => {
-    await expect(revokeRefreshToken(idToken)).rejects.toThrow('Request failed with status code 400');
+    await expect(revokeRefreshToken(idToken)).rejects.toThrow(ValidationError);
   }, 40000);
 
   it('successfully obtain new id token using refresh token. Revoking the token should prevent future use for the refresh token', async () => {
@@ -117,14 +118,14 @@ describe('auth service', () => {
     expect(revokeResponse).toEqual(200);
 
     // try to use the refresh token again and it should fail
-    await expect(useRefreshToken(refreshToken)).rejects.toThrow('Request failed with status code 400');
+    await expect(useRefreshToken(refreshToken)).rejects.toThrow(ValidationError);
   }, 60000);
 
   it('should throw an error if the authorization code is not valid', async () => {
     const dummyAuthCode = 'DUMMY_AUTH_CODE';
     const dummyCodeVerifier = 'DUMMY_PKCE_VERIFIER';
     await expect(exchangeAuthorizationCode(dummyAuthCode, dummyCodeVerifier)).rejects.toThrow(
-      'Request failed with status code 400'
+      ValidationError
     );
   }, 40000);
 
@@ -132,7 +133,7 @@ describe('auth service', () => {
     const dummyIdToken = 'DUMMY_ID_TOKEN';
     const dummyCodeChallenge = 'DUMMY_CODE_CHALLENGE';
     await expect(exchangeAuthorizationCode(dummyIdToken, dummyCodeChallenge)).rejects.toThrow(
-      'Request failed with status code 400'
+      ValidationError
     );
   }, 40000);
 });
