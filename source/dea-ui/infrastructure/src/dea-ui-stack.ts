@@ -56,7 +56,6 @@ export class DeaUiConstruct extends Construct {
     // eslint-disable-next-line no-new
     new BucketDeployment(this, 'artifact-deployment-bucket', {
       destinationBucket: bucket,
-      extract: deaConfig.isOneClick(),
       sources,
     });
 
