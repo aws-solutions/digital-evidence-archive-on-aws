@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { StackProps } from 'aws-cdk-lib';
+import { CfnResource, StackProps } from 'aws-cdk-lib';
 import * as CloudTrail from 'aws-cdk-lib/aws-cloudtrail';
 import { CfnTrail, ReadWriteType } from 'aws-cdk-lib/aws-cloudtrail';
 import { Effect, PolicyStatement, ServicePrincipal, StarPrincipal } from 'aws-cdk-lib/aws-iam';
@@ -40,6 +40,7 @@ export class DeaAuditTrail extends Construct {
     super(scope, stackName);
 
     this.auditLogGroup = this.createLogGroup(scope, 'deaAuditLogs', props.kmsKey);
+
     this.trailLogGroup = this.createLogGroup(scope, 'deaTrailLogs', props.kmsKey);
     this.auditTrail = this.createAuditTrail(
       scope,
@@ -49,6 +50,17 @@ export class DeaAuditTrail extends Construct {
       props.deaTableArn
     );
     props.kmsKey.grantEncrypt(new ServicePrincipal('cloudtrail.amazonaws.com'));
+
+    // Nag Suppressions
+    const auditLogsNode = this.auditLogGroup.node.defaultChild;
+    if (auditLogsNode instanceof CfnResource) {
+      this.retentionNagSuppresion(auditLogsNode);
+    }
+
+    const trailLogGroupResource = this.trailLogGroup.node.defaultChild;
+    if (trailLogGroupResource instanceof CfnResource) {
+      this.retentionNagSuppresion(trailLogGroupResource);
+    }
 
     protectedDeaResourceArns.push(this.auditLogGroup.logGroupArn);
     protectedDeaResourceArns.push(this.trailLogGroup.logGroupArn);
@@ -157,6 +169,12 @@ export class DeaAuditTrail extends Construct {
       ];
     }
 
+    //CFN Nag Suppressions
+    const logsRoleNode = trail.node.findChild('LogsRole').node.defaultChild;
+    if (logsRoleNode instanceof CfnResource) {
+      this.retentionNagSuppresion(logsRoleNode);
+    }
+
     return trail;
   }
 
@@ -165,6 +183,18 @@ export class DeaAuditTrail extends Construct {
       encryptionKey: kmsKey,
       retention: deaConfig.retentionDays(),
       removalPolicy: deaConfig.retainPolicy(),
+    });
+  }
+
+  private retentionNagSuppresion(resource: CfnResource) {
+    resource.addMetadata('cfn_nag', {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      rules_to_suppress: [
+        {
+          id: 'W86',
+          reason: 'Should not retain on test stacks',
+        },
+      ],
     });
   }
 }
