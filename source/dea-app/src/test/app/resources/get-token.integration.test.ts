@@ -71,7 +71,7 @@ describe('get-token', () => {
     }
   }, 20000);
 
-  it('should throw an error if the authorization code is not valid', async () => {
+  it('should throw a validation error if the authorization code is not valid', async () => {
     const event = getDummyEvent({
       body: JSON.stringify({
         codeVerifier: pkceStrings.code_verifier,
@@ -81,7 +81,29 @@ describe('get-token', () => {
       },
     });
 
-    await expect(getToken(event, dummyContext)).rejects.toThrow('Request failed with status code 400');
+    await expect(getToken(event, dummyContext)).rejects.toThrow(ValidationError);
+  });
+
+  it('should throw a validation error if the codeVerifier is not valid', async () => {
+    const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
+    const authCode = await getAuthorizationCode(
+      cognitoParams.cognitoDomainUrl,
+      authTestUrl,
+      testUser,
+      cognitoHelper.testPassword,
+      pkceStrings.code_challenge
+    );
+
+    const event = getDummyEvent({
+      body: JSON.stringify({
+        codeVerifier: 'DUMMYCODE_VERIFIER',
+      }),
+      pathParameters: {
+        authCode: authCode,
+      },
+    });
+
+    await expect(getToken(event, dummyContext)).rejects.toThrow(ValidationError);
   });
 
   it('should throw an error if the path param is missing', async () => {
