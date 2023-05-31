@@ -9,7 +9,6 @@ export interface InitiateUploadForm {
   filePath: string;
   contentType: string;
   fileSizeBytes: number;
-  tag: string;
   details: string;
   reason: string;
   chunkSizeBytes: number;

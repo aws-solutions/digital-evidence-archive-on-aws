@@ -174,7 +174,6 @@ const caseFilesToDTO = (
       updated: file.updated,
       isFile: file.isFile,
       reason: file.reason,
-      tag: file.tag,
       details: file.details,
     };
   });

@@ -67,13 +67,6 @@ describe('UploadFiles page', () => {
     File.prototype.text = jest.fn().mockResolvedValueOnce('hello');
     await userEvent.upload(selectFileInput, [testFile]);
 
-    const tagInput = screen.getByTestId('input-tag');
-    const wrappedTag = wrapper(tagInput).findInput();
-    if (!wrappedTag) {
-      fail();
-    }
-    wrappedTag.setInputValue('tag');
-
     const detailsInput = screen.getByTestId('input-details');
     const wrappedDetails = wrapper(detailsInput).findTextarea();
     if (!wrappedDetails) {
