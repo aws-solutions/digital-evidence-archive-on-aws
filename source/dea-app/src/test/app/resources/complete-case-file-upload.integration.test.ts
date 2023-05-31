@@ -144,6 +144,7 @@ describe('Test complete case file upload', () => {
     const event = getDummyEvent({
       pathParameters: {
         caseId: bogusUlid,
+        fileId: bogusUlid,
       },
     });
     await expect(
@@ -264,10 +265,11 @@ describe('Test complete case file upload', () => {
     ).rejects.toThrow(); // illegal character
   });
 
-  it('should error if the payload and resource ids do not match', async () => {
+  it('should error if the payload and resource case ids do not match', async () => {
     const event = getDummyEvent({
       pathParameters: {
         caseId: bogusUlid,
+        fileId: bogusUlid,
       },
       body: JSON.stringify({
         caseUlid: fakeUlid,
@@ -278,6 +280,23 @@ describe('Test complete case file upload', () => {
     await expect(
       completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
     ).rejects.toThrow('Requested Case Ulid does not match resource');
+  });
+
+  it('should error if the payload and resource file ids do not match', async () => {
+    const event = getDummyEvent({
+      pathParameters: {
+        caseId: bogusUlid,
+        fileId: bogusUlid,
+      },
+      body: JSON.stringify({
+        caseUlid: bogusUlid,
+        sha256Hash: '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B',
+        ulid: fakeUlid,
+      }),
+    });
+    await expect(
+      completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+    ).rejects.toThrow('Requested File Ulid does not match resource');
   });
 });
 

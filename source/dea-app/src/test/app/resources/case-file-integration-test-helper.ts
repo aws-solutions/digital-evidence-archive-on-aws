@@ -116,6 +116,7 @@ export const callCompleteCaseFileUpload = async (
     },
     pathParameters: {
       caseId: caseUlid,
+      fileId: ulid,
     },
     body: JSON.stringify({
       caseUlid,
