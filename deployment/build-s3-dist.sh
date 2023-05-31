@@ -370,6 +370,28 @@ if test -f $staging_dist_dir/*.gql; then
     do_cmd mv $staging_dist_dir/*.gql $build_dist_dir/
 fi
 
+# looking for bundled asset zip
+pattern="asset.*.zip"
+
+for file in "$staging_dist_dir"/*; do
+    if [[ $file =~ $pattern ]]; then
+        new_filename="${file//asset./asset}"  # remove period in asset. for compatability
+        mv "$file" "$new_filename"
+        echo "Renamed file: $file to $new_filename"
+    fi
+done
+
+if test -f $staging_dist_dir/*.zip; then
+    echo "Move outputs of zip from staging to build_dist_dir"
+    do_cmd mv $staging_dist_dir/*.zip $build_dist_dir/
+fi
+
+# move remaining files to build dir
+if test -e "$staging_dist_dir"/*; then
+    echo "Move remaining outputs from staging to build_dist_dir"
+    mv "$staging_dist_dir"/* "$build_dist_dir/"
+fi
+
 for d in `find . -mindepth 1 -maxdepth 1 -type d`; do
 
     # Rename the artifact, removing the period for handler compatibility
