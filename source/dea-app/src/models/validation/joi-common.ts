@@ -96,10 +96,15 @@ export const jti = Joi.string().pattern(jtiRegex).required().messages(customMess
 // https://github.com/odomojuli/RegExAPI
 export const authCode = Joi.string().regex(/^[A-Za-z0-9-_]+$/);
 
+// FileSize should be a positive integer less than 5 TB
 export const safeFileSize = Joi.number()
-  .greater(0)
+  .integer()
+  .positive()
   .less(5 * ONE_TB); // 0-5TB is the range supported by S3
 
+// ChunkSize should be a positive integer in the expected range
 export const safeChunkSize = Joi.number()
+  .integer()
+  .positive()
   .greater(5 * ONE_MB)
   .less(500 * ONE_MB); // 5MB is minimum size supported by S3, 500MB is the max necessary to upload a 5TB file
