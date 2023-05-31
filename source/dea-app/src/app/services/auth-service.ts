@@ -228,6 +228,9 @@ export const exchangeAuthorizationCode = async (
     logger.error(
       `Unable to exchange authorization code: ${response.statusText} : ${JSON.stringify(response.data)}`
     );
+    if (response.status === 400) {
+      throw new ValidationError('Bad Request.');
+    }
     throw new Error(`Request failed with status code ${response.status}`);
   }
 
@@ -264,6 +267,9 @@ export const useRefreshToken = async (refreshToken: string): Promise<[Oauth2Toke
 
   if (response.status !== 200) {
     logger.error(`Unable to use refresh token for new id token: ${response.statusText}`);
+    if (response.status === 400) {
+      throw new ValidationError('Bad Request.');
+    }
     throw new Error(`Request failed with status code ${response.status}`);
   }
 
@@ -307,6 +313,9 @@ export const revokeRefreshToken = async (refreshToken: string) => {
 
   if (response.status !== 200) {
     logger.error(`Unable to revoke refresh code: ${response.statusText}`);
+    if (response.status === 400) {
+      throw new ValidationError('Bad Request.');
+    }
     throw new Error(`Request failed with status code ${response.status}`);
   }
 
