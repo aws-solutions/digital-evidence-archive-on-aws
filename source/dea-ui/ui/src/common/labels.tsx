@@ -96,7 +96,7 @@ export const caseListLabels = {
   systemCasesLabel: 'All cases',
   casesPageDescription: 'This is a list of cases that have been shared with you.',
   systemCasesPageDescription:
-    "This list show all cases within the system, including cases that haven't been shared with you.",
+    "This list shows all cases within the system, including cases that haven't been shared with you.",
 };
 
 export const filesListLabels = {
@@ -106,7 +106,7 @@ export const filesListLabels = {
   noDisplayLabel: 'No files to display',
   uploadFileLabel: 'Upload a file',
   searchLabel: 'Search by file name',
-  filterDescription: 'Uploaded folders/files associated with this case.',
+  filterDescription: 'Uploaded folders/files associated with this case',
 };
 
 export const fileOperationsLabels = {
@@ -142,7 +142,7 @@ export const fileOperationsLabels = {
 };
 
 export const caseDetailLabels = {
-  caseFilesLabel: 'Case Files',
+  caseFilesLabel: 'Case files',
   auditLogLabel: 'Audit log',
   manageAccessLabel: 'Case members',
 };
