@@ -185,4 +185,23 @@ describe('exception handlers', () => {
       body: 'Server Error',
     });
   });
+
+  it('should handle Throttling errors', async () => {
+    const sut = createDeaHandler(
+      async () => {
+        const throttlingException = new Error('Rate exceeded');
+        throttlingException.name = 'ThrottlingException';
+        throw throttlingException;
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    const actual = await sut(dummyEvent, dummyContext);
+    expect(actual).toEqual({
+      statusCode: 429,
+      body: 'Rate exceeded',
+    });
+  });
 });

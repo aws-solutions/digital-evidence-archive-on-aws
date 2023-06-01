@@ -13,6 +13,7 @@ import Joi from 'joi';
 import { logger } from '../logger';
 
 const AWS_CLIENT_INVALID_PARAMETER_NAME = 'InvalidParameterException';
+const AWS_THROTTLING_ERROR_NAME = 'ThrottlingException';
 // If you have a new error case that you want to support, create a new Class that extends Error
 // and add a handler here that responds with an appropriate status code.
 
@@ -67,6 +68,14 @@ const defaultErrorHandler: ExceptionHandler = async (error, event) => {
   });
 };
 
+const throttlingErrorHandler: ExceptionHandler = async (error, event) => {
+  logger.error('ThrottlingError', error);
+  return withAllowedOrigin(event, {
+    statusCode: 429,
+    body: 'Rate exceeded',
+  });
+};
+
 const joiInstance = new Joi.ValidationError('', [], undefined);
 const errorInstance = new Error('');
 
@@ -78,3 +87,4 @@ exceptionHandlers.set(joiInstance.name, joiValidationErrorHandler);
 exceptionHandlers.set(FORBIDDEN_ERROR_NAME, forbiddenErrorHandler);
 exceptionHandlers.set(AWS_CLIENT_INVALID_PARAMETER_NAME, validationErrorHandler);
 exceptionHandlers.set(REAUTHENTICATION_ERROR_NAME, reauthenticationErrorHandler);
+exceptionHandlers.set(AWS_THROTTLING_ERROR_NAME, throttlingErrorHandler);
