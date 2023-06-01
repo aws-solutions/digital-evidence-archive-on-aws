@@ -593,7 +593,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::RestApi",
     },
-    "testApiDeployment3727A0B9b4638045cf9d2d2b9044ad6c67de1147": Object {
+    "testApiDeployment3727A0B9e4e3fa115f41b9dbd42b40e0e7664817": Object {
       "DependsOn": Array [
         "testApiuiproxyGET92230E90",
         "testApiuiproxyDDF9EC1E",
@@ -624,7 +624,7 @@ Object {
       ],
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "testApiDeployment3727A0B9b4638045cf9d2d2b9044ad6c67de1147",
+          "Ref": "testApiDeployment3727A0B9e4e3fa115f41b9dbd42b40e0e7664817",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",

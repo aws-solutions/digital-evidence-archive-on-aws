@@ -24,6 +24,14 @@ export const addSnapshotSerializers = (): void => {
   });
 
   expect.addSnapshotSerializer({
+    test: (val) => typeof val === 'string' && val.includes('DeaApiGatewaydeaapiDeployment'),
+    print: () => {
+      const newVal = 'DeaApiGatewaydeaapiDeployment-[HASH REMOVED]';
+      return `"${newVal}"`;
+    },
+  });
+
+  expect.addSnapshotSerializer({
     test: (val) => typeof val === 'string' && val.includes(deaConfig.stage()),
     print: (val) => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
