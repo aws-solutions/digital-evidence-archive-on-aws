@@ -4383,7 +4383,7 @@ Object {
         "DeaApiGatewaydeaapiusersGETDBF3AD6C",
         "DeaApiGatewaydeaapiusersOPTIONS330C13A7",
         "DeaApiGatewaydeaapiusersCC765E55",
-        "DeaApiGatewaydeaapiDeployment99E77629905e6537e69f93a6142769b51a32b557",
+        "DeaApiGatewaydeaapiDeployment99E7762956c0800d8cca6408c125e4171ec239e1",
         "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaApiGatewaydeaapi822A9228",
         "DeaApiGatewayUpdateBucketCORSCustomResourcePolicy9EC0AABC",
@@ -4728,7 +4728,7 @@ Object {
         "DeaApiGatewaydeaapiusersGETDBF3AD6C",
         "DeaApiGatewaydeaapiusersOPTIONS330C13A7",
         "DeaApiGatewaydeaapiusersCC765E55",
-        "DeaApiGatewaydeaapiDeployment99E77629905e6537e69f93a6142769b51a32b557",
+        "DeaApiGatewaydeaapiDeployment99E7762956c0800d8cca6408c125e4171ec239e1",
         "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaApiGatewaydeaapi822A9228",
       ],
@@ -4851,7 +4851,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E77629905e6537e69f93a6142769b51a32b557": Object {
+    "DeaApiGatewaydeaapiDeployment99E7762956c0800d8cca6408c125e4171ec239e1": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiauthauthCodeOPTIONS8EA9BA0F",
         "DeaApiGatewaydeaapiauthauthCodeFC92ADBD",
@@ -5016,7 +5016,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E77629905e6537e69f93a6142769b51a32b557",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E7762956c0800d8cca6408c125e4171ec239e1",
         },
         "MethodSettings": Array [
           Object {
@@ -10521,7 +10521,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'sha512-jeN1gwe1vzHOOuVFQYymtq4GO7WRpFEIUMACq5M8PvsiboXE22Rlb5cxgseQF4l5ue5Xj1QY9Uy6AyNhtu2ReA==';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -10657,7 +10657,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'sha512-jeN1gwe1vzHOOuVFQYymtq4GO7WRpFEIUMACq5M8PvsiboXE22Rlb5cxgseQF4l5ue5Xj1QY9Uy6AyNhtu2ReA==';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -10793,7 +10793,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'sha512-jeN1gwe1vzHOOuVFQYymtq4GO7WRpFEIUMACq5M8PvsiboXE22Rlb5cxgseQF4l5ue5Xj1QY9Uy6AyNhtu2ReA==';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -10929,7 +10929,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'sha512-jeN1gwe1vzHOOuVFQYymtq4GO7WRpFEIUMACq5M8PvsiboXE22Rlb5cxgseQF4l5ue5Xj1QY9Uy6AyNhtu2ReA==';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11065,7 +11065,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'sha512-jeN1gwe1vzHOOuVFQYymtq4GO7WRpFEIUMACq5M8PvsiboXE22Rlb5cxgseQF4l5ue5Xj1QY9Uy6AyNhtu2ReA==';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11211,7 +11211,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'sha512-jeN1gwe1vzHOOuVFQYymtq4GO7WRpFEIUMACq5M8PvsiboXE22Rlb5cxgseQF4l5ue5Xj1QY9Uy6AyNhtu2ReA==';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11347,7 +11347,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'sha512-jeN1gwe1vzHOOuVFQYymtq4GO7WRpFEIUMACq5M8PvsiboXE22Rlb5cxgseQF4l5ue5Xj1QY9Uy6AyNhtu2ReA==';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
