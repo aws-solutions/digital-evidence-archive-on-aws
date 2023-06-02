@@ -5022,6 +5022,7 @@ Object {
           Object {
             "DataTraceEnabled": false,
             "HttpMethod": "*",
+            "MetricsEnabled": true,
             "ResourcePath": "/*",
             "ThrottlingBurstLimit": 40,
             "ThrottlingRateLimit": 40,
