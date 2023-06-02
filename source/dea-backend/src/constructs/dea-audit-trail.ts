@@ -143,7 +143,7 @@ export class DeaAuditTrail extends Construct {
       },
     ];
     const partition = deaConfig.partition();
-    if (partition !== 'aws-us-gov') {
+    if (partition !== 'aws-us-gov' && !deaConfig.isOneClick()) {
       dataResources.push(
         {
           type: 'AWS::DynamoDB::Table',
