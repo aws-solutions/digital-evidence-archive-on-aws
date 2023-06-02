@@ -406,6 +406,7 @@ export class DeaAuth extends Construct {
       const cognitoPrefixParam = new CfnParameter(this, 'CognitoDomainPrefix', {
         type: 'String',
         description: 'The prefix of the cognito domain to associate to the user pool',
+        allowedPattern: '^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$',
       });
       domainPrefix = cognitoPrefixParam.valueAsString;
     }
