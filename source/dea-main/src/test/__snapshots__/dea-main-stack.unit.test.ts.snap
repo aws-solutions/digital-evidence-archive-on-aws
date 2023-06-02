@@ -5022,9 +5022,18 @@ Object {
           Object {
             "DataTraceEnabled": false,
             "HttpMethod": "*",
+            "MetricsEnabled": true,
             "ResourcePath": "/*",
-            "ThrottlingBurstLimit": 50,
-            "ThrottlingRateLimit": 50,
+            "ThrottlingBurstLimit": 40,
+            "ThrottlingRateLimit": 40,
+          },
+          Object {
+            "DataTraceEnabled": false,
+            "HttpMethod": "GET",
+            "MetricsEnabled": true,
+            "ResourcePath": "/~1availableEndpoints",
+            "ThrottlingBurstLimit": 30,
+            "ThrottlingRateLimit": 30,
           },
         ],
         "RestApiId": Object {

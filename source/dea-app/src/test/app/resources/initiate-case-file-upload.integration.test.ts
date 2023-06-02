@@ -3,13 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import 'aws-sdk-client-mock-jest';
 import { fail } from 'assert';
 import {
+  CreateMultipartUploadCommand,
   S3Client,
   ServiceInputTypes,
   ServiceOutputTypes,
-  CreateMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
 import {
   STSClient,
@@ -17,6 +16,8 @@ import {
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
+import Joi from 'joi';
 import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
 import { DeaCaseFile } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
@@ -28,12 +29,12 @@ import { bogusUlid, fakeUlid } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
+  CHUNK_SIZE_BYTES,
+  DATASETS_PROVIDER,
   callCompleteCaseFileUpload,
   callCreateCase,
   callCreateUser,
   callInitiateCaseFileUpload,
-  CHUNK_SIZE_BYTES,
-  DATASETS_PROVIDER,
   validateCaseFile,
 } from './case-file-integration-test-helper';
 
@@ -280,6 +281,56 @@ describe('Test initiate case file upload', () => {
     await expect(
       initiateCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
     ).rejects.toThrow('Requested Case Ulid does not match resource');
+  });
+
+  it('should error if the fileSizeBytes is a negative number in exponential notation', async () => {
+    const event = getDummyEvent({
+      headers: {
+        userUlid: fileUploader.ulid,
+      },
+      pathParameters: {
+        caseId: caseToUploadTo,
+      },
+      body: JSON.stringify({
+        caseUlid: caseToUploadTo,
+        fileName: 'bogus',
+        filePath: '/',
+        contentType: 'image/jpeg',
+        fileSizeBytes: 1e-300,
+        tag: 'abc',
+        reason: '123',
+        details: 'u&me',
+        chunkSizeBytes: 5242881,
+      }),
+    });
+    await expect(
+      initiateCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+    ).rejects.toThrow(Joi.ValidationError);
+  });
+
+  it('should error if the fileSizeBytes is a greater than 5TB', async () => {
+    const event = getDummyEvent({
+      headers: {
+        userUlid: fileUploader.ulid,
+      },
+      pathParameters: {
+        caseId: caseToUploadTo,
+      },
+      body: JSON.stringify({
+        caseUlid: caseToUploadTo,
+        fileName: 'bogus',
+        filePath: '/',
+        contentType: 'image/jpeg',
+        fileSizeBytes: 5 * ONE_TB + 1,
+        tag: 'abc',
+        reason: '123',
+        details: 'u&me',
+        chunkSizeBytes: 5242881,
+      }),
+    });
+    await expect(
+      initiateCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+    ).rejects.toThrow(Joi.ValidationError);
   });
 });
 
