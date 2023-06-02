@@ -137,13 +137,21 @@ export const markSessionAsRevoked = async (
     logger.info('No session to revoke for user ' + userUlid);
   } else {
     logger.info('Revoking session for user ' + userUlid + '...');
-    await SessionPersistence.updateSession(
-      {
-        ...maybeSession,
-        isRevoked: true,
-      },
-      repositoryProvider
-    );
+    try {
+      await SessionPersistence.updateSession(
+        {
+          ...maybeSession,
+          isRevoked: true,
+        },
+        repositoryProvider
+      );
+    } catch (error) {
+      if ('code' in error && error.code === 'TransactionCanceledException') {
+        logger.debug(`Revoking session already in progress, moving on...`);
+      } else {
+        throw error;
+      }
+    }
   }
 };
 
