@@ -129,11 +129,19 @@ export class DeaRestApiConstruct extends Construct {
         metricsEnabled: true,
         // Per method throttling limit. Conservative setting based on fact that we have 35 APIs and Lambda concurrency is 1000
         // Worst case this setting could potentially initiate up to 1750 API calls running at any moment (which is over lambda limit),
-        // but it is unlikely that all the APIs are going to be used at the 50TPS limit
+        // but it is unlikely that all the APIs are going to be used at the 50TPS limit.
         methodOptions: {
           '/*/*': {
-            throttlingBurstLimit: 50,
-            throttlingRateLimit: 50,
+            throttlingBurstLimit: 40,
+            throttlingRateLimit: 40,
+            metricsEnabled: true,
+          },
+          // /availableEndpoints reads data from the Parameter Store.
+          // Default throughput: 40 (Shared by the following API actions: GetParameter, GetParameters, GetParametersByPath)
+          // 30TPS is the safe value to avoid getting 502's Http errors for this endpoint.
+          '/availableEndpoints/GET': {
+            throttlingBurstLimit: 30,
+            throttlingRateLimit: 30,
             metricsEnabled: true,
           },
         },
