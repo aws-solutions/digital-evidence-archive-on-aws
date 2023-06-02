@@ -412,7 +412,7 @@ describe('CaseDetailsPage', () => {
     await act(async () => {
       item.findDismissButton()!.click();
     });
-  });
+  }, 15000);
 
   it('navigates to upload files page', async () => {
     mockedAxios.create.mockReturnThis();

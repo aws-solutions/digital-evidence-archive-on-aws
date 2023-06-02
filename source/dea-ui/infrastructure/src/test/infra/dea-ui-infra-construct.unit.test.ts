@@ -14,7 +14,7 @@ import 'source-map-support/register';
 import { validateDeaUiConstruct } from '../..';
 import { DeaUiConstruct } from '../../dea-ui-stack';
 
-describe('DeaMainStack', () => {
+describe('DEA UI Infrastructure stack', () => {
   beforeAll(() => {
     process.env.STAGE = 'chewbacca';
   });

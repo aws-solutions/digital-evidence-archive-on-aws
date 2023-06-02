@@ -4477,7 +4477,7 @@ Object {
         "DeaRestApiConstructdeaapiusersGET45E97005",
         "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
         "DeaRestApiConstructdeaapiusers95152658",
-        "DeaRestApiConstructdeaapiDeploymentC27C6CB1006d6f5158255a9680a6a67388133212",
+        "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
         "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaRestApiConstructdeaapi6587DDA1",
         "DeaRestApiConstructUpdateBucketCORSCustomResourcePolicyAECBED94",
@@ -4809,7 +4809,7 @@ Object {
         "DeaRestApiConstructdeaapiusersGET45E97005",
         "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
         "DeaRestApiConstructdeaapiusers95152658",
-        "DeaRestApiConstructdeaapiDeploymentC27C6CB1006d6f5158255a9680a6a67388133212",
+        "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
         "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaRestApiConstructdeaapi6587DDA1",
       ],
@@ -4932,7 +4932,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaRestApiConstructdeaapiDeploymentC27C6CB1006d6f5158255a9680a6a67388133212": Object {
+    "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8",
         "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
@@ -5076,7 +5076,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB1006d6f5158255a9680a6a67388133212",
+          "Ref": "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
         },
         "MethodSettings": Array [
           Object {
