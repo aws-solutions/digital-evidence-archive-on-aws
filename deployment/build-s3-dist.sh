@@ -120,6 +120,9 @@ handle_ui_assets_output()
 
     # copy artifacts from /ui/out to build_dist
     do_cmd cp -r "$template_dir/../source/dea-ui/ui/out"/* "$staging_dist_dir/ui"
+    (cd $staging_dist_dir/ui && zip -r -X "../ui.zip" .)
+
+    do_cmd rm -rf "$staging_dist_dir/ui"
 }
 
 create_template_yaml() 
@@ -378,11 +381,13 @@ for file in "$staging_dist_dir"/*; do
         new_filename="${file//asset./asset}"  # remove period in asset. for compatability
         mv "$file" "$new_filename"
         echo "Renamed file: $file to $new_filename"
-        do_cmd mv $new_filename $build_dist_dir/
     fi
 done
 
-
+if [[ $(find "$staging_dist_dir" -maxdepth 1 -name "*.zip" -type f) ]]; then
+    echo "Move outputs of zip from staging to build_dist_dir"
+    do_cmd mv $staging_dist_dir/*.zip $build_dist_dir/
+fi
 
 for d in `find . -mindepth 1 -maxdepth 1 -type d`; do
 
