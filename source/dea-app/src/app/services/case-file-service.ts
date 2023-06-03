@@ -36,14 +36,22 @@ export const initiateCaseFileUpload = async (
   repositoryProvider: ModelRepositoryProvider,
   datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFile> => {
-  const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
-    uploadDTO,
-    userUlid,
-    repositoryProvider
-  );
-
-  await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider, uploadDTO.chunkSizeBytes, sourceIp);
-  return { ...caseFile, chunkSizeBytes: uploadDTO.chunkSizeBytes };
+  try {
+    const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
+      uploadDTO,
+      userUlid,
+      repositoryProvider
+    );
+    await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider, uploadDTO.chunkSizeBytes, sourceIp);
+    return { ...caseFile, chunkSizeBytes: uploadDTO.chunkSizeBytes };
+  } catch (error) {
+    // On multiple concurrent requests with the same payload only one wins.
+    if ('code' in error && error.code === 'UniqueError') {
+      throw new ValidationError('File already exists in the DB');
+    } else {
+      throw error;
+    }
+  }
 };
 
 export const validateInitiateUploadRequirements = async (

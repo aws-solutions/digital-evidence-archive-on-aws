@@ -13,7 +13,10 @@ import Joi from 'joi';
 import { logger } from '../logger';
 
 const AWS_CLIENT_INVALID_PARAMETER_NAME = 'InvalidParameterException';
+// // Exception name thrown from Parameter Store when the throughput is exceeded.
 const AWS_THROTTLING_ERROR_NAME = 'ThrottlingException';
+// Exception name thrown from CloudWatch when the quota limit is exceeded.
+const AWS_LIMITED_EXCEEDED_ERROR_NAME = 'LimitExceededException';
 // If you have a new error case that you want to support, create a new Class that extends Error
 // and add a handler here that responds with an appropriate status code.
 
@@ -72,7 +75,7 @@ const throttlingErrorHandler: ExceptionHandler = async (error, event) => {
   logger.error('ThrottlingError', error);
   return withAllowedOrigin(event, {
     statusCode: 429,
-    body: 'Rate exceeded',
+    body: error.message,
   });
 };
 
@@ -88,3 +91,4 @@ exceptionHandlers.set(FORBIDDEN_ERROR_NAME, forbiddenErrorHandler);
 exceptionHandlers.set(AWS_CLIENT_INVALID_PARAMETER_NAME, validationErrorHandler);
 exceptionHandlers.set(REAUTHENTICATION_ERROR_NAME, reauthenticationErrorHandler);
 exceptionHandlers.set(AWS_THROTTLING_ERROR_NAME, throttlingErrorHandler);
+exceptionHandlers.set(AWS_LIMITED_EXCEEDED_ERROR_NAME, throttlingErrorHandler);

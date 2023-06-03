@@ -71,9 +71,13 @@ export const contentType = Joi.string().pattern(htmlSafeCharsRegex).max(200).mes
 
 export const caseStatus = Joi.string().valid(...Object.keys(CaseStatus));
 
-export const idToken = Joi.string().regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/);
+export const idToken = Joi.string()
+  .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/)
+  .messages(customMessages);
 
-export const refreshToken = Joi.string().regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/);
+export const refreshToken = Joi.string()
+  .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/)
+  .messages(customMessages);
 
 export const loginUrlRegex = Joi.string().uri();
 

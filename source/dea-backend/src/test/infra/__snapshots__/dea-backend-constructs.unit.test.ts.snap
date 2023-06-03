@@ -1331,7 +1331,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1417,7 +1417,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1503,7 +1503,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1589,7 +1589,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1675,7 +1675,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1761,7 +1761,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1847,7 +1847,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -1933,7 +1933,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2019,7 +2019,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2105,7 +2105,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2191,7 +2191,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2277,7 +2277,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2363,7 +2363,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -2449,7 +2449,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -2535,7 +2535,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2621,7 +2621,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2707,7 +2707,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2793,7 +2793,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2879,7 +2879,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2965,7 +2965,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3051,7 +3051,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3137,7 +3137,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -3223,7 +3223,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3309,7 +3309,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3395,7 +3395,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -3481,7 +3481,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3567,7 +3567,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3653,7 +3653,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3739,7 +3739,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3825,7 +3825,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -3911,7 +3911,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3997,7 +3997,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4083,7 +4083,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4169,7 +4169,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4255,7 +4255,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5084,14 +5084,12 @@ Object {
             "HttpMethod": "*",
             "MetricsEnabled": true,
             "ResourcePath": "/*",
-            "ThrottlingBurstLimit": 40,
-            "ThrottlingRateLimit": 40,
           },
           Object {
             "DataTraceEnabled": false,
-            "HttpMethod": "GET",
+            "HttpMethod": "*",
             "MetricsEnabled": true,
-            "ResourcePath": "/~1availableEndpoints",
+            "ResourcePath": "/*",
             "ThrottlingBurstLimit": 30,
             "ThrottlingRateLimit": 30,
           },
