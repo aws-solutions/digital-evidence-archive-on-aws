@@ -121,19 +121,14 @@ export class DeaRestApiConstruct extends Construct {
       },
       deployOptions: {
         stageName: STAGE,
+        metricsEnabled: true,
         // Per method throttling limit. Conservative setting based on fact that we have 35 APIs and Lambda concurrency is 1000
         // Worst case this setting could potentially initiate up to 1750 API calls running at any moment (which is over lambda limit),
         // but it is unlikely that all the APIs are going to be used at the 50TPS limit.
+        // Throttle value set to 30 to match CloudWatch Logs Insights queries maximun concurrency and mitigate lambda function timeouts.
+        // For instance: // CloudWatch Logs Insights queries have a maximum of 30 concurrent queries, including queries that have been added to dashboards. This quota can't be changed.
         methodOptions: {
           '/*/*': {
-            throttlingBurstLimit: 40,
-            throttlingRateLimit: 40,
-            metricsEnabled: true,
-          },
-          // /availableEndpoints reads data from the Parameter Store.
-          // Default throughput: 40 (Shared by the following API actions: GetParameter, GetParameters, GetParametersByPath)
-          // 30TPS is the safe value to avoid getting 502's Http errors for this endpoint.
-          '/availableEndpoints/GET': {
             throttlingBurstLimit: 30,
             throttlingRateLimit: 30,
             metricsEnabled: true,
@@ -320,7 +315,9 @@ export class DeaRestApiConstruct extends Construct {
     accountId: string
   ): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
-      memorySize: 512,
+      // Set to 1024MB to mitigate memory allocation issues. Some executions were using more than 512MB.
+      // E.g: Error: Runtime exited with error: signal: killed Runtime.ExitError.
+      memorySize: 1024,
       role: role,
       timeout: Duration.seconds(10),
       runtime: Runtime.NODEJS_18_X,
