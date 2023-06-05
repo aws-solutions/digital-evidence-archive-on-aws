@@ -232,6 +232,9 @@ export const exchangeAuthorizationCode = async (
     if (response.status === 400) {
       throw new ValidationError('Bad Request.');
     }
+    if (response.status === 429) {
+      throw new ThrottlingException('Too Many Requests');
+    }
     throw new Error(`Request failed with status code ${response.status}`);
   }
 
@@ -319,6 +322,9 @@ export const revokeRefreshToken = async (refreshToken: string) => {
     logger.error(`Unable to revoke refresh code: ${response.statusText}`);
     if (response.status === 400) {
       throw new ValidationError('Bad Request.');
+    }
+    if (response.status === 429) {
+      throw new ThrottlingException('Too Many Requests');
     }
     throw new Error(`Request failed with status code ${response.status}`);
   }
