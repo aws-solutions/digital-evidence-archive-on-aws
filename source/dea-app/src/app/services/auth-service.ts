@@ -15,6 +15,7 @@ import axios from 'axios';
 import { getRequiredEnv, getRequiredHeader } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { Oauth2Token } from '../../models/auth';
+import { ThrottlingException } from '../exceptions/throttling-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 
 const stage = getRequiredEnv('STAGE', 'chewbacca');
@@ -266,9 +267,12 @@ export const useRefreshToken = async (refreshToken: string): Promise<[Oauth2Toke
   });
 
   if (response.status !== 200) {
-    logger.error(`Unable to use refresh token for new id token: ${response.statusText}`);
+    logger.error('Unable to use refresh token for new id token', response);
     if (response.status === 400) {
       throw new ValidationError('Bad Request.');
+    }
+    if (response.status === 429) {
+      throw new ThrottlingException('Too Many Requests');
     }
     throw new Error(`Request failed with status code ${response.status}`);
   }
