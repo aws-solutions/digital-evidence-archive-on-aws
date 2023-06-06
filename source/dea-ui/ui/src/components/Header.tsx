@@ -14,6 +14,7 @@ export default function Header(): JSX.Element {
   const { user, signOut, isLoggedIn } = useAuthentication();
 
   const profileActions = [{ id: 'signout', text: headerLabels.signout }];
+  const href = process.env.NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN ? '/ui' : `/${settings.stage}/ui`;
   return (
     <TopNavigation
       id="header"
@@ -21,7 +22,7 @@ export default function Header(): JSX.Element {
       data-testid="header-top-navigation"
       i18nStrings={headerLabels}
       identity={{
-        href: `/${settings.stage}/ui`,
+        href,
         title: isLoggedIn ? settings.name : `${settings.name}${headerLabels.notLoggedIn}`,
       }}
       utilities={[

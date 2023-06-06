@@ -7,8 +7,13 @@ import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { refreshCredentials, signOutProcess } from './authService';
 
 let urlBase = process.env.NEXT_PUBLIC_DEA_API_URL;
+const isUsingCustomDomain = process.env.NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN ? true : false;
 if (typeof window !== 'undefined' && !urlBase) {
-  urlBase = `https://${window.location.hostname}/${process.env.NEXT_PUBLIC_STAGE}/`;
+  if (isUsingCustomDomain) {
+    urlBase = `https://${window.location.hostname}/`;
+  } else {
+    urlBase = `https://${window.location.hostname}/${process.env.NEXT_PUBLIC_STAGE}/`;
+  }
 }
 
 const handleErrors = async (error: Error) => {

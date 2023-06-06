@@ -21,14 +21,17 @@ function FileDetailPage() {
   if (!caseId || typeof caseId !== 'string' || !fileId || typeof fileId !== 'string') {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
+
+  const href_prefix = process.env.NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN ? `/ui` : `/${settings.stage}/ui`;
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: breadcrumbLabels.homePageLabel,
-      href: `/${settings.stage}/ui`,
+      href: href_prefix,
     },
     {
       text: breadcrumbLabels.caseDetailsLabel,
-      href: `/${settings.stage}/ui/case-detail?caseId=${caseId}`,
+      href: `${href_prefix}/case-detail?caseId=${caseId}`,
     },
     {
       text: breadcrumbLabels.fileDetailsLabel,

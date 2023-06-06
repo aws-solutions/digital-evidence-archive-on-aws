@@ -101,7 +101,11 @@ export class DeaAuth extends Construct {
   public constructor(scope: Construct, stackName: string, deaProps: DeaAuthProps) {
     super(scope, stackName + 'Construct');
 
-    const loginUrl = `${deaProps.restApi.url}ui/login`;
+    let loginUrl = `${deaProps.restApi.url}ui/login`;
+    const customDomainInfo = deaConfig.customDomainInfo();
+    if (customDomainInfo.domainName && customDomainInfo.certificateArn) {
+      loginUrl = `https://${customDomainInfo.domainName}/ui/login`;
+    }
 
     const partition = deaConfig.partition();
 

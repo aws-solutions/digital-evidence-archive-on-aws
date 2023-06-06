@@ -96,6 +96,28 @@ const convictSchema = {
       env: 'DOMAIN_PREFIX',
     },
   },
+  customDomain: {
+    domainName: {
+      doc: 'Custom domain for solution',
+      format: String,
+      default: undefined,
+    },
+    certificateArn: {
+      doc: 'The reference to an AWS-managed certificate for the domain name.',
+      format: String,
+      default: undefined,
+    },
+    hostedZoneId: {
+      doc: 'The id for the hosted zone for the domain',
+      format: String,
+      default: undefined,
+    },
+    hostedZoneName: {
+      doc: 'The name of the hosted zone',
+      format: String,
+      default: undefined,
+    },
+  },
   idpInfo: {
     metadataPath: {
       doc: 'Either the URL or file path to the IDP metadata',
@@ -218,6 +240,13 @@ export interface DEARoleTypeDefinition {
   readonly endpoints: DEAEndpointDefinition[];
 }
 
+export interface CustomDomainInfo {
+  readonly domainName: string | undefined;
+  readonly certificateArn: string | undefined;
+  readonly hostedZoneId: string | undefined;
+  readonly hostedZoneName: string | undefined;
+}
+
 convict.addFormat(deaRoleTypesFormat);
 convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
@@ -229,6 +258,7 @@ interface DEAConfig {
   region(): string;
   partition(): string;
   cognitoDomain(): string | undefined;
+  customDomainInfo(): CustomDomainInfo;
   isTestStack(): boolean;
   isOneClick(): boolean;
   deaRoleTypes(): DEARoleTypeDefinition[];
@@ -252,6 +282,7 @@ export const deaConfig: DEAConfig = {
   region: () => convictConfig.get('region'),
   partition: () => convictConfig.get('awsPartition'),
   cognitoDomain: () => convictConfig.get('cognito.domain'),
+  customDomainInfo: () => convictConfig.get('customDomain'),
   isTestStack: () => convictConfig.get('testStack'),
   isOneClick: () => convictConfig.get('isOneClick'),
   deaRoleTypes: () => convictConfig.get('deaRoleTypes'),
