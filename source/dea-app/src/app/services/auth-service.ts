@@ -226,11 +226,12 @@ export const exchangeAuthorizationCode = async (
   });
 
   if (response.status !== 200) {
-    logger.error(
-      `Unable to exchange authorization code: ${response.statusText} : ${JSON.stringify(response.data)}`
-    );
+    logger.error('Unable to exchange authorization code', response);
     if (response.status === 400) {
       throw new ValidationError('Bad Request.');
+    }
+    if (response.status === 429) {
+      throw new ThrottlingException('Too Many Requests');
     }
     throw new Error(`Request failed with status code ${response.status}`);
   }
@@ -316,9 +317,12 @@ export const revokeRefreshToken = async (refreshToken: string) => {
   });
 
   if (response.status !== 200) {
-    logger.error(`Unable to revoke refresh code: ${response.statusText}`);
+    logger.error('Unable to revoke refresh code', response);
     if (response.status === 400) {
       throw new ValidationError('Bad Request.');
+    }
+    if (response.status === 429) {
+      throw new ThrottlingException('Too Many Requests');
     }
     throw new Error(`Request failed with status code ${response.status}`);
   }
