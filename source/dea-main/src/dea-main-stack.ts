@@ -102,7 +102,6 @@ export class DeaMainStack extends cdk.Stack {
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey,
-      region,
       accountId,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
@@ -122,7 +121,7 @@ export class DeaMainStack extends cdk.Stack {
     // us-gov-west-1 since Cognito is not available, so we have to
     // deploy DeaAuth as a stack, and DeaParameters as a stack as
     // well to break the cyclic dependency between main stack and deaauth stack
-    if (region === 'us-gov-east-1') {
+    if (!deaConfig.isOneClick() && region === 'us-gov-east-1') {
       // Build the Cognito Stack (UserPool and IdentityPool)
       // Along with the IAM Roles
       const authConstruct = new DeaAuthStack(
@@ -242,7 +241,7 @@ export class DeaMainStack extends cdk.Stack {
             'kms:GenerateDataKey*',
             'kms:Describe*',
           ],
-          principals: [new ServicePrincipal(`logs.${this.region}.amazonaws.com`)],
+          principals: [new ServicePrincipal(`logs.amazonaws.com`)],
           resources: ['*'],
           sid: 'main-key-share-statement',
         }),

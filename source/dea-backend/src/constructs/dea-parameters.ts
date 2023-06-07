@@ -77,11 +77,10 @@ export class DeaParameters extends Construct {
     protectedDeaResourceArns: string[],
     availableEndpointsPerRole: Map<string, string[]>
   ) {
-    const region = deaConfig.region();
     const stage = deaConfig.stage();
     availableEndpointsPerRole.forEach((endpointStrings: string[], roleName: string) => {
       const param = new StringListParameter(this, `${roleName}_actions`, {
-        parameterName: `/dea/${region}/${stage}-${roleName}-actions`,
+        parameterName: `/dea/${stage}-${roleName}-actions`,
         stringListValue: endpointStrings,
         description: 'stores the available endpoints for a role',
         tier: ParameterTier.STANDARD,
@@ -93,10 +92,9 @@ export class DeaParameters extends Construct {
   }
 
   private storeSecrets(protectedDeaResourceArns: string[], clientSecret: SecretValue, kmsKey: Key) {
-    const region = deaConfig.region();
     const stage = deaConfig.stage();
-    const secret = new Secret(this, `/dea/${region}/${stage}/clientSecret`, {
-      secretName: `/dea/${region}/${stage}/clientSecret`,
+    const secret = new Secret(this, `/dea/${stage}/clientSecret`, {
+      secretName: `/dea/${stage}/clientSecret`,
       encryptionKey: kmsKey,
       secretStringValue: clientSecret,
     });
@@ -114,11 +112,10 @@ export class DeaParameters extends Construct {
     identityPoolId: string,
     agencyIdpName?: string
   ) {
-    const region = deaConfig.region();
     const stage = deaConfig.stage();
 
     new StringParameter(this, 'user-pool-id-ssm-param', {
-      parameterName: `/dea/${region}/${stage}-userpool-id-param`,
+      parameterName: `/dea/${stage}-userpool-id-param`,
       stringValue: userPoolId,
       description: 'stores the user pool id for use in token verification on the backend',
       tier: ParameterTier.STANDARD,
@@ -126,7 +123,7 @@ export class DeaParameters extends Construct {
     });
 
     new StringParameter(this, 'user-pool-client-id-ssm-param', {
-      parameterName: `/dea/${region}/${stage}-userpool-client-id-param`,
+      parameterName: `/dea/${stage}-userpool-client-id-param`,
       stringValue: userPoolClientId,
       description: 'stores the user pool client id for use in token verification on the backend',
       tier: ParameterTier.STANDARD,
@@ -134,7 +131,7 @@ export class DeaParameters extends Construct {
     });
 
     new StringParameter(this, 'user-pool-cognito-domain-ssm-param', {
-      parameterName: `/dea/${region}/${stage}-userpool-cognito-domain-param`,
+      parameterName: `/dea/${stage}-userpool-cognito-domain-param`,
       stringValue: cognitoDomain,
       description: 'stores the user pool cognito domain for use in token verification on the backend',
       tier: ParameterTier.STANDARD,
@@ -142,7 +139,7 @@ export class DeaParameters extends Construct {
     });
 
     new StringParameter(this, 'identity-pool-id-ssm-param', {
-      parameterName: `/dea/${region}/${stage}-identity-pool-id-param`,
+      parameterName: `/dea/${stage}-identity-pool-id-param`,
       stringValue: identityPoolId,
       description: 'stores the identity pool id for use in user verification on the backend',
       tier: ParameterTier.STANDARD,
@@ -150,7 +147,7 @@ export class DeaParameters extends Construct {
     });
 
     new StringParameter(this, 'client-callback-url-ssm-param', {
-      parameterName: `/dea/${region}/${stage}-client-callback-url-param`,
+      parameterName: `/dea/${stage}-client-callback-url-param`,
       stringValue: callbackUrl,
       description: 'stores the app client callback url for use in token verification on the backend',
       tier: ParameterTier.STANDARD,
@@ -160,7 +157,7 @@ export class DeaParameters extends Construct {
     if (agencyIdpName) {
       // Put the name of the IdP in SSM so the hosted UI can automaticaly redirect to the IdP Signin page
       new StringParameter(this, 'agency-idp-name', {
-        parameterName: `/dea/${region}/${stage}-agency-idp-name`,
+        parameterName: `/dea/${stage}-agency-idp-name`,
         stringValue: agencyIdpName,
         description: 'stores the agency idp name for redirection during login with hosted ui',
         tier: ParameterTier.STANDARD,

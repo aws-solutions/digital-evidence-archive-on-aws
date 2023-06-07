@@ -89,7 +89,8 @@
    * PNPM documentation: https://pnpm.io/package_json#pnpmoverrides
    */
   "globalOverrides": {
-    "caniuse-lite": "latest"
+    "caniuse-lite": "latest",
+    "fast-xml-parser": "4.2.4"
   },
 
   /**

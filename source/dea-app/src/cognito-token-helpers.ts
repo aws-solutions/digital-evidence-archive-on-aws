@@ -14,8 +14,8 @@ const stage = getRequiredEnv('STAGE', 'chewbacca');
 
 export const getTokenPayload = async (idToken: string, region: string): Promise<CognitoIdTokenPayload> => {
   const ssmClient = new SSMClient({ region });
-  const userPoolIdPath = `/dea/${region}/${stage}-userpool-id-param`;
-  const clientIdPath = `/dea/${region}/${stage}-userpool-client-id-param`;
+  const userPoolIdPath = `/dea/${stage}-userpool-id-param`;
+  const clientIdPath = `/dea/${stage}-userpool-client-id-param`;
   const response = await ssmClient.send(
     new GetParametersCommand({
       Names: [userPoolIdPath, clientIdPath],

@@ -18938,11 +18938,7 @@ Object {
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/dea/",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    "/[STAGE-REMOVED]*",
+                    ":parameter/dea/[STAGE-REMOVED]*",
                   ],
                 ],
               },
@@ -18962,11 +18958,7 @@ Object {
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":secret:/dea/",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    "/[STAGE-REMOVED]/clientSecret-*",
+                    ":secret:/dea/[STAGE-REMOVED]/clientSecret-*",
                   ],
                 ],
               },
@@ -19171,11 +19163,7 @@ Object {
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/dea/",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    "/[STAGE-REMOVED]*",
+                    ":parameter/dea/[STAGE-REMOVED]*",
                   ],
                 ],
               },

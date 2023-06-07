@@ -77,15 +77,19 @@ export class DeaAuthStack extends Stack {
   public deaAuthInfo: DeaAuthInfo;
 
   public constructor(scope: Construct, stackName: string, deaProps: DeaAuthProps, props?: StackProps) {
-    super(scope, stackName, {
-      ...props,
-      env: {
-        ...props?.env,
-        region: deaProps.region, // Note: for us-gov-east-1, we change the region
-        // to us-gov-west-1 since Cognito is not available in that region
-      },
-      crossRegionReferences: true,
-    });
+    if (!deaConfig.isOneClick()) {
+      super(scope, stackName, {
+        ...props,
+        env: {
+          ...props?.env,
+          region: deaProps.region, // Note: for us-gov-east-1, we change the region
+          // to us-gov-west-1 since Cognito is not available in that region
+        },
+        crossRegionReferences: true,
+      });
+    } else {
+      super(scope, stackName, props);
+    }
 
     this.deaAuthInfo = new DeaAuth(this, 'DeaAuth', deaProps).deaAuthInfo;
   }

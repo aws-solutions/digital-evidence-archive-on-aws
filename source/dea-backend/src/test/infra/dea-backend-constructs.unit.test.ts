@@ -76,7 +76,6 @@ describe('DeaBackend constructs', () => {
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
-      region: stack.region,
       accountId: stack.account,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
@@ -165,7 +164,6 @@ describe('DeaBackend constructs', () => {
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey: key,
-      region: stack.region,
       accountId: stack.account,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
@@ -243,7 +241,6 @@ describe('DeaBackend constructs', () => {
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
-      region: stack.region,
       accountId: stack.account,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
