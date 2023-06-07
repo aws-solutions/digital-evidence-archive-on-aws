@@ -43,14 +43,14 @@
     "unit:only": "heft test --no-build --disable-code-coverage  --test-path-pattern '.*/*unit.test.*'"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "3.299.0",
-    "@aws-sdk/client-cognito-identity-provider": "3.299.0",
-    "@aws-sdk/client-dynamodb": "3.299.0",
-    "@aws-sdk/client-s3": "3.299.0",
-    "@aws-sdk/client-s3-control": "3.299.0",
-    "@aws-sdk/client-sts": "3.299.0",
-    "@aws-sdk/client-ssm": "3.299.0",
-    "@aws-sdk/s3-request-presigner": "3.299.0",
+    "@aws-sdk/client-cognito-identity": "3.347.1",
+    "@aws-sdk/client-cognito-identity-provider": "3.347.1",
+    "@aws-sdk/client-dynamodb": "3.347.1",
+    "@aws-sdk/client-s3": "3.347.1",
+    "@aws-sdk/client-s3-control": "3.347.1",
+    "@aws-sdk/client-sts": "3.347.1",
+    "@aws-sdk/client-ssm": "3.347.1",
+    "@aws-sdk/s3-request-presigner": "3.347.1",
     "@types/aws-lambda": "^8.10.114",
     "@types/crypto-js": "^4.1.1",
     "@types/jsonwebtoken": "~9.0.1",
@@ -65,7 +65,7 @@
     "@aws-sdk/client-secrets-manager": "~3.321.1"
   },
   "devDependencies": {
-    "@aws-sdk/client-cloudwatch-logs": "~3.299.0",
+    "@aws-sdk/client-cloudwatch-logs": "~3.347.1",
     "@aws/workbench-core-audit": "~0.1.1",
     "@casl/ability": "~6.3.3",
     "@rushstack/eslint-config": "^3.2.0",
