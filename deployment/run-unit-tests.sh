@@ -25,5 +25,5 @@ cd $source_dir
 rush purge
 rush update
 rush build
-rush unit:only
+rush test:sonar
 echo "Test Complete"

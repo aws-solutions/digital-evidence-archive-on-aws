@@ -42,7 +42,8 @@
     "test:dev": "jest --watch",
     "test:noe2e": "jest --ci --coverage '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": "jest --ci --coverage",
-    "unit:only": "jest --ci '.*/*unit.test.*'"
+    "unit:only": "jest --ci '.*/*unit.test.*'",
+    "test:sonar": "rushx test:only"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.299.0",
