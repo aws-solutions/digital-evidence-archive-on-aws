@@ -5,7 +5,7 @@
 
 import path from 'path';
 import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
-import { Duration, Fn } from 'aws-cdk-lib';
+import { Aws, Duration, Fn } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   AuthorizationType,
@@ -51,7 +51,6 @@ interface DeaRestApiProps {
   deaAuditLogArn: string;
   deaTrailLogArn: string;
   kmsKey: Key;
-  region: string;
   accountId: string;
   lambdaEnv: LambdaEnvironment;
   opsDashboard: DeaOperationalDashboard;
@@ -82,7 +81,6 @@ export class DeaRestApiConstruct extends Construct {
       props.kmsKey.keyArn,
       props.deaTableArn,
       props.deaDatasetsBucket.bucketArn,
-      props.region,
       props.accountId,
       partition,
       props.deaAuditLogArn,
@@ -90,7 +88,7 @@ export class DeaRestApiConstruct extends Construct {
       props.s3BatchDeleteCaseFileRoleArn
     );
 
-    this.authLambdaRole = this.createAuthLambdaRole(props.region, props.accountId, partition);
+    this.authLambdaRole = this.createAuthLambdaRole(props.accountId, partition);
 
     this.customResourceRole = new Role(this, 'custom-resource-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -388,7 +386,6 @@ export class DeaRestApiConstruct extends Construct {
     kmsKeyArn: string,
     tableArn: string,
     datasetsBucketArn: string,
-    region: string,
     accountId: string,
     partition: string,
     auditLogArn: string,
@@ -396,6 +393,7 @@ export class DeaRestApiConstruct extends Construct {
     s3BatchDeleteCaseFileRoleArn: string
   ): Role {
     const STAGE = deaConfig.stage();
+    const region = Aws.REGION;
 
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
@@ -474,14 +472,15 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
+        resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${STAGE}*`],
       })
     );
 
     return role;
   }
 
-  private createAuthLambdaRole(region: string, accountId: string, partition: string): Role {
+  private createAuthLambdaRole(accountId: string, partition: string): Role {
+    const region = Aws.REGION;
     const STAGE = deaConfig.stage();
 
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
@@ -495,7 +494,7 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
+        resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${STAGE}*`],
       })
     );
 
@@ -503,7 +502,7 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['secretsmanager:GetSecretValue'],
         resources: [
-          `arn:${partition}:secretsmanager:${region}:${accountId}:secret:/dea/${region}/${STAGE}/clientSecret-*`,
+          `arn:${partition}:secretsmanager:${region}:${accountId}:secret:/dea/${STAGE}/clientSecret-*`,
         ],
       })
     );

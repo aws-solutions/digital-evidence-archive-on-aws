@@ -12012,11 +12012,15 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:ssm:us-east-1:",
+                    "arn:aws:ssm:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/dea/us-east-1/[STAGE-REMOVED]*",
+                    ":parameter/dea/[STAGE-REMOVED]*",
                   ],
                 ],
               },
@@ -12028,11 +12032,15 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:secretsmanager:us-east-1:",
+                    "arn:aws:secretsmanager:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":secret:/dea/us-east-1/[STAGE-REMOVED]/clientSecret-*",
+                    ":secret:/dea/[STAGE-REMOVED]/clientSecret-*",
                   ],
                 ],
               },
@@ -12243,11 +12251,15 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:ssm:us-east-1:",
+                    "arn:aws:ssm:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/dea/us-east-1/[STAGE-REMOVED]*",
+                    ":parameter/dea/[STAGE-REMOVED]*",
                   ],
                 ],
               },
@@ -24870,7 +24882,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-AuthTestGroup-actions",
+        "Name": "/dea/[STAGE-REMOVED]-AuthTestGroup-actions",
         "Tier": "Standard",
         "Type": "StringList",
         "Value": "/cases/my-casesGET,/auth/tokenPOST,/auth/credentials/{idToken}/exchangeGET,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST",
@@ -24881,7 +24893,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-CaseWorker-actions",
+        "Name": "/dea/[STAGE-REMOVED]-CaseWorker-actions",
         "Tier": "Standard",
         "Type": "StringList",
         "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsPUT,/cases/{caseId}/detailsDELETE,/cases/{caseId}/actionsGET,/cases/{caseId}/statusPUT,/cases/{caseId}/userMembershipsGET,/cases/{caseId}/userMembershipsPOST,/cases/{caseId}/users/{userId}/membershipsPUT,/cases/{caseId}/users/{userId}/membershipsDELETE,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/{caseId}/filesPOST,/cases/{caseId}/filesGET,/cases/{caseId}/files/{fileId}/contentsPUT,/cases/{caseId}/files/{fileId}/restorePUT,/cases/{caseId}/files/{fileId}/infoGET,/cases/{caseId}/files/{fileId}/contentsGET,/cases/my-casesGET,/cases/{caseId}/audit/{auditId}/csvGET,/cases/{caseId}/auditPOST,/availableEndpointsGET",
@@ -24892,7 +24904,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-CreateCasesTestGroup-actions",
+        "Name": "/dea/[STAGE-REMOVED]-CreateCasesTestGroup-actions",
         "Tier": "Standard",
         "Type": "StringList",
         "Value": "/casesPOST,/cases/{caseId}/detailsDELETE,/cases/all-casesGET,/auth/tokenPOST,/auth/credentials/{idToken}/exchangeGET,/auth/loginUrlGET",
@@ -24903,7 +24915,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-EvidenceManager-actions",
+        "Name": "/dea/[STAGE-REMOVED]-EvidenceManager-actions",
         "Tier": "Standard",
         "Type": "StringList",
         "Value": "/cases/{caseId}/actionsGET,/cases/{caseId}/userMembershipsGET,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/all-casesGET,/availableEndpointsGET,/cases/{caseId}/scopedInformationGET,/cases/{caseId}/ownerPOST,/users/{userId}/auditPOST,/users/{userId}/audit/{auditId}/csvGET,/system/auditPOST,/system/audit/{auditId}/csvGET",
@@ -24914,7 +24926,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-GetCaseTestGroup-actions",
+        "Name": "/dea/[STAGE-REMOVED]-GetCaseTestGroup-actions",
         "Tier": "Standard",
         "Type": "StringList",
         "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsDELETE,/auth/tokenPOST,/auth/credentials/{idToken}/exchangeGET,/auth/loginUrlGET",
@@ -24925,7 +24937,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-GetMyCasesTestGroup-actions",
+        "Name": "/dea/[STAGE-REMOVED]-GetMyCasesTestGroup-actions",
         "Tier": "Standard",
         "Type": "StringList",
         "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsDELETE,/cases/my-casesGET,/cases/{caseId}/userMembershipsPOST,/usersGET",
@@ -24936,7 +24948,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-NoPermissionsGroup-actions",
+        "Name": "/dea/[STAGE-REMOVED]-NoPermissionsGroup-actions",
         "Tier": "Standard",
         "Type": "StringList",
         "Value": "/availableEndpointsGET",
@@ -24947,7 +24959,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the available endpoints for a role",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-WorkingManager-actions",
+        "Name": "/dea/[STAGE-REMOVED]-WorkingManager-actions",
         "Tier": "Standard",
         "Type": "StringList",
         "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsPUT,/cases/{caseId}/detailsDELETE,/cases/{caseId}/actionsGET,/cases/{caseId}/userMembershipsGET,/cases/{caseId}/userMembershipsPOST,/cases/{caseId}/users/{userId}/membershipsPUT,/cases/{caseId}/users/{userId}/membershipsDELETE,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/{caseId}/filesPOST,/cases/{caseId}/filesGET,/cases/{caseId}/files/{fileId}/contentsPUT,/cases/{caseId}/files/{fileId}/restorePUT,/cases/{caseId}/files/{fileId}/infoGET,/cases/{caseId}/files/{fileId}/contentsGET,/cases/my-casesGET,/cases/all-casesGET,/cases/{caseId}/audit/{auditId}/csvGET,/cases/{caseId}/auditPOST,/availableEndpointsGET,/cases/{caseId}/scopedInformationGET,/cases/{caseId}/ownerPOST,/users/{userId}/auditPOST,/users/{userId}/audit/{auditId}/csvGET,/system/auditPOST,/system/audit/{auditId}/csvGET",
@@ -24958,7 +24970,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the app client callback url for use in token verification on the backend",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-client-callback-url-param",
+        "Name": "/dea/[STAGE-REMOVED]-client-callback-url-param",
         "Tier": "Standard",
         "Type": "String",
         "Value": Object {
@@ -24984,7 +24996,7 @@ Object {
       },
       "Type": "AWS::SSM::Parameter",
     },
-    "DeaParametersConstructdeauseast1[STAGE-REMOVED]clientSecret[HASH REMOVED]": Object {
+    "DeaParametersConstructdea[STAGE-REMOVED]clientSecret[HASH REMOVED]": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
         "KmsKeyId": Object {
@@ -24993,7 +25005,7 @@ Object {
             "Arn",
           ],
         },
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]/clientSecret",
+        "Name": "/dea/[STAGE-REMOVED]/clientSecret",
         "SecretString": Object {
           "Fn::GetAtt": Array [
             "DeaAuthConstructDEAUserPooldeaappclientDescribeCognitoUserPoolClientC581C332",
@@ -25008,7 +25020,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the identity pool id for use in user verification on the backend",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-identity-pool-id-param",
+        "Name": "/dea/[STAGE-REMOVED]-identity-pool-id-param",
         "Tier": "Standard",
         "Type": "String",
         "Value": Object {
@@ -25021,7 +25033,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the user pool client id for use in token verification on the backend",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-client-id-param",
+        "Name": "/dea/[STAGE-REMOVED]-userpool-client-id-param",
         "Tier": "Standard",
         "Type": "String",
         "Value": Object {
@@ -25034,7 +25046,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the user pool cognito domain for use in token verification on the backend",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-cognito-domain-param",
+        "Name": "/dea/[STAGE-REMOVED]-userpool-cognito-domain-param",
         "Tier": "Standard",
         "Type": "String",
         "Value": Object {
@@ -25056,7 +25068,7 @@ Object {
       "Properties": Object {
         "AllowedPattern": ".*",
         "Description": "stores the user pool id for use in token verification on the backend",
-        "Name": "/dea/us-east-1/[STAGE-REMOVED]-userpool-id-param",
+        "Name": "/dea/[STAGE-REMOVED]-userpool-id-param",
         "Tier": "Standard",
         "Type": "String",
         "Value": Object {
@@ -25609,7 +25621,7 @@ Object {
                   ],
                 },
                 Object {
-                  "Ref": "DeaParametersConstructdeauseast1[STAGE-REMOVED]clientSecret[HASH REMOVED]",
+                  "Ref": "DeaParametersConstructdea[STAGE-REMOVED]clientSecret[HASH REMOVED]",
                 },
               ],
             },

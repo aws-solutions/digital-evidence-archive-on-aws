@@ -15,11 +15,14 @@ const app: cdk.App = new cdk.App();
 const stage = deaConfig.stage();
 const region = deaConfig.region();
 
-const props = {
-  env: {
-    region,
-  },
-  crossRegionReferences: true,
-};
+let props = {};
+if (!deaConfig.isOneClick) {
+  props = {
+    env: {
+      region,
+    },
+    crossRegionReferences: true,
+  };
+}
 
 new DeaMainStack(app, `${stage}-DeaMainStack`, props);
