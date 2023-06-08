@@ -40,7 +40,8 @@
     "test:dev": ". ../common/scripts/setEnv.sh && heft test --watch",
     "test:noe2e": ". ../common/scripts/setEnv.sh && heft test --no-build --test-path-pattern '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": ". ../common/scripts/setEnv.sh && heft test --no-build",
-    "unit:only": "heft test --no-build --disable-code-coverage  --test-path-pattern '.*/*unit.test.*'"
+    "unit:only": "heft test --no-build --test-path-pattern '.*/*unit.test.*'",
+    "test:sonar": "rushx unit:only"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.299.0",
@@ -48,8 +49,8 @@
     "@aws-sdk/client-dynamodb": "3.299.0",
     "@aws-sdk/client-s3": "3.299.0",
     "@aws-sdk/client-s3-control": "3.299.0",
-    "@aws-sdk/client-sts": "3.299.0",
     "@aws-sdk/client-ssm": "3.299.0",
+    "@aws-sdk/client-sts": "3.299.0",
     "@aws-sdk/s3-request-presigner": "3.299.0",
     "@types/aws-lambda": "^8.10.114",
     "@types/crypto-js": "^4.1.1",

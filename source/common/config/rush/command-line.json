@@ -192,6 +192,14 @@
       "allowWarningsInSuccessfulBuild": true
     },
     {
+      "name": "test:sonar",
+      "commandKind": "bulk",
+      "summary": "Used to perform static tests on the packages on the build pipeline",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
+    },
+    {
       "name": "integration:only",
       "commandKind": "bulk",
       "summary": "Used to perform integration tests only on the packages",
