@@ -42,11 +42,12 @@
     "test:dev": "jest --watch",
     "test:noe2e": "jest --ci --coverage '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": "jest --ci --coverage",
-    "unit:only": "jest --ci '.*/*unit.test.*'"
+    "unit:only": "jest --ci '.*/*unit.test.*'",
+    "test:sonar": "rushx test:only"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "3.347.1",
-    "@aws-sdk/client-cognito-identity-provider": "3.347.1",
+    "@aws-sdk/client-cognito-identity": "3.299.0",
+    "@aws-sdk/client-cognito-identity-provider": "3.299.0",
     "@aws/dea-app": "workspace:*",
     "@cloudscape-design/collection-hooks": "^1.0.20",
     "@cloudscape-design/components": "^3.0.262",
