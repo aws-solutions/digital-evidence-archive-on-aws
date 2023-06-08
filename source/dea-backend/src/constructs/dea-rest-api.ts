@@ -221,8 +221,6 @@ export class DeaRestApiConstruct extends Construct {
       allowedOrigins.push(`https://${customDomainName}`);
     }
 
-    allowedOrigins.forEach((origin) => console.log(origin));
-
     const updateCorsCall: AwsSdkCall = {
       service: 'S3',
       action: 'putBucketCors',
