@@ -23,13 +23,6 @@ export const addSnapshotSerializers = (): void => {
       return `"${newVal}"`;
     },
   });
-  expect.addSnapshotSerializer({
-    test: (val) => typeof val === 'string' && val.includes('sha512'),
-    print: () => {
-      const newVal = '[HASH REMOVED]';
-      return `"${newVal}"`;
-    },
-  });
 
   expect.addSnapshotSerializer({
     test: (val) => typeof val === 'string' && val.includes(deaConfig.stage()),

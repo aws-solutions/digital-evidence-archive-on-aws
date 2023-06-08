@@ -3,8 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 /* eslint-disable no-new */
-import { createHash } from 'crypto';
-import { readFileSync } from 'fs';
 import * as path from 'path';
 import { deaConfig } from '@aws/dea-backend';
 import { StackProps } from 'aws-cdk-lib';
@@ -131,7 +129,7 @@ export class DeaUiConstruct extends Construct {
                 `img-src 'self' blob:;` +
                 `style-src 'unsafe-inline' 'self';` +
                 `connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;` +
-                `script-src ${this.getUiHash()};` +
+                `script-src 'self'` +
                 `font-src 'self' data:;` +
                 `object-src 'none';` +
                 `block-all-mixed-content;'`,
@@ -146,18 +144,6 @@ export class DeaUiConstruct extends Construct {
         contentHandling: ContentHandling.CONVERT_TO_TEXT,
       },
     });
-  }
-
-  // Copying solution from another internal Amazon project
-  // https://code.amazon.com/packages/ThinkboxFloatingLicensePortalCDK/blobs/mainline/--/lib/tflpStack.ts
-  // I suspect that our solution doesn't have any scripts and that's why this solution works
-  // We may need to redo script-src hash validation if we add <scripts> of our own
-  // but for the timebeing, it protects us from the types of attacks outlined in  https://t.corp.amazon.com/V920048770
-  private getUiHash() {
-    const fileBuffer = readFileSync(path.join(__dirname, '../../ui/out', 'index.html'));
-    const hasher = createHash('sha512');
-    hasher.update(fileBuffer.toString(), 'ascii');
-    return `'sha512-${hasher.digest('base64')}'`;
   }
 
   private getMethodOptions(): MethodOptions {
