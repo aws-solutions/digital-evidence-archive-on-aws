@@ -6,6 +6,7 @@
 import { FORBIDDEN_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/forbidden-exception';
 import { NOT_FOUND_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/not-found-exception';
 import { REAUTHENTICATION_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/reauthentication-exception';
+import { THROTTLING_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/throttling-exception';
 import { VALIDATION_ERROR_NAME } from '@aws/dea-app/lib/app/exceptions/validation-exception';
 import { withAllowedOrigin } from '@aws/dea-app/lib/app/resources/dea-lambda-utils';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
@@ -14,6 +15,12 @@ import { logger } from '../logger';
 
 const AWS_CLIENT_INVALID_PARAMETER_NAME = 'InvalidParameterException';
 const AWS_THROTTLING_ERROR_NAME = 'ThrottlingException';
+// Exception name thrown from CloudWatch when the quota limit is exceeded.
+const AWS_LIMITED_EXCEEDED_ERROR_NAME = 'LimitExceededException';
+// DynamoDB https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html
+// Exception thrown during concurrent item-level requests(i.e Throttling from DynamoDB)
+const AWS_DYNAMODB_TRANSACTION_CANCELED_ERROR_NAME = 'TransactionCanceledException';
+
 // If you have a new error case that you want to support, create a new Class that extends Error
 // and add a handler here that responds with an appropriate status code.
 
@@ -72,7 +79,7 @@ const throttlingErrorHandler: ExceptionHandler = async (error, event) => {
   logger.error('ThrottlingError', error);
   return withAllowedOrigin(event, {
     statusCode: 429,
-    body: 'Rate exceeded',
+    body: 'Too Many Requests',
   });
 };
 
@@ -88,3 +95,6 @@ exceptionHandlers.set(FORBIDDEN_ERROR_NAME, forbiddenErrorHandler);
 exceptionHandlers.set(AWS_CLIENT_INVALID_PARAMETER_NAME, validationErrorHandler);
 exceptionHandlers.set(REAUTHENTICATION_ERROR_NAME, reauthenticationErrorHandler);
 exceptionHandlers.set(AWS_THROTTLING_ERROR_NAME, throttlingErrorHandler);
+exceptionHandlers.set(THROTTLING_ERROR_NAME, throttlingErrorHandler);
+exceptionHandlers.set(AWS_LIMITED_EXCEEDED_ERROR_NAME, throttlingErrorHandler);
+exceptionHandlers.set(AWS_DYNAMODB_TRANSACTION_CANCELED_ERROR_NAME, throttlingErrorHandler);

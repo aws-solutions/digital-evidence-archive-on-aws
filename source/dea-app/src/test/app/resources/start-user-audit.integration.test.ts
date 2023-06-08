@@ -9,6 +9,7 @@ import { anything, instance, mock, when } from 'ts-mockito';
 import { startUserAudit } from '../../../app/resources/start-user-audit';
 import { joiUlid } from '../../../models/validation/joi-common';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
+import { createUser } from '../../../persistence/user';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
@@ -17,8 +18,18 @@ describe('start user audit', () => {
   const OLD_ENV = process.env;
 
   let modelProvider: ModelRepositoryProvider;
+  let userId: string;
   beforeAll(async () => {
     modelProvider = await getTestRepositoryProvider('startUserAuditIntegration');
+    const user = await createUser(
+      {
+        tokenId: '123',
+        firstName: 'afirstname',
+        lastName: 'alastname',
+      },
+      modelProvider
+    );
+    userId = user.ulid;
   });
 
   beforeEach(() => {
@@ -38,7 +49,7 @@ describe('start user audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        userId: bogusUlid,
+        userId,
       },
     });
     const result = await startUserAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
@@ -55,11 +66,24 @@ describe('start user audit', () => {
 
     const event = getDummyEvent({
       pathParameters: {
-        userId: bogusUlid,
+        userId,
       },
     });
     await expect(
       startUserAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
     ).rejects.toThrow('Unknown error starting Cloudwatch Logs Query.');
+  });
+
+  it('throws an error for an invalid user', async () => {
+    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    const clientMockInstance = instance(clientMock);
+    const event = getDummyEvent({
+      pathParameters: {
+        userId: bogusUlid,
+      },
+    });
+    await expect(
+      startUserAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+    ).rejects.toThrow('Could not find user');
   });
 });

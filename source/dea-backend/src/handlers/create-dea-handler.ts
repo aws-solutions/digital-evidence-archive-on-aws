@@ -81,11 +81,9 @@ export const createDeaHandler = (
     } catch (error) {
       logger.error('Error', { Body: JSON.stringify(error) });
       if (typeof error === 'object') {
-        if ('name' in error) {
-          const errorHandler = exceptionHandlers.get(error.name);
-          if (errorHandler) {
-            return errorHandler(error, event);
-          }
+        const errorHandler = exceptionHandlers.get(getErrorName(error));
+        if (errorHandler) {
+          return errorHandler(error, event);
         }
       }
 
@@ -100,6 +98,17 @@ export const createDeaHandler = (
     }
   };
   return wrappedHandler;
+};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getErrorName = (error: any): string => {
+  // OneTableError's code property has the underline DynamoDB error name https://doc.onetable.io/api/errors/
+  if ('code' in error) {
+    return error.code;
+  }
+  if ('name' in error) {
+    return error.name;
+  }
+  return '';
 };
 
 const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {

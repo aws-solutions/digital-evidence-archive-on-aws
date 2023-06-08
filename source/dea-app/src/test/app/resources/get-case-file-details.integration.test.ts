@@ -6,7 +6,11 @@
 import 'aws-sdk-client-mock-jest';
 import { fail } from 'assert';
 import { S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
-
+import {
+  STSClient,
+  ServiceInputTypes as STSInputs,
+  ServiceOutputTypes as STSOutputs,
+} from '@aws-sdk/client-sts';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { getCaseFileDetails } from '../../../app/resources/get-case-file-details';
 import { CaseFileStatus } from '../../../models/case-file-status';
@@ -25,6 +29,7 @@ import {
 
 let repositoryProvider: ModelRepositoryProvider;
 let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+let stsMock: AwsStub<STSInputs, STSOutputs>;
 let fileDescriber: DeaUser;
 let caseToDescribe = '';
 
@@ -41,6 +46,16 @@ describe('Test get case file details', () => {
     fileDescriber = await callCreateUser(repositoryProvider);
 
     caseToDescribe = (await callCreateCase(fileDescriber, repositoryProvider)).ulid ?? fail();
+
+    stsMock = mockClient(STSClient);
+    stsMock.resolves({
+      Credentials: {
+        AccessKeyId: 'hi',
+        SecretAccessKey: 'hello',
+        SessionToken: 'foo',
+        Expiration: new Date(),
+      },
+    });
   });
 
   afterAll(async () => {

@@ -19,7 +19,8 @@ export const restrictResourcePolicies = (
   applicationRole: Role,
   batchDeleteRole: Role,
   batchDeleteLambdaRole: Role,
-  customResourceRole: Role
+  customResourceRole: Role,
+  datasetsRole: Role
 ) => {
   if (!deaConfig.isTestStack()) {
     const datasetsObjectActions = [
@@ -40,13 +41,23 @@ export const restrictResourcePolicies = (
 
     const applicationCondition = {
       StringEquals: {
-        'aws:PrincipalArn': [applicationRole.roleArn, batchDeleteRole.roleArn, batchDeleteLambdaRole.roleArn],
+        'aws:PrincipalArn': [
+          applicationRole.roleArn,
+          batchDeleteRole.roleArn,
+          batchDeleteLambdaRole.roleArn,
+          datasetsRole.roleArn,
+        ],
       },
     };
 
     const notApplicationCondition = {
       StringNotEquals: {
-        'aws:PrincipalArn': [applicationRole.roleArn, batchDeleteRole.roleArn, batchDeleteLambdaRole.roleArn],
+        'aws:PrincipalArn': [
+          applicationRole.roleArn,
+          batchDeleteRole.roleArn,
+          batchDeleteLambdaRole.roleArn,
+          datasetsRole.roleArn,
+        ],
       },
     };
 

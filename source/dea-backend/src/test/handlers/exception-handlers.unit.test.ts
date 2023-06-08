@@ -186,7 +186,7 @@ describe('exception handlers', () => {
     });
   });
 
-  it('should handle Throttling errors', async () => {
+  it('should handle Throttling errors from the Parameter Store', async () => {
     const sut = createDeaHandler(
       async () => {
         const throttlingException = new Error('Rate exceeded');
@@ -201,7 +201,46 @@ describe('exception handlers', () => {
     const actual = await sut(dummyEvent, dummyContext);
     expect(actual).toEqual({
       statusCode: 429,
-      body: 'Rate exceeded',
+      body: 'Too Many Requests',
+    });
+  });
+
+  it('should handle Throttling errors from CloudWatch', async () => {
+    const sut = createDeaHandler(
+      async () => {
+        const throttlingException = new Error('Limit exceeded');
+        throttlingException.name = 'LimitExceededException';
+        throw throttlingException;
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    const actual = await sut(dummyEvent, dummyContext);
+    expect(actual).toEqual({
+      statusCode: 429,
+      body: 'Too Many Requests',
+    });
+  });
+
+  it('should handle Throttling errors from DynamoDB', async () => {
+    const sut = createDeaHandler(
+      async () => {
+        const transactionCanceledException = new Error('Transaction cancelled');
+        transactionCanceledException.name = 'TransactionCanceledException';
+        throw transactionCanceledException;
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    const actual = await sut(dummyEvent, dummyContext);
+
+    expect(actual).toEqual({
+      statusCode: 429,
+      body: 'Too Many Requests',
     });
   });
 });

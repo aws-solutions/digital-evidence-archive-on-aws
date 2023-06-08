@@ -70,9 +70,13 @@ export const contentType = Joi.string().pattern(htmlSafeCharsRegex).max(200).mes
 
 export const caseStatus = Joi.string().valid(...Object.keys(CaseStatus));
 
-export const idToken = Joi.string().regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/);
+export const idToken = Joi.string()
+  .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/)
+  .messages(customMessages);
 
-export const refreshToken = Joi.string().regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/);
+export const refreshToken = Joi.string()
+  .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/)
+  .messages(customMessages);
 
 export const loginUrlRegex = Joi.string().uri();
 
@@ -94,7 +98,9 @@ export const ttlJoi = Joi.number().min(1500000000).max(5000000000).required();
 export const jti = Joi.string().pattern(jtiRegex).required().messages(customMessages);
 
 // https://github.com/odomojuli/RegExAPI
-export const authCode = Joi.string().regex(/^[A-Za-z0-9-_]+$/);
+export const authCode = Joi.string()
+  .regex(/^[A-Za-z0-9-_]+$/)
+  .messages(customMessages);
 
 // FileSize should be a positive integer less than 5 TB
 export const safeFileSize = Joi.number()

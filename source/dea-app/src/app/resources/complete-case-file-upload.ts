@@ -25,6 +25,7 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
+  const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
   const requestCaseFile: CompleteCaseFileUploadDTO = getRequiredPayload(
     event,
     'Complete case file upload',
@@ -32,6 +33,9 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   );
   if (caseId !== requestCaseFile.caseUlid) {
     throw new ValidationError('Requested Case Ulid does not match resource');
+  }
+  if (fileId !== requestCaseFile.ulid) {
+    throw new ValidationError('Requested File Ulid does not match resource');
   }
 
   const userUlid = getUserUlid(event);
