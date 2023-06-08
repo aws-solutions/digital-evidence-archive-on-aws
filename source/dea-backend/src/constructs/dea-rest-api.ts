@@ -9,11 +9,14 @@ import { Aws, Duration, Fn } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   AuthorizationType,
+  DomainNameOptions,
   EndpointType,
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
+  SecurityPolicy,
 } from 'aws-cdk-lib/aws-apigateway';
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import {
   ArnPrincipal,
   Effect,
@@ -26,6 +29,8 @@ import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
+import { ApiGateway } from 'aws-cdk-lib/aws-route53-targets';
 import { Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3';
 import {
   AwsCustomResource,
@@ -117,6 +122,28 @@ export class DeaRestApiConstruct extends Construct {
 
     this.opsDashboard = props.opsDashboard;
 
+    // Define your custom domain for use with the API if provided
+    let domainNameOptions: DomainNameOptions | undefined;
+    const customDomainNameInfo = deaConfig.customDomainInfo();
+    const useCustomDomain: boolean =
+      customDomainNameInfo.domainName &&
+      customDomainNameInfo.certificateArn &&
+      customDomainNameInfo.hostedZoneId &&
+      customDomainNameInfo.hostedZoneName
+        ? true
+        : false;
+    if (useCustomDomain) {
+      domainNameOptions = {
+        certificate: Certificate.fromCertificateArn(
+          this,
+          'CustomDomainCert',
+          customDomainNameInfo.certificateArn ?? fail()
+        ),
+        domainName: customDomainNameInfo.domainName ?? fail(),
+        securityPolicy: SecurityPolicy.TLS_1_2,
+      };
+    }
+
     this.deaRestApi = new RestApi(this, `dea-api`, {
       description: 'Backend API',
       endpointConfiguration: {
@@ -166,7 +193,19 @@ export class DeaRestApiConstruct extends Construct {
       defaultMethodOptions: {
         authorizationType: AuthorizationType.IAM,
       },
+      domainName: domainNameOptions,
+      disableExecuteApiEndpoint: false,
     });
+
+    if (useCustomDomain) {
+      new ARecord(this, 'AliasRecord', {
+        zone: HostedZone.fromHostedZoneAttributes(this, 'HostedZoneId', {
+          hostedZoneId: customDomainNameInfo.hostedZoneId ?? fail(),
+          zoneName: customDomainNameInfo.hostedZoneName ?? fail(),
+        }),
+        target: RecordTarget.fromAlias(new ApiGateway(this.deaRestApi)),
+      });
+    }
 
     this.configureApiGateway(deaApiRouteConfig, props.lambdaEnv, props.accountId);
 
@@ -176,6 +215,11 @@ export class DeaRestApiConstruct extends Construct {
   private updateBucketCors(restApi: RestApi, bucketName: Readonly<string>) {
     const allowedOrigins = deaConfig.deaAllowedOriginsList();
     allowedOrigins.push(`https://${Fn.parseDomainName(restApi.url)}`);
+
+    const customDomainName = deaConfig.customDomainInfo().domainName;
+    if (customDomainName) {
+      allowedOrigins.push(`https://${customDomainName}`);
+    }
 
     const updateCorsCall: AwsSdkCall = {
       service: 'S3',

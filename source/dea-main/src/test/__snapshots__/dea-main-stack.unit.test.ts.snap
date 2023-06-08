@@ -4164,7 +4164,7 @@ Object {
         "DeaApiGatewaydeaapiusersGETDBF3AD6C",
         "DeaApiGatewaydeaapiusersOPTIONS330C13A7",
         "DeaApiGatewaydeaapiusersCC765E55",
-        "DeaApiGatewaydeaapiDeployment99E776297bc38804297cedd8c29c7a5224c57072",
+        "DeaApiGatewaydeaapiDeployment99E776296a92820912c6a06b29d49c9f256cbe2a",
         "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaApiGatewaydeaapi822A9228",
         "DeaApiGatewayUpdateBucketCORSCustomResourcePolicy9EC0AABC",
@@ -4509,7 +4509,7 @@ Object {
         "DeaApiGatewaydeaapiusersGETDBF3AD6C",
         "DeaApiGatewaydeaapiusersOPTIONS330C13A7",
         "DeaApiGatewaydeaapiusersCC765E55",
-        "DeaApiGatewaydeaapiDeployment99E776297bc38804297cedd8c29c7a5224c57072",
+        "DeaApiGatewaydeaapiDeployment99E776296a92820912c6a06b29d49c9f256cbe2a",
         "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaApiGatewaydeaapi822A9228",
       ],
@@ -4567,6 +4567,7 @@ Object {
     "DeaApiGatewaydeaapi822A9228": Object {
       "Properties": Object {
         "Description": "Backend API",
+        "DisableExecuteApiEndpoint": false,
         "EndpointConfiguration": Object {
           "Types": Array [
             "REGIONAL",
@@ -4646,7 +4647,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E776297bc38804297cedd8c29c7a5224c57072": Object {
+    "DeaApiGatewaydeaapiDeployment99E776296a92820912c6a06b29d49c9f256cbe2a": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiauthauthCodeOPTIONS8EA9BA0F",
         "DeaApiGatewaydeaapiauthauthCodeFC92ADBD",
@@ -4811,7 +4812,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\",\\"integrationLatency\\":\\"$context.integrationLatency\\",\\"responseLatency\\":\\"$context.responseLatency\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E776297bc38804297cedd8c29c7a5224c57072",
+          "Ref": "DeaApiGatewaydeaapiDeployment99E776296a92820912c6a06b29d49c9f256cbe2a",
         },
         "MethodSettings": Array [
           Object {

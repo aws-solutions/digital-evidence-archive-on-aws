@@ -40,10 +40,12 @@ export default function ManageCasePage() {
     }
   }
 
+  const href = process.env.NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN ? `/ui` : `/${settings.stage}/ui`;
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: breadcrumbLabels.homePageLabel,
-      href: `/${settings.stage}/ui`,
+      href,
     },
     {
       text: `${breadcrumbLabels.manageCaseLabel} ${caseId}`,
