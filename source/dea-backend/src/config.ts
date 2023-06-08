@@ -315,8 +315,13 @@ export const deaConfig: DEAConfig = {
         ],
   deletionAllowed: () => convictConfig.get('deletionAllowed'),
   sameSiteValue: () => (convictConfig.get('testStack') ? 'None' : 'Strict'),
-  preflightOptions: () =>
-    convictConfig.get('testStack')
+  preflightOptions: () => {
+    const allowOrigins = deaConfig.deaAllowedOriginsList();
+    if (deaConfig.customDomainInfo().domainName) {
+      allowOrigins.push(`https://${deaConfig.customDomainInfo().domainName}`);
+    }
+
+    return convictConfig.get('testStack')
       ? {
           allowHeaders: [
             'Content-Type',
@@ -331,9 +336,10 @@ export const deaConfig: DEAConfig = {
           ],
           allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
           allowCredentials: true,
-          allowOrigins: deaConfig.deaAllowedOriginsList(),
+          allowOrigins,
         }
-      : undefined,
+      : undefined;
+  },
 };
 
 export const loadConfig = (stage: string): void => {

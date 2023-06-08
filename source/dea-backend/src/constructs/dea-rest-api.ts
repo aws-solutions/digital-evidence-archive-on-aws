@@ -216,6 +216,13 @@ export class DeaRestApiConstruct extends Construct {
     const allowedOrigins = deaConfig.deaAllowedOriginsList();
     allowedOrigins.push(`https://${Fn.parseDomainName(restApi.url)}`);
 
+    const customDomainName = deaConfig.customDomainInfo().domainName;
+    if (customDomainName) {
+      allowedOrigins.push(`https://${customDomainName}`);
+    }
+
+    allowedOrigins.forEach((origin) => console.log(origin));
+
     const updateCorsCall: AwsSdkCall = {
       service: 'S3',
       action: 'putBucketCors',

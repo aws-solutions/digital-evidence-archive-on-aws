@@ -108,6 +108,11 @@ export class DeaUiConstruct extends Construct {
   }
 
   private getS3Integration(path: string, bucket: Bucket, executeRole: Role): AwsIntegration {
+    const deaCustomDomainInfo = deaConfig.customDomainInfo();
+    const deaDomain = deaCustomDomainInfo.domainName
+      ? `https://${deaCustomDomainInfo.domainName} https://*.amazonaws.com`
+      : 'https://*.amazonaws.com';
+
     return new AwsIntegration({
       service: 's3',
       integrationHttpMethod: 'GET',
@@ -124,8 +129,7 @@ export class DeaUiConstruct extends Construct {
             statusCode: '200',
             responseParameters: {
               'method.response.header.Content-Type': 'integration.response.header.Content-Type',
-              'method.response.header.Content-Security-Policy':
-                "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+              'method.response.header.Content-Security-Policy': `'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com ${deaDomain}; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'`,
               'method.response.header.Strict-Transport-Security': "'max-age=31540000; includeSubdomains'",
               'method.response.header.X-Content-Type-Options': "'nosniff'",
               'method.response.header.X-Frame-Options': "'DENY'",

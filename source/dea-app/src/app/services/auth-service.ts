@@ -195,7 +195,9 @@ export const exchangeAuthorizationCode = async (
 
   let callbackUrl = cognitoParams.callbackUrl;
   if (origin) {
-    callbackUrl = `${origin}/${stage}/ui/login`;
+    // If using default API Gateway domain, include stage in path
+    // Otherwise its a custom domain, DO NOT include stage.
+    callbackUrl = origin.includes('amazonaws.com') ? `${origin}/${stage}/ui/login` : `${origin}/ui/login`;
   }
   if (callbackOverride) {
     callbackUrl = callbackOverride;
