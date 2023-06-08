@@ -235,7 +235,7 @@ mockedAxios.request.mockImplementation((eventObj) => {
       headers: {},
       config: {},
     });
-  } else if (eventObj.url?.endsWith('files?filePath=/food/')) {
+  } else if (eventObj.url?.includes('files?filePath=/food/')) {
     return Promise.resolve({
       data: mockFilesFood,
       status: 200,
@@ -243,7 +243,7 @@ mockedAxios.request.mockImplementation((eventObj) => {
       headers: {},
       config: {},
     });
-  } else if (eventObj.url?.endsWith('files?filePath=/')) {
+  } else if (eventObj.url?.includes('files?filePath=/')) {
     return Promise.resolve({
       data: mockFilesRoot,
       status: 200,

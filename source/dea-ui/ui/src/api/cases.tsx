@@ -54,13 +54,13 @@ interface CaseListReponse {
 }
 
 export const useListAllCases = (): DeaListResult<DeaCaseDTO> => {
-  const { data, error } = useSWR(() => `cases/all-cases`, httpApiGet<CaseListReponse> );
+  const { data, error } = useSWR(() => `cases/all-cases?limit=10000`, httpApiGet<CaseListReponse> );
   const cases: DeaCaseDTO[] = data?.cases ?? [];
   return { data: cases, isLoading: !data && !error };
 };
 
 export const useListMyCases = (): DeaListResult<DeaCaseDTO> => {
-  const { data, error, mutate } = useSWR(() => `cases/my-cases`, (httpApiGet<CaseListReponse>) );
+  const { data, error, mutate } = useSWR(() => `cases/my-cases?limit=10000`, (httpApiGet<CaseListReponse>) );
   const cases: DeaCaseDTO[] = data?.cases ?? [];
   return { data: cases, isLoading: !data && !error, mutate };
 };
@@ -89,7 +89,7 @@ export const updateCase = async (editCaseForm: EditCaseForm): Promise<void> => {
 };
 
 export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DeaCaseFile> => {
-  const { data, error } = useSWR(() => `cases/${id}/files?filePath=${filePath}`, httpApiGet<{files: DeaCaseFile[]}>);
+  const { data, error } = useSWR(() => `cases/${id}/files?filePath=${filePath}&limit=10000`, httpApiGet<{files: DeaCaseFile[]}>);
   const caseFiles: DeaCaseFile[] = data?.files ?? [];
   return { data: caseFiles, isLoading: !error && !data };
 };
@@ -111,7 +111,7 @@ export const restoreFile = async (apiInput: RestoreFileForm): Promise<void> => {
 };
 
 export const useGetUsers = (nameBeginsWith: string): DeaListResult<DeaUser> => {
-  const { data, error } = useSWR(() => `users?nameBeginsWith=${nameBeginsWith}`, httpApiGet<{users: DeaUser[]}>);
+  const { data, error } = useSWR(() => `users?nameBeginsWith=${nameBeginsWith}&limit=10000`, httpApiGet<{users: DeaUser[]}>);
   const users: DeaUser[] = data?.users ?? [];
   return { data: users, isLoading: !data && !error };
 };

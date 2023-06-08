@@ -34,6 +34,7 @@ import {
   commonTableLabels,
   fileOperationsLabels,
   filesListLabels,
+  paginationLabels,
 } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDate } from '../../helpers/dateHelper';
@@ -73,7 +74,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     },
   ];
 
-  const { items, filterProps, collectionProps } = useCollection(data, {
+  const { items, filterProps, collectionProps, paginationProps } = useCollection(data, {
     filtering: {
       empty: TableEmptyDisplay(filesListLabels.noFilesLabel, filesListLabels.noDisplayLabel),
       noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
@@ -88,6 +89,10 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       filteringProperties: filteringProperties,
       empty: TableEmptyDisplay(filesListLabels.noFilesLabel, filesListLabels.noDisplayLabel),
       noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
+    },
+    pagination: {
+      defaultPage: 0,
+      pageSize: 50,
     },
     sorting: {},
     selection: {},
@@ -253,17 +258,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     );
 
   // pagination element
-  const tablePagination = (
-    <Pagination
-      currentPageIndex={1}
-      pagesCount={1}
-      ariaLabels={{
-        nextPageLabel: 'Next page',
-        previousPageLabel: 'Previous page',
-        pageLabel: (pageNumber) => `Page ${pageNumber} of all pages`,
-      }}
-    />
-  );
+  const tablePagination = <Pagination {...paginationProps} ariaLabels={paginationLabels} />;
 
   async function downloadCaseFileAuditHandler() {
     const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));

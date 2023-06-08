@@ -65,7 +65,7 @@ describe('Manage Case Page', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url?.endsWith('users?nameBeginsWith=')) {
+      } else if (eventObj.url?.includes('users?nameBeginsWith=')) {
         // get users
         return Promise.resolve({
           data: mockedUsers,
@@ -147,7 +147,7 @@ describe('Manage Case Page', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url?.endsWith('users?nameBeginsWith=')) {
+      } else if (eventObj.url?.includes('users?nameBeginsWith=')) {
         // get users
         return Promise.resolve({
           data: mockedUsers,

@@ -85,7 +85,7 @@ export const safeDescription = Joi.string()
   .optional()
   .messages(customMessages);
 
-export const paginationLimit = Joi.number().min(1).max(100).optional();
+export const paginationLimit = Joi.number().min(1).max(10000).optional();
 
 export const base64String = Joi.string().base64().required();
 
