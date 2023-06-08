@@ -127,7 +127,7 @@ export const fileOperationsLabels = {
     'Enter a brief description of the evidence being uploaded. Max character limit 250.',
   uploadReasonLabel: 'Reason for uploading evidence',
   uploadReasonDescription: "Explain why you're accessing the case files.",
-  selectFileSubtext: 'All file types accepted. 5TB max file size.',
+  selectFileSubtext: 'All file types accepted. 5TB maximum file size.',
   auditLogLabel: 'Case File Audit Log',
   restoreSuccessful: 'Successfully initiated restore for selected files',
   restoreFail: 'Failed to restore selected files',
@@ -159,6 +159,12 @@ export const auditLogLabels = {
   loadingLabel: 'loading audit log',
   errorLabel: 'Error downloading audit logs. Audit query is empty or encountered an error or cancellation.',
   downloadCaseAuditFail: (fileName: string) => `Failed to download case file audit for ${fileName}`,
+};
+
+export const paginationLabels = {
+  nextPageLabel: 'Next page',
+  pageLabel: (pageNumber: number) => `Go to page ${pageNumber}`,
+  previousPageLabel: 'Previous page',
 };
 
 export const manageCaseAccessLabels = {
@@ -195,6 +201,11 @@ export const manageCaseAccessLabels = {
     'There access will be instantly removed and they will be notified by email.',
   saveSuccessMessage: 'Changes have been saved successfully.',
   saveFailMessage: 'Changes have not been saved.',
+};
+
+export const caseStatusLabels = {
+  active: 'Active',
+  inactive: 'Inactive',
 };
 
 export const createCaseLabels = {
