@@ -10,8 +10,6 @@ import {
 } from '@aws-sdk/client-cognito-identity';
 import { getLogoutUrl, refreshToken, revokeToken } from '../api/auth';
 
-const region = process.env.NEXT_PUBLIC_REGION ?? 'us-east-1';
-
 export interface Credentials {
   AccessKeyId: string;
   SecretKey: string;
@@ -61,6 +59,7 @@ export const refreshCredentials = async () => {
 };
 
 export const getCredentialsByToken = async (idToken: string, identityPoolId: string, userPoolId: string) => {
+  const region = identityPoolId.substring(0, identityPoolId.indexOf(':'));
   const cognitoRegion = region.includes('gov') ? 'us-gov-west-1' : region;
   // Set up the Cognito Identity client
   const cognitoIdentityClient = new CognitoIdentityClient({
