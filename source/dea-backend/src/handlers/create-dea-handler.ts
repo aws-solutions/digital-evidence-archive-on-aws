@@ -43,9 +43,9 @@ export const createDeaHandler = (
     try {
       const debugHeaders = removeSensitiveHeaders(event.headers);
       const { headers: _, multiValueHeaders: _1, ...debugEvent } = event;
-      logger.debug(`Headers`, { Data: JSON.stringify(debugHeaders, null, 2) });
-      logger.debug(`Event`, { Data: JSON.stringify(debugEvent, null, 2) });
-      logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
+      logger.debug(`Headers`, debugHeaders);
+      logger.debug(`Event`, debugEvent);
+      logger.debug(`Context`, context);
 
       if (auditEvent.eventType === AuditEventType.UNKNOWN) {
         logger.error('An Audit Event was not found for the requested method', {
@@ -79,7 +79,7 @@ export const createDeaHandler = (
       }
       return result;
     } catch (error) {
-      logger.error('Error', { Body: JSON.stringify(error) });
+      logger.error('Error', error);
       if (typeof error === 'object') {
         const errorHandler = exceptionHandlers.get(getErrorName(error));
         if (errorHandler) {
