@@ -97,6 +97,7 @@ export const createDeaHandler = (
       await deaAuditService.writeCJISCompliantEntry(auditEvent);
     }
   };
+
   return wrappedHandler;
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -276,7 +277,6 @@ const parseEventForExtendedAuditFields = (
   // Use : instead of , to list actions, since audit is sent
   // in a csv format
   if (isCaseInviteAPI) {
-    console.log(body);
     auditEvent.caseActions = body.actions.join(':');
   }
 };

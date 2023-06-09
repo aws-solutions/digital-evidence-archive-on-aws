@@ -206,16 +206,6 @@ describe('case audit e2e', () => {
         }
       }
       --queryRetries;
-
-      if (queryRetries == 0) {
-        const lines: string[] = (getQueryReponse.data as string)
-          .split('\n')
-          .filter((line) => !line.includes('GetCaseAudit'))
-          .filter((line) => !line.includes('RequestCaseAudit'))
-          .filter((line) => !line.includes('AwsApiCall'));
-
-        lines.forEach((line) => console.log(line));
-      }
     }
 
     expect(csvData).toBeDefined();
@@ -254,10 +244,6 @@ describe('case audit e2e', () => {
       expect(entry.username).toStrictEqual(expectedUsername);
       expect(entry.caseId).toStrictEqual(caseUlid);
     }
-
-    // TODO: remove
-    console.log(csvData);
-    entries.forEach((entry) => console.log(entry));
 
     const createCaseEntry = entries.find((entry) => entry.eventType === AuditEventType.CREATE_CASE);
     verifyCaseAuditEntry(createCaseEntry, AuditEventType.CREATE_CASE, testUser);

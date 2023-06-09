@@ -53,6 +53,7 @@ export default class DeaAuditWriter implements Writer {
     auditEntry.caseId = entry.caseId;
     auditEntry.fileId = entry.fileId;
     auditEntry.targetUserId = entry.targetUserId;
+    auditEntry.caseActions = entry.caseActions;
   }
 
   public async write(metadata: Metadata, auditEntry: AuditEntry): Promise<void> {
