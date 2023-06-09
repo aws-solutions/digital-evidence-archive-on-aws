@@ -50,6 +50,7 @@
     "@aws-sdk/client-s3": "3.299.0",
     "@aws-sdk/client-s3-control": "3.299.0",
     "@aws-sdk/client-ssm": "3.299.0",
+    "@aws-sdk/client-sts": "3.299.0",
     "@aws-sdk/s3-request-presigner": "3.299.0",
     "@types/aws-lambda": "^8.10.114",
     "@types/crypto-js": "^4.1.1",

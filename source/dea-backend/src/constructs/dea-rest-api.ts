@@ -64,6 +64,8 @@ interface DeaRestApiProps {
 export class DeaRestApiConstruct extends Construct {
   public authLambdaRole: Role;
   public lambdaBaseRole: Role;
+  // this role is needed to create session credentials to restrict pre-signed URL access parameters such as ip-address
+  public datasetsRole: Role;
   public customResourceRole: Role;
   public deaRestApi: RestApi;
   public apiEndpointArns: Map<string, string>;
@@ -95,6 +97,10 @@ export class DeaRestApiConstruct extends Construct {
 
     this.authLambdaRole = this.createAuthLambdaRole(props.accountId, partition);
 
+    this.datasetsRole = this.createDatasetsRole(props.kmsKey.keyArn, props.deaDatasetsBucket.bucketArn);
+
+    props.lambdaEnv['DATASETS_ROLE'] = this.datasetsRole.roleArn;
+
     this.customResourceRole = new Role(this, 'custom-resource-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
     });
@@ -106,6 +112,7 @@ export class DeaRestApiConstruct extends Construct {
         principals: [
           new ArnPrincipal(this.lambdaBaseRole.roleArn),
           new ArnPrincipal(this.authLambdaRole.roleArn),
+          new ArnPrincipal(this.datasetsRole.roleArn),
         ],
         resources: ['*'],
         sid: 'lambda-roles-key-share-statement',
@@ -155,6 +162,8 @@ export class DeaRestApiConstruct extends Construct {
         // Per method throttling limit. Conservative setting based on fact that we have 35 APIs and Lambda concurrency is 1000
         // Worst case this setting could potentially initiate up to 1750 API calls running at any moment (which is over lambda limit),
         // but it is unlikely that all the APIs are going to be used at the 50TPS limit.
+        // Throttle value set to 30 to match CloudWatch Logs Insights queries maximun concurrency and mitigate lambda function timeouts.
+        // For instance: // CloudWatch Logs Insights queries have a maximum of 30 concurrent queries, including queries that have been added to dashboards. This quota can't be changed.
         methodOptions: {
           '/*/*': {
             throttlingBurstLimit: 40,
@@ -372,7 +381,9 @@ export class DeaRestApiConstruct extends Construct {
     accountId: string
   ): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
-      memorySize: 512,
+      // Set to 1024MB to mitigate memory allocation issues. Some executions were using more than 512MB.
+      // E.g: Error: Runtime exited with error: signal: killed Runtime.ExitError.
+      memorySize: 1024,
       role: role,
       timeout: Duration.seconds(10),
       runtime: Runtime.NODEJS_18_X,
@@ -517,6 +528,28 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
         resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${STAGE}*`],
+      })
+    );
+
+    return role;
+  }
+
+  private createDatasetsRole(kmsKeyArn: string, datasetsBucketArn: string): Role {
+    const role = new Role(this, 'dea-datasets-role', {
+      assumedBy: this.lambdaBaseRole,
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject', 's3:GetObject', 's3:GetObjectVersion'],
+        resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [kmsKeyArn],
       })
     );
 

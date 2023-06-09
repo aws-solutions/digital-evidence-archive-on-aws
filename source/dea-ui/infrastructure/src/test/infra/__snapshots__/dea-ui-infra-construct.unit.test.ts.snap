@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DeaMainStack synthesizes the way we expect 1`] = `
+exports[`DEA UI Infrastructure stack synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
     "testApiEndpointC9D07ADA": Object {
@@ -22,7 +22,7 @@ Object {
             },
             "/",
             Object {
-              "Ref": "testApiDeploymentStageprodCE051BE8",
+              "Ref": "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
             },
             "/",
           ],
@@ -593,7 +593,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::RestApi",
     },
-    "testApiDeployment3727A0B9dfa38d21c52796305c593d40fc1f6117": Object {
+    "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]": Object {
       "DependsOn": Array [
         "testApiuiproxyGET92230E90",
         "testApiuiproxyDDF9EC1E",
@@ -618,13 +618,13 @@ Object {
       },
       "Type": "AWS::ApiGateway::Deployment",
     },
-    "testApiDeploymentStageprodCE051BE8": Object {
+    "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]": Object {
       "DependsOn": Array [
         "testApiAccountA6723CBB",
       ],
       "Properties": Object {
         "DeploymentId": Object {
-          "Ref": "testApiDeployment3727A0B9dfa38d21c52796305c593d40fc1f6117",
+          "Ref": "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",
@@ -664,7 +664,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -761,7 +761,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -858,7 +858,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -955,7 +955,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -1052,7 +1052,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -1149,7 +1149,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -1246,7 +1246,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",

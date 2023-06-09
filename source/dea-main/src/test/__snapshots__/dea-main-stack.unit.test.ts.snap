@@ -735,6 +735,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -749,6 +755,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -759,7 +766,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -828,6 +835,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -842,6 +855,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -852,7 +866,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -921,6 +935,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -935,6 +955,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -945,7 +966,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1014,6 +1035,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -1028,6 +1055,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1038,7 +1066,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1107,6 +1135,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -1121,6 +1155,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1131,7 +1166,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1200,6 +1235,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -1214,6 +1255,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1224,7 +1266,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1293,6 +1335,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -1307,6 +1355,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1317,7 +1366,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1386,6 +1435,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -1400,6 +1455,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1410,7 +1466,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1479,6 +1535,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -1493,6 +1555,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1503,7 +1566,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1572,6 +1635,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -1586,6 +1655,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1596,7 +1666,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1665,6 +1735,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -1679,6 +1755,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1689,7 +1766,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1758,6 +1835,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -1772,6 +1855,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1782,7 +1866,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1851,6 +1935,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -1865,6 +1955,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1875,7 +1966,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeaauthlambdarole4F5CC393",
@@ -1944,6 +2035,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -1958,6 +2055,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -1968,7 +2066,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeaauthlambdarole4F5CC393",
@@ -2037,6 +2135,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -2051,6 +2155,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2061,7 +2166,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2130,6 +2235,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -2144,6 +2255,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2154,7 +2266,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2223,6 +2335,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -2237,6 +2355,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2247,7 +2366,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2316,6 +2435,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -2330,6 +2455,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2340,7 +2466,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2409,6 +2535,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -2423,6 +2555,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2433,7 +2566,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2502,6 +2635,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -2516,6 +2655,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2526,7 +2666,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2595,6 +2735,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -2609,6 +2755,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2619,7 +2766,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2688,6 +2835,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -2702,6 +2855,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2712,7 +2866,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeaauthlambdarole4F5CC393",
@@ -2781,6 +2935,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -2795,6 +2955,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2805,7 +2966,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2874,6 +3035,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -2888,6 +3055,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2898,7 +3066,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2967,6 +3135,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -2981,6 +3155,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -2991,7 +3166,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeaauthlambdarole4F5CC393",
@@ -3060,6 +3235,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -3074,6 +3255,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -3084,7 +3266,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3153,6 +3335,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -3167,6 +3355,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -3177,7 +3366,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3246,6 +3435,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -3260,6 +3455,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -3270,7 +3466,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3339,6 +3535,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -3353,6 +3555,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -3363,7 +3566,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3432,6 +3635,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -3446,6 +3655,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -3456,7 +3666,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeaauthlambdarole4F5CC393",
@@ -3525,6 +3735,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -3539,6 +3755,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -3549,7 +3766,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3618,6 +3835,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -3632,6 +3855,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -3642,7 +3866,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3711,6 +3935,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -3725,6 +3955,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -3735,7 +3966,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3804,6 +4035,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -3818,6 +4055,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -3828,7 +4066,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3897,6 +4135,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
             "DELETE_CASE_FILE_LAMBDA_ARN": Object {
               "Fn::GetAtt": Array [
                 "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
@@ -3911,6 +4155,7 @@ Object {
             },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -3921,7 +4166,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -4164,7 +4409,7 @@ Object {
         "DeaApiGatewaydeaapiusersGETDBF3AD6C",
         "DeaApiGatewaydeaapiusersOPTIONS330C13A7",
         "DeaApiGatewaydeaapiusersCC765E55",
-        "DeaApiGatewaydeaapiDeployment99E776296a92820912c6a06b29d49c9f256cbe2a",
+        "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
         "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaApiGatewaydeaapi822A9228",
         "DeaApiGatewayUpdateBucketCORSCustomResourcePolicy9EC0AABC",
@@ -4509,7 +4754,7 @@ Object {
         "DeaApiGatewaydeaapiusersGETDBF3AD6C",
         "DeaApiGatewaydeaapiusersOPTIONS330C13A7",
         "DeaApiGatewaydeaapiusersCC765E55",
-        "DeaApiGatewaydeaapiDeployment99E776296a92820912c6a06b29d49c9f256cbe2a",
+        "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
         "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaApiGatewaydeaapi822A9228",
       ],
@@ -4647,7 +4892,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaApiGatewaydeaapiDeployment99E776296a92820912c6a06b29d49c9f256cbe2a": Object {
+    "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]": Object {
       "DependsOn": Array [
         "DeaApiGatewaydeaapiauthauthCodeOPTIONS8EA9BA0F",
         "DeaApiGatewaydeaapiauthauthCodeFC92ADBD",
@@ -4812,7 +5057,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\",\\"integrationLatency\\":\\"$context.integrationLatency\\",\\"responseLatency\\":\\"$context.responseLatency\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaApiGatewaydeaapiDeployment99E776296a92820912c6a06b29d49c9f256cbe2a",
+          "Ref": "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
         },
         "MethodSettings": Array [
           Object {
@@ -10382,7 +10627,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -10528,7 +10773,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -10674,7 +10919,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -10820,7 +11065,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -10966,7 +11211,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11112,7 +11357,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11258,7 +11503,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self'; img-src 'self' blob:; style-src 'unsafe-inline' 'self'; connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com; script-src 'self'; font-src 'self' data:; block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -12272,6 +12517,80 @@ Object {
         "Roles": Array [
           Object {
             "Ref": "DeaApiGatewaydeabaselambdarole91512884",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeaApiGatewaydeadatasetsrole96DE0218": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "DeaApiGatewaydeabaselambdarole91512884",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaApiGatewaydeadatasetsroleDefaultPolicyA7BF2A75": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaBackendStackS3DatasetsBucket408FF954",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:GenerateDataKey",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "primaryCustomerKey87EC2263",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaApiGatewaydeadatasetsroleDefaultPolicyA7BF2A75",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaApiGatewaydeadatasetsrole96DE0218",
           },
         ],
       },
@@ -25931,6 +26250,12 @@ Object {
                   Object {
                     "Fn::GetAtt": Array [
                       "DeaApiGatewaydeaauthlambdarole4F5CC393",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaApiGatewaydeadatasetsrole96DE0218",
                       "Arn",
                     ],
                   },

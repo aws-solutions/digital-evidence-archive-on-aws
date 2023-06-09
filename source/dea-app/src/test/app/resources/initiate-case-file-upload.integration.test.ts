@@ -10,6 +10,11 @@ import {
   ServiceInputTypes,
   ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
+import {
+  STSClient,
+  ServiceInputTypes as STSInputs,
+  ServiceOutputTypes as STSOutputs,
+} from '@aws-sdk/client-sts';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import Joi from 'joi';
@@ -35,6 +40,7 @@ import {
 
 let repositoryProvider: ModelRepositoryProvider;
 let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+let stsMock: AwsStub<STSInputs, STSOutputs>;
 let fileUploader: DeaUser;
 let caseToUploadTo = '';
 
@@ -54,6 +60,16 @@ describe('Test initiate case file upload', () => {
 
     fileUploader = await callCreateUser(repositoryProvider);
     caseToUploadTo = (await callCreateCase(fileUploader, repositoryProvider)).ulid ?? fail();
+
+    stsMock = mockClient(STSClient);
+    stsMock.resolves({
+      Credentials: {
+        AccessKeyId: 'hi',
+        SecretAccessKey: 'hello',
+        SessionToken: 'foo',
+        Expiration: new Date(),
+      },
+    });
   });
 
   afterAll(async () => {
@@ -280,7 +296,6 @@ describe('Test initiate case file upload', () => {
         filePath: '/',
         contentType: 'image/jpeg',
         fileSizeBytes: 1e-300,
-        tag: 'abc',
         reason: '123',
         details: 'u&me',
         chunkSizeBytes: 5242881,
@@ -305,7 +320,6 @@ describe('Test initiate case file upload', () => {
         filePath: '/',
         contentType: 'image/jpeg',
         fileSizeBytes: 5 * ONE_TB + 1,
-        tag: 'abc',
         reason: '123',
         details: 'u&me',
         chunkSizeBytes: 5242881,

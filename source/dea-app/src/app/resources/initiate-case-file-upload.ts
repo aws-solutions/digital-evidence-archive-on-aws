@@ -40,6 +40,7 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
   const initiateUploadResponse = await CaseFileService.initiateCaseFileUpload(
     requestCaseFile,
     userUlid,
+    `${event.requestContext.identity.sourceIp}/32`,
     repositoryProvider,
     datasetsProvider
   );

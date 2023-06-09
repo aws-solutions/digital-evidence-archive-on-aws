@@ -8831,6 +8831,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -8843,7 +8849,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -8911,6 +8917,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -8923,7 +8935,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -8991,6 +9003,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9003,7 +9021,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9071,6 +9089,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9083,7 +9107,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9151,6 +9175,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9163,7 +9193,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9231,6 +9261,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9243,7 +9279,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9311,6 +9347,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9323,7 +9365,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9391,6 +9433,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9403,7 +9451,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9471,6 +9519,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9483,7 +9537,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9551,6 +9605,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9563,7 +9623,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9631,6 +9691,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9643,7 +9709,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9711,6 +9777,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9723,7 +9795,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9791,6 +9863,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9803,7 +9881,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -9871,6 +9949,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9883,7 +9967,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -9951,6 +10035,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -9963,7 +10053,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10031,6 +10121,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -10043,7 +10139,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10111,6 +10207,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -10123,7 +10225,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10191,6 +10293,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -10203,7 +10311,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10271,6 +10379,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -10283,7 +10397,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10351,6 +10465,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -10363,7 +10483,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10431,6 +10551,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -10443,7 +10569,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10511,6 +10637,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -10523,7 +10655,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -10591,6 +10723,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -10603,7 +10741,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10671,6 +10809,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -10683,7 +10827,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10751,6 +10895,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -10763,7 +10913,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -10831,6 +10981,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -10843,7 +10999,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10911,6 +11067,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -10923,7 +11085,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10991,6 +11153,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -11003,7 +11171,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -11071,6 +11239,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -11083,7 +11257,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -11151,6 +11325,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -11163,7 +11343,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -11231,6 +11411,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -11243,7 +11429,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -11311,6 +11497,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -11323,7 +11515,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -11391,6 +11583,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -11403,7 +11601,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -11471,6 +11669,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -11483,7 +11687,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -11551,6 +11755,12 @@ Object {
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "STAGE": "[STAGE-REMOVED]",
@@ -11563,7 +11773,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -11785,7 +11995,7 @@ Object {
         "DeaRestApiConstructdeaapiusersGET45E97005",
         "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
         "DeaRestApiConstructdeaapiusers95152658",
-        "DeaRestApiConstructdeaapiDeploymentC27C6CB140c66667e515f0398b92e96712ecc8eb",
+        "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
         "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaRestApiConstructdeaapi6587DDA1",
         "DeaRestApiConstructUpdateBucketCORSCustomResourcePolicyAECBED94",
@@ -12117,7 +12327,7 @@ Object {
         "DeaRestApiConstructdeaapiusersGET45E97005",
         "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
         "DeaRestApiConstructdeaapiusers95152658",
-        "DeaRestApiConstructdeaapiDeploymentC27C6CB140c66667e515f0398b92e96712ecc8eb",
+        "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
         "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaRestApiConstructdeaapi6587DDA1",
       ],
@@ -12241,7 +12451,7 @@ Object {
       },
       "Type": "AWS::ApiGateway::UsagePlan",
     },
-    "DeaRestApiConstructdeaapiDeploymentC27C6CB140c66667e515f0398b92e96712ecc8eb": Object {
+    "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8",
         "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
@@ -12385,7 +12595,7 @@ Object {
           "Format": "{\\"stage\\":\\"$context.stage\\",\\"requestId\\":\\"$context.requestId\\",\\"integrationRequestId\\":\\"$context.integration.requestId\\",\\"status\\":\\"$context.status\\",\\"apiId\\":\\"$context.apiId\\",\\"resourcePath\\":\\"$context.resourcePath\\",\\"path\\":\\"$context.path\\",\\"resourceId\\":\\"$context.resourceId\\",\\"httpMethod\\":\\"$context.httpMethod\\",\\"sourceIp\\":\\"$context.identity.sourceIp\\",\\"userAgent\\":\\"$context.identity.userAgent\\",\\"integrationLatency\\":\\"$context.integrationLatency\\",\\"responseLatency\\":\\"$context.responseLatency\\"}",
         },
         "DeploymentId": Object {
-          "Ref": "DeaRestApiConstructdeaapiDeploymentC27C6CB140c66667e515f0398b92e96712ecc8eb",
+          "Ref": "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
         },
         "MethodSettings": Array [
           Object {
@@ -19181,6 +19391,80 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
+    "DeaRestApiConstructdeadatasetsrole293FB411": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaRestApiConstructdeadatasetsroleDefaultPolicyF065267B": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:GenerateDataKey",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "testKey1CDDDD5E",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaRestApiConstructdeadatasetsroleDefaultPolicyF065267B",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaRestApiConstructdeadatasetsrole293FB411",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "deaAuditLogs7B75D3F1": Object {
       "DeletionPolicy": "Delete",
       "Metadata": Object {
@@ -19457,6 +19741,12 @@ Object {
                   Object {
                     "Fn::GetAtt": Array [
                       "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaRestApiConstructdeadatasetsrole293FB411",
                       "Arn",
                     ],
                   },
