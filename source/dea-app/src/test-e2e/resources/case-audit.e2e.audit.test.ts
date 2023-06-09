@@ -114,17 +114,31 @@ describe('case audit e2e', () => {
 
     // Modify User Permissions
     const modifyInvitePermissions = [CaseAction.VIEW_CASE_DETAILS, CaseAction.CASE_AUDIT, CaseAction.UPLOAD];
-    await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/userMemberships`, 'PUT', idToken, creds, {
-      userUlid: inviteeUlid,
-      caseUlid: caseUlid,
-      actions: modifyInvitePermissions,
-    });
+    const modifyResponse = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${caseUlid}/users/${inviteeUlid}/memberships`,
+      'PUT',
+      idToken,
+      creds,
+      {
+        userUlid: inviteeUlid,
+        caseUlid: caseUlid,
+        actions: modifyInvitePermissions,
+      }
+    );
+    expect(modifyResponse.status).toEqual(200);
 
     // Remove User Permissions
-    await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/userMemberships`, 'DELETE', idToken, creds, {
-      userUlid: inviteeUlid,
-      caseUlid: caseUlid,
-    });
+    await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${caseUlid}/users/${inviteeUlid}/memberships`,
+      'DELETE',
+      idToken,
+      creds,
+      {
+        userUlid: inviteeUlid,
+        caseUlid: caseUlid,
+      }
+    );
+    // expect(removeUserPermissions.status).toEqual(200);
 
     // Try to call a case API see that it fails.
     // The three case-invite APIs should show up in the case Audit with the actions taken
@@ -182,6 +196,7 @@ describe('case audit e2e', () => {
           potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
           potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
           potentialCsvData.includes(AuditEventType.REMOVE_USER_FROM_CASE) &&
+          potentialCsvData.includes(AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE) &&
           dynamoMatch &&
           dynamoMatch.length >= 7
         ) {
@@ -191,7 +206,19 @@ describe('case audit e2e', () => {
         }
       }
       --queryRetries;
+
+      if (queryRetries == 0) {
+        const lines: string[] = (getQueryReponse.data as string)
+          .split('\n')
+          .filter((line) => !line.includes('GetCaseAudit'))
+          .filter((line) => !line.includes('RequestCaseAudit'))
+          .filter((line) => !line.includes('AwsApiCall'));
+
+        lines.forEach((line) => console.log(line));
+      }
     }
+
+    expect(csvData).toBeDefined();
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const entries = parseCaseAuditCsv(csvData!).filter(

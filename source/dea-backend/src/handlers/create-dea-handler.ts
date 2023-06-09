@@ -112,7 +112,7 @@ const getErrorName = (error: any): string => {
 };
 
 const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
-  const [targetUserId, caseActions] = getTargetUserId(event);
+  const targetUserId = getTargetUserId(event);
   return {
     dateTime: new Date().toISOString(),
     requestPath: event.resource,
@@ -123,7 +123,6 @@ const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
     caseId: event.pathParameters?.caseId,
     fileId: event.pathParameters?.fileId,
     targetUserId,
-    caseActions,
   };
 };
 
@@ -190,7 +189,7 @@ const getEventType = (event: APIGatewayProxyEvent): AuditEventType => {
   return route.eventName;
 };
 
-const getTargetUserId = (event: APIGatewayProxyEvent): [string | undefined, string | undefined] => {
+const getTargetUserId = (event: APIGatewayProxyEvent): string | undefined => {
   const eventType = getEventType(event);
   const isCaseInviteAPI =
     eventType === AuditEventType.INVITE_USER_TO_CASE ||
@@ -199,15 +198,15 @@ const getTargetUserId = (event: APIGatewayProxyEvent): [string | undefined, stri
   if (isCaseInviteAPI && event.body) {
     try {
       const caseUser: CaseUserDTO = JSON.parse(event.body);
-      return [caseUser?.userUlid, caseUser?.actions.join(':')]; // join with ":" instead of "," because audit returns a csv file
+      return caseUser?.userUlid;
     } catch {
       // It means `JSON.parse` has thrown a SyntaxError.
       // The target endpoint will handle appropriately the payload issues.
       // We do nothing at this point we are trying our best to retrieve the `targetUserId` value from the body.
-      return [undefined, undefined];
+      return undefined;
     }
   }
-  return [event.pathParameters?.userId, undefined];
+  return event.pathParameters?.userId;
 };
 
 const parseEventForExtendedAuditFields = (
@@ -217,10 +216,16 @@ const parseEventForExtendedAuditFields = (
 ) => {
   const eventType = getEventType(event);
 
+  const isCaseInviteAPI =
+    eventType === AuditEventType.INVITE_USER_TO_CASE ||
+    eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE ||
+    eventType === AuditEventType.REMOVE_USER_FROM_CASE;
+
   if (
     eventType !== AuditEventType.CREATE_CASE &&
     eventType !== AuditEventType.INITIATE_CASE_FILE_UPLOAD &&
-    eventType !== AuditEventType.COMPLETE_CASE_FILE_UPLOAD
+    eventType !== AuditEventType.COMPLETE_CASE_FILE_UPLOAD &&
+    !isCaseInviteAPI
   ) {
     return;
   }
@@ -265,5 +270,13 @@ const parseEventForExtendedAuditFields = (
     });
     auditEvent.fileHash = 'ERROR: hash is absent';
     auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
+  }
+
+  // Include case actions in the audit event
+  // Use : instead of , to list actions, since audit is sent
+  // in a csv format
+  if (isCaseInviteAPI) {
+    console.log(body);
+    auditEvent.caseActions = body.actions.join(':');
   }
 };
