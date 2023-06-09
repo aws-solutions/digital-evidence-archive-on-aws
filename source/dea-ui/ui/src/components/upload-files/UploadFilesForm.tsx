@@ -138,8 +138,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         if (index > 0 && index % MAX_PARALLEL_UPLOADS === 0) {
           // getting user actions from api to reset idle timer while upload is in progress
           userActions.mutate();
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const actions = userActions.data;
           await Promise.all(uploadPromises);
           uploadPromises = [];
         }
