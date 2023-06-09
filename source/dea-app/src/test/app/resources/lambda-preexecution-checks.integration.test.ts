@@ -54,7 +54,7 @@ describe('lambda pre-execution checks', () => {
     const oauthToken = await cognitoHelper.getIdTokenForUser(testUser);
 
     const event = getDummyEvent();
-    event.headers['cookie'] = `idToken=${JSON.stringify(oauthToken)}`;
+    event.headers['cookie'] = `extraCookie=someval; idToken=${JSON.stringify(oauthToken)}`;
     const tokenPayload = await getTokenPayload(oauthToken.id_token, region);
     const tokenId = tokenPayload.sub;
 
