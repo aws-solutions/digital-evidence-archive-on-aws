@@ -114,9 +114,20 @@ export const getRequiredHeader = (event: APIGatewayProxyEvent, headerName: strin
   throw new ValidationError(`Required header '${headerName}' is missing.`);
 };
 
+export const getCookieValue = (event: APIGatewayProxyEvent, cookieName: string): string | null => {
+  return (
+    event.headers['cookie']
+      ?.split(';')
+      .map((value) => value.trim())
+      .filter((cookie) => cookie.startsWith(`${cookieName}=`))
+      .map((cookie) => decodeURIComponent(cookie.substring(cookieName.length + 1)))[0] || null
+  );
+};
+
 export const getOauthToken = (event: APIGatewayProxyEvent): Oauth2Token => {
-  if (event.headers['cookie'] && event.headers['cookie'].includes('idToken=')) {
-    const token: Oauth2Token = JSON.parse(event.headers['cookie'].replace('idToken=', ''));
+  const tokenVal = getCookieValue(event, 'idToken');
+  if (tokenVal) {
+    const token: Oauth2Token = JSON.parse(tokenVal);
     Joi.assert(token, Oauth2TokenSchema);
     return token;
   }
