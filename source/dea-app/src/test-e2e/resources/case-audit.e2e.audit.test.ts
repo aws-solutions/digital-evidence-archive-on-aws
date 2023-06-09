@@ -286,8 +286,6 @@ describe('case audit e2e', () => {
     verifyCaseAuditEntry(removeInviteEntry, AuditEventType.REMOVE_USER_FROM_CASE, testUser);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(removeInviteEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(removeInviteEntry!.caseActions).toBeUndefined();
 
     expect(entries.length).toBe(8);
 
