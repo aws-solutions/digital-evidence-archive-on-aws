@@ -198,7 +198,10 @@ export const exchangeAuthorizationCode = async (
   if (origin) {
     // If using default API Gateway domain, include stage in path
     // Otherwise its a custom domain, DO NOT include stage.
-    callbackUrl = origin.includes('amazonaws.com') ? `${origin}/${stage}/ui/login` : `${origin}/ui/login`;
+    callbackUrl =
+      origin.includes('amazonaws.com') || origin.includes('localhost')
+        ? `${origin}/${stage}/ui/login`
+        : `${origin}/ui/login`;
   }
   if (callbackOverride) {
     callbackUrl = callbackOverride;
