@@ -277,6 +277,6 @@ const parseEventForExtendedAuditFields = (
   // Use : instead of , to list actions, since audit is sent
   // in a csv format
   if (isCaseInviteAPI) {
-    auditEvent.caseActions = body.actions.join(':');
+    auditEvent.caseActions = body.actions?.join(':');
   }
 };
