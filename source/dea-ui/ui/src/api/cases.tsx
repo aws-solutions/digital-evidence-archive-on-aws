@@ -28,6 +28,8 @@ export interface DeaListResult<T> {
 export interface DeaSingleResult<T> {
   data: T;
   isLoading: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  mutate?: any;
 }
 
 enum QueryStatus {
@@ -198,8 +200,8 @@ export function delay(ms: number) {
 }
 
 export const useGetCaseActions = (id: string): DeaSingleResult<CaseUser | undefined> => {
-  const { data, error } = useSWR(() => `cases/${id}/actions`, httpApiGet<CaseUser>);
-  return { data, isLoading: !data && !error };
+  const { data, error, mutate } = useSWR(() => `cases/${id}/actions`, httpApiGet<CaseUser>);
+  return { data, isLoading: !data && !error, mutate };
 };
 
 export const getSystemAuditCSV = async (): Promise<string> => {

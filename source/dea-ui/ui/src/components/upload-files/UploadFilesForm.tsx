@@ -23,7 +23,7 @@ import {
 import cryptoJS from 'crypto-js';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { completeUpload, initiateUpload } from '../../api/cases';
+import { completeUpload, initiateUpload, useGetCaseActions } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import FileUpload from '../common-components/FileUpload';
@@ -48,6 +48,7 @@ interface ActiveFileUpload {
 }
 
 export const ONE_MB = 1024 * 1024;
+const MAX_PARALLEL_UPLOADS = 10;
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
@@ -56,6 +57,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [reason, setReason] = useState('');
   const [uploadInProgress, setUploadInProgress] = useState(false);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
+  const userActions = useGetCaseActions(props.caseId);
   const router = useRouter();
 
   async function onSubmitHandler() {
@@ -112,7 +114,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
   async function finalizeFileUpload(activeFileUpload: ActiveFileUpload) {
     const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
-    const uploadPromises: Promise<Response>[] = [];
+    let uploadPromises: Promise<Response>[] = [];
     const hash = cryptoJS.algo.SHA256.create();
     if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
       const numberOfUrls = initiatedCaseFile.presignedUrls.length;
@@ -132,6 +134,13 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
         hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
         uploadPromises[index] = fetch(url, { method: 'PUT', body: loadedFilePart });
+
+        if (index > 0 && index % MAX_PARALLEL_UPLOADS === 0) {
+          // getting user actions from api to reset idle timer while upload is in progress
+          userActions.mutate();
+          await Promise.all(uploadPromises);
+          uploadPromises = [];
+        }
       }
       await Promise.all(uploadPromises);
 
