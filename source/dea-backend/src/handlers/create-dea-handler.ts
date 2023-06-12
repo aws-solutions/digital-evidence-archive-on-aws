@@ -19,7 +19,7 @@ import {
 } from '@aws/dea-app/lib/app/services/audit-service';
 import { removeSensitiveHeaders } from '@aws/dea-app/lib/lambda-http-helpers';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
-import { CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
+import { CaseOwnerDTO, CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { logger } from '../logger';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
@@ -113,7 +113,6 @@ const getErrorName = (error: any): string => {
 };
 
 const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
-  const targetUserId = getTargetUserId(event);
   return {
     dateTime: new Date().toISOString(),
     requestPath: event.resource,
@@ -123,7 +122,7 @@ const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
     result: AuditEventResult.FAILURE,
     caseId: event.pathParameters?.caseId,
     fileId: event.pathParameters?.fileId,
-    targetUserId,
+    targetUserId: getTargetUserId(event),
   };
 };
 
@@ -200,6 +199,18 @@ const getTargetUserId = (event: APIGatewayProxyEvent): string | undefined => {
     try {
       const caseUser: CaseUserDTO = JSON.parse(event.body);
       return caseUser?.userUlid;
+    } catch {
+      // It means `JSON.parse` has thrown a SyntaxError.
+      // The target endpoint will handle appropriately the payload issues.
+      // We do nothing at this point we are trying our best to retrieve the `targetUserId` value from the body.
+      return undefined;
+    }
+  }
+
+  if (eventType === AuditEventType.CREATE_CASE_OWNER && event.body) {
+    try {
+      const caseOwner: CaseOwnerDTO = JSON.parse(event.body);
+      return caseOwner?.userUlid;
     } catch {
       // It means `JSON.parse` has thrown a SyntaxError.
       // The target endpoint will handle appropriately the payload issues.

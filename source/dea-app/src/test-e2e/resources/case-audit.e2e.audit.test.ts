@@ -40,7 +40,12 @@ describe('case audit e2e', () => {
   beforeAll(async () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'CaseWorker', 'CaseAudit', 'TestUser');
-    await cognitoHelper.createUser(unauthorizedUser, 'EvidenceManager', 'CaseAudit', 'UnauthorizedUser');
+    await cognitoHelper.createUser(
+      unauthorizedUser,
+      'EvidenceManager',
+      'CaseAuditManager',
+      'UnauthorizedUser'
+    );
     [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
     [managerCreds, managerToken] = await cognitoHelper.getCredentialsForUser(unauthorizedUser);
   }, 10000);
@@ -138,7 +143,12 @@ describe('case audit e2e', () => {
         caseUlid: caseUlid,
       }
     );
-    // expect(removeUserPermissions.status).toEqual(200);
+
+    // Add another user as an owner, see that the targetUserId is populated in the audit log
+    await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/owner`, 'POST', managerToken, managerCreds, {
+      userUlid: inviteeUlid,
+      caseUlid: caseUlid,
+    });
 
     // Try to call a case API see that it fails.
     // The three case-invite APIs should show up in the case Audit with the actions taken
@@ -197,6 +207,7 @@ describe('case audit e2e', () => {
           potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
           potentialCsvData.includes(AuditEventType.REMOVE_USER_FROM_CASE) &&
           potentialCsvData.includes(AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE) &&
+          potentialCsvData.includes(AuditEventType.CREATE_CASE_OWNER) &&
           dynamoMatch &&
           dynamoMatch.length >= 7
         ) {
@@ -287,7 +298,14 @@ describe('case audit e2e', () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(removeInviteEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
 
-    expect(entries.length).toBe(8);
+    const createCaseOwnerEntry = entries.find(
+      (entry) => entry.eventType === AuditEventType.CREATE_CASE_OWNER
+    );
+    verifyCaseAuditEntry(createCaseOwnerEntry, AuditEventType.CREATE_CASE_OWNER, unauthorizedUser);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(createCaseOwnerEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
+
+    expect(entries.length).toBe(9);
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const cloudtrailEntries = parseTrailEventsFromAuditQuery(csvData!);
