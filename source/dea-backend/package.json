@@ -37,8 +37,8 @@
     "test:noe2e": ". ../common/scripts/setEnv.sh && heft test --no-build --test-path-pattern '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": ". ../common/scripts/setEnv.sh && heft test --no-build --verbose --test-path-pattern test",
     "test:only:u": ". ../common/scripts/setEnv.sh && heft test -u --no-build --verbose --test-path-pattern test",
-    "unit:only": "heft test --no-build --test-path-pattern '.*/*unit.test.*'",
-    "test:sonar": "rushx unit:only"
+    "test:sonar": "rushx unit:only",
+    "unit:only": "heft test --no-build --test-path-pattern '.*/*unit.test.*'"
   },
   "dependencies": {
     "@aws-cdk/aws-cognito-identitypool-alpha": "^2.22.0-alpha.0",
@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@aws-cdk/assert": "^2.68.0",
+    "@aws-cdk/aws-servicecatalogappregistry-alpha": "~2.78.0-alpha.0",
     "@aws-sdk/client-cloudwatch-logs": "~3.299.0",
     "@rushstack/eslint-config": "^3.2.0",
     "@rushstack/heft": "^0.50.0",
@@ -82,7 +83,6 @@
     "npm-package-json-lint-config-default": "^5.0.0",
     "sort-package-json": "^2.4.1",
     "ts-mockito": "~2.6.1",
-    "typescript": "^4.5.2",
-    "@aws-cdk/aws-servicecatalogappregistry-alpha": "~2.78.0-alpha.0"
+    "typescript": "^4.5.2"
   }
 }
