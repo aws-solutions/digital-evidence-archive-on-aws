@@ -219,8 +219,7 @@ const parseEventForExtendedAuditFields = (
 
   const isCaseInviteAPI =
     eventType === AuditEventType.INVITE_USER_TO_CASE ||
-    eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE ||
-    eventType === AuditEventType.REMOVE_USER_FROM_CASE;
+    eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE;
 
   if (
     eventType !== AuditEventType.CREATE_CASE &&
