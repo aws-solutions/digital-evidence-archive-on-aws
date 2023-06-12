@@ -144,16 +144,23 @@ describe('case audit e2e', () => {
       }
     );
 
-    // Add another user as an owner, see that the targetUserId is populated in the audit log
-    await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/owner`, 'POST', managerToken, managerCreds, {
-      userUlid: inviteeUlid,
-      caseUlid: caseUlid,
-    });
-
     // Try to call a case API see that it fails.
     // The three case-invite APIs should show up in the case Audit with the actions taken
     const [inviteeCreds, inviteeToken] = await cognitoHelper.getCredentialsForUser(failedCaseUser);
     await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/files`, 'GET', inviteeToken, inviteeCreds);
+
+    // Add another user as an owner, see that the targetUserId is populated in the audit log
+    const createCaseOwnerResp = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${caseUlid}/owner`,
+      'POST',
+      managerToken,
+      managerCreds,
+      {
+        userUlid: inviteeUlid,
+        caseUlid: caseUlid,
+      }
+    );
+    expect(createCaseOwnerResp.status).toEqual(200);
 
     // allow some time so the events show up in CW logs
     await delay(5 * 60 * 1000);
@@ -203,8 +210,12 @@ describe('case audit e2e', () => {
         const dynamoMatch = potentialCsvData.match(/dynamodb.amazonaws.com/g);
 
         if (
+          potentialCsvData.includes(AuditEventType.CREATE_CASE) &&
           potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
           potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
+          potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE) &&
+          potentialCsvData.includes(AuditEventType.GET_CASE_FILES) &&
+          potentialCsvData.includes(AuditEventType.INVITE_USER_TO_CASE) &&
           potentialCsvData.includes(AuditEventType.REMOVE_USER_FROM_CASE) &&
           potentialCsvData.includes(AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE) &&
           potentialCsvData.includes(AuditEventType.CREATE_CASE_OWNER) &&
