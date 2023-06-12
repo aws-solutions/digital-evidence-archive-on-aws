@@ -113,9 +113,25 @@
       ]
     },
     {
-      "name": "EvidenceManager",
-      "description": "Users with access to privileged endpoints",
+      "name": "WorkingManager",
+      "description": "users who act as both case workers and managers",
       "endpoints": [
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "DELETE"
+        },
         {
           "path": "/cases/{caseId}/actions",
           "method": "GET"
@@ -123,6 +139,18 @@
         {
           "path": "/cases/{caseId}/userMemberships",
           "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/users/{userId}/memberships",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/users/{userId}/memberships",
+          "method": "DELETE"
         },
         {
           "path": "/auth/{authCode}/token",
@@ -153,8 +181,44 @@
           "method": "GET"
         },
         {
+          "path": "/cases/{caseId}/files",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/files",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/contents",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/restore",
+          "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/info",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/files/{fileId}/contents",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/my-cases",
+          "method": "GET"
+        },
+        {
           "path": "/cases/all-cases",
           "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/audit",
+          "method": "POST"
         },
         {
           "path": "/availableEndpoints",
