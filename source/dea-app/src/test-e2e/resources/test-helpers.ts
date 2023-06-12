@@ -221,7 +221,7 @@ export const inviteUserToCase = async (
   ownerCreds: Credentials,
   testInvitee: string,
   createUser = false
-) => {
+): Promise<string> => {
   if (createUser) {
     await cognitoHelper.createUser(testInvitee, 'CaseWorker', testInvitee, 'TestUser');
   }
@@ -249,6 +249,8 @@ export const inviteUserToCase = async (
     newMembership
   );
   expect(inviteResponse.status).toEqual(200);
+
+  return inviteeUlid;
 };
 
 export const initiateCaseFileUploadSuccess = async (
@@ -567,6 +569,7 @@ export type CaseAuditEventEntry = {
   fileId?: string;
   fileHash?: string;
   targetUser?: string;
+  caseActions?: string;
 };
 
 const parseAuditCsv = (csvData: string, parseFn: (entry: string) => AuditEventEntry): AuditEventEntry[] => {
@@ -648,12 +651,14 @@ function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
   }
 
   let targetUser: string | undefined;
+  let caseActions: string | undefined;
   if (
     eventType === AuditEventType.INVITE_USER_TO_CASE ||
     eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE ||
     eventType === AuditEventType.REMOVE_USER_FROM_CASE
   ) {
     targetUser = fields[18];
+    caseActions = fields[19];
   }
 
   return {
@@ -666,6 +671,7 @@ function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
     fileId: fields[16],
     fileHash: fields[17],
     targetUser,
+    caseActions,
   };
 }
 

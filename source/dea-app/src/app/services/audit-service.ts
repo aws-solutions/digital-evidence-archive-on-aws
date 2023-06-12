@@ -172,6 +172,7 @@ export type CJISAuditEventBody = {
   caseId?: string;
   fileId?: string;
   targetUserId?: string;
+  caseActions?: string; // since we return audit results as a csv, this should be string where actions are joined by ":"
 };
 
 /**
@@ -199,6 +200,7 @@ const queryFields = [
   'coalesce(fileId, " ") as File_ID',
   'coalesce(fileHash, " ") as File_SHA_256',
   'coalesce(targetUserId, " ") as Target_User_ID',
+  'coalesce(caseActions, " ") as Case_Actions',
   'coalesce(requestParameters.key.PK, " ") as PrimaryKey',
   'coalesce(requestParameters.key.SK, " ") as SortKey',
 ];

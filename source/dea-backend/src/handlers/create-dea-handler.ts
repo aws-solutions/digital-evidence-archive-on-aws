@@ -97,6 +97,7 @@ export const createDeaHandler = (
       await deaAuditService.writeCJISCompliantEntry(auditEvent);
     }
   };
+
   return wrappedHandler;
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,6 +113,7 @@ const getErrorName = (error: any): string => {
 };
 
 const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
+  const targetUserId = getTargetUserId(event);
   return {
     dateTime: new Date().toISOString(),
     requestPath: event.resource,
@@ -121,7 +123,7 @@ const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
     result: AuditEventResult.FAILURE,
     caseId: event.pathParameters?.caseId,
     fileId: event.pathParameters?.fileId,
-    targetUserId: getTargetUserId(event),
+    targetUserId,
   };
 };
 
@@ -190,7 +192,11 @@ const getEventType = (event: APIGatewayProxyEvent): AuditEventType => {
 
 const getTargetUserId = (event: APIGatewayProxyEvent): string | undefined => {
   const eventType = getEventType(event);
-  if (eventType === AuditEventType.INVITE_USER_TO_CASE && event.body) {
+  const isCaseInviteAPI =
+    eventType === AuditEventType.INVITE_USER_TO_CASE ||
+    eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE ||
+    eventType === AuditEventType.REMOVE_USER_FROM_CASE;
+  if (isCaseInviteAPI && event.body) {
     try {
       const caseUser: CaseUserDTO = JSON.parse(event.body);
       return caseUser?.userUlid;
@@ -211,10 +217,15 @@ const parseEventForExtendedAuditFields = (
 ) => {
   const eventType = getEventType(event);
 
+  const isCaseInviteAPI =
+    eventType === AuditEventType.INVITE_USER_TO_CASE ||
+    eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE;
+
   if (
     eventType !== AuditEventType.CREATE_CASE &&
     eventType !== AuditEventType.INITIATE_CASE_FILE_UPLOAD &&
-    eventType !== AuditEventType.COMPLETE_CASE_FILE_UPLOAD
+    eventType !== AuditEventType.COMPLETE_CASE_FILE_UPLOAD &&
+    !isCaseInviteAPI
   ) {
     return;
   }
@@ -259,5 +270,12 @@ const parseEventForExtendedAuditFields = (
     });
     auditEvent.fileHash = 'ERROR: hash is absent';
     auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
+  }
+
+  // Include case actions in the audit event
+  // Use : instead of , to list actions, since audit is sent
+  // in a csv format
+  if (isCaseInviteAPI) {
+    auditEvent.caseActions = body.actions?.join(':');
   }
 };

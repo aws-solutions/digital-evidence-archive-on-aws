@@ -99,16 +99,49 @@ describe('case audit e2e', () => {
     // to do something outside the permissions, should show up as failure in the
     // audit log
     const failedCaseUser = `caseAuditFailedListFilesTestUser${suffix}`;
-    await inviteUserToCase(
+    const firstInvitePermissions = [CaseAction.CASE_AUDIT];
+    // Invite user
+    const inviteeUlid = await inviteUserToCase(
       deaApiUrl,
       cognitoHelper,
       caseUlid,
-      [CaseAction.CASE_AUDIT],
+      firstInvitePermissions,
       idToken,
       creds,
       failedCaseUser,
       true
     );
+
+    // Modify User Permissions
+    const modifyInvitePermissions = [CaseAction.VIEW_CASE_DETAILS, CaseAction.CASE_AUDIT, CaseAction.UPLOAD];
+    const modifyResponse = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${caseUlid}/users/${inviteeUlid}/memberships`,
+      'PUT',
+      idToken,
+      creds,
+      {
+        userUlid: inviteeUlid,
+        caseUlid: caseUlid,
+        actions: modifyInvitePermissions,
+      }
+    );
+    expect(modifyResponse.status).toEqual(200);
+
+    // Remove User Permissions
+    await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${caseUlid}/users/${inviteeUlid}/memberships`,
+      'DELETE',
+      idToken,
+      creds,
+      {
+        userUlid: inviteeUlid,
+        caseUlid: caseUlid,
+      }
+    );
+    // expect(removeUserPermissions.status).toEqual(200);
+
+    // Try to call a case API see that it fails.
+    // The three case-invite APIs should show up in the case Audit with the actions taken
     const [inviteeCreds, inviteeToken] = await cognitoHelper.getCredentialsForUser(failedCaseUser);
     await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/files`, 'GET', inviteeToken, inviteeCreds);
 
@@ -162,7 +195,8 @@ describe('case audit e2e', () => {
         if (
           potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
           potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
-          potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE) &&
+          potentialCsvData.includes(AuditEventType.REMOVE_USER_FROM_CASE) &&
+          potentialCsvData.includes(AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE) &&
           dynamoMatch &&
           dynamoMatch.length >= 7
         ) {
@@ -173,6 +207,8 @@ describe('case audit e2e', () => {
       }
       --queryRetries;
     }
+
+    expect(csvData).toBeDefined();
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const entries = parseCaseAuditCsv(csvData!).filter(
@@ -232,8 +268,26 @@ describe('case audit e2e', () => {
     verifyCaseAuditEntry(caseInviteEntry, AuditEventType.INVITE_USER_TO_CASE, testUser);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(caseInviteEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(caseInviteEntry!.caseActions).toStrictEqual(firstInvitePermissions.join(':'));
 
-    expect(entries.length).toBe(6);
+    const modifyInviteEntry = entries.find(
+      (entry) => entry.eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE
+    );
+    verifyCaseAuditEntry(modifyInviteEntry, AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE, testUser);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(modifyInviteEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(modifyInviteEntry!.caseActions).toStrictEqual(modifyInvitePermissions.join(':'));
+
+    const removeInviteEntry = entries.find(
+      (entry) => entry.eventType === AuditEventType.REMOVE_USER_FROM_CASE
+    );
+    verifyCaseAuditEntry(removeInviteEntry, AuditEventType.REMOVE_USER_FROM_CASE, testUser);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(removeInviteEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
+
+    expect(entries.length).toBe(8);
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const cloudtrailEntries = parseTrailEventsFromAuditQuery(csvData!);
