@@ -33,6 +33,7 @@ interface FileUploadProgressRow {
   fileName: string;
   status: UploadStatus;
   fileSizeBytes: number;
+  relativePath: string;
 }
 
 enum UploadStatus {
@@ -42,8 +43,7 @@ enum UploadStatus {
 }
 
 interface ActiveFileUpload {
-  fileUploadProgress: FileUploadProgressRow;
-  file: File;
+  file: FileWithPath;
   initiatedCaseFilePromise: Promise<DeaCaseFile>;
 }
 
@@ -65,6 +65,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // top level try/finally to set uploadInProgress bool state
     try {
       setUploadInProgress(true);
+
+      setUploadedFiles([...uploadedFiles, ...selectedFiles.map( file => ({ fileName: file.name, fileSizeBytes:  Math.max(file.size, 1), status: UploadStatus.progress, relativePath: file.relativePath }))]);
 
       let position = 0;
       while (position < selectedFiles.length) {
@@ -118,7 +120,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         sha256Hash: hash.finalize().toString(),
       });
     }
-    activeFileUpload.fileUploadProgress.status = UploadStatus.complete;
+    updateFileProgress(activeFileUpload.file, UploadStatus.complete);
   }
 
   async function uploadFile(selectedFile: FileWithPath) {
@@ -126,10 +128,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // Trying to use small chunk size (50MB) to reduce memory use.
     // However, since S3 allows a max of 10,000 parts for multipart uploads, we will increase chunk size for larger files
     const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
-    const uploadingFile = { fileName: selectedFile.name, fileSizeBytes, status: UploadStatus.progress };
     // per file try/finally state to initiate uploads
     try {
-      setUploadedFiles((prev) => [...prev, uploadingFile]);
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
       const initiatedCaseFilePromise = initiateUpload({
         caseUlid: props.caseId,
@@ -143,14 +143,24 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       });
       const activeFileUpload = {
         file: selectedFile,
-        fileUploadProgress: uploadingFile,
         initiatedCaseFilePromise,
       };
       await uploadFilePartsAndComplete(activeFileUpload);
     } catch (e) {
-      uploadingFile.status = UploadStatus.failed;
+      updateFileProgress(selectedFile, UploadStatus.failed);
       console.log('Upload failed', e);
     }
+  }
+
+  function updateFileProgress(selectedFile:FileWithPath, status:UploadStatus){
+    setUploadedFiles(prev => {
+      const newList = [...prev];
+      const fileToUpdateStatus = newList.find(file => file.fileName === selectedFile.name && file.relativePath === selectedFile.relativePath && file.status === UploadStatus.progress);
+      if(fileToUpdateStatus){
+        fileToUpdateStatus.status = status;
+      }
+      return newList;
+    });
   }
 
   async function readFileSlice(blob: Blob): Promise<Uint8Array> {
