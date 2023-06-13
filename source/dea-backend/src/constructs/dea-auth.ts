@@ -77,15 +77,19 @@ export class DeaAuthStack extends Stack {
   public deaAuthInfo: DeaAuthInfo;
 
   public constructor(scope: Construct, stackName: string, deaProps: DeaAuthProps, props?: StackProps) {
-    super(scope, stackName, {
-      ...props,
-      env: {
-        ...props?.env,
-        region: deaProps.region, // Note: for us-gov-east-1, we change the region
-        // to us-gov-west-1 since Cognito is not available in that region
-      },
-      crossRegionReferences: true,
-    });
+    if (!deaConfig.isOneClick()) {
+      super(scope, stackName, {
+        ...props,
+        env: {
+          ...props?.env,
+          region: deaProps.region, // Note: for us-gov-east-1, we change the region
+          // to us-gov-west-1 since Cognito is not available in that region
+        },
+        crossRegionReferences: true,
+      });
+    } else {
+      super(scope, stackName, props);
+    }
 
     this.deaAuthInfo = new DeaAuth(this, 'DeaAuth', deaProps).deaAuthInfo;
   }
@@ -97,7 +101,11 @@ export class DeaAuth extends Construct {
   public constructor(scope: Construct, stackName: string, deaProps: DeaAuthProps) {
     super(scope, stackName + 'Construct');
 
-    const loginUrl = `${deaProps.restApi.url}ui/login`;
+    let loginUrl = `${deaProps.restApi.url}ui/login`;
+    const customDomainInfo = deaConfig.customDomainInfo();
+    if (customDomainInfo.domainName && customDomainInfo.certificateArn) {
+      loginUrl = `https://${customDomainInfo.domainName}/ui/login`;
+    }
 
     const partition = deaConfig.partition();
 
@@ -406,11 +414,12 @@ export class DeaAuth extends Construct {
       const cognitoPrefixParam = new CfnParameter(this, 'CognitoDomainPrefix', {
         type: 'String',
         description: 'The prefix of the cognito domain to associate to the user pool',
+        allowedPattern: '^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$',
       });
       domainPrefix = cognitoPrefixParam.valueAsString;
     }
 
-    const newDomain = new UserPoolDomain(this, domainPrefix, {
+    const newDomain = new UserPoolDomain(this, 'dea-user-pool-domain', {
       userPool,
       cognitoDomain: {
         domainPrefix,

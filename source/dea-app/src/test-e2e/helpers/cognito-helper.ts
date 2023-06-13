@@ -130,7 +130,7 @@ export default class CognitoHelper {
   }
 
   getClientSecret = async () => {
-    const clientSecretId = `/dea/${this.region}/${this.stage}/clientSecret`;
+    const clientSecretId = `/dea/${this.stage}/clientSecret`;
 
     const client = new SecretsManagerClient({ region: this.region });
     const input = {

@@ -22,9 +22,9 @@ export const getMyCases: DEAGatewayProxyHandler = async (
 
   const pageOfCases = await listCasesForUser(
     userUlid,
-    paginationParams.limit,
+    repositoryProvider,
     paginationParams.nextToken,
-    repositoryProvider
+    paginationParams.limit
   );
 
   return responseOk(event, {

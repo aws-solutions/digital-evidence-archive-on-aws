@@ -303,18 +303,18 @@ describe('API authentication', () => {
   // This test will ONLY run in you have an external idp linked up to Cognito, (with
   // the appropriate attribute mapping)
   // whose name (recognized by Cognito) is stored in SSM Param Store under
-  // /dea/<region>/<stage>-agency-idp-name, AND have a test user ALREADY created
+  // /dea/<stage>-agency-idp-name, AND have a test user ALREADY created
   // in the IdP (assigned to the DEA application under test and has DEARole assigned as CaseWorker)
   // whose login credentials are stored in SSM Param store under
-  // /dea/<region>/<stage>-test/idp/idp-test-user-logon and /dea/<region>/<stage>-test/idp/idp-test-user-password
+  // /dea/<stage>-test/idp/idp-test-user-logon and /dea/<stage>-test/idp/idp-test-user-password
   // you can use the following script in the dea-app folder to set those fields in SSM
   // "rushx idp-test-setup --username <TEST_USER_NAME> --password <TEST_USER_PASSWORD>"
   it('should authenticate and authorize a federated user from the configured IdP', async () => {
     // Check that SSM Parameters are all present, if not skip the test
     const ssmClient = new SSMClient({ region });
-    const agencyIdpNamePath = `/dea/${region}/${stage}-agency-idp-name`;
-    const testUserLogonPath = `/dea/${region}/${stage}-test/idp/idp-test-user-logon`;
-    const testUserPasswordPath = `/dea/${region}/${stage}-test/idp/idp-test-user-password`;
+    const agencyIdpNamePath = `/dea/${stage}-agency-idp-name`;
+    const testUserLogonPath = `/dea/${stage}-test/idp/idp-test-user-logon`;
+    const testUserPasswordPath = `/dea/${stage}-test/idp/idp-test-user-password`;
     const ssmResponse = await ssmClient.send(
       new GetParametersCommand({
         Names: [agencyIdpNamePath, testUserLogonPath, testUserPasswordPath],

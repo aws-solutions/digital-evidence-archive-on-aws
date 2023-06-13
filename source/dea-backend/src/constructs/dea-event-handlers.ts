@@ -15,11 +15,12 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
+import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 interface LambdaEnvironment {
   [key: string]: string;
@@ -30,6 +31,7 @@ interface DeaEventHandlerProps {
   deaDatasetsBucketArn: string;
   lambdaEnv: LambdaEnvironment;
   kmsKey: Key;
+  opsDashboard: DeaOperationalDashboard;
 }
 
 export class DeaEventHandlers extends Construct {
@@ -88,6 +90,19 @@ export class DeaEventHandlers extends Construct {
 
     // create event bridge rule
     this.createEventBridgeRuleForS3BatchJobs(s3BatchJobStatusChangeHandlerLambda);
+
+    props.opsDashboard.addLambdaOperationalComponents(
+      this.s3BatchDeleteCaseFileLambda,
+      'S3BatchDeleteCaseFileLambda',
+      undefined,
+      true
+    );
+    props.opsDashboard.addLambdaOperationalComponents(
+      s3BatchJobStatusChangeHandlerLambda,
+      'S3BatchJobStatusChangeLambda',
+      undefined,
+      true
+    );
   }
 
   private createEventBridgeRuleForS3BatchJobs(targetLambda: NodejsFunction) {
@@ -130,6 +145,31 @@ export class DeaEventHandlers extends Construct {
         sourceMap: true,
       },
     });
+
+    //CFN NAG Suppression
+    const lambdaMetaDataNode = lambda.node.defaultChild;
+    if (lambdaMetaDataNode instanceof CfnFunction) {
+      lambdaMetaDataNode.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W58',
+            reason:
+              'AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs',
+          },
+          {
+            id: 'W92',
+            reason: 'Reserved concurrency is currently not required. Revisit in the future',
+          },
+          {
+            id: 'W89',
+            reason:
+              'The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)\
+               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC',
+          },
+        ],
+      });
+    }
 
     createCfnOutput(this, cfnExportName, {
       value: lambda.functionArn,

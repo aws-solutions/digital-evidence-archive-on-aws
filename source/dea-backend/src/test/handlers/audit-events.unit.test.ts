@@ -376,11 +376,15 @@ describe('dea lambda audits', () => {
 
   it('should fill targetUserId property from the body', async () => {
     const testAuditService = getTestAuditService();
+
+    const deaResponse = JSON.stringify({
+      data: ':D',
+    });
     const sut = createDeaHandler(
       async () => {
         return {
           statusCode: 200,
-          body: ':D',
+          body: deaResponse,
         };
       },
       NO_ACL,
@@ -394,7 +398,7 @@ describe('dea lambda audits', () => {
     theEvent.body = '{"userUlid": "abc123"}';
 
     const response = await sut(theEvent, dummyContext);
-    expect(response).toEqual({ body: ':D', statusCode: 200 });
+    expect(response).toEqual({ body: deaResponse, statusCode: 200 });
 
     const sent = capture(testAuditService.client.send).last();
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -407,11 +411,15 @@ describe('dea lambda audits', () => {
 
   it('should left targetUserId property undefined if the body is malformed', async () => {
     const testAuditService = getTestAuditService();
+
+    const deaResponse = JSON.stringify({
+      data: ':D',
+    });
     const sut = createDeaHandler(
       async () => {
         return {
           statusCode: 200,
-          body: ':D',
+          body: deaResponse,
         };
       },
       NO_ACL,
@@ -425,7 +433,7 @@ describe('dea lambda audits', () => {
     theEvent.body = ':D';
 
     const response = await sut(theEvent, dummyContext);
-    expect(response).toEqual({ body: ':D', statusCode: 200 });
+    expect(response).toEqual({ body: deaResponse, statusCode: 200 });
 
     const sent = capture(testAuditService.client.send).last();
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -654,5 +662,42 @@ describe('dea lambda audits', () => {
       fail();
     }
     expect(sentInput.logEvents[0].message).toContain(`"fileId":"1"`);
+  });
+
+  it('should add the case actions to the Audit Event for Invite/Modify CaseMembership', async () => {
+    const testAuditService = getTestAuditService();
+    const theEvent = getDummyEvent();
+
+    const deaResponse = JSON.stringify({
+      actions: ['AUDIT', 'INVITE', 'DOWNLOAD'],
+    });
+
+    const sut = createDeaHandler(
+      async () => {
+        return {
+          statusCode: 200,
+          body: deaResponse,
+        };
+      },
+      NO_ACL,
+      preExecutionChecks,
+      testAuditService.service
+    );
+
+    theEvent.resource = '/cases/{caseId}/userMemberships';
+    theEvent.httpMethod = 'POST';
+    theEvent.body = '{"userUlid": "abc123"}';
+
+    const response = await sut(theEvent, dummyContext);
+    expect(response).toEqual({ body: deaResponse, statusCode: 200 });
+
+    const sent = capture(testAuditService.client.send).last();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
+    if (!sentInput.logEvents) {
+      fail();
+    }
+    expect(sentInput.logEvents[0].message).toContain(`"caseActions":"AUDIT:INVITE:DOWNLOAD"`);
+    expect(sentInput.logEvents[0].message).toContain(`"targetUserId":"abc123"`);
   });
 });

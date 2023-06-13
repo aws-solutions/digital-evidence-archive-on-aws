@@ -9,17 +9,26 @@
 import 'source-map-support/register';
 import { deaConfig } from '@aws/dea-backend';
 import * as cdk from 'aws-cdk-lib';
+import { DefaultStackSynthesizer } from 'aws-cdk-lib';
 import { DeaMainStack } from './dea-main-stack';
 
 const app: cdk.App = new cdk.App();
 const stage = deaConfig.stage();
 const region = deaConfig.region();
 
-const props = {
-  env: {
-    region,
-  },
-  crossRegionReferences: true,
+let props: cdk.StackProps = {
+  synthesizer: new DefaultStackSynthesizer({
+    generateBootstrapVersionRule: false,
+  }),
 };
+
+if (!deaConfig.isOneClick) {
+  props = {
+    env: {
+      region,
+    },
+    crossRegionReferences: true,
+  };
+}
 
 new DeaMainStack(app, `${stage}-DeaMainStack`, props);

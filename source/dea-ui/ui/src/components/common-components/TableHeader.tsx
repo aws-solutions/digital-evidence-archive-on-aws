@@ -11,9 +11,9 @@ interface TableHeaderProps {
   readonly description: string;
   readonly actionButtons: ReactElement;
   readonly title: string;
-  readonly counter?: string | undefined;
-  readonly totalItems?: ReadonlyArray<unknown> | undefined;
-  readonly selectedItems?: ReadonlyArray<unknown> | undefined;
+  readonly counter?: string;
+  readonly totalItems?: ReadonlyArray<unknown>;
+  readonly selectedItems?: ReadonlyArray<unknown>;
 }
 
 export const TableHeader = (props: TableHeaderProps) => {

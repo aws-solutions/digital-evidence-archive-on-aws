@@ -40,7 +40,12 @@ describe('case audit e2e', () => {
   beforeAll(async () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'CaseWorker', 'CaseAudit', 'TestUser');
-    await cognitoHelper.createUser(unauthorizedUser, 'EvidenceManager', 'CaseAudit', 'UnauthorizedUser');
+    await cognitoHelper.createUser(
+      unauthorizedUser,
+      'EvidenceManager',
+      'CaseAuditManager',
+      'UnauthorizedUser'
+    );
     [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
     [managerCreds, managerToken] = await cognitoHelper.getCredentialsForUser(unauthorizedUser);
   }, 10000);
@@ -99,18 +104,63 @@ describe('case audit e2e', () => {
     // to do something outside the permissions, should show up as failure in the
     // audit log
     const failedCaseUser = `caseAuditFailedListFilesTestUser${suffix}`;
-    await inviteUserToCase(
+    const firstInvitePermissions = [CaseAction.CASE_AUDIT];
+    // Invite user
+    const inviteeUlid = await inviteUserToCase(
       deaApiUrl,
       cognitoHelper,
       caseUlid,
-      [CaseAction.CASE_AUDIT],
+      firstInvitePermissions,
       idToken,
       creds,
       failedCaseUser,
       true
     );
+
+    // Modify User Permissions
+    const modifyInvitePermissions = [CaseAction.VIEW_CASE_DETAILS, CaseAction.CASE_AUDIT, CaseAction.UPLOAD];
+    const modifyResponse = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${caseUlid}/users/${inviteeUlid}/memberships`,
+      'PUT',
+      idToken,
+      creds,
+      {
+        userUlid: inviteeUlid,
+        caseUlid: caseUlid,
+        actions: modifyInvitePermissions,
+      }
+    );
+    expect(modifyResponse.status).toEqual(200);
+
+    // Remove User Permissions
+    await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${caseUlid}/users/${inviteeUlid}/memberships`,
+      'DELETE',
+      idToken,
+      creds,
+      {
+        userUlid: inviteeUlid,
+        caseUlid: caseUlid,
+      }
+    );
+
+    // Try to call a case API see that it fails.
+    // The three case-invite APIs should show up in the case Audit with the actions taken
     const [inviteeCreds, inviteeToken] = await cognitoHelper.getCredentialsForUser(failedCaseUser);
     await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/files`, 'GET', inviteeToken, inviteeCreds);
+
+    // Add another user as an owner, see that the targetUserId is populated in the audit log
+    const createCaseOwnerResp = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${caseUlid}/owner`,
+      'POST',
+      managerToken,
+      managerCreds,
+      {
+        userUlid: inviteeUlid,
+        caseUlid: caseUlid,
+      }
+    );
+    expect(createCaseOwnerResp.status).toEqual(200);
 
     // allow some time so the events show up in CW logs
     await delay(5 * 60 * 1000);
@@ -129,8 +179,7 @@ describe('case audit e2e', () => {
       const auditId: string = startAuditQueryResponse.data.auditId;
       Joi.assert(auditId, joiUlid);
 
-      let retries = 10;
-      await delay(5000);
+      let retries = 20;
       let getQueryReponse = await callDeaAPIWithCreds(
         `${deaApiUrl}cases/${caseUlid}/audit/${auditId}/csv`,
         'GET',
@@ -155,24 +204,34 @@ describe('case audit e2e', () => {
         );
       }
 
-      const potentialCsvData: string = getQueryReponse.data;
+      if (getQueryReponse.data && !getQueryReponse.data.status) {
+        const potentialCsvData: string = getQueryReponse.data;
 
-      if (
-        getQueryReponse.data &&
-        !getQueryReponse.data.status &&
-        potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
-        potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
-        potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE) &&
-        potentialCsvData.match(/dynamodb.amazonaws.com/g)?.length === 7
-      ) {
-        csvData = getQueryReponse.data;
-      } else {
-        await delay(10000);
+        const dynamoMatch = potentialCsvData.match(/dynamodb.amazonaws.com/g);
+
+        if (
+          potentialCsvData.includes(AuditEventType.CREATE_CASE) &&
+          potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
+          potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
+          potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE) &&
+          potentialCsvData.includes(AuditEventType.GET_CASE_FILES) &&
+          potentialCsvData.includes(AuditEventType.INVITE_USER_TO_CASE) &&
+          potentialCsvData.includes(AuditEventType.REMOVE_USER_FROM_CASE) &&
+          potentialCsvData.includes(AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE) &&
+          potentialCsvData.includes(AuditEventType.CREATE_CASE_OWNER) &&
+          dynamoMatch &&
+          dynamoMatch.length >= 7
+        ) {
+          csvData = getQueryReponse.data;
+        } else {
+          await delay(10000);
+        }
       }
       --queryRetries;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(csvData).toBeDefined();
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const entries = parseCaseAuditCsv(csvData!).filter(
       (entry) =>
@@ -231,8 +290,33 @@ describe('case audit e2e', () => {
     verifyCaseAuditEntry(caseInviteEntry, AuditEventType.INVITE_USER_TO_CASE, testUser);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(caseInviteEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(caseInviteEntry!.caseActions).toStrictEqual(firstInvitePermissions.join(':'));
 
-    expect(entries.length).toBe(6);
+    const modifyInviteEntry = entries.find(
+      (entry) => entry.eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE
+    );
+    verifyCaseAuditEntry(modifyInviteEntry, AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE, testUser);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(modifyInviteEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(modifyInviteEntry!.caseActions).toStrictEqual(modifyInvitePermissions.join(':'));
+
+    const removeInviteEntry = entries.find(
+      (entry) => entry.eventType === AuditEventType.REMOVE_USER_FROM_CASE
+    );
+    verifyCaseAuditEntry(removeInviteEntry, AuditEventType.REMOVE_USER_FROM_CASE, testUser);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(removeInviteEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
+
+    const createCaseOwnerEntry = entries.find(
+      (entry) => entry.eventType === AuditEventType.CREATE_CASE_OWNER
+    );
+    verifyCaseAuditEntry(createCaseOwnerEntry, AuditEventType.CREATE_CASE_OWNER, unauthorizedUser);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(createCaseOwnerEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
+
+    expect(entries.length).toBe(9);
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const cloudtrailEntries = parseTrailEventsFromAuditQuery(csvData!);

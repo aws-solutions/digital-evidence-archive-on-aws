@@ -4,7 +4,7 @@
  */
 
 /* eslint-disable no-new */
-import { Aws, StackProps, Duration } from 'aws-cdk-lib';
+import { Aws, StackProps, Duration, CfnResource } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -20,10 +20,12 @@ import {
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
+import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 interface IBackendStackProps extends StackProps {
   readonly kmsKey: Key;
   readonly accessLogsPrefixes: ReadonlyArray<string>;
+  readonly opsDashboard: DeaOperationalDashboard;
 }
 
 export class DeaBackendConstruct extends Construct {
@@ -31,7 +33,12 @@ export class DeaBackendConstruct extends Construct {
   public datasetsBucket: Bucket;
   public accessLogsBucket: Bucket;
 
-  public constructor(scope: Construct, id: string, props: IBackendStackProps) {
+  public constructor(
+    scope: Construct,
+    id: string,
+    protectedDeaResourceArns: string[],
+    props: IBackendStackProps
+  ) {
     super(scope, id);
 
     this.deaTable = this.createDeaTable(props.kmsKey);
@@ -44,6 +51,14 @@ export class DeaBackendConstruct extends Construct {
       `DeaS3Datasets`,
       datasetsPrefix
     );
+
+    props.opsDashboard.addDynamoTableOperationalComponents(this.deaTable);
+
+    protectedDeaResourceArns.push(this.deaTable.tableArn);
+    protectedDeaResourceArns.push(this.datasetsBucket.bucketArn);
+    protectedDeaResourceArns.push(this.datasetsBucket.arnForObjects('*'));
+    protectedDeaResourceArns.push(this.accessLogsBucket.bucketArn);
+    protectedDeaResourceArns.push(this.accessLogsBucket.arnForObjects('*'));
   }
 
   private createDeaTable(key: Key): Table {
@@ -121,6 +136,19 @@ export class DeaBackendConstruct extends Construct {
       });
     }
 
+    const s3AccessLogsBucketPolicyNode = s3AccessLogsBucket.node.findChild('Policy').node.defaultChild;
+    if (s3AccessLogsBucketPolicyNode instanceof CfnResource) {
+      s3AccessLogsBucketPolicyNode.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'F16',
+            reason: 'S3 Bucket Policy * is used on Deny',
+          },
+        ],
+      });
+    }
+
     createCfnOutput(this, bucketNameOutput, {
       value: s3AccessLogsBucket.bucketName,
     });
@@ -163,6 +191,20 @@ export class DeaBackendConstruct extends Construct {
     createCfnOutput(this, bucketNameOutput, {
       value: datasetsBucket.bucketName,
     });
+
+    //CFN NAG Suppression
+    const datasetsBucketPolicyNode = datasetsBucket.node.findChild('Policy').node.defaultChild;
+    if (datasetsBucketPolicyNode instanceof CfnResource) {
+      datasetsBucketPolicyNode.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'F16',
+            reason: 'S3 Bucket Policy * is used on Deny',
+          },
+        ],
+      });
+    }
 
     return datasetsBucket;
   }

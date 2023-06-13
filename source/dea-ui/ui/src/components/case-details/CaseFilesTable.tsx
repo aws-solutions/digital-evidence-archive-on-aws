@@ -12,7 +12,6 @@ import {
   BreadcrumbGroup,
   Button,
   Header,
-  Icon,
   Pagination,
   SpaceBetween,
   Spinner,
@@ -35,6 +34,7 @@ import {
   commonTableLabels,
   fileOperationsLabels,
   filesListLabels,
+  paginationLabels,
 } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDate } from '../../helpers/dateHelper';
@@ -74,7 +74,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     },
   ];
 
-  const { items, filterProps, collectionProps } = useCollection(data, {
+  const { items, filterProps, collectionProps, paginationProps } = useCollection(data, {
     filtering: {
       empty: TableEmptyDisplay(filesListLabels.noFilesLabel, filesListLabels.noDisplayLabel),
       noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
@@ -89,6 +89,10 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       filteringProperties: filteringProperties,
       empty: TableEmptyDisplay(filesListLabels.noFilesLabel, filesListLabels.noDisplayLabel),
       noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
+    },
+    pagination: {
+      defaultPage: 0,
+      pageSize: 50,
     },
     sorting: {},
     selection: {},
@@ -126,12 +130,17 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         {caseFile.fileName}
       </Button>
     ) : (
-      <Box padding={{ left: 'm' }} data-testid={`${caseFile.fileName}-box`}>
-        <SpaceBetween direction="horizontal" size="xs" key={caseFile.fileName}>
-          <Icon name="file" />
-          <span>{caseFile.fileName}</span>
-        </SpaceBetween>
-      </Box>
+      <Button
+        data-testid={`${caseFile.fileName}-file-button`}
+        iconName="file"
+        variant="link"
+        onClick={(e: { preventDefault: () => void }) => {
+          e.preventDefault();
+          return router.push(`/file-detail?caseId=${caseFile.caseUlid}&fileId=${caseFile.ulid}`);
+        }}
+      >
+        {caseFile.fileName}
+      </Button>
     );
   };
 
@@ -171,7 +180,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
             confirmAction={restoreFiles}
             confirmButtonText={commonLabels.restoreButton}
             cancelAction={cancelRestore}
-            cancelButtonText={commonLabels.cancelButton}
+            cancelButtonText={fileOperationsLabels.cancelRestoringLabel}
           />
           <Button
             data-testid="upload-file-button"
@@ -249,17 +258,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     );
 
   // pagination element
-  const tablePagination = (
-    <Pagination
-      currentPageIndex={1}
-      pagesCount={1}
-      ariaLabels={{
-        nextPageLabel: 'Next page',
-        previousPageLabel: 'Previous page',
-        pageLabel: (pageNumber) => `Page ${pageNumber} of all pages`,
-      }}
-    />
-  );
+  const tablePagination = <Pagination {...paginationProps} ariaLabels={paginationLabels} />;
 
   async function downloadCaseFileAuditHandler() {
     const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
@@ -295,7 +294,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   }
 
   function uploadFilesHandler() {
-    void router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
+    return router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
   }
 
   async function downloadFilesHandler() {
@@ -348,7 +347,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         setSelectedFiles(detail.selectedItems);
       }}
       selectedItems={selectedFiles}
-      isItemDisabled={(item) => item.status !== CaseFileStatus.ACTIVE}
+      isItemDisabled={(item) => item.status !== CaseFileStatus.ACTIVE || !item.isFile}
       columnDefinitions={[
         {
           id: 'name',

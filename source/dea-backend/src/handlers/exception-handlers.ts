@@ -14,6 +14,7 @@ import Joi from 'joi';
 import { logger } from '../logger';
 
 const AWS_CLIENT_INVALID_PARAMETER_NAME = 'InvalidParameterException';
+const AWS_THROTTLING_ERROR_NAME = 'ThrottlingException';
 // Exception name thrown from CloudWatch when the quota limit is exceeded.
 const AWS_LIMITED_EXCEEDED_ERROR_NAME = 'LimitExceededException';
 // DynamoDB https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html
@@ -93,6 +94,7 @@ exceptionHandlers.set(joiInstance.name, joiValidationErrorHandler);
 exceptionHandlers.set(FORBIDDEN_ERROR_NAME, forbiddenErrorHandler);
 exceptionHandlers.set(AWS_CLIENT_INVALID_PARAMETER_NAME, validationErrorHandler);
 exceptionHandlers.set(REAUTHENTICATION_ERROR_NAME, reauthenticationErrorHandler);
+exceptionHandlers.set(AWS_THROTTLING_ERROR_NAME, throttlingErrorHandler);
 exceptionHandlers.set(THROTTLING_ERROR_NAME, throttlingErrorHandler);
 exceptionHandlers.set(AWS_LIMITED_EXCEEDED_ERROR_NAME, throttlingErrorHandler);
 exceptionHandlers.set(AWS_DYNAMODB_TRANSACTION_CANCELED_ERROR_NAME, throttlingErrorHandler);

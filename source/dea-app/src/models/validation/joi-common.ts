@@ -48,7 +48,6 @@ export const safeName = Joi.string()
   .max(50)
   .messages(customMessages);
 
-export const safeTag = Joi.string().pattern(allButDisallowed).min(2).max(200).messages(customMessages);
 export const safeReason = Joi.string().pattern(allButDisallowed).min(2).max(250).messages(customMessages);
 export const safeDetails = Joi.string().pattern(allButDisallowed).min(2).max(250).messages(customMessages);
 
@@ -90,7 +89,7 @@ export const safeDescription = Joi.string()
   .optional()
   .messages(customMessages);
 
-export const paginationLimit = Joi.number().min(1).max(100).optional();
+export const paginationLimit = Joi.number().min(1).max(10000).optional();
 
 export const base64String = Joi.string().base64().required();
 

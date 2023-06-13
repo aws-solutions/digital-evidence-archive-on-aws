@@ -41,12 +41,12 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
 
   const ssmClient = new SSMClient({ region });
 
-  const cognitoDomainPath = `/dea/${region}/${stage}-userpool-cognito-domain-param`;
-  const clientIdPath = `/dea/${region}/${stage}-userpool-client-id-param`;
-  const callbackUrlPath = `/dea/${region}/${stage}-client-callback-url-param`;
-  const identityPoolIdPath = `/dea/${region}/${stage}-identity-pool-id-param`;
-  const userPoolIdPath = `/dea/${region}/${stage}-userpool-id-param`;
-  const agencyIdpNamePath = `/dea/${region}/${stage}-agency-idp-name`;
+  const cognitoDomainPath = `/dea/${stage}-userpool-cognito-domain-param`;
+  const clientIdPath = `/dea/${stage}-userpool-client-id-param`;
+  const callbackUrlPath = `/dea/${stage}-client-callback-url-param`;
+  const identityPoolIdPath = `/dea/${stage}-identity-pool-id-param`;
+  const userPoolIdPath = `/dea/${stage}-userpool-id-param`;
+  const agencyIdpNamePath = `/dea/${stage}-agency-idp-name`;
 
   const response = await ssmClient.send(
     new GetParametersCommand({
@@ -167,7 +167,7 @@ export const getCredentialsByToken = async (idToken: string) => {
 };
 
 const getClientSecret = async () => {
-  const clientSecretId = `/dea/${region}/${stage}/clientSecret`;
+  const clientSecretId = `/dea/${stage}/clientSecret`;
 
   const client = new SecretsManagerClient({ region: region });
   const input = {
@@ -196,7 +196,12 @@ export const exchangeAuthorizationCode = async (
 
   let callbackUrl = cognitoParams.callbackUrl;
   if (origin) {
-    callbackUrl = `${origin}/${stage}/ui/login`;
+    // If using default API Gateway domain, include stage in path
+    // Otherwise its a custom domain, DO NOT include stage.
+    callbackUrl =
+      origin.includes('amazonaws.com') || origin.includes('localhost')
+        ? `${origin}/${stage}/ui/login`
+        : `${origin}/ui/login`;
   }
   if (callbackOverride) {
     callbackUrl = callbackOverride;
@@ -333,7 +338,7 @@ export const revokeRefreshToken = async (refreshToken: string) => {
 export const getAvailableEndpoints: AvailableEndpointsSignature = async (event) => {
   const deaRoleName = getRequiredHeader(event, 'deaRole');
   const ssmClient = new SSMClient({ region });
-  const roleActionsPath = `/dea/${region}/${stage}-${deaRoleName}-actions`;
+  const roleActionsPath = `/dea/${stage}-${deaRoleName}-actions`;
   const response = await ssmClient.send(
     new GetParametersCommand({
       Names: [roleActionsPath],

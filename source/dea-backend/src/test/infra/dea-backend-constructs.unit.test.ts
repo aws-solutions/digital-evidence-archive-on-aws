@@ -13,10 +13,13 @@ import { DeaAuditTrail } from '../../constructs/dea-audit-trail';
 import { DeaAuth } from '../../constructs/dea-auth';
 import { DeaBackendConstruct } from '../../constructs/dea-backend-stack';
 import { DeaEventHandlers } from '../../constructs/dea-event-handlers';
+import { DeaOperationalDashboard } from '../../constructs/dea-ops-dashboard';
 import { DeaParameters } from '../../constructs/dea-parameters';
 import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
 import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
+
+const PROTECTED_DEA_RESOURCES: string[] = [];
 
 describe('DeaBackend constructs', () => {
   const expectedLambdaCount = 39;
@@ -45,12 +48,15 @@ describe('DeaBackend constructs', () => {
       pendingWindow: Duration.days(7),
     });
 
+    const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
+
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', {
+    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       accessLogsPrefixes: ['dea-ui-access-log'],
+      opsDashboard: dashboard,
     });
-    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
+    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
@@ -60,8 +66,9 @@ describe('DeaBackend constructs', () => {
       deaTableArn: backend.deaTable.tableArn,
       lambdaEnv: {},
       kmsKey: key,
+      opsDashboard: dashboard,
     });
-    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
+    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', PROTECTED_DEA_RESOURCES, {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
       deaDatasetsBucket: backend.datasetsBucket,
@@ -69,7 +76,6 @@ describe('DeaBackend constructs', () => {
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
-      region: stack.region,
       accountId: stack.account,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
@@ -77,6 +83,7 @@ describe('DeaBackend constructs', () => {
         DATASETS_BUCKET_NAME: backend.datasetsBucket.bucketName,
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
       },
+      opsDashboard: dashboard,
     });
 
     // Prepare the stack for assertions.
@@ -107,7 +114,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', {
+    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
@@ -129,12 +136,15 @@ describe('DeaBackend constructs', () => {
       pendingWindow: Duration.days(7),
     });
 
+    const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
+
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', {
+    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       accessLogsPrefixes: ['dea-ui-access-log'],
+      opsDashboard: dashboard,
     });
-    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
+    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
@@ -144,8 +154,9 @@ describe('DeaBackend constructs', () => {
       deaTableArn: backend.deaTable.tableArn,
       lambdaEnv: {},
       kmsKey: key,
+      opsDashboard: dashboard,
     });
-    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
+    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', PROTECTED_DEA_RESOURCES, {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
       deaDatasetsBucket: backend.datasetsBucket,
@@ -153,7 +164,6 @@ describe('DeaBackend constructs', () => {
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey: key,
-      region: stack.region,
       accountId: stack.account,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
@@ -161,6 +171,7 @@ describe('DeaBackend constructs', () => {
         DATASETS_BUCKET_NAME: backend.datasetsBucket.bucketName,
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
       },
+      opsDashboard: dashboard,
     });
 
     const apiEndpointArns = new Map([
@@ -175,15 +186,15 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', {
+    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
 
-    // throws due to unassigned parameter
-    expect(() => {
-      Template.fromStack(stack);
-    }).toThrow('ID components may not include unresolved tokens');
+    const template = Template.fromStack(stack);
+    template.hasParameter('*', {
+      Type: 'String',
+    });
   });
 
   it('synthesizes without Delete Case Handler when `deletionAllowed` Flag is NOT set', () => {
@@ -202,12 +213,15 @@ describe('DeaBackend constructs', () => {
       pendingWindow: Duration.days(7),
     });
 
+    const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
+
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', {
+    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       accessLogsPrefixes: ['dea-ui-access-log'],
+      opsDashboard: dashboard,
     });
-    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', {
+    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
@@ -217,8 +231,9 @@ describe('DeaBackend constructs', () => {
       deaTableArn: backend.deaTable.tableArn,
       lambdaEnv: {},
       kmsKey: key,
+      opsDashboard: dashboard,
     });
-    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', {
+    const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', PROTECTED_DEA_RESOURCES, {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
       deaDatasetsBucket: backend.datasetsBucket,
@@ -226,7 +241,6 @@ describe('DeaBackend constructs', () => {
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
-      region: stack.region,
       accountId: stack.account,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
@@ -234,6 +248,7 @@ describe('DeaBackend constructs', () => {
         DATASETS_BUCKET_NAME: backend.datasetsBucket.bucketName,
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
       },
+      opsDashboard: dashboard,
     });
 
     //Auth construct
@@ -249,7 +264,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', {
+    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });

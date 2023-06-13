@@ -1,14 +1,12 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { act, cleanup, fireEvent, getByRole, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, getByRole, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import Axios from 'axios';
 import { auditLogLabels, caseDetailLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
-
-afterEach(cleanup);
 
 const push = jest.fn();
 const CASE_ID = '100';
@@ -59,6 +57,23 @@ const mockFilesRoot = {
       sha256Hash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
       versionId: 'mwXq6KDGPfw8qD3oUeDNjh2dsSGWWHad',
       status: 'ACTIVE',
+      created: '2023-03-10T01:30:04.877Z',
+      updated: '2023-03-10T01:30:14.326Z',
+      isFile: true,
+    },
+    {
+      ulid: '01GV4J7C6D18WQVCBA7RAPXTT2',
+      caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
+      fileName: 'rootFile2',
+      contentType: 'application/octet-stream',
+      createdBy: '01GV13XRYZE1VKY7TY88Y7RPH0',
+      filePath: '/',
+      fileSizeMb: 50,
+      uploadId:
+        'OEQeZM6D6jYzdHm6nnpXggWDlDhSZbZ1mcUe7JKdpfHP5zSnWlQ3kU.iz5v6zyOiQVvPqS9BfFixgBQgxRaa242L6XQyT2MwzUw7Nizk1pvXQJR_anulhvuvjGH_hpQ1x7ciO5yEDWEKTaxBF5vtxSryncXAFpHfBWBzSQi01Eou9I8PzadqnirZU0PBlN.3DxFuJP8pG2FTMHlBQSlEcB--',
+      sha256Hash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
+      versionId: 'mwXq6KDGPfw8qD3oUeDNjh2dsSGWWHad',
+      status: 'INACTIVE',
       created: '2023-03-10T01:30:04.877Z',
       updated: '2023-03-10T01:30:14.326Z',
       isFile: true,
@@ -161,51 +176,111 @@ const mockedCaseUsers = {
 };
 
 let csvCall = -1;
-let failingCall = -1;
 
 const csvResult = [{ status: 'Running' }, { status: 'Running' }, 'csvresults'];
 
-const failingCsvResult = [{ status: 'Running' }, { status: 'Running' }, { status: 'Cancelled' }];
+const ACTIVE_USER_ID = mockedUsers.users[0].ulid;
+const OTHER_USER_ID = mockedUsers.users[1].ulid;
+
+mockedAxios.create.mockReturnThis();
+mockedAxios.request.mockImplementation((eventObj) => {
+  if (eventObj.url?.endsWith(`${CASE_ID}/details`)) {
+    return Promise.resolve({
+      data: mockedCaseDetail,
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+  } else if (eventObj.url?.endsWith('100/actions')) {
+    return Promise.resolve({
+      data: mockedCaseActions,
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+  } else if (eventObj.url?.endsWith(`${CASE_ID}/userMemberships`)) {
+    if (eventObj.method === 'POST') {
+      return Promise.resolve({
+        data: {},
+        status: 200,
+        statusText: 'Ok',
+        headers: {},
+        config: {},
+      });
+    }
+    return Promise.resolve({
+      data: mockedCaseUsers,
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+  } else if (eventObj.url?.endsWith(`${CASE_ID}/users/${ACTIVE_USER_ID}/memberships`)) {
+    if (eventObj.method === 'DELETE') {
+      return Promise.resolve({
+        data: {},
+        status: 200,
+        statusText: 'Ok',
+        headers: {},
+        config: {},
+      });
+    }
+    // put
+    return Promise.resolve({
+      data: {},
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+  } else if (eventObj.url?.includes('files?filePath=/food/')) {
+    return Promise.resolve({
+      data: mockFilesFood,
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+  } else if (eventObj.url?.includes('files?filePath=/')) {
+    return Promise.resolve({
+      data: mockFilesRoot,
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+  } else if (eventObj.url?.endsWith('audit')) {
+    return Promise.resolve({
+      data: { auditId: '11111111-1111-1111-1111-111111111111' },
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+  } else if (eventObj.url?.endsWith('csv')) {
+    return Promise.resolve({
+      data: csvResult[++csvCall],
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+  } else {
+    // get users
+    return Promise.resolve({
+      data: mockedUsers,
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+  }
+});
 
 describe('CaseDetailsPage', () => {
   it('renders a case details page', async () => {
-    mockedAxios.create.mockReturnThis();
-    mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url?.endsWith('100/details')) {
-        return Promise.resolve({
-          data: mockedCaseDetail,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith('100/actions')) {
-        return Promise.resolve({
-          data: mockedCaseActions,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith('files?filePath=/food/')) {
-        return Promise.resolve({
-          data: mockFilesFood,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else {
-        return Promise.resolve({
-          data: mockFilesRoot,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      }
-    });
-
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
@@ -218,7 +293,7 @@ describe('CaseDetailsPage', () => {
     expect(table).toBeTruthy();
 
     const folderEntry = await screen.findByTestId('food-button');
-    const fileEntry = await screen.findByTestId('rootFile-box');
+    const fileEntry = await screen.findByTestId('rootFile-file-button');
     // the folder button exists
     expect(folderEntry).toBeTruthy();
     // the file exists as a box
@@ -232,17 +307,17 @@ describe('CaseDetailsPage', () => {
     textFilterInput.setInputValue('food');
 
     // after filtering, rootFile will not be visible
-    await waitFor(() => expect(screen.queryByTestId('rootFile-box')).toBeNull());
+    await waitFor(() => expect(screen.queryByTestId('rootFile-file-button')).toBeNull());
 
     // clear the filter
     textFilterInput.setInputValue('');
-    await waitFor(() => expect(screen.queryByTestId('rootFile-box')).toBeDefined());
+    await waitFor(() => expect(screen.queryByTestId('rootFile-file-button')).toBeDefined());
 
     // click on the folder to navigate
     fireEvent.click(folderEntry);
 
     // we should now see the new file "sushi.png"
-    await waitFor(() => expect(screen.getByTestId('sushi.png-box')).toBeDefined());
+    await waitFor(() => expect(screen.getByTestId('sushi.png-file-button')).toBeDefined());
 
     const breadcrumb = wrapper(page.container).findBreadcrumbGroup();
 
@@ -254,77 +329,10 @@ describe('CaseDetailsPage', () => {
 
     // should find the original rows again
     await screen.findByTestId('food-button');
-    await screen.findByTestId('rootFile-box');
+    await screen.findByTestId('rootFile-file-button');
   });
 
   it('navigates to manage access page', async () => {
-    const ACTIVE_USER_ID = mockedUsers.users[0].ulid;
-    const OTHER_USER_ID = mockedUsers.users[1].ulid;
-    mockedAxios.create.mockReturnThis();
-    mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url?.endsWith(`${CASE_ID}/details`)) {
-        return Promise.resolve({
-          data: mockedCaseDetail,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith('100/actions')) {
-        return Promise.resolve({
-          data: mockedCaseActions,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith(`${CASE_ID}/userMemberships`)) {
-        if (eventObj.method === 'POST') {
-          return Promise.resolve({
-            data: {},
-            status: 200,
-            statusText: 'Ok',
-            headers: {},
-            config: {},
-          });
-        }
-        return Promise.resolve({
-          data: mockedCaseUsers,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith(`${CASE_ID}/users/${ACTIVE_USER_ID}/memberships`)) {
-        if (eventObj.method === 'DELETE') {
-          return Promise.resolve({
-            data: {},
-            status: 200,
-            statusText: 'Ok',
-            headers: {},
-            config: {},
-          });
-        }
-        // put
-        return Promise.resolve({
-          data: {},
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else {
-        // get users
-        return Promise.resolve({
-          data: mockedUsers,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      }
-    });
-
     const page = render(
       <NotificationsProvider>
         <CaseDetailsPage />
@@ -415,26 +423,6 @@ describe('CaseDetailsPage', () => {
   }, 15000);
 
   it('navigates to upload files page', async () => {
-    mockedAxios.create.mockReturnThis();
-    mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url?.endsWith('actions')) {
-        return Promise.resolve({
-          data: mockedCaseActions,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else {
-        return Promise.resolve({
-          data: mockedCaseDetail,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      }
-    });
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
@@ -445,51 +433,6 @@ describe('CaseDetailsPage', () => {
   });
 
   it('downloads a case audit', async () => {
-    mockedAxios.create.mockReturnThis();
-    mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url?.endsWith('details')) {
-        return Promise.resolve({
-          data: mockedCaseDetail,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith('actions')) {
-        return Promise.resolve({
-          data: mockedCaseActions,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith('audit')) {
-        return Promise.resolve({
-          data: { auditId: '11111111-1111-1111-1111-111111111111' },
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith('csv')) {
-        return Promise.resolve({
-          data: csvResult[++csvCall],
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else {
-        return Promise.resolve({
-          data: mockFilesRoot,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      }
-    });
-
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
@@ -503,65 +446,15 @@ describe('CaseDetailsPage', () => {
     });
   });
 
-  it('recovers from a from a csv download failure', async () => {
-    mockedAxios.create.mockReturnThis();
-    mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url?.endsWith('details')) {
-        return Promise.resolve({
-          data: mockedCaseDetail,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith('actions')) {
-        return Promise.resolve({
-          data: mockedCaseActions,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith('audit')) {
-        return Promise.resolve({
-          data: { auditId: '11111111-1111-1111-1111-111111111111' },
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else if (eventObj.url?.endsWith('csv')) {
-        return Promise.resolve({
-          data: failingCsvResult[++failingCall],
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      } else {
-        return Promise.resolve({
-          data: mockFilesRoot,
-          status: 200,
-          statusText: 'Ok',
-          headers: {},
-          config: {},
-        });
-      }
-    });
-
+  it('navigates to file details page', async () => {
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
-    const downloadCsvButton = await screen.findByText(auditLogLabels.downloadCSVLabel);
-    fireEvent.click(downloadCsvButton);
+    const fileEntry = await screen.findByTestId('rootFile-file-button');
+    fireEvent.click(fileEntry);
 
-    // upload button will be disabled while in progress and then re-enabled when done
-    await waitFor(() => expect(screen.queryByTestId('download-case-audit-csv-button')).toBeDisabled());
-    await waitFor(() => expect(screen.queryByTestId('download-case-audit-csv-button')).toBeEnabled(), {
-      timeout: 4000,
-    });
-    // error notification is visible
-    const notificationsWrapper = wrapper(page.container).findFlashbar()!;
-    expect(notificationsWrapper).toBeTruthy();
+    expect(push).toHaveBeenCalledWith(
+      `/file-detail?caseId=${mockFilesRoot.files[1].caseUlid}&fileId=${mockFilesRoot.files[1].ulid}`
+    );
   });
 });

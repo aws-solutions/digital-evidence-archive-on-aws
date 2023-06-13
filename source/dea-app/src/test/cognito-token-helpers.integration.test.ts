@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getDeaUserFromToken, getTokenPayload } from '../cognito-token-helpers';
+import { getDeaUserFromToken, getExpirationTimeFromToken, getTokenPayload } from '../cognito-token-helpers';
 import CognitoHelper from '../test-e2e/helpers/cognito-helper';
 import { testEnv } from '../test-e2e/helpers/settings';
 import { randomSuffix } from '../test-e2e/resources/test-helpers';
@@ -85,5 +85,16 @@ describe('cognito helpers integration test', () => {
     await expect(getDeaUserFromToken(tokenPayload)).rejects.toThrow(
       'First and/or last name not given in id token.'
     );
+  });
+
+  it('should return a ID Token expiration time from the token', async () => {
+    const { id_token } = await cognitoHelper.getIdTokenForUser(testUser);
+    const tokenPayload = await getTokenPayload(id_token, region);
+
+    tokenPayload['exp'] = 10000;
+    tokenPayload['iat'] = 9000;
+    const expirationTime = getExpirationTimeFromToken(tokenPayload);
+
+    expect(expirationTime).toStrictEqual(1000);
   });
 });

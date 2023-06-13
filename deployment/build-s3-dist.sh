@@ -33,7 +33,7 @@ normal=$(tput sgr0)
 # SETTINGS
 #------------------------------------------------------------------------------
 # Important: CDK global version number
-cdk_version=2.46.0
+cdk_version=2.76.0
 # Note: should match package.json
 template_format="json"
 run_helper="true"
@@ -94,7 +94,7 @@ do_replace()
 create_template_json() 
 {
     # Run 'cdk synth' to generate raw solution outputs
-    do_cmd rushx cdk context --clear && STAGE=$STAGE rushx cdk synth -q --output=$staging_dist_dir
+    do_cmd rushx cdk context --clear && STAGE=$STAGE CONFIGNAME=$CONFIGNAME rushx cdk synth -q --output=$staging_dist_dir
 
     # Remove unnecessary output files
     do_cmd cd $staging_dist_dir
@@ -111,6 +111,18 @@ create_template_json()
     for f in $template_dist_dir/*.template.json; do
         mv -- "$f" "${f%.template.json}.template"
     done
+}
+
+handle_ui_assets_output()
+{
+    # create ui directory
+    do_cmd mkdir -p "$staging_dist_dir/ui"
+
+    # copy artifacts from /ui/out to build_dist
+    do_cmd cp -r "$template_dir/../source/dea-ui/ui/out"/* "$staging_dist_dir/ui"
+    (cd $staging_dist_dir/ui && zip -r -X "../ui.zip" .)
+
+    do_cmd rm -rf "$staging_dist_dir/ui"
 }
 
 create_template_yaml() 
@@ -266,8 +278,18 @@ echo "--------------------------------------------------------------------------
 # Note: do not install using global (-g) option. This makes build-s3-dist.sh difficult
 # for customers and developers to use, as it globally changes their environment.
 
-STAGE=demo
+# Prepare DEA for build and clear environment variables for one-click
+STAGE=dea-one-click
 echo Stage set to $STAGE
+CONFIGNAME=ashoka
+echo config name set to $CONFIGNAME
+
+do_cmd cd $source_dir
+do_cmd unset DOMAIN_PREFIX && unset DEA_API_URL && unset IDENTITY_POOL_ID && unset USER_POOL_ID && unset USER_POOL_CLIENT_ID && unset DATASETS_BUCKET_NAME && unset S3_BATCH_DELETE_CASE_FILE_LAMBDA_ARN
+do_cmd rush rebuild
+
+# return to previous directory
+do_cmd cd $template_dir/cdk-solution-helper
 
 # Add local install to PATH
 export PATH=$(npm bin):$PATH
@@ -294,6 +316,14 @@ if fn_exists create_template_${template_format}; then
 else
     echo "Invalid setting for \$template_format: $template_format"
     exit 255
+fi
+
+echo "------------------------------------------------------------------------------"
+echo "${bold}[UI] Artifacts${normal}"
+echo "------------------------------------------------------------------------------"
+
+if fn_exists handle_ui_assets_output; then
+    handle_ui_assets_output
 fi
 
 echo "------------------------------------------------------------------------------"
@@ -341,6 +371,22 @@ ls -ltr
 if test -f $staging_dist_dir/*.gql; then
     echo "Move outputs of gql from staging to build_dist_dir"
     do_cmd mv $staging_dist_dir/*.gql $build_dist_dir/
+fi
+
+# looking for bundled asset zip
+pattern="asset.*.zip"
+
+for file in "$staging_dist_dir"/*; do
+    if [[ $file =~ $pattern ]]; then
+        new_filename="${file//asset./asset}"  # remove period in asset. for compatability
+        mv "$file" "$new_filename"
+        echo "Renamed file: $file to $new_filename"
+    fi
+done
+
+if [[ $(find "$staging_dist_dir" -maxdepth 1 -name "*.zip" -type f) ]]; then
+    echo "Move outputs of zip from staging to build_dist_dir"
+    do_cmd mv $staging_dist_dir/*.zip $build_dist_dir/
 fi
 
 for d in `find . -mindepth 1 -maxdepth 1 -type d`; do

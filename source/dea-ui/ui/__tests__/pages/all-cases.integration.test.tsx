@@ -21,7 +21,7 @@ describe('All Cases Dashboard', () => {
   it('renders a list of cases', async () => {
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url?.endsWith('all-cases')) {
+      if (eventObj.url?.includes('all-cases')) {
         return Promise.resolve({
           data: {
             cases: [

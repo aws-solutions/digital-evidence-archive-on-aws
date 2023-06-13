@@ -5,6 +5,7 @@
 
 import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -13,6 +14,7 @@ import {
   Header,
   Icon,
   Input,
+  Modal,
   SpaceBetween,
   Spinner,
   Table,
@@ -21,7 +23,7 @@ import {
 import cryptoJS from 'crypto-js';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { completeUpload, initiateUpload } from '../../api/cases';
+import { completeUpload, initiateUpload, useGetCaseActions } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import FileUpload from '../common-components/FileUpload';
@@ -46,14 +48,16 @@ interface ActiveFileUpload {
 }
 
 export const ONE_MB = 1024 * 1024;
+const MAX_PARALLEL_UPLOADS = 10;
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
   const [uploadedFiles] = useState<FileUploadProgressRow[]>([]);
-  const [tag, setTag] = useState('');
   const [details, setDetails] = useState('');
   const [reason, setReason] = useState('');
   const [uploadInProgress, setUploadInProgress] = useState(false);
+  const [confirmationVisible, setConfirmationVisible] = useState(false);
+  const userActions = useGetCaseActions(props.caseId);
   const router = useRouter();
 
   async function onSubmitHandler() {
@@ -78,7 +82,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
             fileSizeBytes,
             chunkSizeBytes,
             contentType,
-            tag,
             reason,
             details,
           });
@@ -98,38 +101,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       for (const activeFileUpload of activeFileUploads) {
         // per file try/finally state to upload to s3
         try {
-          const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
-          const uploadPromises: Promise<Response>[] = [];
-          const hash = cryptoJS.algo.SHA256.create();
-          if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
-            const numberOfUrls = initiatedCaseFile.presignedUrls.length;
-            const chunkSizeBytes = initiatedCaseFile.chunkSizeBytes
-              ? initiatedCaseFile.chunkSizeBytes
-              : 50 * ONE_MB;
-            for (let index = 0; index < initiatedCaseFile.presignedUrls.length; index += 1) {
-              const url = initiatedCaseFile.presignedUrls[index];
-              const start = index * chunkSizeBytes;
-              const end = (index + 1) * chunkSizeBytes;
-              const filePartPointer =
-                index === numberOfUrls - 1
-                  ? activeFileUpload.file.slice(start)
-                  : activeFileUpload.file.slice(start, end);
-              const loadedFilePart = await readFileSlice(filePartPointer);
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
-              hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
-              uploadPromises[index] = fetch(url, { method: 'PUT', body: loadedFilePart });
-            }
-            await Promise.all(uploadPromises);
-
-            await completeUpload({
-              caseUlid: props.caseId,
-              ulid: initiatedCaseFile.ulid,
-              uploadId: initiatedCaseFile.uploadId,
-              sha256Hash: hash.finalize().toString(),
-            });
-          }
-          activeFileUpload.fileUploadProgress.status = UploadStatus.complete;
+          await finalizeFileUpload(activeFileUpload);
         } catch (e) {
           activeFileUpload.fileUploadProgress.status = UploadStatus.failed;
           console.log('Upload failed', e);
@@ -138,6 +110,48 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     } finally {
       setUploadInProgress(false);
     }
+  }
+
+  async function finalizeFileUpload(activeFileUpload: ActiveFileUpload) {
+    const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
+    let uploadPromises: Promise<Response>[] = [];
+    const hash = cryptoJS.algo.SHA256.create();
+    if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
+      const numberOfUrls = initiatedCaseFile.presignedUrls.length;
+      const chunkSizeBytes = initiatedCaseFile.chunkSizeBytes
+        ? initiatedCaseFile.chunkSizeBytes
+        : 50 * ONE_MB;
+      for (let index = 0; index < initiatedCaseFile.presignedUrls.length; index += 1) {
+        const url = initiatedCaseFile.presignedUrls[index];
+        const start = index * chunkSizeBytes;
+        const end = (index + 1) * chunkSizeBytes;
+        const filePartPointer =
+          index === numberOfUrls - 1
+            ? activeFileUpload.file.slice(start)
+            : activeFileUpload.file.slice(start, end);
+        const loadedFilePart = await readFileSlice(filePartPointer);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
+        hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
+        uploadPromises[index] = fetch(url, { method: 'PUT', body: loadedFilePart });
+
+        if (index > 0 && index % MAX_PARALLEL_UPLOADS === 0) {
+          // getting user actions from api to reset idle timer while upload is in progress
+          userActions.mutate();
+          await Promise.all(uploadPromises);
+          uploadPromises = [];
+        }
+      }
+      await Promise.all(uploadPromises);
+
+      await completeUpload({
+        caseUlid: props.caseId,
+        ulid: initiatedCaseFile.ulid,
+        uploadId: initiatedCaseFile.uploadId,
+        sha256Hash: hash.finalize().toString(),
+      });
+    }
+    activeFileUpload.fileUploadProgress.status = UploadStatus.complete;
   }
 
   async function readFileSlice(blob: Blob): Promise<Uint8Array> {
@@ -198,17 +212,47 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     }
   }
 
-  function onCancelHandler() {
+  function onDoneHandler() {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     router.push(`/case-detail?caseId=${props.caseId}`);
   }
 
   function validateFields(): boolean {
-    return reason.length > 1 && tag.length > 1 && details.length > 1;
+    return reason.length > 1 && details.length > 1;
   }
 
   return (
     <SpaceBetween data-testid="upload-file-form-space" size="s">
+      <Modal
+        data-testid="upload-file-form-modal"
+        onDismiss={() => setConfirmationVisible(false)}
+        visible={confirmationVisible}
+        closeAriaLabel="Close modal"
+        footer={
+          <Box float="right">
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button variant="link" onClick={() => setConfirmationVisible(false)}>
+                Go back
+              </Button>
+              <Button
+                data-testid="confirm-upload-button"
+                variant="primary"
+                onClick={() => {
+                  void onSubmitHandler();
+                  setConfirmationVisible(false);
+                }}
+              >
+                Confirm
+              </Button>
+            </SpaceBetween>
+          </Box>
+        }
+        header={fileOperationsLabels.modalTitle}
+      >
+        <Alert statusIconAriaLabel="Warning" type="warning">
+          {fileOperationsLabels.modalBody}
+        </Alert>
+      </Modal>
       <Form>
         <Container
           header={
@@ -218,19 +262,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           }
         >
           <SpaceBetween direction="vertical" size="l">
-            <FormField
-              data-testid="input-tag"
-              label={fileOperationsLabels.evidenceTagLabel}
-              description={fileOperationsLabels.evidenceTagDescription}
-              errorText={tag.length > 1 ? '' : commonLabels.requiredLength}
-            >
-              <Input
-                value={tag}
-                onChange={({ detail: { value } }) => {
-                  setTag(value);
-                }}
-              />
-            </FormField>
             <FormField
               data-testid="input-details"
               label={fileOperationsLabels.evidenceDetailsLabel}
@@ -267,17 +298,17 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       </Form>
 
       <SpaceBetween direction="horizontal" size="xs">
-        <Button formAction="none" variant="link" data-testid="upload-file-cancel" onClick={onCancelHandler}>
-          {commonLabels.cancelButton}
+        <Button formAction="none" variant="link" onClick={onDoneHandler}>
+          {commonLabels.doneButton}
         </Button>
         <Button
           variant="primary"
           iconAlign="right"
           data-testid="upload-file-submit"
-          onClick={onSubmitHandler}
+          onClick={() => setConfirmationVisible(true)}
           disabled={uploadInProgress || !validateFields()}
         >
-          {commonLabels.uploadButton}
+          {commonLabels.uploadAndSaveButton}
         </Button>
         {uploadInProgress ? <Spinner size="big" variant="disabled" /> : null}
       </SpaceBetween>

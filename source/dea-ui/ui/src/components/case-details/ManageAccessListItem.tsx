@@ -13,7 +13,6 @@ import {
   Multiselect,
   MultiselectProps,
   SelectProps,
-  TextContent,
 } from '@cloudscape-design/components';
 import { useMemo, useState } from 'react';
 import { caseActionOptions, commonLabels, manageCaseAccessLabels } from '../../common/labels';
@@ -67,11 +66,7 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
       gridDefinition={[{ colspan: { default: 12, xs: 10 } }, { colspan: { default: 12, xs: 2 } }]}
     >
       <ColumnLayout columns={2}>
-        <FormField label={`${caseMember.userFirstName} ${caseMember.userLastName}`}>
-          <TextContent>
-            <u>{manageCaseAccessLabels.manageMemberEmailLabel}</u>
-          </TextContent>
-        </FormField>
+        <FormField label={`${caseMember.userFirstName} ${caseMember.userLastName}`} />
         <FormField label={manageCaseAccessLabels.manageMemberPermissionsLabel}>
           <Multiselect
             data-testid={`${caseMember.userUlid}-multiselect`}

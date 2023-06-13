@@ -40,14 +40,18 @@
     "test:noe2e": "heft test --no-build --test-path-pattern '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": "heft test --no-build --test-path-pattern test",
     "test:only:u": "heft test -u --no-build --verbose --test-path-pattern test",
-    "unit:only": "heft test --no-build --test-path-pattern '.*/*unit.test.*'",
-    "test:sonar": "rushx test:only"
+    "test:sonar": "rushx test:only",
+    "unit:only": "heft test --no-build --test-path-pattern '.*/*unit.test.*'"
   },
   "dependencies": {
     "@aws/dea-backend": "workspace:*",
     "@aws/dea-ui": "workspace:*",
     "@aws/dea-ui-infrastructure": "workspace:*",
+    "aws-cdk": "2.76.0",
+    "aws-cdk-lib": "2.76.0",
     "aws-lambda": "^1.0.7",
+    "constructs": "10.2.5",
+    "dynamodb-onetable": "2.5.1",
     "lodash": "^4.17.21",
     "source-map-support": "^0.5.16"
   },
@@ -62,11 +66,7 @@
     "@types/node": "^18.15.7",
     "@typescript-eslint/eslint-plugin": "~5.56.0",
     "@typescript-eslint/parser": "~5.56.0",
-    "aws-cdk": "2.76.0",
-    "aws-cdk-lib": "2.76.0",
     "axios": "^0.27.1",
-    "constructs": "10.2.5",
-    "dynamodb-onetable": "2.5.1",
     "esbuild": "^0.17.13",
     "eslint": "^8.36.0",
     "eslint-plugin-import": "^2.27.5",

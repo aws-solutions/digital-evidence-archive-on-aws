@@ -51,7 +51,6 @@ export const FILE_SIZE_BYTES = 50;
 export const CHUNK_SIZE_BYTES = 499 * ONE_MB;
 const CONTENT_TYPE = 'image/jpeg';
 const REASON = 'none';
-const TAG = 'yum';
 const DETAILS = 'hungry';
 export const DATASETS_PROVIDER = {
   s3Client: new S3Client({ region: 'us-east-1' }),
@@ -74,7 +73,6 @@ export const callInitiateCaseFileUpload = async (
   filePath = FILE_PATH,
   contentType = CONTENT_TYPE,
   fileSizeBytes = FILE_SIZE_BYTES,
-  tag = TAG,
   reason = REASON,
   details = DETAILS,
   chunkSizeBytes = CHUNK_SIZE_BYTES
@@ -92,7 +90,6 @@ export const callInitiateCaseFileUpload = async (
       filePath,
       contentType,
       fileSizeBytes,
-      tag,
       reason,
       details,
       chunkSizeBytes,
@@ -339,7 +336,6 @@ export const validateCaseFile = async (
   expectedFilePath = FILE_PATH,
   expectedContentType = CONTENT_TYPE,
   expectedFileSizeBytes = FILE_SIZE_BYTES,
-  expectedTag = TAG,
   expectedReason = REASON,
   expectedDetails = DETAILS
 ): Promise<void> => {
@@ -351,7 +347,6 @@ export const validateCaseFile = async (
   expect(deaCaseFile.filePath).toEqual(expectedFilePath);
   expect(deaCaseFile.createdBy).toEqual(expectedCreator);
   expect(deaCaseFile.fileSizeBytes).toEqual(expectedFileSizeBytes);
-  expect(deaCaseFile.tag).toEqual(expectedTag);
   expect(deaCaseFile.details).toEqual(expectedDetails);
   expect(deaCaseFile.reason).toEqual(expectedReason);
 };

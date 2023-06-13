@@ -5,16 +5,18 @@
 
 import path from 'path';
 import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
-import { Duration, Fn } from 'aws-cdk-lib';
-
+import { Aws, Duration, Fn } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   AuthorizationType,
+  DomainNameOptions,
   EndpointType,
   LambdaIntegration,
   LogGroupLogDestination,
   RestApi,
+  SecurityPolicy,
 } from 'aws-cdk-lib/aws-apigateway';
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import {
   ArnPrincipal,
   Effect,
@@ -27,6 +29,8 @@ import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
+import { ApiGateway } from 'aws-cdk-lib/aws-route53-targets';
 import { Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3';
 import {
   AwsCustomResource,
@@ -39,6 +43,7 @@ import { deaConfig } from '../config';
 import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway-route-config';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
 import { createCfnOutput } from './construct-support';
+import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 interface LambdaEnvironment {
   [key: string]: string;
@@ -51,9 +56,9 @@ interface DeaRestApiProps {
   deaAuditLogArn: string;
   deaTrailLogArn: string;
   kmsKey: Key;
-  region: string;
   accountId: string;
   lambdaEnv: LambdaEnvironment;
+  opsDashboard: DeaOperationalDashboard;
 }
 
 export class DeaRestApiConstruct extends Construct {
@@ -64,8 +69,15 @@ export class DeaRestApiConstruct extends Construct {
   public customResourceRole: Role;
   public deaRestApi: RestApi;
   public apiEndpointArns: Map<string, string>;
+  private opsDashboard: DeaOperationalDashboard;
+  public accessLogGroup: LogGroup;
 
-  public constructor(scope: Construct, stackName: string, props: DeaRestApiProps) {
+  public constructor(
+    scope: Construct,
+    stackName: string,
+    protectedDeaResourceArns: string[],
+    props: DeaRestApiProps
+  ) {
     super(scope, stackName);
 
     this.apiEndpointArns = new Map<string, string>();
@@ -76,7 +88,6 @@ export class DeaRestApiConstruct extends Construct {
       props.kmsKey.keyArn,
       props.deaTableArn,
       props.deaDatasetsBucket.bucketArn,
-      props.region,
       props.accountId,
       partition,
       props.deaAuditLogArn,
@@ -84,7 +95,7 @@ export class DeaRestApiConstruct extends Construct {
       props.s3BatchDeleteCaseFileRoleArn
     );
 
-    this.authLambdaRole = this.createAuthLambdaRole(props.region, props.accountId, partition);
+    this.authLambdaRole = this.createAuthLambdaRole(props.accountId, partition);
 
     this.datasetsRole = this.createDatasetsRole(props.kmsKey.keyArn, props.deaDatasetsBucket.bucketArn);
 
@@ -108,11 +119,37 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
-    const accessLogGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
+    this.accessLogGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
       encryptionKey: props.kmsKey,
     });
 
+    protectedDeaResourceArns.push(this.accessLogGroup.logGroupArn);
+
     const STAGE = deaConfig.stage();
+
+    this.opsDashboard = props.opsDashboard;
+
+    // Define your custom domain for use with the API if provided
+    let domainNameOptions: DomainNameOptions | undefined;
+    const customDomainNameInfo = deaConfig.customDomainInfo();
+    const useCustomDomain: boolean =
+      customDomainNameInfo.domainName &&
+      customDomainNameInfo.certificateArn &&
+      customDomainNameInfo.hostedZoneId &&
+      customDomainNameInfo.hostedZoneName
+        ? true
+        : false;
+    if (useCustomDomain) {
+      domainNameOptions = {
+        certificate: Certificate.fromCertificateArn(
+          this,
+          'CustomDomainCert',
+          customDomainNameInfo.certificateArn ?? fail()
+        ),
+        domainName: customDomainNameInfo.domainName ?? fail(),
+        securityPolicy: SecurityPolicy.TLS_1_2,
+      };
+    }
 
     this.deaRestApi = new RestApi(this, `dea-api`, {
       description: 'Backend API',
@@ -129,12 +166,20 @@ export class DeaRestApiConstruct extends Construct {
         // For instance: // CloudWatch Logs Insights queries have a maximum of 30 concurrent queries, including queries that have been added to dashboards. This quota can't be changed.
         methodOptions: {
           '/*/*': {
+            throttlingBurstLimit: 40,
+            throttlingRateLimit: 40,
+            metricsEnabled: true,
+          },
+          // /availableEndpoints reads data from the Parameter Store.
+          // Default throughput: 40 (Shared by the following API actions: GetParameter, GetParameters, GetParametersByPath)
+          // 30TPS is the safe value to avoid getting 502's Http errors for this endpoint.
+          '/availableEndpoints/GET': {
             throttlingBurstLimit: 30,
             throttlingRateLimit: 30,
             metricsEnabled: true,
           },
         },
-        accessLogDestination: new LogGroupLogDestination(accessLogGroup),
+        accessLogDestination: new LogGroupLogDestination(this.accessLogGroup),
         accessLogFormat: AccessLogFormat.custom(
           JSON.stringify({
             stage: '$context.stage',
@@ -148,6 +193,8 @@ export class DeaRestApiConstruct extends Construct {
             httpMethod: '$context.httpMethod',
             sourceIp: '$context.identity.sourceIp',
             userAgent: '$context.identity.userAgent',
+            integrationLatency: '$context.integrationLatency',
+            responseLatency: '$context.responseLatency',
           })
         ),
       },
@@ -155,7 +202,19 @@ export class DeaRestApiConstruct extends Construct {
       defaultMethodOptions: {
         authorizationType: AuthorizationType.IAM,
       },
+      domainName: domainNameOptions,
+      disableExecuteApiEndpoint: false,
     });
+
+    if (useCustomDomain) {
+      new ARecord(this, 'AliasRecord', {
+        zone: HostedZone.fromHostedZoneAttributes(this, 'HostedZoneId', {
+          hostedZoneId: customDomainNameInfo.hostedZoneId ?? fail(),
+          zoneName: customDomainNameInfo.hostedZoneName ?? fail(),
+        }),
+        target: RecordTarget.fromAlias(new ApiGateway(this.deaRestApi)),
+      });
+    }
 
     this.configureApiGateway(deaApiRouteConfig, props.lambdaEnv, props.accountId);
 
@@ -165,6 +224,11 @@ export class DeaRestApiConstruct extends Construct {
   private updateBucketCors(restApi: RestApi, bucketName: Readonly<string>) {
     const allowedOrigins = deaConfig.deaAllowedOriginsList();
     allowedOrigins.push(`https://${Fn.parseDomainName(restApi.url)}`);
+
+    const customDomainName = deaConfig.customDomainInfo().domainName;
+    if (customDomainName) {
+      allowedOrigins.push(`https://${customDomainName}`);
+    }
 
     const updateCorsCall: AwsSdkCall = {
       service: 'S3',
@@ -237,6 +301,7 @@ export class DeaRestApiConstruct extends Construct {
       // full set of permissions
       const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
       this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv, accountId);
+      this.opsDashboard.addMethodOperationalComponents(this.deaRestApi, route);
     });
   }
 
@@ -263,6 +328,7 @@ export class DeaRestApiConstruct extends Construct {
           lambdaEnv,
           accountId
         );
+        this.opsDashboard.addLambdaOperationalComponents(lambda, route.eventName, route);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let queryParams: any = {};
@@ -375,7 +441,6 @@ export class DeaRestApiConstruct extends Construct {
     kmsKeyArn: string,
     tableArn: string,
     datasetsBucketArn: string,
-    region: string,
     accountId: string,
     partition: string,
     auditLogArn: string,
@@ -383,6 +448,7 @@ export class DeaRestApiConstruct extends Construct {
     s3BatchDeleteCaseFileRoleArn: string
   ): Role {
     const STAGE = deaConfig.stage();
+    const region = Aws.REGION;
 
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
@@ -461,7 +527,7 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
+        resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${STAGE}*`],
       })
     );
 
@@ -490,7 +556,8 @@ export class DeaRestApiConstruct extends Construct {
     return role;
   }
 
-  private createAuthLambdaRole(region: string, accountId: string, partition: string): Role {
+  private createAuthLambdaRole(accountId: string, partition: string): Role {
+    const region = Aws.REGION;
     const STAGE = deaConfig.stage();
 
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
@@ -504,7 +571,7 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${region}/${STAGE}*`],
+        resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${STAGE}*`],
       })
     );
 
@@ -512,7 +579,7 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['secretsmanager:GetSecretValue'],
         resources: [
-          `arn:${partition}:secretsmanager:${region}:${accountId}:secret:/dea/${region}/${STAGE}/clientSecret-*`,
+          `arn:${partition}:secretsmanager:${region}:${accountId}:secret:/dea/${STAGE}/clientSecret-*`,
         ],
       })
     );

@@ -72,34 +72,25 @@ paths:
                     type: string
                   caseId:
                     type: string
-  /config:
-    put:
-      summary: Put storage config
-      tags:
-        - elevated
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StorageConfig'
-      responses:
-        200:
-          description: Storage config successfully updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StorageConfig'
+  /cases/{caseId}/scopedInformation:
     get:
-      summary: Get storage config
+      summary: Return scoped information on case by Case Id
+      description: Get specific set case details. Intended for evidence managers and admins
       tags:
         - elevated
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
       responses:
         200:
-          description: Success Response
+          description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StorageConfig'
+                $ref: '#/components/schemas/ScopedCase'
   /cases:
     post:
       tags:
@@ -253,6 +244,26 @@ paths:
                       $ref: '#/components/schemas/Cases'
                   next:
                     type: string
+
+  /cases/{caseId}/actions:
+    get:
+      summary: Return case actions available to user by case Id
+      description: Get user for case and their available actions
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseUser'
   /cases/{caseId}/details:
     get:
       summary: Return case details by case Id
@@ -294,37 +305,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Case'
+    delete:
+      summary: Delete case
+      tags:
+        - elevated
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Success
   /cases/{caseId}/status:
-      put:
-        summary: Update case status and optionally request deletion of case files
-        tags:
-          - cases
-        parameters:
-          - in: path
-            name: caseId
+    put:
+      summary: Update case status and optionally request deletion of case files
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
             schema:
-              type: string
-            required: true
-        requestBody:
+              type: object
+              properties:
+                name:
+                  type: string
+                deleteFiles:
+                  type: boolean
+                  default: false
+                status:
+                  $ref: '#/components/schemas/CaseStatus'
+      responses:
+        200:
+          description: Success
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                  deleteFiles:
-                    type: boolean
-                    default: false
-                  status:
-                    $ref: '#/components/schemas/CaseStatus'
-        responses:
-          200:
-            description: Success
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Case'
+                $ref: '#/components/schemas/Case'
   /cases/{caseId}/files:
     post:
       summary: Begin case file upload
@@ -414,33 +438,6 @@ paths:
                     type: string
                   file:
                     $ref: '#/components/schemas/CaseFile'
-    put:
-      summary: Complete case file upload
-      tags:
-        - cases
-      parameters:
-        - in: path
-          name: caseId
-          schema:
-            type: string
-          required: true
-        - in: path
-          name: fileId
-          schema:
-            type: string
-          required: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CaseFiles'
-      responses:
-        200:
-          description: Success Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CaseUploadResponse'
   /cases/{caseId}/files/{fileId}/contents:
     get:
       summary: Download file
@@ -473,6 +470,33 @@ paths:
                     format: uri
                   isRestoring:
                     type: boolean
+    put:
+      summary: Complete case file upload
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseFiles'
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseUploadResponse'
   /cases/{caseId}/files/{fileId}/restore:
     put:
       summary: Restore archived file
@@ -521,33 +545,58 @@ paths:
                       $ref: '#/components/schemas/Users'
                   next:
                     type: string
+
+  /availableEndpoints:
+    get:
+      summary: Get available endpoints for a user
+      tags:
+        - cases
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  actions:
+                    type: array
+                    items:
+                      type: string
 components:
   schemas:
     Case:
       type: object
       properties:
-        caseId:
+        ulid:
           type: string
-        caseName:
+        name:
           type: string
-        caseDescription:
-          type: string
-        createDate:
-          type: string
-        lastUpdateDate:
-          type: string
-        objectCount:
-          type: number
         status:
           $ref: '#/components/schemas/CaseStatus'
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/CaseAction'
+        objectCount:
+          type: number
+        totalSizeBytes:
+          type: number
+        fileStatus:
+          $ref: '#/components/schemas/CaseFileStatus'
+        s3BatchJobId:
+          type: string
+        created:
+          type: string
+        updated:
+          type: string
     Cases:
       type: array
       items:
         $ref: '#/components/schemas/Case'
+    ScopedCase:
+      type: object
+      properties:
+        ulid:
+          type: string
+        name:
+          type: string
     CaseUpdateRequest:
       type: object
       properties:
@@ -557,22 +606,18 @@ components:
           type: string
         caseDescription:
           type: string
-    CaseStatusRequest:
-      type: object
-      properties:
-        caseId:
-          type: string
-        caseStatus:
-          $ref: '#/components/schemas/CaseStatus'
     CreateCaseObject:
       type: object
       properties:
-        CaseName:
+        name:
           type: string
           example: Cookie Stealing
-        CaseDescription:
+        description:
           type: string
           example: Suspecting cookie monster stole all the cookies
+        status:
+          type: string
+          example: ACTIVE
     CaseUser:
       type: object
       properties:
@@ -589,6 +634,10 @@ components:
         firstName:
           type: string
         lastName:
+          type: string
+        created:
+          type: string
+        updated:
           type: string
     CaseUserRequest:
       type: object
@@ -659,13 +708,6 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/User'
-    StorageConfig:
-      type: object
-      properties:
-        ActiveStorage:
-          $ref: '#/components/schemas/StorageTier'
-        ArchiveStorage:
-          $ref: '#/components/schemas/StorageTier'
 
     CaseAction:
       type: string
@@ -673,6 +715,6 @@ components:
     CaseStatus:
       type: string
       enum: [ACTIVE, ARCHIVE, DELETED]
-    StorageTier:
+    CaseFileStatus:
       type: string
-      enum: [S3STANDARD, GLACIER_INSTANT, GLACIER_FLEX, GLACIER_DEEP]
+      enum: [ACTIVE, DELETING, DELETE_FAILED, DELETED, PENDING]

@@ -11,7 +11,7 @@ const args = minimist(process.argv.slice(2));
 
 const putTestUserCredsInSSMParamStore = async (username: string, password: string) => {
   const ssmClient = new SSMClient({ region: testEnv.awsRegion });
-  const idpTestUserSSMPathPrefix = `/dea/${testEnv.awsRegion}/${testEnv.stage}-test/idp/idp-test-user-`;
+  const idpTestUserSSMPathPrefix = `/dea/${testEnv.stage}-test/idp/idp-test-user-`;
 
   await ssmClient.send(
     new PutParameterCommand({

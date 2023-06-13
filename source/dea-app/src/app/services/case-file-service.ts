@@ -135,9 +135,9 @@ export const completeCaseFileUpload = async (
 export const listCaseFilesByFilePath = async (
   caseId: string,
   filePath: string,
-  limit = 30,
   repositoryProvider: ModelRepositoryProvider,
-  nextToken?: object
+  nextToken: object | undefined,
+  limit = 30
 ): Promise<Paged<DeaCaseFileResult>> => {
   return await CaseFilePersistence.listCaseFilesByFilePath(
     caseId,
@@ -183,7 +183,6 @@ const caseFilesToDTO = (
       updated: file.updated,
       isFile: file.isFile,
       reason: file.reason,
-      tag: file.tag,
       details: file.details,
     };
   });

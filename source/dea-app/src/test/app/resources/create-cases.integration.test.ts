@@ -45,12 +45,7 @@ describe('create cases resource', () => {
     const caseUlid = await createAndValidateCase(caseName, 'A description of the new case', user.ulid);
 
     //check the user has been added as a case user with all permissions
-    const casesForUser = await getCaseUsersForUser(
-      user.ulid ?? '',
-      /*limit=*/ undefined,
-      /*next*/ undefined,
-      repositoryProvider
-    );
+    const casesForUser = await getCaseUsersForUser(user.ulid ?? '', repositoryProvider, /*next=*/ undefined);
 
     expect(casesForUser.length).toEqual(1);
     const caseUser = casesForUser[0];

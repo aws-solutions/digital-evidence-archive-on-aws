@@ -34,9 +34,9 @@ export const getCase = async (
 };
 
 export const listCases = async (
-  limit = 30,
+  repositoryProvider: CaseModelRepositoryProvider,
   nextToken: object | undefined,
-  repositoryProvider: CaseModelRepositoryProvider
+  limit = 30
 ): Promise<Paged<DeaCase>> => {
   const caseEntities = await repositoryProvider.CaseModel.find(
     {

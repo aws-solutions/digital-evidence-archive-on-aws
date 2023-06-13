@@ -131,7 +131,12 @@ describe('Test complete case file upload', () => {
     await completeCaseFileUploadAndValidate(fileId, caseToUploadTo, fileName);
     await completeCaseFileUploadAndValidate(fileId2, caseToUploadTo, fileName2, 2);
 
-    const result = await listCaseFilesByFilePath(caseToUploadTo, '/', undefined, repositoryProvider);
+    const result = await listCaseFilesByFilePath(
+      caseToUploadTo,
+      '/',
+      repositoryProvider,
+      /*next=*/ undefined
+    );
     expect(result.length).toEqual(1);
     expect(result[0].fileName).toEqual('food');
 

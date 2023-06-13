@@ -21,7 +21,6 @@ export interface DeaCaseFile {
   chunkSizeBytes?: number;
   ttl?: number;
   versionId?: string;
-  readonly tag?: string;
   readonly details?: string;
   readonly reason?: string;
 
@@ -46,7 +45,6 @@ export interface DeaCaseFileResult {
   isFile: boolean;
   ttl?: number;
   reason?: string;
-  tag?: string;
   details?: string;
 }
 
@@ -70,7 +68,6 @@ export interface CaseFileDTO {
   readonly updated?: Date;
   readonly isFile: boolean;
   readonly reason?: string;
-  readonly tag?: string;
   readonly details?: string;
 }
 
@@ -87,7 +84,6 @@ export interface InitiateCaseFileUploadDTO {
   readonly filePath: string;
   readonly contentType: string;
   readonly fileSizeBytes: number;
-  readonly tag?: string;
   readonly details?: string;
   readonly reason?: string;
   readonly chunkSizeBytes: number;

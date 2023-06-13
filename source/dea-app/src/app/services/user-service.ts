@@ -52,12 +52,12 @@ export const getUserUsingTokenId = async (
 };
 
 export const getUsers = async (
-  limit = 30,
-  nextToken: object | undefined,
   nameBeginsWith: string | undefined,
-  repositoryProvider: ModelRepositoryProvider
+  repositoryProvider: ModelRepositoryProvider,
+  nextToken: object | undefined,
+  limit = 30
 ): Promise<Paged<DeaUser>> => {
-  return UserPersistence.listUsers(limit, nextToken, nameBeginsWith, repositoryProvider);
+  return UserPersistence.listUsers(nameBeginsWith, repositoryProvider, nextToken, limit);
 };
 
 export const validateUser = async (userUlid: string, repositoryProvider: ModelRepositoryProvider) => {

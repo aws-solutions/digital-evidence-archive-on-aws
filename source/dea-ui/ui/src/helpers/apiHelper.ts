@@ -7,9 +7,38 @@ import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { refreshCredentials, signOutProcess } from './authService';
 
 let urlBase = process.env.NEXT_PUBLIC_DEA_API_URL;
+const isUsingCustomDomain = process.env.NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN ? true : false;
 if (typeof window !== 'undefined' && !urlBase) {
-  urlBase = `https://${window.location.hostname}/${process.env.NEXT_PUBLIC_STAGE}/`;
+  if (isUsingCustomDomain) {
+    urlBase = `https://${window.location.hostname}/`;
+  } else {
+    urlBase = `https://${window.location.hostname}/${process.env.NEXT_PUBLIC_STAGE}/`;
+  }
 }
+
+const handleErrors = async (error: Error) => {
+  console.log(error);
+
+  let statusCode;
+  let endpointUrl;
+  if (error instanceof AxiosError) {
+    statusCode = error.response && error.response.status ? error.response.status : 0;
+    endpointUrl = error.response && error.config.url ? error.config.url : '';
+
+    // Logout if refresh failed (refresh token expired)
+    // Logout if 412 (session lock)
+    if (endpointUrl.includes('auth/refreshToken') || statusCode === 412) {
+      const logoutUrl = await signOutProcess();
+      window.location.assign(logoutUrl);
+    }
+
+    if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST') {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data);
+    }
+  }
+  throw new Error('there was an error while trying to retrieve data');
+};
 
 const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
   const accessKeyId = sessionStorage.getItem('accessKeyId');
@@ -49,30 +78,7 @@ const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
 
     client.interceptors.request.use(interceptor);
   }
-  const { data } = await client.request(options).catch(async (error: Error) => {
-    console.log(error);
-
-    let statusCode;
-    let endpointUrl;
-    if (error instanceof AxiosError) {
-      statusCode = error.response && error.response.status ? error.response.status : 0;
-      endpointUrl = error.response && error.config.url ? error.config.url : '';
-
-      // Logout if refresh failed (refresh token expired)
-      // Logout if 412 (session lock)
-      if (endpointUrl.includes('auth/refreshToken') || statusCode === 412) {
-        const logoutUrl = await signOutProcess();
-        window.location.assign(logoutUrl);
-      }
-
-      if (error instanceof AxiosError && error.code === 'ERR_BAD_REQUEST') {
-        console.log(error.response?.data);
-        throw new Error(error.response?.data);
-      }
-    }
-    // TODO: call logger to capture exception
-    throw new Error('there was an error while trying to retrieve data');
-  });
+  const { data } = await client.request(options).catch(handleErrors);
   return data;
 };
 

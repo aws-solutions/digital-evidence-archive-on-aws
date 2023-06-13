@@ -16,6 +16,7 @@ import {
   DeaRestApiConstruct,
   createCfnOutput,
   deaConfig,
+  DeaOperationalDashboard,
 } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
@@ -24,15 +25,15 @@ import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountPrincipal,
   Effect,
+  ManagedPolicy,
   PolicyDocument,
   PolicyStatement,
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { CfnFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { restrictResourcePolicies } from './apply-bucket-policies';
-import { addLambdaSuppressions } from './nag-suppressions';
+import { addLambdaSuppressions, addResourcePolicySuppressions } from './nag-suppressions';
 
 // DEA AppRegistry Constants
 export const SOLUTION_VERSION = '1.0.0';
@@ -42,6 +43,8 @@ export class DeaMainStack extends cdk.Stack {
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    const dashboard = new DeaOperationalDashboard(this, 'DeaApiOpsDashboard');
 
     // DEA App Register Construct
     this.appRegistry = new DeaAppRegisterConstruct(this, this.stackId, {
@@ -56,20 +59,23 @@ export class DeaMainStack extends cdk.Stack {
       value: this.appRegistry.registryApplication.applicationArn,
     });
 
+    const protectedDeaResourceArns: string[] = [];
+
     // Create KMS key to pass into backend and UI
     const kmsKey = this.createEncryptionKey();
 
     const uiAccessLogPrefix = 'dea-ui-access-log';
     // DEA Backend Construct
-    const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', {
+    const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', protectedDeaResourceArns, {
       kmsKey: kmsKey,
       accessLogsPrefixes: [uiAccessLogPrefix],
+      opsDashboard: dashboard,
     });
 
     const region = deaConfig.region();
     const accountId = this.account;
 
-    const auditTrail = new DeaAuditTrail(this, 'DeaAudit', {
+    const auditTrail = new DeaAuditTrail(this, 'DeaAudit', protectedDeaResourceArns, {
       kmsKey,
       deaDatasetsBucket: backendConstruct.datasetsBucket,
       deaTableArn: backendConstruct.deaTable.tableArn,
@@ -85,9 +91,10 @@ export class DeaMainStack extends cdk.Stack {
         DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
         AWS_USE_FIPS_ENDPOINT: 'true',
       },
+      opsDashboard: dashboard,
     });
 
-    const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', {
+    const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', protectedDeaResourceArns, {
       deaTableArn: backendConstruct.deaTable.tableArn,
       deaTableName: backendConstruct.deaTable.tableName,
       deaDatasetsBucket: backendConstruct.datasetsBucket,
@@ -95,7 +102,6 @@ export class DeaMainStack extends cdk.Stack {
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey,
-      region,
       accountId,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
@@ -107,6 +113,7 @@ export class DeaMainStack extends cdk.Stack {
         AWS_USE_FIPS_ENDPOINT: 'true',
         SOURCE_IP_VALIDATION_ENABLED: deaConfig.sourceIpValidationEnabled().toString(),
       },
+      opsDashboard: dashboard,
     });
 
     // For OneClick we need to have one Cfn template, so we will
@@ -115,7 +122,7 @@ export class DeaMainStack extends cdk.Stack {
     // us-gov-west-1 since Cognito is not available, so we have to
     // deploy DeaAuth as a stack, and DeaParameters as a stack as
     // well to break the cyclic dependency between main stack and deaauth stack
-    if (region === 'us-gov-east-1') {
+    if (!deaConfig.isOneClick() && region === 'us-gov-east-1') {
       // Build the Cognito Stack (UserPool and IdentityPool)
       // Along with the IAM Roles
       const authConstruct = new DeaAuthStack(
@@ -136,6 +143,7 @@ export class DeaMainStack extends cdk.Stack {
       new DeaParametersStack(
         scope,
         'DeaParameters',
+        protectedDeaResourceArns,
         {
           deaAuthInfo: authConstruct.deaAuthInfo,
           kmsKey,
@@ -153,7 +161,7 @@ export class DeaMainStack extends cdk.Stack {
 
       // Store relevant parameters for the functioning of DEA
       // in SSM Param Store and Secrets Manager
-      new DeaParameters(this, 'DeaParameters', {
+      new DeaParameters(this, 'DeaParameters', protectedDeaResourceArns, {
         deaAuthInfo: authConstruct.deaAuthInfo,
         kmsKey,
       });
@@ -172,6 +180,13 @@ export class DeaMainStack extends cdk.Stack {
       deaApi.datasetsRole
     );
 
+    const permissionBoundaryOnDeaResources =
+      this.createPermissionsBoundaryOnDeaResources(protectedDeaResourceArns);
+
+    createCfnOutput(this, 'PermissionsBoundary', {
+      value: `${permissionBoundaryOnDeaResources.managedPolicyArn}`,
+    });
+
     // DEA UI Construct
     new DeaUiConstruct(this, 'DeaUiConstruct', {
       kmsKey: kmsKey,
@@ -189,23 +204,31 @@ export class DeaMainStack extends cdk.Stack {
     // These are resources that will be configured in a future story. Please remove these suppressions or modify them to the specific resources as needed
     // when we tackle the particular story. Details in function below
     this.apiGwAuthNagSuppresions();
+
+    this.policyNagSuppresions();
   }
 
   private uiStackConstructNagSuppress(): void {
-    const cdkLambda = this.node.findChild('Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C').node
-      .defaultChild;
-    if (cdkLambda instanceof CfnFunction) {
-      addLambdaSuppressions(cdkLambda);
-    }
+    const lambdaSuppresionList = [];
+
+    lambdaSuppresionList.push(
+      this.node.findChild('Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C').node.defaultChild
+    );
+
+    // custom resource role
+    lambdaSuppresionList.push(this.node.findChild('AWS679f53fac002430cb0da5b7982bd2287').node.defaultChild);
 
     // This will not exist in non-test deploys
     const lambdaChild = this.node.tryFindChild('Custom::S3AutoDeleteObjectsCustomResourceProvider');
     if (lambdaChild) {
-      const autoDeleteLambda = lambdaChild.node.findChild('Handler');
-      if (autoDeleteLambda instanceof CfnResource) {
-        addLambdaSuppressions(autoDeleteLambda);
-      }
+      lambdaSuppresionList.push(lambdaChild.node.findChild('Handler'));
     }
+
+    lambdaSuppresionList.forEach((lambdaToSuppress) => {
+      if (lambdaToSuppress instanceof CfnResource) {
+        addLambdaSuppressions(lambdaToSuppress);
+      }
+    });
   }
 
   private createEncryptionKey(): Key {
@@ -220,7 +243,7 @@ export class DeaMainStack extends cdk.Stack {
             'kms:GenerateDataKey*',
             'kms:Describe*',
           ],
-          principals: [new ServicePrincipal(`logs.${this.region}.amazonaws.com`)],
+          principals: [new ServicePrincipal(`logs.amazonaws.com`)],
           resources: ['*'],
           sid: 'main-key-share-statement',
         }),
@@ -263,12 +286,69 @@ export class DeaMainStack extends cdk.Stack {
     return key;
   }
 
+  // Creates a deny all access to DEA resources that customers
+  // can attach to existing user IAM roles for the accounts
+  // to block sdk/cli/console access to DEA resources outside DEA
+  // Details will be added to the Implementation Guide
+  private createPermissionsBoundaryOnDeaResources(deaResourceArns: string[]) {
+    const statements: PolicyStatement[] = [
+      new PolicyStatement({
+        effect: Effect.DENY,
+        actions: ['*'],
+        resources: deaResourceArns,
+      }),
+    ];
+    return new ManagedPolicy(this, 'deaResourcesPermissionsBoundary', {
+      statements,
+    });
+  }
+
+  private policyNagSuppresions(): void {
+    const cfnResources = [];
+
+    cfnResources.push(
+      this.node
+        .findChild('DeaEventHandlers')
+        .node.findChild('s3-batch-delete-case-file-handler-role')
+        .node.findChild('DefaultPolicy').node.defaultChild
+    );
+
+    cfnResources.push(
+      this.node
+        .findChild('DeaEventHandlers')
+        .node.findChild('s3-batch-status-change-handler-role')
+        .node.findChild('DefaultPolicy').node.defaultChild
+    );
+
+    cfnResources.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('dea-base-lambda-role')
+        .node.findChild('DefaultPolicy').node.defaultChild
+    );
+
+    cfnResources.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('UpdateBucketCORS')
+        .node.findChild('CustomResourcePolicy').node.defaultChild
+    );
+
+    cfnResources.forEach((cfnResource) => {
+      if (cfnResource instanceof CfnResource) {
+        return addResourcePolicySuppressions(cfnResource);
+      }
+    });
+  }
+
   private apiGwAuthNagSuppresions(): void {
     // Nag suppress on all authorizationType related warnings until our Auth implementation is complete
     const apiGwMethodArray = [];
-    // Backend API GW
 
-    // UI API GW
+    // API GW - UI Suppressions
+    const uiPages = ['login', 'case-detail', 'create-cases', 'upload-files', 'auth-test'];
+
+    //Home page
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
@@ -278,14 +358,79 @@ export class DeaMainStack extends cdk.Stack {
         .node.findChild('GET').node.defaultChild
     );
 
-    // UI API GW Proxy
+    // Other pages
+    uiPages.forEach((page) => {
+      apiGwMethodArray.push(
+        this.node
+          .findChild('DeaApiGateway')
+          .node.findChild('dea-api')
+          .node.findChild('Default')
+          .node.findChild('ui')
+          .node.findChild(page)
+          .node.findChild('GET').node.defaultChild
+      );
+
+      // UI API GW Proxy
+      apiGwMethodArray.push(
+        this.node
+          .findChild('DeaApiGateway')
+          .node.findChild('dea-api')
+          .node.findChild('Default')
+          .node.findChild('ui')
+          .node.findChild('{proxy+}')
+          .node.findChild('GET').node.defaultChild
+      );
+    });
+
+    // Auth endpoints
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
         .node.findChild('dea-api')
         .node.findChild('Default')
-        .node.findChild('ui')
-        .node.findChild('{proxy+}')
+        .node.findChild('auth')
+        .node.findChild('{authCode}')
+        .node.findChild('token')
+        .node.findChild('POST').node.defaultChild
+    );
+
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('dea-api')
+        .node.findChild('Default')
+        .node.findChild('auth')
+        .node.findChild('refreshToken')
+        .node.findChild('POST').node.defaultChild
+    );
+
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('dea-api')
+        .node.findChild('Default')
+        .node.findChild('auth')
+        .node.findChild('revokeToken')
+        .node.findChild('POST').node.defaultChild
+    );
+
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('dea-api')
+        .node.findChild('Default')
+        .node.findChild('auth')
+        .node.findChild('loginUrl')
+        .node.findChild('GET').node.defaultChild
+    );
+
+    apiGwMethodArray.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('dea-api')
+        .node.findChild('Default')
+        .node.findChild('auth')
+        .node.findChild('logoutUrl')
         .node.findChild('GET').node.defaultChild
     );
 

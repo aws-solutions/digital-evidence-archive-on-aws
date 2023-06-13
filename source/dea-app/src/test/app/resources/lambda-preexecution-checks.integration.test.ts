@@ -54,7 +54,7 @@ describe('lambda pre-execution checks', () => {
     const oauthToken = await cognitoHelper.getIdTokenForUser(testUser);
 
     const event = getDummyEvent();
-    event.headers['cookie'] = `idToken=${JSON.stringify(oauthToken)}`;
+    event.headers['cookie'] = `extraCookie=someval; idToken=${JSON.stringify(oauthToken)}`;
     const tokenPayload = await getTokenPayload(oauthToken.id_token, region);
     const tokenId = tokenPayload.sub;
 
@@ -133,10 +133,10 @@ describe('lambda pre-execution checks', () => {
 
     // Check only user is in the db:
     const users: Paged<DeaUser> = await listUsers(
-      /*limit=*/ 100,
-      /*next=*/ undefined,
       /*nameBeginsWith=*/ undefined,
-      repositoryProvider
+      repositoryProvider,
+      /*next=*/ undefined,
+      /*limit=*/ 100
     );
     expect(users.length).toBe(1);
     expect(users[0].tokenId).toStrictEqual(tokenId);

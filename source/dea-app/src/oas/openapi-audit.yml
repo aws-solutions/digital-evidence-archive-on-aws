@@ -3,108 +3,260 @@ info:
   version: 1.0.0
   title: DEA Audit API
 paths:
-  /audits:
+  /users/{userId}/audit/{auditId}/csv:
     get:
-      summary: Returns audit logs
-      operationId: getAudit
+      summary: Returns audit log for a User
+      operationId: getUserAudit
       tags:
-        - audit
+        - elevated
       parameters:
         - name: userId
-          in: query
-          description: Which user ID to return audit log entries for
-          required: false
+          in: path
+          description: User ID to return audit log entries for
+          required: true
           schema:
             type: string
-        - name: caseId
-          in: query
-          description: Which case ID to return audit log entries for
-          required: false
-          schema:
-            type: string
-        - name: fileId
-          in: query
-          description: Which file ID to return audit log entires for
-          required: false
+        - name: auditId
+          in: path
+          description: Audit log ID
+          required: true
           schema:
             type: string
       responses:
         '200':
-          description: A list of audit log entries filtered by any optional query parameters
+          description: Audit log CSV result and status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuditLogs'
-        default:
-          description: An unexpected error has occurred
+                $ref: '#/components/schemas/AuditResult'
+  /system/audit/{auditId}/csv:
+    get:
+      summary: Returns audit log for system
+      operationId: getSystemAudit
+      tags:
+        - elevated
+      parameters:
+        - name: auditId
+          in: path
+          description: Audit log ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit log CSV result and status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditResult'
+  /cases/{caseId}/audit:
+    post:
+      summary: Generates audit log for case ID
+      operationId: requestCaseAudit
+      tags:
+        - audit
+      parameters:
+        - name: caseId
+          in: path
+          description: Case ID to generate audit log for
+          required: true
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Audit Query ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditId:
+                    type: string
+  /users/{userId}/audit:
+    post:
+      summary: Generates audit log for User
+      operationId: requestUserAudit
+      tags:
+        - elevated
+      parameters:
+        - name: userId
+          in: path
+          description: User ID to generate audit log for
+          required: true
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Audit Query ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditId:
+                    type: string
+  /system/audit:
+    post:
+      summary: Generates audit log for System
+      operationId: requestSystemAudit
+      tags:
+        - elevated
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Audit Query ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditId:
+                    type: string
+  /cases/{caseId}/audit/{auditId}/csv:
+    get:
+      summary: Returns audit log by audit log ID and case ID
+      operationId: getCaseAudit
+      tags:
+        - audit
+      parameters:
+        - name: caseId
+          in: path
+          description: Case ID to return audit log for
+          required: true
+          schema:
+            type: string
+        - name: auditId
+          in: path
+          description: Audit log ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit log CSV result and status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditResult'
+  /cases/{caseId}/files/{fileId}/audit:
+    post:
+      summary: Generates audit log for a file
+      operationId: requestCaseFileAudit
+      tags:
+        - audit
+      parameters:
+        - name: caseId
+          in: path
+          description: Case ID to generate audit log for
+          required: true
+          schema:
+            type: string
+        - name: fileId
+          in: path
+          description: File ID to generate audit log for
+          required: true
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Audit Query ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditId:
+                    type: string
+  /cases/{caseId}/files/{fileId}/audit/{auditId}/csv:
+    get:
+      summary: Returns audit log for a specific file by file ID, case ID, and audit log ID
+      operationId: getCaseFileAudit
+      tags:
+        - audit
+      parameters:
+        - name: caseId
+          in: path
+          description: Case ID to return audit log entries for
+          required: true
+          schema:
+            type: string
+        - name: fileId
+          in: path
+          description: File ID to return audit log entries for
+          required: true
+          schema:
+            type: string
+        - name: auditId
+          in: path
+          description: Audit log ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit log CSV result and status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditResult'
 
 components:
   schemas:
-    SessionContext:
+    AuditResult:
       type: object
       properties:
-        creationDate:
-          type: integer
-        sourceIdentity:
+        status:
           type: string
-    UserIdentity:
-      type: object
-      required:
-        - type
-      properties:
-        type:
+          items:
+            $ref: '#/components/schemas/QueryStatus'
+        csvFormattedData:
           type: string
-        principalId:
-          type: string
-        arn:
-          type: string
-        accountId:
-          type: string
-        userName:
-          type: string
-        sessionContext:
-          $ref: '#/components/schemas/SessionContext'
-        sessionIssuer:
-          type: string
-        root:
-          type: string
-    AuditLog:
-      type: object
-      required:
-        - requestId
-        - userIdentity
-        - eventTime
-        - eventSource
-        - eventType
-        - eventName
-        - sourceIpAddress
-      properties:
-        requestId:
-          type: string
-        userIdentity:
-          $ref: '#/components/schemas/UserIdentity'
-        eventTime:
-          type: string
-        eventSource:
-          type: string
-        eventType:
-          type: string
-        eventName:
-          type: string
-        sourceIpAddress:
-          type: string
-    AuditLogs:
-      type: array
-      items:
-        $ref: '#/components/schemas/AuditLog'
-    Error:
-      type: object
-      required:
-        - code
-        - message
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
+
+    QueryStatus:
+      type: string
+      enum: [Cancelled, Complete, Failed, Running, Scheduled, Timeout, Unknown]
+
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/CHOWCHIN/audit/1.0.0

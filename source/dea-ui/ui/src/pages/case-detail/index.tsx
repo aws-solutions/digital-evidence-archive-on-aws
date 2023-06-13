@@ -21,10 +21,13 @@ function CaseDetailsPage() {
   if (!caseId || typeof caseId !== 'string') {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
+
+  const href = process.env.NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN ? `/ui` : `/${settings.stage}/ui`;
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: breadcrumbLabels.homePageLabel,
-      href: `/${settings.stage}/ui`,
+      href,
     },
     {
       text: breadcrumbLabels.caseDetailsLabel,

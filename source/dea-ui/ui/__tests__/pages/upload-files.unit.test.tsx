@@ -48,12 +48,12 @@ describe('UploadFiles page', () => {
     expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.caseDetailsLabel);
     expect(breadcrumbLinks[2].getElement()).toHaveTextContent(breadcrumbLabels.uploadFilesAndFoldersLabel);
   });
-  it('responds to cancel', () => {
+  it('responds to done', () => {
     render(<Home />);
 
-    const cancelButton = screen.getByText(commonLabels.cancelButton);
+    const doneButton = screen.getByText(commonLabels.doneButton);
 
-    const btn = wrapper(cancelButton);
+    const btn = wrapper(doneButton);
     btn.click();
     expect(push).toHaveBeenCalledWith(`/case-detail?caseId=${CASE_ID}`);
   });
@@ -66,13 +66,6 @@ describe('UploadFiles page', () => {
     const testFile = new File(['hello'], 'hello.world', { type: 'text/plain' });
     File.prototype.text = jest.fn().mockResolvedValueOnce('hello');
     await userEvent.upload(selectFileInput, [testFile]);
-
-    const tagInput = screen.getByTestId('input-tag');
-    const wrappedTag = wrapper(tagInput).findInput();
-    if (!wrappedTag) {
-      fail();
-    }
-    wrappedTag.setInputValue('tag');
 
     const detailsInput = screen.getByTestId('input-details');
     const wrappedDetails = wrapper(detailsInput).findTextarea();
@@ -88,9 +81,18 @@ describe('UploadFiles page', () => {
     }
     wrappedReason.setInputValue('reason');
 
-    const uploadButton = screen.getByText(commonLabels.uploadButton);
+    // modal is not visible initially
+    expect(wrapper(document.body).findModal()?.isVisible()).toBe(false);
+
+    const uploadButton = screen.getByText(commonLabels.uploadAndSaveButton);
     const uploadButtonWrapper = wrapper(uploadButton);
     uploadButtonWrapper.click();
+
+    await waitFor(() => expect(wrapper(document.body).findModal()?.isVisible()).toBe(true));
+    const submitButton = screen.getByTestId('confirm-upload-button');
+    const submitButtonWrapper = wrapper(submitButton);
+    submitButtonWrapper.click();
+    await waitFor(() => expect(wrapper(document.body).findModal()?.isVisible()).toBe(false));
 
     // upload button will be disabled while in progress and then re-enabled when done
     await waitFor(() => expect(screen.queryByTestId('upload-file-submit')).toBeDisabled());

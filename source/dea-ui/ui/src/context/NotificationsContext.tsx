@@ -4,7 +4,7 @@
  */
 
 import { FlashbarProps } from '@cloudscape-design/components';
-import { Context, createContext, useContext, useState } from 'react';
+import { Context, createContext, useContext, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { IAppNotification } from '../models/AppNotification';
 
@@ -37,11 +37,10 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
   function dismissNotification(id: string): void {
     setNotifications((notifications) => notifications.filter((notifications) => notifications.id !== id));
   }
-  return (
-    <NotificationsContext.Provider value={{ notifications, pushNotification, dismissNotification }}>
-      {children}
-    </NotificationsContext.Provider>
-  );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const props = useMemo(() => ({ notifications, pushNotification, dismissNotification }), [notifications]);
+  return <NotificationsContext.Provider value={props}>{children}</NotificationsContext.Provider>;
 }
 
 export function useNotifications(): INotificationsProps {

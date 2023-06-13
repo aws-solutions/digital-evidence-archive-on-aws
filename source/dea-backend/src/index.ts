@@ -12,6 +12,7 @@ import { DeaAuditTrail } from './constructs/dea-audit-trail';
 import { DeaAuth, DeaAuthStack } from './constructs/dea-auth';
 import { DeaBackendConstruct } from './constructs/dea-backend-stack';
 import { DeaEventHandlers } from './constructs/dea-event-handlers';
+import { DeaOperationalDashboard } from './constructs/dea-ops-dashboard';
 import { DeaParameters, DeaParametersStack } from './constructs/dea-parameters';
 import { DeaRestApiConstruct } from './constructs/dea-rest-api';
 import { addSnapshotSerializers } from './test/infra/dea-snapshot-serializers';
@@ -28,6 +29,7 @@ export {
   DeaRestApiConstruct,
   DeaEventHandlers,
   DeaAppRegisterConstruct,
+  DeaOperationalDashboard,
   deaConfig,
   validateBackendConstruct,
   validateAppRegistryConstruct,

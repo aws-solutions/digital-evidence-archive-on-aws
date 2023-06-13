@@ -8,9 +8,12 @@ import { AppLayoutProps, SelectProps } from '@cloudscape-design/components';
 
 export const commonLabels = {
   cancelButton: 'Cancel',
+  doneButton: 'Done',
   submitButton: 'Submit',
   createButton: 'Create',
+  editButton: 'Edit',
   uploadButton: 'Upload',
+  uploadAndSaveButton: 'Upload and save',
   activateButton: 'Activate',
   deactivateButton: 'Deactivate',
   addButton: 'Add',
@@ -20,7 +23,7 @@ export const commonLabels = {
   saveButton: 'Save',
   loadingLabel: 'Loading...',
   statusLabel: 'Status',
-  loginLabel: 'Logging in...',
+  loginLabel: 'Loading/ Logging into the Digital Evidence Archive',
   notFoundLabel: 'Not Found',
   noMatchesLabel: 'No matches found',
   retryLabel: 'Retry',
@@ -41,13 +44,13 @@ export const commonTableLabels = {
   reasonHeader: 'Reason',
   caseNameHeader: 'Case name',
   caseLeadHeader: 'Case Lead(s)',
-  objectCounterHeader: 'No. of files',
+  objectCounterHeader: 'Number of files',
   totalSize: 'Total Size',
   creationDateHeader: 'Creation date',
   statusHeader: 'Status',
   fileTypeHeader: 'File type',
   fileSizeHeader: 'Size',
-  dateUploadedHeader: 'Date uploaded',
+  dateUploadedHeader: 'Upload date',
   uploadedByHeader: 'Uploaded by',
   caseFileAudit: 'Download Case File Audit',
 };
@@ -75,10 +78,10 @@ export const headerLabels = {
 
 export const caseListLabels = {
   loading: 'Loading cases',
-  noCasesLabel: 'No cases',
+  noCasesLabel: 'Get started by creating a new case.',
   noCasesMatchLabel: 'No cases matched',
   noDisplayLabel: 'No cases to display',
-  createNewCaseLabel: 'Create new case',
+  createNewCaseLabel: 'Create case',
   activateCaseLabel: 'Activate case',
   deactivateCaseLabel: 'Deactivate case',
   deactivateCaseModalLabel: (name: string) => `Are you sure you want to deactivate ${name}?`,
@@ -90,8 +93,10 @@ export const caseListLabels = {
     'Once the case is activated, anyone with access will be able to edit, add case members, or upload/download files to the case.',
   searchCasesLabel: 'Search by case name',
   casesLabel: 'Cases',
-  systemCasesLabel: 'All System Cases',
+  systemCasesLabel: 'All cases',
   casesPageDescription: 'This is a list of cases that have been shared with you.',
+  systemCasesPageDescription:
+    "This list shows all cases within the system, including cases that haven't been shared with you.",
 };
 
 export const filesListLabels = {
@@ -101,7 +106,7 @@ export const filesListLabels = {
   noDisplayLabel: 'No files to display',
   uploadFileLabel: 'Upload a file',
   searchLabel: 'Search by file name',
-  filterDescription: 'All folders/files associated with this case.',
+  filterDescription: 'Uploaded folders/files associated with this case',
 };
 
 export const fileOperationsLabels = {
@@ -116,33 +121,37 @@ export const fileOperationsLabels = {
   restoreFilesModalDescription: 'The restored files will become available for download within 12 hours',
   evidenceTagLabel: 'Evidence tag',
   evidenceTagDescription:
-    'Specify the type of device where the evidence is copied from such as mobile, laptop, or hard drive.',
+    "Specify the device type that you're copying evidence from (examples: mobile, laptop, or hard drive).",
   evidenceDetailsLabel: 'Description',
   evidenceDetailsDescription:
     'Enter a brief description of the evidence being uploaded. Max character limit 250.',
   uploadReasonLabel: 'Reason for uploading evidence',
-  uploadReasonDescription: 'Specify why you are accessing the case files.',
-  selectFileSubtext: 'All file types accepted. 5TB max file size.',
+  uploadReasonDescription: "Explain why you're accessing the case files.",
+  selectFileSubtext: 'All file types accepted. 5TB maximum file size.',
   auditLogLabel: 'Case File Audit Log',
   restoreSuccessful: 'Successfully initiated restore for selected files',
   restoreFail: 'Failed to restore selected files',
+  modalTitle: 'Confirm you want to upload these files',
+  modalBody: 'Once uploaded case files cannot be individually removed',
   restoreInProgress: (fileName: string) =>
-    `${fileName} is currently being restored. It will be ready to download in up to 12 hours`,
+    `The recovery of file ${fileName} has been successfully started. The file will become viewable within 12 hours.`,
   archivedFileNoPermissionError: (fileName: string) =>
     `${fileName} is archived. Please contact case owner to restore file for access.`,
   downloadFailed: (fileName: string) => `Failed to download ${fileName}`,
+  cancelRestoringLabel: 'Cancel restoring',
 };
 
 export const caseDetailLabels = {
-  caseFilesLabel: 'Case Files',
-  auditLogLabel: 'Audit Log',
-  manageAccessLabel: 'Case Members',
+  caseFilesLabel: 'Case files',
+  auditLogLabel: 'Audit log',
+  manageAccessLabel: 'Case members',
 };
 
 export const auditLogLabels = {
   downloadCSVLabel: 'Download Case Audit Log CSV',
-  caseAuditLogLabel: 'Audit Log',
+  caseAuditLogLabel: 'Audit log',
   caseFileAuditLogLabel: 'Case File Audit Log',
+  downloadFileAuditLabel: 'Download File Audit Log CSV',
   descriptionLabel:
     'This table records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file',
   emptyAuditLabel: 'No audit',
@@ -150,6 +159,12 @@ export const auditLogLabels = {
   loadingLabel: 'loading audit log',
   errorLabel: 'Error downloading audit logs. Audit query is empty or encountered an error or cancellation.',
   downloadCaseAuditFail: (fileName: string) => `Failed to download case file audit for ${fileName}`,
+};
+
+export const paginationLabels = {
+  nextPageLabel: 'Next page',
+  pageLabel: (pageNumber: number) => `Go to page ${pageNumber}`,
+  previousPageLabel: 'Previous page',
 };
 
 export const manageCaseAccessLabels = {
@@ -188,16 +203,20 @@ export const manageCaseAccessLabels = {
   saveFailMessage: 'Changes have not been saved.',
 };
 
+export const caseStatusLabels = {
+  active: 'Active',
+  inactive: 'Inactive',
+};
+
 export const createCaseLabels = {
-  createNewCaseLabel: 'Create New Case',
+  createNewCaseLabel: 'Create case',
   createNewCaseDescription: 'All fields are required unless specified.',
   enterCaseDetailsLabel: 'Enter Case Details',
   caseNameLabel: 'Case name',
   caseNameSubtext: 'Alphanumeric characters only. No special charcaters.',
   caseDescription: 'Description - optional',
   caseNameDescription: ' Create a Unique name that you can easily reference.',
-  caseDescriptionSubtext:
-    'Enter a brief description of the case to easily identify it. Max character limit ###',
+  caseDescriptionSubtext: 'Enter a brief description for your case.',
   activeLabel: 'Active',
   archivedLabel: 'Archived',
   caseStatusLabel: 'Case Status',
@@ -272,26 +291,40 @@ export const caseActionOptions = {
 
 export const breadcrumbLabels = {
   homePageLabel: 'Digital Evidence Archive',
-  createNewCaseLabel: 'Create New Case',
+  createNewCaseLabel: 'Create case',
   caseLabel: 'Case',
   caseDetailsLabel: 'Case Details',
   manageCaseLabel: 'Manage Case',
   uploadFilesAndFoldersLabel: 'Upload folders/files',
+  editCaseLabel: 'Edit Case',
+  fileDetailsLabel: 'File Details',
 };
 
 export const navigationLabels = {
   documentationLabel: 'Documentation',
   myCasesLabel: 'My Cases',
-  allSystemCasesLabel: 'All System Cases',
+  allSystemCasesLabel: 'All cases',
   systemAuditLogsLabel: 'Download System Audit Log',
 };
 
 export const fileUploadLabels = {
-  dragAndDropFolderLabel: 'Drag and drop folder(s)/file(s) or',
-  chooseFolderLabel: 'Select folder',
-  chooseFilesLabel: 'Upload files',
+  dragAndDropFolderLabel: 'Drag and drop files or',
+  chooseFolderLabel: 'Choose folder',
+  chooseFilesLabel: 'Choose files',
   limitShowFewerLabel: 'Show fewer files',
   limitShowMoreLabel: 'Show more files',
   errorIconAriaLabel: 'Error',
   removeFileAriaLabel: (e: number) => `Remove file ${e + 1}`,
 };
+
+export const fileDetailLabels = {
+  uploadDateLabel: 'Upload date/time',
+  fileSizeLabel: 'File size',
+  shaHashLabel: 'SHA 256 hash',
+};
+
+export const systemUseNotificationText =
+  'CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT according ' +
+  'to your local laws and regulations. This is needed to fulfill CJIS Policy 5.5.4. (Use Notification). ' +
+  'Refer to the Implementation Guide for instructions on how to customize this text, and review ' +
+  'CJIS Policy 5.5.4 for latest requirement details.';

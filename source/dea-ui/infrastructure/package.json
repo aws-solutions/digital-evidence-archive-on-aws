@@ -34,12 +34,15 @@
     "test:noe2e": "heft test --no-build --test-path-pattern '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": "heft test --no-build --verbose --test-path-pattern test",
     "test:only:u": "heft test -u --no-build --verbose --test-path-pattern test",
+    "test:sonar": "rushx test:only",
     "unit:only": "heft test --no-build --test-path-pattern '.*/*unit.test.*'",
-    "watch": "tsc -w",
-    "test:sonar": "rushx test:only"
+    "watch": "tsc -w"
   },
   "dependencies": {
     "@aws/dea-backend": "workspace:*",
+    "aws-cdk": "2.76.0",
+    "aws-cdk-lib": "2.76.0",
+    "constructs": "10.2.5",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
@@ -54,9 +57,6 @@
     "@types/prettier": "2.7.2",
     "@typescript-eslint/eslint-plugin": "~5.56.0",
     "@typescript-eslint/parser": "~5.56.0",
-    "aws-cdk": "2.76.0",
-    "aws-cdk-lib": "2.76.0",
-    "constructs": "10.2.5",
     "eslint": "^8.36.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-security": "^1.7.1",

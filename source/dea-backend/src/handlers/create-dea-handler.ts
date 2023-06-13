@@ -19,7 +19,7 @@ import {
 } from '@aws/dea-app/lib/app/services/audit-service';
 import { removeSensitiveHeaders } from '@aws/dea-app/lib/lambda-http-helpers';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
-import { CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
+import { CaseOwnerDTO, CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { logger } from '../logger';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
@@ -43,9 +43,9 @@ export const createDeaHandler = (
     try {
       const debugHeaders = removeSensitiveHeaders(event.headers);
       const { headers: _, multiValueHeaders: _1, ...debugEvent } = event;
-      logger.debug(`Headers`, { Data: JSON.stringify(debugHeaders, null, 2) });
-      logger.debug(`Event`, { Data: JSON.stringify(debugEvent, null, 2) });
-      logger.debug(`Context`, { Data: JSON.stringify(context, null, 2) });
+      logger.debug(`Headers`, debugHeaders);
+      logger.debug(`Event`, debugEvent);
+      logger.debug(`Context`, context);
 
       if (auditEvent.eventType === AuditEventType.UNKNOWN) {
         logger.error('An Audit Event was not found for the requested method', {
@@ -79,7 +79,7 @@ export const createDeaHandler = (
       }
       return result;
     } catch (error) {
-      logger.error('Error', { Body: JSON.stringify(error) });
+      logger.error('Error', error);
       if (typeof error === 'object') {
         const errorHandler = exceptionHandlers.get(getErrorName(error));
         if (errorHandler) {
@@ -97,6 +97,7 @@ export const createDeaHandler = (
       await deaAuditService.writeCJISCompliantEntry(auditEvent);
     }
   };
+
   return wrappedHandler;
 };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -190,10 +191,26 @@ const getEventType = (event: APIGatewayProxyEvent): AuditEventType => {
 
 const getTargetUserId = (event: APIGatewayProxyEvent): string | undefined => {
   const eventType = getEventType(event);
-  if (eventType === AuditEventType.INVITE_USER_TO_CASE && event.body) {
+  const isCaseInviteAPI =
+    eventType === AuditEventType.INVITE_USER_TO_CASE ||
+    eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE ||
+    eventType === AuditEventType.REMOVE_USER_FROM_CASE;
+  if (isCaseInviteAPI && event.body) {
     try {
       const caseUser: CaseUserDTO = JSON.parse(event.body);
       return caseUser?.userUlid;
+    } catch {
+      // It means `JSON.parse` has thrown a SyntaxError.
+      // The target endpoint will handle appropriately the payload issues.
+      // We do nothing at this point we are trying our best to retrieve the `targetUserId` value from the body.
+      return undefined;
+    }
+  }
+
+  if (eventType === AuditEventType.CREATE_CASE_OWNER && event.body) {
+    try {
+      const caseOwner: CaseOwnerDTO = JSON.parse(event.body);
+      return caseOwner?.userUlid;
     } catch {
       // It means `JSON.parse` has thrown a SyntaxError.
       // The target endpoint will handle appropriately the payload issues.
@@ -211,10 +228,15 @@ const parseEventForExtendedAuditFields = (
 ) => {
   const eventType = getEventType(event);
 
+  const isCaseInviteAPI =
+    eventType === AuditEventType.INVITE_USER_TO_CASE ||
+    eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE;
+
   if (
     eventType !== AuditEventType.CREATE_CASE &&
     eventType !== AuditEventType.INITIATE_CASE_FILE_UPLOAD &&
-    eventType !== AuditEventType.COMPLETE_CASE_FILE_UPLOAD
+    eventType !== AuditEventType.COMPLETE_CASE_FILE_UPLOAD &&
+    !isCaseInviteAPI
   ) {
     return;
   }
@@ -259,5 +281,12 @@ const parseEventForExtendedAuditFields = (
     });
     auditEvent.fileHash = 'ERROR: hash is absent';
     auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
+  }
+
+  // Include case actions in the audit event
+  // Use : instead of , to list actions, since audit is sent
+  // in a csv format
+  if (isCaseInviteAPI) {
+    auditEvent.caseActions = body.actions?.join(':');
   }
 };

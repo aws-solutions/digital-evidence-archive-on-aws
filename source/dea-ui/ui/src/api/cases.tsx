@@ -14,9 +14,9 @@ import {
   DownloadFileResult,
   InitiateUploadForm, RestoreFileForm,
 } from '../models/CaseFiles';
-import {CreateCaseForm, UpdateCaseStatusForm} from '../models/Cases';
+import {CreateCaseForm, EditCaseForm, UpdateCaseStatusForm} from '../models/Cases';
 import { CaseUserForm } from '../models/CaseUser';
-import { CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
+import { CaseFileDTO, CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
 
 export interface DeaListResult<T> {
   data: T[];
@@ -28,6 +28,8 @@ export interface DeaListResult<T> {
 export interface DeaSingleResult<T> {
   data: T;
   isLoading: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  mutate?: any;
 }
 
 enum QueryStatus {
@@ -54,13 +56,13 @@ interface CaseListReponse {
 }
 
 export const useListAllCases = (): DeaListResult<DeaCaseDTO> => {
-  const { data, error } = useSWR(() => `cases/all-cases`, httpApiGet<CaseListReponse> );
+  const { data, error } = useSWR(() => `cases/all-cases?limit=10000`, httpApiGet<CaseListReponse> );
   const cases: DeaCaseDTO[] = data?.cases ?? [];
   return { data: cases, isLoading: !data && !error };
 };
 
 export const useListMyCases = (): DeaListResult<DeaCaseDTO> => {
-  const { data, error, mutate } = useSWR(() => `cases/my-cases`, (httpApiGet<CaseListReponse>) );
+  const { data, error, mutate } = useSWR(() => `cases/my-cases?limit=10000`, (httpApiGet<CaseListReponse>) );
   const cases: DeaCaseDTO[] = data?.cases ?? [];
   return { data: cases, isLoading: !data && !error, mutate };
 };
@@ -69,6 +71,11 @@ export const useGetCaseById = (id: string): DeaSingleResult<DeaCaseDTO | undefin
   const { data, error } = useSWR(() => `cases/${id}/details`, httpApiGet<DeaCaseDTO>);
   return { data, isLoading: !data && !error };
 };
+
+export const useGetFileDetailsById = (caseId: string, fileId: string): DeaSingleResult<CaseFileDTO | undefined> => {
+  const { data, error } = useSWR(() => `cases/${caseId}/files/${fileId}/info`, httpApiGet<CaseFileDTO>);
+  return { data, isLoading: !data && !error };
+}
 
 export const useGetScopedCaseInfoById = (id: string): DeaSingleResult<ScopedDeaCaseDTO | undefined> => {
   const { data, error } = useSWR(() => `cases/${id}/scopedInformation`, httpApiGet<ScopedDeaCaseDTO>);
@@ -79,8 +86,12 @@ export const createCase = async (createCaseForm: CreateCaseForm): Promise<void> 
   await httpApiPost(`cases`, { ...createCaseForm });
 };
 
+export const updateCase = async (editCaseForm: EditCaseForm): Promise<void> => {
+  await httpApiPut(`/cases/${editCaseForm.ulid}/details`, { ...editCaseForm });
+};
+
 export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DeaCaseFile> => {
-  const { data, error } = useSWR(() => `cases/${id}/files?filePath=${filePath}`, httpApiGet<{files: DeaCaseFile[]}>);
+  const { data, error } = useSWR(() => `cases/${id}/files?filePath=${filePath}&limit=10000`, httpApiGet<{files: DeaCaseFile[]}>);
   const caseFiles: DeaCaseFile[] = data?.files ?? [];
   return { data: caseFiles, isLoading: !error && !data };
 };
@@ -102,7 +113,7 @@ export const restoreFile = async (apiInput: RestoreFileForm): Promise<void> => {
 };
 
 export const useGetUsers = (nameBeginsWith: string): DeaListResult<DeaUser> => {
-  const { data, error } = useSWR(() => `users?nameBeginsWith=${nameBeginsWith}`, httpApiGet<{users: DeaUser[]}>);
+  const { data, error } = useSWR(() => `users?nameBeginsWith=${nameBeginsWith}&limit=10000`, httpApiGet<{users: DeaUser[]}>);
   const users: DeaUser[] = data?.users ?? [];
   return { data: users, isLoading: !data && !error };
 };
@@ -189,8 +200,8 @@ export function delay(ms: number) {
 }
 
 export const useGetCaseActions = (id: string): DeaSingleResult<CaseUser | undefined> => {
-  const { data, error } = useSWR(() => `cases/${id}/actions`, httpApiGet<CaseUser>);
-  return { data, isLoading: !data && !error };
+  const { data, error, mutate } = useSWR(() => `cases/${id}/actions`, httpApiGet<CaseUser>);
+  return { data, isLoading: !data && !error, mutate };
 };
 
 export const getSystemAuditCSV = async (): Promise<string> => {

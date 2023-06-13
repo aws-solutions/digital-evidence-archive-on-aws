@@ -9,11 +9,11 @@ import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { useCollection } from '@cloudscape-design/collection-hooks';
 import {
   Button,
-  Icon,
   Link,
   Pagination,
   PropertyFilter,
   SpaceBetween,
+  StatusIndicator,
   Table,
   Toggle,
 } from '@cloudscape-design/components';
@@ -24,7 +24,13 @@ import * as React from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { DeaListResult, updateCaseStatus } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
-import { caseListLabels, commonLabels, commonTableLabels } from '../../common/labels';
+import {
+  caseListLabels,
+  caseStatusLabels,
+  commonLabels,
+  commonTableLabels,
+  paginationLabels,
+} from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
@@ -41,6 +47,7 @@ export interface CaseTableProps {
   canCreate: boolean;
   detailPage: string;
   headerLabel: string;
+  headerDescription: string;
 }
 
 function CaseTable(props: CaseTableProps): JSX.Element {
@@ -54,34 +61,41 @@ function CaseTable(props: CaseTableProps): JSX.Element {
   const { pushNotification } = useNotifications();
 
   // Property and date filter collections
-  const { items, filteredItemsCount, propertyFilterProps, collectionProps } = useCollection(data, {
-    filtering: {
-      empty: TableEmptyDisplay(caseListLabels.noCasesLabel, caseListLabels.noDisplayLabel),
-      noMatch: TableNoMatchDisplay(caseListLabels.noCasesMatchLabel),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      filteringFunction: (item: any, filteringText): any => {
-        const filteringTextLowerCase = filteringText.toLowerCase();
+  const { items, filteredItemsCount, propertyFilterProps, collectionProps, paginationProps } = useCollection(
+    data,
+    {
+      filtering: {
+        empty: TableEmptyDisplay(caseListLabels.noCasesLabel, caseListLabels.noDisplayLabel),
+        noMatch: TableNoMatchDisplay(caseListLabels.noCasesMatchLabel),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        filteringFunction: (item: any, filteringText): any => {
+          const filteringTextLowerCase = filteringText.toLowerCase();
 
-        return (
-          searchableColumns
-            // eslint-disable-next-line security/detect-object-injection
-            .map((key) => item[key])
-            .some(
-              (value) => typeof value === 'string' && value.toLowerCase().indexOf(filteringTextLowerCase) > -1
-            )
-        );
+          return (
+            searchableColumns
+              // eslint-disable-next-line security/detect-object-injection
+              .map((key) => item[key])
+              .some(
+                (value) =>
+                  typeof value === 'string' && value.toLowerCase().indexOf(filteringTextLowerCase) > -1
+              )
+          );
+        },
       },
-    },
-    propertyFiltering: {
-      filteringProperties: filteringProperties,
-      empty: TableEmptyDisplay(caseListLabels.noCasesLabel, caseListLabels.noDisplayLabel),
-      noMatch: TableNoMatchDisplay(caseListLabels.noCasesMatchLabel),
-    },
-    sorting: {},
-    selection: {},
-  });
+      propertyFiltering: {
+        filteringProperties: filteringProperties,
+        empty: TableEmptyDisplay(caseListLabels.noCasesLabel, caseListLabels.noDisplayLabel),
+        noMatch: TableNoMatchDisplay(caseListLabels.noCasesMatchLabel),
+      },
+      sorting: {},
+      selection: {},
+      pagination: {
+        pageSize: 15,
+      },
+    }
+  );
   function createNewCaseHandler() {
-    void router.push('/create-cases');
+    return router.push('/create-cases');
   }
 
   function canActivateCase(): boolean {
@@ -165,23 +179,9 @@ function CaseTable(props: CaseTableProps): JSX.Element {
 
   function statusCell(deaCase: DeaCaseDTO) {
     if (deaCase.status == CaseStatus.ACTIVE) {
-      return (
-        <Box>
-          <SpaceBetween direction="horizontal" size="xs" key={deaCase.ulid}>
-            <Icon name="check" variant="success" />
-            <span>{deaCase.status.slice(0, 1) + deaCase.status.slice(1).toLowerCase()}</span>
-          </SpaceBetween>
-        </Box>
-      );
+      return <StatusIndicator>{caseStatusLabels.active}</StatusIndicator>;
     } else {
-      return (
-        <Box>
-          <SpaceBetween direction="horizontal" size="xs" key={deaCase.ulid}>
-            <Icon name="status-stopped" variant="disabled" />
-            <span>{deaCase.status.slice(0, 1) + deaCase.status.slice(1).toLowerCase()}</span>
-          </SpaceBetween>
-        </Box>
-      );
+      return <StatusIndicator type="stopped">{caseStatusLabels.inactive}</StatusIndicator>;
     }
   }
 
@@ -218,6 +218,20 @@ function CaseTable(props: CaseTableProps): JSX.Element {
     );
   }
 
+  function nameCell(deaCase: DeaCaseDTO) {
+    return (
+      <Link
+        href={`${deaCase.ulid}`}
+        onFollow={(e) => {
+          e.preventDefault();
+          return router.push(`/${props.detailPage}?caseId=${e.detail.href}`);
+        }}
+      >
+        {deaCase.name}
+      </Link>
+    );
+  }
+
   return (
     <Table
       {...collectionProps}
@@ -238,7 +252,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
           data-testid="case-table-header"
           variant="awsui-h1-sticky"
           title={props.headerLabel}
-          description={caseListLabels.casesPageDescription}
+          description={props.headerDescription}
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
               {deactivateCaseModal()}
@@ -295,17 +309,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
         {
           id: 'name',
           header: commonTableLabels.caseNameHeader,
-          cell: (e) => (
-            <Link
-              href={`${e.ulid}`}
-              onFollow={(e) => {
-                e.preventDefault();
-                void router.push(`/${props.detailPage}?caseId=${e.detail.href}`);
-              }}
-            >
-              {e.name}
-            </Link>
-          ),
+          cell: nameCell,
           width: 350,
           minWidth: 220,
           sortingField: 'name',
@@ -354,17 +358,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
           />
         </SpaceBetween>
       }
-      pagination={
-        <Pagination
-          currentPageIndex={1}
-          pagesCount={1}
-          ariaLabels={{
-            nextPageLabel: 'Next page',
-            previousPageLabel: 'Previous page',
-            pageLabel: (pageNumber) => `Page ${pageNumber} of all pages`,
-          }}
-        />
-      }
+      pagination={<Pagination {...paginationProps} ariaLabels={paginationLabels} />}
     />
   );
 }
