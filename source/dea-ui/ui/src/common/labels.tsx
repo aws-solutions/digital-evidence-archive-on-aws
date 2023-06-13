@@ -244,7 +244,7 @@ export const caseActionOptions = {
       case CaseAction.UPDATE_CASE_STATUS:
         return {
           value: CaseAction.UPDATE_CASE_STATUS,
-          label: 'Delete case files',
+          label: 'Update case status',
         };
       case CaseAction.UPLOAD:
         return {
