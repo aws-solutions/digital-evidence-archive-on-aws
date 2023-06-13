@@ -134,9 +134,7 @@ describe('Test initiate case file upload', () => {
     await initiateCaseFileUploadAndValidate(caseToUploadTo, pendingFileName);
     await expect(
       callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, pendingFileName)
-    ).rejects.toThrow(
-      `${FILE_PATH}${pendingFileName} is currently being uploaded. Check again in 60 minutes`
-    );
+    ).rejects.toThrow(`File is currently being uploaded. Check again in 60 minutes`);
   });
 
   it('Initiate upload should throw an exception when case-file exists', async () => {
@@ -154,6 +152,20 @@ describe('Test initiate case file upload', () => {
       callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, activeFileName)
     ).rejects.toThrow('File already exists in the DB');
   });
+
+  it('Initiate upload should work after un-uploaded case-file is cleared by ttl', async () => {
+    const fileName = 'ttlCaseFile';
+    const caseFile: DeaCaseFile = await initiateCaseFileUploadAndValidate(caseToUploadTo, fileName);
+
+    // delete case-file from ddb and leave behind unique item
+    await repositoryProvider.table.deleteItem({
+      PK: `CASE#${caseToUploadTo}#`,
+      SK: `FILE#${caseFile.ulid}#`,
+    });
+
+    await callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, fileName);
+  });
+  u;
 
   it('Initiate upload should enforce a strict payload', async () => {
     // validate caseUlid
