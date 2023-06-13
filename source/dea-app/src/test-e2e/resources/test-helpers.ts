@@ -638,17 +638,6 @@ function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
     fail(`Unrecognized Event Type in Case Level Audit ${eventType}`);
   }
 
-  let targetUser: string | undefined;
-  let caseActions: string | undefined;
-  if (
-    eventType === AuditEventType.INVITE_USER_TO_CASE ||
-    eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE ||
-    eventType === AuditEventType.REMOVE_USER_FROM_CASE
-  ) {
-    targetUser = fields[18];
-    caseActions = fields[19];
-  }
-
   return {
     eventType,
     result: fields[2] === AuditEventResult.SUCCESS,
@@ -658,8 +647,8 @@ function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
     caseId: fields[15],
     fileId: fields[16],
     fileHash: fields[17],
-    targetUser,
-    caseActions,
+    targetUser: fields[18],
+    caseActions: fields[19],
   };
 }
 
