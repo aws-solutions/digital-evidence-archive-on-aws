@@ -3,7 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
 import { Oauth2Token } from '../../models/auth';
@@ -11,7 +10,7 @@ import { ScopedDeaCase } from '../../models/case';
 import { scopedCaseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPIWithCreds, createCaseSuccess, deleteCase, randomSuffix } from './test-helpers';
+import { callDeaAPIWithCreds, createCaseSuccess, randomSuffix } from './test-helpers';
 
 describe('get scoped case info E2E', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
@@ -73,8 +72,6 @@ describe('get scoped case info E2E', () => {
     );
 
     expect(workerResponse.status).toEqual(403);
-
-    await deleteCase(deaApiUrl ?? fail(), fetchedCase.ulid ?? fail(), workerToken, workerCreds);
   }, 30000);
 
   it('should throw an error when the case is not found', async () => {

@@ -18,7 +18,6 @@ import {
   completeCaseFileUploadSuccess,
   createCaseSuccess,
   delay,
-  deleteCase,
   deleteCaseFiles,
   describeCaseFileDetailsSuccess,
   downloadContentFromS3,
@@ -57,9 +56,6 @@ describe('case file audit e2e', () => {
   }, 10000);
 
   afterAll(async () => {
-    for (const caseId of caseIdsToDelete) {
-      await deleteCase(deaApiUrl, caseId, idToken, creds);
-    }
     await cognitoHelper.cleanup();
 
     await s3Cleanup(s3ObjectsToDelete);

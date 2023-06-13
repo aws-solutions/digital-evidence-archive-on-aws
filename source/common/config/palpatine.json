@@ -128,10 +128,6 @@
           "method": "PUT"
         },
         {
-          "path": "/cases/{caseId}/details",
-          "method": "DELETE"
-        },
-        {
           "path": "/cases/{caseId}/actions",
           "method": "GET"
         },

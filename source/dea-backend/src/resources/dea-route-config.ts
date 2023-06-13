@@ -201,12 +201,6 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pagination: true,
     },
     {
-      eventName: AuditEventType.DELETE_CASE,
-      path: '/cases/{caseId}/details',
-      httpMethod: ApiGatewayMethod.DELETE,
-      pathToSource: '../../src/handlers/delete-case-handler.ts',
-    },
-    {
       eventName: AuditEventType.CREATE_CASE_OWNER,
       path: '/cases/{caseId}/owner',
       httpMethod: ApiGatewayMethod.POST,

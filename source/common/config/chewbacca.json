@@ -20,10 +20,6 @@
           "method": "PUT"
         },
         {
-          "path": "/cases/{caseId}/details",
-          "method": "DELETE"
-        },
-        {
           "path": "/cases/{caseId}/actions",
           "method": "GET"
         },
@@ -132,10 +128,6 @@
         {
           "path": "/cases/{caseId}/details",
           "method": "PUT"
-        },
-        {
-          "path": "/cases/{caseId}/details",
-          "method": "DELETE"
         },
         {
           "path": "/cases/{caseId}/actions",
@@ -382,10 +374,6 @@
           "method": "POST"
         },
         {
-          "path": "/cases/{caseId}/details",
-          "method": "DELETE"
-        },
-        {
           "path": "/cases/all-cases",
           "method": "GET"
         },
@@ -416,10 +404,6 @@
           "method": "GET"
         },
         {
-          "path": "/cases/{caseId}/details",
-          "method": "DELETE"
-        },
-        {
           "path": "/auth/token",
           "method": "POST"
         },
@@ -444,10 +428,6 @@
         {
           "path": "/cases/{caseId}/details",
           "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/details",
-          "method": "DELETE"
         },
         {
           "path": "/cases/my-cases",

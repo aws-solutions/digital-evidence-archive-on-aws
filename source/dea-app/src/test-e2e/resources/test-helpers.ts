@@ -54,17 +54,6 @@ export interface s3Object {
   uploadId?: string;
 }
 
-export async function deleteCase(
-  baseUrl: string,
-  caseUlid: string,
-  idToken: Oauth2Token,
-  creds: Credentials
-): Promise<void> {
-  const response = await callDeaAPIWithCreds(`${baseUrl}cases/${caseUlid}/details`, 'DELETE', idToken, creds);
-
-  expect(response.status).toEqual(204);
-}
-
 export async function deleteCaseFiles(
   baseUrl: string,
   caseUlid: string,
@@ -603,7 +592,6 @@ const CASE_FILE_EVENT_TYPES = new Set<AuditEventType>([
 const CASE_LEVEL_EVENT_TYPES = new Set<AuditEventType>([
   AuditEventType.CREATE_CASE,
   AuditEventType.CREATE_CASE_OWNER,
-  AuditEventType.DELETE_CASE,
   AuditEventType.GET_CASE_AUDIT,
   AuditEventType.GET_CASE_DETAILS,
   AuditEventType.GET_CASE_FILES,

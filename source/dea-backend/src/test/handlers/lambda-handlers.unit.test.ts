@@ -7,7 +7,6 @@ import * as CompleteCaseFileUploadHandler from '../../handlers/complete-case-fil
 import * as CreateCaseOwnerHandler from '../../handlers/create-case-owner-handler';
 import * as CreateCaseUserHandler from '../../handlers/create-case-user-handler';
 import * as CreateCasesHandler from '../../handlers/create-cases-handler';
-import * as DeleteCasesHandler from '../../handlers/delete-case-handler';
 import * as DeleteCaseUserHandler from '../../handlers/delete-case-user-handler';
 import * as DownloadCaseFileHandler from '../../handlers/download-case-file-handler';
 import * as GetAllCasesHandler from '../../handlers/get-all-cases-handler';
@@ -48,7 +47,6 @@ describe('lambda handlers', () => {
       CreateCaseOwnerHandler.handler,
       CreateCaseUserHandler.handler,
       CompleteCaseFileUploadHandler.handler,
-      DeleteCasesHandler.handler,
       DownloadCaseFileHandler.handler,
       GetAllCasesHandler.handler,
       GetLoginUrlHandler.handler,

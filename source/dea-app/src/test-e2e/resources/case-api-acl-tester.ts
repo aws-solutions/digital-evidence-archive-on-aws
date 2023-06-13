@@ -19,7 +19,6 @@ import {
   completeCaseFileUploadSuccess,
   createCaseSuccess,
   DeaHttpMethod,
-  deleteCase,
   initiateCaseFileUploadSuccess,
   randomSuffix,
   s3Cleanup,
@@ -394,8 +393,6 @@ const initializeACLE2ETest = async (
 };
 
 const cleanupTestHarness = async (testHarnes: ACLTestHarness): Promise<void> => {
-  await deleteCase(deaApiUrl, testHarnes.targetCase.ulid!, testHarnes.owner.idToken, testHarnes.owner.creds);
-
   const cleanupPromises: Promise<unknown>[] = [];
   cleanupPromises.push(cognitoHelper.deleteUser(testHarnes.owner.userName));
   cleanupPromises.push(cognitoHelper.deleteUser(testHarnes.userWithRequiredActions.userName));

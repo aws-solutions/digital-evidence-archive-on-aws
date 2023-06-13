@@ -698,167 +698,6 @@ Object {
       },
       "Type": "AWS::CloudWatch::Alarm",
     },
-    "DeaApiOpsDashboardDeleteCaseerroralarm51EA5A74": Object {
-      "Properties": Object {
-        "AlarmDescription": "Api Errors above 3%",
-        "ComparisonOperator": "GreaterThanThreshold",
-        "EvaluationPeriods": 2,
-        "Metrics": Array [
-          Object {
-            "Expression": "((errors4xx + errors5xx) / invocations) * 100",
-            "Id": "expr_1",
-            "Label": "Error Rate (%)",
-          },
-          Object {
-            "Id": "invocations",
-            "Label": "DeleteCase_count",
-            "MetricStat": Object {
-              "Metric": Object {
-                "Dimensions": Array [
-                  Object {
-                    "Name": "ApiName",
-                    "Value": "dea-api",
-                  },
-                  Object {
-                    "Name": "Method",
-                    "Value": "DELETE",
-                  },
-                  Object {
-                    "Name": "Resource",
-                    "Value": "/cases/{caseId}/details",
-                  },
-                  Object {
-                    "Name": "Stage",
-                    "Value": Object {
-                      "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                  },
-                ],
-                "MetricName": "Count",
-                "Namespace": "AWS/ApiGateway",
-              },
-              "Period": 120,
-              "Stat": "Sum",
-            },
-            "ReturnData": false,
-          },
-          Object {
-            "Id": "errors4xx",
-            "Label": "DeleteCase_4XX",
-            "MetricStat": Object {
-              "Metric": Object {
-                "Dimensions": Array [
-                  Object {
-                    "Name": "ApiName",
-                    "Value": "dea-api",
-                  },
-                  Object {
-                    "Name": "Method",
-                    "Value": "DELETE",
-                  },
-                  Object {
-                    "Name": "Resource",
-                    "Value": "/cases/{caseId}/details",
-                  },
-                  Object {
-                    "Name": "Stage",
-                    "Value": Object {
-                      "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                  },
-                ],
-                "MetricName": "4XXError",
-                "Namespace": "AWS/ApiGateway",
-              },
-              "Period": 120,
-              "Stat": "Sum",
-            },
-            "ReturnData": false,
-          },
-          Object {
-            "Id": "errors5xx",
-            "Label": "DeleteCase_5XX",
-            "MetricStat": Object {
-              "Metric": Object {
-                "Dimensions": Array [
-                  Object {
-                    "Name": "ApiName",
-                    "Value": "dea-api",
-                  },
-                  Object {
-                    "Name": "Method",
-                    "Value": "DELETE",
-                  },
-                  Object {
-                    "Name": "Resource",
-                    "Value": "/cases/{caseId}/details",
-                  },
-                  Object {
-                    "Name": "Stage",
-                    "Value": Object {
-                      "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                  },
-                ],
-                "MetricName": "5XXError",
-                "Namespace": "AWS/ApiGateway",
-              },
-              "Period": 120,
-              "Stat": "Sum",
-            },
-            "ReturnData": false,
-          },
-        ],
-        "Threshold": 3,
-        "TreatMissingData": "ignore",
-      },
-      "Type": "AWS::CloudWatch::Alarm",
-    },
-    "DeaApiOpsDashboardDeleteCaselatencyalarm0CC1A5ED": Object {
-      "Properties": Object {
-        "AlarmDescription": "P99 Latency above 2000ms",
-        "ComparisonOperator": "GreaterThanThreshold",
-        "EvaluationPeriods": 2,
-        "Metrics": Array [
-          Object {
-            "Id": "m1",
-            "Label": "DeleteCase_p99",
-            "MetricStat": Object {
-              "Metric": Object {
-                "Dimensions": Array [
-                  Object {
-                    "Name": "ApiName",
-                    "Value": "dea-api",
-                  },
-                  Object {
-                    "Name": "Method",
-                    "Value": "DELETE",
-                  },
-                  Object {
-                    "Name": "Resource",
-                    "Value": "/cases/{caseId}/details",
-                  },
-                  Object {
-                    "Name": "Stage",
-                    "Value": Object {
-                      "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-                    },
-                  },
-                ],
-                "MetricName": "Latency",
-                "Namespace": "AWS/ApiGateway",
-              },
-              "Period": 120,
-              "Stat": "p99",
-            },
-            "ReturnData": true,
-          },
-        ],
-        "Threshold": 2000,
-        "TreatMissingData": "ignore",
-      },
-      "Type": "AWS::CloudWatch::Alarm",
-    },
     "DeaApiOpsDashboardDownloadCaseFileerroralarm5289917A": Object {
       "Properties": Object {
         "AlarmDescription": "Api Errors above 3%",
@@ -6090,11 +5929,7 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "\\",{\\"label\\":\\"GetAllCases_p99\\",\\"period\\":120,\\"stat\\":\\"p99\\"}],[\\"AWS/ApiGateway\\",\\"Latency\\",\\"ApiName\\",\\"dea-api\\",\\"Method\\",\\"DELETE\\",\\"Resource\\",\\"/cases/{caseId}/details\\",\\"Stage\\",\\"",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "\\",{\\"label\\":\\"DeleteCase_p99\\",\\"period\\":120,\\"stat\\":\\"p99\\"}],[\\"AWS/ApiGateway\\",\\"Latency\\",\\"ApiName\\",\\"dea-api\\",\\"Method\\",\\"POST\\",\\"Resource\\",\\"/cases/{caseId}/owner\\",\\"Stage\\",\\"",
+              "\\",{\\"label\\":\\"GetAllCases_p99\\",\\"period\\":120,\\"stat\\":\\"p99\\"}],[\\"AWS/ApiGateway\\",\\"Latency\\",\\"ApiName\\",\\"dea-api\\",\\"Method\\",\\"POST\\",\\"Resource\\",\\"/cases/{caseId}/owner\\",\\"Stage\\",\\"",
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
@@ -6318,19 +6153,7 @@ Object {
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "\\",{\\"color\\":\\"#d62728\\",\\"label\\":\\"GetAllCases_5XX\\",\\"period\\":120,\\"stat\\":\\"Sum\\"}],[\\"AWS/ApiGateway\\",\\"Count\\",\\"ApiName\\",\\"dea-api\\",\\"Method\\",\\"DELETE\\",\\"Resource\\",\\"/cases/{caseId}/details\\",\\"Stage\\",\\"",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "\\",{\\"color\\":\\"#1f77b4\\",\\"label\\":\\"DeleteCase_count\\",\\"period\\":120,\\"stat\\":\\"Sum\\"}],[\\"AWS/ApiGateway\\",\\"4XXError\\",\\"ApiName\\",\\"dea-api\\",\\"Method\\",\\"DELETE\\",\\"Resource\\",\\"/cases/{caseId}/details\\",\\"Stage\\",\\"",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "\\",{\\"color\\":\\"#ff7f0e\\",\\"label\\":\\"DeleteCase_4XX\\",\\"period\\":120,\\"stat\\":\\"Sum\\"}],[\\"AWS/ApiGateway\\",\\"5XXError\\",\\"ApiName\\",\\"dea-api\\",\\"Method\\",\\"DELETE\\",\\"Resource\\",\\"/cases/{caseId}/details\\",\\"Stage\\",\\"",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "\\",{\\"color\\":\\"#d62728\\",\\"label\\":\\"DeleteCase_5XX\\",\\"period\\":120,\\"stat\\":\\"Sum\\"}],[\\"AWS/ApiGateway\\",\\"Count\\",\\"ApiName\\",\\"dea-api\\",\\"Method\\",\\"POST\\",\\"Resource\\",\\"/cases/{caseId}/owner\\",\\"Stage\\",\\"",
+              "\\",{\\"color\\":\\"#d62728\\",\\"label\\":\\"GetAllCases_5XX\\",\\"period\\":120,\\"stat\\":\\"Sum\\"}],[\\"AWS/ApiGateway\\",\\"Count\\",\\"ApiName\\",\\"dea-api\\",\\"Method\\",\\"POST\\",\\"Resource\\",\\"/cases/{caseId}/owner\\",\\"Stage\\",\\"",
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
@@ -6902,14 +6725,6 @@ Object {
               },
               "\\",{\\"color\\":\\"#d62728\\",\\"label\\":\\"GetAllCases_errors\\",\\"stat\\":\\"Sum\\"}],[\\"AWS/Lambda\\",\\"Invocations\\",\\"FunctionName\\",\\"",
               Object {
-                "Ref": "DeaRestApiConstructDELETEDeleteCase9C8CBC88",
-              },
-              "\\",{\\"color\\":\\"#1f77b4\\",\\"label\\":\\"DeleteCase_invocations\\",\\"stat\\":\\"Sum\\"}],[\\"AWS/Lambda\\",\\"Errors\\",\\"FunctionName\\",\\"",
-              Object {
-                "Ref": "DeaRestApiConstructDELETEDeleteCase9C8CBC88",
-              },
-              "\\",{\\"color\\":\\"#d62728\\",\\"label\\":\\"DeleteCase_errors\\",\\"stat\\":\\"Sum\\"}],[\\"AWS/Lambda\\",\\"Invocations\\",\\"FunctionName\\",\\"",
-              Object {
                 "Ref": "DeaRestApiConstructPOSTCreateCaseOwner07019161",
               },
               "\\",{\\"color\\":\\"#1f77b4\\",\\"label\\":\\"CreateCaseOwner_invocations\\",\\"stat\\":\\"Sum\\"}],[\\"AWS/Lambda\\",\\"Errors\\",\\"FunctionName\\",\\"",
@@ -6993,10 +6808,6 @@ Object {
                 "Ref": "DeaRestApiConstructGETGetAllCasesD64E9594",
               },
               "\\",{\\"label\\":\\"GetAllCases_throttles\\",\\"stat\\":\\"Sum\\"}],[\\"AWS/Lambda\\",\\"Throttles\\",\\"FunctionName\\",\\"",
-              Object {
-                "Ref": "DeaRestApiConstructDELETEDeleteCase9C8CBC88",
-              },
-              "\\",{\\"label\\":\\"DeleteCase_throttles\\",\\"stat\\":\\"Sum\\"}],[\\"AWS/Lambda\\",\\"Throttles\\",\\"FunctionName\\",\\"",
               Object {
                 "Ref": "DeaRestApiConstructPOSTCreateCaseOwner07019161",
               },
@@ -8790,92 +8601,6 @@ Object {
       },
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
-    },
-    "DeaRestApiConstructDELETEDeleteCase9C8CBC88": Object {
-      "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-      ],
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W58",
-              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
-            },
-            Object {
-              "id": "W92",
-              "reason": "Reserved concurrency is currently not required. Revisit in the future",
-            },
-            Object {
-              "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "[HASH REMOVED].zip",
-        },
-        "Environment": Object {
-          "Variables": Object {
-            "ALLOWED_ORIGINS": "https://localhost:3001",
-            "AUDIT_LOG_GROUP_NAME": Object {
-              "Ref": "deaAuditLogs7B75D3F1",
-            },
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "DATASETS_BUCKET_NAME": Object {
-              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-            },
-            "DATASETS_ROLE": Object {
-              "Fn::GetAtt": Array [
-                "DeaRestApiConstructdeadatasetsrole293FB411",
-                "Arn",
-              ],
-            },
-            "NODE_OPTIONS": "--enable-source-maps",
-            "SAMESITE": "None",
-            "STAGE": "[STAGE-REMOVED]",
-            "TABLE_NAME": Object {
-              "Ref": "DeaBackendConstructDeaTableB48721A0",
-            },
-            "TRAIL_LOG_GROUP_NAME": Object {
-              "Ref": "deaTrailLogs0A0531F5",
-            },
-          },
-        },
-        "Handler": "index.handler",
-        "MemorySize": 1024,
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs18.x",
-        "Timeout": 10,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "DeaRestApiConstructDELETEDeleteCaseInvokeLambdaPermissionCB1C6040": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructDELETEDeleteCase9C8CBC88",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceAccount": Object {
-          "Ref": "AWS::AccountId",
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructDELETERemoveUserFromCase315FE1CE": Object {
       "DependsOn": Array [
@@ -11858,9 +11583,6 @@ Object {
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit5D5BA22A",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTE1FBCE9C",
         "DeaRestApiConstructdeaapicasescaseIdaudit16BF85CD",
-        "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails918BFC1A",
-        "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails2FC44B5A",
-        "DeaRestApiConstructdeaapicasescaseIddetailsDELETED0F47C2D",
         "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails7EEFD469",
         "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails44CA90D4",
         "DeaRestApiConstructdeaapicasescaseIddetailsGET0AC0D58C",
@@ -12190,9 +11912,6 @@ Object {
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit5D5BA22A",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTE1FBCE9C",
         "DeaRestApiConstructdeaapicasescaseIdaudit16BF85CD",
-        "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails918BFC1A",
-        "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails2FC44B5A",
-        "DeaRestApiConstructdeaapicasescaseIddetailsDELETED0F47C2D",
         "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails7EEFD469",
         "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails44CA90D4",
         "DeaRestApiConstructdeaapicasescaseIddetailsGET0AC0D58C",
@@ -12486,7 +12205,6 @@ Object {
         "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTE1FBCE9C",
         "DeaRestApiConstructdeaapicasescaseIdaudit16BF85CD",
-        "DeaRestApiConstructdeaapicasescaseIddetailsDELETED0F47C2D",
         "DeaRestApiConstructdeaapicasescaseIddetailsGET0AC0D58C",
         "DeaRestApiConstructdeaapicasescaseIddetailsOPTIONSA19CA131",
         "DeaRestApiConstructdeaapicasescaseIddetailsPUT33A3214F",
@@ -14825,124 +14543,6 @@ Object {
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails918BFC1A": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructDELETEDeleteCase9C8CBC88",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/DELETE/cases/*/details",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails2FC44B5A": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructDELETEDeleteCase9C8CBC88",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "/DELETE/cases/*/details",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructdeaapicasescaseIddetailsDELETED0F47C2D": Object {
-      "Properties": Object {
-        "AuthorizationType": "AWS_IAM",
-        "HttpMethod": "DELETE",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaRestApiConstructDELETEDeleteCase9C8CBC88",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
     },
     "DeaRestApiConstructdeaapicasescaseIddetailsGET0AC0D58C": Object {
       "Properties": Object {

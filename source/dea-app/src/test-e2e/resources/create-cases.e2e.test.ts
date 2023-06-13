@@ -7,7 +7,7 @@ import { Credentials } from 'aws4-axios';
 import { Oauth2Token } from '../../models/auth';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPIWithCreds, createCaseSuccess, deleteCase } from './test-helpers';
+import { callDeaAPIWithCreds, createCaseSuccess } from './test-helpers';
 
 describe('create cases api', () => {
   const cognitoHelper = new CognitoHelper();
@@ -29,9 +29,6 @@ describe('create cases api', () => {
   });
 
   afterAll(async () => {
-    for (const caseId of caseIdsToDelete) {
-      await deleteCase(deaApiUrl, caseId, idToken, creds);
-    }
     await cognitoHelper.cleanup();
   }, 30000);
 

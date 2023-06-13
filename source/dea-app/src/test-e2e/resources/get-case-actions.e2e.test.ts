@@ -18,7 +18,6 @@ import { testEnv } from '../helpers/settings';
 import {
   callDeaAPIWithCreds,
   createCaseSuccess,
-  deleteCase,
   getSpecificUserByFirstName,
   randomSuffix,
 } from './test-helpers';
@@ -67,9 +66,6 @@ describe('GetCaseActions E2E', () => {
   }, 30000);
 
   afterAll(async () => {
-    for (const caseId of caseIdsToDelete) {
-      await deleteCase(deaApiUrl, caseId, ownerToken, ownerCreds);
-    }
     await cognitoHelper.cleanup();
   }, 30000);
 

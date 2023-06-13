@@ -15,7 +15,6 @@ import { testEnv } from '../helpers/settings';
 import {
   completeCaseFileUploadSuccess,
   createCaseSuccess,
-  deleteCase,
   deleteCaseFiles,
   describeCaseFileDetailsSuccess,
   downloadContentFromS3,
@@ -54,10 +53,6 @@ describe('Test case file APIs', () => {
   });
 
   afterAll(async () => {
-    for (const caseId of caseIdsToDelete) {
-      await deleteCase(DEA_API_URL, caseId, idToken, creds);
-    }
-
     await cognitoHelper.cleanup();
 
     await s3Cleanup(s3ObjectsToDelete);

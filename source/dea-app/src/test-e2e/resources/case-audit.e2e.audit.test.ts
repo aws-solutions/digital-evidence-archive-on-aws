@@ -16,7 +16,6 @@ import {
   CaseAuditEventEntry,
   createCaseSuccess,
   delay,
-  deleteCase,
   inviteUserToCase,
   parseCaseAuditCsv,
   parseTrailEventsFromAuditQuery,
@@ -46,9 +45,6 @@ describe('case audit e2e', () => {
   }, 10000);
 
   afterAll(async () => {
-    for (const caseId of caseIdsToDelete) {
-      await deleteCase(deaApiUrl, caseId, idToken, creds);
-    }
     await cognitoHelper.cleanup();
   }, 30000);
 

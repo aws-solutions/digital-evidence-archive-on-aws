@@ -10,7 +10,7 @@ import { Oauth2Token } from '../../models/auth';
 import { joiUlid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPIWithCreds, createCaseSuccess, deleteCase, randomSuffix } from './test-helpers';
+import { callDeaAPIWithCreds, createCaseSuccess, randomSuffix } from './test-helpers';
 
 describe('system audit e2e', () => {
   const cognitoHelper = new CognitoHelper();
@@ -40,9 +40,6 @@ describe('system audit e2e', () => {
   }, 10000);
 
   afterAll(async () => {
-    for (const caseId of caseIdsToDelete) {
-      await deleteCase(deaApiUrl, caseId, idToken, creds);
-    }
     await cognitoHelper.cleanup();
   }, 30000);
 

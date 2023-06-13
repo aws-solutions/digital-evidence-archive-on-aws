@@ -13,7 +13,7 @@ import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPIWithCreds, createCaseSuccess, deleteCase, randomSuffix } from './test-helpers';
+import { callDeaAPIWithCreds, createCaseSuccess, randomSuffix } from './test-helpers';
 
 describe('get my cases api', () => {
   const cognitoHelper = new CognitoHelper();
@@ -43,9 +43,6 @@ describe('get my cases api', () => {
   });
 
   afterAll(async () => {
-    // clean up any cases leftover during a failure
-    await deleteCases(user1CaseIds, deaApiUrl, idToken, creds);
-    await deleteCases(user2CaseIds, deaApiUrl, idToken2, creds2);
     await cognitoHelper.cleanup();
   }, 20000);
 
@@ -136,32 +133,5 @@ describe('get my cases api', () => {
     expect(otherUserFetchedCases.length).toBe(1);
     otherUserFetchedCases.forEach((fetchedCase) => Joi.assert(fetchedCase, caseResponseSchema));
     expect(otherUserFetchedCases.find((deacase) => deacase.name === invitedCaseName)).toBeDefined();
-
-    await deleteCases(user1CaseIds, deaApiUrl, idToken, creds);
-    await deleteCases(user2CaseIds, deaApiUrl, idToken2, creds2);
-
-    // Get My Cases for both users should be empty
-    const user1Cases = await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', idToken, creds);
-    expect(user1Cases.status).toEqual(200);
-
-    const user1FetchedCases: DeaCase[] = await user1Cases.data.cases;
-    expect(user1FetchedCases.length).toBe(0);
-
-    const user2Cases = await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', idToken2, creds2);
-    expect(user2Cases.status).toEqual(200);
-
-    const user2FetchedCases: DeaCase[] = await user2Cases.data.cases;
-    expect(user2FetchedCases.length).toBe(0);
   }, 60000);
 });
-
-const deleteCases = async (
-  caseIdsToDelete: string[],
-  deaApiUrl: string,
-  idToken: Oauth2Token,
-  creds: Credentials
-) => {
-  for (const caseId of caseIdsToDelete) {
-    await deleteCase(deaApiUrl, caseId, idToken, creds);
-  }
-};

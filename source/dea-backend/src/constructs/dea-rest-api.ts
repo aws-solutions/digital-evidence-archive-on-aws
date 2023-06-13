@@ -4,7 +4,6 @@
  */
 
 import path from 'path';
-import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
 import { Aws, Duration, Fn } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
@@ -291,10 +290,6 @@ export class DeaRestApiConstruct extends Construct {
     });
 
     routeConfig.routes.forEach((route) => {
-      // Do NOT Deploy Delete Case Handler when 'deletionAllowed' Flag is NOT set in the config file.
-      if (!deaConfig.deletionAllowed() && route.eventName === AuditEventType.DELETE_CASE) {
-        return;
-      }
       // If this is a non-Auth API, then we specify the auth method (Non-IAM)
       // and we should give the lambda limited permissions
       // otherwise it is a DEA execution API, which needs the

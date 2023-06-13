@@ -305,19 +305,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Case'
-    delete:
-      summary: Delete case
-      tags:
-        - elevated
-      parameters:
-        - in: path
-          name: caseId
-          schema:
-            type: string
-          required: true
-      responses:
-        200:
-          description: Success
   /cases/{caseId}/status:
     put:
       summary: Update case status and optionally request deletion of case files
