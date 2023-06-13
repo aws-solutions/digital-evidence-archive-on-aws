@@ -165,7 +165,6 @@ describe('Test initiate case file upload', () => {
 
     await callInitiateCaseFileUpload(fileUploader.ulid, repositoryProvider, caseToUploadTo, fileName);
   });
-  u;
 
   it('Initiate upload should enforce a strict payload', async () => {
     // validate caseUlid
