@@ -322,7 +322,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           alink.click();
           // sleep 5ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
           // long term we should consider zipping the files in the backend and then downloading as a single file
-          await sleep(5);
+          await sleep(100);
         } catch (e) {
           pushNotification('error', fileOperationsLabels.downloadFailed(file.fileName));
           console.log(`failed to download ${file.fileName}`, e);

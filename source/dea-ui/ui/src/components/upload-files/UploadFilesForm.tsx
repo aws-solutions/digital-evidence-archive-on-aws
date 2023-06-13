@@ -48,11 +48,12 @@ interface ActiveFileUpload {
 }
 
 export const ONE_MB = 1024 * 1024;
-const MAX_PARALLEL_UPLOADS = 10;
+const MAX_PARALLEL_PART_UPLOADS = 10;
+const MAX_PARALLEL_UPLOADS = 1; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
-  const [uploadedFiles] = useState<FileUploadProgressRow[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<FileUploadProgressRow[]>([]);
   const [details, setDetails] = useState('');
   const [reason, setReason] = useState('');
   const [uploadInProgress, setUploadInProgress] = useState(false);
@@ -64,55 +65,21 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // top level try/finally to set uploadInProgress bool state
     try {
       setUploadInProgress(true);
-      const activeFileUploads: ActiveFileUpload[] = [];
-      for (const selectedFile of selectedFiles) {
-        const fileSizeBytes = Math.max(selectedFile.size, 1);
-        // Trying to use small chunk size (50MB) to reduce memory use.
-        // However, since S3 allows a max of 10,000 parts for multipart uploads, we will increase chunk size for larger files
-        const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
-        const uploadingFile = { fileName: selectedFile.name, fileSizeBytes, status: UploadStatus.progress };
-        // per file try/finally state to initiate uploads
-        try {
-          uploadedFiles.push(uploadingFile);
-          const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
-          const initiatedCaseFilePromise = initiateUpload({
-            caseUlid: props.caseId,
-            fileName: selectedFile.name,
-            filePath: selectedFile.relativePath,
-            fileSizeBytes,
-            chunkSizeBytes,
-            contentType,
-            reason,
-            details,
-          });
-          activeFileUploads.push({
-            file: selectedFile,
-            fileUploadProgress: uploadingFile,
-            initiatedCaseFilePromise,
-          });
-        } catch (e) {
-          uploadingFile.status = UploadStatus.failed;
-          console.log('Upload failed', e);
-        }
+
+      let position = 0;
+      while (position < selectedFiles.length) {
+        const itemsForBatch = selectedFiles.slice(position, position + MAX_PARALLEL_UPLOADS);
+        await Promise.all(itemsForBatch.map((item) => uploadFile(item)));
+        position += MAX_PARALLEL_UPLOADS;
       }
 
       setSelectedFiles([]);
-
-      for (const activeFileUpload of activeFileUploads) {
-        // per file try/finally state to upload to s3
-        try {
-          await finalizeFileUpload(activeFileUpload);
-        } catch (e) {
-          activeFileUpload.fileUploadProgress.status = UploadStatus.failed;
-          console.log('Upload failed', e);
-        }
-      }
     } finally {
       setUploadInProgress(false);
     }
   }
 
-  async function finalizeFileUpload(activeFileUpload: ActiveFileUpload) {
+  async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload) {
     const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
     let uploadPromises: Promise<Response>[] = [];
     const hash = cryptoJS.algo.SHA256.create();
@@ -133,9 +100,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
         hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
-        uploadPromises[index] = fetch(url, { method: 'PUT', body: loadedFilePart });
+        uploadPromises.push(fetch(url, { method: 'PUT', body: loadedFilePart }));
 
-        if (index > 0 && index % MAX_PARALLEL_UPLOADS === 0) {
+        if (index > 0 && index % MAX_PARALLEL_PART_UPLOADS === 0) {
           // getting user actions from api to reset idle timer while upload is in progress
           userActions.mutate();
           await Promise.all(uploadPromises);
@@ -152,6 +119,38 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       });
     }
     activeFileUpload.fileUploadProgress.status = UploadStatus.complete;
+  }
+
+  async function uploadFile(selectedFile: FileWithPath) {
+    const fileSizeBytes = Math.max(selectedFile.size, 1);
+    // Trying to use small chunk size (50MB) to reduce memory use.
+    // However, since S3 allows a max of 10,000 parts for multipart uploads, we will increase chunk size for larger files
+    const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
+    const uploadingFile = { fileName: selectedFile.name, fileSizeBytes, status: UploadStatus.progress };
+    // per file try/finally state to initiate uploads
+    try {
+      setUploadedFiles((prev) => [...prev, uploadingFile]);
+      const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
+      const initiatedCaseFilePromise = initiateUpload({
+        caseUlid: props.caseId,
+        fileName: selectedFile.name,
+        filePath: selectedFile.relativePath,
+        fileSizeBytes,
+        chunkSizeBytes,
+        contentType,
+        reason,
+        details,
+      });
+      const activeFileUpload = {
+        file: selectedFile,
+        fileUploadProgress: uploadingFile,
+        initiatedCaseFilePromise,
+      };
+      await uploadFilePartsAndComplete(activeFileUpload);
+    } catch (e) {
+      uploadingFile.status = UploadStatus.failed;
+      console.log('Upload failed', e);
+    }
   }
 
   async function readFileSlice(blob: Blob): Promise<Uint8Array> {
