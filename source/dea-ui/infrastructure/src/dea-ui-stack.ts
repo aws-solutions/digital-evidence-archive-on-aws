@@ -5,7 +5,7 @@
 /* eslint-disable no-new */
 import * as path from 'path';
 import { deaConfig } from '@aws/dea-backend';
-import { StackProps } from 'aws-cdk-lib';
+import { Aws, StackProps } from 'aws-cdk-lib';
 import {
   AuthorizationType,
   AwsIntegration,
@@ -47,7 +47,7 @@ export class DeaUiConstruct extends Construct {
 
     let sources = [Source.asset(path.resolve(__dirname, '../../ui/out'))];
     if (deaConfig.isOneClick()) {
-      const solutionsBucketName = 'solutions-features';
+      const solutionsBucketName = `solutions-${Aws.REGION}`;
 
       const solutionsBucket = Bucket.fromBucketName(this, 'solutions-bucket', solutionsBucketName);
 
