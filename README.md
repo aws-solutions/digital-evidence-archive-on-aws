@@ -118,7 +118,8 @@ For each role, specify the name, description, and an array of endpoints defined 
 {
   "path": "/system/audit/{auditId}/csv",
   "method": "GET"
-}
+}  
+
 6. If your local laws and regulations allows for or mandates the deletion of case evidence, set deletionAllowed field to true, otherwise set it to false.
 7. Go to the front end UI to change the System Use Notification.
 CJIS Policy 5.4 Use Notification states that you must display an approved system use notification message befor granting access, informing users of various usages and monitoring rules.
