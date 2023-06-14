@@ -4,6 +4,7 @@
  */
 
 import { addSnapshotSerializers } from '@aws/dea-backend';
+import { convictConfig } from '@aws/dea-backend/lib/config';
 import * as cdk from 'aws-cdk-lib';
 import { Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
@@ -74,5 +75,57 @@ describe('DEA UI Infrastructure stack', () => {
     addSnapshotSerializers();
 
     expect(template).toMatchSnapshot();
+  });
+
+  it('synthesizes the with isOneClick flag enabled', () => {
+    // set isOneClick to true
+    convictConfig.set('isOneClick', true);
+
+    const app = new cdk.App();
+    const stack = new Stack(app, 'test-stack');
+
+    const key = new Key(stack, 'testKey', {
+      enableKeyRotation: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+      pendingWindow: Duration.days(7),
+    });
+
+    const accessLogsBucket = new Bucket(stack, 'testS3AccessLogBucket', {
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+    });
+
+    const restApi = new RestApi(stack, 'testApi', { description: 'Backend API' });
+
+    new DeaUiConstruct(stack, 'DeaUiConstruct', {
+      kmsKey: key,
+      accessLogsBucket: accessLogsBucket,
+      restApi,
+      accessLogPrefix: 'dea-ui-access-log',
+    });
+
+    // Prepare the stack for assertions.
+    const template = Template.fromStack(stack);
+
+    // assertions relevant to backend and any parent
+    validateDeaUiConstruct(template);
+
+    // ui-specific assertions
+    template.allResourcesProperties('AWS::S3::Bucket', {
+      PublicAccessBlockConfiguration: {
+        BlockPublicAcls: true,
+        BlockPublicPolicy: true,
+        IgnorePublicAcls: true,
+        RestrictPublicBuckets: true,
+      },
+    });
+
+    //handlers + authorizer
+    const expectedBucketCount = 2;
+    const expectedLambdaCount = 2;
+    const expectedMethodCount = 7;
+    template.resourceCountIs('AWS::S3::Bucket', expectedBucketCount);
+    template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCount);
+    template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCount);
   });
 });

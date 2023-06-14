@@ -34,7 +34,9 @@ export const initiateCaseFileUpload = async (
   userUlid: string,
   sourceIp: string,
   repositoryProvider: ModelRepositoryProvider,
-  datasetsProvider: DatasetsProvider
+  datasetsProvider: DatasetsProvider,
+  // retryDepth exists to limit recursive retry count
+  retryDepth = 0
 ): Promise<DeaCaseFile> => {
   try {
     const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
@@ -45,9 +47,19 @@ export const initiateCaseFileUpload = async (
     await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider, uploadDTO.chunkSizeBytes, sourceIp);
     return { ...caseFile, chunkSizeBytes: uploadDTO.chunkSizeBytes };
   } catch (error) {
-    // On multiple concurrent requests with the same payload only one wins.
-    if ('code' in error && error.code === 'UniqueError') {
-      throw new ValidationError('File already exists in the DB');
+    if ('code' in error && error.code === 'UniqueError' && retryDepth === 0) {
+      // potential race-condition when we ran validate earlier. double check to ensure no case-file exists
+      await validateInitiateUploadRequirements(uploadDTO, userUlid, repositoryProvider);
+
+      // if no case-file exists, it means that the case-file was cleared by ttl after failed upload
+      // we need to clear the unique file item in ddb and retry request.
+      // https://doc.onetable.io/api/model/methods/#unique-fields
+      await repositoryProvider.table.deleteItem({
+        PK: `_unique#CaseFile#GSI2PK#CASE#${uploadDTO.caseUlid}#${uploadDTO.filePath}${uploadDTO.fileName}#`,
+        SK: '_unique#',
+      });
+
+      return initiateCaseFileUpload(uploadDTO, userUlid, sourceIp, repositoryProvider, datasetsProvider, 1);
     } else {
       throw error;
     }
@@ -72,9 +84,7 @@ export const validateInitiateUploadRequirements = async (
     // todo: the error experience of this scenario can be improved upon based on UX/customer feedback
     // todo: add more protection to prevent creation of 2 files with same filePath+fileName
     if (existingCaseFile.status == CaseFileStatus.PENDING) {
-      throw new ValidationError(
-        `${existingCaseFile.filePath}${existingCaseFile.fileName} is currently being uploaded. Check again in 60 minutes`
-      );
+      throw new ValidationError('File is currently being uploaded. Check again in 60 minutes');
     }
     throw new ValidationError('File already exists in the DB');
   }

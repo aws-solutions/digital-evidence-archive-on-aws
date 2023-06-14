@@ -11,6 +11,224 @@ Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest 
 
 # Getting Started
 
+## Production Deployment
+Follow these steps to deploy your production environment. If developing/testing, follow the Simple Deployment Section.
+
+### Pre-requisites:
+Run the following commands
+```sh
+npm install -g @microsoft/rush
+npm install -g pnpm@7.16.0
+```
+
+Note pnpm needs to match the version pnpmVersion in rush.json
+
+### Step 0: Setup a Custom Domain (Recommended)
+We recommend using a custom domain, otherwise the URL for the solution will not be human readable. You will need to register a domain using AWS Route53 or other provider, and import a certificate for the domain using AWS Certificate Manager.
+
+1. Register a Domain with Route53 by following https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-register.html#register_new_console
+2. Wait for confirmation email
+3. Keep Note of the domain name: e.g. digitalevidencearchive.com
+4. Route53 automatically creates a hosted zone for your domain. Go to Route 53, click HostedZones on the left tab. Go to the hosted zone that matches your domain name, and copy and paste the Hosted Zone ID somewhere safe
+5. Next go to AWS Certificate Manager to request a certificate for your domain: (MAKE SURE TO DO IT IN THE REGION YOU WANT TO DEPLOY) https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html
+6. Navigate to the certificate table. The request should be pending. Click on the Certificate ID link, scroll to the Domains section, and on the upper right hand side of that section, click Create Records in Route53. Wait about 10 minutes
+7. Once the Certificate is issued, click the Certificate ID link and copy the ARN in the first section. Save this somewhere safe.
+
+### Step 1: Clone the repository
+Use the command line to run the following commands:
+
+```sh
+git clone https://github.com/aws-solutions/digital-evidence-archive-on-aws
+cd ./digital-evidence-archive-on-aws/source/
+rush cupdate
+rush build
+```
+
+### Step 2: Customize your configuration
+
+From the source folder in your repository, copy and rename the default configuration file.
+```sh
+cp ./common/config/palpatine.json ./common/config/prod.json
+```
+
+Open up the configuration file you just created in your editor of choice.
+Inside the configuration file, change the following fields
+1. Specify your region by including a line in the following format ```"region": "us-east-2"```
+2. If launching in Gov Cloud, include the following line: ```"awsPartition": "aws-us-gov"```
+3. Specify an unique domain prefix for your hosted Cognito login. NOTE: this is separate from your custom domain. It should look like the following:
+
+```
+“cognito”: {
+  “domain”: “bobinohio”
+},
+```
+4. If you completed step 0, then import the domainName, hostedZoneId, hostedZoneName, and ACM Certificate ARN like so:
+```
+"customDomain": {
+  "domainName": "example.com",
+  "certificateArn": "arn:aws:acm:us-east-1:ACCTNUM:certificate/CERT_NUM",
+  "hostedZoneId": "NJKVNFJKNVJF345903",
+  "hostedZoneName": "example.com"
+},
+```
+5. Define your User Role Types.
+You can see examples of role types already in the file. Feel free to modify these endpoints or create new roles as necessary for your use case.
+For each role, specify the name, description, and an array of endpoints defined by path and endpoint method. You can refer to API Reference section of the Implementation Guide for a list of available endpoints. Alternatively, you can view the file called dea-route-config.ts under the dea-backend folder for the most up to date list of API endpoints.  
+
+> :warning: Note about elevated endpoints: The following API endpoints, which can be configured on Roles within deaRoleTypes configuration, are considered elevated. These endpoints grant applicable users access to resources without any case-owner granted membership and are intended for "admin-type" roles.
+
+
+> - Fetch a list of all cases within the system.  
+{
+  "path": "/cases/all-cases",
+  "method": "GET"
+}
+
+> - Fetch information on a case, there is no membership requirement on the caller.  
+{
+  "path": "/cases/{caseId}/scopedInformation",
+  "method": "GET"
+}
+
+> - Assign a case owner, can be called on any case in the system.  
+{
+  "path": "/cases/{caseId}/owner",
+  "method": "POST"
+}
+
+> - Generate an audit showing all actions taken by a specified user.  
+{
+  "path": "/users/{userId}/audit",
+  "method": "POST"
+}
+
+> - Retrieve the results of a generated user audit.  
+{
+  "path": "/users/{userId}/audit/{auditId}/csv",
+  "method": "GET"
+}
+
+> - Generate an audit showing all actions taken in the system.  
+{
+  "path": "/system/audit",
+  "method": "POST"
+}
+
+> - Retrieve the results of a generated system audit.  
+{
+  "path": "/system/audit/{auditId}/csv",
+  "method": "GET"
+}  
+
+6. If your local laws and regulations allows for or mandates the deletion of case evidence, set deletionAllowed field to true, otherwise set it to false.
+7. Go to the front end UI to change the System Use Notification.
+CJIS Policy 5.4 Use Notification states that you must display an approved system use notification message befor granting access, informing users of various usages and monitoring rules.
+
+The message should generally discuss the following information: that the user is accessing a restricted information system; that system usage may be monitored, recorded, and subject to audit; that unauthorized use of the system is prohibited and may be subject to criminal and/or civil penalties; use of the system indicateds consent to monitoring and recording.
+
+Additionally the message shall provide appropriate privacy and security notices based on local laws and regulations. Please refer to CJIS Policy 5.4 for the most up to date information.
+
+To input your System Use Notification Message, open the following file in a text editor: ~/digital-evidence-archive-on-aws/source/dea-ui/ui/src/common/labels.tsx.
+Scroll to the systemUseNotificationText definition, and change the text starting with CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT… to your approved system message.
+
+### Step 3: Launch the Stack
+
+Go to the dea-main folder
+```sh
+cd ~/digital-evidence-archive-on-aws/source/dea-main
+```
+
+Export the following variables (customize as needed)
+```
+export STAGE=prod
+export AWS_REGION="us-east-2"
+export DEA_CUSTOM_DOMAIN=true // if using custom domain, otherwise do not set
+export AWS_ACCT_NUMBER=<your 12 digit AWS account number>
+```
+
+Now run the following commands to launch the stack
+```sh
+rush rebuild
+rushx cdk bootstrap aws://${AWS_ACCT_NUMBER}/${AWS_REGION}
+rushx cdk deploy
+```
+
+After the command is done, copy the list of outputs somewhere safe, You will need them for next steps.
+
+### Step 4: Integrate your CJIS Compliant Identity Provider
+Cognito is not CJIS compliant, therefore you need to use your CJIS Compliant IdP to federate with Cognito for use in DEA. This will require you to create an App Integration in your IdP, relaunch the stack, create a custom attribute for users called DEARole, and assign users to DEA via the App Integration.
+
+1) First in your IdP, create a new custom attribute for users called DEARole, limit the possible values to only the Roles you configured in step 3.
+* Okta: https://help.okta.com/en-us/Content/Topics/users-groups-profiles/usgp-add-custom-user-attributes.htm
+* Active Directory: https://windowstechno.com/how-to-create-custom-attributes-in-active-directory/
+
+2) Add the new user pool as a SAML 2.0 enterprise application in your IdP. For this you will need your cognito domain prefix (as you stated in your configuration file) and your user pool Id (listed in the named CDK outputs as DeaAuthConstructuserPoolId).
+AWS has articles on how to integrate Okta and Active Directory with Cognito for Federation. See below for links. NOTE: DEA has already created the User Pool and App Client for you skip those steps. 
+
+* For Okta: Complete ONLY the steps "Create a SAML app in Okta" and "Configure SAML integration for your Okta App" in https://repost.aws/knowledge-center/cognito-okta-saml-identity-provider.
+** For Attribute Statements, ensure you have the following fields: first name, last name, email, username, DEARole (the custom attribute you created in step 1)
+* For Active Directory: Complete ONLY Step 2: Add Amazon Cognito as an entrpise application in Azure AD in the following article https://aws.amazon.com/blogs/security/how-to-set-up-amazon-cognito-for-federated-authentication-using-azure-ad/.
+** For User Attributes and Claims,, ensure you have the following fields: first name, last name, email, username, DEARole (the custom attribute you created in step 1)
+
+One you have created the SAML 2.0 integration in your IdP, with the appropriate User Attribute Mapping, you can now start the integration process with DEA.
+
+3) Open your configuration file from step 3 and add the following (with your specific values for each of the fields) to the configuration file.
+* metadataPath : the URL link to the IdP App Integration Metadata (recommended) or the path to the metadata file locally
+* metadataPathType: either URL or FILE
+* attributeMap: mapping from what Cognito fields are named to what you named them in your App Integration (App Integration names are on right hand side, do not modify left hand side)
+
+E.g.
+```
+"idpInfo": {
+  "metadataPath": <URL link to IdP metatdata, or path to the file locally>
+  "metadataPathType": "URL", // or “FILE” if you used the path to the metadata file locally
+  "attributeMap": {
+    "username": "username",
+    "email": "email",
+    "firstName": "firstName",
+    "lastName": "lastName",
+    "deaRoleName": "DEARole"
+  }
+}
+```
+
+4) Update the stack to use the information you provided in the configuration file to integrate your IdP with the DEA stack. Run the following commands:
+```sh
+rush rebuild
+rushx cdk bootstrap aws://${AWS_ACCT_NUMBER}/${AWS_REGION}
+rushx cdk deploy
+```
+
+5) Post Deployment Steps:
+
+**DEA Permissions Boundary**
+
+The CDK stack for DEA also creates a permissions boundary that blocks all access to protected DEA resources. Cloudtrail is enabled for DEA resources, so all access outside of DEA will be logged. However, for extra security you can attach the Permissions Boundary to all Console IAM Roles to block access to DEA resources.
+
+Log in as Admin in your AWS account.
+1. Go to IAM.
+2. Go to Users. (Alternately, go to Roles to set permissions boundaries around a role.)
+3. Choose a user.
+4. Go to Permissions Boundary, and choose set permissions boundary.
+5. In the search bar, enter deaResourcesPermissionsBoundary and choose it.
+6. Choose Set boundary.
+
+Repeat steps 3-6 for each User (or Role that users have access to).
+
+**Enable AWS WAF**
+
+Digital Evidence Archive on AWS allows configuration of AWS Web Application Firewall (WAF) to protect the DEA-created Amazon API Gateway. Please see this documentation for more information on how you can protect your deployment:
+*https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html
+*https://repost.aws/knowledge-center/waf-apply-rate-limit
+
+Please note that default DEA limits are conservative, but you can increase the numbers alongside the lambda service limit increases. Fine-grain throttle limits using WAF.
+
+**Anti-virus**
+
+DEA does not protect against uploading viruses (as they can be considered evidence in certain investigations), therefore we recommend setting up anti-virus and other security protections, such as crowdstrike to ensure your Criminal Justice devices stay secure. A common product is Crowdstrike.
+
+## Simple Deployment
+
 Deployments are controlled by your `STAGE` environment variable. If unspecified this will default to `chewbacca`.
 Any deployments cohabitating on a single AWS account will require an account-unique `STAGE` name.
 By default the build process will seek a configuration file ([example](/source/common/config/chewbacca.json)) with the same name as your `STAGE`, however, you can optionally specify `CONFIGNAME` in your environment to specify a filename separate from your `STAGE`, this is useful if you want multiple stages that share the same configuration.
