@@ -71,7 +71,52 @@ Inside the configuration file, change the following fields
 ```
 5. Define your User Role Types.
 You can see examples of role types already in the file. Feel free to modify these endpoints or create new roles as necessary for your use case.
-For each role, specify the name, description, and an array of endpoints defined by path and endpoint method. You can refer to API Reference section of the Implementation Guide for a list of available endpoints. Alternatively, you can view the file called dea-route-config.ts under the dea-backend folder for the most up to date list of API endpoints.
+For each role, specify the name, description, and an array of endpoints defined by path and endpoint method. You can refer to API Reference section of the Implementation Guide for a list of available endpoints. Alternatively, you can view the file called dea-route-config.ts under the dea-backend folder for the most up to date list of API endpoints.  
+
+> :warning: Note about elevated endpoints: The following API endpoints, which can be configured on Roles within deaRoleTypes configuration, are considered elevated. These endpoints grant applicable users access to resources without any case-owner granted membership and are intended for "admin-type" roles.
+
+
+> - Fetch a list of all cases within the system.  
+{
+  "path": "/cases/all-cases",
+  "method": "GET"
+}
+
+> - Fetch information on a case, there is no membership requirement on the caller.  
+{
+  "path": "/cases/{caseId}/scopedInformation",
+  "method": "GET"
+}
+
+> - Assign a case owner, can be called on any case in the system.  
+{
+  "path": "/cases/{caseId}/owner",
+  "method": "POST"
+}
+
+> - Generate an audit showing all actions taken by a specified user.  
+{
+  "path": "/users/{userId}/audit",
+  "method": "POST"
+}
+
+> - Retrieve the results of a generated user audit.  
+{
+  "path": "/users/{userId}/audit/{auditId}/csv",
+  "method": "GET"
+}
+
+> - Generate an audit showing all actions taken in the system.  
+{
+  "path": "/system/audit",
+  "method": "POST"
+}
+
+> - Retrieve the results of a generated system audit.  
+{
+  "path": "/system/audit/{auditId}/csv",
+  "method": "GET"
+}
 6. If your local laws and regulations allows for or mandates the deletion of case evidence, set deletionAllowed field to true, otherwise set it to false.
 7. Go to the front end UI to change the System Use Notification.
 CJIS Policy 5.4 Use Notification states that you must display an approved system use notification message befor granting access, informing users of various usages and monitoring rules.
