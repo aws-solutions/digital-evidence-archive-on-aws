@@ -21,6 +21,8 @@ npm install -g @microsoft/rush
 npm install -g pnpm@7.16.0
 ```
 
+Note pnpm needs to match the version pnpmVersion in rush.json
+
 ### Step 0: Setup a Custom Domain (Recommended)
 We recommend using a custom domain, otherwise the URL for the solution will not be human readable. You will need to register a domain using AWS Route53 or other provider, and import a certificate for the domain using AWS Certificate Manager.
 
@@ -29,8 +31,8 @@ We recommend using a custom domain, otherwise the URL for the solution will not 
 3. Keep Note of the domain name: e.g. digitalevidencearchive.com
 4. Route53 automatically creates a hosted zone for your domain. Go to Route 53, click HostedZones on the left tab. Go to the hosted zone that matches your domain name, and copy and paste the Hosted Zone ID somewhere safe
 5. Next go to AWS Certificate Manager to request a certificate for your domain: (MAKE SURE TO DO IT IN THE REGION YOU WANT TO DEPLOY) https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html
-6. You should be navigated to the Certificate table, and the request should be in pending. Click on the Certificate ID link, scroll to the Domains section, and on the upper right hand side of that section, click Create Records in Route53. Wait about 10 minutes
-7. Once the Certificate is issues, click the Certificate ID link and copy the ARN in the first section. Save this somewhere safe.
+6. Navigate to the certificate table. The request should be pending. Click on the Certificate ID link, scroll to the Domains section, and on the upper right hand side of that section, click Create Records in Route53. Wait about 10 minutes
+7. Once the Certificate is issued, click the Certificate ID link and copy the ARN in the first section. Save this somewhere safe.
 
 ### Step 1: Clone the repository
 Use the command line to run the following commands:
@@ -53,7 +55,7 @@ Open up the configuration file you just created in your editor of choice.
 Inside the configuration file, change the following fields
 1. Specify your region by including a line in the following format ```"region": "us-east-2"```
 2. If launching in Gov Cloud, include the following line: ```"awsPartition": "aws-us-gov"```
-3. Specify an unique domain prefix for your hosed cognito login. For example:
+3. Specify an unique domain prefix for your hosted Cognito login. NOTE: this is separate from your custom domain. It should look like the following:
 
 ```
 “cognito”: {
