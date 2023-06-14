@@ -413,7 +413,8 @@ export class DeaAuth extends Construct {
     if (!domainPrefix) {
       const cognitoPrefixParam = new CfnParameter(this, 'CognitoDomainPrefix', {
         type: 'String',
-        description: 'The prefix of the cognito domain to associate to the user pool',
+        description:
+          "The prefix of the cognito domain to associate to the user pool. Domain prefixes may only include lowercase, alphanumeric characters, and hyphens. You can't use the text aws, amazon, or cognito in the domain prefix. Your domain prefix must be unique within the current Region.",
         allowedPattern: '^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$',
       });
       domainPrefix = cognitoPrefixParam.valueAsString;

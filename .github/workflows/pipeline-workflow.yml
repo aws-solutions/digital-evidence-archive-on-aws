@@ -5,7 +5,7 @@ env:
 
 on:
   push:
-    branches: [main, develop, pipelinedevelop]
+    branches: [main, develop, release-v1.0.0]
 
 jobs:
   pipeline-job:

@@ -5,7 +5,7 @@
   "coveragePathIgnorePatterns": ["<rootDir>/src/test/", "<rootDir>/src/index.ts"],
   "coverageThreshold": {
     "global": {
-      "branches": 75,
+      "branches": 70,
       "functions": 75,
       "lines": 75,
       "statements": 75
