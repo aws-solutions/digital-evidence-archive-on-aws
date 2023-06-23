@@ -19,7 +19,9 @@ export const getAuthorizationCode = async (
   code_challenge: string,
   agencyIdpName?: string
 ) => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox'],
+  });
   const page = await browser.newPage();
 
   const clientId = testEnv.clientId;
