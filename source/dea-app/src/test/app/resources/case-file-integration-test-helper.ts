@@ -32,6 +32,7 @@ import { jsonParseWithDates } from '../../../models/validation/json-parse-with-d
 import { getJob } from '../../../persistence/job';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
+import { testEnv } from '../../../test-e2e/helpers/settings';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 
 export type ResponseCaseFilePage = {
@@ -53,8 +54,8 @@ const CONTENT_TYPE = 'image/jpeg';
 const REASON = 'none';
 const DETAILS = 'hungry';
 export const DATASETS_PROVIDER = {
-  s3Client: new S3Client({ region: 'us-east-1' }),
-  s3ControlClient: new S3ControlClient({ region: 'us-east-1' }),
+  s3Client: new S3Client({ region: testEnv.awsRegion }),
+  s3ControlClient: new S3ControlClient({ region: testEnv.awsRegion }),
   bucketName: 'testBucket',
   presignedCommandExpirySeconds: 3600,
   s3BatchDeleteCaseFileLambdaArn: 'arn:aws:lambda:us-east-1:1234:function:foo',

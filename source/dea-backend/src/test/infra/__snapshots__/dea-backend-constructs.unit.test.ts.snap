@@ -2,6 +2,109 @@
 
 exports[`DeaBackend constructs synthesizes the way we expect 1`] = `
 Object {
+  "Mappings": Object {
+    "DefaultCrNodeVersionMap": Object {
+      "af-south-1": Object {
+        "value": "nodejs16.x",
+      },
+      "ap-east-1": Object {
+        "value": "nodejs16.x",
+      },
+      "ap-northeast-1": Object {
+        "value": "nodejs16.x",
+      },
+      "ap-northeast-2": Object {
+        "value": "nodejs16.x",
+      },
+      "ap-northeast-3": Object {
+        "value": "nodejs16.x",
+      },
+      "ap-south-1": Object {
+        "value": "nodejs16.x",
+      },
+      "ap-south-2": Object {
+        "value": "nodejs16.x",
+      },
+      "ap-southeast-1": Object {
+        "value": "nodejs16.x",
+      },
+      "ap-southeast-2": Object {
+        "value": "nodejs16.x",
+      },
+      "ap-southeast-3": Object {
+        "value": "nodejs16.x",
+      },
+      "ca-central-1": Object {
+        "value": "nodejs16.x",
+      },
+      "cn-north-1": Object {
+        "value": "nodejs16.x",
+      },
+      "cn-northwest-1": Object {
+        "value": "nodejs16.x",
+      },
+      "eu-central-1": Object {
+        "value": "nodejs16.x",
+      },
+      "eu-central-2": Object {
+        "value": "nodejs16.x",
+      },
+      "eu-north-1": Object {
+        "value": "nodejs16.x",
+      },
+      "eu-south-1": Object {
+        "value": "nodejs16.x",
+      },
+      "eu-south-2": Object {
+        "value": "nodejs16.x",
+      },
+      "eu-west-1": Object {
+        "value": "nodejs16.x",
+      },
+      "eu-west-2": Object {
+        "value": "nodejs16.x",
+      },
+      "eu-west-3": Object {
+        "value": "nodejs16.x",
+      },
+      "me-central-1": Object {
+        "value": "nodejs16.x",
+      },
+      "me-south-1": Object {
+        "value": "nodejs16.x",
+      },
+      "sa-east-1": Object {
+        "value": "nodejs16.x",
+      },
+      "us-east-1": Object {
+        "value": "nodejs16.x",
+      },
+      "us-east-2": Object {
+        "value": "nodejs16.x",
+      },
+      "us-gov-east-1": Object {
+        "value": "nodejs16.x",
+      },
+      "us-gov-west-1": Object {
+        "value": "nodejs16.x",
+      },
+      "us-iso-east-1": Object {
+        "value": "nodejs14.x",
+      },
+      "us-iso-west-1": Object {
+        "value": "nodejs14.x",
+      },
+      "us-isob-east-1": Object {
+        "value": "nodejs14.x",
+      },
+      "us-west-1": Object {
+        "value": "nodejs16.x",
+      },
+      "us-west-2": Object {
+        "value": "nodejs16.x",
+      },
+    },
+  },
   "Outputs": Object {
     "DeaBackendConstructDeaS3AccessLogs327B4237": Object {
       "Export": Object {
@@ -152,7 +255,15 @@ Object {
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
+        "Runtime": Object {
+          "Fn::FindInMap": Array [
+            "DefaultCrNodeVersionMap",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            "value",
+          ],
+        },
         "Timeout": 120,
       },
       "Type": "AWS::Lambda::Function",
@@ -180,7 +291,7 @@ Object {
             ],
           ],
         },
-        "Handler": "__entrypoint__.handler",
+        "Handler": "index.handler",
         "MemorySize": 128,
         "Role": Object {
           "Fn::GetAtt": Array [
@@ -188,7 +299,7 @@ Object {
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs16.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -12630,6 +12741,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiOPTIONSE2FADC9C": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -12691,6 +12803,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiauthOPTIONSF807407C": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -12746,6 +12859,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -12801,6 +12915,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -13092,6 +13207,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -13265,6 +13381,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -13320,6 +13437,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -13493,6 +13611,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -13787,6 +13906,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -13845,6 +13965,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasesOPTIONS6C23822B": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -14144,6 +14265,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasesallcasesOPTIONSA5C611C6": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -14199,6 +14321,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -14372,6 +14495,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdactionsOPTIONSE258076A": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -14427,6 +14551,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -14600,6 +14725,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdauditauditIdOPTIONS517DE0AB": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -14773,6 +14899,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvOPTIONS428A5C73": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -15064,6 +15191,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIddetailsOPTIONSA19CA131": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -15355,6 +15483,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesOPTIONS18C09E02": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -15528,6 +15657,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -15583,6 +15713,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -15756,6 +15887,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdOPTIONSDBE821E3": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -15929,6 +16061,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONS5D0C778E": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -16102,6 +16235,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -16393,6 +16527,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoOPTIONS11169FBA": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -16448,6 +16583,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -16621,6 +16757,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdownerOPTIONSBD3E6D71": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -16912,6 +17049,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -16967,6 +17105,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdstatusOPTIONS0760E14E": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -17258,6 +17397,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -17431,6 +17571,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdusersOPTIONS61C453FB": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -17486,6 +17627,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdusersuserIdOPTIONS15B78F29": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -17659,6 +17801,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -17958,6 +18101,7 @@ Object {
     },
     "DeaRestApiConstructdeaapicasesmycasesOPTIONSE1C2DE04": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -18016,6 +18160,7 @@ Object {
     },
     "DeaRestApiConstructdeaapisystemOPTIONS2695AC39": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -18071,6 +18216,7 @@ Object {
     },
     "DeaRestApiConstructdeaapisystemauditOPTIONS30FFCB3F": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -18244,6 +18390,7 @@ Object {
     },
     "DeaRestApiConstructdeaapisystemauditauditIdOPTIONS2EADE5A9": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -18417,6 +18564,7 @@ Object {
     },
     "DeaRestApiConstructdeaapisystemauditauditIdcsvOPTIONSBC6D4692": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -18599,6 +18747,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -18654,6 +18803,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiusersuserIdOPTIONS66B09E53": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -18709,6 +18859,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiusersuserIdauditOPTIONSEE6E3674": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -18882,6 +19033,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiusersuserIdauditauditIdOPTIONS3652E037": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -19055,6 +19207,7 @@ Object {
     },
     "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvOPTIONSFD04EC81": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {

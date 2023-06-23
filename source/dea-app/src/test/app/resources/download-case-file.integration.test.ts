@@ -23,6 +23,7 @@ import { DownloadCaseFileResult } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
+import { testEnv } from '../../../test-e2e/helpers/settings';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
@@ -43,6 +44,8 @@ let caseToDownloadFrom = '';
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
 const UPLOAD_ID = '123456';
 const VERSION_ID = '543210';
+
+const region = testEnv.awsRegion;
 
 jest.setTimeout(20000);
 
@@ -290,7 +293,7 @@ async function downloadCaseFileAndValidate(fileId: string, caseId: string): Prom
   const result = await callDownloadCaseFile(fileUploader.ulid, repositoryProvider, fileId, caseId);
   if (result.downloadUrl) {
     expect(result.downloadUrl).toContain(
-      `https://s3.us-east-1.amazonaws.com/${DATASETS_PROVIDER.bucketName}`
+      `https://s3.${region}.amazonaws.com/${DATASETS_PROVIDER.bucketName}`
     );
   }
   return result;
