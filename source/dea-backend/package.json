@@ -2,10 +2,10 @@
   "name": "@aws/dea-backend",
   "version": "0.0.1",
   "description": "Example infrastructure to deploy express app",
-  "homepage": "https://code.amazon.com/packages/Digital-evidence-archive/trees/mainline",
+  "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/tree/main/",
   "repository": {
     "type": "git",
-    "url": "https://code.amazon.com/packages/Digital-evidence-archive/trees/mainline"
+    "url": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/tree/main/"
   },
   "license": "Apache-2.0",
   "author": {

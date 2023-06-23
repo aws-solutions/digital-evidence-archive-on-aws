@@ -14,7 +14,7 @@
     "changeLogUpdateCommitMessage": "Update changelogs [skip ci]"
   },
   "repository": {
-    "url": "ssh://git.amazon.com/pkg/Digital-evidence-archive",
+    "url": "git@github.com:aws-solutions/digital-evidence-archive-on-aws.git",
     "defaultBranch": "mainline"
   },
   "eventHooks": {
