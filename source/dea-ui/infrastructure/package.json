@@ -2,10 +2,10 @@
   "name": "@aws/dea-ui-infrastructure",
   "version": "0.0.1",
   "description": "CDK project for deploying dea-ui",
-  "homepage": "https://code.amazon.com/packages/Digital-evidence-archive/blobs/dea-ui/--/README.md",
+  "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/blob/main/source/dea-ui/infrastructure",
   "repository": {
     "type": "git",
-    "url": "https://code.amazon.com/packages/Digital-evidence-archive/blobs/dea-ui/--/README.md"
+    "url": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/blob/main/source/dea-ui/infrastructure/README.md"
   },
   "license": "Apache-2.0",
   "author": {
