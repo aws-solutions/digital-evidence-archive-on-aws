@@ -37,7 +37,7 @@ import {
   paginationLabels,
 } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
-import { formatDate } from '../../helpers/dateHelper';
+import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import {
   canDownloadCaseAudit,
@@ -376,7 +376,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         {
           id: 'uploadDate',
           header: commonTableLabels.dateUploadedHeader,
-          cell: (e) => formatDate(e.created),
+          cell: (e) => formatDateFromISOString(e.created?.toString()),
           width: 170,
           minWidth: 165,
           sortingField: 'uploadDate',

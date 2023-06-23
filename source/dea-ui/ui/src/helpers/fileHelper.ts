@@ -10,7 +10,7 @@ const TB = GB * 1024;
 
 export function formatFileSize(size: number): string {
   if (!size) {
-    return '';
+    return '-';
   }
   if (size < MB) {
     return `${(size / KB).toFixed(2)} KB`;
