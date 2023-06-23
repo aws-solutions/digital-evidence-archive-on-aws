@@ -2,6 +2,7 @@
 
 exports[`DeaMainStack synthesizes the way we expect 1`] = `
 Object {
+  "Description": "(SO0224) Digital Evidence Archive v1.0.0 - This solution helps investigative units manage and store digital evidence on AWS.",
   "Mappings": Object {
     "Solution": Object {
       "Data": Object {
