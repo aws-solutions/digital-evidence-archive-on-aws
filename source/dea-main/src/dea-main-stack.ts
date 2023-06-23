@@ -37,18 +37,24 @@ import { addLambdaSuppressions, addResourcePolicySuppressions } from './nag-supp
 
 // DEA AppRegistry Constants
 export const SOLUTION_VERSION = '1.0.0';
+export const SOLUTION_ID = 'SO0224';
 
 export class DeaMainStack extends cdk.Stack {
   private readonly appRegistry: DeaAppRegisterConstruct;
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+    const stackProps: cdk.StackProps = {
+      ...props,
+      description: `(${SOLUTION_ID}) Digital Evidence Archive v${SOLUTION_VERSION} - This solution helps investigative units manage and store digital evidence on AWS.`,
+    };
+
+    super(scope, id, stackProps);
 
     const dashboard = new DeaOperationalDashboard(this, 'DeaApiOpsDashboard');
 
     // DEA App Register Construct
     this.appRegistry = new DeaAppRegisterConstruct(this, this.stackId, {
-      solutionId: 'SO0224',
+      solutionId: SOLUTION_ID,
       solutionName: 'Digital Evidence Archive',
       solutionVersion: SOLUTION_VERSION,
       appRegistryApplicationName: 'digital-evidence-archive',
