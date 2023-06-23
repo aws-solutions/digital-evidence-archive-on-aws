@@ -4,7 +4,7 @@ import { act, fireEvent, getByRole, render, screen, waitFor } from '@testing-lib
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import Axios from 'axios';
-import { auditLogLabels, caseDetailLabels } from '../../src/common/labels';
+import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
@@ -379,7 +379,7 @@ describe('CaseDetailsPage', () => {
     permissionsWrapper.selectOption(1);
 
     //assert save button
-    const saveButton = await screen.findByRole('button', { name: 'Save' });
+    const saveButton = await screen.findByRole('button', { name: commonLabels.saveUpdatesButton });
     expect(saveButton).toBeTruthy();
     await act(async () => {
       saveButton.click();

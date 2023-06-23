@@ -83,11 +83,17 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
             <div>
               {' '}
               <h4>{commonLabels.creationDate}</h4>
-              <p>{new Date(data.created).toLocaleString()}</p>
+              <p>
+                {new Date(data.created).toLocaleString([], {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </p>
             </div>
             <div>
               <h4>{commonLabels.description}</h4>
-              <p>{data.description}</p>
+              <p>{data.description ?? '-'}</p>
             </div>
             <div>
               {' '}

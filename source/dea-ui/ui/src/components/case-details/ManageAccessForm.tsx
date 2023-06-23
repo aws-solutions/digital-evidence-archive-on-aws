@@ -87,7 +87,7 @@ function ManageAccessForm(props: ManageAccessFormProps): JSX.Element {
       actions={
         <SpaceBetween direction="horizontal" size="xs">
           <Button variant="primary" disabled={modifiedMembers.length === 0 || isSaving} onClick={saveHandler}>
-            {commonLabels.saveButton}
+            {commonLabels.saveUpdatesButton}
           </Button>
         </SpaceBetween>
       }

@@ -21,6 +21,7 @@ export const commonLabels = {
   downloadButton: 'Download',
   restoreButton: 'Recover',
   saveButton: 'Save',
+  saveUpdatesButton: 'Save updates',
   loadingLabel: 'Loading...',
   statusLabel: 'Status',
   loginLabel: 'Loading/ Logging into the Digital Evidence Archive',
@@ -30,22 +31,23 @@ export const commonLabels = {
   errorLabel: 'Error fetching results',
   dismissMessageLabel: 'Dismiss message',
   description: 'Description',
-  creationDate: 'Creation Date',
+  creationDate: 'Creation date',
   requiredField: 'This is a required field.',
   requiredLength: 'Required field must be at least 2 characters long.',
   closeModalAriaLabel: 'Close modal',
+  optionalLabel: 'optional',
 };
 
 export const commonTableLabels = {
   timestampHeader: 'Timestamp',
-  nameHeader: 'Name',
+  nameHeader: 'File name',
   fileNameHeader: 'File name',
   actionHeader: 'Action',
   reasonHeader: 'Reason',
   caseNameHeader: 'Case name',
   caseLeadHeader: 'Case Lead(s)',
   objectCounterHeader: 'Number of files',
-  totalSize: 'Total Size',
+  totalSize: 'Total size',
   creationDateHeader: 'Creation date',
   statusHeader: 'Status',
   fileTypeHeader: 'File type',
@@ -78,40 +80,41 @@ export const headerLabels = {
 
 export const caseListLabels = {
   loading: 'Loading cases',
-  noCasesLabel: 'Get started by creating a new case.',
+  noCasesLabel: 'No cases have been created.',
   noCasesMatchLabel: 'No cases matched',
-  noDisplayLabel: 'No cases to display',
+  noDisplayLabel: 'Once cases are created, they will be displayed.',
   createNewCaseLabel: 'Create case',
   activateCaseLabel: 'Activate case',
   deactivateCaseLabel: 'Deactivate case',
   deactivateCaseModalLabel: (name: string) => `Are you sure you want to deactivate ${name}?`,
   deactivateCaseModalMessage:
-    'Once the case is deactivated, anyone with access will not be able to edit, add case members, or upload/download files to the case.',
+    'Once the case is deactivated, anyone with access will not be able to edit, add case members, or upload and download files to the case. We will keep all your files unless you prefer to delete them.',
   deleteFilesLabel: 'Delete all files',
   activateCaseModalLabel: (name: string) => `Are you sure you want to activate ${name}?`,
   activateCaseModalMessage:
     'Once the case is activated, anyone with access will be able to edit, add case members, or upload/download files to the case.',
   searchCasesLabel: 'Search by case name',
-  casesLabel: 'Cases',
+  casesLabel: 'My cases',
   systemCasesLabel: 'All cases',
-  casesPageDescription: 'This is a list of cases that have been shared with you.',
+  casesPageDescription:
+    'TSearch for cases, view case details, or create new cases to store digital evidence.',
   systemCasesPageDescription:
-    "This list shows all cases within the system, including cases that haven't been shared with you.",
+    'All cases within the system are listed, including ones that haven’t been shared with you. You can search for cases and give member access.',
 };
 
 export const filesListLabels = {
-  caseFilesLabel: 'Case Files',
+  caseFilesLabel: 'Case files',
   loading: 'Loading files',
   noFilesLabel: "It's looking empty in here.",
   noDisplayLabel: 'No files to display',
   uploadFileLabel: 'Upload a file',
   searchLabel: 'Search by file name',
-  filterDescription: 'Uploaded folders/files associated with this case',
+  filterDescription: 'Uploaded folders and files associated with this case.',
 };
 
 export const fileOperationsLabels = {
-  caseFilesLabel: 'Case Files',
-  uploadFileLabel: 'Upload folders/files',
+  caseFilesLabel: 'Case files',
+  uploadFileLabel: 'Upload folders and files',
   uploadFileDescription: 'All fields are required unless otherwise indicated.',
   uploadStatusDescription: 'Uploaded files associated with this case.',
   uploadDetailsLabel: 'Upload details',
@@ -144,11 +147,11 @@ export const fileOperationsLabels = {
 export const caseDetailLabels = {
   caseFilesLabel: 'Case files',
   auditLogLabel: 'Audit log',
-  manageAccessLabel: 'Case members',
+  manageAccessLabel: 'Assign case permissions',
 };
 
 export const auditLogLabels = {
-  downloadCSVLabel: 'Download Case Audit Log CSV',
+  downloadCSVLabel: 'Download case audit log CSV',
   caseAuditLogLabel: 'Audit log',
   caseFileAuditLogLabel: 'Case File Audit Log',
   downloadFileAuditLabel: 'Download File Audit Log CSV',
@@ -214,7 +217,7 @@ export const createCaseLabels = {
   enterCaseDetailsLabel: 'Enter Case Details',
   caseNameLabel: 'Case name',
   caseNameSubtext: 'Alphanumeric characters only. No special charcaters.',
-  caseDescription: 'Description - optional',
+  caseDescription: 'Description - ',
   caseNameDescription: ' Create a Unique name that you can easily reference.',
   caseDescriptionSubtext: 'Enter a brief description for your case.',
   activeLabel: 'Active',
@@ -293,11 +296,11 @@ export const breadcrumbLabels = {
   homePageLabel: 'Digital Evidence Archive',
   createNewCaseLabel: 'Create case',
   caseLabel: 'Case',
-  caseDetailsLabel: 'Case Details',
+  caseDetailsLabel: 'Case details',
   manageCaseLabel: 'Manage Case',
-  uploadFilesAndFoldersLabel: 'Upload folders/files',
+  uploadFilesAndFoldersLabel: 'Upload folders and files',
   editCaseLabel: 'Edit Case',
-  fileDetailsLabel: 'File Details',
+  fileDetailsLabel: 'File details',
 };
 
 export const navigationLabels = {
@@ -309,7 +312,7 @@ export const navigationLabels = {
 
 export const fileUploadLabels = {
   dragAndDropFolderLabel: 'Drag and drop files or',
-  chooseFolderLabel: 'Choose folder',
+  chooseFolderLabel: 'Choose folders',
   chooseFilesLabel: 'Choose files',
   limitShowFewerLabel: 'Show fewer files',
   limitShowMoreLabel: 'Show more files',
@@ -318,7 +321,7 @@ export const fileUploadLabels = {
 };
 
 export const fileDetailLabels = {
-  uploadDateLabel: 'Upload date/time',
+  uploadDateLabel: 'Upload date',
   fileSizeLabel: 'File size',
   shaHashLabel: 'SHA 256 hash',
 };

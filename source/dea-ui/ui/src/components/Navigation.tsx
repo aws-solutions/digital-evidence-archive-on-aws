@@ -69,7 +69,7 @@ export default function Navigation({ initialHref, header }: NavigationProps): JS
     {
       type: 'link',
       text: navigationLabels.documentationLabel,
-      href: 'https://example.com',
+      href: 'https://aws.amazon.com/solutions/implementations/digital-evidence-archive-on-aws',
       external: true,
     }
   );
