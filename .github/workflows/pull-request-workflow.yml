@@ -41,7 +41,7 @@ jobs:
       - name: pnpm audit
         run: |
           cd common/config/rush
-          pnpm audit
+          pnpm audit --audit-level high
       - name: license check
         run: |
           node common/scripts/install-run-rush.js license-checker
