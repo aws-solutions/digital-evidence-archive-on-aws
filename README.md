@@ -398,11 +398,6 @@ The user should already be created in the IdP, assigned to the DEA application u
 - Install Rush, the monorepo management tool
   `npm install -g @microsoft/rush`
 
-## Further setup
-
-Please see the Developer Runbook for further instrunctions
-https://w.amazon.com/bin/view/WWPS/MissionAccelerators/DigitalEvidenceArchive/DeveloperRunbook/
-
 Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
 Licensed under the Apache License Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
