@@ -18,7 +18,7 @@
     "audit:only": "",
     "build": "heft build",
     "build:clean": "heft build --clean",
-    "build:test": "heft test --verbose --test-path-pattern test && rushx make-badges",
+    "build:test": ". ../common/scripts/setEnv.sh && heft test --verbose --test-path-pattern test && rushx make-badges",
     "cdk": "cdk",
     "cdk:bootstrap": "cdk bootstrap",
     "cdk:deploy": "cdk deploy --all --require-approval never --outputs-file cdk-outputs.json",

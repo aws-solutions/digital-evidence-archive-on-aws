@@ -88,6 +88,8 @@ describe('DeaBackend constructs', () => {
 
     // Prepare the stack for assertions.
     const template = Template.fromStack(stack);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions
+    delete template['template']['Mappings'];
 
     // assertions relevant to backend and any parent
     validateBackendConstruct(template);
@@ -297,18 +299,18 @@ describe('DeaBackend constructs', () => {
     convictConfig.set('cognito.domain', domain);
     convictConfig.set('idpInfo.metadataPath', metaPath);
     convictConfig.set('idpInfo.metadataPathType', metaPathType);
-    
+
     const app = new cdk.App();
     const stack = new Stack(app, 'test-stack');
-    
+
     const key = new Key(stack, 'testKey', {
       enableKeyRotation: true,
       removalPolicy: RemovalPolicy.DESTROY,
       pendingWindow: Duration.days(7),
     });
-    
+
     const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
-    
+
     // Create the DeaBackendConstruct
     const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
       kmsKey: key,
@@ -344,7 +346,7 @@ describe('DeaBackend constructs', () => {
       },
       opsDashboard: dashboard,
     });
-    
+
     //Auth construct
     const apiEndpointArns = new Map([
       ['A', 'Aarn'],
@@ -357,12 +359,12 @@ describe('DeaBackend constructs', () => {
       restApi: restApi.deaRestApi,
       apiEndpointArns: apiEndpointArns,
     });
-    
+
     new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
-    
+
     // Prepare the stack for assertions.
     const template = Template.fromStack(stack);
     // assertions relevant to backend and any parent

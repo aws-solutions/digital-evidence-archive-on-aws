@@ -10,7 +10,6 @@
     cd source
     node common/scripts/install-run-rush.js add-license-header|| exit $?
     node common/scripts/install-run-rush.js prettier || exit $?
-    node common/scripts/install-run-rush.js make-badges || exit $?
 if [ "$RUN_HOOKS" == true ]; then
     node common/scripts/install-run-rush.js git-secrets-scan || exit $?
     node common/scripts/install-run-rush.js lint:fix || exit $?

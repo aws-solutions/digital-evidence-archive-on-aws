@@ -20,7 +20,7 @@
     "audit:only": ". ../common/scripts/setEnv.sh && heft test --no-build --disable-code-coverage --test-path-pattern '.*/*e2e.audit.test.*'",
     "build": "heft build",
     "build:clean": "heft build --clean",
-    "build:test": "heft test && rushx pkg-json-lint && rushx make-badges",
+    "build:test": ". ../common/scripts/setEnv.sh && heft test && rushx pkg-json-lint && rushx make-badges",
     "check-license-header": "license-check-and-add check -f license-add-config.json",
     "create-cognito-user": ". ../common/scripts/setEnv.sh && npx ts-node src/test/local-dev-support/create-user.ts",
     "delete-cognito-user": ". ../common/scripts/setEnv.sh && npx ts-node src/test/local-dev-support/delete-user.ts",
