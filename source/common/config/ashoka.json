@@ -1,6 +1,7 @@
 {
   "deletionAllowed": false,
   "isOneClick": true,
+  "fipsEndpointsEnabled": false,
   "deaRoleTypes": [
     {
       "name": "CaseWorker",

@@ -95,7 +95,7 @@ export class DeaMainStack extends cdk.Stack {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backendConstruct.deaTable.tableName,
         DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
-        AWS_USE_FIPS_ENDPOINT: 'true',
+        AWS_USE_FIPS_ENDPOINT: deaConfig.fipsEndpointsEnabled().toString(),
       },
       opsDashboard: dashboard,
     });
@@ -116,7 +116,7 @@ export class DeaMainStack extends cdk.Stack {
         DELETE_CASE_FILE_LAMBDA_ARN: deaEventHandlers.s3BatchDeleteCaseFileLambda.functionArn,
         DELETE_CASE_FILE_ROLE: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
-        AWS_USE_FIPS_ENDPOINT: 'true',
+        AWS_USE_FIPS_ENDPOINT: deaConfig.fipsEndpointsEnabled().toString(),
         SOURCE_IP_VALIDATION_ENABLED: deaConfig.sourceIpValidationEnabled().toString(),
       },
       opsDashboard: dashboard,
