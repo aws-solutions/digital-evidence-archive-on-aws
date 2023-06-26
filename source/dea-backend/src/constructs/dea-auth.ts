@@ -493,7 +493,7 @@ export class DeaAuth extends Construct {
     const cognitoDomain =
       partition === 'aws-us-gov'
         ? `https://${newDomain.domainName}.auth-fips.us-gov-west-1.amazoncognito.com`
-        : newDomain.baseUrl({ fips: true });
+        : newDomain.baseUrl({ fips: deaConfig.fipsEndpointsEnabled() });
 
     return [userPool, poolClient, cognitoDomain, poolClient.userPoolClientSecret, agencyIdpName];
   }

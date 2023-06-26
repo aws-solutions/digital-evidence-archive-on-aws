@@ -218,6 +218,11 @@ const convictSchema = {
     format: 'Boolean',
     default: false,
   },
+  fipsEndpointsEnabled: {
+    doc: 'Whether to use the FIPS-compliant endpoints',
+    format: 'Boolean',
+    default: true,
+  },
 };
 
 export interface IdPAttributes {
@@ -277,6 +282,7 @@ interface DEAConfig {
   deletionAllowed(): boolean;
   sameSiteValue(): string;
   preflightOptions(): CorsOptions | undefined;
+  fipsEndpointsEnabled(): boolean;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -347,6 +353,7 @@ export const deaConfig: DEAConfig = {
         }
       : undefined;
   },
+  fipsEndpointsEnabled: () => convictConfig.get('fipsEndpointsEnabled') ?? true,
 };
 
 export const loadConfig = (stage: string): void => {
