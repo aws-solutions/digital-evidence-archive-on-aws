@@ -244,8 +244,8 @@ export class DeaAuditService extends AuditService {
     resourceId: string,
     repositoryProvider: ModelRepositoryProvider
   ) {
-    // sort by eventDateTime, the time when the event actually occurred, rather than timestamp, the moment when it appeared in logs
-    const defaultQuery = `fields ${queryFields.join(', ')} | sort eventDateTime desc`;
+    // sort by DateTimeUTC, the time when the event actually occurred, rather than timestamp, the moment when it appeared in logs
+    const defaultQuery = `fields ${queryFields.join(', ')} | sort DateTimeUTC desc`;
     const queryString = filterPredicate ? `filter ${filterPredicate} | ${defaultQuery}` : defaultQuery;
     const startQueryCmd = new StartQueryCommand({
       logGroupNames,

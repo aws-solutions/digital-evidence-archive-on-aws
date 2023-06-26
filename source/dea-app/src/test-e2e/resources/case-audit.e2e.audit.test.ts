@@ -58,6 +58,7 @@ describe('case audit e2e', () => {
   }, 30000);
 
   it('retrieves actions taken against a case', async () => {
+    const startTime = Date.now();
     const caseName = `auditTestCase${randomSuffix()}`;
     const createdCase = await createCaseSuccess(
       deaApiUrl,
@@ -164,12 +165,13 @@ describe('case audit e2e', () => {
 
     // allow some time so the events show up in CW logs
     await delay(5 * 60 * 1000);
+    const endTime = Date.now();
 
     let csvData: string | undefined;
-    let queryRetries = 5;
+    let queryRetries = 10;
     while (!csvData && queryRetries > 0) {
       const startAuditQueryResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${caseUlid}/audit`,
+        `${deaApiUrl}cases/${caseUlid}/audit?from=${startTime}&to=${endTime}`,
         'POST',
         idToken,
         creds
@@ -179,7 +181,8 @@ describe('case audit e2e', () => {
       const auditId: string = startAuditQueryResponse.data.auditId;
       Joi.assert(auditId, joiUlid);
 
-      let retries = 20;
+      let retries = 5;
+      await delay(5000);
       let getQueryReponse = await callDeaAPIWithCreds(
         `${deaApiUrl}cases/${caseUlid}/audit/${auditId}/csv`,
         'GET',
@@ -208,8 +211,10 @@ describe('case audit e2e', () => {
         const potentialCsvData: string = getQueryReponse.data;
 
         const dynamoMatch = potentialCsvData.match(/dynamodb.amazonaws.com/g);
+        const transactItemMatch = potentialCsvData.match(/TransactWriteItems/g);
+        const getItemMatch = potentialCsvData.match(/GetItem/g);
 
-        if (
+        const includesAllDeaEvents =
           potentialCsvData.includes(AuditEventType.CREATE_CASE) &&
           potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
           potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
@@ -218,9 +223,16 @@ describe('case audit e2e', () => {
           potentialCsvData.includes(AuditEventType.INVITE_USER_TO_CASE) &&
           potentialCsvData.includes(AuditEventType.REMOVE_USER_FROM_CASE) &&
           potentialCsvData.includes(AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE) &&
-          potentialCsvData.includes(AuditEventType.CREATE_CASE_OWNER) &&
+          potentialCsvData.includes(AuditEventType.CREATE_CASE_OWNER);
+
+        if (
+          includesAllDeaEvents &&
           dynamoMatch &&
-          dynamoMatch.length >= 7
+          dynamoMatch.length >= 7 &&
+          transactItemMatch &&
+          transactItemMatch.length == 2 &&
+          getItemMatch &&
+          getItemMatch.length >= 5
         ) {
           csvData = getQueryReponse.data;
         } else {
