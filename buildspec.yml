@@ -13,8 +13,8 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 16
-      python: 3.10
+      nodejs: 18
+      python: 3.11
     commands:
       - echo "nothing to do in install"
   pre_build:
