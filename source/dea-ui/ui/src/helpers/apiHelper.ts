@@ -15,6 +15,8 @@ if (typeof window !== 'undefined' && !urlBase) {
     urlBase = `https://${window.location.hostname}/${process.env.NEXT_PUBLIC_STAGE}/`;
   }
 }
+// if using custom domain thru cdk get's the target aws region. Otherwise set undefined to allow automatic resolution.
+const region = isUsingCustomDomain ? process.env.NEXT_PUBLIC_AWS_REGION : undefined;
 
 const handleErrors = async (error: Error) => {
   console.log(error);
@@ -72,6 +74,7 @@ const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
     const interceptor = aws4Interceptor(
       {
         service: 'execute-api',
+        region,
       },
       credentials
     );
