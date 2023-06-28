@@ -43,6 +43,7 @@ describe('delete cases resource', () => {
     const user = await createUser(
       {
         tokenId: 'mickybell',
+        idPoolId: 'mickybellidentityid',
         firstName: 'Micky',
         lastName: 'Bell',
       },
@@ -73,6 +74,7 @@ describe('delete cases resource', () => {
     const user = await createUser(
       {
         tokenId: 'sadieadler',
+        idPoolId: 'sadieadleridentityid',
         firstName: 'Sadie',
         lastName: 'Adler',
       },
@@ -91,6 +93,7 @@ describe('delete cases resource', () => {
       const user = await createUser(
         {
           tokenId: `sadieadler${i}`,
+          idPoolId: `sadieadleridentityid${i}`,
           firstName: `Sadie${i}`,
           lastName: `Adler${i}`,
         },

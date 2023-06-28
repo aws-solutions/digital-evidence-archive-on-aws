@@ -34,6 +34,7 @@ describe('getCaseMembership', () => {
       (await createUser(
         {
           tokenId: 'caseowner',
+          idPoolId: 'caseowneridentityid',
           firstName: 'Case',
           lastName: 'Owner',
         },
@@ -55,6 +56,7 @@ describe('getCaseMembership', () => {
     // AND a first user get's invited to the case
     const userToBeInvited1: DeaUserInput = {
       tokenId: 'user1',
+      idPoolId: 'user1identityid',
       firstName: 'Abby',
       lastName: 'First',
     };
@@ -75,6 +77,7 @@ describe('getCaseMembership', () => {
     // AND a second user get's invited to the case
     const userToBeInvited2: DeaUserInput = {
       tokenId: 'user2',
+      idPoolId: 'user2identityid',
       firstName: 'Bob',
       lastName: 'Second',
     };
@@ -147,6 +150,7 @@ describe('getCaseMembership', () => {
     for (let i = 0; i < inviteSize; ++i) {
       const userToBeInvited: DeaUserInput = {
         tokenId: `tokenId${i}`,
+        idPoolId: `identityid${i}`,
         firstName: `firstName${i}`,
         lastName: `lastName${i}`,
       };

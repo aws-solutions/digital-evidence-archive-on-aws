@@ -149,6 +149,10 @@ export const DeaSchema = {
       // is guaranteed to unique per user. This field is used to determine
       // whether or not user has already been added to the DB
       tokenId: { type: String, required: true, unique: true },
+      // The identity id given by the Cognito Identity Pool is unique per user
+      // and will be checked for each API to make sure that the person described
+      // by the id token, and who the IAM credentials were granted are the same person
+      idPoolId: { type: String, unique: true },
       firstName: { type: String, required: true, validate: allButDisallowed },
       lastName: { type: String, required: true, validate: allButDisallowed },
       lowerFirstName: { type: String, required: true, validate: allButDisallowed },

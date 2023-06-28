@@ -34,6 +34,7 @@ describe('verify case ACLs', () => {
         firstName: 'Owen',
         lastName: 'Doe',
         tokenId: 'token1',
+        idPoolId: 'identityid1',
       },
       repositoryProvider
     );
@@ -42,6 +43,7 @@ describe('verify case ACLs', () => {
         firstName: 'UserA',
         lastName: 'Doe',
         tokenId: 'token2',
+        idPoolId: 'identityid2',
       },
       repositoryProvider
     );
@@ -50,6 +52,7 @@ describe('verify case ACLs', () => {
         firstName: 'UserB',
         lastName: 'Doe',
         tokenId: 'token3',
+        idPoolId: 'identityid3',
       },
       repositoryProvider
     );
@@ -58,6 +61,7 @@ describe('verify case ACLs', () => {
         firstName: 'UserC',
         lastName: 'Doe',
         tokenId: 'token4',
+        idPoolId: 'identityid4',
       },
       repositoryProvider
     );
@@ -66,6 +70,7 @@ describe('verify case ACLs', () => {
         firstName: 'UserD',
         lastName: 'Doe',
         tokenId: 'token5',
+        idPoolId: 'identityid5',
       },
       repositoryProvider
     );

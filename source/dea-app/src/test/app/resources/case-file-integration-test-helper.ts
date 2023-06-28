@@ -41,6 +41,7 @@ export type ResponseCaseFilePage = {
 };
 
 const TOKEN_ID = 'CaseFile';
+const ID_POOL_ID = 'CaseFileIdentityId';
 const FIRST_NAME = 'CASE';
 const LAST_NAME = 'FILE';
 const CASE_NAME = 'Dinner';
@@ -241,12 +242,14 @@ export const callListCaseFiles = async (
 export const callCreateUser = async (
   repositoryProvider: ModelRepositoryProvider,
   tokenId: string = TOKEN_ID,
+  idPoolId: string = ID_POOL_ID,
   firstName: string = FIRST_NAME,
   lastName: string = LAST_NAME
 ): Promise<DeaUser> => {
   return createUser(
     {
       tokenId,
+      idPoolId,
       firstName,
       lastName,
     },

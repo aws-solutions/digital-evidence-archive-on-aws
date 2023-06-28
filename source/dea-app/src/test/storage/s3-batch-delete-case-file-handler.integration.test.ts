@@ -56,6 +56,7 @@ describe('S3 batch delete case-file lambda', () => {
       (await createUser(
         {
           tokenId: 'caseowner',
+          idPoolId: 'caseowneridentityid',
           firstName: 'Case',
           lastName: 'Owner',
         },

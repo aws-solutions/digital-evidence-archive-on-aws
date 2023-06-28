@@ -27,6 +27,7 @@ describe('getCaseActions', () => {
       (await createUser(
         {
           tokenId: 'caseowner',
+          idPoolId: 'caseowneridentityid',
           firstName: 'Case',
           lastName: 'Owner',
         },
@@ -64,6 +65,7 @@ describe('getCaseActions', () => {
       (await createUser(
         {
           tokenId: 'jacksonwang',
+          idPoolId: 'jacksonwangidentityid',
           firstName: 'Jackson',
           lastName: 'Wang',
         },
@@ -144,6 +146,7 @@ describe('getCaseActions', () => {
       (await createUser(
         {
           tokenId: 'michaeljack',
+          idPoolId: 'michaeljackidentityid',
           firstName: 'Michael',
           lastName: 'Jack',
         },

@@ -33,6 +33,7 @@ describe('get case details resource', () => {
     const user = await createUser(
       {
         tokenId: 'creator',
+        idPoolId: 'creatoridentityid',
         firstName: 'Create',
         lastName: 'Case',
       },

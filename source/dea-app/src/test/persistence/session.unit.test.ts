@@ -18,6 +18,7 @@ describe('session persistence', () => {
       await createUser(
         {
           tokenId: 'jinnycraft',
+          idPoolId: 'jinnycraftidentityid',
           firstName: 'Jinny',
           lastName: 'Craft',
         },
@@ -29,6 +30,7 @@ describe('session persistence', () => {
       await createUser(
         {
           tokenId: 'jimjenson',
+          idPoolId: 'jimjensonidentityid',
           firstName: 'Jim',
           lastName: 'Jenson',
         },
@@ -80,6 +82,7 @@ describe('session persistence', () => {
       await createUser(
         {
           tokenId: 'jenraft',
+          idPoolId: 'jenraftidentityid',
           firstName: 'Jen',
           lastName: 'Raft',
         },
@@ -116,6 +119,7 @@ describe('session persistence', () => {
       await createUser(
         {
           tokenId: 'raftpaxos',
+          idPoolId: 'raftpaxosidentityid',
           firstName: 'Raft',
           lastName: 'Paxos',
         },
@@ -180,6 +184,7 @@ describe('session persistence', () => {
       await createUser(
         {
           tokenId: 'Papayafruit',
+          idPoolId: 'papayafruitidentityid',
           firstName: 'Papaya',
           lastName: 'Fruit',
         },
@@ -213,6 +218,7 @@ describe('session persistence', () => {
       await createUser(
         {
           tokenId: 'emptyupdate',
+          idPoolId: 'emptyupdateidentityid',
           firstName: 'Empty',
           lastName: 'Update',
         },

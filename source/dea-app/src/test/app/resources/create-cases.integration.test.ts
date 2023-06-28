@@ -29,6 +29,7 @@ describe('create cases resource', () => {
       (await createUser(
         {
           tokenId: 'jackwang',
+          idPoolId: 'jackwangidentityid',
           firstName: 'Jack',
           lastName: 'Wang',
         },

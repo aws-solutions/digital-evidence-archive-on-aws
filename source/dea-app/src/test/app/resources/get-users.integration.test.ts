@@ -33,6 +33,7 @@ describe('get users resource', () => {
     const user1 = await createUser(
       {
         tokenId: 'creator1',
+        idPoolId: 'creator1identityid',
         firstName: 'Create',
         lastName: 'One',
       },
@@ -42,6 +43,7 @@ describe('get users resource', () => {
     const user2 = await createUser(
       {
         tokenId: 'creator2',
+        idPoolId: 'creator2identityid',
         firstName: 'Create',
         lastName: 'Two',
       },
@@ -62,6 +64,8 @@ describe('get users resource', () => {
     const casesPage: ResponseUserPage = JSON.parse(response.body);
     expect(casesPage.users.length).toEqual(1);
     expect(casesPage.next).toBeTruthy();
+    expect(casesPage.users[0].idPoolId).toBeUndefined();
+    expect(casesPage.users[0].tokenId).toBeUndefined();
     Joi.assert(casesPage.users[0], userResponseSchema);
     const event2 = getDummyEvent({
       queryStringParameters: {
@@ -85,6 +89,7 @@ describe('get users resource', () => {
     const user1 = await createUser(
       {
         tokenId: 'apriloneil',
+        idPoolId: 'apriloneilidentityid',
         firstName: 'April',
         lastName: 'Oneil',
       },
@@ -94,6 +99,7 @@ describe('get users resource', () => {
     const user2 = await createUser(
       {
         tokenId: 'aprilludgate',
+        idPoolId: 'aprilludgateidentityid',
         firstName: 'April',
         lastName: 'Ludgate',
       },
@@ -103,6 +109,7 @@ describe('get users resource', () => {
     await createUser(
       {
         tokenId: 'scroogemcduck',
+        idPoolId: 'scroogemcduckidentityid',
         firstName: 'Scrooge',
         lastName: 'McDuck',
       },
