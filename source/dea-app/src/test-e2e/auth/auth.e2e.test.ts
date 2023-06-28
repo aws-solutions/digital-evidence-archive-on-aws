@@ -91,6 +91,42 @@ describe('API authentication', () => {
     expect(response.status).toEqual(403);
   });
 
+  it('should disallow API calls where the identity id granted by the IdPool does NOT match whats in the DB.', async () => {
+    // This test is to block users from using their credentials with another
+    // person's id token. To do this, when a user first calls a DEA API for the first time
+    //
+    const url = `${deaApiUrl}cases/my-cases`;
+    const response = await callDeaAPI(testUser, url, cognitoHelper, 'GET');
+    expect(response.status).toBe(200);
+
+    // Now try to use someone else's credentials, should fail
+    const otherUser = 'StolenCredentialsUser';
+    await cognitoHelper.createUser(otherUser, 'AuthTestGroup', 'StolenCredentials', 'TestUser');
+    const [otherCreds] = await cognitoHelper.getCredentialsForUser(otherUser);
+    const [_creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
+
+    const failedResponse = await callDeaAPIWithCreds(url, 'GET', idToken, otherCreds);
+    expect(failedResponse.status).toEqual(412);
+  });
+
+  it('should disallow API calls for new users where the identity id from headers already exists in db for someone else', async () => {
+    // This test is to block users from using their credentials with another
+    // person's id token. To do this, when a user first calls a DEA API for the first time
+    //
+    const url = `${deaApiUrl}cases/my-cases`;
+    const response = await callDeaAPI(testUser, url, cognitoHelper, 'GET');
+    expect(response.status).toBe(200);
+
+    // Make another user, try to use first user's credentials to call API for
+    // the first time. Should fail since another user is assigned that identity id
+    const otherUser = 'DuplicateCredentialsUser';
+    await cognitoHelper.createUser(otherUser, 'AuthTestGroup', 'DuplicateCredentials', 'TestUser');
+    const [_otherCreds, otherIdToken] = await cognitoHelper.getCredentialsForUser(otherUser);
+
+    const failedResponse = await callDeaAPIWithCreds(url, 'GET', otherIdToken, creds);
+    expect(failedResponse.status).toEqual(412);
+  });
+
   it('should add first time federated user to DDB', async () => {
     // 1. create user
     const firstTimeFederatedUser = 'CheckFirstTimeFederatedUserTestUser';

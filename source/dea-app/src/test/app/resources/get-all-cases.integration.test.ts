@@ -32,6 +32,7 @@ describe('get all cases resource', () => {
     const user1 = await createUser(
       {
         tokenId: 'creator1',
+        idPoolId: 'creator1identityid',
         firstName: 'Create',
         lastName: 'One',
       },
@@ -41,6 +42,7 @@ describe('get all cases resource', () => {
     const user2 = await createUser(
       {
         tokenId: 'creator2',
+        idPoolId: 'creator2identityid',
         firstName: 'Create',
         lastName: 'Two',
       },

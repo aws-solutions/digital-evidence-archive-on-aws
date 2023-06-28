@@ -33,6 +33,7 @@ describe('create case owner resource', () => {
       (await createUser(
         {
           tokenId: 'caseowner',
+          idPoolId: 'caseowneridentityid',
           firstName: 'Case',
           lastName: 'Owner',
         },
@@ -53,6 +54,7 @@ describe('create case owner resource', () => {
     // user to be invited
     const deaUser: DeaUserInput = {
       tokenId: 'arthurmorgan',
+      idPoolId: 'arthurmorganidentityid',
       firstName: 'Arthur',
       lastName: 'Morgan',
     };
@@ -96,6 +98,7 @@ describe('create case owner resource', () => {
     // user to be invited
     const deaUser: DeaUserInput = {
       tokenId: 'arthurmorgan',
+      idPoolId: 'arthurmorganidentityid',
       firstName: 'Arthur',
       lastName: 'Morgan',
     };
@@ -217,6 +220,7 @@ describe('create case owner resource', () => {
   it('should error if the case does not exist', async () => {
     const deaUser: DeaUserInput = {
       tokenId: 'michahbell',
+      idPoolId: 'micahbellidentityid',
       firstName: 'Micah',
       lastName: 'Bell',
     };
@@ -242,6 +246,7 @@ describe('create case owner resource', () => {
   it('should error if the user does not exist', async () => {
     const deaUser: DeaUserInput = {
       tokenId: 'mickbell',
+      idPoolId: 'mickbellidentityid',
       firstName: 'Mick',
       lastName: 'Bell',
     };

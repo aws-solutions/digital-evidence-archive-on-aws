@@ -23,9 +23,11 @@ describe('user persistence', () => {
     const firstName = 'Steve';
     const lastName = 'Zissou';
     const tokenId = 'stevezissou';
+    const idPoolId = 'nvjktnjvktnj';
 
     const expectedUser: DeaUserInput = {
       tokenId,
+      idPoolId,
       firstName,
       lastName,
     };
@@ -60,15 +62,18 @@ describe('user persistence', () => {
     const firstName = 'Ralph';
     const lastName = 'Machio';
     const tokenId = 'ralphamachio';
+    const idPoolId = 'nvjktnjvktnj1';
 
     const firstName2 = 'Randy';
     const lastName2 = 'Savage';
     const tokenId2 = 'randysavage';
+    const idPoolId2 = 'nvjktnjvktnj2';
 
-    const user1 = await createUser({ tokenId, firstName, lastName }, modelProvider);
+    const user1 = await createUser({ tokenId, idPoolId, firstName, lastName }, modelProvider);
     const user2 = await createUser(
       {
         tokenId: tokenId2,
+        idPoolId: idPoolId2,
         firstName: firstName2,
         lastName: lastName2,
       },
@@ -79,6 +84,7 @@ describe('user persistence', () => {
       {
         ulid: user1.ulid,
         tokenId,
+        idPoolId,
         firstName,
         lastName,
         created: user1.created,
@@ -87,6 +93,7 @@ describe('user persistence', () => {
       {
         ulid: user2.ulid,
         tokenId: tokenId2,
+        idPoolId: idPoolId2,
         firstName: firstName2,
         lastName: lastName2,
         created: user2.created,
@@ -116,11 +123,13 @@ describe('user persistence', () => {
     const firstName = 'R';
     const lastName = 'V W';
     const tokenId = 'rvw';
+    const idPoolId = 'nvjktnjvktnj3';
     const updatedFirstName = 'Rip';
     const updatedLastName = 'Van Winkle';
 
     const deaUser: DeaUserInput = {
       tokenId,
+      idPoolId,
       firstName,
       lastName,
     };
@@ -136,6 +145,7 @@ describe('user persistence', () => {
     const updatedUser: DeaUser = {
       ulid: createdUser.ulid,
       tokenId,
+      idPoolId,
       firstName: updatedFirstName,
       lastName: updatedLastName,
     };
@@ -145,11 +155,6 @@ describe('user persistence', () => {
     expect(actual.lastName).toStrictEqual(updatedLastName);
     expect(actual.tokenId).toStrictEqual(tokenId);
     expect(actual.ulid).toStrictEqual(createdUser.ulid);
-    // const createDate = actual.created ?? fail();
-
-    // console.log(actual);
-    // expect(actual.updated?.getTime()).toBeGreaterThan(createDate.getTime());
-
     expect(actual).toEqual({
       ...updatedUser,
       created: createdUser.created,

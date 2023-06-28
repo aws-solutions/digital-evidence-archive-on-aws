@@ -24,6 +24,7 @@ describe('start user audit', () => {
     const user = await createUser(
       {
         tokenId: '123',
+        idPoolId: '123identityid',
         firstName: 'afirstname',
         lastName: 'alastname',
       },

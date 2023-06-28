@@ -60,6 +60,7 @@ describe('update case status', () => {
       (await createUser(
         {
           tokenId: 'caseowner',
+          idPoolId: 'caseowneridentityid',
           firstName: 'Case',
           lastName: 'Owner',
         },

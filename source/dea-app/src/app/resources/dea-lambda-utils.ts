@@ -64,12 +64,42 @@ export const runPreExecutionChecks = async (
     deaRole,
     userPoolUserId: tokenSub,
   };
+  const idPoolId = auditEvent.actorIdentity.idPoolUserId;
   let maybeUser = await getUserFromTokenId(tokenSub, repositoryProvider);
   if (!maybeUser) {
     // Create the user in the database and store the new user's ulid
     // into the event, so lambda execution code does not need to
     // reverify and decode the token and call the ddb for the user
-    maybeUser = await addUserToDatabase(idTokenPayload, repositoryProvider);
+    try {
+      maybeUser = await addUserToDatabase(idTokenPayload, idPoolId, repositoryProvider);
+    } catch (error) {
+      throw new ReauthenticationError(
+        'Something went wrong during new user registration. Please Reauthenticate.'
+      );
+    }
+  } else {
+    // To be backwards compatible, if the user obj does not have an identity id in
+    // then update the user in that row
+    if (!maybeUser.idPoolId) {
+      try {
+        await UserService.addIdPoolIdToUser(maybeUser, idPoolId, repositoryProvider);
+      } catch (error) {
+        throw new ReauthenticationError(
+          'Something went wrong during new user update. Please Reauthenticate.'
+        );
+      }
+    }
+
+    // Verify that the Identity Id from the audit event matches
+    // whats already in the DB for this user. This check is to
+    // prevent someone from using their IAM credentials with someone
+    // else's id token
+    else if (maybeUser.idPoolId !== idPoolId) {
+      logger.error(
+        'The IdPoolUserId from the audit event does NOT match what is in the DB for this user. Suspect IAM credentials mismatch with id token'
+      );
+      throw new ReauthenticationError('Something went wrong during execution checks. Please Reauthenticate.');
+    }
   }
   // progress audit identity
   const userUlid = maybeUser.ulid;
@@ -138,9 +168,10 @@ const getUserFromTokenId = async (
 
 const addUserToDatabase = async (
   payload: CognitoIdTokenPayload,
+  idPoolId: string,
   repositoryProvider: LambdaRepositoryProvider
 ): Promise<DeaUser> => {
-  const deaUser = await getDeaUserFromToken(payload);
+  const deaUser = await getDeaUserFromToken(payload, idPoolId);
 
   const deaUserResult = await UserService.createUser(deaUser, repositoryProvider);
 

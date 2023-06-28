@@ -57,6 +57,7 @@ describe('lambda pre-execution checks', () => {
     event.headers['cookie'] = `extraCookie=someval; idToken=${JSON.stringify(oauthToken)}`;
     const tokenPayload = await getTokenPayload(oauthToken.id_token, region);
     const tokenId = tokenPayload.sub;
+    const idPoolId = event.requestContext.identity.cognitoIdentityId ?? 'us-east-1:1-2-3-a-b-c';
 
     const auditEvent = getDummyAuditEvent();
 
@@ -72,6 +73,7 @@ describe('lambda pre-execution checks', () => {
     const user = await getUserByTokenId(tokenId, repositoryProvider);
     expect(user).toBeDefined();
     expect(user?.tokenId).toBe(tokenId);
+    expect(user?.idPoolId).toStrictEqual(idPoolId);
     expect(user?.firstName).toStrictEqual(firstName);
     expect(user?.lastName).toStrictEqual(lastName);
     // check that the event contains the ulid from the new user
@@ -86,6 +88,7 @@ describe('lambda pre-execution checks', () => {
     const duplicateUser = await createUser(
       {
         tokenId,
+        idPoolId,
         firstName,
         lastName,
       },
@@ -126,6 +129,7 @@ describe('lambda pre-execution checks', () => {
     expect(user2).toBeDefined();
     expect(user2?.ulid).toStrictEqual(user?.ulid);
     expect(user2?.tokenId).toStrictEqual(tokenId);
+    expect(user2?.idPoolId).toStrictEqual(idPoolId);
     expect(user2?.created).toStrictEqual(user?.created);
     // check that the event contains the ulid from the new user
     expect(event2.headers['userUlid']).toBeDefined();
@@ -161,16 +165,17 @@ describe('lambda pre-execution checks', () => {
     const user = `SuccessSession${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Success', 'Session');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
+    const idPoolId = `successsession${suffix}`;
 
     // Call API expect success, adds session to db
-    const userUlid = await callPreChecks(oauthToken);
+    const userUlid = await callPreChecks(oauthToken, idPoolId);
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
     const session1 = sessions[0];
     Joi.assert(session1, sessionResponseSchema);
 
     // Call API again with same creds, expect success
-    await callPreChecks(oauthToken);
+    await callPreChecks(oauthToken, idPoolId);
     const sessions2 = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions2.length).toEqual(1);
     const session2 = sessions2[0];
@@ -197,9 +202,10 @@ describe('lambda pre-execution checks', () => {
     const user = `RevokedSession${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Revoked', 'Session');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
+    const idPoolId = `revokedsession${suffix}`;
 
     // Call API, adds session to db
-    const userUlid = await callPreChecks(oauthToken);
+    const userUlid = await callPreChecks(oauthToken, idPoolId);
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
     const session1 = sessions[0];
@@ -214,11 +220,11 @@ describe('lambda pre-execution checks', () => {
     );
 
     // Call API again, expect failure
-    await expect(callPreChecks(oauthToken)).rejects.toThrow(ReauthenticationError);
+    await expect(callPreChecks(oauthToken, idPoolId)).rejects.toThrow(ReauthenticationError);
 
     // Create new session, call API, should succeed
     const newIdToken = await cognitoHelper.getIdTokenForUser(user);
-    await callPreChecks(newIdToken);
+    await callPreChecks(newIdToken, idPoolId);
   }, 40000);
 
   it('should require reauthentication if your session is expired', async () => {
@@ -226,9 +232,10 @@ describe('lambda pre-execution checks', () => {
     const user = `ExpiredSession${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Expired', 'Session');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
+    const idPoolId = `expiredsession${suffix}`;
 
     // Call API, adds session to db
-    const userUlid = await callPreChecks(oauthToken);
+    const userUlid = await callPreChecks(oauthToken, idPoolId);
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
     const session1 = sessions[0];
@@ -243,11 +250,11 @@ describe('lambda pre-execution checks', () => {
     );
 
     // Call API again, expect failure
-    await expect(callPreChecks(oauthToken)).rejects.toThrow(ReauthenticationError);
+    await expect(callPreChecks(oauthToken, idPoolId)).rejects.toThrow(ReauthenticationError);
 
     // Create new session, call API, should succeed
     const newIdToken = await cognitoHelper.getIdTokenForUser(user);
-    await callPreChecks(newIdToken);
+    await callPreChecks(newIdToken, idPoolId);
   }, 40000);
 
   it('should require reauthentication if your session was last active 30+ minutes ago', async () => {
@@ -255,9 +262,10 @@ describe('lambda pre-execution checks', () => {
     const user = `InactiveSession${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Inactive', 'Session');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
+    const idPoolId = `inactivesession${suffix}`;
 
     // Call API, adds session to db
-    const userUlid = await callPreChecks(oauthToken);
+    const userUlid = await callPreChecks(oauthToken, idPoolId);
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
     const session = sessions[0];
@@ -276,15 +284,16 @@ describe('lambda pre-execution checks', () => {
     const user = `ConcurrentSession${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'Concurrent', 'Session');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
+    const idPoolId = `concurrentsession${suffix}`;
 
     // Call API, adds session to db
-    const userUlid = await callPreChecks(oauthToken);
+    const userUlid = await callPreChecks(oauthToken, idPoolId);
     const sessions = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions.length).toEqual(1);
 
     // Create another session, call API, it should succeed and revoke old session
     const newIdToken = await cognitoHelper.getIdTokenForUser(user);
-    await callPreChecks(newIdToken);
+    await callPreChecks(newIdToken, idPoolId);
 
     // There should be 2 sessions for the user now
     // The old one which is revoked, and the new session
@@ -294,25 +303,74 @@ describe('lambda pre-execution checks', () => {
     expect(newSession.length).toBe(1);
 
     // Try old session, it should fail
-    await expect(callPreChecks(oauthToken)).rejects.toThrow(ReauthenticationError);
+    await expect(callPreChecks(oauthToken, idPoolId)).rejects.toThrow(ReauthenticationError);
 
     // Get new id token with old refresh token, call API with new id token, it should fail
     // since old session with origin_jti was revoked
     const [newIdTokenForOldSession] = await useRefreshToken(oauthToken.refresh_token);
-    await expect(callPreChecks(newIdTokenForOldSession)).rejects.toThrow(ReauthenticationError);
+    await expect(callPreChecks(newIdTokenForOldSession, idPoolId)).rejects.toThrow(ReauthenticationError);
 
     // Try new session again it should succeed.
-    await callPreChecks(newIdToken);
+    await callPreChecks(newIdToken, idPoolId);
 
     // There should still only be 2 sessions
     const sessions3 = await listSessionsForUser(userUlid, repositoryProvider);
     expect(sessions3.length).toEqual(2);
   }, 40000);
+
+  it('should fail id the identityid from event does not match whats in the DB for the user', async () => {
+    // Create user
+    const user = `MismatchedCreds${suffix}`;
+    await cognitoHelper.createUser(user, 'AuthTestGroup', 'Mismatched', 'Creds');
+    const oauthToken = await cognitoHelper.getIdTokenForUser(user);
+    const idPoolId = `mismatchedcredsidpoolid${suffix}`;
+
+    // Call API, adds user to db with the identity id
+    await callPreChecks(oauthToken, idPoolId);
+
+    // Call API again with different identity id this time, expect failure
+    await expect(callPreChecks(oauthToken, 'BAD_IDENTITY_ID')).rejects.toThrow(ReauthenticationError);
+
+    // Call API with correct identity id, call API, should succeed
+    await callPreChecks(oauthToken, idPoolId);
+  }, 40000);
+
+  it('should update user identity id in DB if it is not present', async () => {
+    // Create user
+    const user = `NoIdentityPoolId${suffix}`;
+    await cognitoHelper.createUser(user, 'AuthTestGroup', 'NoIdentityPool', 'PoolId');
+    const oauthToken = await cognitoHelper.getIdTokenForUser(user);
+    const tokenPayload = await getTokenPayload(oauthToken.id_token, region);
+    const tokenId = tokenPayload.sub;
+    const endIdPoolId = `oldusernowupdatesidpoolid${suffix}`;
+
+    // Add user to db without id pool id
+    const newDeaUser = {
+      tokenId,
+      firstName: 'NoIdentityPool',
+      lastName: 'PoolId',
+    };
+    await createUser(newDeaUser, repositoryProvider);
+
+    // Check that the Identity Id is not set (mimicking a user being added before
+    // we required the idPoolId in the db)
+    const deaUser = await getUserByTokenId(tokenId, repositoryProvider);
+    expect(deaUser?.idPoolId).toBeUndefined();
+
+    // Call API again, then check that the identity id was added in
+    await callPreChecks(oauthToken, endIdPoolId);
+    const userWithIdPoolId = await getUserByTokenId(tokenId, repositoryProvider);
+    expect(userWithIdPoolId).toBeDefined();
+    expect(userWithIdPoolId?.idPoolId).toStrictEqual(endIdPoolId);
+  }, 40000);
 });
 
-const callPreChecks = async (oauthToken: Oauth2Token): Promise<string> => {
+const callPreChecks = async (oauthToken: Oauth2Token, idPoolId?: string): Promise<string> => {
   const event = getDummyEvent();
   event.headers['cookie'] = `idToken=${JSON.stringify(oauthToken)}`;
+  if (idPoolId) {
+    event.requestContext.identity.cognitoIdentityId = idPoolId;
+  }
   const auditEvent = getDummyAuditEvent();
 
   // Call API expect success

@@ -52,12 +52,16 @@ export const getTokenPayload = async (idToken: string, region: string): Promise<
   }
 };
 
-export const getDeaUserFromToken = async (idTokenPayload: CognitoIdTokenPayload): Promise<DeaUserInput> => {
+export const getDeaUserFromToken = async (
+  idTokenPayload: CognitoIdTokenPayload,
+  idPoolId: string
+): Promise<DeaUserInput> => {
   if (!idTokenPayload['given_name'] || !idTokenPayload['family_name']) {
     throw new ValidationError('First and/or last name not given in id token.');
   }
   const deaUser: DeaUserInput = {
     tokenId: idTokenPayload.sub,
+    idPoolId,
     firstName: idTokenPayload['given_name'] + '',
     lastName: idTokenPayload['family_name'] + '',
   };

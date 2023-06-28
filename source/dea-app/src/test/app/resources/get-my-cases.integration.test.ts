@@ -31,6 +31,7 @@ describe('getMyCases', () => {
       (await createUser(
         {
           tokenId: 'caseowner',
+          idPoolId: 'caseowneridentityid',
           firstName: 'Case',
           lastName: 'Owner',
         },
@@ -77,6 +78,7 @@ describe('getMyCases', () => {
       (await createUser(
         {
           tokenId: 'jacksonwang',
+          idPoolId: 'jacksonwangidentityid',
           firstName: 'Jackson',
           lastName: 'Wang',
         },
@@ -141,6 +143,7 @@ describe('getMyCases', () => {
       (await createUser(
         {
           tokenId: 'frankzappa',
+          idPoolId: 'frankzappaidentityid',
           firstName: 'Frank',
           lastName: 'Zappa',
         },
@@ -231,6 +234,7 @@ describe('getMyCases', () => {
       (await createUser(
         {
           tokenId: 'michaeljack',
+          idPoolId: 'michaeljackidentityid',
           firstName: 'Michael',
           lastName: 'Jack',
         },

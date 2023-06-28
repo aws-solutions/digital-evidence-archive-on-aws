@@ -62,6 +62,7 @@ describe('S3 batch job status change handler', () => {
       (await createUser(
         {
           tokenId: 'caseowner',
+          idPoolId: 'caseowneridentityid',
           firstName: 'Case',
           lastName: 'Owner',
         },

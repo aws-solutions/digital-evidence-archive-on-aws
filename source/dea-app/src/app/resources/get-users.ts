@@ -31,8 +31,16 @@ export const getUsers: DEAGatewayProxyHandler = async (
   );
 
   return responseOk(event, {
-    //remove tokenId
-    users: pageOfUsers.map(({ tokenId: _, ...user }) => user),
+    //remove tokenId and idPoolId
+    users: pageOfUsers.map((user) => {
+      return {
+        ulid: user.ulid,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        created: user.created,
+        updated: user.updated,
+      };
+    }),
     total: pageOfUsers.count,
     next: getNextToken(pageOfUsers.next),
   });
