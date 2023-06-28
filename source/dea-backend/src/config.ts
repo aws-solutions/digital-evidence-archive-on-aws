@@ -223,6 +223,11 @@ const convictSchema = {
     format: 'Boolean',
     default: true,
   },
+  isMultiRegionTrail: {
+    doc: 'Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account.',
+    format: 'Boolean',
+    default: true,
+  },
 };
 
 export interface IdPAttributes {
@@ -283,6 +288,7 @@ interface DEAConfig {
   sameSiteValue(): string;
   preflightOptions(): CorsOptions | undefined;
   fipsEndpointsEnabled(): boolean;
+  isMultiRegionTrail(): boolean;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -354,6 +360,7 @@ export const deaConfig: DEAConfig = {
       : undefined;
   },
   fipsEndpointsEnabled: () => convictConfig.get('fipsEndpointsEnabled') ?? true,
+  isMultiRegionTrail: () => convictConfig.get('isMultiRegionTrail') ?? true,
 };
 
 export const loadConfig = (stage: string): void => {

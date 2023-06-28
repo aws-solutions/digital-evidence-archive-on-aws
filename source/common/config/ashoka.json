@@ -2,6 +2,7 @@
   "deletionAllowed": false,
   "isOneClick": true,
   "fipsEndpointsEnabled": false,
+  "isMultiRegionTrail": false,
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
