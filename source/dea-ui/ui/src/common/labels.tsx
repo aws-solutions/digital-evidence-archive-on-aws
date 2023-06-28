@@ -25,7 +25,7 @@ export const commonLabels = {
   loadingLabel: 'Loading...',
   statusLabel: 'Status',
   loginLabel: 'Loading/ Logging into the Digital Evidence Archive',
-  notFoundLabel: 'Not Found',
+  notFoundLabel: 'Not found',
   noMatchesLabel: 'No matches found',
   retryLabel: 'Retry',
   errorLabel: 'Error fetching results',
@@ -45,7 +45,7 @@ export const commonTableLabels = {
   actionHeader: 'Action',
   reasonHeader: 'Reason',
   caseNameHeader: 'Case name',
-  caseLeadHeader: 'Case Lead(s)',
+  caseLeadHeader: 'Case lead(s)',
   objectCounterHeader: 'Number of files',
   totalSize: 'Total size',
   creationDateHeader: 'Creation date',
@@ -96,8 +96,7 @@ export const caseListLabels = {
   searchCasesLabel: 'Search by case name',
   casesLabel: 'My cases',
   systemCasesLabel: 'All cases',
-  casesPageDescription:
-    'TSearch for cases, view case details, or create new cases to store digital evidence.',
+  casesPageDescription: 'Search for cases, view case details, or create new cases to store digital evidence.',
   systemCasesPageDescription:
     'All cases within the system are listed, including ones that haven’t been shared with you. You can search for cases and give member access.',
 };
@@ -214,7 +213,7 @@ export const caseStatusLabels = {
 export const createCaseLabels = {
   createNewCaseLabel: 'Create case',
   createNewCaseDescription: 'All fields are required unless specified.',
-  enterCaseDetailsLabel: 'Enter Case Details',
+  enterCaseDetailsLabel: 'Enter case details',
   caseNameLabel: 'Case name',
   caseNameSubtext: 'Alphanumeric characters only. No special charcaters.',
   caseDescription: 'Description - ',
@@ -222,7 +221,7 @@ export const createCaseLabels = {
   caseDescriptionSubtext: 'Enter a brief description for your case.',
   activeLabel: 'Active',
   archivedLabel: 'Archived',
-  caseStatusLabel: 'Case Status',
+  caseStatusLabel: 'Case status',
   activeCaseDescription:
     'Cases are Active by default. When a case is Active you can upload/download files and share a case.',
   archivedCaseDescription:
@@ -297,15 +296,15 @@ export const breadcrumbLabels = {
   createNewCaseLabel: 'Create case',
   caseLabel: 'Case',
   caseDetailsLabel: 'Case details',
-  manageCaseLabel: 'Manage Case',
+  manageCaseLabel: 'Manage case',
   uploadFilesAndFoldersLabel: 'Upload folders and files',
-  editCaseLabel: 'Edit Case',
+  editCaseLabel: 'Edit case',
   fileDetailsLabel: 'File details',
 };
 
 export const navigationLabels = {
   documentationLabel: 'Documentation',
-  myCasesLabel: 'My Cases',
+  myCasesLabel: 'My cases',
   allSystemCasesLabel: 'All cases',
   systemAuditLogsLabel: 'Download System Audit Log',
 };
@@ -314,8 +313,8 @@ export const fileUploadLabels = {
   dragAndDropFolderLabel: 'Drag and drop files or',
   chooseFolderLabel: 'Choose folders',
   chooseFilesLabel: 'Choose files',
-  limitShowFewerLabel: 'Show fewer files',
-  limitShowMoreLabel: 'Show more files',
+  limitShowFewerLabel: 'Show fewer',
+  limitShowMoreLabel: 'Show more',
   errorIconAriaLabel: 'Error',
   removeFileAriaLabel: (e: number) => `Remove file ${e + 1}`,
 };
