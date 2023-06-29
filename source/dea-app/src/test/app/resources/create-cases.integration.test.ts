@@ -28,10 +28,10 @@ describe('create cases resource', () => {
     user =
       (await createUser(
         {
-          tokenId: 'jackwang',
-          idPoolId: 'jackwangidentityid',
-          firstName: 'Jack',
-          lastName: 'Wang',
+          tokenId: 'FirstsixLastsix',
+          idPoolId: 'FirstsixLastsixidentityid',
+          firstName: 'Firstsix',
+          lastName: 'Lastsix',
         },
         repositoryProvider
       )) ?? fail();

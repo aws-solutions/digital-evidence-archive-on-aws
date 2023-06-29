@@ -18,7 +18,7 @@ import { Oauth2Token } from '../../models/auth';
 import { ThrottlingException } from '../exceptions/throttling-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 
-const stage = getRequiredEnv('STAGE', 'chewbacca');
+const stage = getRequiredEnv('STAGE', 'devsample');
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
 
 export type AvailableEndpointsSignature = (event: APIGatewayProxyEvent) => Promise<string[]>;

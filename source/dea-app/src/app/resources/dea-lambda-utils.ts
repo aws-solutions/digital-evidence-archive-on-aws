@@ -78,7 +78,7 @@ export const runPreExecutionChecks = async (
       );
     }
   } else {
-    // To be backwards compatible, if the user obj does not have an identity id in
+    // To be backwards compatible, if the user obj does not have an identity id
     // then update the user in that row
     if (!maybeUser.idPoolId) {
       try {

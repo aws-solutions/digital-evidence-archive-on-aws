@@ -27,7 +27,7 @@ describe('DeaBackend constructs', () => {
 
   beforeAll(() => {
     process.env.STAGE = 'RUN1';
-    process.env.CONFIGNAME = 'chewbacca';
+    process.env.CONFIGNAME = 'devsample';
   });
 
   afterAll(() => {

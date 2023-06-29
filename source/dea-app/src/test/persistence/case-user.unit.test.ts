@@ -194,10 +194,10 @@ describe('caseUser persistence', () => {
     listUser1 =
       (await createUser(
         {
-          tokenId: 'morganfreeman',
-          idPoolId: 'morganfreemanidentityid',
-          firstName: 'Morgan',
-          lastName: 'Freeman',
+          tokenId: 'FirstfourLastfour',
+          idPoolId: 'FirstfourLastfouridentityid',
+          firstName: 'Firstfour',
+          lastName: 'Lastfour',
         },
         repositoryProvider
       )) ?? fail();
@@ -205,10 +205,10 @@ describe('caseUser persistence', () => {
     listUser2 =
       (await createUser(
         {
-          tokenId: 'terrypratchet',
-          idPoolId: 'terrypratchetidentityid',
-          firstName: 'Terry',
-          lastName: 'Pratchet',
+          tokenId: 'FirstFiveLastfive',
+          idPoolId: 'FirstFiveLastfiveidentityid',
+          firstName: 'FirstFive',
+          lastName: 'Lastfive',
         },
         repositoryProvider
       )) ?? fail();

@@ -88,37 +88,37 @@ describe('get users resource', () => {
   it('should fetch records beginning with a pattern', async () => {
     const user1 = await createUser(
       {
-        tokenId: 'apriloneil',
-        idPoolId: 'apriloneilidentityid',
-        firstName: 'April',
-        lastName: 'Oneil',
+        tokenId: 'FNameAOStartingname',
+        idPoolId: 'FNameAOStartingnameidentityid',
+        firstName: 'FNameA',
+        lastName: 'OStartingname',
       },
       repositoryProvider
     );
 
     const user2 = await createUser(
       {
-        tokenId: 'aprilludgate',
-        idPoolId: 'aprilludgateidentityid',
-        firstName: 'April',
-        lastName: 'Ludgate',
+        tokenId: 'FNameALstartingname',
+        idPoolId: 'FNameALstartingnameidentityid',
+        firstName: 'FNameA',
+        lastName: 'Lstartingname',
       },
       repositoryProvider
     );
 
     await createUser(
       {
-        tokenId: 'scroogemcduck',
-        idPoolId: 'scroogemcduckidentityid',
-        firstName: 'Scrooge',
-        lastName: 'McDuck',
+        tokenId: 'ShirleyRodriguez',
+        idPoolId: 'ShirleyRodriguezidentityid',
+        firstName: 'Shirley',
+        lastName: 'Rodriguez',
       },
       repositoryProvider
     );
 
     const event = getDummyEvent({
       queryStringParameters: {
-        nameBeginsWith: 'APRIL',
+        nameBeginsWith: 'FNameA',
       },
     });
     const response = await getUsers(event, dummyContext, repositoryProvider);

@@ -26,5 +26,5 @@ export const defaultAppSettings: IAppSettings = {
   name: 'Digital Evidence Archive on AWS',
   slogan: 'Better ingredients better evidence',
   description: 'Digital Evidence Archive is the perfect place to store all your evidence.',
-  stage: process.env.NEXT_PUBLIC_STAGE ?? 'chewbacca',
+  stage: process.env.NEXT_PUBLIC_STAGE ?? 'devsample',
 };

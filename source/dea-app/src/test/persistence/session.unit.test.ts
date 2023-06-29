@@ -17,10 +17,10 @@ describe('session persistence', () => {
     userUlid = (
       await createUser(
         {
-          tokenId: 'jinnycraft',
-          idPoolId: 'jinnycraftidentityid',
-          firstName: 'Jinny',
-          lastName: 'Craft',
+          tokenId: 'JaneDoe',
+          idPoolId: 'JaneDoeidentityid',
+          firstName: 'Jane',
+          lastName: 'Doe',
         },
         repositoryProvider
       )
@@ -29,10 +29,10 @@ describe('session persistence', () => {
     otherUserUlid = (
       await createUser(
         {
-          tokenId: 'jimjenson',
-          idPoolId: 'jimjensonidentityid',
-          firstName: 'Jim',
-          lastName: 'Jenson',
+          tokenId: 'JohnDoe',
+          idPoolId: 'JohnDoeidentityid',
+          firstName: 'John',
+          lastName: 'Doe',
         },
         repositoryProvider
       )
@@ -81,10 +81,10 @@ describe('session persistence', () => {
     const testUserUlid = (
       await createUser(
         {
-          tokenId: 'jenraft',
-          idPoolId: 'jenraftidentityid',
-          firstName: 'Jen',
-          lastName: 'Raft',
+          tokenId: 'Userwithnosession',
+          idPoolId: 'Userwithnosessionidentityid',
+          firstName: 'User',
+          lastName: 'Withnosession',
         },
         repositoryProvider
       )
@@ -118,10 +118,10 @@ describe('session persistence', () => {
     const testUserUlid = (
       await createUser(
         {
-          tokenId: 'raftpaxos',
-          idPoolId: 'raftpaxosidentityid',
-          firstName: 'Raft',
-          lastName: 'Paxos',
+          tokenId: 'UserForsessionupdate',
+          idPoolId: 'UserForsessionupdateidentityid',
+          firstName: 'User',
+          lastName: 'Forsessionupdate',
         },
         repositoryProvider
       )
