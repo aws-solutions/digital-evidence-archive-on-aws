@@ -64,10 +64,10 @@ describe('getCaseActions', () => {
     const user =
       (await createUser(
         {
-          tokenId: 'jacksonwang',
-          idPoolId: 'jacksonwangidentityid',
-          firstName: 'Jackson',
-          lastName: 'Wang',
+          tokenId: 'FirsteightLasteight',
+          idPoolId: 'FirsteightLasteightidentityid',
+          firstName: 'Firsteight',
+          lastName: 'Lasteight',
         },
         repositoryProvider
       )) ?? fail();
@@ -145,10 +145,10 @@ describe('getCaseActions', () => {
     const user =
       (await createUser(
         {
-          tokenId: 'michaeljack',
-          idPoolId: 'michaeljackidentityid',
-          firstName: 'Michael',
-          lastName: 'Jack',
+          tokenId: 'MateoJackson',
+          idPoolId: 'MateoJacksonidentityid',
+          firstName: 'Mateo',
+          lastName: 'Jackson',
         },
         repositoryProvider
       )) ?? fail();

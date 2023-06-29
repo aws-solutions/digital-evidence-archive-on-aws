@@ -42,10 +42,10 @@ describe('delete cases resource', () => {
   it('should successfully delete a case', async () => {
     const user = await createUser(
       {
-        tokenId: 'mickybell',
-        idPoolId: 'mickybellidentityid',
-        firstName: 'Micky',
-        lastName: 'Bell',
+        tokenId: 'FirstsevenLasttwo',
+        idPoolId: 'FirstsevenLasttwoidentityid',
+        firstName: 'Firstseven',
+        lastName: 'Lasttwo',
       },
       repositoryProvider
     );
@@ -73,10 +73,10 @@ describe('delete cases resource', () => {
   it('should clean up memberships when the case is deleted', async () => {
     const user = await createUser(
       {
-        tokenId: 'sadieadler',
-        idPoolId: 'sadieadleridentityid',
-        firstName: 'Sadie',
-        lastName: 'Adler',
+        tokenId: 'FirstsevenLastseven',
+        idPoolId: 'FirstsevenLastsevenidentityid',
+        firstName: 'Firstseven',
+        lastName: 'Lastseven',
       },
       repositoryProvider
     );
@@ -92,10 +92,10 @@ describe('delete cases resource', () => {
     for (let i = 0; i < 28; ++i) {
       const user = await createUser(
         {
-          tokenId: `sadieadler${i}`,
-          idPoolId: `sadieadleridentityid${i}`,
-          firstName: `Sadie${i}`,
-          lastName: `Adler${i}`,
+          tokenId: `FirstsevenLastseven${i}`,
+          idPoolId: `FirstsevenLastsevenidentityid${i}`,
+          firstName: `Firstseven${i}`,
+          lastName: `Lastseven${i}`,
         },
         repositoryProvider
       );

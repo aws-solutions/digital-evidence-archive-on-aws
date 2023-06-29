@@ -10,7 +10,7 @@ import { ValidationError } from './app/exceptions/validation-exception';
 import { getRequiredEnv } from './lambda-http-helpers';
 import { DeaUserInput } from './models/user';
 
-const stage = getRequiredEnv('STAGE', 'chewbacca');
+const stage = getRequiredEnv('STAGE', 'devsample');
 
 export const getTokenPayload = async (idToken: string, region: string): Promise<CognitoIdTokenPayload> => {
   const ssmClient = new SSMClient({ region });

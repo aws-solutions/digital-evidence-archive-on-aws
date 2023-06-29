@@ -17,7 +17,7 @@ import { DeaUiConstruct } from '../../dea-ui-stack';
 
 describe('DEA UI Infrastructure stack', () => {
   beforeAll(() => {
-    process.env.STAGE = 'chewbacca';
+    process.env.STAGE = 'devsample';
   });
 
   afterAll(() => {

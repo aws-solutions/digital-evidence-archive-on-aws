@@ -1,7 +1,7 @@
 name: Pull Request Workflow
 
 env:
-  CONFIGNAME: 'chewbacca'
+  CONFIGNAME: 'devsample'
   STAGE: PRPIPELINE${{github.event.pull_request.number}}
   DOMAIN_PREFIX: deatestenv${{github.event.pull_request.number}}
 
@@ -21,7 +21,7 @@ permissions:
 jobs:
   verify:
     env:
-      CONFIGNAME: 'chewbacca'
+      CONFIGNAME: 'devsample'
       STAGE: RUN${{github.run_number}}verify
       DOMAIN_PREFIX: deatestenv${{github.run_number}}verify
     environment: dea-test

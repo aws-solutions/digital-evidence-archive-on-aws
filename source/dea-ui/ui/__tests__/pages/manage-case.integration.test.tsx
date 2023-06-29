@@ -37,15 +37,15 @@ const mockedUsers = {
   users: [
     {
       ulid: '01GVHP0HP5V2A80XJZTHJH4QGD',
-      firstName: 'Albert',
-      lastName: 'York',
+      firstName: 'Alejandro',
+      lastName: 'Rosalez',
       created: '2023-03-15T03:46:23.045Z',
       updated: '2023-03-15T03:46:23.045Z',
     },
     {
       ulid: '01GVHP0HP5V2A80XJZTHJH4QGE',
-      firstName: 'Bee',
-      lastName: 'Dalton',
+      firstName: 'Carlos',
+      lastName: 'Salazar',
       created: '2023-03-14T03:46:23.045Z',
       updated: '2023-03-14T03:46:23.045Z',
     },
@@ -117,7 +117,7 @@ describe('Manage Case Page', () => {
 
     searchUserInputWrapper.focus();
 
-    const textToInput = 'Bee Dalton';
+    const textToInput = 'Carlos Salazar';
     const searchInput = await screen.findByRole('combobox');
     await user.type(searchInput, textToInput);
     await act(async () => {
@@ -189,7 +189,7 @@ describe('Manage Case Page', () => {
 
     searchUserInputWrapper.focus();
 
-    const textToInput = 'Bee Dalton';
+    const textToInput = 'Carlos Salazar';
     const searchInput = await screen.findByRole('combobox');
     await user.type(searchInput, textToInput);
     await act(async () => {

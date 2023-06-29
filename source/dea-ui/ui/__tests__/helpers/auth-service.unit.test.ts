@@ -43,7 +43,7 @@ describe('auth service', () => {
   });
 
   it('Returns correct callback url', () => {
-    const mockWindowLocation = new URL('https://dea.com/chewbacca/ui/');
+    const mockWindowLocation = new URL('https://dea.com/devsample/ui/');
     global.window = Object.create(window);
     Object.defineProperty(window, 'location', {
       value: mockWindowLocation,
@@ -51,7 +51,7 @@ describe('auth service', () => {
     });
 
     const url = getCallbackUrl();
-    expect(url).toEqual('https://dea.com/chewbacca/ui/login');
+    expect(url).toEqual('https://dea.com/devsample/ui/login');
   });
 
   it('Get credentials given id token', async () => {

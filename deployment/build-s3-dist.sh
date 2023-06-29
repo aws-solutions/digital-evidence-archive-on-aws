@@ -281,7 +281,7 @@ echo "--------------------------------------------------------------------------
 # Prepare DEA for build and clear environment variables for one-click
 STAGE=dea-one-click
 echo Stage set to $STAGE
-CONFIGNAME=ashoka
+CONFIGNAME=oneclickconfig
 echo config name set to $CONFIGNAME
 
 do_cmd cd $source_dir

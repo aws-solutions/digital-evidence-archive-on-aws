@@ -57,7 +57,7 @@ describe('getCaseMembership', () => {
     const userToBeInvited1: DeaUserInput = {
       tokenId: 'user1',
       idPoolId: 'user1identityid',
-      firstName: 'Abby',
+      firstName: 'Alice',
       lastName: 'First',
     };
 
