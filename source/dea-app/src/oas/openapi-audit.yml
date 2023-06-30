@@ -1,6 +1,6 @@
 openapi: '3.0.0'
 info:
-  version: 1.0.0
+  version: 1.0.2
   title: DEA Audit API
 paths:
   /users/{userId}/audit/{auditId}/csv:
@@ -255,8 +255,3 @@ components:
     QueryStatus:
       type: string
       enum: [Cancelled, Complete, Failed, Running, Scheduled, Timeout, Unknown]
-
-servers:
-  # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/CHOWCHIN/audit/1.0.0

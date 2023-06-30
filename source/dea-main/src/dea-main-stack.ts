@@ -36,7 +36,8 @@ import { restrictResourcePolicies } from './apply-bucket-policies';
 import { addLambdaSuppressions, addResourcePolicySuppressions } from './nag-suppressions';
 
 // DEA AppRegistry Constants
-export const SOLUTION_VERSION = '1.0.0';
+// TODO - would be ideal to reference process.env.npm_package_version here but rush breaks that env
+export const SOLUTION_VERSION = '1.0.2';
 export const SOLUTION_ID = 'SO0224';
 
 export class DeaMainStack extends cdk.Stack {

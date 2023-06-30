@@ -2,7 +2,7 @@
 
 exports[`DeaMainStack synthesizes the way we expect 1`] = `
 Object {
-  "Description": "(SO0224) Digital Evidence Archive v1.0.0 - This solution helps investigative units manage and store digital evidence on AWS.",
+  "Description": "(SO0224) Digital Evidence Archive v1.0.2 - This solution helps investigative units manage and store digital evidence on AWS.",
   "Mappings": Object {
     "Solution": Object {
       "Data": Object {
@@ -10,7 +10,7 @@ Object {
         "ApplicationType": "AWS-Solutions",
         "ID": "SO0224",
         "SolutionName": "Digital Evidence Archive",
-        "SolutionVersion": "1.0.0",
+        "SolutionVersion": "1.0.2",
       },
     },
   },
