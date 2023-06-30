@@ -54,15 +54,6 @@ const cognitoDomainFormat: convict.Format = {
   },
 };
 
-const awsPartitionFormat: convict.Format = {
-  name: 'aws-partition',
-  validate: function (val) {
-    if (val !== 'aws' && val !== 'aws-us-gov') {
-      throw new Error('Aws partition may only be "aws" or "aws-us-gov"');
-    }
-  },
-};
-
 const convictSchema = {
   stage: {
     doc: 'The deployment stage.',
@@ -81,12 +72,6 @@ const convictSchema = {
     format: String,
     default: 'us-east-1',
     env: 'AWS_REGION',
-  },
-  awsPartition: {
-    doc: 'The AWS partition for deployment, either "aws" or "aws-us-gov"',
-    format: awsPartitionFormat.name,
-    default: 'aws',
-    env: 'AWS_PARTITION',
   },
   cognito: {
     domain: {
@@ -265,7 +250,6 @@ export interface CustomDomainInfo {
 convict.addFormat(deaRoleTypesFormat);
 convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
-convict.addFormat(awsPartitionFormat);
 
 interface DEAConfig {
   stage(): string;
@@ -298,7 +282,10 @@ export const deaConfig: DEAConfig = {
   stage: () => convictConfig.get('stage'),
   configName: () => convictConfig.get('configname'),
   region: () => convictConfig.get('region'),
-  partition: () => convictConfig.get('awsPartition'),
+  partition: () => {
+    const region = convictConfig.get('region');
+    return region.includes('us-gov') ? 'aws-us-gov' : 'aws';
+  },
   cognitoDomain: () => convictConfig.get('cognito.domain'),
   customDomainInfo: () => convictConfig.get('customDomain'),
   isTestStack: () => convictConfig.get('testStack'),

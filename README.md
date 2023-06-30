@@ -54,15 +54,14 @@ cp ./common/config/prodexample.json ./common/config/prod.json
 Open up the configuration file you just created in your editor of choice.
 Inside the configuration file, change the following fields
 1. Specify your region by including a line in the following format ```"region": "us-east-2"```
-2. If launching in Gov Cloud, include the following line: ```"awsPartition": "aws-us-gov"```
-3. Specify an unique domain prefix for your hosted Cognito login. NOTE: this is separate from your custom domain. It should look like the following:
+2. Specify an unique domain prefix for your hosted Cognito login. NOTE: this is separate from your custom domain. It should look like the following:
 
 ```
 “cognito”: {
   “domain”: “bobinohio”
 },
 ```
-4. If you completed step 0, then import the domainName, hostedZoneId, hostedZoneName, and ACM Certificate ARN like so:
+3. If you completed step 0, then import the domainName, hostedZoneId, hostedZoneName, and ACM Certificate ARN like so:
 ```
 "customDomain": {
   "domainName": "example.com",
@@ -71,7 +70,7 @@ Inside the configuration file, change the following fields
   "hostedZoneName": "example.com"
 },
 ```
-5. Define your User Role Types.
+4. Define your User Role Types.
 You can see examples of role types already in the file. Feel free to modify these endpoints or create new roles as necessary for your use case.
 For each role, specify the name, description, and an array of endpoints defined by path and endpoint method. You can refer to API Reference section of the Implementation Guide for a list of available endpoints. Alternatively, you can view the file called dea-route-config.ts under the dea-backend folder for the most up to date list of API endpoints.  
 
@@ -120,8 +119,8 @@ For each role, specify the name, description, and an array of endpoints defined 
   "method": "GET"
 }  
 
-6. If your local laws and regulations allows for or mandates the deletion of case evidence, set deletionAllowed field to true, otherwise set it to false.
-7. Go to the front end UI to change the System Use Notification.
+5. If your local laws and regulations allows for or mandates the deletion of case evidence, set deletionAllowed field to true, otherwise set it to false.
+6. Go to the front end UI to change the System Use Notification.
 CJIS Policy 5.4 Use Notification states that you must display an approved system use notification message befor granting access, informing users of various usages and monitoring rules.
 
 The message should generally discuss the following information: that the user is accessing a restricted information system; that system usage may be monitored, recorded, and subject to audit; that unauthorized use of the system is prohibited and may be subject to criminal and/or civil penalties; use of the system indicateds consent to monitoring and recording.
