@@ -8,7 +8,7 @@ This is a prototype app and you should expect to modify the source code to refle
 
 | Statements                                                                                   | Branches                                                                                 | Functions                                                                                  | Lines                                                                              |
 | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| ![Statements](https://img.shields.io/badge/statements-92.86%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-83.56%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-91.6%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-93.07%25-brightgreen.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-92.86%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-83.47%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-91.4%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-93.14%25-brightgreen.svg?style=flat) |
 
 ## Deploying code changes
 
@@ -26,7 +26,7 @@ In a separate tab or process, run the development server:
 rushx dev
 ```
 
-Open [https://localhost:3001](https://localhost:3001) with your browser to see the result. You'll need to navigate further to /{stage}/ui, e.g. [https://localhost:3001/chewbacca/ui](https://localhost:3001/chewbacca/ui)
+Open [https://localhost:3001](https://localhost:3001) with your browser to see the result. You'll need to navigate further to /{stage}/ui, e.g. [https://localhost:3001/devsample/ui](https://localhost:3001/devsample/ui)
 
 The UI running locally will be configured to point to your deployed backend via the DEA_API_URL environment variable, which will be copied into a generated [.env.local](.env.local) for use by Nextjs.
 

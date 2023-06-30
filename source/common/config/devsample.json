@@ -1,6 +1,7 @@
 {
-  "deletionAllowed": false,
-  "isOneClick": true,
+  "stage": "devsample",
+  "testStack": true,
+  "sourceIpValidation": false,
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
@@ -17,6 +18,10 @@
         {
           "path": "/cases/{caseId}/details",
           "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "DELETE"
         },
         {
           "path": "/cases/{caseId}/actions",
@@ -83,16 +88,16 @@
           "method": "PUT"
         },
         {
+          "path": "/cases/{caseId}/files/{fileId}/restore",
+          "method": "PUT"
+        },
+        {
           "path": "/cases/{caseId}/files/{fileId}/info",
           "method": "GET"
         },
         {
           "path": "/cases/{caseId}/files/{fileId}/contents",
           "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/files/{fileId}/restore",
-          "method": "PUT"
         },
         {
           "path": "/cases/my-cases",
@@ -127,6 +132,10 @@
         {
           "path": "/cases/{caseId}/details",
           "method": "PUT"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "DELETE"
         },
         {
           "path": "/cases/{caseId}/actions",
@@ -245,6 +254,216 @@
           "method": "GET"
         }
       ]
+    },
+    {
+      "name": "EvidenceManager",
+      "description": "Users with access to privileged endpoints",
+      "endpoints": [
+        {
+          "path": "/cases/{caseId}/actions",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/{authCode}/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/loginUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/logoutUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/refreshToken",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/revokeToken",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
+          "method": "GET"
+        },
+        {
+          "path": "/users",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/all-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/availableEndpoints",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/scopedInformation",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/owner",
+          "method": "POST"
+        },
+        {
+          "path": "/users/{userId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/users/{userId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/system/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/system/audit/{auditId}/csv",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "name": "NoPermissionsGroup",
+      "description": "users who can't do anything in the system",
+      "endpoints": [
+        {
+          "path": "/availableEndpoints",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "name": "AuthTestGroup",
+      "description": "used for auth e2e testing",
+      "endpoints": [
+        {
+          "path": "/cases/my-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/loginUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/logoutUrl",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/refreshToken",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/revokeToken",
+          "method": "POST"
+        }
+      ]
+    },
+    {
+      "name": "CreateCasesTestGroup",
+      "description": "used for create cases API e2e testing",
+      "endpoints": [
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "DELETE"
+        },
+        {
+          "path": "/cases/all-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/loginUrl",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "name": "GetCaseTestGroup",
+      "description": "used for get cases API e2e testing",
+      "endpoints": [
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "DELETE"
+        },
+        {
+          "path": "/auth/token",
+          "method": "POST"
+        },
+        {
+          "path": "/auth/credentials/{idToken}/exchange",
+          "method": "GET"
+        },
+        {
+          "path": "/auth/loginUrl",
+          "method": "GET"
+        }
+      ]
+    },
+    {
+      "name": "GetMyCasesTestGroup",
+      "description": "used for get my cases API e2e testing",
+      "endpoints": [
+        {
+          "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/details",
+          "method": "DELETE"
+        },
+        {
+          "path": "/cases/my-cases",
+          "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/userMemberships",
+          "method": "POST"
+        },
+        {
+          "path": "/users",
+          "method": "GET"
+        }
+      ]
     }
-  ]
+  ],
+  "deaAllowedOrigins": "https://localhost:3001",
+  "deletionAllowed": true
 }

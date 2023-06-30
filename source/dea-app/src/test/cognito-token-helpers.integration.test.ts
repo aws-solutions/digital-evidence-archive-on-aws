@@ -61,12 +61,14 @@ describe('cognito helpers integration test', () => {
   it('should decode and return a DeaUserInput from the token', async () => {
     const { id_token } = await cognitoHelper.getIdTokenForUser(testUser);
     const tokenPayload = await getTokenPayload(id_token, region);
+    const idPoolId = 'ID_POOL_ID';
 
-    const deaUser = await getDeaUserFromToken(tokenPayload);
+    const deaUser = await getDeaUserFromToken(tokenPayload, idPoolId);
 
     expect(deaUser).toBeDefined();
 
     expect(deaUser.tokenId).toStrictEqual((await getTokenPayload(id_token, region)).sub);
+    expect(deaUser.idPoolId).toStrictEqual(idPoolId);
     expect(deaUser.firstName).toStrictEqual(firstName);
     expect(deaUser.lastName).toStrictEqual(lastName);
   });
@@ -74,15 +76,16 @@ describe('cognito helpers integration test', () => {
   it('should fail when first/last name not in id token', async () => {
     const { id_token } = await cognitoHelper.getIdTokenForUser(testUser);
     const tokenPayload = await getTokenPayload(id_token, region);
+    const idPoolId = 'ID_POOL_ID';
 
     delete tokenPayload['given_name'];
-    await expect(getDeaUserFromToken(tokenPayload)).rejects.toThrow(
+    await expect(getDeaUserFromToken(tokenPayload, idPoolId)).rejects.toThrow(
       'First and/or last name not given in id token.'
     );
 
     tokenPayload['given_name'] = firstName;
     delete tokenPayload['family_name'];
-    await expect(getDeaUserFromToken(tokenPayload)).rejects.toThrow(
+    await expect(getDeaUserFromToken(tokenPayload, idPoolId)).rejects.toThrow(
       'First and/or last name not given in id token.'
     );
   });

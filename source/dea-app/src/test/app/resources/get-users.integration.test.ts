@@ -33,6 +33,7 @@ describe('get users resource', () => {
     const user1 = await createUser(
       {
         tokenId: 'creator1',
+        idPoolId: 'creator1identityid',
         firstName: 'Create',
         lastName: 'One',
       },
@@ -42,6 +43,7 @@ describe('get users resource', () => {
     const user2 = await createUser(
       {
         tokenId: 'creator2',
+        idPoolId: 'creator2identityid',
         firstName: 'Create',
         lastName: 'Two',
       },
@@ -62,6 +64,8 @@ describe('get users resource', () => {
     const casesPage: ResponseUserPage = JSON.parse(response.body);
     expect(casesPage.users.length).toEqual(1);
     expect(casesPage.next).toBeTruthy();
+    expect(casesPage.users[0].idPoolId).toBeUndefined();
+    expect(casesPage.users[0].tokenId).toBeUndefined();
     Joi.assert(casesPage.users[0], userResponseSchema);
     const event2 = getDummyEvent({
       queryStringParameters: {
@@ -84,34 +88,37 @@ describe('get users resource', () => {
   it('should fetch records beginning with a pattern', async () => {
     const user1 = await createUser(
       {
-        tokenId: 'apriloneil',
-        firstName: 'April',
-        lastName: 'Oneil',
+        tokenId: 'FNameAOStartingname',
+        idPoolId: 'FNameAOStartingnameidentityid',
+        firstName: 'FNameA',
+        lastName: 'OStartingname',
       },
       repositoryProvider
     );
 
     const user2 = await createUser(
       {
-        tokenId: 'aprilludgate',
-        firstName: 'April',
-        lastName: 'Ludgate',
+        tokenId: 'FNameALstartingname',
+        idPoolId: 'FNameALstartingnameidentityid',
+        firstName: 'FNameA',
+        lastName: 'Lstartingname',
       },
       repositoryProvider
     );
 
     await createUser(
       {
-        tokenId: 'scroogemcduck',
-        firstName: 'Scrooge',
-        lastName: 'McDuck',
+        tokenId: 'ShirleyRodriguez',
+        idPoolId: 'ShirleyRodriguezidentityid',
+        firstName: 'Shirley',
+        lastName: 'Rodriguez',
       },
       repositoryProvider
     );
 
     const event = getDummyEvent({
       queryStringParameters: {
-        nameBeginsWith: 'APRIL',
+        nameBeginsWith: 'FNameA',
       },
     });
     const response = await getUsers(event, dummyContext, repositoryProvider);

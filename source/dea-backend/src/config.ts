@@ -67,7 +67,7 @@ const convictSchema = {
   stage: {
     doc: 'The deployment stage.',
     format: String,
-    default: 'chewbacca',
+    default: 'devsample',
     env: 'STAGE',
   },
   configname: {
@@ -218,6 +218,16 @@ const convictSchema = {
     format: 'Boolean',
     default: false,
   },
+  fipsEndpointsEnabled: {
+    doc: 'Whether to use the FIPS-compliant endpoints',
+    format: 'Boolean',
+    default: true,
+  },
+  isMultiRegionTrail: {
+    doc: 'Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account.',
+    format: 'Boolean',
+    default: true,
+  },
 };
 
 export interface IdPAttributes {
@@ -277,6 +287,8 @@ interface DEAConfig {
   deletionAllowed(): boolean;
   sameSiteValue(): string;
   preflightOptions(): CorsOptions | undefined;
+  fipsEndpointsEnabled(): boolean;
+  isMultiRegionTrail(): boolean;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -347,6 +359,8 @@ export const deaConfig: DEAConfig = {
         }
       : undefined;
   },
+  fipsEndpointsEnabled: () => convictConfig.get('fipsEndpointsEnabled') ?? true,
+  isMultiRegionTrail: () => convictConfig.get('isMultiRegionTrail') ?? true,
 };
 
 export const loadConfig = (stage: string): void => {

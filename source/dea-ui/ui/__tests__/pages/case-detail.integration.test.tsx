@@ -4,7 +4,7 @@ import { act, fireEvent, getByRole, render, screen, waitFor } from '@testing-lib
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import Axios from 'axios';
-import { auditLogLabels, caseDetailLabels } from '../../src/common/labels';
+import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
@@ -135,15 +135,15 @@ const mockedUsers = {
   users: [
     {
       ulid: '01GVHP0HP5V2A80XJZTHJH4QGD',
-      firstName: 'Albert',
-      lastName: 'York',
+      firstName: 'Alejandro',
+      lastName: 'Rosalez',
       created: '2023-03-15T03:46:23.045Z',
       updated: '2023-03-15T03:46:23.045Z',
     },
     {
       ulid: '01GVHP0HP5V2A80XJZTHJH4QGE',
-      firstName: 'Bee',
-      lastName: 'Dalton',
+      firstName: 'Carlos',
+      lastName: 'Salazar',
       created: '2023-03-14T03:46:23.045Z',
       updated: '2023-03-14T03:46:23.045Z',
     },
@@ -157,8 +157,8 @@ const mockedCaseUsers = {
       userUlid: '01GVHP0HP5V2A80XJZTHJH4QGE',
       caseName: 'Investigation One',
       actions: ['VIEW_CASE_DETAILS'],
-      userFirstName: 'Bee',
-      userLastName: 'Dalton',
+      userFirstName: 'Carlos',
+      userLastName: 'Salazar',
       created: '2023-03-15T03:46:23.045Z',
       updated: '2023-03-15T03:46:23.045Z',
     },
@@ -167,8 +167,8 @@ const mockedCaseUsers = {
       userUlid: '01GVHP0HP5V2A80XJZTHJH4QGD',
       caseName: 'Investigation One',
       actions: ['INVITE'],
-      userFirstName: 'Albert',
-      userLastName: 'York',
+      userFirstName: 'Alejandro',
+      userLastName: 'Rosalez',
       created: '2023-03-15T03:46:23.045Z',
       updated: '2023-03-15T03:46:23.045Z',
     },
@@ -356,7 +356,7 @@ describe('CaseDetailsPage', () => {
       expect(searchUserInputWrapper.findDropdown().findOptionByValue(optionValue)!.getElement()).toBeTruthy();
     }
 
-    const textToInput = 'Bee Dalton';
+    const textToInput = 'Carlos Salazar';
     const searchInput = await screen.findByRole('combobox', {
       description:
         'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
@@ -379,7 +379,7 @@ describe('CaseDetailsPage', () => {
     permissionsWrapper.selectOption(1);
 
     //assert save button
-    const saveButton = await screen.findByRole('button', { name: 'Save' });
+    const saveButton = await screen.findByRole('button', { name: commonLabels.saveUpdatesButton });
     expect(saveButton).toBeTruthy();
     await act(async () => {
       saveButton.click();

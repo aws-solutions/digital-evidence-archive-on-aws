@@ -92,7 +92,11 @@ function CreateCasesForm(): JSX.Element {
             </FormField>
             <FormField
               data-testid="input-description"
-              label={createCaseLabels.caseDescription}
+              label={
+                <span>
+                  {createCaseLabels.caseDescription} <i> {commonLabels.optionalLabel}</i>{' '}
+                </span>
+              }
               description={createCaseLabels.caseDescriptionSubtext}
             >
               <Textarea

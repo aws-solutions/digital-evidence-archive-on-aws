@@ -17,7 +17,7 @@ import { DeaUiConstruct } from '../../dea-ui-stack';
 
 describe('DEA UI Infrastructure stack', () => {
   beforeAll(() => {
-    process.env.STAGE = 'chewbacca';
+    process.env.STAGE = 'devsample';
   });
 
   afterAll(() => {
@@ -50,6 +50,8 @@ describe('DEA UI Infrastructure stack', () => {
 
     // Prepare the stack for assertions.
     const template = Template.fromStack(stack);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions
+    delete template['template']['Mappings'];
 
     // assertions relevant to backend and any parent
     validateDeaUiConstruct(template);

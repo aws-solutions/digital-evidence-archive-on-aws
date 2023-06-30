@@ -37,6 +37,18 @@ export const createUser = async (
   }
 };
 
+export const addIdPoolIdToUser = async (
+  user: DeaUser,
+  idPoolId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaUser | undefined> => {
+  const deaUser = {
+    ...user,
+    idPoolId,
+  };
+  return await UserPersistence.updateUser(deaUser, repositoryProvider);
+};
+
 export const getUser = async (
   userUlid: string,
   repositoryProvider: ModelRepositoryProvider

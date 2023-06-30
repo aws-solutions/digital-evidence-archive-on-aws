@@ -17,9 +17,10 @@ describe('session persistence', () => {
     userUlid = (
       await createUser(
         {
-          tokenId: 'jinnycraft',
-          firstName: 'Jinny',
-          lastName: 'Craft',
+          tokenId: 'JaneDoe',
+          idPoolId: 'JaneDoeidentityid',
+          firstName: 'Jane',
+          lastName: 'Doe',
         },
         repositoryProvider
       )
@@ -28,9 +29,10 @@ describe('session persistence', () => {
     otherUserUlid = (
       await createUser(
         {
-          tokenId: 'jimjenson',
-          firstName: 'Jim',
-          lastName: 'Jenson',
+          tokenId: 'JohnDoe',
+          idPoolId: 'JohnDoeidentityid',
+          firstName: 'John',
+          lastName: 'Doe',
         },
         repositoryProvider
       )
@@ -79,9 +81,10 @@ describe('session persistence', () => {
     const testUserUlid = (
       await createUser(
         {
-          tokenId: 'jenraft',
-          firstName: 'Jen',
-          lastName: 'Raft',
+          tokenId: 'Userwithnosession',
+          idPoolId: 'Userwithnosessionidentityid',
+          firstName: 'User',
+          lastName: 'Withnosession',
         },
         repositoryProvider
       )
@@ -115,9 +118,10 @@ describe('session persistence', () => {
     const testUserUlid = (
       await createUser(
         {
-          tokenId: 'raftpaxos',
-          firstName: 'Raft',
-          lastName: 'Paxos',
+          tokenId: 'UserForsessionupdate',
+          idPoolId: 'UserForsessionupdateidentityid',
+          firstName: 'User',
+          lastName: 'Forsessionupdate',
         },
         repositoryProvider
       )
@@ -180,6 +184,7 @@ describe('session persistence', () => {
       await createUser(
         {
           tokenId: 'Papayafruit',
+          idPoolId: 'papayafruitidentityid',
           firstName: 'Papaya',
           lastName: 'Fruit',
         },
@@ -213,6 +218,7 @@ describe('session persistence', () => {
       await createUser(
         {
           tokenId: 'emptyupdate',
+          idPoolId: 'emptyupdateidentityid',
           firstName: 'Empty',
           lastName: 'Update',
         },

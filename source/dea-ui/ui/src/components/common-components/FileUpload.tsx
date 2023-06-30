@@ -163,6 +163,10 @@ function FileUpload(props: FileUploadProps) {
       </SpaceBetween>
 
       <TokenGroup
+        i18nStrings={{
+          limitShowMore: fileUploadLabels.limitShowMoreLabel,
+          limitShowFewer: fileUploadLabels.limitShowFewerLabel,
+        }}
         onDismiss={({ detail: { itemIndex } }) => onFileRemove(itemIndex)}
         items={value.map((file) => ({
           label: file.relativePath + file.name,

@@ -31,6 +31,7 @@ describe('getMyCases', () => {
       (await createUser(
         {
           tokenId: 'caseowner',
+          idPoolId: 'caseowneridentityid',
           firstName: 'Case',
           lastName: 'Owner',
         },
@@ -76,9 +77,10 @@ describe('getMyCases', () => {
     const user =
       (await createUser(
         {
-          tokenId: 'jacksonwang',
-          firstName: 'Jackson',
-          lastName: 'Wang',
+          tokenId: 'FirsteightLasteight',
+          idPoolId: 'FirsteightLasteightidentityid',
+          firstName: 'Firsteight',
+          lastName: 'Lasteight',
         },
         repositoryProvider
       )) ?? fail();
@@ -140,9 +142,10 @@ describe('getMyCases', () => {
     const user =
       (await createUser(
         {
-          tokenId: 'frankzappa',
-          firstName: 'Frank',
-          lastName: 'Zappa',
+          tokenId: 'FnameLname',
+          idPoolId: 'FnameLnameidentityid',
+          firstName: 'Fname',
+          lastName: 'Lname',
         },
         repositoryProvider
       )) ?? fail();
@@ -230,9 +233,10 @@ describe('getMyCases', () => {
     const user =
       (await createUser(
         {
-          tokenId: 'michaeljack',
-          firstName: 'Michael',
-          lastName: 'Jack',
+          tokenId: 'FnameLname2',
+          idPoolId: 'FnameLnameidentityid2',
+          firstName: 'Fname2',
+          lastName: 'Lname2',
         },
         repositoryProvider
       )) ?? fail();

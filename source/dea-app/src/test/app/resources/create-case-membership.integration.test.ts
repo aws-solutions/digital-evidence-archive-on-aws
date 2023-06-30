@@ -32,6 +32,7 @@ describe('create case membership resource', () => {
       (await createUser(
         {
           tokenId: 'caseowner',
+          idPoolId: 'caseowneridentityid',
           firstName: 'Case',
           lastName: 'Owner',
         },
@@ -51,9 +52,10 @@ describe('create case membership resource', () => {
 
     // user to be invited
     const deaUser: DeaUserInput = {
-      tokenId: 'arthurmorgan',
-      firstName: 'Arthur',
-      lastName: 'Morgan',
+      tokenId: 'FirstOneLastOne',
+      idPoolId: 'FirstOneLastOneidentityid',
+      firstName: 'FirstOne',
+      lastName: 'LastOne',
     };
     const user = await UserService.createUser(deaUser, repositoryProvider);
 
@@ -144,9 +146,10 @@ describe('create case membership resource', () => {
 
   it('should error if the case does not exist', async () => {
     const deaUser: DeaUserInput = {
-      tokenId: 'michahbell',
-      firstName: 'Micah',
-      lastName: 'Bell',
+      tokenId: 'FirstTwoLastTwo',
+      idPoolId: 'FirstTwoLastTwoidentityid',
+      firstName: 'FirstTwo',
+      lastName: 'LastTwo',
     };
     const user = await UserService.createUser(deaUser, repositoryProvider);
 
@@ -172,9 +175,10 @@ describe('create case membership resource', () => {
 
   it('should error if the user does not exist', async () => {
     const deaUser: DeaUserInput = {
-      tokenId: 'mickbell',
-      firstName: 'Mick',
-      lastName: 'Bell',
+      tokenId: 'FirstThreeLastTwo',
+      idPoolId: 'FirstThreeLastTwoidentityid',
+      firstName: 'FirstThree',
+      lastName: 'LastTwo',
     };
     const user = await UserService.createUser(deaUser, repositoryProvider);
 

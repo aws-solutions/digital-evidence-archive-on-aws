@@ -2,6 +2,7 @@
 
 exports[`DeaMainStack synthesizes the way we expect 1`] = `
 Object {
+  "Description": "(SO0224) Digital Evidence Archive v1.0.0 - This solution helps investigative units manage and store digital evidence on AWS.",
   "Mappings": Object {
     "Solution": Object {
       "Data": Object {
@@ -257,7 +258,7 @@ Object {
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs16.x",
         "Timeout": 120,
       },
       "Type": "AWS::Lambda::Function",
@@ -462,6 +463,11 @@ Object {
           },
           "S3Key": "[HASH REMOVED].zip",
         },
+        "Environment": Object {
+          "Variables": Object {
+            "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem",
+          },
+        },
         "Handler": "index.handler",
         "Layers": Array [
           Object {
@@ -645,7 +651,7 @@ Object {
             ],
           ],
         },
-        "Handler": "__entrypoint__.handler",
+        "Handler": "index.handler",
         "MemorySize": 128,
         "Role": Object {
           "Fn::GetAtt": Array [
@@ -653,7 +659,7 @@ Object {
             "Arn",
           ],
         },
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs16.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -5092,6 +5098,7 @@ Object {
     },
     "DeaApiGatewaydeaapiOPTIONS098252F2": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -5153,6 +5160,7 @@ Object {
     },
     "DeaApiGatewaydeaapiauthOPTIONS95F6C2CF": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -5208,6 +5216,7 @@ Object {
     },
     "DeaApiGatewaydeaapiauthauthCodeOPTIONS8EA9BA0F": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -5263,6 +5272,7 @@ Object {
     },
     "DeaApiGatewaydeaapiauthauthCodetokenOPTIONSECFF39C3": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -5550,6 +5560,7 @@ Object {
     },
     "DeaApiGatewaydeaapiauthloginUrlOPTIONSC71EAA7B": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -5721,6 +5732,7 @@ Object {
     },
     "DeaApiGatewaydeaapiauthlogoutUrlOPTIONSA32BAB71": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -5776,6 +5788,7 @@ Object {
     },
     "DeaApiGatewaydeaapiauthrefreshTokenOPTIONS969FDA6D": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -5947,6 +5960,7 @@ Object {
     },
     "DeaApiGatewaydeaapiauthrevokeTokenOPTIONS2D8639A5": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -6227,6 +6241,7 @@ Object {
     },
     "DeaApiGatewaydeaapiavailableEndpointsOPTIONS271595FD": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -6285,6 +6300,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasesOPTIONS4FE777E3": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -6560,6 +6576,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasesallcasesOPTIONSF976C9CD": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -6615,6 +6632,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdOPTIONSED4E4189": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -6776,6 +6794,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdactionsOPTIONS2140F793": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -6831,6 +6850,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdauditOPTIONSBC0FFF0A": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -6992,6 +7012,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdauditauditIdOPTIONSEE8EF3DD": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -7153,6 +7174,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdauditauditIdcsvOPTIONSF0C8820E": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -7420,6 +7442,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIddetailsOPTIONS53E2D203": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -7687,6 +7710,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdfilesOPTIONS7517D173": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -7848,6 +7872,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdfilesfileIdOPTIONS25DF38EE": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -7903,6 +7928,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditOPTIONS2634277B": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -8064,6 +8090,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdOPTIONS7688D070": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -8225,6 +8252,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONSA5AF99EF": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -8386,6 +8414,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdfilesfileIdcontentsOPTIONS1DC417CA": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -8653,6 +8682,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdfilesfileIdinfoOPTIONSC2BB332A": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -8708,6 +8738,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdfilesfileIdrestoreOPTIONS16FF7953": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -8869,6 +8900,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdownerOPTIONS08191B25": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -9136,6 +9168,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdscopedInformationOPTIONS80FCFACF": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -9191,6 +9224,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdstatusOPTIONSCC9D3E46": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -9458,6 +9492,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIduserMembershipsOPTIONSA41AAFF1": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -9619,6 +9654,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdusersOPTIONS09886FE5": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -9674,6 +9710,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdusersuserIdOPTIONS3B6673A7": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -9835,6 +9872,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasescaseIdusersuserIdmembershipsOPTIONS0F1651A7": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -10110,6 +10148,7 @@ Object {
     },
     "DeaApiGatewaydeaapicasesmycasesOPTIONS4C431DB3": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -10168,6 +10207,7 @@ Object {
     },
     "DeaApiGatewaydeaapisystemOPTIONS6EF8E1C0": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -10223,6 +10263,7 @@ Object {
     },
     "DeaApiGatewaydeaapisystemauditOPTIONSF92BC8D9": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -10384,6 +10425,7 @@ Object {
     },
     "DeaApiGatewaydeaapisystemauditauditIdOPTIONS4E0961DF": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -10545,6 +10587,7 @@ Object {
     },
     "DeaApiGatewaydeaapisystemauditauditIdcsvOPTIONSB627E509": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -10694,6 +10737,7 @@ Object {
     },
     "DeaApiGatewaydeaapiuiOPTIONSF590A754": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -10840,6 +10884,7 @@ Object {
     },
     "DeaApiGatewaydeaapiuiauthtestOPTIONSD475105E": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -10986,6 +11031,7 @@ Object {
     },
     "DeaApiGatewaydeaapiuicasedetailOPTIONSC371556A": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -11132,6 +11178,7 @@ Object {
     },
     "DeaApiGatewaydeaapiuicreatecasesOPTIONS4DF4B902": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -11278,6 +11325,7 @@ Object {
     },
     "DeaApiGatewaydeaapiuiloginOPTIONS72139AA0": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -11424,6 +11472,7 @@ Object {
     },
     "DeaApiGatewaydeaapiuiproxyOPTIONS7D1A7859": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -11570,6 +11619,7 @@ Object {
     },
     "DeaApiGatewaydeaapiuiuploadfilesOPTIONS447589BB": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -11740,6 +11790,7 @@ Object {
     },
     "DeaApiGatewaydeaapiusersOPTIONS330C13A7": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -11795,6 +11846,7 @@ Object {
     },
     "DeaApiGatewaydeaapiusersuserIdOPTIONSFD82C006": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -11850,6 +11902,7 @@ Object {
     },
     "DeaApiGatewaydeaapiusersuserIdauditOPTIONSDD803370": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -12011,6 +12064,7 @@ Object {
     },
     "DeaApiGatewaydeaapiusersuserIdauditauditIdOPTIONSCD66D9A6": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {
@@ -12172,6 +12226,7 @@ Object {
     },
     "DeaApiGatewaydeaapiusersuserIdauditauditIdcsvOPTIONSBB3692CC": Object {
       "Properties": Object {
+        "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
         "HttpMethod": "OPTIONS",
         "Integration": Object {

@@ -48,7 +48,7 @@ rush build
 
 From the source folder in your repository, copy and rename the default configuration file.
 ```sh
-cp ./common/config/palpatine.json ./common/config/prod.json
+cp ./common/config/prodexample.json ./common/config/prod.json
 ```
 
 Open up the configuration file you just created in your editor of choice.
@@ -229,9 +229,9 @@ DEA does not protect against uploading viruses (as they can be considered eviden
 
 ## Simple Deployment
 
-Deployments are controlled by your `STAGE` environment variable. If unspecified this will default to `chewbacca`.
+Deployments are controlled by your `STAGE` environment variable. If unspecified this will default to `devsample`.
 Any deployments cohabitating on a single AWS account will require an account-unique `STAGE` name.
-By default the build process will seek a configuration file ([example](/source/common/config/chewbacca.json)) with the same name as your `STAGE`, however, you can optionally specify `CONFIGNAME` in your environment to specify a filename separate from your `STAGE`, this is useful if you want multiple stages that share the same configuration.
+By default the build process will seek a configuration file ([example](/source/common/config/devsample.json)) with the same name as your `STAGE`, however, you can optionally specify `CONFIGNAME` in your environment to specify a filename separate from your `STAGE`, this is useful if you want multiple stages that share the same configuration.
 DEA deployment requires a Cognito Domain Prefix to be specified for creation and reference during CDK deployment, for this you must set a value for `DOMAIN_PREFIX` in your environment. If a value is not specified a CfnParameter will be added to the stack, which will produce an error if not specified during deployment along the lines of `Resolution error: ID components may not include unresolved tokens`.
 There are several environment values required to run E2E tests successfully, these should be set for you when running the test suite after deploying your stack. If you notice your tests failing due to unset values you can run the [setEnv](/source/common/scripts/setEnv.sh) script to pull these values from your stack (e.g. `source ./common/scripts/setEnv.sh`).
 

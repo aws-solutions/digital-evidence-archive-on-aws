@@ -3,22 +3,20 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-function formatDateFromISOString(isoString: string, locale = 'en-us'): string {
-  return formatDate(!isoString ? undefined : new Date(isoString), locale);
-}
-
-function formatDate(date: Date | undefined, locale = 'en-us'): string {
-  if (!date) {
+function formatDateFromISOString(isoString: string | undefined, locale = 'en-us'): string {
+  if (!isoString) {
     return '-';
   }
-  return date
-    .toLocaleString(locale, {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    })
-    .toUpperCase();
+
+  return formatDate(new Date(isoString), locale);
+}
+
+function formatDate(date: Date, locale = 'en-us'): string {
+  return date.toLocaleString(locale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 }
 
 export { formatDateFromISOString, formatDate };

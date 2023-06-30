@@ -30,6 +30,7 @@ describe('delete case membership resource', () => {
       (await createUser(
         {
           tokenId: 'caseowner',
+          idPoolId: 'caseowneridentityid',
           firstName: 'Case',
           lastName: 'Owner',
         },
@@ -43,9 +44,10 @@ describe('delete case membership resource', () => {
 
     // user to be invited
     const deaUser: DeaUserInput = {
-      tokenId: 'arthurmorgan',
-      firstName: 'Arthur',
-      lastName: 'Morgan',
+      tokenId: 'FirstoneLastone',
+      idPoolId: 'FirstoneLastoneidentityid',
+      firstName: 'Firstone',
+      lastName: 'Lastone',
     };
     const user = await UserService.createUser(deaUser, repositoryProvider);
 

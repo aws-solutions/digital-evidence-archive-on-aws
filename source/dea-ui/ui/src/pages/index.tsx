@@ -5,6 +5,9 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import { useAvailableEndpoints } from '../api/auth';
 import { useListMyCases } from '../api/cases';
 import { breadcrumbLabels, caseListLabels } from '../common/labels';
 import BaseLayout from '../components/BaseLayout';
@@ -14,7 +17,25 @@ export interface IHomeProps {
   locale: string;
 }
 
+const MY_CASES_ENDPOINT = '/cases/my-casesGET';
+
 const Home: NextPage = () => {
+  const router = useRouter();
+  const availableEndpoints = useAvailableEndpoints();
+
+  useEffect(() => {
+    const checkCaseUsage = async () => {
+      if (availableEndpoints.isLoading) {
+        return;
+      }
+      if (!availableEndpoints.data?.includes(MY_CASES_ENDPOINT)) {
+        await router.push('/all-cases');
+      }
+    };
+
+    void checkCaseUsage();
+  }, [availableEndpoints, router]);
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: breadcrumbLabels.homePageLabel,

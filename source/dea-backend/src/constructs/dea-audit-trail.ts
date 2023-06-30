@@ -127,6 +127,7 @@ export class DeaAuditTrail extends Construct {
       sendToCloudWatchLogs: true,
       cloudWatchLogGroup: trailLogGroup,
       encryptionKey: kmsKey,
+      isMultiRegionTrail: deaConfig.isMultiRegionTrail(),
     });
 
     // Currently, Amazon DDB API Activity Stream for CluodTrail Data Events

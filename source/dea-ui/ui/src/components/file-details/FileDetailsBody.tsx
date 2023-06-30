@@ -14,7 +14,7 @@ import {
 } from '@cloudscape-design/components';
 import { useState } from 'react';
 import { getCaseFileAuditCSV, useGetCaseActions, useGetFileDetailsById } from '../../api/cases';
-import { auditLogLabels, commonLabels, fileDetailLabels } from '../../common/labels';
+import { auditLogLabels, breadcrumbLabels, commonLabels, fileDetailLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadCaseAudit } from '../../helpers/userActionSupport';
@@ -64,12 +64,20 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
           </SpaceBetween>
         }
       >
-        <Container header={<Header variant="h2">Case Details</Header>}>
+        <Container header={<Header variant="h2">{breadcrumbLabels.fileDetailsLabel}</Header>}>
           <ColumnLayout columns={3} variant="text-grid">
             <div>
               {' '}
               <h4>{fileDetailLabels.uploadDateLabel}</h4>
-              <p>{data.created ? new Date(data.created).toLocaleString() : '-'}</p>
+              <p>
+                {data.created
+                  ? new Date(data.created).toLocaleString([], {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })
+                  : '-'}
+              </p>
             </div>
             <div>
               <h4>{commonLabels.description}</h4>

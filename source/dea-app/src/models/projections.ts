@@ -76,6 +76,7 @@ export const userFromEntity = (userEntity: UserType): DeaUser => {
   return {
     ulid: userEntity.ulid,
     tokenId: userEntity.tokenId,
+    idPoolId: userEntity.idPoolId,
     firstName: userEntity.firstName,
     lastName: userEntity.lastName,
     created: userEntity.created,

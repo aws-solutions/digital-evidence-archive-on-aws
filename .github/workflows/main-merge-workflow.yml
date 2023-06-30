@@ -1,7 +1,7 @@
 name: Merge to Main Workflow
 
 env:
-  STAGE: palpatine
+  STAGE: prodexample
   DOMAIN_PREFIX: deaplayground
 
 on:

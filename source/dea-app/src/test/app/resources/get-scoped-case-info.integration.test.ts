@@ -31,6 +31,7 @@ describe('get scoped case info resource', () => {
     const user = await createUser(
       {
         tokenId: 'creator',
+        idPoolId: 'caseowneridentityid',
         firstName: 'Create',
         lastName: 'Case',
       },

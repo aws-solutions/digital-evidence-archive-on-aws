@@ -43,13 +43,16 @@ describe('caseUser persistence', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('caseUserTestsTable');
     testUser =
-      (await createUser({ tokenId: 'caseman', firstName: 'Case', lastName: 'Man' }, repositoryProvider)) ??
-      fail();
+      (await createUser(
+        { tokenId: 'caseman', idPoolId: 'casemanidentityid', firstName: 'Case', lastName: 'Man' },
+        repositoryProvider
+      )) ?? fail();
     userUlid = testUser.ulid ?? fail();
     caseOwner =
       (await createUser(
         {
           tokenId: 'caseowner',
+          idPoolId: 'caseowneridentityid',
           firstName: 'Case',
           lastName: 'Owner',
         },
@@ -190,13 +193,23 @@ describe('caseUser persistence', () => {
   async function createListData(): Promise<void> {
     listUser1 =
       (await createUser(
-        { tokenId: 'morganfreeman', firstName: 'Morgan', lastName: 'Freeman' },
+        {
+          tokenId: 'FirstfourLastfour',
+          idPoolId: 'FirstfourLastfouridentityid',
+          firstName: 'Firstfour',
+          lastName: 'Lastfour',
+        },
         repositoryProvider
       )) ?? fail();
     listUser1Ulid = listUser1.ulid ?? fail();
     listUser2 =
       (await createUser(
-        { tokenId: 'terrypratchet', firstName: 'Terry', lastName: 'Pratchet' },
+        {
+          tokenId: 'FirstFiveLastfive',
+          idPoolId: 'FirstFiveLastfiveidentityid',
+          firstName: 'FirstFive',
+          lastName: 'Lastfive',
+        },
         repositoryProvider
       )) ?? fail();
     listUser2Ulid = listUser2.ulid ?? fail();

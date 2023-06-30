@@ -8,7 +8,7 @@ const throwUnset = (varName: string) => {
 };
 
 export const testEnv = {
-  stage: process.env.STAGE ?? 'chewbacca',
+  stage: process.env.STAGE ?? 'devsample',
   awsRegion: process.env.AWS_REGION ?? 'us-east-1',
   domainName: process.env.DOMAIN_PREFIX ?? throwUnset('DOMAIN_PREFIX'),
   apiUrlOutput: process.env.DEA_API_URL ?? throwUnset('DEA_API_URL'),

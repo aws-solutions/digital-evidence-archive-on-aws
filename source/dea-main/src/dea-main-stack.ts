@@ -37,18 +37,24 @@ import { addLambdaSuppressions, addResourcePolicySuppressions } from './nag-supp
 
 // DEA AppRegistry Constants
 export const SOLUTION_VERSION = '1.0.0';
+export const SOLUTION_ID = 'SO0224';
 
 export class DeaMainStack extends cdk.Stack {
   private readonly appRegistry: DeaAppRegisterConstruct;
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+    const stackProps: cdk.StackProps = {
+      ...props,
+      description: `(${SOLUTION_ID}) Digital Evidence Archive v${SOLUTION_VERSION} - This solution helps investigative units manage and store digital evidence on AWS.`,
+    };
+
+    super(scope, id, stackProps);
 
     const dashboard = new DeaOperationalDashboard(this, 'DeaApiOpsDashboard');
 
     // DEA App Register Construct
     this.appRegistry = new DeaAppRegisterConstruct(this, this.stackId, {
-      solutionId: 'SO0224',
+      solutionId: SOLUTION_ID,
       solutionName: 'Digital Evidence Archive',
       solutionVersion: SOLUTION_VERSION,
       appRegistryApplicationName: 'digital-evidence-archive',
@@ -89,7 +95,7 @@ export class DeaMainStack extends cdk.Stack {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backendConstruct.deaTable.tableName,
         DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
-        AWS_USE_FIPS_ENDPOINT: 'true',
+        AWS_USE_FIPS_ENDPOINT: deaConfig.fipsEndpointsEnabled().toString(),
       },
       opsDashboard: dashboard,
     });
@@ -110,7 +116,7 @@ export class DeaMainStack extends cdk.Stack {
         DELETE_CASE_FILE_LAMBDA_ARN: deaEventHandlers.s3BatchDeleteCaseFileLambda.functionArn,
         DELETE_CASE_FILE_ROLE: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
-        AWS_USE_FIPS_ENDPOINT: 'true',
+        AWS_USE_FIPS_ENDPOINT: deaConfig.fipsEndpointsEnabled().toString(),
         SOURCE_IP_VALIDATION_ENABLED: deaConfig.sourceIpValidationEnabled().toString(),
       },
       opsDashboard: dashboard,
