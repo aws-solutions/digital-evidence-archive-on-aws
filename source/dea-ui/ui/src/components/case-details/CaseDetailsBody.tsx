@@ -13,12 +13,13 @@ import {
   Icon,
   SpaceBetween,
   Spinner,
+  TextContent,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { getCaseAuditCSV, useGetCaseActions, useGetCaseById } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
-import { auditLogLabels, commonLabels } from '../../common/labels';
+import { auditLogLabels, caseDetailLabels, commonLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { canDownloadCaseAudit, canUpdateCaseDetails } from '../../helpers/userActionSupport';
 import CaseDetailsTabs from './CaseDetailsTabs';
@@ -60,74 +61,79 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
           </SpaceBetween>
         }
       >
-        <Container
-          header={
-            <Header
-              variant="h2"
-              actions={
-                <SpaceBetween direction="horizontal" size="xs">
-                  <Button
-                    disabled={!canUpdateCaseDetails(userActions.data?.actions)}
-                    onClick={editCaseHandler}
-                  >
-                    {commonLabels.editButton}
-                  </Button>
-                </SpaceBetween>
-              }
-            >
-              Case Details
-            </Header>
-          }
-        >
-          <ColumnLayout columns={3} variant="text-grid">
-            <div>
-              {' '}
-              <h4>{commonLabels.creationDate}</h4>
-              <p>
-                {new Date(data.created).toLocaleString([], {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </p>
-            </div>
-            <div>
-              <h4>{commonLabels.description}</h4>
-              <p>{data.description ?? '-'}</p>
-            </div>
-            <div>
-              {' '}
-              <h4>{auditLogLabels.caseAuditLogLabel}</h4>
-              <Button
-                data-testid="download-case-audit-csv-button"
-                disabled={downloadInProgress || !canDownloadCaseAudit(userActions.data?.actions)}
-                variant="link"
-                onClick={async () => {
-                  setDownloadInProgress(true);
-                  try {
-                    await downloadCaseAudit(data);
-                  } catch (e) {
-                    pushNotification('error', auditLogLabels.errorLabel);
-                  } finally {
-                    setDownloadInProgress(false);
-                  }
-                }}
+        <SpaceBetween size="xxl">
+          <Container
+            header={
+              <Header
+                variant="h2"
+                actions={
+                  <SpaceBetween direction="horizontal" size="xs">
+                    <Button
+                      data-testid="download-case-audit-csv-button"
+                      disabled={downloadInProgress || !canDownloadCaseAudit(userActions.data?.actions)}
+                      onClick={async () => {
+                        setDownloadInProgress(true);
+                        try {
+                          await downloadCaseAudit(data);
+                        } catch (e) {
+                          pushNotification('error', auditLogLabels.errorLabel);
+                        } finally {
+                          setDownloadInProgress(false);
+                        }
+                      }}
+                    >
+                      {auditLogLabels.downloadCSVLabel}
+                      {downloadInProgress ? <Spinner /> : null}
+                    </Button>
+                    <Button
+                      disabled={!canUpdateCaseDetails(userActions.data?.actions)}
+                      onClick={editCaseHandler}
+                    >
+                      {commonLabels.editButton}
+                    </Button>
+                  </SpaceBetween>
+                }
               >
-                {auditLogLabels.downloadCSVLabel}
-                {downloadInProgress ? <Spinner /> : null}
-              </Button>
-            </div>
-          </ColumnLayout>
-          <ColumnLayout columns={1} variant="text-grid">
-            <div>
-              <h4>{commonLabels.statusLabel}</h4>
-              <p>
-                {getStatusIcon(data.status)} {data.status.slice(0, 1) + data.status.slice(1).toLowerCase()}
-              </p>
-            </div>
-          </ColumnLayout>
-        </Container>
-        <CaseDetailsTabs caseId={props.caseId} caseStatus={data.status}></CaseDetailsTabs>
+                {caseDetailLabels.caseDetailsLabel}
+              </Header>
+            }
+          >
+            <ColumnLayout columns={3} variant="text-grid">
+              <TextContent>
+                <div>
+                  <h5>{commonLabels.creationDate}</h5>
+                  <p>
+                    {new Date(data.created).toLocaleString([], {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </p>
+                </div>
+              </TextContent>
+              <TextContent>
+                <div>
+                  <h5>{commonLabels.description}</h5>
+                  <p>{data.description ?? '-'}</p>
+                </div>
+              </TextContent>
+              <TextContent>
+                <div>
+                  <h5>{commonLabels.statusLabel}</h5>
+                  <p>
+                    {getStatusIcon(data.status)}{' '}
+                    {data.status.slice(0, 1) + data.status.slice(1).toLowerCase()}
+                  </p>
+                </div>
+              </TextContent>
+            </ColumnLayout>
+          </Container>
+          <CaseDetailsTabs
+            caseId={props.caseId}
+            caseStatus={data.status}
+            fileCount={data.objectCount}
+          ></CaseDetailsTabs>
+        </SpaceBetween>
       </ContentLayout>
     );
   }

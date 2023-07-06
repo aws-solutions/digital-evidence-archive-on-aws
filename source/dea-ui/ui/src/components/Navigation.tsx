@@ -22,11 +22,7 @@ const MY_CASES_ENDPOINT = '/cases/my-casesGET';
 const ALL_CASES_ENDPOINT = '/cases/all-casesGET';
 const SYSTEM_AUDIT_ENDPOINT = '/system/auditPOST';
 
-export default function Navigation({ initialHref, header }: NavigationProps): JSX.Element {
-  const defaultNavHeader: SideNavigationProps.Header = {
-    text: 'Digital Evidence Archive',
-    href: '#/',
-  };
+export default function Navigation({ initialHref }: NavigationProps): JSX.Element {
   const router = useRouter();
 
   const [activeHref, setActiveHref] = useState(initialHref);
@@ -87,7 +83,6 @@ export default function Navigation({ initialHref, header }: NavigationProps): JS
     <SideNavigation
       data-testid="sideNavigation"
       activeHref={activeHref}
-      header={header ?? defaultNavHeader}
       onFollow={async (event) => {
         if (!event.detail.external) {
           event.preventDefault();

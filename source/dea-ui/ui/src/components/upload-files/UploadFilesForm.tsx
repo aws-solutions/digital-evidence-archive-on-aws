@@ -66,7 +66,15 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     try {
       setUploadInProgress(true);
 
-      setUploadedFiles([...uploadedFiles, ...selectedFiles.map( file => ({ fileName: file.name, fileSizeBytes:  Math.max(file.size, 1), status: UploadStatus.progress, relativePath: file.relativePath }))]);
+      setUploadedFiles([
+        ...uploadedFiles,
+        ...selectedFiles.map((file) => ({
+          fileName: file.name,
+          fileSizeBytes: Math.max(file.size, 1),
+          status: UploadStatus.progress,
+          relativePath: file.relativePath,
+        })),
+      ]);
 
       let position = 0;
       while (position < selectedFiles.length) {
@@ -152,11 +160,16 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     }
   }
 
-  function updateFileProgress(selectedFile:FileWithPath, status:UploadStatus){
-    setUploadedFiles(prev => {
+  function updateFileProgress(selectedFile: FileWithPath, status: UploadStatus) {
+    setUploadedFiles((prev) => {
       const newList = [...prev];
-      const fileToUpdateStatus = newList.find(file => file.fileName === selectedFile.name && file.relativePath === selectedFile.relativePath && file.status === UploadStatus.progress);
-      if(fileToUpdateStatus){
+      const fileToUpdateStatus = newList.find(
+        (file) =>
+          file.fileName === selectedFile.name &&
+          file.relativePath === selectedFile.relativePath &&
+          file.status === UploadStatus.progress
+      );
+      if (fileToUpdateStatus) {
         fileToUpdateStatus.status = status;
       }
       return newList;
@@ -231,7 +244,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   }
 
   return (
-    <SpaceBetween data-testid="upload-file-form-space" size="s">
+    <SpaceBetween data-testid="upload-file-form-space" size="xxl">
       <Modal
         data-testid="upload-file-form-modal"
         onDismiss={() => setConfirmationVisible(false)}

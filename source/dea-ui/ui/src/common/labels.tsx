@@ -19,12 +19,12 @@ export const commonLabels = {
   addButton: 'Add',
   removeButton: 'Remove',
   downloadButton: 'Download',
-  restoreButton: 'Recover',
+  restoreButton: 'Restore',
   saveButton: 'Save',
   saveUpdatesButton: 'Save updates',
   loadingLabel: 'Loading...',
   statusLabel: 'Status',
-  loginLabel: 'Loading/ Logging into the Digital Evidence Archive',
+  loginLabel: 'Logging into the Digital Evidence Archive.',
   notFoundLabel: 'Not found',
   noMatchesLabel: 'No matches found',
   retryLabel: 'Retry',
@@ -105,7 +105,7 @@ export const filesListLabels = {
   caseFilesLabel: 'Case files',
   loading: 'Loading files',
   noFilesLabel: "It's looking empty in here.",
-  noDisplayLabel: 'No files to display',
+  noDisplayLabel: 'No files to display.',
   uploadFileLabel: 'Upload a file',
   searchLabel: 'Search by file name',
   filterDescription: 'Uploaded folders and files associated with this case.',
@@ -119,8 +119,8 @@ export const fileOperationsLabels = {
   uploadDetailsLabel: 'Upload details',
   selectFileDescription: 'Choose files',
   restoreFilesModalLabel: (count: number) =>
-    `${count} of the files you tried to download was archived due to inactivity`,
-  restoreFilesModalDescription: 'The restored files will become available for download within 12 hours',
+    `${count} of the files you tried to download was archived due to inactivity.`,
+  restoreFilesModalDescription: 'The restored files will become available for download within 12 hours.',
   evidenceTagLabel: 'Evidence tag',
   evidenceTagDescription:
     "Specify the device type that you're copying evidence from (examples: mobile, laptop, or hard drive).",
@@ -130,32 +130,33 @@ export const fileOperationsLabels = {
   uploadReasonLabel: 'Reason for uploading evidence',
   uploadReasonDescription: "Explain why you're accessing the case files.",
   selectFileSubtext: 'All file types accepted. 5TB maximum file size.',
-  auditLogLabel: 'Case File Audit Log',
-  restoreSuccessful: 'Successfully initiated restore for selected files',
-  restoreFail: 'Failed to restore selected files',
-  modalTitle: 'Confirm you want to upload these files',
-  modalBody: 'Once uploaded case files cannot be individually removed',
+  auditLogLabel: 'Case file audit log',
+  restoreSuccessful: 'Successfully initiated restore for selected files.',
+  restoreFail: 'Failed to restore selected files.',
+  modalTitle: 'Confirm you want to upload these files.',
+  modalBody: 'Once uploaded case files cannot be individually removed.',
   restoreInProgress: (fileName: string) =>
     `The recovery of file ${fileName} has been successfully started. The file will become viewable within 12 hours.`,
   archivedFileNoPermissionError: (fileName: string) =>
     `${fileName} is archived. Please contact case owner to restore file for access.`,
   downloadFailed: (fileName: string) => `Failed to download ${fileName}`,
-  cancelRestoringLabel: 'Cancel restoring',
+  cancelRestoringLabel: 'Cancel',
 };
 
 export const caseDetailLabels = {
   caseFilesLabel: 'Case files',
   auditLogLabel: 'Audit log',
   manageAccessLabel: 'Assign case permissions',
+  caseDetailsLabel: 'Case details',
 };
 
 export const auditLogLabels = {
   downloadCSVLabel: 'Download case audit log CSV',
   caseAuditLogLabel: 'Audit log',
-  caseFileAuditLogLabel: 'Case File Audit Log',
-  downloadFileAuditLabel: 'Download File Audit Log CSV',
+  caseFileAuditLogLabel: 'Case file audit log',
+  downloadFileAuditLabel: 'Download file audit log CSV',
   descriptionLabel:
-    'This table records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file',
+    'This table records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file.',
   emptyAuditLabel: 'No audit',
   noDisplayAuditLabel: 'No audit to display.',
   loadingLabel: 'loading audit log',
@@ -170,13 +171,13 @@ export const paginationLabels = {
 };
 
 export const manageCaseAccessLabels = {
-  manageCaseAccessLabel: 'Case Members',
-  assignCaseOwnersLabel: 'Assign Invite Permissions',
+  manageCaseAccessLabel: 'Case members',
+  assignCaseOwnersLabel: 'Assign invite permissions',
   manageAccessDescription:
     'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
   manageAccessSearchLabel: 'Search for people',
   manageAccessSearchInfoHeader: "Can't find someone?",
-  manageAccessSearchInfoLabel: 'Request Access from Admin',
+  manageAccessSearchInfoLabel: 'Request access from admin',
   manageAccessSearchInfoDescription:
     'reach out to your administrator and request a new user to be invited to the system.',
   searchPlaceholder: 'Search by name or email',
@@ -186,9 +187,9 @@ export const manageCaseAccessLabels = {
   searchAutosuggestFinishedText: (value: string) =>
     value ? `End of "${value}" results` : 'End of all results',
   manageCasePeopleAccessLabel: 'People with access',
-  manageOwnerAccessLabel: 'People with Invite permissions',
-  manageMemberEmailLabel: 'View Email',
-  manageMemberAccessTypeLabel: 'Access Type',
+  manageOwnerAccessLabel: 'People with invite permissions',
+  manageMemberEmailLabel: 'View email',
+  manageMemberAccessTypeLabel: 'Access type',
   manageMemberPermissionsLabel: 'Permission(s)',
   manageMemberPermissionsPlaceholder: 'Choose permissions',
   addCaseMemberSuccessMessage: (user: string) => `${user} has been invited to the case successfully.`,
@@ -225,11 +226,10 @@ export const createCaseLabels = {
   activeCaseDescription:
     'Cases are Active by default. When a case is Active you can upload/download files and share a case.',
   archivedCaseDescription:
-    'Everyone invited to the case still has access to it, but are not able to download or upload files to the case',
+    'Everyone invited to the case still has access to it, but are not able to download or upload files to the case.',
 
   // Share case container
   shareCaseLabel: 'Share case',
-  searchPeopleLabel: 'Search for people',
   searchPeopleDescription:
     'Members added or removed will be notified by email. Their access to the case details will be based on permissions set.',
   searchPlaceholder: 'Search by name or email',
@@ -306,7 +306,7 @@ export const navigationLabels = {
   documentationLabel: 'Documentation',
   myCasesLabel: 'My cases',
   allSystemCasesLabel: 'All cases',
-  systemAuditLogsLabel: 'Download System Audit Log',
+  systemAuditLogsLabel: 'Download system audit log',
 };
 
 export const fileUploadLabels = {

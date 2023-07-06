@@ -219,7 +219,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const tableHeader = (
     <Header variant="h2" description={filesListLabels.filterDescription} actions={tableActions()}>
       <SpaceBetween direction="horizontal" size="xs">
-        <span>{filesListLabels.caseFilesLabel}</span>
+        <span>{`${filesListLabels.caseFilesLabel} (${props.fileCount})`}</span>
         <BreadcrumbGroup
           data-testid="file-breadcrumb"
           onClick={(event) => {
@@ -353,7 +353,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           id: 'name',
           header: commonTableLabels.nameHeader,
           cell: fileFolderCell,
-          width: 170,
+          width: 400,
           minWidth: 165,
           sortingField: 'name',
         },
@@ -362,22 +362,22 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           header: commonTableLabels.fileTypeHeader,
           cell: (e) => e.contentType,
           width: 170,
-          minWidth: 165,
+          minWidth: 170,
           sortingField: 'fileType',
         },
         {
           id: 'size',
           header: commonTableLabels.fileSizeHeader,
           cell: (e) => formatFileSize(e.fileSizeBytes),
-          width: 170,
-          minWidth: 165,
+          width: 100,
+          minWidth: 100,
           sortingField: 'fileType',
         },
         {
           id: 'uploadDate',
           header: commonTableLabels.dateUploadedHeader,
           cell: (e) => formatDateFromISOString(e.created?.toString()),
-          width: 170,
+          width: 165,
           minWidth: 165,
           sortingField: 'uploadDate',
         },
@@ -385,16 +385,16 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           id: 'uploader',
           header: commonTableLabels.uploadedByHeader,
           cell: (e) => e.createdBy,
-          width: 170,
-          minWidth: 165,
+          width: 150,
+          minWidth: 150,
           sortingField: 'uploader',
         },
         {
           id: 'status',
           header: commonTableLabels.statusHeader,
           cell: (e) => e.status,
-          width: 170,
-          minWidth: 165,
+          width: 100,
+          minWidth: 100,
           sortingField: 'status',
         },
       ]}

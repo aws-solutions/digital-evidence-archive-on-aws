@@ -13,6 +13,7 @@ import {
   Multiselect,
   MultiselectProps,
   SelectProps,
+  SpaceBetween,
 } from '@cloudscape-design/components';
 import { useMemo, useState } from 'react';
 import { caseActionOptions, commonLabels, manageCaseAccessLabels } from '../../common/labels';
@@ -100,6 +101,7 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
           {commonLabels.removeButton}
         </Button>
       </div>
+      <SpaceBetween size="xs"></SpaceBetween>
     </Grid>
   );
 }

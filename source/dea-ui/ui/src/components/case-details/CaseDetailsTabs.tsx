@@ -15,6 +15,7 @@ import ManageAccessForm from './ManageAccessForm';
 export interface CaseDetailsTabsProps {
   readonly caseId: string;
   readonly caseStatus: CaseStatus;
+  readonly fileCount: number;
 }
 
 function CaseDetailsTabs(props: CaseDetailsTabsProps): JSX.Element {
@@ -31,7 +32,13 @@ function CaseDetailsTabs(props: CaseDetailsTabsProps): JSX.Element {
         tabsContents.push({
           label: caseDetailLabels.caseFilesLabel,
           id: 'caseFiles',
-          content: <CaseFilesTable caseId={props.caseId} caseStatus={props.caseStatus}></CaseFilesTable>,
+          content: (
+            <CaseFilesTable
+              caseId={props.caseId}
+              caseStatus={props.caseStatus}
+              fileCount={props.fileCount}
+            ></CaseFilesTable>
+          ),
         });
       }
       if (canInvite(data.actions)) {
