@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 import { Button, SpaceBetween, TokenGroup } from '@cloudscape-design/components';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import { fileOperationsLabels, fileUploadLabels } from '../../common/labels';
+import { commonTableLabels, fileOperationsLabels, fileUploadLabels } from '../../common/labels';
 import {
   FileWithPath,
   formatFileSize,
@@ -164,8 +164,8 @@ function FileUpload(props: FileUploadProps) {
 
       <TokenGroup
         i18nStrings={{
-          limitShowMore: fileUploadLabels.limitShowMoreLabel,
-          limitShowFewer: fileUploadLabels.limitShowFewerLabel,
+          limitShowMore: commonTableLabels.limitShowMoreLabel,
+          limitShowFewer: commonTableLabels.limitShowFewerLabel,
         }}
         onDismiss={({ detail: { itemIndex } }) => onFileRemove(itemIndex)}
         items={value.map((file) => ({

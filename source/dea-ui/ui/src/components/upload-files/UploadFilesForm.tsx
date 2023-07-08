@@ -343,6 +343,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       >
         <Table
           items={uploadedFiles}
+          variant="embedded"
           columnDefinitions={[
             {
               id: 'name',

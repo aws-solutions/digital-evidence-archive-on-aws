@@ -16,7 +16,12 @@ import {
   SpaceBetween,
 } from '@cloudscape-design/components';
 import { useMemo, useState } from 'react';
-import { caseActionOptions, commonLabels, manageCaseAccessLabels } from '../../common/labels';
+import {
+  caseActionOptions,
+  commonLabels,
+  commonTableLabels,
+  manageCaseAccessLabels,
+} from '../../common/labels';
 import styles from '../../styles/ManageAccessListItem.module.scss';
 import { ConfirmModal } from '../common-components/ConfirmModal';
 
@@ -78,6 +83,10 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
             placeholder={manageCaseAccessLabels.manageMemberPermissionsPlaceholder}
             tokenLimit={1}
             disabled={isDisabled}
+            i18nStrings={{
+              tokenLimitShowMore: commonTableLabels.limitShowMoreLabel,
+              tokenLimitShowFewer: commonTableLabels.limitShowFewerLabel,
+            }}
           />
         </FormField>
       </ColumnLayout>

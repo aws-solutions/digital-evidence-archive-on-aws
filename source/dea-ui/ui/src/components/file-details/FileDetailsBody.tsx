@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
 import {
   Button,
   ColumnLayout,
@@ -11,10 +12,18 @@ import {
   Header,
   SpaceBetween,
   Spinner,
+  StatusIndicator,
+  TextContent,
 } from '@cloudscape-design/components';
 import { useState } from 'react';
 import { getCaseFileAuditCSV, useGetCaseActions, useGetFileDetailsById } from '../../api/cases';
-import { auditLogLabels, breadcrumbLabels, commonLabels, fileDetailLabels } from '../../common/labels';
+import {
+  auditLogLabels,
+  breadcrumbLabels,
+  caseStatusLabels,
+  commonLabels,
+  fileDetailLabels,
+} from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadCaseAudit } from '../../helpers/userActionSupport';
@@ -29,6 +38,14 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
   const { data, isLoading } = useGetFileDetailsById(props.caseId, props.fileId);
   const userActions = useGetCaseActions(props.caseId);
   const { pushNotification } = useNotifications();
+
+  function getStatusIcon(status: string) {
+    if (status == CaseFileStatus.ACTIVE) {
+      return <StatusIndicator>{caseStatusLabels.active}</StatusIndicator>;
+    } else {
+      return <StatusIndicator type="stopped">{caseStatusLabels.inactive}</StatusIndicator>;
+    }
+  }
 
   async function downloadCaseFileAuditHandler() {
     try {
@@ -64,51 +81,66 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
           </SpaceBetween>
         }
       >
-        <Container header={<Header variant="h2">{breadcrumbLabels.fileDetailsLabel}</Header>}>
+        <Container
+          header={
+            <Header
+              variant="h2"
+              actions={
+                <SpaceBetween direction="horizontal" size="xs">
+                  <Button
+                    data-testid="download-case-file-audit-button"
+                    onClick={downloadCaseFileAuditHandler}
+                    disabled={auditDownloadInProgress || !canDownloadCaseAudit(userActions.data?.actions)}
+                  >
+                    {auditLogLabels.caseFileAuditLogLabel}
+                    {auditDownloadInProgress ? <Spinner size="big" /> : null}
+                  </Button>
+                </SpaceBetween>
+              }
+            >
+              {breadcrumbLabels.fileDetailsLabel}
+              {auditDownloadInProgress ? <Spinner size="big" /> : null}
+            </Header>
+          }
+        >
           <ColumnLayout columns={3} variant="text-grid">
-            <div>
-              {' '}
-              <h4>{fileDetailLabels.uploadDateLabel}</h4>
-              <p>
-                {data.created
-                  ? new Date(data.created).toLocaleString([], {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })
-                  : '-'}
-              </p>
-            </div>
-            <div>
-              <h4>{commonLabels.description}</h4>
-              <p>{data.details}</p>
-            </div>
-            <div>
-              {' '}
-              <h4>{auditLogLabels.caseAuditLogLabel}</h4>
-              <Button
-                data-testid="file-detail-download-case-audit-csv-button"
-                disabled={auditDownloadInProgress || !canDownloadCaseAudit(userActions.data?.actions)}
-                variant="link"
-                onClick={downloadCaseFileAuditHandler}
-              >
-                {auditLogLabels.downloadFileAuditLabel}
-                {auditDownloadInProgress ? <Spinner /> : null}
-              </Button>
-            </div>
+            <TextContent>
+              <div>
+                {' '}
+                <h5>{fileDetailLabels.uploadDateLabel}</h5>
+                <SpaceBetween size="l">
+                  <p>
+                    {data.created
+                      ? new Date(data.created).toLocaleString([], {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })
+                      : '-'}
+                  </p>
 
-            <div>
-              <h4>{commonLabels.statusLabel}</h4>
-              <p>{data.status}</p>
-            </div>
-            <div>
-              <h4>{fileDetailLabels.fileSizeLabel}</h4>
-              <p>{formatFileSize(data.fileSizeBytes)}</p>
-            </div>
-            <div>
-              <h4>{fileDetailLabels.shaHashLabel}</h4>
-              <p>{data.sha256Hash}</p>
-            </div>
+                  <h5>{fileDetailLabels.fileSizeLabel}</h5>
+                </SpaceBetween>
+                <p>{formatFileSize(data.fileSizeBytes)}</p>
+              </div>
+            </TextContent>
+            <TextContent>
+              <div>
+                <h5>{commonLabels.description}</h5>
+                <p>{data.details}</p>
+              </div>
+            </TextContent>
+            <TextContent>
+              <div>
+                <h5>{commonLabels.statusLabel}</h5>
+                <SpaceBetween size="l">
+                  <p>{getStatusIcon(data.status)}</p>
+
+                  <h5>{fileDetailLabels.shaHashLabel}</h5>
+                </SpaceBetween>
+                <p>{data.sha256Hash}</p>
+              </div>
+            </TextContent>
           </ColumnLayout>
         </Container>
       </ContentLayout>

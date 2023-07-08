@@ -10,16 +10,16 @@ import {
   Container,
   ContentLayout,
   Header,
-  Icon,
   SpaceBetween,
   Spinner,
+  StatusIndicator,
   TextContent,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { getCaseAuditCSV, useGetCaseActions, useGetCaseById } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
-import { auditLogLabels, caseDetailLabels, commonLabels } from '../../common/labels';
+import { auditLogLabels, caseDetailLabels, caseStatusLabels, commonLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { canDownloadCaseAudit, canUpdateCaseDetails } from '../../helpers/userActionSupport';
 import CaseDetailsTabs from './CaseDetailsTabs';
@@ -37,9 +37,9 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
 
   function getStatusIcon(status: CaseStatus) {
     if (status == CaseStatus.ACTIVE) {
-      return <Icon name="check" variant="success" />;
+      return <StatusIndicator>{caseStatusLabels.active}</StatusIndicator>;
     } else {
-      return <Icon name="status-stopped" variant="disabled" />;
+      return <StatusIndicator type="stopped">{caseStatusLabels.inactive}</StatusIndicator>;
     }
   }
 
@@ -120,10 +120,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
               <TextContent>
                 <div>
                   <h5>{commonLabels.statusLabel}</h5>
-                  <p>
-                    {getStatusIcon(data.status)}{' '}
-                    {data.status.slice(0, 1) + data.status.slice(1).toLowerCase()}
-                  </p>
+                  <p>{getStatusIcon(data.status)}</p>
                 </div>
               </TextContent>
             </ColumnLayout>

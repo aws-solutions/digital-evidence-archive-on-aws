@@ -55,6 +55,8 @@ export const commonTableLabels = {
   dateUploadedHeader: 'Upload date',
   uploadedByHeader: 'Uploaded by',
   caseFileAudit: 'Download Case File Audit',
+  limitShowFewerLabel: 'Show fewer',
+  limitShowMoreLabel: 'Show more',
 };
 
 export const layoutLabels: AppLayoutProps.Labels = {
@@ -153,7 +155,7 @@ export const caseDetailLabels = {
 export const auditLogLabels = {
   downloadCSVLabel: 'Download case audit log CSV',
   caseAuditLogLabel: 'Audit log',
-  caseFileAuditLogLabel: 'Case file audit log',
+  caseFileAuditLogLabel: 'Download file audit log CSV',
   downloadFileAuditLabel: 'Download file audit log CSV',
   descriptionLabel:
     'This table records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file.',
@@ -313,8 +315,6 @@ export const fileUploadLabels = {
   dragAndDropFolderLabel: 'Drag and drop files or',
   chooseFolderLabel: 'Choose folders',
   chooseFilesLabel: 'Choose files',
-  limitShowFewerLabel: 'Show fewer',
-  limitShowMoreLabel: 'Show more',
   errorIconAriaLabel: 'Error',
   removeFileAriaLabel: (e: number) => `Remove file ${e + 1}`,
 };
