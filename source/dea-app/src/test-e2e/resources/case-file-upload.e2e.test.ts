@@ -25,6 +25,7 @@ import {
   randomSuffix,
   s3Cleanup,
   s3Object,
+  s3ObjectHasLegalHold,
   uploadContentToS3,
 } from './test-helpers';
 
@@ -96,8 +97,10 @@ describe('Test case file APIs', () => {
 
     const fileUlid = initiatedCaseFile.ulid ?? fail();
     const fileUlid2 = initiatedCaseFile2.ulid ?? fail();
-    s3ObjectsToDelete.push({ key: `${caseUlid}/${fileUlid}`, uploadId: initiatedCaseFile.uploadId });
-    s3ObjectsToDelete.push({ key: `${caseUlid}/${fileUlid2}`, uploadId: initiatedCaseFile2.uploadId });
+    const file1Object = { key: `${caseUlid}/${fileUlid}`, uploadId: initiatedCaseFile.uploadId };
+    s3ObjectsToDelete.push(file1Object);
+    const file2Object = { key: `${caseUlid}/${fileUlid2}`, uploadId: initiatedCaseFile2.uploadId };
+    s3ObjectsToDelete.push(file2Object);
     const uploadId = initiatedCaseFile.uploadId ?? fail();
     const uploadId2 = initiatedCaseFile2.uploadId ?? fail();
     const presignedUrls = initiatedCaseFile.presignedUrls ?? fail();
@@ -159,6 +162,10 @@ describe('Test case file APIs', () => {
     expect(
       listCaseFilesResponse.files.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
     ).toBeTruthy();
+
+    // Verify that the S3 Objects have Object Locks (Legal Hold) on them
+    expect(s3ObjectHasLegalHold(file1Object)).toBeTruthy();
+    expect(s3ObjectHasLegalHold(file2Object)).toBeTruthy();
 
     // verify download-case-file works as expected
     const downloadUrl = await getCaseFileDownloadUrl(DEA_API_URL, idToken, creds, caseUlid, fileUlid);
