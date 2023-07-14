@@ -20,7 +20,7 @@ import {
 } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
-import { CfnResource, Duration } from 'aws-cdk-lib';
+import { Aws, CfnResource, Duration } from 'aws-cdk-lib';
 import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountPrincipal,
@@ -81,6 +81,7 @@ export class DeaMainStack extends cdk.Stack {
 
     const region = deaConfig.region();
     const accountId = this.account;
+    const stage = deaConfig.stage();
 
     const auditTrail = new DeaAuditTrail(this, 'DeaAudit', protectedDeaResourceArns, {
       kmsKey,
@@ -137,7 +138,7 @@ export class DeaMainStack extends cdk.Stack {
       // Along with the IAM Roles
       const authConstruct = new DeaAuthStack(
         scope,
-        'DeaAuth',
+        `${stage}-DeaAuth`,
         {
           // Cognito is not available in us-gov-east-1, so we have to deploy
           // Cognito in us-gov-west-1
@@ -152,8 +153,7 @@ export class DeaMainStack extends cdk.Stack {
       // in SSM Param Store and Secrets Manager
       new DeaParametersStack(
         scope,
-        'DeaParameters',
-        protectedDeaResourceArns,
+        `${stage}-DeaParameters`,
         {
           deaAuthInfo: authConstruct.deaAuthInfo,
           kmsKey,
@@ -163,7 +163,7 @@ export class DeaMainStack extends cdk.Stack {
     } else {
       // Build the Cognito Stack (UserPool and IdentityPool)
       // Along with the IAM Roles
-      const authConstruct = new DeaAuth(this, 'DeaAuth', {
+      const authConstruct = new DeaAuth(this, `DeaAuth`, {
         region: region,
         restApi: deaApi.deaRestApi,
         apiEndpointArns: deaApi.apiEndpointArns,
@@ -171,11 +171,19 @@ export class DeaMainStack extends cdk.Stack {
 
       // Store relevant parameters for the functioning of DEA
       // in SSM Param Store and Secrets Manager
-      new DeaParameters(this, 'DeaParameters', protectedDeaResourceArns, {
+      new DeaParameters(this, `DeaParameters`, {
         deaAuthInfo: authConstruct.deaAuthInfo,
         kmsKey,
       });
     }
+
+    // Add SSM/SecretManager paths to protected DeaResourceArns
+    protectedDeaResourceArns.push(
+      `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/dea/${stage}*`
+    );
+    protectedDeaResourceArns.push(
+      `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:/dea/${stage}/*`
+    );
 
     restrictResourcePolicies(
       {

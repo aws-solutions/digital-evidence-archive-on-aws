@@ -25934,14 +25934,15 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":ssm:us-east-1:",
+                      ":ssm:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
-                      ":parameter",
-                      Object {
-                        "Ref": "DeaParametersConstructCaseWorkeractionsBE9D52BE",
-                      },
+                      ":parameter/dea/[STAGE-REMOVED]*",
                     ],
                   ],
                 },
@@ -25953,133 +25954,17 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":ssm:us-east-1:",
+                      ":secretsmanager:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
                       Object {
                         "Ref": "AWS::AccountId",
                       },
-                      ":parameter",
-                      Object {
-                        "Ref": "DeaParametersConstructWorkingManageractions5D91AA95",
-                      },
+                      ":secret:/dea/[STAGE-REMOVED]/*",
                     ],
                   ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":ssm:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":parameter",
-                      Object {
-                        "Ref": "DeaParametersConstructEvidenceManageractionsC107F87D",
-                      },
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":ssm:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":parameter",
-                      Object {
-                        "Ref": "DeaParametersConstructNoPermissionsGroupactions2641487C",
-                      },
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":ssm:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":parameter",
-                      Object {
-                        "Ref": "DeaParametersConstructAuthTestGroupactions584EA34A",
-                      },
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":ssm:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":parameter",
-                      Object {
-                        "Ref": "DeaParametersConstructCreateCasesTestGroupactionsAEADA4CB",
-                      },
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":ssm:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":parameter",
-                      Object {
-                        "Ref": "DeaParametersConstructGetCaseTestGroupactions0AC8C56D",
-                      },
-                    ],
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      "arn:",
-                      Object {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":ssm:us-east-1:",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":parameter",
-                      Object {
-                        "Ref": "DeaParametersConstructGetMyCasesTestGroupactions68DF22F7",
-                      },
-                    ],
-                  ],
-                },
-                Object {
-                  "Ref": "DeaParametersConstructdea[STAGE-REMOVED]clientSecret[HASH REMOVED]",
                 },
               ],
             },

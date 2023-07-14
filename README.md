@@ -152,6 +152,11 @@ rushx cdk bootstrap aws://${AWS_ACCT_NUMBER}/${AWS_REGION}
 rushx cdk deploy
 ```
 
+NOTE: if you are running cdk deploy in us-gov-east-1 region, run the command with the --all flag since you are deploying more than one stack. E.g.
+```sh
+rushx cdk deploy --all
+```
+
 After the command is done, copy the list of outputs somewhere safe, You will need them for next steps.
 
 ### Step 4: Integrate your CJIS Compliant Identity Provider
@@ -196,6 +201,11 @@ E.g.
 rush rebuild
 rushx cdk bootstrap aws://${AWS_ACCT_NUMBER}/${AWS_REGION}
 rushx cdk deploy
+```
+
+NOTE: if you are running cdk deploy in us-gov-east-1 region, run the command with the --all flag since you are deploying more than one stack. E.g.
+```sh
+rushx cdk deploy --all
 ```
 
 5) Post Deployment Steps:

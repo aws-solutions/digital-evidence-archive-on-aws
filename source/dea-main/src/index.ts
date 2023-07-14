@@ -22,7 +22,7 @@ let props: cdk.StackProps = {
   }),
 };
 
-if (!deaConfig.isOneClick) {
+if (!deaConfig.isOneClick()) {
   props = {
     env: {
       region,

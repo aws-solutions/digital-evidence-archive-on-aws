@@ -116,7 +116,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
+    new DeaParameters(stack, 'DeaParameters', {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
@@ -188,7 +188,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
+    new DeaParameters(stack, 'DeaParameters', {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
@@ -265,7 +265,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
+    new DeaParameters(stack, 'DeaParameters', {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
@@ -361,7 +361,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
+    new DeaParameters(stack, 'DeaParameters', {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
