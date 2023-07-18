@@ -33,6 +33,7 @@ import { DeaUser } from '../../../models/user';
 import { createCase, getCase, updateCaseStatus as updateCaseStatusInDb } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
+import { testEnv } from '../../../test-e2e/helpers/settings';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
@@ -359,6 +360,42 @@ describe('update case status', () => {
         repositoryProvider
       )
     ).rejects.toThrow('Delete files can only be requested when inactivating a case');
+
+    //ensure no job was created
+    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);
+    expect(s3ControlMock).toHaveReceivedCommandTimes(CreateJobCommand, 0);
+  });
+
+  it('should fail if delete-file requested when it is not allowed in DEA installation', async () => {
+    const theCase: DeaCaseInput = {
+      name: 'delete not allowed',
+      description: 'description',
+    };
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+
+    const datasetsProvider = {
+      s3Client: new S3Client({ region: testEnv.awsRegion }),
+      s3ControlClient: new S3ControlClient({ region: testEnv.awsRegion }),
+      bucketName: 'testBucket',
+      uploadPresignedCommandExpirySeconds: 3600,
+      downloadPresignedCommandExpirySeconds: 900,
+      deletionAllowed: false,
+      s3BatchDeleteCaseFileLambdaArn: 'arn:aws:lambda:us-east-1:1234:function:foo',
+      s3BatchDeleteCaseFileRole: 'arn:aws:iam::1234:role/foo',
+      sourceIpValidationEnabled: true,
+      datasetsRole: 'arn:aws:iam::1234:role/bar',
+    };
+
+    await expect(
+      callUpdateCaseStatusAndValidate(
+        caseOwner.ulid,
+        createdCase,
+        true,
+        CaseStatus.INACTIVE,
+        repositoryProvider,
+        datasetsProvider
+      )
+    ).rejects.toThrow('The application is not configured to delete files');
 
     //ensure no job was created
     expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 0);

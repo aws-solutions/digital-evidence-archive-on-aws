@@ -213,6 +213,11 @@ const convictSchema = {
     format: 'Boolean',
     default: true,
   },
+  uploadFilesTimeoutMinutes: {
+    doc: 'Timeout in minutes for S3 pre-signed URLs generated for file upload',
+    format: Number,
+    default: 60,
+  },
 };
 
 export interface IdPAttributes {
@@ -273,6 +278,7 @@ interface DEAConfig {
   preflightOptions(): CorsOptions | undefined;
   fipsEndpointsEnabled(): boolean;
   isMultiRegionTrail(): boolean;
+  uploadFilesTimeoutMinutes(): number;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -348,6 +354,7 @@ export const deaConfig: DEAConfig = {
   },
   fipsEndpointsEnabled: () => convictConfig.get('fipsEndpointsEnabled') ?? true,
   isMultiRegionTrail: () => convictConfig.get('isMultiRegionTrail') ?? true,
+  uploadFilesTimeoutMinutes: () => convictConfig.get('uploadFilesTimeoutMinutes'),
 };
 
 export const loadConfig = (stage: string): void => {

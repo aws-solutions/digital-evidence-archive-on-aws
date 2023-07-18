@@ -34,7 +34,7 @@ import {
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
-import { canCreateCases, canUpdateCaseStatus } from '../../helpers/userActionSupport';
+import { canCreateCases, canDeleteCaseFiles, canUpdateCaseStatus } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { ConfirmModal } from '../common-components/ConfirmModal';
@@ -211,9 +211,11 @@ function CaseTable(props: CaseTableProps): JSX.Element {
         }
       >
         {caseListLabels.deactivateCaseModalMessage}
-        <Toggle onChange={({ detail }) => setDeleteFiles(detail.checked)} checked={deleteFiles}>
-          {caseListLabels.deleteFilesLabel}
-        </Toggle>
+        {canDeleteCaseFiles(availableEndpoints.data) && (
+          <Toggle onChange={({ detail }) => setDeleteFiles(detail.checked)} checked={deleteFiles}>
+            {caseListLabels.deleteFilesLabel}
+          </Toggle>
+        )}
       </Modal>
     );
   }

@@ -97,6 +97,7 @@ export class DeaMainStack extends cdk.Stack {
         TABLE_NAME: backendConstruct.deaTable.tableName,
         DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
         AWS_USE_FIPS_ENDPOINT: deaConfig.fipsEndpointsEnabled().toString(),
+        DELETION_ALLOWED: deaConfig.deletionAllowed().toString(),
       },
       opsDashboard: dashboard,
     });
@@ -119,6 +120,8 @@ export class DeaMainStack extends cdk.Stack {
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
         AWS_USE_FIPS_ENDPOINT: deaConfig.fipsEndpointsEnabled().toString(),
         SOURCE_IP_VALIDATION_ENABLED: deaConfig.sourceIpValidationEnabled().toString(),
+        DELETION_ALLOWED: deaConfig.deletionAllowed().toString(),
+        UPLOAD_FILES_TIMEOUT_MINUTES: deaConfig.uploadFilesTimeoutMinutes().toString(),
       },
       opsDashboard: dashboard,
     });

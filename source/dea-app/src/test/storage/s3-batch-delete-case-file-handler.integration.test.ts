@@ -10,6 +10,7 @@ import {
   ServiceOutputTypes as S3Output,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
+import { S3ControlClient } from '@aws-sdk/client-s3-control';
 import {
   STSClient,
   ServiceInputTypes as STSInputs,
@@ -26,6 +27,7 @@ import { createCase } from '../../persistence/case';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { createUser } from '../../persistence/user';
 import { deleteCaseFileHandler } from '../../storage/s3-batch-delete-case-file-handler';
+import { testEnv } from '../../test-e2e/helpers/settings';
 import {
   callCompleteCaseFileUpload,
   callGetCaseFileDetails,
@@ -182,6 +184,44 @@ describe('S3 batch delete case-file lambda', () => {
     );
 
     const expectedResult = `Could not find case file: fileId: ${caseId}, caseId: ${caseId}`;
+    expect(response).toEqual(getS3BatchResult(caseId, caseId, 'PermanentFailure', expectedResult));
+    expect(s3Mock).toHaveReceivedCommandTimes(DeleteObjectCommand, 0);
+  });
+
+  it('should mark as failed when delete is not allowed in installation', async () => {
+    const theCase: DeaCaseInput = {
+      name: 'delete not allowed',
+      description: 'description',
+    };
+    const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
+    const caseId = createdCase.ulid;
+
+    const caseFile = await callInitiateCaseFileUpload(caseOwner.ulid, repositoryProvider, caseId, 'file1');
+    const fileId = caseFile.ulid ?? fail();
+    await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, caseId);
+
+    const datasetsProvider = {
+      s3Client: new S3Client({ region: testEnv.awsRegion }),
+      s3ControlClient: new S3ControlClient({ region: testEnv.awsRegion }),
+      bucketName: 'testBucket',
+      uploadPresignedCommandExpirySeconds: 3600,
+      downloadPresignedCommandExpirySeconds: 900,
+      deletionAllowed: false,
+      s3BatchDeleteCaseFileLambdaArn: 'arn:aws:lambda:us-east-1:1234:function:foo',
+      s3BatchDeleteCaseFileRole: 'arn:aws:iam::1234:role/foo',
+      sourceIpValidationEnabled: true,
+      datasetsRole: 'arn:aws:iam::1234:role/bar',
+    };
+
+    const response = await deleteCaseFileHandler(
+      getS3BatchDeleteCaseFileEvent(caseId, fileId, 'version-id'),
+      dummyContext,
+      CALLBACK_FN,
+      repositoryProvider,
+      datasetsProvider
+    );
+
+    const expectedResult = 'This installation of DEA does not allow deletion';
     expect(response).toEqual(getS3BatchResult(caseId, caseId, 'PermanentFailure', expectedResult));
     expect(s3Mock).toHaveReceivedCommandTimes(DeleteObjectCommand, 0);
   });

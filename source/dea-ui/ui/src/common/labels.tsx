@@ -90,7 +90,7 @@ export const caseListLabels = {
   deactivateCaseLabel: 'Deactivate case',
   deactivateCaseModalLabel: (name: string) => `Are you sure you want to deactivate ${name}?`,
   deactivateCaseModalMessage:
-    'Once the case is deactivated, anyone with access will not be able to edit, add case members, or upload and download files to the case. We will keep all your files unless you prefer to delete them.',
+    'Once the case is deactivated, anyone with access will not be able to edit, or upload and download files to the case. We will keep all your files unless you prefer to delete them.',
   deleteFilesLabel: 'Delete all files',
   activateCaseModalLabel: (name: string) => `Are you sure you want to activate ${name}?`,
   activateCaseModalMessage:

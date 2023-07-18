@@ -339,13 +339,22 @@ export const getAvailableEndpoints: AvailableEndpointsSignature = async (event) 
   const deaRoleName = getRequiredHeader(event, 'deaRole');
   const ssmClient = new SSMClient({ region });
   const roleActionsPath = `/dea/${stage}-${deaRoleName}-actions`;
+  const deleteAllowedParamPath = `/dea/${stage}/deletionAllowed`;
   const response = await ssmClient.send(
     new GetParametersCommand({
-      Names: [roleActionsPath],
+      Names: [roleActionsPath, deleteAllowedParamPath],
     })
   );
 
-  const param = response.Parameters?.find((parameter) => parameter.Name === roleActionsPath);
+  const roleActionsParam = response.Parameters?.find((parameter) => parameter.Name === roleActionsPath);
+  const roleActionsList = roleActionsParam?.Value?.split(',') ?? [];
 
-  return param?.Value?.split(',') ?? [];
+  const deletionAllowedParam = response.Parameters?.find(
+    (parameter) => parameter.Name === deleteAllowedParamPath
+  );
+  const deletionAllowed = deletionAllowedParam?.Value ?? 'false';
+  if (deletionAllowed === 'true' && roleActionsList.includes('/cases/{caseId}/statusPUT')) {
+    roleActionsList.push('/cases/{caseId}/filesDELETE');
+  }
+  return roleActionsList;
 };

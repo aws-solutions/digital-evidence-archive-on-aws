@@ -40,10 +40,12 @@ const region = process.env.AWS_REGION;
 export interface DatasetsProvider {
   s3Client: S3Client;
   bucketName: string;
-  presignedCommandExpirySeconds: number;
+  uploadPresignedCommandExpirySeconds: number;
+  downloadPresignedCommandExpirySeconds: number;
   s3BatchDeleteCaseFileLambdaArn: string;
   s3BatchDeleteCaseFileRole: string;
   sourceIpValidationEnabled: boolean;
+  deletionAllowed: boolean;
   datasetsRole: string;
 }
 
@@ -65,8 +67,10 @@ export const defaultDatasetsProvider = {
     'DELETE_CASE_FILE_ROLE is not set in your lambda!'
   ),
   sourceIpValidationEnabled: getRequiredEnv('SOURCE_IP_VALIDATION_ENABLED', 'true') === 'true',
+  deletionAllowed: getRequiredEnv('DELETION_ALLOWED', 'false') === 'true',
   datasetsRole: getRequiredEnv('DATASETS_ROLE', 'DATASETS_ROLE is not set in your lambda!'),
-  presignedCommandExpirySeconds: 3600,
+  uploadPresignedCommandExpirySeconds: Number(getRequiredEnv('UPLOAD_FILES_TIMEOUT_MINUTES', '60')) * 60,
+  downloadPresignedCommandExpirySeconds: 15 * 60,
 };
 
 export const generatePresignedUrlsForCaseFile = async (
@@ -216,7 +220,7 @@ export const getPresignedUrlForDownload = async (
     ResponseContentDisposition: `attachment; filename="${caseFile.fileName}"`,
   });
   result.downloadUrl = await getSignedUrl(presignedUrlS3Client, getObjectCommand, {
-    expiresIn: datasetsProvider.presignedCommandExpirySeconds,
+    expiresIn: datasetsProvider.downloadPresignedCommandExpirySeconds,
   });
   return result;
 };
@@ -419,7 +423,7 @@ async function getUploadPresignedUrlPromise(
     PartNumber: partNumber,
   });
   return getSignedUrl(presignedUrlClient, uploadPartCommand, {
-    expiresIn: datasetsProvider.presignedCommandExpirySeconds,
+    expiresIn: datasetsProvider.uploadPresignedCommandExpirySeconds,
   });
 }
 
@@ -434,7 +438,7 @@ async function getDownloadPresignedUrlClient(
       new AssumeRoleCommand({
         RoleArn: datasetsProvider.datasetsRole,
         RoleSessionName: objectKey.replace('/', '-'),
-        DurationSeconds: datasetsProvider.presignedCommandExpirySeconds,
+        DurationSeconds: datasetsProvider.downloadPresignedCommandExpirySeconds,
         Policy: getPolicyForDownload(objectKey, sourceIp, datasetsProvider),
       })
     )
@@ -467,7 +471,7 @@ async function getUploadPresignedUrlClient(
       new AssumeRoleCommand({
         RoleArn: datasetsProvider.datasetsRole,
         RoleSessionName: objectKey.replace('/', '-'),
-        DurationSeconds: datasetsProvider.presignedCommandExpirySeconds,
+        DurationSeconds: datasetsProvider.uploadPresignedCommandExpirySeconds,
         Policy: getPolicyForUpload(objectKey, sourceIp, datasetsProvider),
       })
     )

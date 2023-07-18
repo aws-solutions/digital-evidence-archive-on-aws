@@ -71,6 +71,19 @@ export class DeaParameters extends Construct {
       deaAuthInfo.identityPoolId,
       deaAuthInfo.agencyIdpName
     );
+
+    this.storeDeletionAllowedInformationInSSM();
+  }
+
+  private storeDeletionAllowedInformationInSSM() {
+    const stage = deaConfig.stage();
+    new StringParameter(this, 'deletion-allowed-ssm-param', {
+      parameterName: `/dea/${stage}/deletionAllowed`,
+      allowedPattern: '^true|false$',
+      stringValue: deaConfig.deletionAllowed().toString(),
+      description: 'Is deletion of files allowed in this installation of DEA',
+      tier: ParameterTier.STANDARD,
+    });
   }
 
   private storeAvailableEndpointsPerRole(
