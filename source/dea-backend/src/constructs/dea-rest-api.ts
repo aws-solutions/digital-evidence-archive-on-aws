@@ -56,7 +56,6 @@ interface DeaRestApiProps {
   deaAuditLogArn: string;
   deaTrailLogArn: string;
   kmsKey: Key;
-  accountId: string;
   lambdaEnv: LambdaEnvironment;
   opsDashboard: DeaOperationalDashboard;
 }
@@ -82,20 +81,16 @@ export class DeaRestApiConstruct extends Construct {
 
     this.apiEndpointArns = new Map<string, string>();
 
-    const partition = deaConfig.partition();
-
     this.lambdaBaseRole = this.createLambdaBaseRole(
       props.kmsKey.keyArn,
       props.deaTableArn,
       props.deaDatasetsBucket.bucketArn,
-      props.accountId,
-      partition,
       props.deaAuditLogArn,
       props.deaTrailLogArn,
       props.s3BatchDeleteCaseFileRoleArn
     );
 
-    this.authLambdaRole = this.createAuthLambdaRole(props.accountId, partition);
+    this.authLambdaRole = this.createAuthLambdaRole();
 
     this.datasetsRole = this.createDatasetsRole(props.kmsKey.keyArn, props.deaDatasetsBucket.bucketArn);
 
@@ -216,7 +211,7 @@ export class DeaRestApiConstruct extends Construct {
       });
     }
 
-    this.configureApiGateway(deaApiRouteConfig, props.lambdaEnv, props.accountId);
+    this.configureApiGateway(deaApiRouteConfig, props.lambdaEnv);
 
     this.updateBucketCors(this.deaRestApi, props.deaDatasetsBucket.bucketName);
   }
@@ -264,11 +259,7 @@ export class DeaRestApiConstruct extends Construct {
     updateCors.node.addDependency(restApi);
   }
 
-  private configureApiGateway(
-    routeConfig: ApiGatewayRouteConfig,
-    lambdaEnv: LambdaEnvironment,
-    accountId: string
-  ): void {
+  private configureApiGateway(routeConfig: ApiGatewayRouteConfig, lambdaEnv: LambdaEnvironment): void {
     const plan = this.deaRestApi.addUsagePlan('DEA Usage Plan', {
       name: 'dea-usage-plan',
       throttle: {
@@ -301,18 +292,12 @@ export class DeaRestApiConstruct extends Construct {
       // otherwise it is a DEA execution API, which needs the
       // full set of permissions
       const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
-      this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv, accountId);
+      this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv);
       this.opsDashboard.addMethodOperationalComponents(this.deaRestApi, route);
     });
   }
 
-  private addMethod(
-    api: RestApi,
-    route: ApiGatewayRoute,
-    role: Role,
-    lambdaEnv: LambdaEnvironment,
-    accountId: string
-  ): void {
+  private addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, lambdaEnv: LambdaEnvironment): void {
     const urlParts = route.path.split('/').filter((str) => str);
     let parent = api.root;
     urlParts.forEach((part, index) => {
@@ -326,8 +311,7 @@ export class DeaRestApiConstruct extends Construct {
           `${route.httpMethod}_${route.eventName}`,
           role,
           route.pathToSource,
-          lambdaEnv,
-          accountId
+          lambdaEnv
         );
         this.opsDashboard.addLambdaOperationalComponents(lambda, route.eventName, route);
 
@@ -378,8 +362,7 @@ export class DeaRestApiConstruct extends Construct {
     id: string,
     role: Role,
     pathToSource: string,
-    lambdaEnv: LambdaEnvironment,
-    accountId: string
+    lambdaEnv: LambdaEnvironment
   ): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
       // Set to 1024MB to mitigate memory allocation issues. Some executions were using more than 512MB.
@@ -408,7 +391,7 @@ export class DeaRestApiConstruct extends Construct {
     lambda.addPermission('InvokeLambdaPermission', {
       action: 'lambda:InvokeFunction',
       principal: new ServicePrincipal('apigateway.amazonaws.com'),
-      sourceAccount: accountId,
+      sourceAccount: Aws.ACCOUNT_ID,
     });
 
     //CFN NAG Suppression
@@ -442,14 +425,11 @@ export class DeaRestApiConstruct extends Construct {
     kmsKeyArn: string,
     tableArn: string,
     datasetsBucketArn: string,
-    accountId: string,
-    partition: string,
     auditLogArn: string,
     trailLogArn: string,
     s3BatchDeleteCaseFileRoleArn: string
   ): Role {
     const STAGE = deaConfig.stage();
-    const region = Aws.REGION;
 
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
@@ -528,7 +508,7 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${STAGE}*`],
+        resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/dea/${STAGE}*`],
       })
     );
 
@@ -557,8 +537,7 @@ export class DeaRestApiConstruct extends Construct {
     return role;
   }
 
-  private createAuthLambdaRole(accountId: string, partition: string): Role {
-    const region = Aws.REGION;
+  private createAuthLambdaRole(): Role {
     const STAGE = deaConfig.stage();
 
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
@@ -572,7 +551,7 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:${partition}:ssm:${region}:${accountId}:parameter/dea/${STAGE}*`],
+        resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/dea/${STAGE}*`],
       })
     );
 
@@ -580,7 +559,7 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['secretsmanager:GetSecretValue'],
         resources: [
-          `arn:${partition}:secretsmanager:${region}:${accountId}:secret:/dea/${STAGE}/clientSecret-*`,
+          `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:/dea/${STAGE}/clientSecret-*`,
         ],
       })
     );

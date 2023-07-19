@@ -80,7 +80,6 @@ export class DeaMainStack extends cdk.Stack {
     });
 
     const region = deaConfig.region();
-    const accountId = this.account;
     const stage = deaConfig.stage();
 
     const auditTrail = new DeaAuditTrail(this, 'DeaAudit', protectedDeaResourceArns, {
@@ -113,7 +112,6 @@ export class DeaMainStack extends cdk.Stack {
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey,
-      accountId,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backendConstruct.deaTable.tableName,

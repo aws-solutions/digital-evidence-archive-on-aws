@@ -19191,7 +19191,11 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:ssm:",
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:",
                     Object {
                       "Ref": "AWS::Region",
                     },
@@ -19211,7 +19215,11 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:secretsmanager:",
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":secretsmanager:",
                     Object {
                       "Ref": "AWS::Region",
                     },
@@ -19416,7 +19424,11 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:ssm:",
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:",
                     Object {
                       "Ref": "AWS::Region",
                     },
