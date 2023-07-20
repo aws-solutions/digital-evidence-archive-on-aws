@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { UserAgent } from '@aws-sdk/types';
 import { APIGatewayProxyEvent, APIGatewayProxyEventHeaders } from 'aws-lambda';
 import Joi from 'joi';
 import { ValidationError } from './app/exceptions/validation-exception';
@@ -15,6 +16,12 @@ export interface PaginationParams {
   limit: number | undefined;
   nextToken: object | undefined;
 }
+
+export const getCustomUserAgent = (): UserAgent => {
+  const solutionId = getRequiredEnv('SOLUTION_ID', 'SOLUTION_ID is not set in your lambda!');
+  const solutionVersion = getRequiredEnv('SOLUTION_VERSION', 'SOLUTION_VERSION is not set in your lambda!');
+  return [[solutionId, solutionVersion]];
+};
 
 export const getPaginationParameters = (event: APIGatewayProxyEvent): PaginationParams => {
   let limit: number | undefined;
