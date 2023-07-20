@@ -1,30 +1,13 @@
-Config
-glob-parent
-rush.json
-package.json
-tools
-.vscode
-common
-node_modules
-build
-coverage
-README.md
 cdk.out
-.github
-.github/workflows/pipeline.yml
+node_modules
+source/dea-ui/ui/.next
+source/common/temp
+source/.tools/viperlight
+Config
 
 # Line specific ignores
-
-CODE_OF_CONDUCT.md:4
-CONTRIBUTING.md:50
+source/dea-app/lib/test/integration-objects.js:79
 
 # Bogus email ignores
-
-source/dea-main/config/test.json:5
-source/dea-backend/config/test.json:5
-source/dea-backend/src/config/test.yaml:5
-source/dea-ui/ui/src/models/User.ts:19
-source/dea-backend/src/config/demo.yaml:5
-source/dea-app/src/test/integration-objects.ts:82
 source/release.config.js:3
-rush.json:17
+source/rush.json:17
