@@ -51,7 +51,7 @@ export class DeaUiConstruct extends Construct {
 
       const solutionsBucket = Bucket.fromBucketName(this, 'solutions-bucket', solutionsBucketName);
 
-      sources = [Source.bucket(solutionsBucket, 'digital-evidence-archive/v1.0.0/ui.zip')];
+      sources = [Source.bucket(solutionsBucket, 'digital-evidence-archive/v1.0.2/ui.zip')];
     }
     // eslint-disable-next-line no-new
     new BucketDeployment(this, 'artifact-deployment-bucket', {

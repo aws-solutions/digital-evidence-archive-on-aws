@@ -2,6 +2,7 @@
   "stage": "devsample",
   "testStack": true,
   "sourceIpValidation": false,
+  "deletionAllowed": true,
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
@@ -464,6 +465,5 @@
       ]
     }
   ],
-  "deaAllowedOrigins": "https://localhost:3001",
-  "deletionAllowed": true
+  "deaAllowedOrigins": "https://localhost:3001"
 }

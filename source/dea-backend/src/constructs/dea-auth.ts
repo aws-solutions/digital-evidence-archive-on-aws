@@ -91,7 +91,7 @@ export class DeaAuthStack extends Stack {
       super(scope, stackName, props);
     }
 
-    this.deaAuthInfo = new DeaAuth(this, 'DeaAuth', deaProps).deaAuthInfo;
+    this.deaAuthInfo = new DeaAuth(this, stackName, deaProps).deaAuthInfo;
   }
 }
 

@@ -8,6 +8,7 @@ import { randomBytes } from 'crypto';
 import {
   AbortMultipartUploadCommand,
   DeleteObjectCommand,
+  GetObjectLegalHoldCommand,
   ObjectLockLegalHoldStatus,
   PutObjectLegalHoldCommand,
   S3Client,
@@ -431,6 +432,21 @@ export const completeCaseFileUploadSuccess = async (
   const uploadedCaseFile: DeaCaseFile = await completeUploadResponse.data;
   Joi.assert(uploadedCaseFile, caseFileResponseSchema);
   return uploadedCaseFile;
+};
+
+export const s3ObjectHasLegalHold = async (object: s3Object): Promise<boolean> => {
+  const response = await s3Client.send(
+    new GetObjectLegalHoldCommand({
+      Bucket: testEnv.datasetsBucketName,
+      Key: object.key,
+    })
+  );
+
+  if (!response.LegalHold) {
+    console.log('Was unable to determine the legal hold of object ' + object.uploadId);
+  }
+
+  return response.LegalHold?.Status === ObjectLockLegalHoldStatus.ON;
 };
 
 export const s3Cleanup = async (s3ObjectsToDelete: s3Object[]): Promise<void> => {

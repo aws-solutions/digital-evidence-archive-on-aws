@@ -113,15 +113,10 @@ describe('FileDetailPage', () => {
     fireEvent.click(downloadCsvButton);
 
     // upload button will be disabled while in progress and then re-enabled when done
-    await waitFor(() =>
-      expect(screen.queryByTestId('file-detail-download-case-audit-csv-button')).toBeDisabled()
-    );
-    await waitFor(
-      () => expect(screen.queryByTestId('file-detail-download-case-audit-csv-button')).toBeEnabled(),
-      {
-        timeout: 4000,
-      }
-    );
+    await waitFor(() => expect(screen.queryByTestId('download-case-file-audit-button')).toBeDisabled());
+    await waitFor(() => expect(screen.queryByTestId('download-case-file-audit-button')).toBeEnabled(), {
+      timeout: 4000,
+    });
 
     // error notification is visible
     const notificationsWrapper = wrapper(page.container).findFlashbar()!;

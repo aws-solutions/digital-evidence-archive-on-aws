@@ -15,21 +15,16 @@ import {
   Pagination,
   SpaceBetween,
   Spinner,
+  StatusIndicator,
   Table,
   TextFilter,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
+import { getPresignedUrl, restoreFile, useGetCaseActions, useListCaseFiles } from '../../api/cases';
 import {
-  getCaseFileAuditCSV,
-  getPresignedUrl,
-  restoreFile,
-  useGetCaseActions,
-  useListCaseFiles,
-} from '../../api/cases';
-import {
-  auditLogLabels,
+  caseStatusLabels,
   commonLabels,
   commonTableLabels,
   fileOperationsLabels,
@@ -39,12 +34,7 @@ import {
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
-import {
-  canDownloadCaseAudit,
-  canDownloadFiles,
-  canRestoreFiles,
-  canUploadFiles,
-} from '../../helpers/userActionSupport';
+import { canDownloadFiles, canRestoreFiles, canUploadFiles } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { ConfirmModal } from '../common-components/ConfirmModal';
 import { CaseDetailsTabsProps } from './CaseDetailsTabs';
@@ -61,7 +51,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const { data, isLoading } = useListCaseFiles(props.caseId, filesTableState.basePath);
   const [selectedFiles, setSelectedFiles] = React.useState<DeaCaseFile[]>([]);
   const [downloadInProgress, setDownloadInProgress] = React.useState(false);
-  const [caseFileAuditDownloadInProgress, setCaseFileAuditDownloadInProgress] = React.useState(false);
+
   const [filesToRestore, setFilesToRestore] = React.useState<DeaCaseFile[]>([]);
   const { pushNotification } = useNotifications();
 
@@ -201,15 +191,6 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
             {commonLabels.downloadButton}
             {downloadInProgress ? <Spinner size="big" /> : null}
           </Button>
-          <Button
-            data-testid="download-case-file-audit-button"
-            variant="primary"
-            onClick={downloadCaseFileAuditHandler}
-            disabled={caseFileAuditDownloadInProgress || !canDownloadCaseAudit(userActions.data?.actions)}
-          >
-            {auditLogLabels.caseFileAuditLogLabel}
-            {caseFileAuditDownloadInProgress ? <Spinner size="big" /> : null}
-          </Button>
         </SpaceBetween>
       );
     }
@@ -219,7 +200,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const tableHeader = (
     <Header variant="h2" description={filesListLabels.filterDescription} actions={tableActions()}>
       <SpaceBetween direction="horizontal" size="xs">
-        <span>{filesListLabels.caseFilesLabel}</span>
+        <span>{`${filesListLabels.caseFilesLabel} (${props.fileCount})`}</span>
         <BreadcrumbGroup
           data-testid="file-breadcrumb"
           onClick={(event) => {
@@ -259,39 +240,6 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
 
   // pagination element
   const tablePagination = <Pagination {...paginationProps} ariaLabels={paginationLabels} />;
-
-  async function downloadCaseFileAuditHandler() {
-    const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
-    try {
-      setCaseFileAuditDownloadInProgress(true);
-      for (const file of selectedFiles) {
-        try {
-          if (!file.ulid) {
-            pushNotification('error', auditLogLabels.downloadCaseAuditFail(file.fileName));
-            console.log(`failed to download case file audit for ${file.fileName}`);
-            continue;
-          }
-          const csv = await getCaseFileAuditCSV(file.caseUlid, file.ulid);
-          const blob = new Blob([csv], { type: 'text/csv' });
-          const fileUrl = window.URL.createObjectURL(blob);
-          const alink = document.createElement('a');
-          alink.href = fileUrl;
-          alink.download = `${file.fileName}_Audit_${new Date().toLocaleString()}`;
-          alink.click();
-
-          // sleep 2ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
-          // long term we should consider zipping the files in the backend and then downloading as a single file
-          await sleep(2);
-        } catch (e) {
-          pushNotification('error', auditLogLabels.downloadCaseAuditFail(file.fileName));
-          console.log(`failed to download case file audit for ${file.fileName}`, e);
-        }
-      }
-    } finally {
-      setCaseFileAuditDownloadInProgress(false);
-      setSelectedFiles([]);
-    }
-  }
 
   function uploadFilesHandler() {
     return router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
@@ -334,6 +282,14 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     }
   }
 
+  function getStatus(status: CaseFileStatus) {
+    if (status == CaseFileStatus.ACTIVE) {
+      return <StatusIndicator>{caseStatusLabels.active}</StatusIndicator>;
+    } else {
+      return <StatusIndicator type="stopped">{caseStatusLabels.inactive}</StatusIndicator>;
+    }
+  }
+
   return (
     <Table
       {...collectionProps}
@@ -353,7 +309,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           id: 'name',
           header: commonTableLabels.nameHeader,
           cell: fileFolderCell,
-          width: 170,
+          width: 400,
           minWidth: 165,
           sortingField: 'name',
         },
@@ -362,22 +318,22 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           header: commonTableLabels.fileTypeHeader,
           cell: (e) => e.contentType,
           width: 170,
-          minWidth: 165,
+          minWidth: 170,
           sortingField: 'fileType',
         },
         {
           id: 'size',
           header: commonTableLabels.fileSizeHeader,
           cell: (e) => formatFileSize(e.fileSizeBytes),
-          width: 170,
-          minWidth: 165,
+          width: 100,
+          minWidth: 100,
           sortingField: 'fileType',
         },
         {
           id: 'uploadDate',
           header: commonTableLabels.dateUploadedHeader,
           cell: (e) => formatDateFromISOString(e.created?.toString()),
-          width: 170,
+          width: 165,
           minWidth: 165,
           sortingField: 'uploadDate',
         },
@@ -385,16 +341,16 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           id: 'uploader',
           header: commonTableLabels.uploadedByHeader,
           cell: (e) => e.createdBy,
-          width: 170,
-          minWidth: 165,
+          width: 150,
+          minWidth: 150,
           sortingField: 'uploader',
         },
         {
           id: 'status',
           header: commonTableLabels.statusHeader,
-          cell: (e) => e.status,
-          width: 170,
-          minWidth: 165,
+          cell: (e) => getStatus(e.status),
+          width: 100,
+          minWidth: 100,
           sortingField: 'status',
         },
       ]}

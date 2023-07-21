@@ -18,6 +18,7 @@ export interface IHomeProps {
 }
 
 const MY_CASES_ENDPOINT = '/cases/my-casesGET';
+const ALL_CASES_ENDPOINT = '/cases/all-casesGET';
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -28,7 +29,10 @@ const Home: NextPage = () => {
       if (availableEndpoints.isLoading) {
         return;
       }
-      if (!availableEndpoints.data?.includes(MY_CASES_ENDPOINT)) {
+      if (
+        !availableEndpoints.data?.includes(MY_CASES_ENDPOINT) &&
+        availableEndpoints.data?.includes(ALL_CASES_ENDPOINT)
+      ) {
         await router.push('/all-cases');
       }
     };

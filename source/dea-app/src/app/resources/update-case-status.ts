@@ -34,10 +34,12 @@ export const updateCaseStatus: DEAGatewayProxyHandler = async (
   );
   const deaCase = await CaseService.getCase(caseId, repositoryProvider);
 
-  // TODO: add mechanism to check if this installation allows authorized users to delete files
-
   if (!deaCase) {
     throw new NotFoundError(`Could not find case: ${input.name}`);
+  }
+
+  if (input.deleteFiles && !datasetsProvider.deletionAllowed) {
+    throw new ValidationError('The application is not configured to delete files');
   }
 
   if (input.deleteFiles && input.status !== CaseStatus.INACTIVE) {

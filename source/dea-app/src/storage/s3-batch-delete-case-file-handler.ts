@@ -35,6 +35,17 @@ export const deleteCaseFileHandler = async (
     const { s3Key, s3VersionId } = task;
     const [caseId, fileId] = s3Key.split('/');
     logger.info('Attempting to delete s3 object', { s3Key, s3VersionId, caseId, fileId });
+
+    if (!datasetsProvider.deletionAllowed) {
+      results.push({
+        taskId: task.taskId,
+        resultCode: 'PermanentFailure',
+        resultString: 'This installation of DEA does not allow deletion',
+      });
+      logger.info('This installation of DEA does not allow deletion');
+      continue;
+    }
+
     if (!s3VersionId) {
       results.push({
         taskId: task.taskId,

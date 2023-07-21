@@ -1,5 +1,6 @@
 {
   "deletionAllowed": false,
+  "uploadFilesTimeoutMinutes": 60,
   "deaRoleTypes": [
     {
       "name": "CaseWorker",

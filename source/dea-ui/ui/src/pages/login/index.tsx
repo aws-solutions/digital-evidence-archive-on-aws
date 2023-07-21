@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Spinner } from '@cloudscape-design/components';
+import { Box, Spinner } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { getToken } from '../../api/auth';
@@ -59,13 +59,19 @@ export default function LoginPage() {
   }, [router, signIn, pushNotification]);
 
   return (
-    <div>
-      <h1>
-        {commonLabels.loginLabel}
-        <span aria-live="polite" aria-label={commonLabels.loginLabel}>
-          <Spinner size="large" />
-        </span>
-      </h1>
-    </div>
+    <Box textAlign="center" color="inherit" margin="xxl" padding="xxl">
+      <div>
+        <p>
+          <span aria-live="polite" aria-label={commonLabels.loginLabel}>
+            <Spinner size="normal" />
+          </span>{' '}
+          {commonLabels.loadingLabel}
+        </p>
+      </div>
+
+      <div>
+        <h3>{commonLabels.loginLabel}</h3>
+      </div>
+    </Box>
   );
 }

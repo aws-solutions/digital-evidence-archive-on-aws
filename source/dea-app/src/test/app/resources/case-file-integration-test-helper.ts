@@ -58,7 +58,9 @@ export const DATASETS_PROVIDER = {
   s3Client: new S3Client({ region: testEnv.awsRegion }),
   s3ControlClient: new S3ControlClient({ region: testEnv.awsRegion }),
   bucketName: 'testBucket',
-  presignedCommandExpirySeconds: 3600,
+  uploadPresignedCommandExpirySeconds: 3600,
+  downloadPresignedCommandExpirySeconds: 900,
+  deletionAllowed: true,
   s3BatchDeleteCaseFileLambdaArn: 'arn:aws:lambda:us-east-1:1234:function:foo',
   s3BatchDeleteCaseFileRole: 'arn:aws:iam::1234:role/foo',
   sourceIpValidationEnabled: true,
@@ -262,7 +264,8 @@ export const callUpdateCaseStatusAndValidate = async (
   createdCase: DeaCase,
   deleteFiles: boolean,
   status: CaseStatus,
-  repositoryProvider: ModelRepositoryProvider
+  repositoryProvider: ModelRepositoryProvider,
+  datasetsProvider = DATASETS_PROVIDER
 ): Promise<DeaCase> => {
   const event = getDummyEvent({
     headers: {
@@ -277,7 +280,7 @@ export const callUpdateCaseStatusAndValidate = async (
       status,
     }),
   });
-  const response = await updateCaseStatus(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
+  const response = await updateCaseStatus(event, dummyContext, repositoryProvider, datasetsProvider);
   checkApiSucceeded(response);
 
   const updatedCase: DeaCase = jsonParseWithDates(response.body);

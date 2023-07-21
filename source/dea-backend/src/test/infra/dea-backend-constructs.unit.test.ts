@@ -116,7 +116,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
+    new DeaParameters(stack, 'DeaParameters', {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
@@ -188,7 +188,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
+    new DeaParameters(stack, 'DeaParameters', {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
@@ -199,15 +199,14 @@ describe('DeaBackend constructs', () => {
     });
   });
 
-  it('synthesizes without Delete Case Handler when `deletionAllowed` Flag is NOT set', () => {
+  it('synthesizes without Delete Case Handler when `test` Flag is NOT set', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const domain: any = 'deatestenv';
+    const domain: any = 'deaprodenv';
     convictConfig.set('cognito.domain', domain);
-
-    convictConfig.set('deletionAllowed', false);
+    convictConfig.set('testStack', false);
 
     const app = new cdk.App();
-    const stack = new Stack(app, 'test-stack');
+    const stack = new Stack(app, 'prod-stack');
 
     const key = new Key(stack, 'testKey', {
       enableKeyRotation: true,
@@ -266,7 +265,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
+    new DeaParameters(stack, 'DeaParameters', {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });
@@ -283,8 +282,10 @@ describe('DeaBackend constructs', () => {
     });
 
     //handlers
-    const expectedLambdaCountWithoutDeleteCaseHandler = expectedLambdaCount - 1;
-    const expectedMethodCountWithoutDeleteCaseHandler = expectedMethodCount - 1;
+    // prod stack also doesn't have test auth method/lambda
+    const expectedLambdaCountWithoutDeleteCaseHandler = expectedLambdaCount - 2;
+    // prod stack doesn't have OPTIONS methods, so divide expected methods by 2
+    const expectedMethodCountWithoutDeleteCaseHandler = Math.floor(expectedMethodCount / 2) - 4;
     template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCountWithoutDeleteCaseHandler);
     template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCountWithoutDeleteCaseHandler);
   });
@@ -360,7 +361,7 @@ describe('DeaBackend constructs', () => {
       apiEndpointArns: apiEndpointArns,
     });
 
-    new DeaParameters(stack, 'DeaParameters', PROTECTED_DEA_RESOURCES, {
+    new DeaParameters(stack, 'DeaParameters', {
       deaAuthInfo: authStack.deaAuthInfo,
       kmsKey: key,
     });

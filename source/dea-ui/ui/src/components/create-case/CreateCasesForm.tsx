@@ -52,6 +52,7 @@ function CreateCasesForm(): JSX.Element {
         actions={
           <SpaceBetween direction="horizontal" size="xs">
             <Button
+              iconAlign="right"
               formAction="none"
               variant="link"
               data-testid="create-case-cancel"
