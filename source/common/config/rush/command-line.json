@@ -367,6 +367,33 @@
       "summary": "Used to perform a viperlight scan on the packages",
       "safeForSimultaneousRushProcesses": true,
       "shellCommand": "bash ./common/scripts/viperlight-scan.sh"
+    },
+    {
+      "name": "version:patch",
+      "commandKind": "bulk",
+      "summary": "Bump all package.json versions by a patch increment",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true,
+      "incremental": true
+    },
+    {
+      "name": "version:minor",
+      "commandKind": "bulk",
+      "summary": "Bump all package.json versions by a minor increment",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true,
+      "incremental": true
+    },
+    {
+      "name": "version:major",
+      "commandKind": "bulk",
+      "summary": "Bump all package.json versions by a major increment",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true,
+      "incremental": true
     }
   ],
 

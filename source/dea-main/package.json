@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-main",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Example infrastructure to deploy express app",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/tree/main/",
   "repository": {
@@ -41,7 +41,10 @@
     "test:only": "heft test --no-build --test-path-pattern test",
     "test:only:u": "heft test -u --no-build --verbose --test-path-pattern test",
     "test:sonar": "rushx test:only",
-    "unit:only": "heft test --no-build --test-path-pattern '.*/*unit.test.*'"
+    "unit:only": "heft test --no-build --test-path-pattern '.*/*unit.test.*'",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major"
   },
   "dependencies": {
     "@aws/dea-backend": "workspace:*",
