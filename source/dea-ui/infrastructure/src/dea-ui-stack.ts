@@ -3,9 +3,10 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 /* eslint-disable no-new */
+import assert from 'assert';
 import * as path from 'path';
 import { deaConfig } from '@aws/dea-backend';
-import { StackProps } from 'aws-cdk-lib';
+import { Aws, StackProps } from 'aws-cdk-lib';
 import {
   AuthorizationType,
   AwsIntegration,
@@ -47,11 +48,14 @@ export class DeaUiConstruct extends Construct {
 
     let sources = [Source.asset(path.resolve(__dirname, '../../ui/out'))];
     if (deaConfig.isOneClick()) {
-      const solutionsBucketName = 'solutions-features';
+      const DIST_BUCKET = process.env.DIST_OUTPUT_BUCKET ?? assert(false);
+      const DIST_VERSION = process.env.DIST_VERSION || '%%VERSION%%';
+
+      const solutionsBucketName = `${DIST_BUCKET}-${Aws.REGION}`;
 
       const solutionsBucket = Bucket.fromBucketName(this, 'solutions-bucket', solutionsBucketName);
 
-      sources = [Source.bucket(solutionsBucket, 'digital-evidence-archive/v1.0.3/ui.zip')];
+      sources = [Source.bucket(solutionsBucket, `digital-evidence-archive/${DIST_VERSION}/ui.zip`)];
     }
     // eslint-disable-next-line no-new
     new BucketDeployment(this, 'artifact-deployment-bucket', {

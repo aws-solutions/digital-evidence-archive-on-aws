@@ -18,6 +18,7 @@ import { DeaUiConstruct } from '../../dea-ui-stack';
 describe('DEA UI Infrastructure stack', () => {
   beforeAll(() => {
     process.env.STAGE = 'devsample';
+    process.env.DIST_OUTPUT_BUCKET = 'DOC-EXAMPLE-BUCKET';
   });
 
   afterAll(() => {
