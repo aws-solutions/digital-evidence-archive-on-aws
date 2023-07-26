@@ -12,7 +12,7 @@ import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-sec
 import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import axios from 'axios';
-import { getRequiredEnv, getRequiredHeader } from '../../lambda-http-helpers';
+import { getCustomUserAgent, getRequiredEnv, getRequiredHeader } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { Oauth2Token } from '../../models/auth';
 import { ThrottlingException } from '../exceptions/throttling-exception';
@@ -141,6 +141,7 @@ export const getCredentialsByToken = async (idToken: string) => {
   const cognitoRegion = region.includes('gov') ? 'us-gov-west-1' : region;
   const cognitoIdentityClient = new CognitoIdentityClient({
     region: cognitoRegion,
+    customUserAgent: getCustomUserAgent(),
   });
 
   const Logins = {
