@@ -1,6 +1,6 @@
 openapi: '3.0.0'
 info:
-  version: 1.0.2
+  version: 1.0.3
   title: DEA Case API
 paths:
   /cases/all-cases:

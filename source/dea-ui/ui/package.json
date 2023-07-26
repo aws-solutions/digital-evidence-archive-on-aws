@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-ui",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "NextJS frontend UI for Digital Evidence Archive",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/blob/main/source/dea-ui/ui/",
   "repository": {
@@ -43,7 +43,10 @@
     "test:noe2e": "jest --ci --coverage '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": "jest --ci --coverage",
     "test:sonar": "rushx test:only",
-    "unit:only": "jest --ci '.*/*unit.test.*'"
+    "unit:only": "jest --ci '.*/*unit.test.*'",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.299.0",
