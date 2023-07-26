@@ -339,6 +339,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "cheerio",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "concurrently",
       "allowedCategories": [ "production" ]
     },

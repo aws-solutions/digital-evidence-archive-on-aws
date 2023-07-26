@@ -10810,7 +10810,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -10957,7 +10957,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11104,7 +11104,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11251,7 +11251,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11398,7 +11398,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11545,7 +11545,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11692,7 +11692,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
