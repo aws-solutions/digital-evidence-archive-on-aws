@@ -144,20 +144,25 @@ export class DeaAuditTrail extends Construct {
       },
     ];
     const partition = deaConfig.partition();
-    if (partition !== 'aws-us-gov' && !deaConfig.isOneClick()) {
-      dataResources.push(
-        {
-          type: 'AWS::DynamoDB::Table',
-          // data plane events for the DEA dynamo table
-          values: [deaTableArn],
-        },
-        {
-          type: 'AWS::Lambda::Function',
-          // data plane events for our lambdas
-          values: ['arn:aws:lambda'],
-        }
-      );
+
+    const includeDynamoDBDataPlaneEvents =
+      partition !== 'aws-us-gov' &&
+      !deaConfig.isOneClick() &&
+      deaConfig.includeDynamoDataPlaneEventsInTrail();
+
+    if (includeDynamoDBDataPlaneEvents) {
+      dataResources.push({
+        type: 'AWS::DynamoDB::Table',
+        // data plane events for the DEA dynamo table
+        values: [deaTableArn],
+      });
     }
+
+    dataResources.push({
+      type: 'AWS::Lambda::Function',
+      // data plane events for our lambdas
+      values: ['arn:aws:lambda'],
+    });
 
     const cfnTrail = trail.node.defaultChild;
     if (cfnTrail instanceof CfnTrail) {

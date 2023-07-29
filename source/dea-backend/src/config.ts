@@ -218,6 +218,11 @@ const convictSchema = {
     format: Number,
     default: 60,
   },
+  includeDynamoDataPlaneEventsInTrail: {
+    doc: 'Boolean to indicate if DynamoDB Data-plane events should be included in the audit CloudTrail',
+    format: 'Boolean',
+    default: true,
+  },
 };
 
 export interface IdPAttributes {
@@ -279,6 +284,7 @@ interface DEAConfig {
   fipsEndpointsEnabled(): boolean;
   isMultiRegionTrail(): boolean;
   uploadFilesTimeoutMinutes(): number;
+  includeDynamoDataPlaneEventsInTrail(): boolean;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -355,6 +361,7 @@ export const deaConfig: DEAConfig = {
   fipsEndpointsEnabled: () => convictConfig.get('fipsEndpointsEnabled') ?? true,
   isMultiRegionTrail: () => convictConfig.get('isMultiRegionTrail') ?? true,
   uploadFilesTimeoutMinutes: () => convictConfig.get('uploadFilesTimeoutMinutes'),
+  includeDynamoDataPlaneEventsInTrail: () => convictConfig.get('includeDynamoDataPlaneEventsInTrail'),
 };
 
 export const loadConfig = (stage: string): void => {
