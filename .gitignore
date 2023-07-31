@@ -4,7 +4,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 *.local
-testhash
+sritest.html
 
 # Ignore local pem files
 *.pem

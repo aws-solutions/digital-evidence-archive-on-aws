@@ -20310,6 +20310,9 @@ Object {
       "DeletionPolicy": "Delete",
       "DependsOn": Array [
         "DeaAuditdeaTrailBucketPolicyA68DF945",
+        "DeaBackendStackS3AccessLogsBucketPolicyCF6769D3",
+        "DeaBackendStackS3DatasetsBucketPolicy328F21B8",
+        "DeaUiStackartifactbucketPolicy4886C807",
       ],
       "Properties": Object {
         "BucketName": Object {
@@ -24589,7 +24592,10 @@ Object {
     "DeaBackendStackS3AccessLogsBucketAutoDeleteObjectsCustomResource54474E78": Object {
       "DeletionPolicy": "Delete",
       "DependsOn": Array [
+        "DeaAuditdeaTrailBucketPolicyA68DF945",
         "DeaBackendStackS3AccessLogsBucketPolicyCF6769D3",
+        "DeaBackendStackS3DatasetsBucketPolicy328F21B8",
+        "DeaUiStackartifactbucketPolicy4886C807",
       ],
       "Properties": Object {
         "BucketName": Object {
@@ -24830,7 +24836,10 @@ Object {
     "DeaBackendStackS3DatasetsBucketAutoDeleteObjectsCustomResource4F25360D": Object {
       "DeletionPolicy": "Delete",
       "DependsOn": Array [
+        "DeaAuditdeaTrailBucketPolicyA68DF945",
+        "DeaBackendStackS3AccessLogsBucketPolicyCF6769D3",
         "DeaBackendStackS3DatasetsBucketPolicy328F21B8",
+        "DeaUiStackartifactbucketPolicy4886C807",
       ],
       "Properties": Object {
         "BucketName": Object {
@@ -25624,6 +25633,9 @@ Object {
     "DeaUiStackartifactbucketAutoDeleteObjectsCustomResource3D6F178A": Object {
       "DeletionPolicy": "Delete",
       "DependsOn": Array [
+        "DeaAuditdeaTrailBucketPolicyA68DF945",
+        "DeaBackendStackS3AccessLogsBucketPolicyCF6769D3",
+        "DeaBackendStackS3DatasetsBucketPolicy328F21B8",
         "DeaUiStackartifactbucketPolicy4886C807",
       ],
       "Properties": Object {

@@ -31,7 +31,8 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { Construct } from 'constructs';
+import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
+import { Construct, IConstruct } from 'constructs';
 import { restrictResourcePolicies } from './apply-bucket-policies';
 import { addLambdaSuppressions, addResourcePolicySuppressions } from './nag-suppressions';
 
@@ -42,6 +43,8 @@ export const SOLUTION_ID = 'SO0224';
 
 export class DeaMainStack extends cdk.Stack {
   private readonly appRegistry: DeaAppRegisterConstruct;
+  private bucketPolicies: CfnBucketPolicy[];
+  private autoDeleteResources: IConstruct[];
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     const stackProps: cdk.StackProps = {
@@ -50,6 +53,9 @@ export class DeaMainStack extends cdk.Stack {
     };
 
     super(scope, id, stackProps);
+
+    this.bucketPolicies = [];
+    this.autoDeleteResources = [];
 
     const dashboard = new DeaOperationalDashboard(this, 'DeaApiOpsDashboard');
 
@@ -73,20 +79,34 @@ export class DeaMainStack extends cdk.Stack {
 
     const uiAccessLogPrefix = 'dea-ui-access-log';
     // DEA Backend Construct
-    const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', protectedDeaResourceArns, {
-      kmsKey: kmsKey,
-      accessLogsPrefixes: [uiAccessLogPrefix],
-      opsDashboard: dashboard,
-    });
+    const backendConstruct = new DeaBackendConstruct(
+      this,
+      'DeaBackendStack',
+      protectedDeaResourceArns,
+      {
+        kmsKey: kmsKey,
+        accessLogsPrefixes: [uiAccessLogPrefix],
+        opsDashboard: dashboard,
+      },
+      this.bucketPolicies,
+      this.autoDeleteResources
+    );
 
     const region = deaConfig.region();
     const stage = deaConfig.stage();
 
-    const auditTrail = new DeaAuditTrail(this, 'DeaAudit', protectedDeaResourceArns, {
-      kmsKey,
-      deaDatasetsBucket: backendConstruct.datasetsBucket,
-      deaTableArn: backendConstruct.deaTable.tableArn,
-    });
+    const auditTrail = new DeaAuditTrail(
+      this,
+      'DeaAudit',
+      protectedDeaResourceArns,
+      {
+        kmsKey,
+        deaDatasetsBucket: backendConstruct.datasetsBucket,
+        deaTableArn: backendConstruct.deaTable.tableArn,
+      },
+      this.bucketPolicies,
+      this.autoDeleteResources
+    );
 
     const deaEventHandlers = new DeaEventHandlers(this, 'DeaEventHandlers', {
       deaTableArn: backendConstruct.deaTable.tableArn,
@@ -208,11 +228,23 @@ export class DeaMainStack extends cdk.Stack {
     });
 
     // DEA UI Construct
-    new DeaUiConstruct(this, 'DeaUiConstruct', {
-      kmsKey: kmsKey,
-      restApi: deaApi.deaRestApi,
-      accessLogsBucket: backendConstruct.accessLogsBucket,
-      accessLogPrefix: uiAccessLogPrefix,
+    new DeaUiConstruct(
+      this,
+      'DeaUiConstruct',
+      {
+        kmsKey: kmsKey,
+        restApi: deaApi.deaRestApi,
+        accessLogsBucket: backendConstruct.accessLogsBucket,
+        accessLogPrefix: uiAccessLogPrefix,
+      },
+      this.bucketPolicies,
+      this.autoDeleteResources
+    );
+
+    this.autoDeleteResources.forEach((resource) => {
+      this.bucketPolicies.forEach((policy) => {
+        resource.node.addDependency(policy);
+      });
     });
 
     // Stack node resource handling

@@ -51,16 +51,30 @@ describe('DeaBackend constructs', () => {
     const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
 
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
-      kmsKey: key,
-      accessLogsPrefixes: ['dea-ui-access-log'],
-      opsDashboard: dashboard,
-    });
-    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
-      kmsKey: key,
-      deaDatasetsBucket: backend.datasetsBucket,
-      deaTableArn: backend.deaTable.tableArn,
-    });
+    const backend = new DeaBackendConstruct(
+      stack,
+      'DeaBackendConstruct',
+      PROTECTED_DEA_RESOURCES,
+      {
+        kmsKey: key,
+        accessLogsPrefixes: ['dea-ui-access-log'],
+        opsDashboard: dashboard,
+      },
+      [],
+      []
+    );
+    const auditTrail = new DeaAuditTrail(
+      stack,
+      'DeaAudit',
+      PROTECTED_DEA_RESOURCES,
+      {
+        kmsKey: key,
+        deaDatasetsBucket: backend.datasetsBucket,
+        deaTableArn: backend.deaTable.tableArn,
+      },
+      [],
+      []
+    );
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
       deaTableArn: backend.deaTable.tableArn,
@@ -140,16 +154,30 @@ describe('DeaBackend constructs', () => {
     const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
 
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
-      kmsKey: key,
-      accessLogsPrefixes: ['dea-ui-access-log'],
-      opsDashboard: dashboard,
-    });
-    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
-      kmsKey: key,
-      deaDatasetsBucket: backend.datasetsBucket,
-      deaTableArn: backend.deaTable.tableArn,
-    });
+    const backend = new DeaBackendConstruct(
+      stack,
+      'DeaBackendConstruct',
+      PROTECTED_DEA_RESOURCES,
+      {
+        kmsKey: key,
+        accessLogsPrefixes: ['dea-ui-access-log'],
+        opsDashboard: dashboard,
+      },
+      [],
+      []
+    );
+    const auditTrail = new DeaAuditTrail(
+      stack,
+      'DeaAudit',
+      PROTECTED_DEA_RESOURCES,
+      {
+        kmsKey: key,
+        deaDatasetsBucket: backend.datasetsBucket,
+        deaTableArn: backend.deaTable.tableArn,
+      },
+      [],
+      []
+    );
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
       deaTableArn: backend.deaTable.tableArn,
@@ -215,16 +243,30 @@ describe('DeaBackend constructs', () => {
     const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
 
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
-      kmsKey: key,
-      accessLogsPrefixes: ['dea-ui-access-log'],
-      opsDashboard: dashboard,
-    });
-    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
-      kmsKey: key,
-      deaDatasetsBucket: backend.datasetsBucket,
-      deaTableArn: backend.deaTable.tableArn,
-    });
+    const backend = new DeaBackendConstruct(
+      stack,
+      'DeaBackendConstruct',
+      PROTECTED_DEA_RESOURCES,
+      {
+        kmsKey: key,
+        accessLogsPrefixes: ['dea-ui-access-log'],
+        opsDashboard: dashboard,
+      },
+      [],
+      []
+    );
+    const auditTrail = new DeaAuditTrail(
+      stack,
+      'DeaAudit',
+      PROTECTED_DEA_RESOURCES,
+      {
+        kmsKey: key,
+        deaDatasetsBucket: backend.datasetsBucket,
+        deaTableArn: backend.deaTable.tableArn,
+      },
+      [],
+      []
+    );
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
       deaTableArn: backend.deaTable.tableArn,
@@ -310,16 +352,30 @@ describe('DeaBackend constructs', () => {
     const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
 
     // Create the DeaBackendConstruct
-    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
-      kmsKey: key,
-      accessLogsPrefixes: ['dea-ui-access-log'],
-      opsDashboard: dashboard,
-    });
-    const auditTrail = new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
-      kmsKey: key,
-      deaDatasetsBucket: backend.datasetsBucket,
-      deaTableArn: backend.deaTable.tableArn,
-    });
+    const backend = new DeaBackendConstruct(
+      stack,
+      'DeaBackendConstruct',
+      PROTECTED_DEA_RESOURCES,
+      {
+        kmsKey: key,
+        accessLogsPrefixes: ['dea-ui-access-log'],
+        opsDashboard: dashboard,
+      },
+      [],
+      []
+    );
+    const auditTrail = new DeaAuditTrail(
+      stack,
+      'DeaAudit',
+      PROTECTED_DEA_RESOURCES,
+      {
+        kmsKey: key,
+        deaDatasetsBucket: backend.datasetsBucket,
+        deaTableArn: backend.deaTable.tableArn,
+      },
+      [],
+      []
+    );
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
       deaTableArn: backend.deaTable.tableArn,

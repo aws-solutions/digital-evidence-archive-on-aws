@@ -16,8 +16,9 @@ import {
   LifecycleRule,
   HttpMethods,
   ObjectOwnership,
+  CfnBucketPolicy,
 } from 'aws-cdk-lib/aws-s3';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
@@ -37,7 +38,9 @@ export class DeaBackendConstruct extends Construct {
     scope: Construct,
     id: string,
     protectedDeaResourceArns: string[],
-    props: IBackendStackProps
+    props: IBackendStackProps,
+    private bucketPolicies: CfnBucketPolicy[],
+    private autoDeleteResources: IConstruct[]
   ) {
     super(scope, id);
 
@@ -104,6 +107,14 @@ export class DeaBackendConstruct extends Construct {
       versioned: false, // https://github.com/awslabs/aws-solutions-constructs/issues/44,
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const cfnPolicy = s3AccessLogsBucket.policy?.node.defaultChild as CfnBucketPolicy | undefined;
+    const autoDeleteResource = s3AccessLogsBucket.node.tryFindChild('AutoDeleteObjectsCustomResource');
+    if (autoDeleteResource && cfnPolicy) {
+      this.bucketPolicies.push(cfnPolicy);
+      this.autoDeleteResources.push(autoDeleteResource);
+    }
 
     const resources = accessLogPrefixes.map((prefix) => `${s3AccessLogsBucket.bucketArn}/${prefix}*`);
 
@@ -183,6 +194,14 @@ export class DeaBackendConstruct extends Construct {
       ],
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const cfnPolicy = datasetsBucket.policy?.node.defaultChild as CfnBucketPolicy | undefined;
+    const autoDeleteResource = datasetsBucket.node.tryFindChild('AutoDeleteObjectsCustomResource');
+    if (autoDeleteResource && cfnPolicy) {
+      this.bucketPolicies.push(cfnPolicy);
+      this.autoDeleteResources.push(autoDeleteResource);
+    }
 
     const datasetsBucketNode = datasetsBucket.node.defaultChild;
     if (datasetsBucketNode instanceof CfnBucket) {

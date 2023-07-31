@@ -18,9 +18,15 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { AnyPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { BlockPublicAccess, Bucket, BucketEncryption, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
+import {
+  BlockPublicAccess,
+  Bucket,
+  BucketEncryption,
+  CfnBucketPolicy,
+  ObjectOwnership,
+} from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { generateSri } from './generate-subresource-integrity';
 
 interface IUiStackProps extends StackProps {
@@ -32,7 +38,13 @@ interface IUiStackProps extends StackProps {
 
 export class DeaUiConstruct extends Construct {
   private uiArtifactPath: string;
-  public constructor(scope: Construct, id: string, props: IUiStackProps) {
+  public constructor(
+    scope: Construct,
+    id: string,
+    props: IUiStackProps,
+    private bucketPolicies: CfnBucketPolicy[],
+    private autoDeleteResources: IConstruct[]
+  ) {
     super(scope, 'DeaUiStack');
 
     const bucket = new Bucket(this, 'artifact-bucket', {
@@ -45,6 +57,14 @@ export class DeaUiConstruct extends Construct {
       autoDeleteObjects: deaConfig.isTestStack(),
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const cfnPolicy = bucket.policy?.node.defaultChild as CfnBucketPolicy | undefined;
+    const autoDeleteResource = bucket.node.tryFindChild('AutoDeleteObjectsCustomResource');
+    if (autoDeleteResource && cfnPolicy) {
+      this.bucketPolicies.push(cfnPolicy);
+      this.autoDeleteResources.push(autoDeleteResource);
+    }
 
     this.addS3TLSSigV4BucketPolicy(bucket);
 
