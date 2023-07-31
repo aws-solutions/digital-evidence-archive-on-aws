@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-ui-infrastructure",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "CDK project for deploying dea-ui",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/blob/main/source/dea-ui/infrastructure",
   "repository": {

@@ -37,7 +37,7 @@ import { addLambdaSuppressions, addResourcePolicySuppressions } from './nag-supp
 
 // DEA AppRegistry Constants
 // TODO - would be ideal to reference process.env.npm_package_version here but rush breaks that env
-export const SOLUTION_VERSION = '1.0.3';
+export const SOLUTION_VERSION = '1.0.4';
 export const SOLUTION_ID = 'SO0224';
 
 export class DeaMainStack extends cdk.Stack {
