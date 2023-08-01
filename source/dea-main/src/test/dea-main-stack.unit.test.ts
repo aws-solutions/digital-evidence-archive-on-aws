@@ -65,7 +65,8 @@ describe('DeaMainStack', () => {
 
     const template = Template.fromStack(deaMainStack);
 
-    template.resourceCountIs('AWS::S3::BucketPolicy', 4);
+    const cwlToS3InfraPolicyCount = 2;
+    template.resourceCountIs('AWS::S3::BucketPolicy', 4 + cwlToS3InfraPolicyCount);
   });
 
   it("disables the FIPS-compliant endpoints. Non US regions don't have FIPS endpoints.", () => {

@@ -22,7 +22,7 @@ import { validateBackendConstruct } from './validate-backend-construct';
 const PROTECTED_DEA_RESOURCES: string[] = [];
 
 describe('DeaBackend constructs', () => {
-  const expectedLambdaCount = 39;
+  const expectedLambdaCount = 40;
   const expectedMethodCount = 77;
 
   beforeAll(() => {
@@ -279,12 +279,14 @@ describe('DeaBackend constructs', () => {
     });
 
     //handlers
+    // two lambdas are added in non-test stack for transformation and legalhold event
+    const legalHoldLambaCount = 2;
     // prod stack also doesn't have test auth method/lambda
     const awsCDKCfnUtilsProviderCount = 1;
     const testAuthHandlerCount = 1;
     const deleteHandlerCount = 1;
     const expectedLambdaCountWithoutDeleteCaseHandler =
-      expectedLambdaCount - testAuthHandlerCount - deleteHandlerCount + awsCDKCfnUtilsProviderCount;
+      expectedLambdaCount - testAuthHandlerCount - deleteHandlerCount + awsCDKCfnUtilsProviderCount + legalHoldLambaCount;
     // prod stack doesn't have OPTIONS methods, so divide expected methods by 2
     const expectedMethodCountWithoutDeleteCaseHandler = Math.floor(expectedMethodCount / 2) - 4;
     template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCountWithoutDeleteCaseHandler);

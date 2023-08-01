@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { putLegalHoldForCreatedS3AuditObject } from './app/event-handlers/put-legal-hold-for-created-s3-audit-object';
 import { FORBIDDEN_ERROR_NAME, ForbiddenError } from './app/exceptions/forbidden-exception';
 import { NOT_FOUND_ERROR_NAME, NotFoundError } from './app/exceptions/not-found-exception';
 import {
@@ -52,6 +53,7 @@ import { updateCases } from './app/resources/update-cases';
 import { verifyCaseACLs } from './app/resources/verify-case-acls';
 import { auditService } from './app/services/audit-service';
 import { getCaseUser } from './app/services/case-user-service';
+import { transformAuditEventForS3 } from './app/transform/audit-logs-to-s3-transformation-handler';
 import { getRequiredPathParam, getUserUlid } from './lambda-http-helpers';
 import { Oauth2Token, RefreshToken, RevokeToken } from './models/auth';
 import { DeaCase } from './models/case';
@@ -134,4 +136,6 @@ export {
   S3BatchEventBridgeDetail,
   withAllowedOrigin,
   restoreCaseFile,
+  putLegalHoldForCreatedS3AuditObject,
+  transformAuditEventForS3,
 };

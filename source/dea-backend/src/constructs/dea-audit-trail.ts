@@ -2,7 +2,6 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-
 import { CfnResource, StackProps } from 'aws-cdk-lib';
 import * as CloudTrail from 'aws-cdk-lib/aws-cloudtrail';
 import { CfnTrail, ReadWriteType } from 'aws-cdk-lib/aws-cloudtrail';
@@ -19,6 +18,7 @@ import {
 } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
+import { AuditCloudwatchToAthenaInfra } from './create-cloudwatch-to-athena-infra';
 
 interface DeaAuditProps extends StackProps {
   readonly kmsKey: Key;
@@ -30,6 +30,7 @@ export class DeaAuditTrail extends Construct {
   public auditTrail: CloudTrail.Trail;
   public auditLogGroup: LogGroup;
   public trailLogGroup: LogGroup;
+  public auditCloudwatchToS3Infra?: AuditCloudwatchToAthenaInfra;
 
   public constructor(
     scope: Construct,
@@ -42,6 +43,13 @@ export class DeaAuditTrail extends Construct {
     this.auditLogGroup = this.createLogGroup(scope, 'deaAuditLogs', props.kmsKey);
 
     this.trailLogGroup = this.createLogGroup(scope, 'deaTrailLogs', props.kmsKey);
+
+    this.auditCloudwatchToS3Infra = new AuditCloudwatchToAthenaInfra(this, stackName, {
+      kmsKey: props.kmsKey,
+      auditLogGroup: this.auditLogGroup,
+      trailLogGroup: this.trailLogGroup,
+    });
+
     this.auditTrail = this.createAuditTrail(
       scope,
       this.trailLogGroup,

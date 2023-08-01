@@ -43,10 +43,10 @@
   },
   "dependencies": {
     "@aws/dea-backend": "workspace:*",
-    "aws-cdk": "2.85.0",
-    "aws-cdk-lib": "2.85.0",
+    "aws-cdk": "2.88.0",
+    "aws-cdk-lib": "2.88.0",
     "cheerio": "~1.0.0-rc.12",
-    "constructs": "10.2.55",
+    "constructs": "10.2.69",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {

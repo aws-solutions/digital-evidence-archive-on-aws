@@ -161,6 +161,7 @@ export type ActorIdentity =
   4. User/subject identity.
   5. Outcome (success or failure) of the event.
  */
+// If you are adding a new field here, make sure you also handle it in dea-audit-writer.ts prepare() and below in the query fields
 export type CJISAuditEventBody = {
   dateTime: string;
   requestPath: string;
@@ -173,6 +174,7 @@ export type CJISAuditEventBody = {
   fileId?: string;
   targetUserId?: string;
   caseActions?: string; // since we return audit results as a csv, this should be string where actions are joined by ":"
+  eventID: string; // guid to identify the event
 };
 
 /**
@@ -203,6 +205,7 @@ const queryFields = [
   'coalesce(caseActions, " ") as Case_Actions',
   'coalesce(requestParameters.key.PK, " ") as PrimaryKey',
   'coalesce(requestParameters.key.SK, " ") as SortKey',
+  'coalesce(eventID, "") as eventID',
 ];
 
 export interface AuditResult {

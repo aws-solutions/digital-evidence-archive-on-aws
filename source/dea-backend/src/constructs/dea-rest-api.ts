@@ -538,6 +538,13 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
+        actions: ['athena:*'],
+        resources: ['*'],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
         actions: ['logs:GetQueryResults', 's3:CreateJob'],
         resources: ['*'],
       })

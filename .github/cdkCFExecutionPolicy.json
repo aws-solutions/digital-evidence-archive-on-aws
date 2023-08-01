@@ -19,7 +19,15 @@
         "cloudtrail:*",
         "events:*",
         "servicecatalog:*",
-        "cloudformation:DescribeStacks"
+        "cloudformation:DescribeStacks",
+        "glue:Create*",
+        "glue:Delete*",
+        "firehose:Create*",
+        "firehose:Delete*",
+        "firehose:DescribeDeliveryStream",
+        "athena:Create*",
+        "athena:Delete*",
+        "athena:GetWorkGroup"
       ],
       "Resource": "*"
     },
