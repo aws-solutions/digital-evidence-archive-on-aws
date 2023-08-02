@@ -42,18 +42,12 @@ describe('DEA UI Infrastructure stack', () => {
 
     const restApi = new RestApi(stack, 'testApi', { description: 'Backend API' });
 
-    new DeaUiConstruct(
-      stack,
-      'DeaUiConstruct',
-      {
-        kmsKey: key,
-        accessLogsBucket: accessLogsBucket,
-        restApi,
-        accessLogPrefix: 'dea-ui-access-log',
-      },
-      [],
-      []
-    );
+    new DeaUiConstruct(stack, 'DeaUiConstruct', {
+      kmsKey: key,
+      accessLogsBucket: accessLogsBucket,
+      restApi,
+      accessLogPrefix: 'dea-ui-access-log',
+    });
 
     // Prepare the stack for assertions.
     const template = Template.fromStack(stack);
@@ -106,18 +100,12 @@ describe('DEA UI Infrastructure stack', () => {
 
     const restApi = new RestApi(stack, 'testApi', { description: 'Backend API' });
 
-    new DeaUiConstruct(
-      stack,
-      'DeaUiConstruct',
-      {
-        kmsKey: key,
-        accessLogsBucket: accessLogsBucket,
-        restApi,
-        accessLogPrefix: 'dea-ui-access-log',
-      },
-      [],
-      []
-    );
+    new DeaUiConstruct(stack, 'DeaUiConstruct', {
+      kmsKey: key,
+      accessLogsBucket: accessLogsBucket,
+      restApi,
+      accessLogPrefix: 'dea-ui-access-log',
+    });
 
     // Prepare the stack for assertions.
     const template = Template.fromStack(stack);

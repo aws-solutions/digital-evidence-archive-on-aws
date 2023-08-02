@@ -14,11 +14,10 @@ import {
   Bucket,
   BucketEncryption,
   CfnBucket,
-  CfnBucketPolicy,
   IBucket,
   ObjectOwnership,
 } from 'aws-cdk-lib/aws-s3';
-import { Construct, IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 
 interface DeaAuditProps extends StackProps {
@@ -36,9 +35,7 @@ export class DeaAuditTrail extends Construct {
     scope: Construct,
     stackName: string,
     protectedDeaResourceArns: string[],
-    props: DeaAuditProps,
-    private bucketPolicies: CfnBucketPolicy[],
-    private autoDeleteResources: IConstruct[]
+    props: DeaAuditProps
   ) {
     super(scope, stackName);
 
@@ -87,14 +84,6 @@ export class DeaAuditTrail extends Construct {
       autoDeleteObjects: deaConfig.isTestStack(),
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
-
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const cfnPolicy = trailBucket.policy?.node.defaultChild as CfnBucketPolicy | undefined;
-    const autoDeleteResource = trailBucket.node.tryFindChild('AutoDeleteObjectsCustomResource');
-    if (autoDeleteResource && cfnPolicy) {
-      this.bucketPolicies.push(cfnPolicy);
-      this.autoDeleteResources.push(autoDeleteResource);
-    }
 
     if (!deaConfig.isTestStack()) {
       trailBucket.addToResourcePolicy(
