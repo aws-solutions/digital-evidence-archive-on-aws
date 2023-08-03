@@ -6,6 +6,7 @@
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { breadcrumbLabels, commonLabels } from '../../common/labels';
+import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import CaseDetailsBody from '../../components/case-details/CaseDetailsBody';
 import { useSettings } from '../../context/SettingsContext';
@@ -22,7 +23,7 @@ function CaseDetailsPage() {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
 
-  const href = process.env.NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN ? `/ui` : `/${settings.stage}/ui`;
+  const href = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {

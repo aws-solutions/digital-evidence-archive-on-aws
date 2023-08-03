@@ -32,6 +32,7 @@ interface IUiStackProps extends StackProps {
 
 export class DeaUiConstruct extends Construct {
   private uiArtifactPath: string;
+  private sriString: string;
   public constructor(scope: Construct, id: string, props: IUiStackProps) {
     super(scope, 'DeaUiStack');
 
@@ -49,6 +50,9 @@ export class DeaUiConstruct extends Construct {
     this.addS3TLSSigV4BucketPolicy(bucket);
 
     this.uiArtifactPath = path.resolve(__dirname, '../../ui/out');
+
+    this.sriString = generateSri(this.uiArtifactPath, 'sha384').join("' '");
+
     let sources = [Source.asset(this.uiArtifactPath)];
     if (deaConfig.isOneClick()) {
       const DIST_BUCKET = process.env.DIST_OUTPUT_BUCKET ?? assert(false);
@@ -136,7 +140,7 @@ export class DeaUiConstruct extends Construct {
                 `img-src 'self' blob:;` +
                 `style-src 'unsafe-inline' 'self';` +
                 `connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;` +
-                `script-src 'strict-dynamic' '${generateSri(this.uiArtifactPath, 'sha384').join("' '")}';` +
+                `script-src 'strict-dynamic' '${this.sriString}';` +
                 `font-src 'self' data:;` +
                 `object-src 'none';` +
                 `block-all-mixed-content;'`,

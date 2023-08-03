@@ -6,6 +6,7 @@
 import TopNavigation from '@cloudscape-design/components/top-navigation';
 import * as React from 'react';
 import { headerLabels } from '../common/labels';
+import { isUsingCustomDomain } from '../common/utility';
 import { useAuthentication } from '../context/AuthenticationContext';
 import { useSettings } from '../context/SettingsContext';
 
@@ -14,7 +15,7 @@ export default function Header(): JSX.Element {
   const { user, signOut, isLoggedIn } = useAuthentication();
 
   const profileActions = [{ id: 'signout', text: headerLabels.signout }];
-  const href = process.env.NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN ? '/ui' : `/${settings.stage}/ui`;
+  const href = isUsingCustomDomain ? '/ui' : `/${settings.stage}/ui`;
   return (
     <TopNavigation
       id="header"
