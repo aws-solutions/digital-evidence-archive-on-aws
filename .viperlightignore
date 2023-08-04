@@ -1,8 +1,9 @@
+
 cdk.out
 node_modules
 source/dea-ui/ui/.next
 source/common/temp
-source/.tools/viperlight
+viperlight
 Config
 
 # Line specific ignores
