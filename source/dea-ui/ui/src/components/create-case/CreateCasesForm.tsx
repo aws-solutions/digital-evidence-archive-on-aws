@@ -30,8 +30,8 @@ function CreateCasesForm(): JSX.Element {
   async function onSubmitHandler() {
     setIsSubmitLoading(true);
     try {
-      await createCase(formData);
-      return router.push('/');
+      const newCase = await createCase(formData);
+      return router.push(`/case-detail?caseId=${newCase.ulid}`);
     } catch (e) {
       if (e instanceof Error) {
         pushNotification('error', e.message);
