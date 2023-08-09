@@ -156,13 +156,13 @@ export class DeaAuditTrail extends Construct {
         // data plane events for the DEA dynamo table
         values: [deaTableArn],
       });
-    }
 
-    dataResources.push({
-      type: 'AWS::Lambda::Function',
-      // data plane events for our lambdas
-      values: ['arn:aws:lambda'],
-    });
+      dataResources.push({
+        type: 'AWS::Lambda::Function',
+        // data plane events for our lambdas
+        values: ['arn:aws:lambda'],
+      });
+    }
 
     const cfnTrail = trail.node.defaultChild;
     if (cfnTrail instanceof CfnTrail) {
