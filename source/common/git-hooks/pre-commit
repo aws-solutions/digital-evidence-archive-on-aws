@@ -19,4 +19,5 @@ if [ "$RUN_HOOKS" == true ]; then
         exit 1
     fi
     node common/scripts/install-run-rush.js common-coverage-make-badge
+    node common/scripts/install-run-rush.js common-cov-info
 fi
