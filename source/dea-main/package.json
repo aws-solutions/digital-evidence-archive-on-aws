@@ -42,9 +42,9 @@
     "test:only:u": "heft test -u --no-build --verbose --test-path-pattern test",
     "test:sonar": "rushx test:only",
     "unit:only": "heft test --no-build --test-path-pattern '.*/*unit.test.*'",
-    "version:patch": "npm version patch",
+    "version:major": "npm version major",
     "version:minor": "npm version minor",
-    "version:major": "npm version major"
+    "version:patch": "npm version patch"
   },
   "dependencies": {
     "@aws/dea-backend": "workspace:*",

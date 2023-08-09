@@ -140,7 +140,8 @@ export class DeaUiConstruct extends Construct {
                 `img-src 'self' blob:;` +
                 `style-src 'unsafe-inline' 'self';` +
                 `connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;` +
-                `script-src 'strict-dynamic' '${this.sriString}';` +
+                // `script-src 'strict-dynamic' '${this.sriString}';` +
+                `script-src 'self';` +
                 `font-src 'self' data:;` +
                 `object-src 'none';` +
                 `block-all-mixed-content;'`,

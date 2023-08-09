@@ -44,9 +44,9 @@
     "test:only": "jest --ci --coverage",
     "test:sonar": "rushx test:only",
     "unit:only": "jest --ci '.*/*unit.test.*'",
-    "version:patch": "npm version patch",
+    "version:major": "npm version major",
     "version:minor": "npm version minor",
-    "version:major": "npm version major"
+    "version:patch": "npm version patch"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "3.299.0",
