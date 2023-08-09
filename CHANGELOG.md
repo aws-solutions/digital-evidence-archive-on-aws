@@ -5,10 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.4]
+## [1.0.4] - 2023-08-09
 
 ### Added
 - configuration to opt out of DynamoDB Dataplane events in CloudTrail
+
+### Fixed
+- bump semver and minimist packages
+- improve custom domain support
+- gov region one-click fix
 
 ## [1.0.3] - 2023-07-24
 
