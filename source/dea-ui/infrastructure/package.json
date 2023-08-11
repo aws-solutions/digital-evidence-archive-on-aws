@@ -35,7 +35,7 @@
     "test:only": "heft test --no-build --verbose --test-path-pattern test",
     "test:only:u": "heft test -u --no-build --verbose --test-path-pattern test",
     "test:sonar": "rushx test:only",
-    "unit:only": "heft test --no-build --test-path-pattern '.*/*unit.test.*'",
+    "unit:only": ". ../common/scripts/setEnvDummy.sh && heft test --no-build --test-path-pattern '.*/*unit.test.*'",
     "version:major": "npm version major",
     "version:minor": "npm version minor",
     "version:patch": "npm version patch",

@@ -78,6 +78,10 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
     switch (param.Name) {
       case cognitoDomainPath:
         cognitoDomainUrl = param.Value;
+        if (cognitoDomainUrl && process.env.AWS_REGION === 'us-gov-west-1') {
+          // support our one-click in us-gov-west-1, which only has fips endpoints
+          cognitoDomainUrl = cognitoDomainUrl.replace('.auth.', '.auth-fips.');
+        }
         break;
       case clientIdPath:
         clientId = param.Value;
