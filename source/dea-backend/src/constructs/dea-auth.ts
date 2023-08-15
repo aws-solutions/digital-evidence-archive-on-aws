@@ -266,10 +266,8 @@ export class DeaAuth extends Construct {
     });
     // See Implementation Guide for how to integrate your existing
     // Identity Provider with Cognito User Pool for SSO
-    const [pool, poolClient, cognitoDomainUrl, clientSecret, agencyIdpName] = this.createCognitoIdP(
-      callbackUrl,
-      usGovCondition.logicalId
-    );
+    const [pool, poolClient, cognitoDomainUrl, clientSecret, agencyIdpName] =
+      this.createCognitoIdP(callbackUrl);
 
     // For gov cloud, Cognito only uses FIPS endpoint, and the only FIPS endpoint
     // is in us-gov-west-1. See https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-cog.html
@@ -372,10 +370,7 @@ export class DeaAuth extends Construct {
   // For production, the Cognito will simply act as a token vendor
   // and ONLY allow federation, no native auth
   // TODO: determine if Cognito is CJIS compatible
-  private createCognitoIdP(
-    callbackUrl: string,
-    isUsGovConditionId: string
-  ): [UserPool, UserPoolClient, string, SecretValue, string?] {
+  private createCognitoIdP(callbackUrl: string): [UserPool, UserPoolClient, string, SecretValue, string?] {
     const tempPasswordValidity = Duration.days(1);
     // must re-authenticate in every 12 hours (so we make expiry 11 hours, so they can't refresh at 11:59)
     // Note when inactive for 30+ minutes, you will also have to reauthenticate
@@ -512,11 +507,10 @@ export class DeaAuth extends Construct {
       userPoolClientName: 'dea-app-client',
     });
 
-    const cognitoDomain = Fn.conditionIf(
-      isUsGovConditionId,
-      `https://${newDomain.domainName}.auth-fips.us-gov-west-1.amazoncognito.com`,
-      newDomain.baseUrl({ fips: deaConfig.fipsEndpointsEnabled() })
-    ).toString();
+    const cognitoDomain =
+      deaConfig.partition() === 'aws-us-gov'
+        ? `https://${newDomain.domainName}.auth-fips.us-gov-west-1.amazoncognito.com`
+        : newDomain.baseUrl({ fips: deaConfig.fipsEndpointsEnabled() });
 
     return [userPool, poolClient, cognitoDomain, poolClient.userPoolClientSecret, agencyIdpName];
   }

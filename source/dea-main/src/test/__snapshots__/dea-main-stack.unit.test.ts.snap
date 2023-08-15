@@ -25983,32 +25983,15 @@ Object {
         "Tier": "Standard",
         "Type": "String",
         "Value": Object {
-          "Fn::If": Array [
-            "DeaAuthConstructisUSGov9A5A3CF5",
-            Object {
-              "Fn::Join": Array [
-                "",
-                Array [
-                  "https://",
-                  Object {
-                    "Ref": "DeaAuthConstructdeauserpooldomain945A7AE8",
-                  },
-                  ".auth-fips.us-gov-west-1.amazoncognito.com",
-                ],
-              ],
-            },
-            Object {
-              "Fn::Join": Array [
-                "",
-                Array [
-                  "https://",
-                  Object {
-                    "Ref": "DeaAuthConstructdeauserpooldomain945A7AE8",
-                  },
-                  ".auth-fips.us-east-1.amazoncognito.com",
-                ],
-              ],
-            },
+          "Fn::Join": Array [
+            "",
+            Array [
+              "https://",
+              Object {
+                "Ref": "DeaAuthConstructdeauserpooldomain945A7AE8",
+              },
+              ".auth-fips.us-east-1.amazoncognito.com",
+            ],
           ],
         },
       },
