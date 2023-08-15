@@ -280,7 +280,11 @@ describe('DeaBackend constructs', () => {
 
     //handlers
     // prod stack also doesn't have test auth method/lambda
-    const expectedLambdaCountWithoutDeleteCaseHandler = expectedLambdaCount - 2;
+    const awsCDKCfnUtilsProviderCount = 1;
+    const testAuthHandlerCount = 1;
+    const deleteHandlerCount = 1;
+    const expectedLambdaCountWithoutDeleteCaseHandler =
+      expectedLambdaCount - testAuthHandlerCount - deleteHandlerCount + awsCDKCfnUtilsProviderCount;
     // prod stack doesn't have OPTIONS methods, so divide expected methods by 2
     const expectedMethodCountWithoutDeleteCaseHandler = Math.floor(expectedMethodCount / 2) - 4;
     template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCountWithoutDeleteCaseHandler);
