@@ -17,13 +17,10 @@ import {
   SecurityPolicy,
 } from 'aws-cdk-lib/aws-apigateway';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
-import { IInterfaceVpcEndpoint, InterfaceVpcEndpoint } from 'aws-cdk-lib/aws-ec2';
 import {
-  AnyPrincipal,
   ArnPrincipal,
   Effect,
   ManagedPolicy,
-  PolicyDocument,
   PolicyStatement,
   Role,
   ServicePrincipal,
@@ -148,15 +145,10 @@ export class DeaRestApiConstruct extends Construct {
       };
     }
 
-    const endpoint = deaConfig.vpcEndpointInfo() ? EndpointType.PRIVATE : EndpointType.REGIONAL;
-    const policy = this.getApiGatewayPolicy();
-    const vpcEndpoints = this.getVpcEndPointObject();
-
     this.deaRestApi = new RestApi(this, `dea-api`, {
       description: 'Backend API',
       endpointConfiguration: {
-        types: [endpoint],
-        vpcEndpoints,
+        types: [EndpointType.REGIONAL],
       },
       deployOptions: {
         stageName: STAGE,
@@ -206,7 +198,6 @@ export class DeaRestApiConstruct extends Construct {
       },
       domainName: domainNameOptions,
       disableExecuteApiEndpoint: false,
-      policy,
     });
 
     if (useCustomDomain) {
@@ -222,50 +213,6 @@ export class DeaRestApiConstruct extends Construct {
     this.configureApiGateway(deaApiRouteConfig, props.lambdaEnv);
 
     this.updateBucketCors(this.deaRestApi, props.deaDatasetsBucket.bucketName);
-  }
-
-  private getApiGatewayPolicy(): PolicyDocument | undefined {
-    const vpcEndpointInfo = deaConfig.vpcEndpointInfo();
-    if (!vpcEndpointInfo) {
-      return;
-    }
-    return new PolicyDocument({
-      statements: [
-        new PolicyStatement({
-          actions: ['execute-api:Invoke'],
-          resources: ['execute-api:/*/*/*'],
-          effect: Effect.ALLOW,
-          principals: [new AnyPrincipal()],
-        }),
-        new PolicyStatement({
-          actions: ['execute-api:Invoke'],
-          resources: ['execute-api:/*/*/*'],
-          effect: Effect.DENY,
-          principals: [new AnyPrincipal()],
-          conditions: {
-            StringNotEquals: {
-              'aws:SourceVpce': vpcEndpointInfo.vpcEndpointId,
-              'aws:SourceVpc': vpcEndpointInfo.vpcId,
-            },
-          },
-        }),
-      ],
-    });
-  }
-
-  private getVpcEndPointObject(): IInterfaceVpcEndpoint[] | undefined {
-    const vpcEndpointInfo = deaConfig.vpcEndpointInfo();
-    if (!vpcEndpointInfo) {
-      return;
-    }
-
-    return [
-      InterfaceVpcEndpoint.fromInterfaceVpcEndpointAttributes(this, 'VpcEndpoint', {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        vpcEndpointId: vpcEndpointInfo.vpcEndpointId as string,
-        port: 443,
-      }),
-    ];
   }
 
   private updateBucketCors(restApi: RestApi, bucketName: Readonly<string>) {

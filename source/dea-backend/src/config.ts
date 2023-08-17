@@ -10,8 +10,6 @@ import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import convict from 'convict';
 // https://www.npmjs.com/package/convict
 
-const UNDEFINED_STRING = 'undefined';
-
 function getSourcePath(): string {
   const pathParts = __dirname.split(path.sep);
   let backTrack = '';
@@ -103,18 +101,6 @@ const convictSchema = {
       doc: 'The name of the hosted zone',
       format: String,
       default: undefined,
-    },
-  },
-  vpcEndpoint: {
-    vpcEndpointId: {
-      doc: 'VPC endpoint of private deployment of DEA',
-      format: String,
-      default: UNDEFINED_STRING,
-    },
-    vpcId: {
-      doc: 'VPC in which to deploy DEA',
-      format: String,
-      default: UNDEFINED_STRING,
     },
   },
   idpInfo: {
@@ -271,11 +257,6 @@ export interface CustomDomainInfo {
   readonly hostedZoneName: string | undefined;
 }
 
-export interface VpcEndpointInfo {
-  readonly vpcEndpointId: string;
-  readonly vpcId: string;
-}
-
 convict.addFormat(deaRoleTypesFormat);
 convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
@@ -287,7 +268,6 @@ interface DEAConfig {
   partition(): string;
   cognitoDomain(): string | undefined;
   customDomainInfo(): CustomDomainInfo;
-  vpcEndpointInfo(): VpcEndpointInfo | undefined;
   isTestStack(): boolean;
   isOneClick(): boolean;
   sourceIpValidationEnabled(): boolean;
@@ -377,17 +357,6 @@ export const deaConfig: DEAConfig = {
           allowOrigins,
         }
       : undefined;
-  },
-  vpcEndpointInfo: () => {
-    const vpcEndpoint = convictConfig.get('vpcEndpoint');
-    if (
-      !vpcEndpoint ||
-      vpcEndpoint.vpcEndpointId === UNDEFINED_STRING ||
-      vpcEndpoint.vpcId === UNDEFINED_STRING
-    ) {
-      return undefined;
-    }
-    return vpcEndpoint;
   },
   fipsEndpointsEnabled: () => convictConfig.get('fipsEndpointsEnabled') ?? true,
   isMultiRegionTrail: () => convictConfig.get('isMultiRegionTrail') ?? true,
