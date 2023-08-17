@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-ui",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "NextJS frontend UI for Digital Evidence Archive",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/blob/main/source/dea-ui/ui/",
   "repository": {
