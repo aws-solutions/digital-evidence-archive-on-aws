@@ -19617,7 +19617,7 @@ Object {
         ],
         "IncludeGlobalServiceEvents": true,
         "IsLogging": true,
-        "IsMultiRegionTrail": true,
+        "IsMultiRegionTrail": false,
         "KMSKeyId": Object {
           "Fn::GetAtt": Array [
             "testKey1CDDDD5E",

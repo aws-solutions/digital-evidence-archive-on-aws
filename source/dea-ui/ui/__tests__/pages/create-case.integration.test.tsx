@@ -98,7 +98,7 @@ describe('CreateCases page', () => {
 
     const button = screen.getByRole('button', { name: commonLabels.createButton });
     await user.click(button);
-    expect(push).toHaveBeenCalledWith('/');
+    expect(push).toHaveBeenCalledWith('/case-detail?caseId=abc');
   });
 
   it('recovers from creation failure', async () => {

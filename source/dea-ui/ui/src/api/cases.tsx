@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { DeaCase } from '@aws/dea-app/lib/models/case';
 import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
 import { CaseUser } from '@aws/dea-app/lib/models/case-user';
 import { DeaUser } from '@aws/dea-app/lib/models/user';
@@ -14,7 +15,7 @@ import {
   DownloadFileResult,
   InitiateUploadForm, RestoreFileForm,
 } from '../models/CaseFiles';
-import {CreateCaseForm, EditCaseForm, UpdateCaseStatusForm} from '../models/Cases';
+import { CreateCaseForm, EditCaseForm, UpdateCaseStatusForm } from '../models/Cases';
 import { CaseUserForm } from '../models/CaseUser';
 import { CaseFileDTO, CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
 
@@ -82,8 +83,8 @@ export const useGetScopedCaseInfoById = (id: string): DeaSingleResult<ScopedDeaC
   return { data, isLoading: !data && !error };
 };
 
-export const createCase = async (createCaseForm: CreateCaseForm): Promise<void> => {
-  await httpApiPost(`cases`, { ...createCaseForm });
+export const createCase = async (createCaseForm: CreateCaseForm): Promise<DeaCase> => {
+  return httpApiPost(`cases`, { ...createCaseForm });
 };
 
 export const updateCase = async (editCaseForm: EditCaseForm): Promise<void> => {

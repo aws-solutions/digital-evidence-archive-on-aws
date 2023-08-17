@@ -26515,7 +26515,7 @@ Object {
         ],
         "IncludeGlobalServiceEvents": true,
         "IsLogging": true,
-        "IsMultiRegionTrail": true,
+        "IsMultiRegionTrail": false,
         "KMSKeyId": Object {
           "Fn::GetAtt": Array [
             "primaryCustomerKey87EC2263",

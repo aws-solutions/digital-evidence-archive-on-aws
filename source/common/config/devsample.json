@@ -3,6 +3,7 @@
   "testStack": true,
   "sourceIpValidation": false,
   "deletionAllowed": true,
+  "isMultiRegionTrail": false,
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
