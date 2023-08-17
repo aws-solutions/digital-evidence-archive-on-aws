@@ -5,5 +5,11 @@
   "dependencies": {
     "@commitlint/cli": "^17.6.5",
     "@commitlint/config-conventional": "^17.6.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "semver@<5.7.2": ">=5.7.2",
+      "semver@>=7.0.0 <7.5.2": ">=7.5.2"
+    }
   }
 }

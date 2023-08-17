@@ -12,7 +12,7 @@ import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-sec
 import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import axios from 'axios';
-import { getRequiredEnv, getRequiredHeader } from '../../lambda-http-helpers';
+import { getCustomUserAgent, getRequiredEnv, getRequiredHeader } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { Oauth2Token } from '../../models/auth';
 import { ThrottlingException } from '../exceptions/throttling-exception';
@@ -78,6 +78,10 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
     switch (param.Name) {
       case cognitoDomainPath:
         cognitoDomainUrl = param.Value;
+        if (cognitoDomainUrl && process.env.AWS_REGION === 'us-gov-west-1') {
+          // support our one-click in us-gov-west-1, which only has fips endpoints
+          cognitoDomainUrl = cognitoDomainUrl.replace('.auth.', '.auth-fips.');
+        }
         break;
       case clientIdPath:
         clientId = param.Value;
@@ -141,6 +145,7 @@ export const getCredentialsByToken = async (idToken: string) => {
   const cognitoRegion = region.includes('gov') ? 'us-gov-west-1' : region;
   const cognitoIdentityClient = new CognitoIdentityClient({
     region: cognitoRegion,
+    customUserAgent: getCustomUserAgent(),
   });
 
   const Logins = {

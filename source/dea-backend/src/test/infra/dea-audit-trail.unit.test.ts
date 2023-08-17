@@ -4,7 +4,7 @@
  */
 
 import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { convictConfig } from '../../config';
 import { DeaAuditTrail } from '../../constructs/dea-audit-trail';
@@ -48,5 +48,96 @@ describe('dea audit trail', () => {
     const template = Template.fromStack(stack);
 
     template.resourceCountIs('AWS::S3::BucketPolicy', 3);
+  });
+
+  it('synthesizes with dynamo dataplane events when enabled', () => {
+    convictConfig.set('includeDynamoDataPlaneEventsInTrail', true);
+
+    const app = new App();
+    const stack = new Stack(app, 'test-stack');
+
+    const key = new Key(stack, 'testKey', {
+      enableKeyRotation: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+      pendingWindow: Duration.days(7),
+    });
+
+    const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
+
+    // Create the DeaBackendConstruct
+    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
+      kmsKey: key,
+      accessLogsPrefixes: ['dea-ui-access-log'],
+      opsDashboard: dashboard,
+    });
+
+    new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
+      kmsKey: key,
+      deaDatasetsBucket: backend.datasetsBucket,
+      deaTableArn: backend.deaTable.tableArn,
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::CloudTrail::Trail', {
+      EventSelectors: Match.arrayWith([
+        Match.objectLike({
+          DataResources: Match.arrayWith([
+            Match.objectLike({
+              Type: 'AWS::DynamoDB::Table',
+            }),
+          ]),
+        }),
+      ]),
+    });
+  });
+
+  it('synthesizes without dynamo dataplane events when disabled', () => {
+    convictConfig.set('includeDynamoDataPlaneEventsInTrail', false);
+
+    const app = new App();
+    const stack = new Stack(app, 'test-stack');
+
+    const key = new Key(stack, 'testKey', {
+      enableKeyRotation: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+      pendingWindow: Duration.days(7),
+    });
+
+    const dashboard = new DeaOperationalDashboard(stack, 'DeaApiOpsDashboard');
+
+    // Create the DeaBackendConstruct
+    const backend = new DeaBackendConstruct(stack, 'DeaBackendConstruct', PROTECTED_DEA_RESOURCES, {
+      kmsKey: key,
+      accessLogsPrefixes: ['dea-ui-access-log'],
+      opsDashboard: dashboard,
+    });
+
+    new DeaAuditTrail(stack, 'DeaAudit', PROTECTED_DEA_RESOURCES, {
+      kmsKey: key,
+      deaDatasetsBucket: backend.datasetsBucket,
+      deaTableArn: backend.deaTable.tableArn,
+    });
+
+    const template = Template.fromStack(stack);
+
+    let hasDDBEvents = true;
+    try {
+      template.hasResourceProperties('AWS::CloudTrail::Trail', {
+        EventSelectors: Match.arrayWith([
+          Match.objectLike({
+            DataResources: Match.arrayWith([
+              Match.objectLike({
+                Type: 'AWS::DynamoDB::Table',
+              }),
+            ]),
+          }),
+        ]),
+      });
+    } catch (e) {
+      hasDDBEvents = false;
+    }
+
+    expect(hasDDBEvents).toBeFalsy();
   });
 });

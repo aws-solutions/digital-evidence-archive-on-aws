@@ -14,6 +14,7 @@ import {
 import { useRouter } from 'next/router';
 import { addCaseOwner, useGetScopedCaseInfoById } from '../../api/cases';
 import { breadcrumbLabels, manageCaseAccessLabels } from '../../common/labels';
+import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import ManageAccessSearchUserForm from '../../components/case-details/ManageAccessSearchUserForm';
 import { useNotifications } from '../../context/NotificationsContext';
@@ -40,7 +41,7 @@ export default function ManageCasePage() {
     }
   }
 
-  const href = process.env.NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN ? `/ui` : `/${settings.stage}/ui`;
+  const href = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {

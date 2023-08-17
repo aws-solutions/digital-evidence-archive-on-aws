@@ -6,7 +6,7 @@ Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest 
 
 | Statements                                                                               | Branches                                                                             | Functions                                                                              | Lines                                                                          |
 | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| ![Statements](https://img.shields.io/badge/statements-95.46%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-85.1%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-93.5%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-95.44%25-brightgreen.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-95.15%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-80.93%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-93.31%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-95.12%25-brightgreen.svg?style=flat) |
 
 
 # Getting Started
@@ -14,14 +14,7 @@ Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest 
 ## Production Deployment
 Follow these steps to deploy your production environment. If developing/testing, follow the Simple Deployment Section.
 
-### Pre-requisites:
-Run the following commands
-```sh
-npm install -g @microsoft/rush
-npm install -g pnpm@7.16.0
-```
-
-Note pnpm needs to match the version pnpmVersion in rush.json
+You can deploy using your local computer via the terminal (for Mac/Linux users) or Command Prompt for Windows Users. The commands in the following steps may use different commands depending on which OS your computer is running, so make sure to follow the directions carefully.
 
 ### Step 0: Setup a Custom Domain (Recommended)
 We recommend using a custom domain, otherwise the URL for the solution will not be human readable. You will need to register a domain using AWS Route53 or other provider, and import a certificate for the domain using AWS Certificate Manager.
@@ -33,6 +26,40 @@ We recommend using a custom domain, otherwise the URL for the solution will not 
 5. Next go to AWS Certificate Manager to request a certificate for your domain: (MAKE SURE TO DO IT IN THE REGION YOU WANT TO DEPLOY) https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html
 6. Navigate to the certificate table. The request should be pending. Click on the Certificate ID link, scroll to the Domains section, and on the upper right hand side of that section, click Create Records in Route53. Wait about 10 minutes
 7. Once the Certificate is issued, click the Certificate ID link and copy the ARN in the first section. Save this somewhere safe.
+
+### Pre-requisites:
+
+**NOTE** If you are using Windows to deploy, make sure that for each of your installation steps the download path DOES NOT contain spaces. Many of the default paths go to "C:\Program Files\", but certain commands cannot run when the path has a space in it
+
+You will need npm and node installed on your machine:
+
+*For Windows*
+Follow the instructions [here](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows) and stop before the Install Visual Studio Code section.
+NOTE: During the nvm install, when asked where to place npm, DO NOT place in "C:/Program Files", instead you can put it in "C:\Users\Public\nodejs". 
+Additionally we recommend installing the LTS node version instead of the latest.
+
+*For Mac/Linux*
+```sh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+source ~/.bashrc
+nvm install node
+```
+
+Next you need to install rush to be able to run commands in the repository, cdk for deployment, and a specific version of pnpm (Note pnpm needs to match the version pnpmVersion in rush.json). 
+```sh
+npm install -g @microsoft/rush
+npm install -g pnpm@7.16.0
+npm install -g aws-cdk
+```
+
+Ensure you have AWS Command Line Interface (AWS CLI) installed, and have your aws credentials set. You can see [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) for more information about installing AWS CLI.
+NOTE: Make sure you change the download location to ensure the path DOES NOT have any spaces.
+
+You'll need to pull the repository to your local machine, therefore you also need git installed. If you do not already have it on your machine you can follow the instructions for your OS [here](https://github.com/git-guides/install-git).
+
+For Windows you will need to install Cygwin so certains scripts can run during the build process. See [here](https://www.cygwin.com/) for installation details. 
+
+If you are using Windows, you may need to restart your command prompt to see the installation changes take place.
 
 ### Step 1: Clone the repository
 Use the command line to run the following commands:
@@ -46,19 +73,29 @@ rush build
 
 ### Step 2: Customize your configuration
 
-From the source folder in your repository, copy and rename the default configuration file.
+Next you'll need to copy and rename the default configuration file, and open the copy in a text editor.
+
+**Windows**
 ```sh
-cp ./common/config/prodexample.json ./common/config/prod.json
+cd ./common/config
+copy prodexample.json prod.json
+cd ../..
+notepad ./common/config/prod.json
 ```
 
-Open up the configuration file you just created in your editor of choice.
+**Linux**
+```sh
+cp ./common/config/prodexample.json ./common/config/prod.json
+nano ./common/config/prod.json
+```
+
 Inside the configuration file, change the following fields
 1. Specify your region by including a line in the following format ```"region": "us-east-2"```
 2. Specify an unique domain prefix for your hosted Cognito login. NOTE: this is separate from your custom domain. It should look like the following:
 
 ```
 “cognito”: {
-  “domain”: “bobinohio”
+  “domain”: “exampleexampleexample”
 },
 ```
 3. If you completed step 0, then import the domainName, hostedZoneId, hostedZoneName, and ACM Certificate ARN like so:
@@ -127,25 +164,55 @@ The message should generally discuss the following information: that the user is
 
 Additionally the message shall provide appropriate privacy and security notices based on local laws and regulations. Please refer to CJIS Policy 5.4 for the most up to date information.
 
-To input your System Use Notification Message, open the following file in a text editor: ~/digital-evidence-archive-on-aws/source/dea-ui/ui/src/common/labels.tsx.
-Scroll to the systemUseNotificationText definition, and change the text starting with CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT… to your approved system message.
+To input your System Use Notification Message, open the following file in a text editor:
+
+**Windows**
+```sh
+notepad ./dea-ui/ui/src/common/labels.tsx
+```
+
+**Linux**
+```sh
+nano  ~/digital-evidence-archive-on-aws/source/dea-ui/ui/src/common/labels.tsx
+```
+
+Scroll to the systemUseNotificationText definition, and change the text starting with CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT… to your approved system message. Save your changes
 
 ### Step 3: Launch the Stack
 
-Go to the dea-main folder
+Navigate to the dea-main folder
 ```sh
-cd ~/digital-evidence-archive-on-aws/source/dea-main
+cd ./dea-main
 ```
 
 Export the following variables (customize as needed)
+
+**Windows**
+```sh
+set STAGE=prod
+set AWS_REGION=us-east-2
+set DEA_CUSTOM_DOMAIN=<true if using custom domain, otherwise do NOT set>
+set AWS_ACCT_NUMBER=<your 12 digit AWS account number>
 ```
+
+**Linux**
+```sh
 export STAGE=prod
 export AWS_REGION="us-east-2"
-export DEA_CUSTOM_DOMAIN=true // if using custom domain, otherwise do not set
+export DEA_CUSTOM_DOMAIN=<true if using custom domain, otherwise do NOT set>
 export AWS_ACCT_NUMBER=<your 12 digit AWS account number>
 ```
 
 Now run the following commands to launch the stack
+
+**Windows**
+```sh
+rush rebuild
+rushx cdk bootstrap aws://%AWS_ACCT_NUMBER%/%AWS_REGION%
+rushx cdk deploy
+```
+
+**Linux**
 ```sh
 rush rebuild
 rushx cdk bootstrap aws://${AWS_ACCT_NUMBER}/${AWS_REGION}
@@ -197,6 +264,15 @@ E.g.
 ```
 
 4) Update the stack to use the information you provided in the configuration file to integrate your IdP with the DEA stack. Run the following commands:
+
+**Windows**
+```sh
+rush rebuild
+rushx cdk bootstrap aws://%AWS_ACCT_NUMBER%/%AWS_REGION%
+rushx cdk deploy
+```
+
+**Linux**
 ```sh
 rush rebuild
 rushx cdk bootstrap aws://${AWS_ACCT_NUMBER}/${AWS_REGION}
@@ -208,7 +284,11 @@ NOTE: if you are running cdk deploy in us-gov-east-1 region, run the command wit
 rushx cdk deploy --all
 ```
 
-5) Post Deployment Steps:
+5) Save your Configuration File
+
+Save your configuration file somewhere safe, like s3, so you can reuse it when you want to update your stack.
+
+6) Post Deployment Steps:
 
 **DEA Permissions Boundary**
 

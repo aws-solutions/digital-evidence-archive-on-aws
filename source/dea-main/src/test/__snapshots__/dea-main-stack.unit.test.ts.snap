@@ -2,7 +2,17 @@
 
 exports[`DeaMainStack synthesizes the way we expect 1`] = `
 Object {
-  "Description": "(SO0224) Digital Evidence Archive v1.0.3 - This solution helps investigative units manage and store digital evidence on AWS.",
+  "Conditions": Object {
+    "DeaAuthConstructisUSGov9A5A3CF5": Object {
+      "Fn::Equals": Array [
+        Object {
+          "Ref": "AWS::Partition",
+        },
+        "aws-us-gov",
+      ],
+    },
+  },
+  "Description": "(SO0224) Digital Evidence Archive v1.0.4 - This solution helps investigative units manage and store digital evidence on AWS.",
   "Mappings": Object {
     "Solution": Object {
       "Data": Object {
@@ -10,7 +20,7 @@ Object {
         "ApplicationType": "AWS-Solutions",
         "ID": "SO0224",
         "SolutionName": "Digital Evidence Archive",
-        "SolutionVersion": "1.0.3",
+        "SolutionVersion": "1.0.4",
       },
     },
   },
@@ -262,6 +272,52 @@ Object {
         "Timeout": 120,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57": Object {
+      "DependsOn": Array [
+        "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Handler": "__entrypoint__.handler",
+        "MemorySize": 128,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs16.x",
+        "Timeout": 900,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Sub": "arn:\${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
     },
     "AppRegistry968496A3": Object {
       "Properties": Object {
@@ -762,6 +818,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -864,6 +922,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -966,6 +1026,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1068,6 +1130,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1170,6 +1234,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1272,6 +1338,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1374,6 +1442,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1476,6 +1546,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1578,6 +1650,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1680,6 +1754,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1782,6 +1858,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1884,6 +1962,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1986,6 +2066,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2088,6 +2170,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2190,6 +2274,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2292,6 +2378,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2394,6 +2482,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2496,6 +2586,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2598,6 +2690,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2700,6 +2794,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2802,6 +2898,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2904,6 +3002,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3006,6 +3106,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3108,6 +3210,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3210,6 +3314,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3312,6 +3418,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3414,6 +3522,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3516,6 +3626,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3618,6 +3730,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3720,6 +3834,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3822,6 +3938,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3924,6 +4042,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4026,6 +4146,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4128,6 +4250,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4230,6 +4354,8 @@ Object {
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -10740,7 +10866,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -10887,7 +11013,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11034,7 +11160,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11181,7 +11307,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11328,7 +11454,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11475,7 +11601,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -11622,7 +11748,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self'font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -12383,7 +12509,11 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:ssm:",
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:",
                     Object {
                       "Ref": "AWS::Region",
                     },
@@ -12403,7 +12533,11 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:secretsmanager:",
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":secretsmanager:",
                     Object {
                       "Ref": "AWS::Region",
                     },
@@ -12622,7 +12756,11 @@ Object {
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:ssm:",
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:",
                     Object {
                       "Ref": "AWS::Region",
                     },
@@ -20371,6 +20509,68 @@ Object {
       },
       "Type": "AWS::S3::BucketPolicy",
     },
+    "DeaAuthConstructAmrJson9649885D": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57",
+            "Arn",
+          ],
+        },
+        "Value": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"",
+              Object {
+                "Fn::If": Array [
+                  "DeaAuthConstructisUSGov9A5A3CF5",
+                  "cognito-identity-us-gov",
+                  "cognito-identity",
+                ],
+              },
+              ".amazonaws.com:amr\\":\\"authenticated\\"}",
+            ],
+          ],
+        },
+      },
+      "Type": "Custom::AWSCDKCfnJson",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaAuthConstructAudJson5D6E59A7": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57",
+            "Arn",
+          ],
+        },
+        "Value": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"",
+              Object {
+                "Fn::If": Array [
+                  "DeaAuthConstructisUSGov9A5A3CF5",
+                  "cognito-identity-us-gov",
+                  "cognito-identity",
+                ],
+              },
+              ".amazonaws.com:aud\\":\\"",
+              Object {
+                "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
+              },
+              "\\"}",
+            ],
+          ],
+        },
+      },
+      "Type": "Custom::AWSCDKCfnJson",
+      "UpdateReplacePolicy": "Delete",
+    },
     "DeaAuthConstructAuthTestGroupRole238CB12C": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -20379,17 +20579,35 @@ Object {
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": Object {
                 "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAmrJson9649885D",
+                    "Value",
+                  ],
                 },
                 "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
-                  },
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAudJson5D6E59A7",
+                    "Value",
+                  ],
                 },
               },
               "Effect": "Allow",
               "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
+                "Federated": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::If": Array [
+                          "DeaAuthConstructisUSGov9A5A3CF5",
+                          "cognito-identity-us-gov",
+                          "cognito-identity",
+                        ],
+                      },
+                      ".amazonaws.com",
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -20552,17 +20770,35 @@ Object {
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": Object {
                 "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAmrJson9649885D",
+                    "Value",
+                  ],
                 },
                 "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
-                  },
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAudJson5D6E59A7",
+                    "Value",
+                  ],
                 },
               },
               "Effect": "Allow",
               "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
+                "Federated": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::If": Array [
+                          "DeaAuthConstructisUSGov9A5A3CF5",
+                          "cognito-identity-us-gov",
+                          "cognito-identity",
+                        ],
+                      },
+                      ".amazonaws.com",
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -21229,17 +21465,35 @@ Object {
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": Object {
                 "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAmrJson9649885D",
+                    "Value",
+                  ],
                 },
                 "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
-                  },
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAudJson5D6E59A7",
+                    "Value",
+                  ],
                 },
               },
               "Effect": "Allow",
               "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
+                "Federated": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::If": Array [
+                          "DeaAuthConstructisUSGov9A5A3CF5",
+                          "cognito-identity-us-gov",
+                          "cognito-identity",
+                        ],
+                      },
+                      ".amazonaws.com",
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -21626,6 +21880,97 @@ Object {
       },
       "Type": "AWS::IAM::Policy",
     },
+    "DeaAuthConstructDefaultAmrJsonBA91AE1B": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57",
+            "Arn",
+          ],
+        },
+        "Value": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"",
+              Object {
+                "Fn::If": Array [
+                  "DeaAuthConstructisUSGov9A5A3CF5",
+                  "cognito-identity-us-gov",
+                  "cognito-identity",
+                ],
+              },
+              ".amazonaws.com:amr\\":\\"authenticated\\"}",
+            ],
+          ],
+        },
+      },
+      "Type": "Custom::AWSCDKCfnJson",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaAuthConstructDefaultAudJson78465EF3": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57",
+            "Arn",
+          ],
+        },
+        "Value": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"",
+              Object {
+                "Fn::If": Array [
+                  "DeaAuthConstructisUSGov9A5A3CF5",
+                  "cognito-identity-us-gov",
+                  "cognito-identity",
+                ],
+              },
+              ".amazonaws.com:aud\\":\\"",
+              Object {
+                "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
+              },
+              "\\"}",
+            ],
+          ],
+        },
+      },
+      "Type": "Custom::AWSCDKCfnJson",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaAuthConstructDefaultUnauthAmrJson5A187672": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57",
+            "Arn",
+          ],
+        },
+        "Value": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"",
+              Object {
+                "Fn::If": Array [
+                  "DeaAuthConstructisUSGov9A5A3CF5",
+                  "cognito-identity-us-gov",
+                  "cognito-identity",
+                ],
+              },
+              ".amazonaws.com:amr\\":\\"unauthenticated\\"}",
+            ],
+          ],
+        },
+      },
+      "Type": "Custom::AWSCDKCfnJson",
+      "UpdateReplacePolicy": "Delete",
+    },
     "DeaAuthConstructEvidenceManagerRole126B1CAE": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -21634,17 +21979,35 @@ Object {
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": Object {
                 "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAmrJson9649885D",
+                    "Value",
+                  ],
                 },
                 "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
-                  },
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAudJson5D6E59A7",
+                    "Value",
+                  ],
                 },
               },
               "Effect": "Allow",
               "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
+                "Federated": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::If": Array [
+                          "DeaAuthConstructisUSGov9A5A3CF5",
+                          "cognito-identity-us-gov",
+                          "cognito-identity",
+                        ],
+                      },
+                      ".amazonaws.com",
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -22071,17 +22434,35 @@ Object {
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": Object {
                 "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAmrJson9649885D",
+                    "Value",
+                  ],
                 },
                 "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
-                  },
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAudJson5D6E59A7",
+                    "Value",
+                  ],
                 },
               },
               "Effect": "Allow",
               "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
+                "Federated": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::If": Array [
+                          "DeaAuthConstructisUSGov9A5A3CF5",
+                          "cognito-identity-us-gov",
+                          "cognito-identity",
+                        ],
+                      },
+                      ".amazonaws.com",
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -22220,17 +22601,35 @@ Object {
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": Object {
                 "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAmrJson9649885D",
+                    "Value",
+                  ],
                 },
                 "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
-                  },
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAudJson5D6E59A7",
+                    "Value",
+                  ],
                 },
               },
               "Effect": "Allow",
               "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
+                "Federated": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::If": Array [
+                          "DeaAuthConstructisUSGov9A5A3CF5",
+                          "cognito-identity-us-gov",
+                          "cognito-identity",
+                        ],
+                      },
+                      ".amazonaws.com",
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -22417,17 +22816,35 @@ Object {
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": Object {
                 "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructDefaultAmrJsonBA91AE1B",
+                    "Value",
+                  ],
                 },
                 "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
-                  },
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructDefaultAudJson78465EF3",
+                    "Value",
+                  ],
                 },
               },
               "Effect": "Allow",
               "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
+                "Federated": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::If": Array [
+                          "DeaAuthConstructisUSGov9A5A3CF5",
+                          "cognito-identity-us-gov",
+                          "cognito-identity",
+                        ],
+                      },
+                      ".amazonaws.com",
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -22444,17 +22861,35 @@ Object {
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": Object {
                 "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "unauthenticated",
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructDefaultUnauthAmrJson5A187672",
+                    "Value",
+                  ],
                 },
                 "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
-                  },
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructDefaultAudJson78465EF3",
+                    "Value",
+                  ],
                 },
               },
               "Effect": "Allow",
               "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
+                "Federated": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::If": Array [
+                          "DeaAuthConstructisUSGov9A5A3CF5",
+                          "cognito-identity-us-gov",
+                          "cognito-identity",
+                        ],
+                      },
+                      ".amazonaws.com",
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -22608,17 +23043,35 @@ Object {
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": Object {
                 "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAmrJson9649885D",
+                    "Value",
+                  ],
                 },
                 "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
-                  },
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAudJson5D6E59A7",
+                    "Value",
+                  ],
                 },
               },
               "Effect": "Allow",
               "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
+                "Federated": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::If": Array [
+                          "DeaAuthConstructisUSGov9A5A3CF5",
+                          "cognito-identity-us-gov",
+                          "cognito-identity",
+                        ],
+                      },
+                      ".amazonaws.com",
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -22683,17 +23136,35 @@ Object {
               "Action": "sts:AssumeRoleWithWebIdentity",
               "Condition": Object {
                 "ForAnyValue:StringLike": Object {
-                  "cognito-identity.amazonaws.com:amr": "authenticated",
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAmrJson9649885D",
+                    "Value",
+                  ],
                 },
                 "StringEquals": Object {
-                  "cognito-identity.amazonaws.com:aud": Object {
-                    "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
-                  },
+                  "Fn::GetAtt": Array [
+                    "DeaAuthConstructAudJson5D6E59A7",
+                    "Value",
+                  ],
                 },
               },
               "Effect": "Allow",
               "Principal": Object {
-                "Federated": "cognito-identity.amazonaws.com",
+                "Federated": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::If": Array [
+                          "DeaAuthConstructisUSGov9A5A3CF5",
+                          "cognito-identity-us-gov",
+                          "cognito-identity",
+                        ],
+                      },
+                      ".amazonaws.com",
+                    ],
+                  ],
+                },
               },
             },
           ],
@@ -24950,6 +25421,8 @@ Object {
             },
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -25306,6 +25779,8 @@ Object {
             },
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.4",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",

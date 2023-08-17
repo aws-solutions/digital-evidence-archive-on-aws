@@ -6,6 +6,7 @@
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
 import { breadcrumbLabels } from '../../common/labels';
+import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import CreateCaseBody from '../../components/create-case/CreateCaseBody';
 import { useSettings } from '../../context/SettingsContext';
@@ -17,7 +18,7 @@ export interface IHomeProps {
 const Home: NextPage = () => {
   const { settings } = useSettings();
 
-  const href = process.env.NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN ? `/ui` : `/${settings.stage}/ui`;
+  const href = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {

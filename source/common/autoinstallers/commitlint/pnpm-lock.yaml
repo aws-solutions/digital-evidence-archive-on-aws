@@ -1,5 +1,9 @@
 lockfileVersion: 5.4
 
+overrides:
+  semver@<5.7.2: '>=5.7.2'
+  semver@>=7.0.0 <7.5.2: '>=7.5.2'
+
 specifiers:
   '@commitlint/cli': ^17.6.5
   '@commitlint/config-conventional': ^17.6.5
@@ -96,7 +100,7 @@ packages:
     engines: {node: '>=v14'}
     dependencies:
       '@commitlint/types': 17.4.4
-      semver: 7.5.0
+      semver: 7.5.4
     dev: false
 
   /@commitlint/lint/17.6.5:
@@ -864,7 +868,7 @@ packages:
     dependencies:
       hosted-git-info: 4.1.0
       is-core-module: 2.8.1
-      semver: 7.5.0
+      semver: 7.5.4
       validate-npm-package-license: 3.0.4
     dev: false
 
@@ -1047,8 +1051,8 @@ packages:
     hasBin: true
     dev: false
 
-  /semver/7.5.0:
-    resolution: {integrity: sha512-+XC0AD/R7Q2mPSRuy2Id0+CGTZ98+8f+KvwirxOKIEyid+XSx6HbC63p+O4IndTHuX5Z+JxQ0TghCkO5Cg/2HA==}
+  /semver/7.5.4:
+    resolution: {integrity: sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==}
     engines: {node: '>=10'}
     hasBin: true
     dependencies:

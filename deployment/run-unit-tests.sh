@@ -17,7 +17,6 @@ echo "--------------------------------------------------------------------------
 npm install -g @microsoft/rush
 npm install -g pnpm@7.16.0
 npm install -g aws-cdk@2.76.0
-git submodule update --init --recursive --remote
 echo "------------------------------------------------------------------------------"
 echo "Install Run Unit Tests"
 echo "------------------------------------------------------------------------------"

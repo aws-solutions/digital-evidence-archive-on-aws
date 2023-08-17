@@ -21,6 +21,7 @@ import { Key } from 'aws-cdk-lib/aws-kms';
 import { BlockPublicAccess, Bucket, BucketEncryption, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
+import { generateSri } from './generate-subresource-integrity';
 
 interface IUiStackProps extends StackProps {
   readonly kmsKey: Key;
@@ -30,6 +31,8 @@ interface IUiStackProps extends StackProps {
 }
 
 export class DeaUiConstruct extends Construct {
+  private uiArtifactPath: string;
+  private sriString: string;
   public constructor(scope: Construct, id: string, props: IUiStackProps) {
     super(scope, 'DeaUiStack');
 
@@ -46,7 +49,11 @@ export class DeaUiConstruct extends Construct {
 
     this.addS3TLSSigV4BucketPolicy(bucket);
 
-    let sources = [Source.asset(path.resolve(__dirname, '../../ui/out'))];
+    this.uiArtifactPath = path.resolve(__dirname, '../../ui/out');
+
+    this.sriString = generateSri(this.uiArtifactPath, 'sha384').join("' '");
+
+    let sources = [Source.asset(this.uiArtifactPath)];
     if (deaConfig.isOneClick()) {
       const DIST_BUCKET = process.env.DIST_OUTPUT_BUCKET ?? assert(false);
       const DIST_VERSION = process.env.DIST_VERSION || '%%VERSION%%';
@@ -133,7 +140,8 @@ export class DeaUiConstruct extends Construct {
                 `img-src 'self' blob:;` +
                 `style-src 'unsafe-inline' 'self';` +
                 `connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;` +
-                `script-src 'self'` +
+                // `script-src 'strict-dynamic' '${this.sriString}';` +
+                `script-src 'self';` +
                 `font-src 'self' data:;` +
                 `object-src 'none';` +
                 `block-all-mixed-content;'`,

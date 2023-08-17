@@ -7,6 +7,7 @@ import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { breadcrumbLabels, commonLabels } from '../../common/labels';
+import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import EditCaseBody from '../../components/edit-case/EditCaseBody';
 import { useSettings } from '../../context/SettingsContext';
@@ -20,7 +21,7 @@ const EditCasePage: NextPage = () => {
   const { settings } = useSettings();
   const { caseId } = router.query;
 
-  const href_prefix = process.env.NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN ? `/ui` : `/${settings.stage}/ui`;
+  const href_prefix = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
   if (!caseId || typeof caseId !== 'string') {
     return <h1>{commonLabels.notFoundLabel}</h1>;

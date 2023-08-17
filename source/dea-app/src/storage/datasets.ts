@@ -31,7 +31,7 @@ import {
 import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
-import { getRequiredEnv } from '../lambda-http-helpers';
+import { getCustomUserAgent, getRequiredEnv } from '../lambda-http-helpers';
 import { logger } from '../logger';
 import { DeaCaseFile, DownloadCaseFileResult } from '../models/case-file';
 
@@ -55,7 +55,7 @@ export interface S3Object {
 }
 
 export const defaultDatasetsProvider = {
-  s3Client: new S3Client({ region }),
+  s3Client: new S3Client({ region, customUserAgent: getCustomUserAgent() }),
   region: region,
   bucketName: getRequiredEnv('DATASETS_BUCKET_NAME', 'DATASETS_BUCKET_NAME is not set in your lambda!'),
   s3BatchDeleteCaseFileLambdaArn: getRequiredEnv(
@@ -327,7 +327,7 @@ export const deleteCaseFile = async (
 };
 
 export const describeS3BatchJob = async (JobId: string, AccountId: string): Promise<DescribeJobResult> => {
-  const s3ControlClient = new S3ControlClient({ region });
+  const s3ControlClient = new S3ControlClient({ region, customUserAgent: getCustomUserAgent() });
   return s3ControlClient.send(new DescribeJobCommand({ JobId, AccountId }));
 };
 
@@ -397,7 +397,7 @@ const createDeleteCaseFileBatchJob = async (
   };
   logger.debug('CreateJobCommand Input', input);
 
-  const s3ControlClient = new S3ControlClient({ region });
+  const s3ControlClient = new S3ControlClient({ region, customUserAgent: getCustomUserAgent() });
   const result = await s3ControlClient.send(new CreateJobCommand(input));
   if (!result.JobId) {
     throw new Error('Failed to create delete files batch job.');
@@ -432,7 +432,7 @@ async function getDownloadPresignedUrlClient(
   sourceIp: string,
   datasetsProvider: DatasetsProvider
 ): Promise<S3Client> {
-  const client = new STSClient({ region });
+  const client = new STSClient({ region, customUserAgent: getCustomUserAgent() });
   const credentials = (
     await client.send(
       new AssumeRoleCommand({
@@ -451,6 +451,7 @@ async function getDownloadPresignedUrlClient(
 
   return new S3Client({
     region,
+    customUserAgent: getCustomUserAgent(),
     credentials: {
       accessKeyId: credentials.AccessKeyId,
       secretAccessKey: credentials.SecretAccessKey,
@@ -484,6 +485,7 @@ async function getUploadPresignedUrlClient(
 
   return new S3Client({
     region,
+    customUserAgent: getCustomUserAgent(),
     credentials: {
       accessKeyId: credentials.AccessKeyId,
       secretAccessKey: credentials.SecretAccessKey,

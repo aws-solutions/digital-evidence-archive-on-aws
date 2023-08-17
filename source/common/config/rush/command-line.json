@@ -324,6 +324,13 @@
       "shellCommand": "istanbul-combine -d coverage -p summary -r json-summary \"*/**/temp/coverage/coverage-final.json\" && istanbul-badges-readme --readmeDir='..' --coverageDir=coverage --exitCode=1"
     },
     {
+      "name": "common-cov-info",
+      "commandKind": "global",
+      "summary": "Copies lcov.info files to a location for inclusion in commits - we do this as a workaround for solutions pipelines not allowing cdk deploy for full coverage",
+      "safeForSimultaneousRushProcesses": true,
+      "shellCommand": "mkdir -p ./coverage-info && cp ./dea-main/temp/coverage/lcov.info ./coverage-info/dea-main-lcov.info && cp ./dea-app/temp/coverage/lcov.info ./coverage-info/dea-app-lcov.info && cp ./dea-backend/temp/coverage/lcov.info ./coverage-info/dea-backend-lcov.info && cp ./dea-ui/infrastructure/temp/coverage/lcov.info ./coverage-info/dea-ui-infra-lcov.info && cp ./dea-ui/ui/temp/coverage/lcov.info ./coverage-info/dea-ui-lcov.info"
+    },
+    {
       "name": "commitlint",
       "commandKind": "global",
       "summary": "Conventional commit check on commit messages",

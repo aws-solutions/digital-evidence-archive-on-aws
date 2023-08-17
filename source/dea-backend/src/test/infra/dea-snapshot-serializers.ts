@@ -16,6 +16,14 @@ export const addSnapshotSerializers = (): void => {
   });
 
   expect.addSnapshotSerializer({
+    test: (val) => typeof val === 'string' && val.includes('sha384'),
+    print: () => {
+      const newVal = '[HASH REMOVED]';
+      return `"${newVal}"`;
+    },
+  });
+
+  expect.addSnapshotSerializer({
     test: (val) => typeof val === 'string' && val.includes('piDeployment'),
     print: () => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

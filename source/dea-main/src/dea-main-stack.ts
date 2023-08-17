@@ -37,7 +37,7 @@ import { addLambdaSuppressions, addResourcePolicySuppressions } from './nag-supp
 
 // DEA AppRegistry Constants
 // TODO - would be ideal to reference process.env.npm_package_version here but rush breaks that env
-export const SOLUTION_VERSION = '1.0.3';
+export const SOLUTION_VERSION = '1.0.4';
 export const SOLUTION_ID = 'SO0224';
 
 export class DeaMainStack extends cdk.Stack {
@@ -80,7 +80,6 @@ export class DeaMainStack extends cdk.Stack {
     });
 
     const region = deaConfig.region();
-    const accountId = this.account;
     const stage = deaConfig.stage();
 
     const auditTrail = new DeaAuditTrail(this, 'DeaAudit', protectedDeaResourceArns, {
@@ -99,6 +98,8 @@ export class DeaMainStack extends cdk.Stack {
         DATASETS_BUCKET_NAME: backendConstruct.datasetsBucket.bucketName,
         AWS_USE_FIPS_ENDPOINT: deaConfig.fipsEndpointsEnabled().toString(),
         DELETION_ALLOWED: deaConfig.deletionAllowed().toString(),
+        SOLUTION_ID,
+        SOLUTION_VERSION,
       },
       opsDashboard: dashboard,
     });
@@ -111,7 +112,6 @@ export class DeaMainStack extends cdk.Stack {
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey,
-      accountId,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backendConstruct.deaTable.tableName,
@@ -123,6 +123,8 @@ export class DeaMainStack extends cdk.Stack {
         SOURCE_IP_VALIDATION_ENABLED: deaConfig.sourceIpValidationEnabled().toString(),
         DELETION_ALLOWED: deaConfig.deletionAllowed().toString(),
         UPLOAD_FILES_TIMEOUT_MINUTES: deaConfig.uploadFilesTimeoutMinutes().toString(),
+        SOLUTION_ID,
+        SOLUTION_VERSION,
       },
       opsDashboard: dashboard,
     });
