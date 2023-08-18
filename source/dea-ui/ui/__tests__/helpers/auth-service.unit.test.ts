@@ -44,7 +44,7 @@ describe('auth service', () => {
 
   it('Returns correct callback url', () => {
     const mockWindowLocation = new URL('https://dea.com/devsample/ui/');
-    global.window = Object.create(window);
+    global.window ??= Object.create(window);
     Object.defineProperty(window, 'location', {
       value: mockWindowLocation,
       writable: true,
