@@ -22,7 +22,7 @@ import { validateBackendConstruct } from './validate-backend-construct';
 const PROTECTED_DEA_RESOURCES: string[] = [];
 
 describe('DeaBackend constructs', () => {
-  const expectedLambdaCount = 40;
+  const expectedLambdaCount = 42;
   const expectedMethodCount = 77;
 
   beforeAll(() => {
@@ -75,6 +75,13 @@ describe('DeaBackend constructs', () => {
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
+      athenaConfig: {
+        athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
+        athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
+        athenaWorkGroupName: auditTrail.auditCloudwatchToS3Infra.athenaWorkGroupName,
+        athenaTableName: auditTrail.auditCloudwatchToS3Infra.athenaTableName,
+        athenaAuditBucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
+      },
       kmsKey: key,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
@@ -165,6 +172,13 @@ describe('DeaBackend constructs', () => {
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey: key,
+      athenaConfig: {
+        athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
+        athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
+        athenaWorkGroupName: auditTrail.auditCloudwatchToS3Infra.athenaWorkGroupName,
+        athenaTableName: auditTrail.auditCloudwatchToS3Infra.athenaTableName,
+        athenaAuditBucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
+      },
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backend.deaTable.tableName,
@@ -240,6 +254,13 @@ describe('DeaBackend constructs', () => {
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
+      athenaConfig: {
+        athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
+        athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
+        athenaWorkGroupName: auditTrail.auditCloudwatchToS3Infra.athenaWorkGroupName,
+        athenaTableName: auditTrail.auditCloudwatchToS3Infra.athenaTableName,
+        athenaAuditBucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
+      },
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backend.deaTable.tableName,
@@ -279,14 +300,12 @@ describe('DeaBackend constructs', () => {
     });
 
     //handlers
-    // two lambdas are added in non-test stack for transformation and legalhold event
-    const legalHoldLambaCount = 2;
     // prod stack also doesn't have test auth method/lambda
     const awsCDKCfnUtilsProviderCount = 1;
     const testAuthHandlerCount = 1;
     const deleteHandlerCount = 1;
     const expectedLambdaCountWithoutDeleteCaseHandler =
-      expectedLambdaCount - testAuthHandlerCount - deleteHandlerCount + awsCDKCfnUtilsProviderCount + legalHoldLambaCount;
+      expectedLambdaCount - testAuthHandlerCount - deleteHandlerCount + awsCDKCfnUtilsProviderCount;
     // prod stack doesn't have OPTIONS methods, so divide expected methods by 2
     const expectedMethodCountWithoutDeleteCaseHandler = Math.floor(expectedMethodCount / 2) - 4;
     template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCountWithoutDeleteCaseHandler);
@@ -341,6 +360,13 @@ describe('DeaBackend constructs', () => {
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
+      athenaConfig: {
+        athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
+        athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
+        athenaWorkGroupName: auditTrail.auditCloudwatchToS3Infra.athenaWorkGroupName,
+        athenaTableName: auditTrail.auditCloudwatchToS3Infra.athenaTableName,
+        athenaAuditBucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
+      },
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backend.deaTable.tableName,

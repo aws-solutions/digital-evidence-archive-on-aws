@@ -137,12 +137,13 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
 }
 
 const downloadCaseAudit = async (deaCase: DeaCaseDTO) => {
-  const csv = await getCaseAuditCSV(deaCase.ulid);
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const fileUrl = window.URL.createObjectURL(blob);
+  const csvDownloadUrl = await getCaseAuditCSV(deaCase.ulid);
+  const downloadDate = new Date();
   const alink = document.createElement('a');
-  alink.href = fileUrl;
-  alink.download = `${deaCase.name}_Audit_${new Date().toLocaleString()}`;
+  alink.href = csvDownloadUrl;
+  alink.download = `CaseAudit_${deaCase.name}_${downloadDate.getFullYear()}_${
+    downloadDate.getMonth() + 1
+  }_${downloadDate.getDate()}_H${downloadDate.getHours()}.csv`;
   alink.click();
 };
 

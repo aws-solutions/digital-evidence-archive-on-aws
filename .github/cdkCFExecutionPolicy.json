@@ -27,7 +27,11 @@
         "firehose:DescribeDeliveryStream",
         "athena:Create*",
         "athena:Delete*",
-        "athena:GetWorkGroup"
+        "athena:GetWorkGroup",
+        "sqs:CreateQueue",
+        "sqs:DeleteQueue",
+        "sqs:GetQueueAttributes",
+        "sqs:SetQueueAttributes"
       ],
       "Resource": "*"
     },

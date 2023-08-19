@@ -24,6 +24,7 @@
     "cdk": "cdk",
     "cdk:bootstrap": "cdk bootstrap",
     "cdk:deploy": "cdk deploy --all --require-approval never --outputs-file cdk-outputs.json",
+    "cdk:destroy": ". ../common/scripts/preDestroy.sh && cdk destroy --force",
     "cdk:synth": "cdk synth",
     "check-license-header": "license-check-and-add check -f license-add-config.json",
     "e2e:only": "",
@@ -57,8 +58,7 @@
     "dynamodb-onetable": "2.5.1",
     "lodash": "^4.17.21",
     "source-map-support": "^0.5.16",
-    "@aws-cdk/aws-glue-alpha": "~2.86.0-alpha.0",
-    "@aws-sdk/client-athena": "~3.299.0"
+    "@aws-cdk/aws-glue-alpha": "~2.86.0-alpha.0"
   },
   "devDependencies": {
     "@rushstack/eslint-config": "^3.3.2",

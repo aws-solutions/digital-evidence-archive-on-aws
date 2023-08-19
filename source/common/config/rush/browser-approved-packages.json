@@ -79,6 +79,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@aws-sdk/client-firehose",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws-sdk/client-iam",
       "allowedCategories": [ "production" ]
     },
@@ -392,6 +396,10 @@
     },
     {
       "name": "csurf",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "csv-string",
       "allowedCategories": [ "production" ]
     },
     {

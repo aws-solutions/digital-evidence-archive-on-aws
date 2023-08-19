@@ -18,6 +18,7 @@ import {
 } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
+import { createCfnOutput } from './construct-support';
 import { AuditCloudwatchToAthenaInfra } from './create-cloudwatch-to-athena-infra';
 
 interface DeaAuditProps extends StackProps {
@@ -30,7 +31,7 @@ export class DeaAuditTrail extends Construct {
   public auditTrail: CloudTrail.Trail;
   public auditLogGroup: LogGroup;
   public trailLogGroup: LogGroup;
-  public auditCloudwatchToS3Infra?: AuditCloudwatchToAthenaInfra;
+  public auditCloudwatchToS3Infra: AuditCloudwatchToAthenaInfra;
 
   public constructor(
     scope: Construct,
@@ -91,6 +92,10 @@ export class DeaAuditTrail extends Construct {
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+    });
+
+    createCfnOutput(this, 'deaTrailBucketName', {
+      value: trailBucket.bucketName,
     });
 
     if (!deaConfig.isTestStack()) {

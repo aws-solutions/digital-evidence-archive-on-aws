@@ -12,3 +12,7 @@ export IDENTITY_POOL_ID=$(aws cloudformation list-exports --region $cognito_regi
 export USER_POOL_ID=$(aws cloudformation list-exports --region $cognito_region $profile_string --query """Exports[?Name == '${STACKPREFIX}-userPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//') 
 export USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region $cognito_region $profile_string --query """Exports[?Name == '${STACKPREFIX}-userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
 export DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+export AUDIT_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-auditBucketName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+export GLUE_DB=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-athenaDBName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+export GLUE_TABLE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-athenaTableName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+export ATHENA_WORKGROUP_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-athenaWorkgroupName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')

@@ -6,17 +6,25 @@
 import AuditPlugin from '@aws/workbench-core-audit/lib/auditPlugin';
 import AuditService from '@aws/workbench-core-audit/lib/auditService';
 import {
-  CloudWatchLogsClient,
-  GetQueryResultsCommand,
-  QueryStatus,
-  ResultField,
-  StartQueryCommand,
-} from '@aws-sdk/client-cloudwatch-logs';
+  AthenaClient,
+  GetQueryExecutionCommand,
+  QueryExecutionState,
+  StartQueryExecutionCommand,
+} from '@aws-sdk/client-athena';
 import { getRequiredEnv } from '../../lambda-http-helpers';
+import { logger } from '../../logger';
 import * as AuditJobPersistence from '../../persistence/audit-job';
 import { AuditType } from '../../persistence/schema/dea-schema';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { deaAuditPlugin } from '../audit/dea-audit-plugin';
+import { getAuditDownloadPresignedUrl } from './audit-download';
+
+const AUDIT_GLUE_DATABASE = getRequiredEnv(
+  'AUDIT_GLUE_DATABASE',
+  'AUDIT_GLUE_DATABASE is not set in your lambda!'
+);
+const AUDIT_GLUE_TABLE = getRequiredEnv('AUDIT_GLUE_TABLE', 'AUDIT_GLUE_TABLE is not set in your lambda!');
+const ATHENA_WORKGROUP = getRequiredEnv('ATHENA_WORKGROUP', 'ATHENA_WORKGROUP is not set in your lambda!');
 
 export enum AuditEventResult {
   SUCCESS = 'success',
@@ -177,40 +185,44 @@ export type CJISAuditEventBody = {
   eventID: string; // guid to identify the event
 };
 
+export type CaseFileAuditParameters = {
+  caseId: string;
+  fileId: string;
+  fileName: string;
+  filePath: string;
+};
+
 /**
  * CloudWatch fields to show in query results.
  * To combine values from multiple source properties we use coalesce function.
  * coalesce: Returns the first non-null value from the list.
  */
-const queryFields = [
-  'coalesce(dateTime, eventTime) as DateTimeUTC',
-  'coalesce(eventType, " ") as Event_Type',
-  'coalesce(result, " ") as Result',
-  'coalesce(requestPath, eventName) as Request_Path',
-  'coalesce(sourceComponent, eventSource) as Source_Component',
-  'coalesce(sourceIPAddress, actorIdentity.sourceIp) as Source_IP_Address',
-  'coalesce(actorIdentity.idType, userIdentity.type) as Identity_ID_Type',
-  'coalesce(actorIdentity.username, userIdentity.userName, userIdentity.sessionContext.sessionIssuer.userName) as Username',
-  'coalesce(actorIdentity.deaRole, " ") as Role',
-  'coalesce(actorIdentity.userUlid, " ") as DEA_User_ID',
-  'coalesce(actorIdentity.firstName, " ") as First_Name',
-  'coalesce(actorIdentity.lastName, " ") as Last_Name',
-  'coalesce(actorIdentity.idPoolUserId, " ") as Identity_Pool_User_ID',
-  'coalesce(actorIdentity.authCode, " ") as Auth_Code',
-  'coalesce(actorIdentity.idToken, " ") as ID_Token',
-  'coalesce(caseId, " ") as Case_ID',
-  'coalesce(fileId, " ") as File_ID',
-  'coalesce(fileHash, " ") as File_SHA_256',
-  'coalesce(targetUserId, " ") as Target_User_ID',
-  'coalesce(caseActions, " ") as Case_Actions',
-  'coalesce(requestParameters.key.PK, " ") as PrimaryKey',
-  'coalesce(requestParameters.key.SK, " ") as SortKey',
-  'coalesce(eventID, "") as eventID',
-];
+const queryFields =
+  'COALESCE(dateTime, eventTime) AS DateTimeUTC,' +
+  "COALESCE(eventType, '') AS Event_Type," +
+  "COALESCE(result, '') AS Result," +
+  'COALESCE(requestPath, eventName) AS Request_Path,' +
+  'COALESCE(sourceComponent, eventSource) AS Source_Component,' +
+  'COALESCE(sourceIPAddress, actorIdentity.sourceIp) AS Source_IP_Address,' +
+  'COALESCE(actorIdentity.idType, userIdentity.type) AS Identity_ID_Type,' +
+  'COALESCE(actorIdentity.username, userIdentity.userName, userIdentity.sessionContext.sessionIssuer.userName) as Username,' +
+  "COALESCE(actorIdentity.deaRole, '') AS Role," +
+  "COALESCE(actorIdentity.userUlid, '') AS DEA_User_ID," +
+  "COALESCE(actorIdentity.firstName, '') AS First_Name," +
+  "COALESCE(actorIdentity.lastName, '') AS Last_Name," +
+  "COALESCE(actorIdentity.idPoolUserId, '') AS Identity_Pool_User_ID," +
+  "COALESCE(actorIdentity.authCode, '') AS Auth_Code," +
+  "COALESCE(actorIdentity.idToken, '') AS ID_Token," +
+  "COALESCE(caseId, '') AS Case_ID," +
+  "COALESCE(fileId, '') AS File_ID," +
+  "COALESCE(fileHash, '') AS File_SHA_256," +
+  "COALESCE(targetUserId, '') AS Target_User_ID," +
+  "COALESCE(caseActions, '') AS Case_Actions," +
+  "COALESCE(eventID, '') AS eventID";
 
 export interface AuditResult {
-  status: QueryStatus | string;
-  csvFormattedData: string | undefined;
+  status: QueryExecutionState | string;
+  downloadUrl: string | undefined;
 }
 
 const continueOnError = false;
@@ -240,30 +252,40 @@ export class DeaAuditService extends AuditService {
   private async startAuditQuery(
     start: number,
     end: number,
-    cloudwatchClient: CloudWatchLogsClient,
-    logGroupNames: string[],
-    filterPredicate: string | undefined,
+    athenaClient: AthenaClient,
+    whereClauses: string[] | undefined,
     auditType: AuditType,
     resourceId: string,
     repositoryProvider: ModelRepositoryProvider
   ) {
+    const milliSecondsToSeconds = 1000;
+    const timeClause = `from_iso8601_timestamp(COALESCE(dateTime, eventTime)) between from_unixtime(${Math.trunc(
+      start / milliSecondsToSeconds
+    )}) and from_unixtime(${Math.trunc(end / milliSecondsToSeconds)})`;
+    const orderByClause = 'ORDER BY from_iso8601_timestamp(DateTimeUTC) ASC';
     // sort by DateTimeUTC, the time when the event actually occurred, rather than timestamp, the moment when it appeared in logs
-    const defaultQuery = `fields ${queryFields.join(', ')} | sort DateTimeUTC desc`;
-    const queryString = filterPredicate ? `filter ${filterPredicate} | ${defaultQuery}` : defaultQuery;
-    const startQueryCmd = new StartQueryCommand({
-      logGroupNames,
-      startTime: start,
-      endTime: end,
-      queryString,
-      limit: 10000,
+    let queryString = `SELECT ${queryFields} FROM "${AUDIT_GLUE_DATABASE}"."${AUDIT_GLUE_TABLE}" where ${timeClause} ${orderByClause};`;
+    if (whereClauses) {
+      queryString = whereClauses
+        .map(
+          (whereClause) =>
+            `SELECT ${queryFields} FROM "${AUDIT_GLUE_DATABASE}"."${AUDIT_GLUE_TABLE}" ${whereClause} and ${timeClause}`
+        )
+        .join(' UNION ALL ');
+      queryString += ` ${orderByClause};`;
+    }
+
+    const startAthenaQueryCmd = new StartQueryExecutionCommand({
+      QueryString: queryString,
+      WorkGroup: ATHENA_WORKGROUP,
     });
-    const startResponse = await cloudwatchClient.send(startQueryCmd);
-    if (!startResponse.queryId) {
-      throw new Error('Unknown error starting Cloudwatch Logs Query.');
+    const startResponse = await athenaClient.send(startAthenaQueryCmd);
+    if (!startResponse.QueryExecutionId) {
+      throw new Error('Unknown error starting Athena Query.');
     }
 
     return AuditJobPersistence.createAuditJob(
-      startResponse.queryId,
+      startResponse.QueryExecutionId,
       auditType,
       resourceId,
       repositoryProvider
@@ -275,17 +297,18 @@ export class DeaAuditService extends AuditService {
     start: number,
     end: number,
     resourceId: string,
-    cloudwatchClient: CloudWatchLogsClient,
+    athenaClient: AthenaClient,
     repositoryProvider: ModelRepositoryProvider
   ) {
-    const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME'), getRequiredEnv('TRAIL_LOG_GROUP_NAME')];
-    const filterPredicate = `caseId = "${caseId}" or (@message like '"PK":"CASE#${caseId}#"' and @message like '"SK":"CASE#"')`;
+    const whereClauses = [
+      `where caseId = '${caseId}'`,
+      `where eventsource = 'dynamodb.amazonaws.com' and (requestParameters.key.PK LIKE 'CASE#${caseId}#' or requestParameters.key.GSI1PK LIKE 'CASE#${caseId}#%' or requestParameters.key.GSI2PK LIKE 'CASE#${caseId}#%' or any_match(requestparameters.requestItems, element -> element.key.PK like '%${caseId}%' or element.key.GSI1PK like '%${caseId}%' or element.key.GSI2PK like '%${caseId}%'))`,
+    ];
     return this.startAuditQuery(
       start,
       end,
-      cloudwatchClient,
-      auditLogGroups,
-      filterPredicate,
+      athenaClient,
+      whereClauses,
       AuditType.CASE,
       resourceId,
       repositoryProvider
@@ -293,23 +316,30 @@ export class DeaAuditService extends AuditService {
   }
 
   public async requestAuditForCaseFile(
-    caseId: string,
-    fileId: string,
+    caseFileParameters: CaseFileAuditParameters,
     start: number,
     end: number,
     resourceId: string,
-    cloudwatchClient: CloudWatchLogsClient,
+    athenaClient: AthenaClient,
     repositoryProvider: ModelRepositoryProvider
   ) {
-    const s3Key = getS3KeyForCaseFile(caseId, fileId);
-    const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME'), getRequiredEnv('TRAIL_LOG_GROUP_NAME')];
-    const filterPredicate = `(caseId = "${caseId}" and fileId = "${fileId}") or (@message like '"PK":"CASE#${caseId}#"' and @message like '"SK":"FILE#${fileId}#"') or (@message like "${s3Key}")`;
+    const s3Key = getS3KeyForCaseFile(caseFileParameters.caseId, caseFileParameters.fileId);
+    const primaryIndexCondition = `requestParameters.key.PK LIKE 'CASE#${caseFileParameters.caseId}#' and requestParameters.key.SK LIKE 'FILE#${caseFileParameters.fileId}#'`;
+    const requestItemsCondition = `element.key.PK LIKE 'CASE#${caseFileParameters.caseId}#' and element.key.SK LIKE 'FILE#${caseFileParameters.fileId}#'`;
+    const gsi1Condition = `requestParameters.key.GSI1PK LIKE 'CASE#${caseFileParameters.caseId}#${caseFileParameters.filePath}#' and requestParameters.key.GSI1SK LIKE 'FILE#${caseFileParameters.fileName}#'`;
+    const gsi2Condition = `requestParameters.key.GSI2PK LIKE 'CASE#${caseFileParameters.caseId}#${caseFileParameters.filePath}${caseFileParameters.fileName}#'`;
+
+    // These where clauses are separated into different queries because our schema is inconsistent which can cause Athena queries to break
+    const whereClauses = [
+      `where caseId = '${caseFileParameters.caseId}' and fileId = '${caseFileParameters.fileId}'`,
+      `where eventsource = 'dynamodb.amazonaws.com' and ((${primaryIndexCondition}) or (${gsi1Condition}) or (${gsi2Condition}) or any_match(requestparameters.requestItems, element -> ${requestItemsCondition}))`,
+      `where eventsource = 's3.amazonaws.com' and resources."0".ARN like '%${s3Key}'`,
+    ];
     return this.startAuditQuery(
       start,
       end,
-      cloudwatchClient,
-      auditLogGroups,
-      filterPredicate,
+      athenaClient,
+      whereClauses,
       AuditType.CASEFILE,
       resourceId,
       repositoryProvider
@@ -321,17 +351,15 @@ export class DeaAuditService extends AuditService {
     start: number,
     end: number,
     resourceId: string,
-    cloudwatchClient: CloudWatchLogsClient,
+    athenaClient: AthenaClient,
     repositoryProvider: ModelRepositoryProvider
   ) {
-    const auditLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME')];
-    const filterPredicate = `actorIdentity.userUlid = '${userUlid}'`;
+    const whereClauses = [`where actorIdentity.userUlid = '${userUlid}'`];
     return this.startAuditQuery(
       start,
       end,
-      cloudwatchClient,
-      auditLogGroups,
-      filterPredicate,
+      athenaClient,
+      whereClauses,
       AuditType.USER,
       resourceId,
       repositoryProvider
@@ -341,15 +369,13 @@ export class DeaAuditService extends AuditService {
   public async requestSystemAudit(
     start: number,
     end: number,
-    cloudwatchClient: CloudWatchLogsClient,
+    athenaClient: AthenaClient,
     repositoryProvider: ModelRepositoryProvider
   ) {
-    const systemLogGroups = [getRequiredEnv('AUDIT_LOG_GROUP_NAME'), getRequiredEnv('TRAIL_LOG_GROUP_NAME')];
     return this.startAuditQuery(
       start,
       end,
-      cloudwatchClient,
-      systemLogGroups,
+      athenaClient,
       undefined,
       AuditType.SYSTEM,
       'SYSTEM',
@@ -360,8 +386,9 @@ export class DeaAuditService extends AuditService {
   public async getCaseAuditResult(
     auditId: string,
     resourceUlid: string,
-    cloudwatchClient: CloudWatchLogsClient,
-    repositoryProvider: ModelRepositoryProvider
+    athenaClient: AthenaClient,
+    repositoryProvider: ModelRepositoryProvider,
+    sourceIp: string
   ) {
     const queryId = await AuditJobPersistence.getAuditJobQueryId(
       auditId,
@@ -369,14 +396,15 @@ export class DeaAuditService extends AuditService {
       resourceUlid,
       repositoryProvider
     );
-    return this.getAuditResult(queryId, cloudwatchClient);
+    return this.getAuditResult(queryId, athenaClient, sourceIp);
   }
 
   public async getUserAuditResult(
     auditId: string,
     resourceUlid: string,
-    cloudwatchClient: CloudWatchLogsClient,
-    repositoryProvider: ModelRepositoryProvider
+    athenaClient: AthenaClient,
+    repositoryProvider: ModelRepositoryProvider,
+    sourceIp: string
   ) {
     const queryId = await AuditJobPersistence.getAuditJobQueryId(
       auditId,
@@ -384,13 +412,14 @@ export class DeaAuditService extends AuditService {
       resourceUlid,
       repositoryProvider
     );
-    return this.getAuditResult(queryId, cloudwatchClient);
+    return this.getAuditResult(queryId, athenaClient, sourceIp);
   }
 
   public async getSystemAuditResult(
     auditId: string,
-    cloudwatchClient: CloudWatchLogsClient,
-    repositoryProvider: ModelRepositoryProvider
+    athenaClient: AthenaClient,
+    repositoryProvider: ModelRepositoryProvider,
+    sourceIp: string
   ) {
     const queryId = await AuditJobPersistence.getAuditJobQueryId(
       auditId,
@@ -398,14 +427,15 @@ export class DeaAuditService extends AuditService {
       'SYSTEM',
       repositoryProvider
     );
-    return this.getAuditResult(queryId, cloudwatchClient);
+    return this.getAuditResult(queryId, athenaClient, sourceIp);
   }
 
   public async getCaseFileAuditResult(
     auditId: string,
     resourceUlid: string,
-    cloudwatchClient: CloudWatchLogsClient,
-    repositoryProvider: ModelRepositoryProvider
+    athenaClient: AthenaClient,
+    repositoryProvider: ModelRepositoryProvider,
+    sourceIp: string
   ) {
     const queryId = await AuditJobPersistence.getAuditJobQueryId(
       auditId,
@@ -413,56 +443,44 @@ export class DeaAuditService extends AuditService {
       resourceUlid,
       repositoryProvider
     );
-    return this.getAuditResult(queryId, cloudwatchClient);
+    return this.getAuditResult(queryId, athenaClient, sourceIp);
   }
 
   private async getAuditResult(
     queryId: string,
-    cloudwatchClient: CloudWatchLogsClient
+    athenaClient: AthenaClient,
+    sourceIp: string
   ): Promise<AuditResult> {
-    const getResultsCommand = new GetQueryResultsCommand({
-      queryId,
+    const getExecCmd = new GetQueryExecutionCommand({
+      QueryExecutionId: queryId,
     });
+    const getResultsResponse = await athenaClient.send(getExecCmd);
+    logger.debug('execution', { execution: getResultsResponse.QueryExecution });
 
-    const getResultsResponse = await cloudwatchClient.send(getResultsCommand);
+    if (getResultsResponse.QueryExecution?.Status?.State === QueryExecutionState.SUCCEEDED) {
+      const outputLocation = getResultsResponse.QueryExecution.ResultConfiguration?.OutputLocation;
+      if (!outputLocation) {
+        logger.error('No output location found for audit query.', getResultsResponse.QueryExecution.Status);
+        return {
+          status: QueryExecutionState.FAILED,
+          downloadUrl: undefined,
+        };
+      }
 
-    if (
-      getResultsResponse.status === QueryStatus.Complete &&
-      getResultsResponse.results &&
-      getResultsResponse.results.length > 0
-    ) {
+      const locationParts = outputLocation.split('/');
+      const bucket = locationParts[2];
+      const key = locationParts.slice(3).join('/');
+      const presignedUrl = await getAuditDownloadPresignedUrl(bucket, key, sourceIp);
       return {
-        status: QueryStatus.Complete,
-        csvFormattedData: this.formatResults(getResultsResponse.results),
+        status: QueryExecutionState.SUCCEEDED,
+        downloadUrl: presignedUrl,
       };
     } else {
       return {
-        status: getResultsResponse.status ?? QueryStatus.Unknown,
-        csvFormattedData: undefined,
+        status: getResultsResponse.QueryExecution?.Status?.State ?? 'Unknown',
+        downloadUrl: undefined,
       };
     }
-  }
-
-  private formatResults(results: ResultField[][]): string {
-    if (results.length === 0) {
-      return '';
-    }
-
-    const separator = ', ';
-    const newline = '\r\n';
-    let csvData = '';
-    const csvHeaders =
-      results[0]
-        .map((column) => column.field?.replaceAll('_', ' ').replaceAll('DateTimeUTC', 'Date/Time (UTC)'))
-        .join(separator) + newline;
-    results.forEach((row) => {
-      // Excluding @ptr field from the csv output.
-      // Only the fields requested in the query are returned, along with a @ptr field, which is the identifier for the log record.
-      const csvFields = row.filter((column) => column.field !== '@ptr');
-      csvData += csvFields.map((column) => column.value).join(separator) + newline;
-    });
-    const csvContent = csvHeaders + csvData;
-    return csvContent;
   }
 }
 

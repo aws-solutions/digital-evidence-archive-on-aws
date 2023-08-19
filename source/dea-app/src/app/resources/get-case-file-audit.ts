@@ -7,12 +7,12 @@ import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
-import { defaultCloudwatchClient } from '../audit/dea-audit-plugin';
+import { defaultAthenaClient } from '../audit/dea-audit-plugin';
 import { auditService } from '../services/audit-service';
 import { getRequiredCaseFile } from '../services/case-file-service';
 import { getRequiredCase } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
-import { csvResponse, responseOk } from './dea-lambda-utils';
+import { responseOk } from './dea-lambda-utils';
 
 export const getCaseFileAudit: DEAGatewayProxyHandler = async (
   event,
@@ -23,7 +23,7 @@ export const getCaseFileAudit: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   _datasetsProvider = defaultDatasetsProvider,
   /* istanbul ignore next */
-  cloudwatchClient = defaultCloudwatchClient
+  athenaClient = defaultAthenaClient
 ) => {
   const auditId = getRequiredPathParam(event, 'auditId', joiUlid);
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
@@ -35,13 +35,10 @@ export const getCaseFileAudit: DEAGatewayProxyHandler = async (
   const result = await auditService.getCaseFileAuditResult(
     auditId,
     `${caseId}${fileId}`,
-    cloudwatchClient,
-    repositoryProvider
+    athenaClient,
+    repositoryProvider,
+    `${event.requestContext.identity.sourceIp}/32`
   );
 
-  if (result.csvFormattedData) {
-    return csvResponse(event, result.csvFormattedData);
-  } else {
-    return responseOk(event, result);
-  }
+  return responseOk(event, result);
 };

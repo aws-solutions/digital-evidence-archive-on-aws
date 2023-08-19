@@ -51,6 +51,15 @@ import { DeaOperationalDashboard } from './dea-ops-dashboard';
 interface LambdaEnvironment {
   [key: string]: string;
 }
+
+export interface AthenaConfig {
+  athenaOutputBucket: Bucket;
+  athenaWorkGroupName: string;
+  athenaDBName: string;
+  athenaTableName: string;
+  athenaAuditBucket: Bucket;
+}
+
 interface DeaRestApiProps {
   deaTableArn: string;
   deaTableName: string;
@@ -61,13 +70,15 @@ interface DeaRestApiProps {
   kmsKey: Key;
   lambdaEnv: LambdaEnvironment;
   opsDashboard: DeaOperationalDashboard;
+  athenaConfig: AthenaConfig;
 }
 
 export class DeaRestApiConstruct extends Construct {
   public authLambdaRole: Role;
   public lambdaBaseRole: Role;
-  // this role is needed to create session credentials to restrict pre-signed URL access parameters such as ip-address
+  // datasetsRole and auditDownloadRole are needed to create session credentials to restrict pre-signed URL access parameters such as ip-address
   public datasetsRole: Role;
+  public auditDownloadRole: Role;
   public customResourceRole: Role;
   public deaRestApi: RestApi;
   public apiEndpointArns: Map<string, string>;
@@ -90,14 +101,23 @@ export class DeaRestApiConstruct extends Construct {
       props.deaDatasetsBucket.bucketArn,
       props.deaAuditLogArn,
       props.deaTrailLogArn,
-      props.s3BatchDeleteCaseFileRoleArn
+      props.s3BatchDeleteCaseFileRoleArn,
+      props.athenaConfig
     );
+    props.athenaConfig.athenaAuditBucket.grantRead(this.lambdaBaseRole);
 
     this.authLambdaRole = this.createAuthLambdaRole();
 
     this.datasetsRole = this.createDatasetsRole(props.kmsKey.keyArn, props.deaDatasetsBucket.bucketArn);
 
+    this.auditDownloadRole = this.createAuditDownloadRole(
+      props.kmsKey.keyArn,
+      props.athenaConfig.athenaOutputBucket.bucketArn
+    );
+
     props.lambdaEnv['DATASETS_ROLE'] = this.datasetsRole.roleArn;
+    props.lambdaEnv['AUDIT_DOWNLOAD_ROLE_ARN'] = this.auditDownloadRole.roleArn;
+    props.lambdaEnv['KEY_ARN'] = props.kmsKey.keyArn;
 
     this.customResourceRole = new Role(this, 'custom-resource-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -111,6 +131,7 @@ export class DeaRestApiConstruct extends Construct {
           new ArnPrincipal(this.lambdaBaseRole.roleArn),
           new ArnPrincipal(this.authLambdaRole.roleArn),
           new ArnPrincipal(this.datasetsRole.roleArn),
+          new ArnPrincipal(this.auditDownloadRole.roleArn),
         ],
         resources: ['*'],
         sid: 'lambda-roles-key-share-statement',
@@ -221,7 +242,10 @@ export class DeaRestApiConstruct extends Construct {
 
     this.configureApiGateway(deaApiRouteConfig, props.lambdaEnv);
 
-    this.updateBucketCors(this.deaRestApi, props.deaDatasetsBucket.bucketName);
+    this.updateBucketCors(this.deaRestApi, [
+      props.deaDatasetsBucket.bucketName,
+      props.athenaConfig.athenaOutputBucket.bucketName,
+    ]);
   }
 
   private getApiGatewayPolicy(): PolicyDocument | undefined {
@@ -268,7 +292,7 @@ export class DeaRestApiConstruct extends Construct {
     ];
   }
 
-  private updateBucketCors(restApi: RestApi, bucketName: Readonly<string>) {
+  private updateBucketCors(restApi: RestApi, bucketNames: ReadonlyArray<string>) {
     const allowedOrigins = deaConfig.deaAllowedOriginsList();
     allowedOrigins.push(`https://${Fn.parseDomainName(restApi.url)}`);
 
@@ -277,38 +301,24 @@ export class DeaRestApiConstruct extends Construct {
       allowedOrigins.push(`https://${customDomainName}`);
     }
 
-    const updateCorsCall: AwsSdkCall = {
-      service: 'S3',
-      action: 'putBucketCors',
-      parameters: {
-        Bucket: bucketName,
-        CORSConfiguration: {
-          CORSRules: [
-            {
-              AllowedOrigins: allowedOrigins,
-              AllowedMethods: [HttpMethods.GET, HttpMethods.PUT, HttpMethods.HEAD],
-              AllowedHeaders: ['*'],
-            },
-          ],
-        },
-      },
-      physicalResourceId: PhysicalResourceId.of(restApi.restApiId),
-    };
-
     const customResourcePolicy = AwsCustomResourcePolicy.fromSdkCalls({
       resources: AwsCustomResourcePolicy.ANY_RESOURCE,
     });
 
     customResourcePolicy.statements.forEach((statement) => this.customResourceRole.addToPolicy(statement));
 
-    const updateCors = new AwsCustomResource(this, 'UpdateBucketCORS', {
-      onCreate: updateCorsCall,
-      onUpdate: updateCorsCall,
-      role: this.customResourceRole,
-      policy: customResourcePolicy,
-      installLatestAwsSdk: false,
+    bucketNames.forEach((bucketName, index) => {
+      const updateCorsCall = this.getUpdateCorsCall(bucketName, allowedOrigins, restApi.restApiId);
+
+      const updateCors = new AwsCustomResource(this, `UpdateBucketCORS${index}`, {
+        onCreate: updateCorsCall,
+        onUpdate: updateCorsCall,
+        role: this.customResourceRole,
+        policy: customResourcePolicy,
+        installLatestAwsSdk: false,
+      });
+      updateCors.node.addDependency(restApi);
     });
-    updateCors.node.addDependency(restApi);
   }
 
   private configureApiGateway(routeConfig: ApiGatewayRouteConfig, lambdaEnv: LambdaEnvironment): void {
@@ -417,11 +427,11 @@ export class DeaRestApiConstruct extends Construct {
     lambdaEnv: LambdaEnvironment
   ): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
-      // Set to 1024MB to mitigate memory allocation issues. Some executions were using more than 512MB.
+      // Set to 2048MB to mitigate memory allocation issues. Some executions were using more than 512MB.
       // E.g: Error: Runtime exited with error: signal: killed Runtime.ExitError.
-      memorySize: 1024,
+      memorySize: 2048,
       role: role,
-      timeout: Duration.seconds(10),
+      timeout: Duration.seconds(20),
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
       entry: path.join(__dirname, pathToSource),
@@ -473,13 +483,34 @@ export class DeaRestApiConstruct extends Construct {
     return lambda;
   }
 
+  private getUpdateCorsCall(bucketName: string, allowedOrigins: string[], restApiId: string): AwsSdkCall {
+    return {
+      service: 'S3',
+      action: 'putBucketCors',
+      parameters: {
+        Bucket: bucketName,
+        CORSConfiguration: {
+          CORSRules: [
+            {
+              AllowedOrigins: allowedOrigins,
+              AllowedMethods: [HttpMethods.GET, HttpMethods.PUT, HttpMethods.HEAD],
+              AllowedHeaders: ['*'],
+            },
+          ],
+        },
+      },
+      physicalResourceId: PhysicalResourceId.of(restApiId),
+    };
+  }
+
   private createLambdaBaseRole(
     kmsKeyArn: string,
     tableArn: string,
     datasetsBucketArn: string,
     auditLogArn: string,
     trailLogArn: string,
-    s3BatchDeleteCaseFileRoleArn: string
+    s3BatchDeleteCaseFileRoleArn: string,
+    athenaConfig: AthenaConfig
   ): Role {
     const STAGE = deaConfig.stage();
 
@@ -538,13 +569,6 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['athena:*'],
-        resources: ['*'],
-      })
-    );
-
-    role.addToPolicy(
-      new PolicyStatement({
         actions: ['logs:GetQueryResults', 's3:CreateJob'],
         resources: ['*'],
       })
@@ -571,6 +595,52 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          's3:GetBucketLocation',
+          's3:GetObject',
+          's3:ListBucket',
+          's3:ListBucketMultipartUploads',
+          's3:ListMultipartUploadParts',
+          's3:AbortMultipartUpload',
+          's3:PutObject',
+        ],
+        resources: [
+          athenaConfig.athenaOutputBucket.bucketArn,
+          `${athenaConfig.athenaOutputBucket.bucketArn}/*`,
+        ],
+      })
+    );
+
+    // Athena Query permissions
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['athena:GetQueryResults', 'athena:GetQueryExecution', 'athena:StartQueryExecution'],
+        resources: ['*'],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['athena:GetWorkgroup'],
+        resources: [
+          `arn:aws:athena:${Aws.REGION}:${Aws.ACCOUNT_ID}:workgroup/${athenaConfig.athenaWorkGroupName}`,
+        ],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['glue:GetTable', 'glue:GetDatabase'],
+        resources: [
+          `arn:aws:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:catalog`,
+          `arn:aws:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:database/${athenaConfig.athenaDBName}`,
+          `arn:aws:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:table/${athenaConfig.athenaDBName}/${athenaConfig.athenaTableName}`,
+        ],
+      })
+    );
+
     return role;
   }
 
@@ -589,6 +659,28 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [kmsKeyArn],
+      })
+    );
+
+    return role;
+  }
+
+  private createAuditDownloadRole(kmsKeyArn: string, auditResultsBucketArn: string): Role {
+    const role = new Role(this, 'dea-audit-download-role', {
+      assumedBy: this.lambdaBaseRole,
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:GetObject', 's3:GetObjectVersion'],
+        resources: [`${auditResultsBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
         resources: [kmsKeyArn],
       })
     );

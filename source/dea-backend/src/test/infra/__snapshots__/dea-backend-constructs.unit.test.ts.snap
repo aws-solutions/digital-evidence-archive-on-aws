@@ -3,6 +3,78 @@
 exports[`DeaBackend constructs synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
+    "DeaAuditathenaDBName33BD65E2": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-athenaDBName",
+      },
+      "Value": Object {
+        "Ref": "DeaAuditauditDB8F465ECE",
+      },
+    },
+    "DeaAuditathenaTableNameB38EA473": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-athenaTableName",
+      },
+      "Value": Object {
+        "Ref": "DeaAuditauditTableF413E0BA",
+      },
+    },
+    "DeaAuditathenaWorkgroupNameCB5B3BB9": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-athenaWorkgroupName",
+      },
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            Object {
+              "Ref": "AWS::StackName",
+            },
+            "-dea-athena-workgroup",
+          ],
+        ],
+      },
+    },
+    "DeaAuditauditBucketName17C211BF": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-auditBucketName",
+      },
+      "Value": Object {
+        "Ref": "DeaAuditauditBucketD75893B5",
+      },
+    },
+    "DeaAuditdeaTrailBucketNameBE00B0CC": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-deaTrailBucketName",
+      },
+      "Value": Object {
+        "Ref": "DeaAuditdeaTrailBucket4819FF43",
+      },
+    },
+    "DeaAuditfirehoseName878D4C88": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-firehoseName",
+      },
+      "Value": Object {
+        "Ref": "DeaAuditDeliveryStreamBF390C06",
+      },
+    },
+    "DeaAuditobjectLockQueueUrlD0E84161": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-objectLockQueueUrl",
+      },
+      "Value": Object {
+        "Ref": "DeaAuditauditobjectlockqueue5FAA6838",
+      },
+    },
+    "DeaAuditqueryResultBucketName7763E648": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-queryResultBucketName",
+      },
+      "Value": Object {
+        "Ref": "DeaAuditqueryResultBucket9D5EA764",
+      },
+    },
     "DeaBackendConstructDeaS3AccessLogs327B4237": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-DeaS3AccessLogs",
@@ -17,6 +89,14 @@ Object {
       },
       "Value": Object {
         "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+      },
+    },
+    "DeaBackendConstructS3AccessLogsBucketNameBE0DE775": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-S3AccessLogsBucketName",
+      },
+      "Value": Object {
+        "Ref": "DeaBackendConstructS3AccessLogsBucket2074272F",
       },
     },
     "DeaEventHandlersS3BatchDeleteCaseFileLambdaF9C0024F": Object {
@@ -156,6 +236,180 @@ Object {
         "Timeout": 120,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691": Object {
+      "DependsOn": Array [
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "ZipFile": "import boto3  # type: ignore
+import json
+import logging
+import urllib.request
+
+s3 = boto3.client("s3")
+
+EVENTBRIDGE_CONFIGURATION = 'EventBridgeConfiguration'
+
+CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations"]
+
+def handler(event: dict, context):
+  response_status = "SUCCESS"
+  error_message = ""
+  try:
+    props = event["ResourceProperties"]
+    bucket = props["BucketName"]
+    notification_configuration = props["NotificationConfiguration"]
+    request_type = event["RequestType"]
+    managed = props.get('Managed', 'true').lower() == 'true'
+    stack_id = event['StackId']
+
+    if managed:
+      config = handle_managed(request_type, notification_configuration)
+    else:
+      config = handle_unmanaged(bucket, stack_id, request_type, notification_configuration)
+
+    put_bucket_notification_configuration(bucket, config)
+  except Exception as e:
+    logging.exception("Failed to put bucket notification configuration")
+    response_status = "FAILED"
+    error_message = f"Error: {str(e)}. "
+  finally:
+    submit_response(event, context, response_status, error_message)
+
+def handle_managed(request_type, notification_configuration):
+  if request_type == 'Delete':
+    return {}
+  return notification_configuration
+
+def handle_unmanaged(bucket, stack_id, request_type, notification_configuration):
+  external_notifications = find_external_notifications(bucket, stack_id)
+
+  if request_type == 'Delete':
+    return external_notifications
+
+  def with_id(notification):
+    notification['Id'] = f"{stack_id}-{hash(json.dumps(notification, sort_keys=True))}"
+    return notification
+
+  notifications = {}
+  for t in CONFIGURATION_TYPES:
+    external = external_notifications.get(t, [])
+    incoming = [with_id(n) for n in notification_configuration.get(t, [])]
+    notifications[t] = external + incoming
+
+  if EVENTBRIDGE_CONFIGURATION in notification_configuration:
+    notifications[EVENTBRIDGE_CONFIGURATION] = notification_configuration[EVENTBRIDGE_CONFIGURATION]
+  elif EVENTBRIDGE_CONFIGURATION in external_notifications:
+    notifications[EVENTBRIDGE_CONFIGURATION] = external_notifications[EVENTBRIDGE_CONFIGURATION]
+
+  return notifications
+
+def find_external_notifications(bucket, stack_id):
+  existing_notifications = get_bucket_notification_configuration(bucket)
+  external_notifications = {}
+  for t in CONFIGURATION_TYPES:
+    external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'].startswith(f"{stack_id}-")]
+
+  if EVENTBRIDGE_CONFIGURATION in existing_notifications:
+    external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
+
+  return external_notifications
+
+def get_bucket_notification_configuration(bucket):
+  return s3.get_bucket_notification_configuration(Bucket=bucket)
+
+def put_bucket_notification_configuration(bucket, notification_configuration):
+  s3.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=notification_configuration)
+
+def submit_response(event: dict, context, response_status: str, error_message: str):
+  response_body = json.dumps(
+    {
+      "Status": response_status,
+      "Reason": f"{error_message}See the details in CloudWatch Log Stream: {context.log_stream_name}",
+      "PhysicalResourceId": event.get("PhysicalResourceId") or event["LogicalResourceId"],
+      "StackId": event["StackId"],
+      "RequestId": event["RequestId"],
+      "LogicalResourceId": event["LogicalResourceId"],
+      "NoEcho": False,
+    }
+  ).encode("utf-8")
+  headers = {"content-type": "", "content-length": str(len(response_body))}
+  try:
+    req = urllib.request.Request(url=event["ResponseURL"], headers=headers, data=response_body, method="PUT")
+    with urllib.request.urlopen(req) as response:
+      print(response.read().decode("utf-8"))
+    print("Status code: " + response.reason)
+  except Exception as e:
+      print("send(..) failed executing request.urlopen(..): " + str(e))
+",
+        },
+        "Description": "AWS CloudFormation handler for \\"Custom::S3BucketNotifications\\" resources (@aws-cdk/aws-s3)",
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.9",
+        "Timeout": 300,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:PutBucketNotification",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "Roles": Array [
+          Object {
+            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": Object {
       "DependsOn": Array [
@@ -382,7 +636,7 @@ Object {
           },
           "BufferingHints": Object {
             "IntervalInSeconds": 60,
-            "SizeInMBs": 3,
+            "SizeInMBs": 1,
           },
           "CloudWatchLoggingOptions": Object {
             "Enabled": true,
@@ -435,6 +689,14 @@ Object {
                         "Arn",
                       ],
                     },
+                  },
+                  Object {
+                    "ParameterName": "BufferSizeInMBs",
+                    "ParameterValue": "1",
+                  },
+                  Object {
+                    "ParameterName": "BufferIntervalInSeconds",
+                    "ParameterValue": "60",
                   },
                 ],
                 "Type": "Lambda",
@@ -610,25 +872,6 @@ Object {
       },
       "Type": "AWS::Athena::WorkGroup",
     },
-    "DeaAuditauditBucketAutoDeleteObjectsCustomResourceBA774CDC": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "DeaAuditauditBucketPolicy9640F504",
-      ],
-      "Properties": Object {
-        "BucketName": Object {
-          "Ref": "DeaAuditauditBucketD75893B5",
-        },
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::S3AutoDeleteObjects",
-      "UpdateReplacePolicy": "Delete",
-    },
     "DeaAuditauditBucketD75893B5": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
@@ -661,18 +904,56 @@ Object {
           "IgnorePublicAcls": true,
           "RestrictPublicBuckets": true,
         },
-        "Tags": Array [
-          Object {
-            "Key": "aws-cdk:auto-delete-objects",
-            "Value": "true",
-          },
-        ],
         "VersioningConfiguration": Object {
           "Status": "Enabled",
         },
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
+    },
+    "DeaAuditauditBucketNotifications37F46D9A": Object {
+      "DependsOn": Array [
+        "DeaAuditauditobjectlockqueuePolicyABC0A859",
+        "DeaAuditauditobjectlockqueue5FAA6838",
+      ],
+      "Properties": Object {
+        "BucketName": Object {
+          "Ref": "DeaAuditauditBucketD75893B5",
+        },
+        "Managed": true,
+        "NotificationConfiguration": Object {
+          "QueueConfigurations": Array [
+            Object {
+              "Events": Array [
+                "s3:ObjectCreated:*",
+              ],
+              "Filter": Object {
+                "Key": Object {
+                  "FilterRules": Array [
+                    Object {
+                      "Name": "prefix",
+                      "Value": "audit/",
+                    },
+                  ],
+                },
+              },
+              "QueueArn": Object {
+                "Fn::GetAtt": Array [
+                  "DeaAuditauditobjectlockqueue5FAA6838",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3BucketNotifications",
     },
     "DeaAuditauditBucketPolicy9640F504": Object {
       "Properties": Object {
@@ -691,44 +972,6 @@ Object {
               "Effect": "Deny",
               "Principal": Object {
                 "AWS": "*",
-              },
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaAuditauditBucketD75893B5",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaAuditauditBucketD75893B5",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            Object {
-              "Action": Array [
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-              ],
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::GetAtt": Array [
-                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                    "Arn",
-                  ],
-                },
               },
               "Resource": Array [
                 Object {
@@ -865,7 +1108,11 @@ Object {
               },
               Object {
                 "Name": "requestParameters",
-                "Type": "struct<key:struct<PK:string,SK:string>>",
+                "Type": "struct<key:struct<PK:string,SK:string,GSI1PK:string,GSI1SK:string,GSI2PK:string,GSI2SK:string>,requestItems:array<struct<key:struct<PK:string,SK:string,GSI1PK:string,GSI1SK:string,GSI2PK:string,GSI2SK:string>>>>",
+              },
+              Object {
+                "Name": "resources",
+                "Type": "struct<0:struct<ARN:string>>",
               },
             ],
             "Compressed": false,
@@ -884,6 +1131,9 @@ Object {
             },
             "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
             "SerdeInfo": Object {
+              "Parameters": Object {
+                "ignore.malformed.json": "true",
+              },
               "SerializationLibrary": "org.openx.data.jsonserde.JsonSerDe",
             },
             "StoredAsSubDirectories": false,
@@ -893,8 +1143,211 @@ Object {
       },
       "Type": "AWS::Glue::Table",
     },
+    "DeaAuditauditobjectlockdlqF310E49D": Object {
+      "DeletionPolicy": "Delete",
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaAuditauditobjectlockerC902034D": Object {
+      "DependsOn": Array [
+        "DeaAuditauditobjectlockerServiceRoleDefaultPolicyF8DF7136",
+        "DeaAuditauditobjectlockerServiceRole8481B518",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps",
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaAuditauditobjectlockerServiceRole8481B518",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 60,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaAuditauditobjectlockerServiceRole8481B518": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaAuditauditobjectlockerServiceRoleDefaultPolicyF8DF7136": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "s3:PutObjectLegalHold",
+                "s3:GetBucketObjectLockConfiguration",
+                "s3:GetObjectLegalHold",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaAuditauditBucketD75893B5",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaAuditauditBucketD75893B5",
+                          "Arn",
+                        ],
+                      },
+                      "/audit/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "sqs:ReceiveMessage",
+                "sqs:ChangeMessageVisibility",
+                "sqs:GetQueueUrl",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaAuditauditobjectlockqueue5FAA6838",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaAuditauditobjectlockerServiceRoleDefaultPolicyF8DF7136",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaAuditauditobjectlockerServiceRole8481B518",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeaAuditauditobjectlockerSqsEventSourceteststackDeaAuditauditobjectlockqueue6174A2D84B54B9C8": Object {
+      "Properties": Object {
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "DeaAuditauditobjectlockqueue5FAA6838",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Ref": "DeaAuditauditobjectlockerC902034D",
+        },
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "DeaAuditauditobjectlockqueue5FAA6838": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "RedrivePolicy": Object {
+          "deadLetterTargetArn": Object {
+            "Fn::GetAtt": Array [
+              "DeaAuditauditobjectlockdlqF310E49D",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 5,
+        },
+        "VisibilityTimeout": 60,
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaAuditauditobjectlockqueuePolicyABC0A859": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Condition": Object {
+                "ArnLike": Object {
+                  "aws:SourceArn": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaAuditauditBucketD75893B5",
+                      "Arn",
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "s3.amazonaws.com",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaAuditauditobjectlockqueue5FAA6838",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": Array [
+          Object {
+            "Ref": "DeaAuditauditobjectlockqueue5FAA6838",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
     "DeaAuditauditprocessinglambdaE24A4EB0": Object {
       "DependsOn": Array [
+        "DeaAuditauditprocessinglambdaServiceRoleDefaultPolicy603DB2EE",
         "DeaAuditauditprocessinglambdaServiceRole74F0C037",
       ],
       "Properties": Object {
@@ -953,6 +1406,46 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "DeaAuditauditprocessinglambdaServiceRoleDefaultPolicy603DB2EE": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "firehose:PutRecordBatch",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:firehose:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":deliverystream/",
+                    Object {
+                      "Ref": "AWS::StackName",
+                    },
+                    "-DeaAuditDeliveryStream*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaAuditauditprocessinglambdaServiceRoleDefaultPolicy603DB2EE",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaAuditauditprocessinglambdaServiceRole74F0C037",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "DeaAuditdeaTrailBucket4819FF43": Object {
       "DeletionPolicy": "Delete",
@@ -1269,6 +1762,7 @@ Object {
         "BucketEncryption": Object {
           "ServerSideEncryptionConfiguration": Array [
             Object {
+              "BucketKeyEnabled": true,
               "ServerSideEncryptionByDefault": Object {
                 "KMSMasterKeyID": Object {
                   "Fn::GetAtt": Array [
@@ -1278,6 +1772,23 @@ Object {
                 },
                 "SSEAlgorithm": "aws:kms",
               },
+            },
+          ],
+        },
+        "CorsConfiguration": Object {
+          "CorsRules": Array [
+            Object {
+              "AllowedHeaders": Array [
+                "*",
+              ],
+              "AllowedMethods": Array [
+                "GET",
+                "PUT",
+                "HEAD",
+              ],
+              "AllowedOrigins": Array [
+                "*",
+              ],
             },
           ],
         },
@@ -1824,25 +2335,6 @@ Object {
       },
       "Type": "AWS::S3::BucketPolicy",
     },
-    "DeaBackendConstructS3DatasetsBucketAutoDeleteObjectsCustomResource5386F212": Object {
-      "DeletionPolicy": "Delete",
-      "DependsOn": Array [
-        "DeaBackendConstructS3DatasetsBucketPolicyA1DF7E5A",
-      ],
-      "Properties": Object {
-        "BucketName": Object {
-          "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-        },
-        "ServiceToken": Object {
-          "Fn::GetAtt": Array [
-            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::S3AutoDeleteObjects",
-      "UpdateReplacePolicy": "Delete",
-    },
     "DeaBackendConstructS3DatasetsBucketDDF4C58A": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
@@ -1910,12 +2402,6 @@ Object {
           "IgnorePublicAcls": true,
           "RestrictPublicBuckets": true,
         },
-        "Tags": Array [
-          Object {
-            "Key": "aws-cdk:auto-delete-objects",
-            "Value": "true",
-          },
-        ],
         "VersioningConfiguration": Object {
           "Status": "Enabled",
         },
@@ -1950,44 +2436,6 @@ Object {
               "Effect": "Deny",
               "Principal": Object {
                 "AWS": "*",
-              },
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            Object {
-              "Action": Array [
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-              ],
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::GetAtt": Array [
-                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                    "Arn",
-                  ],
-                },
               },
               "Resource": Array [
                 Object {
@@ -2481,6 +2929,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -2491,6 +2945,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -2506,7 +2966,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2514,7 +2974,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -2567,6 +3027,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -2577,6 +3043,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -2592,7 +3064,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2600,7 +3072,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -2653,6 +3125,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -2663,6 +3141,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -2678,7 +3162,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2686,7 +3170,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -2739,6 +3223,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -2749,6 +3239,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -2764,7 +3260,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2772,7 +3268,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -2825,6 +3321,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -2835,6 +3337,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -2850,7 +3358,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2858,7 +3366,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -2911,6 +3419,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -2921,6 +3435,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -2936,7 +3456,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -2944,7 +3464,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -2997,6 +3517,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -3007,6 +3533,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -3022,7 +3554,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3030,7 +3562,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3083,6 +3615,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -3093,6 +3631,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -3108,7 +3652,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3116,7 +3660,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3169,6 +3713,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -3179,6 +3729,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -3194,7 +3750,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3202,7 +3758,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3255,6 +3811,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -3265,6 +3827,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -3280,7 +3848,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3288,7 +3856,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3341,6 +3909,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -3351,6 +3925,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -3366,7 +3946,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3374,7 +3954,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3427,6 +4007,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -3437,6 +4023,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -3452,7 +4044,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3460,7 +4052,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3513,6 +4105,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -3523,6 +4121,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -3538,7 +4142,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -3546,7 +4150,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3599,6 +4203,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -3609,6 +4219,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -3624,7 +4240,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -3632,7 +4248,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3685,6 +4301,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -3695,6 +4317,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -3710,7 +4338,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3718,7 +4346,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3771,6 +4399,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -3781,6 +4415,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -3796,7 +4436,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3804,7 +4444,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3857,6 +4497,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -3867,6 +4513,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -3882,7 +4534,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3890,7 +4542,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3943,6 +4595,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -3953,6 +4611,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -3968,7 +4632,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -3976,7 +4640,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4029,6 +4693,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -4039,6 +4709,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -4054,7 +4730,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4062,7 +4738,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4115,6 +4791,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -4125,6 +4807,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -4140,7 +4828,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4148,7 +4836,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4201,6 +4889,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -4211,6 +4905,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -4226,7 +4926,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4234,7 +4934,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4287,6 +4987,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -4297,6 +5003,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -4312,7 +5024,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -4320,7 +5032,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4373,6 +5085,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -4383,6 +5101,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -4398,7 +5122,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4406,7 +5130,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4459,6 +5183,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -4469,6 +5199,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -4484,7 +5220,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4492,7 +5228,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4545,6 +5281,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -4555,6 +5297,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -4570,7 +5318,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -4578,7 +5326,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4631,6 +5379,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -4641,6 +5395,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -4656,7 +5416,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4664,7 +5424,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4717,6 +5477,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -4727,6 +5493,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -4742,7 +5514,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4750,7 +5522,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4803,6 +5575,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -4813,6 +5591,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -4828,7 +5612,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4836,7 +5620,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4889,6 +5673,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -4899,6 +5689,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -4914,7 +5710,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4922,7 +5718,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4975,6 +5771,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -4985,6 +5787,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -5000,7 +5808,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -5008,7 +5816,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5061,6 +5869,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -5071,6 +5885,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -5086,7 +5906,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5094,7 +5914,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5147,6 +5967,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -5157,6 +5983,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -5172,7 +6004,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5180,7 +6012,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5233,6 +6065,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -5243,6 +6081,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -5258,7 +6102,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5266,7 +6110,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5319,6 +6163,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -5329,6 +6179,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -5344,7 +6200,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5352,7 +6208,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5405,6 +6261,12 @@ Object {
         "Environment": Object {
           "Variables": Object {
             "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
             "AUDIT_LOG_GROUP_NAME": Object {
               "Ref": "deaAuditLogs7B75D3F1",
             },
@@ -5415,6 +6277,12 @@ Object {
             "DATASETS_ROLE": Object {
               "Fn::GetAtt": Array [
                 "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
                 "Arn",
               ],
             },
@@ -5430,7 +6298,7 @@ Object {
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 1024,
+        "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5438,7 +6306,7 @@ Object {
           ],
         },
         "Runtime": "nodejs18.x",
-        "Timeout": 10,
+        "Timeout": 20,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5458,7 +6326,7 @@ Object {
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructUpdateBucketCORSCFB274B9": Object {
+    "DeaRestApiConstructUpdateBucketCORS03A74B63D": Object {
       "DeletionPolicy": "Delete",
       "DependsOn": Array [
         "DeaRestApiConstructdeaapiAccount1E82C2B3",
@@ -5655,7 +6523,7 @@ Object {
         "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
         "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
         "DeaRestApiConstructdeaapi6587DDA1",
-        "DeaRestApiConstructUpdateBucketCORSCustomResourcePolicyAECBED94",
+        "DeaRestApiConstructUpdateBucketCORS0CustomResourcePolicy7AB0E605",
       ],
       "Properties": Object {
         "Create": Object {
@@ -5791,7 +6659,7 @@ Object {
       "Type": "Custom::AWS",
       "UpdateReplacePolicy": "Delete",
     },
-    "DeaRestApiConstructUpdateBucketCORSCustomResourcePolicyAECBED94": Object {
+    "DeaRestApiConstructUpdateBucketCORS0CustomResourcePolicy7AB0E605": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaapiAccount1E82C2B3",
         "DeaRestApiConstructdeaapiCloudWatchRole49932FD9",
@@ -5999,7 +6867,7 @@ Object {
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "DeaRestApiConstructUpdateBucketCORSCustomResourcePolicyAECBED94",
+        "PolicyName": "DeaRestApiConstructUpdateBucketCORS0CustomResourcePolicy7AB0E605",
         "Roles": Array [
           Object {
             "Ref": "DeaRestApiConstructcustomresourcerole327E13A2",
@@ -6007,6 +6875,556 @@ Object {
         ],
       },
       "Type": "AWS::IAM::Policy",
+    },
+    "DeaRestApiConstructUpdateBucketCORS1CustomResourcePolicyBD382E26": Object {
+      "DependsOn": Array [
+        "DeaRestApiConstructdeaapiAccount1E82C2B3",
+        "DeaRestApiConstructdeaapiCloudWatchRole49932FD9",
+        "DeaRestApiConstructdeaapiDEAUsagePlanBC29ADF7",
+        "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8",
+        "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
+        "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
+        "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenA42BE3E6",
+        "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenE48A5552",
+        "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
+        "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
+        "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl21F61114",
+        "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF",
+        "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D",
+        "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0",
+        "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
+        "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrlF8A5551B",
+        "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548",
+        "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
+        "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
+        "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
+        "DeaRestApiConstructdeaapiauthOPTIONSF807407C",
+        "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
+        "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken099A885C",
+        "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
+        "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D",
+        "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
+        "DeaRestApiConstructdeaapiauthE4846931",
+        "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E",
+        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeToken13FAD07F",
+        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeTokenD51670A5",
+        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTD4C71CFF",
+        "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
+        "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpointsBF1A4F6F",
+        "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpoints4616DB7F",
+        "DeaRestApiConstructdeaapiavailableEndpointsGET587EF9CF",
+        "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289",
+        "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
+        "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsE4633CE0",
+        "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsFAD4690C",
+        "DeaRestApiConstructdeaapicasescaseIdactionsGETDE6D1CEA",
+        "DeaRestApiConstructdeaapicasescaseIdactionsOPTIONSE258076A",
+        "DeaRestApiConstructdeaapicasescaseIdactions4A0D9ED8",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsv8740F849",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsvC4D46A81",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGET26466F30",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvOPTIONS428A5C73",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvF0D4AAEB",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditIdOPTIONS517DE0AB",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditId33263B8C",
+        "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B",
+        "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit10091757",
+        "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit5D5BA22A",
+        "DeaRestApiConstructdeaapicasescaseIdauditPOSTE1FBCE9C",
+        "DeaRestApiConstructdeaapicasescaseIdaudit16BF85CD",
+        "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails918BFC1A",
+        "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails2FC44B5A",
+        "DeaRestApiConstructdeaapicasescaseIddetailsDELETED0F47C2D",
+        "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails7EEFD469",
+        "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails44CA90D4",
+        "DeaRestApiConstructdeaapicasescaseIddetailsGET0AC0D58C",
+        "DeaRestApiConstructdeaapicasescaseIddetailsOPTIONSA19CA131",
+        "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetailsD3729DE8",
+        "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetails7B2B7A41",
+        "DeaRestApiConstructdeaapicasescaseIddetailsPUT33A3214F",
+        "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsv61B26B23",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsvA8F10AD2",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGET502B4685",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONS5D0C778E",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsv94975A46",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdOPTIONSDBE821E3",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdAF04FFD1",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdaudit5562DDDE",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdauditF20DF571",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOST3CAF58FE",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdaudit231DCFA8",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents8F8D422E",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents28CE2C11",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontents638F2797",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoBE59735B",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoCCF7F8BF",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETBCDCA5B2",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoOPTIONS11169FBA",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore06D2657C",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTA4D1AB12",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreE48E6E5F",
+        "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesF013B694",
+        "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesA389BD7D",
+        "DeaRestApiConstructdeaapicasescaseIdfilesGETB7EECD96",
+        "DeaRestApiConstructdeaapicasescaseIdfilesOPTIONS18C09E02",
+        "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesC519AD34",
+        "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfiles39BF2383",
+        "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
+        "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7",
+        "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954",
+        "DeaRestApiConstructdeaapicasescaseIdownerOPTIONSBD3E6D71",
+        "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdownerE92895A4",
+        "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdowner0B48A767",
+        "DeaRestApiConstructdeaapicasescaseIdownerPOSTFB8341CA",
+        "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F",
+        "DeaRestApiConstructdeaapicasescaseId5919A5AE",
+        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation5EA98B1E",
+        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation45DD1C2C",
+        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETB786FCDD",
+        "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD",
+        "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
+        "DeaRestApiConstructdeaapicasescaseIdstatusOPTIONS0760E14E",
+        "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus03BDFD4A",
+        "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus787AC3AD",
+        "DeaRestApiConstructdeaapicasescaseIdstatusPUT31B9CA11",
+        "DeaRestApiConstructdeaapicasescaseIdstatus0AD7015F",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMembershipsBF5873AE",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMemberships87E19089",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMembershipsBD47C55D",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships7FD5F1FA",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships94BCD26D",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships4134D8D9",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships748F3883",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdOPTIONS15B78F29",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
+        "DeaRestApiConstructdeaapicasescaseIdusersOPTIONS61C453FB",
+        "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
+        "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases0A56C052",
+        "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases8A384810",
+        "DeaRestApiConstructdeaapicasesallcasesGET3D7FE7B4",
+        "DeaRestApiConstructdeaapicasesallcasesOPTIONSA5C611C6",
+        "DeaRestApiConstructdeaapicasesallcases5A486593",
+        "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesC2E61486",
+        "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesEA5EFE48",
+        "DeaRestApiConstructdeaapicasesmycasesGETC5597167",
+        "DeaRestApiConstructdeaapicasesmycasesOPTIONSE1C2DE04",
+        "DeaRestApiConstructdeaapicasesmycases5E6BEFAC",
+        "DeaRestApiConstructdeaapicasesOPTIONS6C23822B",
+        "DeaRestApiConstructdeaapicasesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasesB76BA281",
+        "DeaRestApiConstructdeaapicasesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcases9AE2A82E",
+        "DeaRestApiConstructdeaapicasesPOST0A7C65AB",
+        "DeaRestApiConstructdeaapicasesC2FD1C2B",
+        "DeaRestApiConstructdeaapiOPTIONSE2FADC9C",
+        "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsv32688A4B",
+        "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsvFC587FF9",
+        "DeaRestApiConstructdeaapisystemauditauditIdcsvGETB3B09D3C",
+        "DeaRestApiConstructdeaapisystemauditauditIdcsvOPTIONSBC6D4692",
+        "DeaRestApiConstructdeaapisystemauditauditIdcsv3DF23375",
+        "DeaRestApiConstructdeaapisystemauditauditIdOPTIONS2EADE5A9",
+        "DeaRestApiConstructdeaapisystemauditauditIdB2530B9D",
+        "DeaRestApiConstructdeaapisystemauditOPTIONS30FFCB3F",
+        "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemaudit92D5D91E",
+        "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemauditCB076E78",
+        "DeaRestApiConstructdeaapisystemauditPOSTA0F7E161",
+        "DeaRestApiConstructdeaapisystemaudit2A5DAEF8",
+        "DeaRestApiConstructdeaapisystemOPTIONS2695AC39",
+        "DeaRestApiConstructdeaapisystemAD98847E",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv84743A25",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv64381123",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGET612A031C",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvOPTIONSFD04EC81",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsv119B9333",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditIdOPTIONS3652E037",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditId63841CC8",
+        "DeaRestApiConstructdeaapiusersuserIdauditOPTIONSEE6E3674",
+        "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit6194CA37",
+        "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit3F85C343",
+        "DeaRestApiConstructdeaapiusersuserIdauditPOST04D75563",
+        "DeaRestApiConstructdeaapiusersuserIdaudit60684DFA",
+        "DeaRestApiConstructdeaapiusersuserIdOPTIONS66B09E53",
+        "DeaRestApiConstructdeaapiusersuserIdB57BE8EB",
+        "DeaRestApiConstructdeaapiusersGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusers8EAF9CF0",
+        "DeaRestApiConstructdeaapiusersGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusers52337E4B",
+        "DeaRestApiConstructdeaapiusersGET45E97005",
+        "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
+        "DeaRestApiConstructdeaapiusers95152658",
+        "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
+        "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+        "DeaRestApiConstructdeaapi6587DDA1",
+      ],
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:PutBucketCors",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaRestApiConstructUpdateBucketCORS1CustomResourcePolicyBD382E26",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaRestApiConstructcustomresourcerole327E13A2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeaRestApiConstructUpdateBucketCORS1FB85EA38": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "DeaRestApiConstructdeaapiAccount1E82C2B3",
+        "DeaRestApiConstructdeaapiCloudWatchRole49932FD9",
+        "DeaRestApiConstructdeaapiDEAUsagePlanBC29ADF7",
+        "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8",
+        "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
+        "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
+        "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenA42BE3E6",
+        "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenE48A5552",
+        "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
+        "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
+        "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl21F61114",
+        "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF",
+        "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D",
+        "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0",
+        "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
+        "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrlF8A5551B",
+        "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548",
+        "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
+        "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
+        "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
+        "DeaRestApiConstructdeaapiauthOPTIONSF807407C",
+        "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
+        "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken099A885C",
+        "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
+        "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D",
+        "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
+        "DeaRestApiConstructdeaapiauthE4846931",
+        "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E",
+        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeToken13FAD07F",
+        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeTokenD51670A5",
+        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTD4C71CFF",
+        "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
+        "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpointsBF1A4F6F",
+        "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpoints4616DB7F",
+        "DeaRestApiConstructdeaapiavailableEndpointsGET587EF9CF",
+        "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289",
+        "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
+        "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsE4633CE0",
+        "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsFAD4690C",
+        "DeaRestApiConstructdeaapicasescaseIdactionsGETDE6D1CEA",
+        "DeaRestApiConstructdeaapicasescaseIdactionsOPTIONSE258076A",
+        "DeaRestApiConstructdeaapicasescaseIdactions4A0D9ED8",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsv8740F849",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsvC4D46A81",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGET26466F30",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvOPTIONS428A5C73",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvF0D4AAEB",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditIdOPTIONS517DE0AB",
+        "DeaRestApiConstructdeaapicasescaseIdauditauditId33263B8C",
+        "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B",
+        "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit10091757",
+        "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit5D5BA22A",
+        "DeaRestApiConstructdeaapicasescaseIdauditPOSTE1FBCE9C",
+        "DeaRestApiConstructdeaapicasescaseIdaudit16BF85CD",
+        "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails918BFC1A",
+        "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails2FC44B5A",
+        "DeaRestApiConstructdeaapicasescaseIddetailsDELETED0F47C2D",
+        "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails7EEFD469",
+        "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails44CA90D4",
+        "DeaRestApiConstructdeaapicasescaseIddetailsGET0AC0D58C",
+        "DeaRestApiConstructdeaapicasescaseIddetailsOPTIONSA19CA131",
+        "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetailsD3729DE8",
+        "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetails7B2B7A41",
+        "DeaRestApiConstructdeaapicasescaseIddetailsPUT33A3214F",
+        "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsv61B26B23",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsvA8F10AD2",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGET502B4685",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONS5D0C778E",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsv94975A46",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdOPTIONSDBE821E3",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdAF04FFD1",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdaudit5562DDDE",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdauditF20DF571",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOST3CAF58FE",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdaudit231DCFA8",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents8F8D422E",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents28CE2C11",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontents638F2797",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoBE59735B",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoCCF7F8BF",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETBCDCA5B2",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoOPTIONS11169FBA",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore06D2657C",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTA4D1AB12",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreE48E6E5F",
+        "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesF013B694",
+        "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesA389BD7D",
+        "DeaRestApiConstructdeaapicasescaseIdfilesGETB7EECD96",
+        "DeaRestApiConstructdeaapicasescaseIdfilesOPTIONS18C09E02",
+        "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesC519AD34",
+        "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfiles39BF2383",
+        "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
+        "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7",
+        "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954",
+        "DeaRestApiConstructdeaapicasescaseIdownerOPTIONSBD3E6D71",
+        "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdownerE92895A4",
+        "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdowner0B48A767",
+        "DeaRestApiConstructdeaapicasescaseIdownerPOSTFB8341CA",
+        "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F",
+        "DeaRestApiConstructdeaapicasescaseId5919A5AE",
+        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation5EA98B1E",
+        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation45DD1C2C",
+        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETB786FCDD",
+        "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD",
+        "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
+        "DeaRestApiConstructdeaapicasescaseIdstatusOPTIONS0760E14E",
+        "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus03BDFD4A",
+        "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus787AC3AD",
+        "DeaRestApiConstructdeaapicasescaseIdstatusPUT31B9CA11",
+        "DeaRestApiConstructdeaapicasescaseIdstatus0AD7015F",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMembershipsBF5873AE",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMemberships87E19089",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMembershipsBD47C55D",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
+        "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships7FD5F1FA",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships94BCD26D",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships4134D8D9",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships748F3883",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserIdOPTIONS15B78F29",
+        "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
+        "DeaRestApiConstructdeaapicasescaseIdusersOPTIONS61C453FB",
+        "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
+        "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases0A56C052",
+        "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases8A384810",
+        "DeaRestApiConstructdeaapicasesallcasesGET3D7FE7B4",
+        "DeaRestApiConstructdeaapicasesallcasesOPTIONSA5C611C6",
+        "DeaRestApiConstructdeaapicasesallcases5A486593",
+        "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesC2E61486",
+        "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesEA5EFE48",
+        "DeaRestApiConstructdeaapicasesmycasesGETC5597167",
+        "DeaRestApiConstructdeaapicasesmycasesOPTIONSE1C2DE04",
+        "DeaRestApiConstructdeaapicasesmycases5E6BEFAC",
+        "DeaRestApiConstructdeaapicasesOPTIONS6C23822B",
+        "DeaRestApiConstructdeaapicasesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasesB76BA281",
+        "DeaRestApiConstructdeaapicasesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcases9AE2A82E",
+        "DeaRestApiConstructdeaapicasesPOST0A7C65AB",
+        "DeaRestApiConstructdeaapicasesC2FD1C2B",
+        "DeaRestApiConstructdeaapiOPTIONSE2FADC9C",
+        "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsv32688A4B",
+        "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsvFC587FF9",
+        "DeaRestApiConstructdeaapisystemauditauditIdcsvGETB3B09D3C",
+        "DeaRestApiConstructdeaapisystemauditauditIdcsvOPTIONSBC6D4692",
+        "DeaRestApiConstructdeaapisystemauditauditIdcsv3DF23375",
+        "DeaRestApiConstructdeaapisystemauditauditIdOPTIONS2EADE5A9",
+        "DeaRestApiConstructdeaapisystemauditauditIdB2530B9D",
+        "DeaRestApiConstructdeaapisystemauditOPTIONS30FFCB3F",
+        "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemaudit92D5D91E",
+        "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemauditCB076E78",
+        "DeaRestApiConstructdeaapisystemauditPOSTA0F7E161",
+        "DeaRestApiConstructdeaapisystemaudit2A5DAEF8",
+        "DeaRestApiConstructdeaapisystemOPTIONS2695AC39",
+        "DeaRestApiConstructdeaapisystemAD98847E",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv84743A25",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv64381123",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGET612A031C",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvOPTIONSFD04EC81",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsv119B9333",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditIdOPTIONS3652E037",
+        "DeaRestApiConstructdeaapiusersuserIdauditauditId63841CC8",
+        "DeaRestApiConstructdeaapiusersuserIdauditOPTIONSEE6E3674",
+        "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit6194CA37",
+        "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit3F85C343",
+        "DeaRestApiConstructdeaapiusersuserIdauditPOST04D75563",
+        "DeaRestApiConstructdeaapiusersuserIdaudit60684DFA",
+        "DeaRestApiConstructdeaapiusersuserIdOPTIONS66B09E53",
+        "DeaRestApiConstructdeaapiusersuserIdB57BE8EB",
+        "DeaRestApiConstructdeaapiusersGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusers8EAF9CF0",
+        "DeaRestApiConstructdeaapiusersGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusers52337E4B",
+        "DeaRestApiConstructdeaapiusersGET45E97005",
+        "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
+        "DeaRestApiConstructdeaapiusers95152658",
+        "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
+        "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+        "DeaRestApiConstructdeaapi6587DDA1",
+        "DeaRestApiConstructUpdateBucketCORS1CustomResourcePolicyBD382E26",
+      ],
+      "Properties": Object {
+        "Create": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"service\\":\\"S3\\",\\"action\\":\\"putBucketCors\\",\\"parameters\\":{\\"Bucket\\":\\"",
+              Object {
+                "Ref": "DeaAuditqueryResultBucket9D5EA764",
+              },
+              "\\",\\"CORSConfiguration\\":{\\"CORSRules\\":[{\\"AllowedOrigins\\":[\\"https://localhost:3001\\",\\"https://",
+              Object {
+                "Fn::Select": Array [
+                  0,
+                  Object {
+                    "Fn::Split": Array [
+                      "/",
+                      Object {
+                        "Fn::Select": Array [
+                          1,
+                          Object {
+                            "Fn::Split": Array [
+                              "//",
+                              Object {
+                                "Fn::Join": Array [
+                                  "",
+                                  Array [
+                                    "https://",
+                                    Object {
+                                      "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+                                    },
+                                    ".execute-api.",
+                                    Object {
+                                      "Ref": "AWS::Region",
+                                    },
+                                    ".",
+                                    Object {
+                                      "Ref": "AWS::URLSuffix",
+                                    },
+                                    "/",
+                                    Object {
+                                      "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                                    },
+                                    "/",
+                                  ],
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              "\\"],\\"AllowedMethods\\":[\\"GET\\",\\"PUT\\",\\"HEAD\\"],\\"AllowedHeaders\\":[\\"*\\"]}]}},\\"physicalResourceId\\":{\\"id\\":\\"",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "\\"}}",
+            ],
+          ],
+        },
+        "InstallLatestAwsSdk": false,
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn",
+          ],
+        },
+        "Update": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"service\\":\\"S3\\",\\"action\\":\\"putBucketCors\\",\\"parameters\\":{\\"Bucket\\":\\"",
+              Object {
+                "Ref": "DeaAuditqueryResultBucket9D5EA764",
+              },
+              "\\",\\"CORSConfiguration\\":{\\"CORSRules\\":[{\\"AllowedOrigins\\":[\\"https://localhost:3001\\",\\"https://",
+              Object {
+                "Fn::Select": Array [
+                  0,
+                  Object {
+                    "Fn::Split": Array [
+                      "/",
+                      Object {
+                        "Fn::Select": Array [
+                          1,
+                          Object {
+                            "Fn::Split": Array [
+                              "//",
+                              Object {
+                                "Fn::Join": Array [
+                                  "",
+                                  Array [
+                                    "https://",
+                                    Object {
+                                      "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+                                    },
+                                    ".execute-api.",
+                                    Object {
+                                      "Ref": "AWS::Region",
+                                    },
+                                    ".",
+                                    Object {
+                                      "Ref": "AWS::URLSuffix",
+                                    },
+                                    "/",
+                                    Object {
+                                      "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                                    },
+                                    "/",
+                                  ],
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              "\\"],\\"AllowedMethods\\":[\\"GET\\",\\"PUT\\",\\"HEAD\\"],\\"AllowedHeaders\\":[\\"*\\"]}]}},\\"physicalResourceId\\":{\\"id\\":\\"",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "\\"}}",
+            ],
+          ],
+        },
+      },
+      "Type": "Custom::AWS",
+      "UpdateReplacePolicy": "Delete",
     },
     "DeaRestApiConstructcustomresourcerole327E13A2": Object {
       "Properties": Object {
@@ -12795,6 +14213,78 @@ Object {
       },
       "Type": "AWS::ApiGateway::Method",
     },
+    "DeaRestApiConstructdeaauditdownloadrole41E0E771": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaRestApiConstructdeaauditdownloadroleDefaultPolicy88E58624": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaAuditqueryResultBucket9D5EA764",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "kms:Decrypt",
+                "kms:GenerateDataKey",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "testKey1CDDDD5E",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaRestApiConstructdeaauditdownloadroleDefaultPolicy88E58624",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "DeaRestApiConstructdeaauthlambdarole2081E9E6": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -13032,11 +14522,6 @@ Object {
               ],
             },
             Object {
-              "Action": "athena:*",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
               "Action": Array [
                 "logs:GetQueryResults",
                 "s3:CreateJob",
@@ -13092,6 +14577,183 @@ Object {
                     },
                     ":parameter/dea/[STAGE-REMOVED]*",
                   ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "s3:GetBucketLocation",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads",
+                "s3:ListMultipartUploadParts",
+                "s3:AbortMultipartUpload",
+                "s3:PutObject",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaAuditqueryResultBucket9D5EA764",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaAuditqueryResultBucket9D5EA764",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "athena:GetQueryResults",
+                "athena:GetQueryExecution",
+                "athena:StartQueryExecution",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "athena:GetWorkgroup",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:athena:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":workgroup/",
+                    Object {
+                      "Ref": "AWS::StackName",
+                    },
+                    "-dea-athena-workgroup",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "glue:GetTable",
+                "glue:GetDatabase",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:aws:glue:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":catalog",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:aws:glue:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":database/",
+                      Object {
+                        "Ref": "DeaAuditauditDB8F465ECE",
+                      },
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:aws:glue:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":table/",
+                      Object {
+                        "Ref": "DeaAuditauditDB8F465ECE",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaAuditauditTableF413E0BA",
+                      },
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaAuditauditBucketD75893B5",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaAuditauditBucketD75893B5",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "testKey1CDDDD5E",
+                  "Arn",
                 ],
               },
             },
@@ -13463,6 +15125,12 @@ Object {
                   Object {
                     "Fn::GetAtt": Array [
                       "DeaRestApiConstructdeadatasetsrole293FB411",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaRestApiConstructdeaauditdownloadrole41E0E771",
                       "Arn",
                     ],
                   },

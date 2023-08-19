@@ -237,6 +237,11 @@ const convictSchema = {
     format: 'Boolean',
     default: true,
   },
+  auditDownloadTimeoutMinutes: {
+    doc: 'Timeout in minutes for S3 pre-signed URLs generated for audit CSV download',
+    format: Number,
+    default: 60,
+  },
 };
 
 export interface IdPAttributes {
@@ -305,6 +310,7 @@ interface DEAConfig {
   isMultiRegionTrail(): boolean;
   uploadFilesTimeoutMinutes(): number;
   includeDynamoDataPlaneEventsInTrail(): boolean;
+  auditDownloadTimeoutMinutes(): number;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -393,6 +399,7 @@ export const deaConfig: DEAConfig = {
   isMultiRegionTrail: () => convictConfig.get('isMultiRegionTrail') ?? true,
   uploadFilesTimeoutMinutes: () => convictConfig.get('uploadFilesTimeoutMinutes'),
   includeDynamoDataPlaneEventsInTrail: () => convictConfig.get('includeDynamoDataPlaneEventsInTrail'),
+  auditDownloadTimeoutMinutes: () => convictConfig.get('auditDownloadTimeoutMinutes'),
 };
 
 export const loadConfig = (stage: string): void => {

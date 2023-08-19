@@ -5,6 +5,36 @@
 
 import * as glue from '@aws-cdk/aws-glue-alpha';
 
+const dynamoKeySchema = {
+  name: 'key',
+  type: glue.Schema.struct([
+    {
+      name: 'PK',
+      type: glue.Schema.STRING,
+    },
+    {
+      name: 'SK',
+      type: glue.Schema.STRING,
+    },
+    {
+      name: 'GSI1PK',
+      type: glue.Schema.STRING,
+    },
+    {
+      name: 'GSI1SK',
+      type: glue.Schema.STRING,
+    },
+    {
+      name: 'GSI2PK',
+      type: glue.Schema.STRING,
+    },
+    {
+      name: 'GSI2SK',
+      type: glue.Schema.STRING,
+    },
+  ]),
+};
+
 export const auditGlueTableColumns = [
   {
     name: 'timestamp',
@@ -155,15 +185,21 @@ export const auditGlueTableColumns = [
   {
     name: 'requestParameters',
     type: glue.Schema.struct([
+      dynamoKeySchema,
       {
-        name: 'key',
+        name: 'requestItems',
+        type: glue.Schema.array(glue.Schema.struct([dynamoKeySchema])),
+      },
+    ]),
+  },
+  {
+    name: 'resources',
+    type: glue.Schema.struct([
+      {
+        name: '0',
         type: glue.Schema.struct([
           {
-            name: 'PK',
-            type: glue.Schema.STRING,
-          },
-          {
-            name: 'SK',
+            name: 'ARN',
             type: glue.Schema.STRING,
           },
         ]),

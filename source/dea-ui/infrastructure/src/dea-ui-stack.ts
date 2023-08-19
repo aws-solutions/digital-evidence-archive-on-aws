@@ -5,7 +5,7 @@
 /* eslint-disable no-new */
 import assert from 'assert';
 import * as path from 'path';
-import { deaConfig } from '@aws/dea-backend';
+import { createCfnOutput, deaConfig } from '@aws/dea-backend';
 import { Aws, StackProps } from 'aws-cdk-lib';
 import {
   AuthorizationType,
@@ -45,6 +45,10 @@ export class DeaUiConstruct extends Construct {
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+    });
+
+    createCfnOutput(this, 'artifactBucketName', {
+      value: bucket.bucketName,
     });
 
     this.addS3TLSSigV4BucketPolicy(bucket);

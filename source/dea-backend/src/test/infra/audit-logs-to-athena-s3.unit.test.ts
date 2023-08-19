@@ -11,7 +11,7 @@ import { convictConfig } from '../../config';
 import { AuditCloudwatchToAthenaInfra } from '../../constructs/create-cloudwatch-to-athena-infra';
 
 describe('audit logs to s3 infrastructure', () => {
-  it('synthesizes without legal hold event handling in a test stack', () => {
+  it('synthesizes with expected infra', () => {
     convictConfig.set('testStack', true);
     const app = new App();
     const stack = new Stack(app, 'audit-to-s3-test-stack');
@@ -34,41 +34,10 @@ describe('audit logs to s3 infrastructure', () => {
 
     template.resourceCountIs('AWS::S3::Bucket', 2);
     template.resourceCountIs('AWS::Athena::WorkGroup', 1);
-    template.resourceCountIs('AWS::IAM::Role', 5);
-    template.resourceCountIs('AWS::Lambda::Function', 2);
+    template.resourceCountIs('AWS::IAM::Role', 7);
+    template.resourceCountIs('AWS::Lambda::Function', 4);
     template.resourceCountIs('AWS::KinesisFirehose::DeliveryStream', 1);
     template.resourceCountIs('AWS::Glue::Table', 1);
     template.resourceCountIs('AWS::Glue::Database', 1);
-  });
-
-  it('synthesizes with legal hold event handling in a prod stack', () => {
-    convictConfig.set('testStack', false);
-    const app = new App();
-    const stack = new Stack(app, 'audit-to-s3-test-stack');
-
-    const key = new Key(stack, 'testKey', {
-      removalPolicy: RemovalPolicy.DESTROY,
-      pendingWindow: Duration.days(7),
-    });
-
-    const auditLogGroup = new LogGroup(stack, 'audit-log-group');
-    const trailLogGroup = new LogGroup(stack, 'trail-log-group');
-
-    const _auditToS3Construct = new AuditCloudwatchToAthenaInfra(stack, 'audit-to-s3-construct', {
-      kmsKey: key,
-      auditLogGroup,
-      trailLogGroup,
-    });
-
-    const template = Template.fromStack(stack);
-
-    template.resourceCountIs('AWS::S3::Bucket', 2);
-    template.resourceCountIs('AWS::Athena::WorkGroup', 1);
-    template.resourceCountIs('AWS::IAM::Role', 6);
-    template.resourceCountIs('AWS::Lambda::Function', 3);
-    template.resourceCountIs('AWS::KinesisFirehose::DeliveryStream', 1);
-    template.resourceCountIs('AWS::Glue::Table', 1);
-    template.resourceCountIs('AWS::Glue::Database', 1);
-    template.resourceCountIs('AWS::SQS::Queue', 2);
   });
 });

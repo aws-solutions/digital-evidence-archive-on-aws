@@ -105,6 +105,10 @@ export class DeaBackendConstruct extends Construct {
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
 
+    createCfnOutput(this, 'S3AccessLogsBucketName', {
+      value: s3AccessLogsBucket.bucketName,
+    });
+
     const resources = accessLogPrefixes.map((prefix) => `${s3AccessLogsBucket.bucketArn}/${prefix}*`);
 
     s3AccessLogsBucket.addToResourcePolicy(
@@ -170,7 +174,6 @@ export class DeaBackendConstruct extends Construct {
       lifecycleRules: this.getLifeCycleRules(),
       publicReadAccess: false,
       removalPolicy: deaConfig.retainPolicy(),
-      autoDeleteObjects: deaConfig.isTestStack(),
       versioned: true,
       serverAccessLogsBucket: accessLogBucket,
       serverAccessLogsPrefix: accessLogPrefix,

@@ -7,18 +7,27 @@ import path from 'path';
 import * as glue from '@aws-cdk/aws-glue-alpha';
 import { Aws, Duration, Fn, StackProps, aws_kinesisfirehose } from 'aws-cdk-lib';
 import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
+import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { FilterPattern, LogGroup, SubscriptionFilter } from 'aws-cdk-lib/aws-logs';
-import { BlockPublicAccess, Bucket, BucketEncryption, EventType, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
+import {
+  BlockPublicAccess,
+  Bucket,
+  BucketEncryption,
+  EventType,
+  HttpMethods,
+  ObjectOwnership,
+} from 'aws-cdk-lib/aws-s3';
 import { SqsDestination } from 'aws-cdk-lib/aws-s3-notifications';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { auditGlueTableColumns } from './audit-glue-table-columns';
+import { createCfnOutput } from './construct-support';
 import { FirehoseDestination } from './firehose-destination';
 
 interface AuditCloudwatchToAthenaProps extends StackProps {
@@ -31,6 +40,8 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
   public athenaTableName: string;
   public athenaDBName: string;
   public athenaWorkGroupName: string;
+  public athenaOutputBucket: Bucket;
+  public athenaAuditBucket: Bucket;
 
   public constructor(scope: Construct, stackName: string, props: AuditCloudwatchToAthenaProps) {
     super(scope, stackName);
@@ -38,27 +49,29 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
     });
 
-    const auditBucket = new Bucket(this, 'auditBucket', {
+    this.athenaAuditBucket = new Bucket(this, 'auditBucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       encryption: BucketEncryption.KMS,
       encryptionKey: props.kmsKey,
       enforceSSL: true,
       publicReadAccess: false,
       removalPolicy: deaConfig.retainPolicy(),
-      autoDeleteObjects: deaConfig.isTestStack(),
       versioned: true,
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
       objectLockEnabled: true,
     });
 
+    createCfnOutput(this, 'auditBucketName', {
+      value: this.athenaAuditBucket.bucketName,
+    });
+
     const auditPrefix = 'audit/';
 
-    if (!deaConfig.isTestStack()) {
-      this.addLegalHoldInfrastructure(auditBucket, auditPrefix);
-    }
+    this.addLegalHoldInfrastructure(this.athenaAuditBucket, auditPrefix);
 
     const queryResultBucket = new Bucket(this, 'queryResultBucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      bucketKeyEnabled: true,
       encryption: BucketEncryption.KMS,
       encryptionKey: props.kmsKey,
       enforceSSL: true,
@@ -66,7 +79,19 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       versioned: true,
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
+      cors: [
+        {
+          allowedOrigins: ['*'],
+          allowedMethods: [HttpMethods.GET, HttpMethods.PUT, HttpMethods.HEAD],
+          allowedHeaders: ['*'],
+        },
+      ],
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+    });
+    this.athenaOutputBucket = queryResultBucket;
+
+    createCfnOutput(this, 'queryResultBucketName', {
+      value: queryResultBucket.bucketName,
     });
 
     const athenaWorkgroup = new CfnWorkGroup(this, 'athenaWorkgroup', {
@@ -100,13 +125,13 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
           's3:ListBucketMultipartUploads',
           's3:PutObject',
         ],
-        resources: [auditBucket.bucketArn, `${auditBucket.bucketArn}/*`],
+        resources: [this.athenaAuditBucket.bucketArn, `${this.athenaAuditBucket.bucketArn}/*`],
       })
     );
     props.kmsKey.grantEncrypt(fireHosetoS3Role);
 
     const lambda = new NodejsFunction(this, 'audit-processing-lambda', {
-      // Our kinesis hint is 3MB, assume a high decompression of 10x, 512mb will be plenty
+      // Our kinesis hint is 1MB, assume a high decompression of 10x, 512mb will be plenty
       memorySize: 512,
       // transformation lambda has a maximum execution of 5 minutes
       timeout: Duration.minutes(5),
@@ -126,7 +151,8 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
 
     lambda.grantInvoke(fireHosetoS3Role);
 
-    const fhose = new aws_kinesisfirehose.CfnDeliveryStream(this, 'Delivery Stream', {
+    const firehoseName = 'Delivery Stream';
+    const fhose = new aws_kinesisfirehose.CfnDeliveryStream(this, firehoseName, {
       deliveryStreamType: 'DirectPut',
       deliveryStreamEncryptionConfigurationInput: {
         keyType: 'CUSTOMER_MANAGED_CMK',
@@ -146,10 +172,10 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
         Also ensure that the response that your function returns doesn't exceed 6 MB
          */
         bufferingHints: {
-          sizeInMBs: 3,
+          sizeInMBs: 1,
           intervalInSeconds: 60,
         },
-        bucketArn: auditBucket.bucketArn,
+        bucketArn: this.athenaAuditBucket.bucketArn,
         prefix: auditPrefix,
         errorOutputPrefix: 'deliveryErrors',
         roleArn: fireHosetoS3Role.roleArn,
@@ -163,13 +189,34 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
           enabled: true,
           processors: [
             {
-              parameters: [{ parameterName: 'LambdaArn', parameterValue: lambda.functionArn }],
+              // Allowed values: BufferIntervalInSeconds | BufferSizeInMBs | Delimiter | JsonParsingEngine | LambdaArn | MetadataExtractionQuery | NumberOfRetries | RoleArn | SubRecordType
+              parameters: [
+                { parameterName: 'LambdaArn', parameterValue: lambda.functionArn },
+                { parameterName: 'BufferSizeInMBs', parameterValue: '1' },
+                { parameterName: 'BufferIntervalInSeconds', parameterValue: '60' },
+              ],
               type: 'Lambda',
             },
           ],
         },
       },
     });
+
+    createCfnOutput(this, 'firehoseName', {
+      value: fhose.ref,
+    });
+
+    // construct the arn here because using the arn directly leads to a circular dependency
+    lambda.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['firehose:PutRecordBatch'],
+        resources: [
+          `arn:aws:firehose:${Aws.REGION}:${Aws.ACCOUNT_ID}:deliverystream/${
+            Aws.STACK_NAME
+          }-${stackName}${firehoseName.replaceAll(' ', '')}*`,
+        ],
+      })
+    );
 
     const fhoseArn = Fn.getAtt(fhose.logicalId, 'Arn').toString();
     const destination = new FirehoseDestination(fhoseArn);
@@ -193,11 +240,30 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
 
     const glueDB = new glue.Database(this, 'auditDB');
     const glueTable = new glue.Table(this, 'auditTable', {
-      bucket: auditBucket,
+      bucket: this.athenaAuditBucket,
       database: glueDB,
       columns: auditGlueTableColumns,
       dataFormat: glue.DataFormat.JSON,
     });
+
+    createCfnOutput(this, 'athenaDBName', {
+      value: glueDB.databaseName,
+    });
+    createCfnOutput(this, 'athenaTableName', {
+      value: glueTable.tableName,
+    });
+    createCfnOutput(this, 'athenaWorkgroupName', {
+      value: this.athenaWorkGroupName,
+    });
+
+    //eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const tableNode = glueTable.node.defaultChild as CfnTable;
+    tableNode.addPropertyOverride('TableInput.StorageDescriptor.SerdeInfo.Parameters', {
+      // 'case.insensitive': 'false',
+      // prevent malformed JSON from completely wrecking athena queries
+      'ignore.malformed.json': 'true',
+    });
+
     this.athenaDBName = glueDB.databaseName;
     this.athenaTableName = glueTable.tableName;
   }
@@ -235,6 +301,10 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
         queue: objectLockDLQ,
         maxReceiveCount: 5,
       },
+    });
+
+    createCfnOutput(this, 'objectLockQueueUrl', {
+      value: objectLockQueue.queueUrl,
     });
 
     const eventSource = new SqsEventSource(objectLockQueue);

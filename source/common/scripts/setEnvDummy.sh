@@ -3,3 +3,7 @@ export IDENTITY_POOL_ID=dummyId
 export USER_POOL_ID=dummyPool
 export USER_POOL_CLIENT_ID=dummyClient
 export DATASETS_BUCKET_NAME=dummyBucket
+export AUDIT_BUCKET_NAME=dummyAuditBucket
+export ATHENA_WORKGROUP_NAME=dummyWorkgroup
+export GLUE_TABLE=dummyTable
+export GLUE_DB=dummyDb

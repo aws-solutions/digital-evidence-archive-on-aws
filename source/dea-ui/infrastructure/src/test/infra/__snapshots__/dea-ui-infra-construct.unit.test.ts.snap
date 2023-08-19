@@ -3,6 +3,14 @@
 exports[`DEA UI Infrastructure stack synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
+    "DeaUiStackartifactBucketNameE913A2E8": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-artifactBucketName",
+      },
+      "Value": Object {
+        "Ref": "DeaUiStackartifactbucketFFC87A37",
+      },
+    },
     "testApiEndpointC9D07ADA": Object {
       "Value": Object {
         "Fn::Join": Array [

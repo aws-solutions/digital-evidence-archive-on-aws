@@ -3,14 +3,21 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
-import Joi from 'joi';
 import { AuditEventType } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
-import { joiUlid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
-import { callDeaAPIWithCreds, createCaseSuccess, deleteCase, randomSuffix } from './test-helpers';
+import {
+  MINUTES_TO_MILLISECONDS,
+  callDeaAPIWithCreds,
+  createCaseSuccess,
+  deleteCase,
+  getAuditQueryResults,
+  randomSuffix,
+  verifyAuditEntry,
+} from './test-helpers';
 
 describe('system audit e2e', () => {
   const cognitoHelper = new CognitoHelper();
@@ -26,19 +33,6 @@ describe('system audit e2e', () => {
 
   const caseIdsToDelete: string[] = [];
 
-  beforeAll(async () => {
-    // Create manager
-    await cognitoHelper.createUser(testManager, 'WorkingManager', testManager, 'TestManager');
-    [managerCreds, managerIdToken] = await cognitoHelper.getCredentialsForUser(testManager);
-
-    // Create worker
-    await cognitoHelper.createUser(testUser, 'CaseWorker', testUser, 'TestUser');
-    [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
-
-    // initialize the user into the DB
-    await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', idToken, creds);
-  }, 10000);
-
   afterAll(async () => {
     for (const caseId of caseIdsToDelete) {
       await deleteCase(deaApiUrl, caseId, idToken, creds);
@@ -46,129 +40,146 @@ describe('system audit e2e', () => {
     await cognitoHelper.cleanup();
   }, 30000);
 
-  it('retrieves system actions', async () => {
-    const caseName = `auditTestCase${randomSuffix()}`;
-    const createdCase = await createCaseSuccess(
-      deaApiUrl,
-      {
-        name: caseName,
-        description: 'this is a description',
-      },
-      idToken,
-      creds
-    );
-    const caseUlid = createdCase.ulid ?? fail();
-    caseIdsToDelete.push(caseUlid);
+  it(
+    'retrieves system actions',
+    async () => {
+      const startTime = Date.now();
+      // ensure separation between the start time and when events roll in
+      await delay(1000);
+      // Create manager
+      await cognitoHelper.createUser(testManager, 'WorkingManager', testManager, 'TestManager');
+      [managerCreds, managerIdToken] = await cognitoHelper.getCredentialsForUser(testManager);
 
-    const updateResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${caseUlid}/details`,
-      'PUT',
-      idToken,
-      creds,
-      {
-        ulid: caseUlid,
-        name: caseName,
-        description: 'An updated description',
-      }
-    );
-    expect(updateResponse.status).toEqual(200);
+      // Create worker
+      await cognitoHelper.createUser(testUser, 'CaseWorker', testUser, 'TestUser');
+      [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
-    const getResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${caseUlid}/details`,
-      'GET',
-      idToken,
-      creds
-    );
-    expect(getResponse.status).toEqual(200);
+      // initialize the user into the DB
+      await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', idToken, creds);
 
-    const membershipsResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${caseUlid}/userMemberships`,
-      'GET',
-      idToken,
-      creds
-    );
-    expect(membershipsResponse.status).toEqual(200);
+      const caseName = `auditTestCase${randomSuffix()}`;
 
-    // allow some time so the events show up in CW logs
-    await delay(25000);
-
-    let csvData: string | undefined;
-    let queryRetries = 50;
-    while (!csvData && queryRetries > 0) {
-      const startAuditQueryResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}system/audit`,
-        'POST',
-        managerIdToken,
-        managerCreds
+      const createdCase = await createCaseSuccess(
+        deaApiUrl,
+        {
+          name: caseName,
+          description: 'this is a description',
+        },
+        idToken,
+        creds
       );
+      const caseUlid = createdCase.ulid ?? fail();
+      caseIdsToDelete.push(caseUlid);
 
-      expect(startAuditQueryResponse.status).toEqual(200);
-      const auditId: string = startAuditQueryResponse.data.auditId;
-      Joi.assert(auditId, joiUlid);
+      const updateResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${caseUlid}/details`,
+        'PUT',
+        idToken,
+        creds,
+        {
+          ulid: caseUlid,
+          name: caseName,
+          description: 'An updated description',
+        }
+      );
+      expect(updateResponse.status).toEqual(200);
 
-      let retries = 10;
-      let getQueryReponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}system/audit/${auditId}/csv`,
+      const getResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${caseUlid}/details`,
         'GET',
-        managerIdToken,
-        managerCreds
+        idToken,
+        creds
       );
-      while (getQueryReponse.data.status && retries > 0) {
-        if (getQueryReponse.data.status === 'Complete') {
-          break;
-        }
-        --retries;
-        if (getQueryReponse.status !== 200) {
-          fail();
-        }
-        await delay(2000);
+      expect(getResponse.status).toEqual(200);
 
-        getQueryReponse = await callDeaAPIWithCreds(
-          `${deaApiUrl}system/audit/${auditId}/csv`,
-          'GET',
-          managerIdToken,
-          managerCreds
-        );
-      }
+      const membershipsResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${caseUlid}/userMemberships`,
+        'GET',
+        idToken,
+        creds
+      );
+      expect(membershipsResponse.status).toEqual(200);
+      // some buffer on the endtime
+      const endTime = Date.now() + 2_000;
 
-      const potentialCsvData: string = getQueryReponse.data;
+      // wait for data plane events
+      await delay(15 * MINUTES_TO_MILLISECONDS);
 
-      if (
-        getQueryReponse.data &&
-        !getQueryReponse.data.status &&
-        potentialCsvData.includes(testUser) &&
-        potentialCsvData.includes(caseUlid) &&
-        potentialCsvData.includes('cognito-idp.amazonaws.com') &&
-        potentialCsvData.includes('kms.amazonaws.com') &&
-        potentialCsvData.includes('ssm.amazonaws.com') &&
-        potentialCsvData.includes('logs.amazonaws.com') &&
-        potentialCsvData.includes('apigateway.amazonaws.com') &&
-        potentialCsvData.includes('dynamodb.amazonaws.com') &&
-        potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
-        potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
-        potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE)
-      ) {
-        csvData = getQueryReponse.data;
-      } else {
-        await delay(2000);
-      }
-      --queryRetries;
-    }
-    expect(csvData).toContain('/cases/{caseId}/details');
-    expect(csvData).toContain(testUser);
-    expect(csvData).toContain(caseUlid);
-    expect(csvData).toContain(AuditEventType.GET_CASE_DETAILS);
-    expect(csvData).toContain(AuditEventType.UPDATE_CASE_DETAILS);
-    expect(csvData).toContain(AuditEventType.GET_USERS_FROM_CASE);
+      const entries = await getAuditQueryResults(
+        `${deaApiUrl}system/audit`,
+        `?from=${startTime}&to=${endTime}`,
+        managerIdToken,
+        managerCreds,
+        [
+          AuditEventType.CREATE_CASE,
+          AuditEventType.UPDATE_CASE_DETAILS,
+          AuditEventType.GET_CASE_DETAILS,
+          AuditEventType.GET_USERS_FROM_CASE,
+        ],
+        [
+          { regex: /dynamodb.amazonaws.com/g, count: 7 },
+          { regex: /TransactWriteItems/g, count: 2 },
+          { regex: /GetItem/g, count: 4 },
+          { regex: /APIGateway/g, count: 1 },
+          { regex: /cognito-idp.amazonaws.com/g, count: 1 },
+          { regex: /kms.amazonaws.com/g, count: 1 },
+          { regex: /ssm.amazonaws.com/g, count: 1 },
+          { regex: /logs.amazonaws.com/g, count: 1 },
+        ]
+      );
 
-    // assert system actions
-    expect(csvData).toContain('cognito-idp.amazonaws.com');
-    expect(csvData).toContain('kms.amazonaws.com');
-    expect(csvData).toContain('ssm.amazonaws.com');
-    expect(csvData).toContain('logs.amazonaws.com');
-    expect(csvData).toContain('apigateway.amazonaws.com');
-    expect(csvData).toContain('dynamodb.amazonaws.com');
-  }, 360000);
+      // CreateCase
+      // Dynamo - TransactWriteItems
+      // UpdateCaseDetails
+      // Dynamo - GetItem
+      // Dynamo - TransactWriteItems
+      // Dynamo - GetItem
+
+      // GetCaseDetails
+      // Dynamo - GetItem
+
+      // GetUsersFromCase
+      // Dynamo - GetItem
+      // Dynamo - Query
+      const applicationEntries = entries.filter((entry) => entry.Event_Type !== 'AwsApiCall');
+
+      const expectedDetails = {
+        expectedResult: 'success',
+        expectedCaseUlid: createdCase.ulid,
+        expectedFileHash: '',
+        expectedFileUlid: '',
+      };
+      const createCaseEntry = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.CREATE_CASE && entry.Username === testUser
+      );
+      verifyAuditEntry(createCaseEntry, AuditEventType.CREATE_CASE, testUser, expectedDetails);
+
+      const updateCaseDetails = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.UPDATE_CASE_DETAILS && entry.Username === testUser
+      );
+      verifyAuditEntry(updateCaseDetails, AuditEventType.UPDATE_CASE_DETAILS, testUser, expectedDetails);
+
+      const getCaseDetailsEntry = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.GET_CASE_DETAILS && entry.Username === testUser
+      );
+      verifyAuditEntry(getCaseDetailsEntry, AuditEventType.GET_CASE_DETAILS, testUser, expectedDetails);
+
+      const getUsersFromCaseEntry = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.GET_USERS_FROM_CASE && entry.Username === testUser
+      );
+      verifyAuditEntry(getUsersFromCaseEntry, AuditEventType.GET_USERS_FROM_CASE, testUser, expectedDetails);
+
+      const beforeStartTimeEntry = entries.find((entry) => Date.parse(entry.DateTimeUTC) < startTime);
+      expect(beforeStartTimeEntry).toBeUndefined();
+      const afterEndTimeEntry = entries.find((entry) => Date.parse(entry.DateTimeUTC) > endTime);
+      expect(afterEndTimeEntry).toBeUndefined();
+      const withinStartAndEndEntry = entries.find(
+        (entry) => Date.parse(entry.DateTimeUTC) >= startTime && Date.parse(entry.DateTimeUTC) <= endTime
+      );
+      expect(withinStartAndEndEntry).toBeDefined();
+    },
+    45 * MINUTES_TO_MILLISECONDS
+  );
 
   function delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));

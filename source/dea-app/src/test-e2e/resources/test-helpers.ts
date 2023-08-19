@@ -5,6 +5,7 @@
 
 import { fail } from 'assert';
 import { randomBytes } from 'crypto';
+import { QueryExecutionState } from '@aws-sdk/client-athena';
 import {
   AbortMultipartUploadCommand,
   DeleteObjectCommand,
@@ -16,8 +17,9 @@ import {
 import { aws4Interceptor, Credentials } from 'aws4-axios';
 import axios, { AxiosResponse } from 'axios';
 import sha256 from 'crypto-js/sha256';
+import * as CSV from 'csv-string';
 import Joi from 'joi';
-import { AuditEventResult, AuditEventType } from '../../app/services/audit-service';
+import { AuditEventType, AuditResult } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
@@ -28,6 +30,7 @@ import { CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
 import { caseFileResponseSchema } from '../../models/validation/case-file';
+import { joiUlid } from '../../models/validation/joi-common';
 import {
   CHUNK_SIZE_BYTES,
   ResponseCaseFilePage,
@@ -42,9 +45,16 @@ export const validateStatus = () => true;
 
 export type DeaHttpMethod = 'PUT' | 'POST' | 'GET' | 'DELETE';
 
+export const MINUTES_TO_MILLISECONDS = 60 * 1000;
+
 const CONTENT_TYPE = 'application/octet-stream';
 export const bogusUlid = 'SVPERCA11FRAG111ST1CETCETC';
 export const fakeUlid = 'SVPERCA22FRAG111ST2CETCETC';
+
+export const auditQueryProgressStates = [
+  QueryExecutionState.RUNNING.valueOf(),
+  QueryExecutionState.QUEUED.valueOf(),
+];
 
 export const randomSuffix = (length = 10) => {
   return randomBytes(10).toString('hex').substring(0, length);
@@ -435,15 +445,19 @@ export const completeCaseFileUploadSuccess = async (
 };
 
 export const s3ObjectHasLegalHold = async (object: s3Object): Promise<boolean> => {
+  return await s3KeyHasLegalHold(testEnv.datasetsBucketName, object.key);
+};
+
+export const s3KeyHasLegalHold = async (bucketName: string, key: string): Promise<boolean> => {
   const response = await s3Client.send(
     new GetObjectLegalHoldCommand({
-      Bucket: testEnv.datasetsBucketName,
-      Key: object.key,
+      Bucket: bucketName,
+      Key: key,
     })
   );
 
   if (!response.LegalHold) {
-    console.log('Was unable to determine the legal hold of object ' + object.uploadId);
+    console.log(`Was unable to determine the legal hold of object ${bucketName}/${key}`);
   }
 
   return response.LegalHold?.Status === ObjectLockLegalHoldStatus.ON;
@@ -560,131 +574,136 @@ export const parseTrailEventsFromAuditQuery = (csvData: string): CloudTrailEvent
     .map((entry) => parseFn(entry));
 };
 
-// TODO: make it so we do the same for CaseAudit and UserAudit, and
-// extend the E2E tests to do the same checks as the CaseFileAudit
-export type AuditEventEntry = CaseFileAuditEventEntry | CaseAuditEventEntry;
-
-export type CaseFileAuditEventEntry = {
-  eventType: AuditEventType;
-  result: boolean;
-  eventDetails: string;
-  username: string;
-  userUlid: string;
-  caseId: string;
-  fileId: string;
-  fileHash?: string;
+export type AuditEventEntry = {
+  DateTimeUTC: string;
+  Event_Type?: string;
+  Request_Path?: string;
+  Result?: string;
+  Username?: string;
+  DEA_User_ID?: string;
+  Case_ID?: string;
+  File_ID?: string;
+  File_SHA_256?: string;
+  Target_User_ID?: string;
+  Case_Actions?: string;
 };
 
-export type CaseAuditEventEntry = {
-  eventType: AuditEventType;
-  result: boolean;
-  eventDetails: string;
-  username: string;
-  userUlid: string;
-  caseId: string;
-  fileId?: string;
-  fileHash?: string;
-  targetUser?: string;
-  caseActions?: string;
-};
-
-const parseAuditCsv = (csvData: string, parseFn: (entry: string) => AuditEventEntry): AuditEventEntry[] => {
-  // Split csv into entries, filter out the heading entries
-  return csvData
-    .trimEnd()
-    .split('\n')
-    .filter((entry) => !entry.includes('Date/Time (UTC)'))
-    .filter((entry) => !entry.includes('AwsApiCall'))
-    .map((entry) => parseFn(entry));
-};
-
-export const parseCaseFileAuditCsv = (csvData: string): CaseFileAuditEventEntry[] => {
+export function csvToObject<T>(csv: string): T[] {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return parseAuditCsv(csvData, parseCaseFileAuditEvent).map((entry) => entry as CaseFileAuditEventEntry);
-};
-
-export const parseCaseAuditCsv = (csvData: string): CaseAuditEventEntry[] => {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return parseAuditCsv(csvData, parseCaseAuditEvent).map((entry) => entry as CaseAuditEventEntry);
-};
-
-const CASE_FILE_EVENT_TYPES = new Set<AuditEventType>([
-  AuditEventType.COMPLETE_CASE_FILE_UPLOAD,
-  AuditEventType.DOWNLOAD_CASE_FILE,
-  AuditEventType.GET_CASE_FILE_AUDIT,
-  AuditEventType.GET_CASE_FILE_DETAIL,
-  AuditEventType.INITIATE_CASE_FILE_UPLOAD,
-  AuditEventType.REQUEST_CASE_FILE_AUDIT,
-]);
-const CASE_LEVEL_EVENT_TYPES = new Set<AuditEventType>([
-  AuditEventType.CREATE_CASE,
-  AuditEventType.CREATE_CASE_OWNER,
-  AuditEventType.DELETE_CASE,
-  AuditEventType.GET_CASE_AUDIT,
-  AuditEventType.GET_CASE_DETAILS,
-  AuditEventType.GET_CASE_FILES,
-  AuditEventType.GET_SCOPED_CASE_INFO,
-  AuditEventType.GET_USERS_FROM_CASE,
-  AuditEventType.INVITE_USER_TO_CASE,
-  AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE,
-  AuditEventType.REMOVE_USER_FROM_CASE,
-  AuditEventType.REQUEST_CASE_AUDIT,
-  AuditEventType.UPDATE_CASE_DETAILS,
-  AuditEventType.UPDATE_CASE_STATUS,
-  AuditEventType.AWS_API_CALL,
-]);
-
-function parseCaseFileAuditEvent(entry: string): CaseAuditEventEntry {
-  const fields = entry.split(', ').map((field) => field.trimEnd());
-  const eventType = parseAuditEventType(fields);
-  expect(CASE_FILE_EVENT_TYPES.has(eventType));
-  let fileHash: string | undefined;
-  if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD) {
-    expect(fields[17]).toBeDefined();
-    fileHash = fields[17];
-  }
-  return {
-    eventType,
-    result: fields[2] === AuditEventResult.SUCCESS,
-    eventDetails: fields[3],
-    username: fields[7],
-    userUlid: fields[9],
-    caseId: fields[15],
-    fileId: fields[16],
-    fileHash,
-  };
+  return CSV.parse(csv, { output: 'objects' }) as T[];
 }
 
-function parseCaseAuditEvent(entry: string): CaseAuditEventEntry {
-  const fields = entry.split(', ').map((field) => field.trimEnd());
-  const eventType = parseAuditEventType(fields);
-  if (CASE_FILE_EVENT_TYPES.has(eventType)) {
-    return parseCaseFileAuditEvent(entry);
-  }
+export type AuditExpectations = {
+  expectedResult: string;
+  expectedCaseUlid: string;
+  expectedFileUlid: string;
+  expectedFileHash: string;
+};
 
-  if (!CASE_LEVEL_EVENT_TYPES.has(eventType)) {
-    fail(`Unrecognized Event Type in Case Level Audit ${eventType}`);
+export function verifyAuditEntry(
+  entry: AuditEventEntry | undefined,
+  expectedEventType: AuditEventType,
+  expectedUsername: string,
+  expectations: AuditExpectations = {
+    expectedResult: 'success',
+    expectedCaseUlid: '',
+    expectedFileUlid: '',
+    expectedFileHash: '',
   }
-
-  return {
-    eventType,
-    result: fields[2] === AuditEventResult.SUCCESS,
-    eventDetails: fields[3],
-    username: fields[7],
-    userUlid: fields[9],
-    caseId: fields[15],
-    fileId: fields[16],
-    fileHash: fields[17],
-    targetUser: fields[18],
-    caseActions: fields[19],
-  };
+) {
+  if (!entry) {
+    fail('Entry does not exist');
+  }
+  expect(entry.Event_Type).toStrictEqual(expectedEventType);
+  expect(entry.Result).toStrictEqual(expectations.expectedResult);
+  expect(entry.Username).toStrictEqual(expectedUsername);
+  expect(entry.Case_ID).toStrictEqual(expectations.expectedCaseUlid);
+  expect(entry.File_ID).toStrictEqual(expectations.expectedFileUlid);
+  expect(entry.File_SHA_256).toStrictEqual(expectations.expectedFileHash);
 }
 
-function parseAuditEventType(fields: string[]): AuditEventType {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const eventType = fields[1] as AuditEventType;
-  if (eventType === undefined || eventType === AuditEventType.UNKNOWN) {
-    fail('Unable to parse event type from log entry');
+export type CloudTrailMatches = {
+  regex: RegExp;
+  count: number;
+};
+
+export async function getAuditQueryResults(
+  requestUrl: string,
+  queryParams: string,
+  idToken: Oauth2Token,
+  creds: Credentials,
+  expectedDeaEvents: AuditEventType[],
+  expectedCloudtrailMatches: CloudTrailMatches[],
+  delayMillisBetweenAttempts = 45000
+) {
+  let csvData: string | undefined;
+  let queryRetries = 15;
+  while (!csvData && queryRetries > 0) {
+    const startAuditQueryResponse = await callDeaAPIWithCreds(
+      `${requestUrl}${queryParams}`,
+      'POST',
+      idToken,
+      creds
+    );
+
+    expect(startAuditQueryResponse.status).toEqual(200);
+    const auditId: string = startAuditQueryResponse.data.auditId;
+    Joi.assert(auditId, joiUlid);
+
+    let retries = 5;
+    await delay(5000);
+    let getQueryResponse: AuditResult = (
+      await callDeaAPIWithCreds(`${requestUrl}/${auditId}/csv`, 'GET', idToken, creds)
+    ).data;
+
+    while (auditQueryProgressStates.includes(getQueryResponse.status.valueOf()) && retries > 0) {
+      --retries;
+      await delay(2000);
+      getQueryResponse = (await callDeaAPIWithCreds(`${requestUrl}/${auditId}/csv`, 'GET', idToken, creds))
+        .data;
+    }
+
+    if (getQueryResponse.status === QueryExecutionState.SUCCEEDED && getQueryResponse.downloadUrl) {
+      const potentialCsvData: string = await axios
+        .get(getQueryResponse.downloadUrl, { responseType: 'text' })
+        .then((res) => res.data);
+
+      const includesAllCloudTrailEvents = expectedCloudtrailMatches.every((match) => {
+        const matchCount = potentialCsvData.match(match.regex)?.length || 0;
+        console.log(`matching ${match.regex} with ${matchCount} expected at least ${match.count}`);
+        return matchCount >= match.count;
+      });
+
+      const includesAllDeaEvents = expectedDeaEvents.every((event) => {
+        const includes = potentialCsvData.includes(event);
+        console.log(`${event} expected, found: ${includes}`);
+        return includes;
+      });
+
+      if (includesAllDeaEvents && includesAllCloudTrailEvents) {
+        if (queryRetries === 1) {
+          console.log(`includesAllDeaEvents: ${includesAllDeaEvents}`);
+          console.log(`includesAllCloudTrailEvents: ${includesAllCloudTrailEvents}`);
+          console.log(potentialCsvData);
+        }
+        csvData = potentialCsvData;
+      } else {
+        await delay(delayMillisBetweenAttempts);
+      }
+    }
+    --queryRetries;
   }
-  return eventType;
+
+  if (!csvData) {
+    fail();
+  }
+
+  const entries: AuditEventEntry[] = csvToObject<AuditEventEntry>(csvData).filter(
+    (entry) =>
+      entry.Event_Type != AuditEventType.GET_CASE_FILE_AUDIT &&
+      entry.Event_Type != AuditEventType.REQUEST_CASE_FILE_AUDIT &&
+      entry.Request_Path != 'StartQuery'
+  );
+
+  return entries;
 }

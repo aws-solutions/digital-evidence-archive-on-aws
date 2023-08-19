@@ -3,7 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import assert from 'assert';
 import zlib from 'zlib';
+import { Firehose, _Record } from '@aws-sdk/client-firehose';
 import {
   Context,
   FirehoseTransformationEvent,
@@ -11,6 +13,7 @@ import {
   FirehoseTransformationResult,
   FirehoseTransformationResultRecord,
 } from 'aws-lambda';
+import { logger } from '../../logger';
 
 /*
 For processing data sent to Firehose by Cloudwatch Logs subscription filters.
@@ -59,6 +62,110 @@ The code below will:
    of times for intermittent failures you can lower this value.
 */
 
+export type LogEvent = {
+  id: string;
+  message: string;
+};
+
+export type CWLRecord = {
+  messageType: string;
+  owner: string;
+  logGroup: string;
+  logStream: string;
+  subscriptionFilters: string[];
+  logEvents: LogEvent[];
+};
+
+export const transformAuditEventForS3 = async function (
+  event: FirehoseTransformationEvent,
+  _context: Context
+): Promise<FirehoseTransformationResult> {
+  // grab the info we need to put records back if we end up splitting them out
+  const streamARN = event.deliveryStreamArn;
+  const region = streamARN.split(':')[3];
+  const streamName = streamARN.split('/')[1];
+
+  const records = processRecords(event.records);
+
+  let projectedSize = 0;
+  const recordListsToReingest: _Record[][] = [];
+
+  records.forEach((rec, idx) => {
+    const originalRecord = event.records[idx];
+
+    if (rec.result !== 'Ok') {
+      return;
+    }
+
+    // If a single record is too large after processing, split the original CWL data into two, each containing half
+    // the log events, and re-ingest both of them (note that it is the original data that is re-ingested, not the
+    // processed data).
+    // If it's not possible to split because there is only one log event, then mark the record as
+    // ProcessingFailed, which sends it to error output.
+    if (rec.data.length > 6000000) {
+      const cwlRecord = loadJsonGzipBase64(originalRecord.data);
+      if (cwlRecord.logEvents.length > 1) {
+        rec.result = 'Dropped';
+        const splitRecords = splitCWLRecord(cwlRecord).map((data) =>
+          createReingestionRecord(originalRecord, data)
+        );
+        recordListsToReingest.push(splitRecords);
+      } else {
+        rec.result = 'ProcessingFailed';
+        logger.debug(
+          `Record ${rec.recordId} contains only one log event but is still too large after processing ` +
+            `(${rec.data.length} bytes), marking it as ${rec.result}`
+        );
+      }
+      // this record will be returned as dropped, but we need to clear the data so we don't exceed the 6MB payload response
+      rec.data = '';
+    } else {
+      projectedSize += rec.data.length + rec.recordId.length;
+      // 6000000 instead of 6291456 to leave ample headroom for the stuff we didn't account for
+      if (projectedSize > 6000000) {
+        recordListsToReingest.push([createReingestionRecord(originalRecord)]);
+        // this record will be returned as dropped, but we need to clear the data so we don't exceed the 6MB payload response
+        rec.data = '';
+        rec.result = 'Dropped';
+      }
+    }
+  });
+
+  // call putRecordBatch/putRecords for each group of up to 500 records to be re-ingested
+  if (recordListsToReingest.length > 0) {
+    let recordsReingestedSoFar = 0;
+    const clientArgs = { region: region };
+    const client = new Firehose(clientArgs);
+    const maxBatchSize = 500;
+    const flattenedList = recordListsToReingest.flat();
+    for (let i = 0; i < flattenedList.length; i += maxBatchSize) {
+      const recordBatch = flattenedList.slice(i, i + maxBatchSize);
+      await putRecordsToFirehoseStream(streamName, recordBatch, client, 0, 20);
+      recordsReingestedSoFar += recordBatch.length;
+      logger.debug(`Reingested ${recordsReingestedSoFar}/${flattenedList.length}`);
+    }
+  }
+
+  logger.debug(
+    [
+      `${event.records.length} input records`,
+      `${records.filter((r) => r.result !== 'Dropped').length} returned as Ok or ProcessingFailed`,
+      `${recordListsToReingest.filter((a) => a.length > 1).length} split and re-ingested`,
+      `${recordListsToReingest.filter((a) => a.length === 1).length} re-ingested as-is`,
+    ].join(', ')
+  );
+
+  return { records: records };
+};
+
+function createReingestionRecord(originalRecord: FirehoseTransformationEventRecord, data?: Buffer): _Record {
+  if (data === undefined) {
+    data = Buffer.from(originalRecord.data, 'base64');
+  }
+  const r = { Data: data };
+  return r;
+}
+
 /**
  * logEvent has this format:
  *
@@ -70,50 +177,118 @@ The code below will:
  *
  * The default implementation below just extracts the message and appends a newline to it.
  */
-function transformLogEvent(logEvent: { message: unknown }) {
-  return `${logEvent.message}\n`;
+function transformLogEvent(logEvent: LogEvent) {
+  let validatedMessage: unknown;
+  try {
+    // Some event have been observed to have duplicate keys e.g. {Tagging: '', tagging: ''}
+    // This will lead to a malformed json error preventing all queries in Athena
+    // while ignore.malformed.json is turned on, we want to preserve whatever we can, so parse and re-stringify here
+    validatedMessage = JSON.parse(logEvent.message);
+    return `${JSON.stringify(validatedMessage)}\n`;
+  } catch (e) {
+    // only log the eventId for follow up
+    logger.error('Malformed Event', { recordId: logEvent.id });
+  }
+  return `{}\n`;
 }
 
 function processRecords(records: FirehoseTransformationEventRecord[]): FirehoseTransformationResultRecord[] {
   return records.map((r) => {
-    const data = loadJsonGzipBase64(r.data);
-    const recId = r.recordId;
-    // CONTROL_MESSAGE are sent by CWL to check if the subscription is reachable.
-    // They do not contain actual data.
-    if (data.messageType === 'CONTROL_MESSAGE') {
-      return {
-        result: 'Dropped',
-        recordId: recId,
-        data: '',
-      };
-    } else if (data.messageType === 'DATA_MESSAGE') {
-      const logEvents: { message: unknown }[] = data.logEvents;
-      const joinedData = logEvents.map((e) => transformLogEvent(e));
-      const encodedData = Buffer.from(joinedData.join(''), 'utf-8').toString('base64');
-      return {
-        data: encodedData,
-        result: 'Ok',
-        recordId: recId,
-      };
-    } else {
+    try {
+      const data = loadJsonGzipBase64(r.data);
+      const recId = r.recordId;
+      // CONTROL_MESSAGE are sent by CWL to check if the subscription is reachable.
+      // They do not contain actual data.
+      if (data.messageType === 'CONTROL_MESSAGE') {
+        return {
+          result: 'Dropped',
+          recordId: recId,
+          data: '',
+        };
+      } else if (data.messageType === 'DATA_MESSAGE') {
+        const logEvents: LogEvent[] = data.logEvents;
+        const joinedData = logEvents.map((e) => transformLogEvent(e));
+        const encodedData = Buffer.from(joinedData.join(''), 'utf-8').toString('base64');
+        return {
+          data: encodedData,
+          result: 'Ok',
+          recordId: recId,
+        };
+      } else {
+        logger.debug('ProcessingFailed', { recordId: recId });
+        return {
+          result: 'ProcessingFailed',
+          recordId: recId,
+          data: '',
+        };
+      }
+    } catch (e) {
+      logger.error('ProcessingFailed', { recordId: r.recordId });
       return {
         result: 'ProcessingFailed',
-        recordId: recId,
+        recordId: r.recordId,
         data: '',
       };
     }
   });
 }
 
-function loadJsonGzipBase64(base64Data: string) {
+function loadJsonGzipBase64(base64Data: string): CWLRecord {
   return JSON.parse(zlib.gunzipSync(Buffer.from(base64Data, 'base64')).toString());
 }
 
-export const transformAuditEventForS3 = async function (
-  event: FirehoseTransformationEvent,
-  _context: Context
-): Promise<FirehoseTransformationResult> {
-  const records = processRecords(event.records);
+/**
+ * Splits one CWL record into two, each containing half the log events.
+ * Serializes and compreses the data before returning. That data can then be
+ * re-ingested into the stream, and it'll appear as though they came from CWL
+ * directly.
+ */
+function splitCWLRecord(cwlRecord: CWLRecord) {
+  const logEvents = cwlRecord.logEvents;
+  assert(logEvents.length > 1);
+  const mid = logEvents.length / 2;
+  const rec1 = Object.assign({}, cwlRecord);
+  rec1.logEvents = logEvents.slice(0, mid);
+  const rec2 = Object.assign({}, cwlRecord);
+  rec2.logEvents = logEvents.slice(mid);
+  return [rec1, rec2].map((r) => zlib.gzipSync(Buffer.from(JSON.stringify(r), 'utf-8')));
+}
 
-  return { records: records };
-};
+async function putRecordsToFirehoseStream(
+  streamName: string,
+  records: _Record[],
+  client: Firehose,
+  attemptsMade: number,
+  maxAttempts: number
+) {
+  let failed: _Record[] = [];
+  let errMsg;
+  try {
+    const response = await client.putRecordBatch({
+      DeliveryStreamName: streamName,
+      Records: records,
+    });
+
+    const errCodes: string[] = [];
+    response.RequestResponses?.forEach((r, i) => {
+      if (r.ErrorCode) {
+        errCodes.push(r.ErrorCode);
+        failed.push(records[i]);
+      }
+    });
+
+    errMsg = `Individual error codes: ${errCodes}`;
+  } catch (error) {
+    failed = records;
+    errMsg = error;
+  }
+
+  if (failed.length > 0) {
+    if (attemptsMade + 1 < maxAttempts) {
+      logger.debug(`Some records failed while calling reingesting to Firehose, retrying. ${errMsg}`);
+      await putRecordsToFirehoseStream(streamName, failed, client, attemptsMade + 1, maxAttempts);
+    } else {
+      throw new Error(`Could not put records after ${maxAttempts} attempts. ${errMsg}`);
+    }
+  }
+}

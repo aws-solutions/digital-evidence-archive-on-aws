@@ -49,8 +49,9 @@
     "version:patch": "npm version patch"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "3.299.0",
-    "@aws-sdk/client-cognito-identity-provider": "3.299.0",
+    "@aws-sdk/client-athena": "~3.398.0",
+    "@aws-sdk/client-cognito-identity": "~3.398.0",
+    "@aws-sdk/client-cognito-identity-provider": "~3.398.0",
     "@aws/dea-app": "workspace:*",
     "@cloudscape-design/collection-hooks": "^1.0.20",
     "@cloudscape-design/components": "^3.0.262",

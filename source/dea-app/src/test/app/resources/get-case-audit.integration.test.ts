@@ -4,7 +4,13 @@
  */
 
 import { fail } from 'assert';
-import { CloudWatchLogsClient, GetQueryResultsCommand, QueryStatus } from '@aws-sdk/client-cloudwatch-logs';
+import { AthenaClient, GetQueryExecutionCommand, QueryExecutionState } from '@aws-sdk/client-athena';
+import {
+  STSClient,
+  ServiceInputTypes as STSInputs,
+  ServiceOutputTypes as STSOutputs,
+} from '@aws-sdk/client-sts';
+import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { anyOfClass, anything, instance, mock, when } from 'ts-mockito';
 import { getCaseAudit } from '../../../app/resources/get-case-audit';
 import { AuditType } from '../../../persistence/schema/dea-schema';
@@ -12,16 +18,26 @@ import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
-import { startAudit } from '../audit-test-support';
+import { getQueryResponseWithState, startAudit } from '../audit-test-support';
 import { callCreateCase, callCreateUser } from './case-file-integration-test-helper';
 
 let caseId = '';
 describe('start case audit', () => {
   const OLD_ENV = process.env;
+  let stsMock: AwsStub<STSInputs, STSOutputs>;
 
   let modelProvider: ModelRepositoryProvider;
   beforeAll(async () => {
     modelProvider = await getTestRepositoryProvider('getCaseAuditIntegration');
+    stsMock = mockClient(STSClient);
+    stsMock.resolves({
+      Credentials: {
+        AccessKeyId: 'hi',
+        SecretAccessKey: 'hello',
+        SessionToken: 'foo',
+        Expiration: new Date(),
+      },
+    });
     const user = await callCreateUser(modelProvider);
     caseId = (await callCreateCase(user, modelProvider)).ulid ?? fail();
   });
@@ -31,32 +47,21 @@ describe('start case audit', () => {
     process.env = { ...OLD_ENV };
     process.env.AUDIT_LOG_GROUP_NAME = 'TESTGROUP';
     process.env.TRAIL_LOG_GROUP_NAME = 'TESTTRAILGROUP';
+    process.env.AUDIT_DOWNLOAD_ROLE_ARN = 'AUDIT_DOWNLOAD_ROLE_ARN';
+    process.env.AWS_REGION = 'eu-west-1';
+    process.env.KEY_ARN = 'keyarn';
   });
 
   afterAll(() => {
     process.env = OLD_ENV;
   });
 
-  it('responds with csv data', async () => {
+  it('responds with a presigned url', async () => {
     const auditId = await startAudit(AuditType.CASE, caseId, modelProvider);
-    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    const clientMock: AthenaClient = mock(AthenaClient);
     const clientMockInstance = instance(clientMock);
-    when(clientMock.send(anyOfClass(GetQueryResultsCommand))).thenResolve({
-      $metadata: {},
-      status: QueryStatus.Complete,
-      results: [
-        [
-          { field: 'fieldA', value: 'valueA' },
-          { field: 'fieldB', value: 'valueB' },
-        ],
-        [
-          { field: 'fieldA', value: 'valueA2' },
-          { field: 'fieldB', value: 'valueB2' },
-        ],
-      ],
-    });
-
-    const expectedCSV = 'fieldA, fieldB\r\nvalueA, valueB\r\nvalueA2, valueB2\r\n';
+    const response = getQueryResponseWithState(QueryExecutionState.SUCCEEDED);
+    when(clientMock.send(anyOfClass(GetQueryExecutionCommand))).thenResolve(response);
 
     const event = getDummyEvent({
       pathParameters: {
@@ -67,14 +72,15 @@ describe('start case audit', () => {
     const result = await getCaseAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
 
     expect(result.statusCode).toEqual(200);
-    expect(result.body).toEqual(expectedCSV);
+    expect(result.body).toContain('"status":"SUCCEEDED"');
+    expect(result.body).toContain('"downloadUrl":"https://test-bucket.s3');
   });
 
   it('returns status if not complete', async () => {
     const auditId = await startAudit(AuditType.CASE, caseId, modelProvider);
-    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    const clientMock: AthenaClient = mock(AthenaClient);
     const clientMockInstance = instance(clientMock);
-    when(clientMock.send(anything())).thenResolve({ $metadata: {}, status: QueryStatus.Running });
+    when(clientMock.send(anything())).thenResolve(getQueryResponseWithState(QueryExecutionState.RUNNING));
 
     const event = getDummyEvent({
       pathParameters: {
@@ -85,54 +91,12 @@ describe('start case audit', () => {
     const result = await getCaseAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string } = JSON.parse(result.body);
-    expect(responseBody.status).toEqual('Running');
-  });
-
-  it('returns complete with no data if data is not returned', async () => {
-    const auditId = await startAudit(AuditType.CASE, caseId, modelProvider);
-    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
-    const clientMockInstance = instance(clientMock);
-    when(clientMock.send(anything())).thenResolve({ $metadata: {}, status: QueryStatus.Complete });
-
-    const event = getDummyEvent({
-      pathParameters: {
-        caseId,
-        auditId,
-      },
-    });
-    const result = await getCaseAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
-    expect(result.statusCode).toEqual(200);
-    const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
-    expect(responseBody.status).toEqual('Complete');
-    expect(responseBody.csvFormattedData).toBeUndefined();
-  });
-
-  it('returns complete with no data if data is empty', async () => {
-    const auditId = await startAudit(AuditType.CASE, caseId, modelProvider);
-    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
-    const clientMockInstance = instance(clientMock);
-    when(clientMock.send(anything())).thenResolve({
-      $metadata: {},
-      status: QueryStatus.Complete,
-      results: [],
-    });
-
-    const event = getDummyEvent({
-      pathParameters: {
-        caseId,
-        auditId,
-      },
-    });
-    const result = await getCaseAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
-    expect(result.statusCode).toEqual(200);
-    const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
-    expect(responseBody.status).toEqual('Complete');
-    expect(responseBody.csvFormattedData).toBeUndefined();
+    expect(responseBody.status).toEqual(QueryExecutionState.RUNNING.valueOf());
   });
 
   it('returns unknown status if the status is not provided', async () => {
     const auditId = await startAudit(AuditType.CASE, caseId, modelProvider);
-    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    const clientMock: AthenaClient = mock(AthenaClient);
     const clientMockInstance = instance(clientMock);
     when(clientMock.send(anything())).thenResolve({ $metadata: {} });
 
@@ -151,7 +115,7 @@ describe('start case audit', () => {
 
   it('throws an error if case does not exist', async () => {
     const auditId = await startAudit(AuditType.CASE, caseId, modelProvider);
-    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    const clientMock: AthenaClient = mock(AthenaClient);
     const clientMockInstance = instance(clientMock);
     when(clientMock.send(anything())).thenResolve({ $metadata: {} });
 

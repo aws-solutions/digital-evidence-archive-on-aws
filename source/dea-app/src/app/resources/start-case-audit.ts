@@ -8,7 +8,7 @@ import { getQueryParam, getRequiredPathParam } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
-import { defaultCloudwatchClient } from '../audit/dea-audit-plugin';
+import { defaultAthenaClient } from '../audit/dea-audit-plugin';
 import { auditService } from '../services/audit-service';
 import { getRequiredCase } from '../services/case-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -23,7 +23,7 @@ export const startCaseAudit: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   _datasetsProvider = defaultDatasetsProvider,
   /* istanbul ignore next */
-  cloudwatchClient = defaultCloudwatchClient
+  athenaClient = defaultAthenaClient
 ) => {
   const now = Date.now();
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
@@ -39,7 +39,7 @@ export const startCaseAudit: DEAGatewayProxyHandler = async (
     startTime,
     endTime,
     caseId,
-    cloudwatchClient,
+    athenaClient,
     repositoryProvider
   );
 
