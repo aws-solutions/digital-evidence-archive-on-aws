@@ -60,7 +60,7 @@ interface DeaRestApiProps {
   deaTrailLogArn: string;
   kmsKey: Key;
   lambdaEnv: LambdaEnvironment;
-  opsDashboard: DeaOperationalDashboard;
+  opsDashboard?: DeaOperationalDashboard;
 }
 
 export class DeaRestApiConstruct extends Construct {
@@ -71,7 +71,7 @@ export class DeaRestApiConstruct extends Construct {
   public customResourceRole: Role;
   public deaRestApi: RestApi;
   public apiEndpointArns: Map<string, string>;
-  private opsDashboard: DeaOperationalDashboard;
+  private opsDashboard?: DeaOperationalDashboard;
   public accessLogGroup: LogGroup;
 
   public constructor(
@@ -345,7 +345,7 @@ export class DeaRestApiConstruct extends Construct {
       // full set of permissions
       const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
       this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv);
-      this.opsDashboard.addMethodOperationalComponents(this.deaRestApi, route);
+      this.opsDashboard?.addMethodOperationalComponents(this.deaRestApi, route);
     });
   }
 
@@ -365,7 +365,7 @@ export class DeaRestApiConstruct extends Construct {
           route.pathToSource,
           lambdaEnv
         );
-        this.opsDashboard.addLambdaOperationalComponents(lambda, route.eventName, route);
+        this.opsDashboard?.addLambdaOperationalComponents(lambda, route.eventName, route);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let queryParams: any = {};

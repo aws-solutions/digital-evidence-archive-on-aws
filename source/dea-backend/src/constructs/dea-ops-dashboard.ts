@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Duration } from 'aws-cdk-lib';
+import { Duration, NestedStack } from 'aws-cdk-lib';
 import { RestApi } from 'aws-cdk-lib/aws-apigateway';
 import {
   Alarm,
@@ -29,7 +29,7 @@ const LAMBDA_THROTTLE_THRESHOLD = 1;
 const TABLE_SYSTEM_ERROR_THRESHOLD = 1;
 const TABLE_THROTTLE_THRESHOLD = 1;
 
-export class DeaOperationalDashboard extends Construct {
+export class DeaOperationalDashboard extends NestedStack {
   private apiDashboard: Dashboard;
   private lambdaDashboard: Dashboard;
   private tableDashboard: Dashboard;
