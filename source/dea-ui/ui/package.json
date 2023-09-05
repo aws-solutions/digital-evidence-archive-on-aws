@@ -87,7 +87,7 @@
     "@rushstack/heft-jest-plugin": "^0.5.5",
     "@rushstack/heft-node-rig": "^1.12.5",
     "@testing-library/dom": "^8.13.0",
-    "@testing-library/jest-dom": "5.16.5",
+    "@testing-library/jest-dom": "6.1.2",
     "@testing-library/react": "12.1.2",
     "@testing-library/user-event": "~14.4.3",
     "@types/heft-jest": "1.0.3",
