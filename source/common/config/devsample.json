@@ -14,6 +14,22 @@
           "method": "POST"
         },
         {
+          "path": "/datavaults",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/tasks",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/tasks",
+          "method": "GET"
+        },
+        {
           "path": "/cases/{caseId}/details",
           "method": "GET"
         },

@@ -12,11 +12,15 @@ import {
   UserType,
   CaseFileType,
   JobType,
+  DataVaultType,
+  DataVaultTaskType,
 } from '../persistence/schema/entities';
 import { CaseAction } from './case-action';
 import { CaseFileStatus } from './case-file-status';
 import { CaseStatus } from './case-status';
 import { CaseUser } from './case-user';
+import { DeaDataVault } from './data-vault';
+import { DeaDataVaultTask } from './data-vault-task';
 import { Job } from './job';
 import { DeaSession } from './session';
 import { DeaUser } from './user';
@@ -36,6 +40,29 @@ export const caseFromEntity = (caseEntity: CaseType): DeaCase => {
     s3BatchJobId: caseEntity.s3BatchJobId,
     created: caseEntity.created,
     updated: caseEntity.updated,
+  };
+};
+
+export const dataVaultFromEntity = (dataVaultEntity: DataVaultType): DeaDataVault => {
+  return {
+    ulid: dataVaultEntity.ulid,
+    name: dataVaultEntity.name,
+    description: dataVaultEntity.description,
+    objectCount: dataVaultEntity.objectCount,
+    totalSizeBytes: dataVaultEntity.totalSizeBytes,
+  };
+};
+
+export const dataVaultTaskFromEntity = (dataVaultTaskEntity: DataVaultTaskType): DeaDataVaultTask => {
+  return {
+    taskId: dataVaultTaskEntity.taskId,
+    dataVaultUlid: dataVaultTaskEntity.dataVaultUlid,
+    name: dataVaultTaskEntity.name,
+    description: dataVaultTaskEntity.description,
+    sourceLocationArn: dataVaultTaskEntity.sourceLocationArn,
+    destinationLocationArn: dataVaultTaskEntity.destinationLocationArn,
+    taskArn: dataVaultTaskEntity.taskArn,
+    deleted: dataVaultTaskEntity.deleted,
   };
 };
 

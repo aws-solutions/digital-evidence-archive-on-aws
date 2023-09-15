@@ -41,6 +41,10 @@ export const UNIDENTIFIED_USER = 'UNIDENTIFIED_USER';
 
 export enum AuditEventType {
   CREATE_CASE = 'CreateCase',
+  CREATE_DATA_VAULT = 'CreateDataVault',
+  GET_DATA_VAULTS = 'GetDataVaults',
+  CREATE_DATA_VAULT_TASK = 'CreateDataVaultTask',
+  GET_DATA_VAULT_TASKS = 'GetDataVaultTask',
   GET_MY_CASES = 'GetMyCases',
   GET_ALL_CASES = 'GetAllCases',
   GET_CASE_DETAILS = 'GetCaseDetails',

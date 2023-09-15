@@ -185,6 +185,31 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-available-endpoints-handler.ts',
     },
+    {
+      eventName: AuditEventType.CREATE_DATA_VAULT,
+      path: '/datavaults',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/create-data-vault-handler.ts',
+    },
+    {
+      eventName: AuditEventType.CREATE_DATA_VAULT_TASK,
+      path: '/datavaults/{dataVaultId}/tasks',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/create-data-vault-task-handler.ts',
+    },
+    {
+      eventName: AuditEventType.GET_DATA_VAULT_TASKS,
+      path: '/datavaults/{dataVaultId}/tasks',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-data-vault-tasks-handler.ts',
+    },
+    {
+      eventName: AuditEventType.GET_DATA_VAULTS,
+      path: '/datavaults',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-data-vaults-handler.ts',
+      pagination: true,
+    },
     // PRIVILEGED ENDPOINTS
     {
       // intended for evidence managers/admins to see a specific set of case details

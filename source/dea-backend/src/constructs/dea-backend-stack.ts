@@ -6,7 +6,7 @@
 /* eslint-disable no-new */
 import { Aws, StackProps, Duration, CfnResource } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
-import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import {
   BlockPublicAccess,
@@ -32,6 +32,7 @@ export class DeaBackendConstruct extends Construct {
   public deaTable: Table;
   public datasetsBucket: Bucket;
   public accessLogsBucket: Bucket;
+  public datasetsDataSyncRole: Role;
 
   public constructor(
     scope: Construct,
@@ -51,6 +52,7 @@ export class DeaBackendConstruct extends Construct {
       `DeaS3Datasets`,
       datasetsPrefix
     );
+    this.datasetsDataSyncRole = this.createDatasetsBucketAccessRole(props.kmsKey);
 
     props.opsDashboard?.addDynamoTableOperationalComponents(this.deaTable);
 
@@ -156,6 +158,7 @@ export class DeaBackendConstruct extends Construct {
     createCfnOutput(this, bucketNameOutput, {
       value: s3AccessLogsBucket.bucketName,
     });
+
     return s3AccessLogsBucket;
   }
 
@@ -210,6 +213,57 @@ export class DeaBackendConstruct extends Construct {
     }
 
     return datasetsBucket;
+  }
+
+  private createDatasetsBucketAccessRole(kmsKey: Key): Role {
+    const role = new Role(this, 'DataSyncPermissionsRole', {
+      assumedBy: new ServicePrincipal('datasync.amazonaws.com'),
+    });
+
+    // Define your policy statements based on the provided policy
+    const policyStatements: PolicyStatement[] = [
+      new PolicyStatement({
+        actions: ['s3:GetBucketLocation', 's3:ListBucket', 's3:ListBucketMultipartUploads'],
+        effect: Effect.ALLOW,
+        resources: [this.datasetsBucket.bucketArn],
+      }),
+      new PolicyStatement({
+        actions: [
+          's3:AbortMultipartUpload',
+          's3:GetObject',
+          's3:ListMultipartUploadParts',
+          's3:PutObjectTagging',
+          's3:GetObjectTagging',
+          's3:PutObject',
+        ],
+        effect: Effect.ALLOW,
+        resources: [`${this.datasetsBucket.bucketArn}/*`],
+      }),
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['kms:GenerateDataKey'],
+        resources: [kmsKey.keyArn],
+      }),
+      // DataSync stores temporary objects in S3 to facilitate transfers
+      // These objects are stored under .aws-datasync/ prefix.
+      // Allow for object deletion only in that prefix
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['s3:DeleteObject'],
+        resources: [`${this.datasetsBucket.bucketArn}*/.aws-datasync/*`],
+      }),
+    ];
+
+    // Attach the policy statements to the role
+    policyStatements.forEach((statement) => {
+      role.addToPolicy(statement);
+    });
+
+    createCfnOutput(this, 'DeaDataSyncRole', {
+      value: role.roleArn,
+    });
+
+    return role;
   }
 
   private getLifeCycleRules(): LifecycleRule[] {

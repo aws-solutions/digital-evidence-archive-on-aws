@@ -285,7 +285,7 @@ CONFIGNAME=oneclickconfig
 echo config name set to $CONFIGNAME
 
 do_cmd cd $source_dir
-do_cmd unset DOMAIN_PREFIX && unset DEA_API_URL && unset IDENTITY_POOL_ID && unset USER_POOL_ID && unset USER_POOL_CLIENT_ID && unset DATASETS_BUCKET_NAME && unset S3_BATCH_DELETE_CASE_FILE_LAMBDA_ARN
+do_cmd unset DOMAIN_PREFIX && unset DEA_API_URL && unset IDENTITY_POOL_ID && unset USER_POOL_ID && unset USER_POOL_CLIENT_ID && unset DATASETS_BUCKET_NAME && unset S3_BATCH_DELETE_CASE_FILE_LAMBDA_ARN && unset DATASYNC_ROLE
 do_cmd rush rebuild
 
 # return to previous directory

@@ -113,6 +113,7 @@ export class DeaMainStack extends cdk.Stack {
       deaTableArn: backendConstruct.deaTable.tableArn,
       deaTableName: backendConstruct.deaTable.tableName,
       deaDatasetsBucket: backendConstruct.datasetsBucket,
+      deaDatasetsBucketDataSyncRoleArn: backendConstruct.datasetsDataSyncRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,

@@ -41,6 +41,8 @@ export const joiUuid = Joi.string().uuid();
 
 export const sha256Hash = Joi.string().pattern(new RegExp('^[a-fA-F0-9]{64}$')).messages(customMessages);
 
+export const joiArn = Joi.string().pattern(new RegExp('.*\\S.*')).min(20).max(2048).messages(customMessages);
+
 export const safeName = Joi.string()
   .pattern(allButDisallowed)
   .required()

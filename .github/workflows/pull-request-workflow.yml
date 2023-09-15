@@ -1,7 +1,7 @@
 name: Pull Request Workflow
 
 env:
-  CONFIGNAME: 'devsample'
+  CONFIGNAME: "devsample"
   STAGE: PRPIPELINE${{github.event.pull_request.number}}
   DOMAIN_PREFIX: deatestenv${{github.event.pull_request.number}}
 
@@ -16,12 +16,12 @@ on:
       - synchronize
 
 permissions:
-      id-token: write   # This is required for requesting the JWT
-      contents: read    # This is required for actions/checkout
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
 jobs:
   verify:
     env:
-      CONFIGNAME: 'devsample'
+      CONFIGNAME: "devsample"
       STAGE: RUN${{github.run_number}}verify
       DOMAIN_PREFIX: deatestenv${{github.run_number}}verify
     environment: dea-test
@@ -125,6 +125,7 @@ jobs:
           echo "USER_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "export DATASYNC_ROLE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DataSyncPermissionsRole'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js e2e:only --verbose
@@ -158,6 +159,7 @@ jobs:
           echo "USER_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "export DATASYNC_ROLE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DataSyncPermissionsRole'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
       - name: Rush Test
         run: |
           cd dea-app
@@ -192,6 +194,7 @@ jobs:
           echo "USER_POOL_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "export DATASYNC_ROLE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DataSyncPermissionsRole'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:noe2e --verbose
@@ -222,7 +225,7 @@ jobs:
         run: |
           node common/scripts/install-run-rush.js audit:only --verbose
   destroy:
-    needs: [Test, E2E, Audit-Test,ACL]
+    needs: [Test, E2E, Audit-Test, ACL]
     environment: dea-test
     defaults:
       run:

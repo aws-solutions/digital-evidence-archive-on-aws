@@ -64,6 +64,7 @@ interface DeaRestApiProps {
   deaTableArn: string;
   deaTableName: string;
   deaDatasetsBucket: Bucket;
+  deaDatasetsBucketDataSyncRoleArn: string;
   s3BatchDeleteCaseFileRoleArn: string;
   deaAuditLogArn: string;
   deaTrailLogArn: string;
@@ -102,7 +103,8 @@ export class DeaRestApiConstruct extends Construct {
       props.deaAuditLogArn,
       props.deaTrailLogArn,
       props.s3BatchDeleteCaseFileRoleArn,
-      props.athenaConfig
+      props.athenaConfig,
+      props.deaDatasetsBucketDataSyncRoleArn,
     );
     props.athenaConfig.athenaAuditBucket.grantRead(this.lambdaBaseRole);
 
@@ -118,6 +120,7 @@ export class DeaRestApiConstruct extends Construct {
     props.lambdaEnv['DATASETS_ROLE'] = this.datasetsRole.roleArn;
     props.lambdaEnv['AUDIT_DOWNLOAD_ROLE_ARN'] = this.auditDownloadRole.roleArn;
     props.lambdaEnv['KEY_ARN'] = props.kmsKey.keyArn;
+    props.lambdaEnv['DATASYNC_ROLE'] = props.deaDatasetsBucketDataSyncRoleArn;
 
     this.customResourceRole = new Role(this, 'custom-resource-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -524,7 +527,8 @@ export class DeaRestApiConstruct extends Construct {
     auditLogArn: string,
     trailLogArn: string,
     s3BatchDeleteCaseFileRoleArn: string,
-    athenaConfig: AthenaConfig
+    athenaConfig: AthenaConfig,
+    deaDatasetsBucketDataSyncRoleArn: string,
   ): Role {
     const STAGE = deaConfig.stage();
 
@@ -569,8 +573,21 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
+        actions: [
+          'datasync:CreateLocationS3',
+          'datasync:CreateTask',
+          'datasync:StartTaskExecution',
+          'datasync:UpdateTask',
+          'datasync:UpdateTaskExecution',
+        ],
+        resources: ['*'],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
         actions: ['s3:ListBucket'],
-        resources: [`${datasetsBucketArn}`],
+        resources: ['*'],
       })
     );
 
@@ -591,7 +608,7 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: [s3BatchDeleteCaseFileRoleArn],
+        resources: [s3BatchDeleteCaseFileRoleArn, deaDatasetsBucketDataSyncRoleArn],
       })
     );
 

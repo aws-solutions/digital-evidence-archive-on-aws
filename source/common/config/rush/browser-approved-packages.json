@@ -67,6 +67,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@aws-sdk/client-datasync",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws-sdk/client-dynamodb",
       "allowedCategories": [ "production" ]
     },
