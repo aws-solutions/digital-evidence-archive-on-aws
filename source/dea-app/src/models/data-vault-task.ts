@@ -16,6 +16,13 @@ export interface DeaDataVaultTask {
   readonly deleted: boolean;
 }
 
+export interface DataVaultTaskDTO {
+  readonly name: string;
+  readonly sourceLocationArn: string;
+  readonly description?: string;
+  readonly destinationFolder: string;
+}
+
 export interface DeaDataVaultTaskInput {
   readonly taskId: string;
   readonly dataVaultUlid: string;
@@ -24,6 +31,6 @@ export interface DeaDataVaultTaskInput {
   readonly sourceLocationArn: string;
   readonly destinationLocationArn: string;
   readonly taskArn: string;
-  readonly s3BucketPrefix: string;
+  readonly destinationFolder: string;
   readonly deleted: boolean;
 }

@@ -6,7 +6,7 @@
 import { DataSyncClient } from '@aws-sdk/client-datasync';
 import { getRequiredEnv } from '../lambda-http-helpers';
 
-const region = process.env.AWS_REGION;
+const region = process.env.AWS_REGION ?? 'us-east-1';
 
 export interface DataSyncProvider {
   dataSyncClient: DataSyncClient;

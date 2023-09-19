@@ -32,7 +32,7 @@ describe('create data vaults resource', () => {
     });
     const response = await createDataVault(event, dummyContext, repositoryProvider);
     const newDataVault = await validateAndReturnDataVault(name, response);
-    return newDataVault.ulid ?? fail();
+    expect(newDataVault.ulid).toBeDefined();
   });
 
   it('should fail to create a data vault when the provided name is already in use', async () => {
@@ -44,14 +44,18 @@ describe('create data vaults resource', () => {
     });
     await createDataVault(event, dummyContext, repositoryProvider);
 
-    await expect(createDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow();
+    await expect(createDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(
+      'Cannot create unique attributes "name" for "DataVault". An item of the same name already exists.'
+    );
   });
 
   it('should fail when no name is provided', async () => {
     const event = getDummyEvent({
       body: JSON.stringify({}),
     });
-    await expect(createDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow();
+    await expect(createDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(
+      '"name" is required'
+    );
   });
 
   async function validateAndReturnDataVault(name: string, response: APIGatewayProxyResult) {

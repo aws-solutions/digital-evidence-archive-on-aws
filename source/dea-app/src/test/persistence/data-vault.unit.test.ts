@@ -52,4 +52,10 @@ describe('data vault persistence', () => {
     expect(dataVaults).toBeDefined();
     expect(dataVaults.length).toEqual(3);
   });
+
+  it('should list only 1 data vault', async () => {
+    const dataVaults: Paged<DeaDataVault> = await listDataVaults(repositoryProvider, undefined, 1);
+    expect(dataVaults).toBeDefined();
+    expect(dataVaults.length).toEqual(1);
+  });
 });

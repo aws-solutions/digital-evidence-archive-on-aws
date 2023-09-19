@@ -7,7 +7,6 @@ import { createDataVault } from '../../../app/resources/create-data-vault';
 import { createDataVaultTask } from '../../../app/resources/create-data-vault-task';
 import { getDataVaultTasks } from '../../../app/resources/get-data-vault-tasks';
 import { createS3Location } from '../../../app/services/data-sync-service';
-import { DeaDataVault } from '../../../models/data-vault';
 import { DeaDataVaultTask } from '../../../models/data-vault-task';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { DataSyncProvider, defaultDataSyncProvider } from '../../../storage/dataSync';
@@ -15,8 +14,6 @@ import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
-let newDataVault: DeaDataVault;
-let locationArn1: string;
 
 const dataSyncProvider: DataSyncProvider = defaultDataSyncProvider;
 
@@ -44,10 +41,13 @@ describe('get data vaults', () => {
       repositoryProvider
     );
 
-    newDataVault = JSON.parse(response.body);
+    const newDataVault = JSON.parse(response.body);
 
     // Create source location arn
-    locationArn1 = await createS3Location(`/DATAVAULT${newDataVault.ulid}/locationtest1`, dataSyncProvider);
+    const locationArn1 = await createS3Location(
+      `/DATAVAULT${newDataVault.ulid}/locationtest1`,
+      dataSyncProvider
+    );
 
     await createDataVaultTask(
       getDummyEvent({
@@ -57,7 +57,7 @@ describe('get data vaults', () => {
         body: JSON.stringify({
           name: dataVaultTaskName1,
           sourceLocationArn: locationArn1,
-          s3BucketPrefix: 'testbucket',
+          destinationFolder: 'testbucket',
         }),
       }),
       dummyContext,
@@ -72,7 +72,7 @@ describe('get data vaults', () => {
         body: JSON.stringify({
           name: dataVaultTaskName2,
           sourceLocationArn: locationArn1,
-          s3BucketPrefix: 'testbucket',
+          destinationFolder: 'testbucket',
         }),
       }),
       dummyContext,

@@ -13,15 +13,9 @@ export const createDataVault = async (
   deaDataVault: DeaDataVaultInput,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaDataVault> => {
-  const transaction = {};
-  const dataVaultEntity = await repositoryProvider.DataVaultModel.create(
-    {
-      ...deaDataVault,
-    },
-    { transaction }
-  );
-
-  await repositoryProvider.table.transact('write', transaction);
+  const dataVaultEntity = await repositoryProvider.DataVaultModel.create({
+    ...deaDataVault,
+  });
 
   return dataVaultFromEntity(dataVaultEntity);
 };

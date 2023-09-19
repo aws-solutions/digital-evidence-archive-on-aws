@@ -49,7 +49,7 @@ describe('create data vault tasks resource', () => {
       body: JSON.stringify({
         name: 'testTask',
         sourceLocationArn: locationArn1,
-        s3BucketPrefix: 'testbucket',
+        destinationFolder: 'testbucket',
       }),
     });
 
@@ -58,7 +58,7 @@ describe('create data vault tasks resource', () => {
     const dataVaultTask = await validateAndReturnDataVaultTask('testTask', newDataVault.ulid, response2);
 
     expect(response.statusCode).toEqual(200);
-    return dataVaultTask.taskArn ?? fail();
+    expect(dataVaultTask.dataVaultUlid).toBeDefined();
   });
 
   it('should fail when a data vault task name is already in use', async () => {
@@ -69,11 +69,13 @@ describe('create data vault tasks resource', () => {
       body: JSON.stringify({
         name: 'testTask',
         sourceLocationArn: locationArn1,
-        s3BucketPrefix: 'testbucket',
+        destinationFolder: 'testbucket',
       }),
     });
 
-    await expect(createDataVaultTask(event, dummyContext, repositoryProvider)).rejects.toThrow();
+    await expect(createDataVaultTask(event, dummyContext, repositoryProvider)).rejects.toThrow(
+      'Cannot create unique attributes "name" for "DataVaultTask". An item of the same name already exists.'
+    );
   });
 
   it('should fail when a data vault task is missing a name', async () => {
@@ -83,11 +85,13 @@ describe('create data vault tasks resource', () => {
       },
       body: JSON.stringify({
         sourceLocationArn: locationArn1,
-        s3BucketPrefix: 'testbucket',
+        destinationFolder: 'testbucket',
       }),
     });
 
-    await expect(createDataVaultTask(event, dummyContext, repositoryProvider)).rejects.toThrow();
+    await expect(createDataVaultTask(event, dummyContext, repositoryProvider)).rejects.toThrow(
+      '"name" is required'
+    );
   });
 
   it('should fail when data vault task is missing a valid source location', async () => {
@@ -98,11 +102,13 @@ describe('create data vault tasks resource', () => {
       body: JSON.stringify({
         name: 'newname',
         sourceLocationArn: 'dummylocationarn',
-        s3BucketPrefix: 'testbucket',
+        destinationFolder: 'testbucket',
       }),
     });
 
-    await expect(createDataVaultTask(event, dummyContext, repositoryProvider)).rejects.toThrow();
+    await expect(createDataVaultTask(event, dummyContext, repositoryProvider)).rejects.toThrow(
+      '"sourceLocationArn" length must be at least 20 characters long'
+    );
   });
 
   async function validateAndReturnDataVault(name: string, response: APIGatewayProxyResult) {

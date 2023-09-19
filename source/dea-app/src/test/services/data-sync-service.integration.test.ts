@@ -20,21 +20,39 @@ describe('data-sync-service integration tests', () => {
   let locationArn2 = '';
   let taskArn = '';
 
-  it('should create datavault s3 locations for task generation', async () => {
+  afterAll(async () => {
+    await deleteDatasyncTask(taskArn, dataSyncProvider);
+    await deleteDatasyncLocation(locationArn1, dataSyncProvider);
+    await deleteDatasyncLocation(locationArn2, dataSyncProvider);
+  });
+
+  it('should create datavault s3 task', async () => {
     locationArn1 = await createS3Location(`/DATAVAULT${dataVaultUlid}/locationtest1`, dataSyncProvider);
     expect(locationArn1).toBeTruthy();
     locationArn2 = await createS3Location(`DATAVAULT${dataVaultUlid}/locationtest2`, dataSyncProvider);
     expect(locationArn2).toBeTruthy();
-  }, 40000);
-
-  it('should create datavault s3 task', async () => {
     taskArn = await createDatasyncTask('taskname', locationArn1, locationArn2, dataSyncProvider);
     expect(taskArn).toBeTruthy();
   }, 40000);
 
-  it('should delete datavault s3 task and location arns', async () => {
-    expect(await deleteDatasyncTask(taskArn, dataSyncProvider)).toEqual(taskArn);
-    expect(await deleteDatasyncLocation(locationArn1, dataSyncProvider)).toEqual(locationArn1);
-    expect(await deleteDatasyncLocation(locationArn2, dataSyncProvider)).toEqual(locationArn2);
+  it('should successfully delete location and tasks', async () => {
+    const deleteLocationTest = await createS3Location(
+      `/DATAVAULT${dataVaultUlid}/locationtest1`,
+      dataSyncProvider
+    );
+    const deleteLocationTest2 = await createS3Location(
+      `DATAVAULT${dataVaultUlid}/locationtest2`,
+      dataSyncProvider
+    );
+    const deleteTaskArn = await createDatasyncTask(
+      'taskname',
+      deleteLocationTest,
+      deleteLocationTest2,
+      dataSyncProvider
+    );
+
+    expect(await deleteDatasyncTask(deleteTaskArn, dataSyncProvider)).toEqual(deleteTaskArn);
+    expect(await deleteDatasyncLocation(deleteLocationTest, dataSyncProvider)).toEqual(deleteLocationTest);
+    expect(await deleteDatasyncLocation(deleteLocationTest2, dataSyncProvider)).toEqual(deleteLocationTest2);
   }, 40000);
 });

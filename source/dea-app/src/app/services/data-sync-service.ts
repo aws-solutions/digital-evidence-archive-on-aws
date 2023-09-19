@@ -13,11 +13,11 @@ import { DataSyncProvider } from '../../storage/dataSync';
 import { ValidationError } from '../exceptions/validation-exception';
 
 export const createS3Location = async (
-  s3BucketPrefix: string,
+  destinationFolder: string,
   dataSyncProvider: DataSyncProvider
 ): Promise<string> => {
   const locationSettings = {
-    Subdirectory: s3BucketPrefix,
+    Subdirectory: destinationFolder,
     S3BucketArn: dataSyncProvider.datasetsBucketArn,
     S3Config: {
       BucketAccessRoleArn: dataSyncProvider.dataSyncRoleArn,

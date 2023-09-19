@@ -4,7 +4,7 @@
  */
 
 import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
-import { DeaDataVaultTaskInput } from '../../models/data-vault-task';
+import { DataVaultTaskDTO, DeaDataVaultTaskInput } from '../../models/data-vault-task';
 import { createDataVaultTaskSchema } from '../../models/validation/data-vault';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
@@ -31,15 +31,18 @@ export const createDataVaultTask: DEAGatewayProxyHandler = async (
 ) => {
   const dataVaultId = getRequiredPathParam(event, 'dataVaultId', joiUlid);
 
-  const deaDataVaultTask: DeaDataVaultTaskInput = getRequiredPayload(
+  const deaDataVaultTask: DataVaultTaskDTO = getRequiredPayload(
     event,
     'Create Data Vault Tasks',
     createDataVaultTaskSchema
   );
 
-  const destinationS3Prefix = `DATAVAULT${dataVaultId}/${deaDataVaultTask.s3BucketPrefix.replace(/^\//, '')}`;
+  const destinationFolder = `DATAVAULT${dataVaultId}/${deaDataVaultTask.destinationFolder.replace(
+    /^\//,
+    ''
+  )}`;
 
-  const destinationLocationArn = await createS3Location(destinationS3Prefix, dataSyncProvider);
+  const destinationLocationArn = await createS3Location(destinationFolder, dataSyncProvider);
   const taskArn = await createDatasyncTask(
     deaDataVaultTask.name,
     deaDataVaultTask.sourceLocationArn,
@@ -53,7 +56,7 @@ export const createDataVaultTask: DEAGatewayProxyHandler = async (
     taskId: taskId,
     dataVaultUlid: dataVaultId,
     name: deaDataVaultTask.name,
-    s3BucketPrefix: destinationS3Prefix,
+    destinationFolder: destinationFolder,
     description: deaDataVaultTask.description,
     sourceLocationArn: deaDataVaultTask.sourceLocationArn,
     destinationLocationArn: destinationLocationArn,

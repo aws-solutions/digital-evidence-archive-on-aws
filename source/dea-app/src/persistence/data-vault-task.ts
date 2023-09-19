@@ -13,16 +13,9 @@ export const createDataVaultTask = async (
   deaDataVaultTask: DeaDataVaultTask,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaDataVaultTask> => {
-  const transaction = {};
-  const dataVaultTaskEntity = await repositoryProvider.DataVaultTaskModel.create(
-    {
-      ...deaDataVaultTask,
-    },
-    { transaction }
-  );
-
-  await repositoryProvider.table.transact('write', transaction);
-
+  const dataVaultTaskEntity = await repositoryProvider.DataVaultTaskModel.create({
+    ...deaDataVaultTask,
+  });
   return dataVaultTaskFromEntity(dataVaultTaskEntity);
 };
 
@@ -36,7 +29,7 @@ export const listDataVaultTasks = async (
     {
       GSI1PK: `DATAVAULT#${dataVaultUlid}#`,
       GSI1SK: {
-        begins_with: `DATAVAULT#${dataVaultUlid}#TASK#`,
+        begins_with: `DATAVAULT#TASK#`,
       },
     },
     {

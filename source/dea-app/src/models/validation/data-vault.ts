@@ -25,7 +25,7 @@ export const createDataVaultTaskSchema = Joi.object({
   name: safeName,
   description: safeDescription,
   sourceLocationArn: joiArn,
-  s3BucketPrefix: Joi.string().required(),
+  destinationFolder: Joi.string().required(),
 });
 
 export const dataVaultTaskResponseSchema = Joi.object({

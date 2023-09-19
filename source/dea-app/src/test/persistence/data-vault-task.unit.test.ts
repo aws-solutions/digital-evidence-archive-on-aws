@@ -29,7 +29,7 @@ describe('data vault tasks persistence', () => {
       sourceLocationArn: 'sourceLocationArn',
       destinationLocationArn: 'destinationLocationArn',
       taskArn: 'taskArn',
-      s3BucketPrefix: 'DATAVAULTULID/dummyprefix',
+      destinationFolder: 'DATAVAULTULID/dummyprefix',
       deleted: false,
     };
 
@@ -48,7 +48,7 @@ describe('data vault tasks persistence', () => {
       sourceLocationArn: 'sourceLocationArn',
       destinationLocationArn: 'destinationLocationArn',
       taskArn: 'taskArn',
-      s3BucketPrefix: 'DATAVAULTULID/dummyprefix',
+      destinationFolder: 'DATAVAULTULID/dummyprefix',
       deleted: false,
     };
 
@@ -60,7 +60,7 @@ describe('data vault tasks persistence', () => {
       sourceLocationArn: 'sourceLocationArn',
       destinationLocationArn: 'destinationLocationArn',
       taskArn: 'taskArn',
-      s3BucketPrefix: 'DATAVAULTULID/dummyprefix',
+      destinationFolder: 'DATAVAULTULID/dummyprefix',
       deleted: false,
     };
 
@@ -75,5 +75,17 @@ describe('data vault tasks persistence', () => {
 
     expect(dataVaultTasks).toBeDefined();
     expect(dataVaultTasks.length).toEqual(3);
+  });
+
+  it('should list only 1 data vault task', async () => {
+    const dataVaultTasks: Paged<DeaDataVaultTask> = await listDataVaultTasks(
+      repositoryProvider,
+      'DATAVAULTULID',
+      undefined,
+      1
+    );
+
+    expect(dataVaultTasks).toBeDefined();
+    expect(dataVaultTasks.length).toEqual(1);
   });
 });

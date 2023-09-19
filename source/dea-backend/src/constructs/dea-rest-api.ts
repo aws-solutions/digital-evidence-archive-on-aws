@@ -587,7 +587,7 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['s3:ListBucket'],
-        resources: ['*'],
+        resources: [`${datasetsBucketArn}`],
       })
     );
 
