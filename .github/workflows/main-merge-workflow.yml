@@ -30,7 +30,6 @@ jobs:
         run: |
           node common/scripts/install-run-rush.js build
       - name: configure aws credentials
-        env:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
