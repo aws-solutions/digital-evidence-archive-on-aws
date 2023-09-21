@@ -45,7 +45,7 @@ export const getQueryParam = (
   event: APIGatewayProxyEvent,
   paramName: string,
   defaultValue: string,
-  validationSchema: Joi.StringSchema | Joi.NumberSchema
+  validationSchema: Joi.AnySchema
 ): string => {
   let paramValue = defaultValue;
   if (event.queryStringParameters) {

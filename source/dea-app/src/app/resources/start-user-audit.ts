@@ -28,8 +28,8 @@ export const startUserAudit: DEAGatewayProxyHandler = async (
   const now = Date.now();
   const userId = getRequiredPathParam(event, 'userId', joiUlid);
   await validateUser(userId, repositoryProvider);
-  const start = getQueryParam(event, 'from', '0', Joi.number().integer());
-  const end = getQueryParam(event, 'to', now.toString(), Joi.number().integer());
+  const start = getQueryParam(event, 'from', '0', Joi.date().timestamp('unix'));
+  const end = getQueryParam(event, 'to', now.toString(), Joi.date().timestamp('unix'));
   const startTime = Number.parseInt(start);
   const endTime = Number.parseInt(end);
   const queryId = await auditService.requestAuditForUser(

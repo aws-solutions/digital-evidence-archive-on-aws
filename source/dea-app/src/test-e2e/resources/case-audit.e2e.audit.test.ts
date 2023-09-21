@@ -58,12 +58,16 @@ describe('case audit e2e', () => {
     await cognitoHelper.cleanup();
   }, 30000);
 
+  const currentSeconds = () => {
+    return Math.trunc(Date.now() / 1000);
+  };
+
   it(
     'retrieves actions taken against a case',
     async () => {
       const caseName = `auditTestCase${randomSuffix()}`;
 
-      const startTime = Date.now();
+      const startTime = currentSeconds();
       // ensure separation between the start time and when events roll in
       await delay(1000);
 
@@ -174,7 +178,7 @@ describe('case audit e2e', () => {
       );
       expect(createCaseOwnerResp.status).toEqual(200);
       // add some buffer to the end time
-      const endTime = Date.now() + 2_000;
+      const endTime = currentSeconds() + 2;
 
       //wait a moment so the next event falls outside of our end time
       await delay(3_000);
@@ -367,12 +371,18 @@ describe('case audit e2e', () => {
 
       expect(cloudtrailEntries.length).toBeGreaterThanOrEqual(9);
 
-      const beforeStartTimeEntry = entries.find((entry) => Date.parse(entry.DateTimeUTC) < startTime);
+      const beforeStartTimeEntry = entries.find(
+        (entry) => Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) < startTime
+      );
       expect(beforeStartTimeEntry).toBeUndefined();
-      const afterEndTimeEntry = entries.find((entry) => Date.parse(entry.DateTimeUTC) > endTime);
+      const afterEndTimeEntry = entries.find(
+        (entry) => Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) > endTime
+      );
       expect(afterEndTimeEntry).toBeUndefined();
       const withinStartAndEndEntry = entries.find(
-        (entry) => Date.parse(entry.DateTimeUTC) >= startTime && Date.parse(entry.DateTimeUTC) <= endTime
+        (entry) =>
+          Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) >= startTime &&
+          Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) <= endTime
       );
       expect(withinStartAndEndEntry).toBeDefined();
     },

@@ -40,10 +40,14 @@ describe('system audit e2e', () => {
     await cognitoHelper.cleanup();
   }, 30000);
 
+  const currentSeconds = () => {
+    return Math.trunc(Date.now() / 1000);
+  };
+
   it(
     'retrieves system actions',
     async () => {
-      const startTime = Date.now();
+      const startTime = currentSeconds();
       // ensure separation between the start time and when events roll in
       await delay(1000);
       // Create manager
@@ -100,7 +104,7 @@ describe('system audit e2e', () => {
       );
       expect(membershipsResponse.status).toEqual(200);
       // some buffer on the endtime
-      const endTime = Date.now() + 2_000;
+      const endTime = currentSeconds() + 2;
 
       // wait for data plane events
       await delay(15 * MINUTES_TO_MILLISECONDS);
@@ -169,12 +173,18 @@ describe('system audit e2e', () => {
       );
       verifyAuditEntry(getUsersFromCaseEntry, AuditEventType.GET_USERS_FROM_CASE, testUser, expectedDetails);
 
-      const beforeStartTimeEntry = entries.find((entry) => Date.parse(entry.DateTimeUTC) < startTime);
+      const beforeStartTimeEntry = entries.find(
+        (entry) => Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) < startTime
+      );
       expect(beforeStartTimeEntry).toBeUndefined();
-      const afterEndTimeEntry = entries.find((entry) => Date.parse(entry.DateTimeUTC) > endTime);
+      const afterEndTimeEntry = entries.find(
+        (entry) => Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) > endTime
+      );
       expect(afterEndTimeEntry).toBeUndefined();
       const withinStartAndEndEntry = entries.find(
-        (entry) => Date.parse(entry.DateTimeUTC) >= startTime && Date.parse(entry.DateTimeUTC) <= endTime
+        (entry) =>
+          Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) >= startTime &&
+          Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) <= endTime
       );
       expect(withinStartAndEndEntry).toBeDefined();
     },

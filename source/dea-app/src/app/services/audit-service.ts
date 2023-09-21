@@ -258,10 +258,7 @@ export class DeaAuditService extends AuditService {
     resourceId: string,
     repositoryProvider: ModelRepositoryProvider
   ) {
-    const milliSecondsToSeconds = 1000;
-    const timeClause = `from_iso8601_timestamp(COALESCE(dateTime, eventTime)) between from_unixtime(${Math.trunc(
-      start / milliSecondsToSeconds
-    )}) and from_unixtime(${Math.trunc(end / milliSecondsToSeconds)})`;
+    const timeClause = `from_iso8601_timestamp(COALESCE(dateTime, eventTime)) between from_unixtime(${start}) and from_unixtime(${end})`;
     const orderByClause = 'ORDER BY from_iso8601_timestamp(DateTimeUTC) ASC';
     // sort by DateTimeUTC, the time when the event actually occurred, rather than timestamp, the moment when it appeared in logs
     let queryString = `SELECT ${queryFields} FROM "${AUDIT_GLUE_DATABASE}"."${AUDIT_GLUE_TABLE}" where ${timeClause} ${orderByClause};`;
