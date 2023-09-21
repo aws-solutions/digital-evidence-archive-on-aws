@@ -38,4 +38,5 @@ jobs:
       - name: cdk deploy
         run: |
           cd dea-main
+          npm run cdk bootstrap aws://${{secrets.AWS_ACCT_NUMBER}}/${{secrets.AWS_REGION}}
           npm run cdk deploy
