@@ -787,7 +787,7 @@ resources:
     parentId: fld_13d35b73d9924829b61fd07d3e07be09
     modified: 1683866302311
     created: 1683865436207
-    url: https://{{cognitoDomainName}}.auth.{{region}}.amazoncognito.com/oauth2/authorize
+    #    url: https://{{cognitoDomainName}}.auth.{{region}}.amazoncognito.com/oauth2/authorize
     name: GET Oauth2/Authorize
     description: ""
     method: GET
@@ -1304,10 +1304,10 @@ resources:
     created: 1683865436192
     name: Base Environment
     data:
-      region: us-east-1
+      region: eu-west-2
       deaApiUrl: https://someurl/stage/
       cognitoClientId: somevalue
-      cognitoDomainName: somevalue
+      cognitoDomainName: someurl
       authCode: somevalue
       idToken: somevalue
       identityPoolId: somevalue

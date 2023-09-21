@@ -327,6 +327,6 @@ export const fileDetailLabels = {
 
 export const systemUseNotificationText =
   'CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT according ' +
-  'to your local laws and regulations. This is needed to fulfill CJIS Policy 5.5.4. (Use Notification). ' +
-  'Refer to the Implementation Guide for instructions on how to customize this text, and review ' +
-  'CJIS Policy 5.5.4 for latest requirement details.';
+  'Its is an offence to continue without proper authority. (Use Notification). ' +
+  'access to use this system restricted to genuine user and limited to the purpose of the organisation business, and review ' +
+  'unauthorised access or attempt to alter or damage data or programme could result in criminal persecution under the computer misuse act, (1990).';
