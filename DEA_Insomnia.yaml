@@ -787,7 +787,7 @@ resources:
     parentId: fld_13d35b73d9924829b61fd07d3e07be09
     modified: 1683866302311
     created: 1683865436207
-    #    url: https://{{cognitoDomainName}}.auth.{{region}}.amazoncognito.com/oauth2/authorize
+    url: https://{{cognitoDomainName}}.auth.{{region}}.amazoncognito.com/oauth2/authorize
     name: GET Oauth2/Authorize
     description: ""
     method: GET
