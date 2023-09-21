@@ -1,8 +1,8 @@
 name: Digital Evidence Archive Deployment
 
 env:
-  STAGE: prodDEA
-  DOMAIN_PREFIX: deaplayground
+  STAGE: prod
+  DOMAIN_PREFIX: cfiforensicsdev
 
 on:
   push:
@@ -32,8 +32,8 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: GITHUBACTIONSESSION
           aws-region: ${{ secrets.AWS_REGION }}
