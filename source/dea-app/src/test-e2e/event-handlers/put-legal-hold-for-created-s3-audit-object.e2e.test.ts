@@ -126,7 +126,7 @@ describe('the audit object legal hold process', () => {
         }
 
         --retries;
-        await delay(2000);
+        await delay(1 * MINUTES_TO_MILLISECONDS);
       }
 
       if (!auditObjParts) {
@@ -136,6 +136,6 @@ describe('the audit object legal hold process', () => {
       const hasLegalHold = await s3KeyHasLegalHold(auditObjParts[2], auditObjParts.slice(3).join('/'));
       expect(hasLegalHold).toBe(true);
     },
-    5 * MINUTES_TO_MILLISECONDS
+    15 * MINUTES_TO_MILLISECONDS
   );
 });

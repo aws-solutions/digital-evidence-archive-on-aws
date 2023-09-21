@@ -51,14 +51,17 @@ export class DeaMainStack extends cdk.Stack {
 
     super(scope, id, stackProps);
 
-    const dashboard = new DeaOperationalDashboard(this, 'DeaApiOpsDashboard');
+    let dashboard: DeaOperationalDashboard | undefined = undefined;
+    if (!deaConfig.isOneClick()) {
+      dashboard = new DeaOperationalDashboard(this, 'DeaApiOpsDashboard');
+    }
 
     // DEA App Register Construct
     this.appRegistry = new DeaAppRegisterConstruct(this, this.stackId, {
       solutionId: SOLUTION_ID,
       solutionName: 'Digital Evidence Archive',
       solutionVersion: SOLUTION_VERSION,
-      appRegistryApplicationName: 'digital-evidence-archive',
+      appRegistryApplicationName: 'DEA',
       applicationType: 'AWS-Solutions',
     });
     createCfnOutput(this, 'AppRegistryArn', {

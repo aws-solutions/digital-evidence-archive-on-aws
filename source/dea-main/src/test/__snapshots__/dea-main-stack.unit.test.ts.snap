@@ -16,7 +16,7 @@ Object {
   "Mappings": Object {
     "Solution": Object {
       "Data": Object {
-        "AppRegistryApplicationName": "digital-evidence-archive",
+        "AppRegistryApplicationName": "DEA",
         "ApplicationType": "AWS-Solutions",
         "ID": "SO0224",
         "SolutionName": "Digital Evidence Archive",
@@ -423,9 +423,6 @@ Object {
               },
               Object {
                 "Ref": "AWS::Region",
-              },
-              Object {
-                "Ref": "AWS::AccountId",
               },
               Object {
                 "Ref": "AWS::StackName",

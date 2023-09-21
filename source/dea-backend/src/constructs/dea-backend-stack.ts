@@ -25,7 +25,7 @@ import { DeaOperationalDashboard } from './dea-ops-dashboard';
 interface IBackendStackProps extends StackProps {
   readonly kmsKey: Key;
   readonly accessLogsPrefixes: ReadonlyArray<string>;
-  readonly opsDashboard: DeaOperationalDashboard;
+  readonly opsDashboard?: DeaOperationalDashboard;
 }
 
 export class DeaBackendConstruct extends Construct {
@@ -52,7 +52,7 @@ export class DeaBackendConstruct extends Construct {
       datasetsPrefix
     );
 
-    props.opsDashboard.addDynamoTableOperationalComponents(this.deaTable);
+    props.opsDashboard?.addDynamoTableOperationalComponents(this.deaTable);
 
     protectedDeaResourceArns.push(this.deaTable.tableArn);
     protectedDeaResourceArns.push(this.datasetsBucket.bucketArn);
