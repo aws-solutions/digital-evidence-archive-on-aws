@@ -1,6 +1,9 @@
 {
   "deletionAllowed": false,
-  "uploadFilesTimeoutMinutes": 60,
+  "isOneClick": false,  
+  "sourceIpValidation": false,
+  "fipsEndpointsEnabled": false,
+  "isMultiRegionTrail": false,
   "cognito": {
     "domain": "cfidevforensics"
   },
