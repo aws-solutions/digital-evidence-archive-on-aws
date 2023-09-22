@@ -1,5 +1,10 @@
 #! /bin/bash
 
+read -p "This process will attempt to clean up all Digital Evidence Archive S3 Buckets, including those with Audit and CaseFile data. Are you sure want to proceed? (Enter 'Proceed with cleanup' to continue) " -n 20 -r
+echo
+if [[ $REPLY = 'Proceed with cleanup' ]]
+then
+
 STACKPREFIX="${STAGE:-devsample}"
 REGION="${AWS_REGION:-us-east-1}"
 
@@ -31,3 +36,4 @@ sleep 90
 date
 python3 ../common/scripts/cleanupLockedBuckets.py
 date
+fi
