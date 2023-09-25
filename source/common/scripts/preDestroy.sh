@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
 read -p "This process will attempt to clean up all Digital Evidence Archive S3 Buckets, including those with Audit and CaseFile data. Are you sure want to proceed? (Enter 'Proceed with cleanup' to continue) " -n 20 -r
 echo
