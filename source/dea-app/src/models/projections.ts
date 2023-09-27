@@ -14,12 +14,14 @@ import {
   JobType,
   DataVaultType,
   DataVaultTaskType,
+  DataVaultExecutionType,
 } from '../persistence/schema/entities';
 import { CaseAction } from './case-action';
 import { CaseFileStatus } from './case-file-status';
 import { CaseStatus } from './case-status';
 import { CaseUser } from './case-user';
 import { DeaDataVault } from './data-vault';
+import { DeaDataVaultExecution } from './data-vault-execution';
 import { DeaDataVaultTask } from './data-vault-task';
 import { Job } from './job';
 import { DeaSession } from './session';
@@ -63,6 +65,17 @@ export const dataVaultTaskFromEntity = (dataVaultTaskEntity: DataVaultTaskType):
     destinationLocationArn: dataVaultTaskEntity.destinationLocationArn,
     taskArn: dataVaultTaskEntity.taskArn,
     deleted: dataVaultTaskEntity.deleted,
+  };
+};
+
+export const dataVaultExecutionFromEntity = (
+  dataVaultExecutionEntity: DataVaultExecutionType
+): DeaDataVaultExecution => {
+  return {
+    executionId: dataVaultExecutionEntity.executionId,
+    taskId: dataVaultExecutionEntity.taskId,
+    created: dataVaultExecutionEntity.created,
+    createdBy: dataVaultExecutionEntity.createdBy,
   };
 };
 

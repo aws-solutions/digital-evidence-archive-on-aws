@@ -584,10 +584,11 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
+    const listBucketResources = [...deaConfig.dataSyncLocationBuckets(), datasetsBucketArn];
     role.addToPolicy(
       new PolicyStatement({
         actions: ['s3:ListBucket'],
-        resources: [`${datasetsBucketArn}`],
+        resources: listBucketResources,
       })
     );
 

@@ -8,6 +8,7 @@ import {
   createS3Location,
   deleteDatasyncLocation,
   deleteDatasyncTask,
+  startDatasyncTaskExecution,
 } from '../../app/services/data-sync-service';
 import { DataSyncProvider, defaultDataSyncProvider } from '../../storage/dataSync';
 
@@ -26,13 +27,15 @@ describe('data-sync-service integration tests', () => {
     await deleteDatasyncLocation(locationArn2, dataSyncProvider);
   });
 
-  it('should create datavault s3 task', async () => {
+  it('should create datavault s3 task and run it', async () => {
     locationArn1 = await createS3Location(`/DATAVAULT${dataVaultUlid}/locationtest1`, dataSyncProvider);
     expect(locationArn1).toBeTruthy();
     locationArn2 = await createS3Location(`DATAVAULT${dataVaultUlid}/locationtest2`, dataSyncProvider);
     expect(locationArn2).toBeTruthy();
     taskArn = await createDatasyncTask('taskname', locationArn1, locationArn2, dataSyncProvider);
     expect(taskArn).toBeTruthy();
+    const executionArn = await startDatasyncTaskExecution(taskArn, dataSyncProvider);
+    expect(executionArn).toBeTruthy();
   }, 40000);
 
   it('should successfully delete location and tasks', async () => {

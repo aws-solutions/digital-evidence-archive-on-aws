@@ -8,6 +8,7 @@ import {
   CreateTaskCommand,
   DeleteLocationCommand,
   DeleteTaskCommand,
+  StartTaskExecutionCommand,
 } from '@aws-sdk/client-datasync';
 import { DataSyncProvider } from '../../storage/dataSync';
 import { ValidationError } from '../exceptions/validation-exception';
@@ -33,6 +34,8 @@ export const createS3Location = async (
   }
 };
 
+// function to create datasync task given name, and location arns. but turn off overwriting files option
+
 export const createDatasyncTask = async (
   name: string,
   sourceLocationArn: string,
@@ -43,6 +46,10 @@ export const createDatasyncTask = async (
     name,
     SourceLocationArn: sourceLocationArn,
     DestinationLocationArn: destinationLocationArn,
+    options: {
+      VerifyMode: 'ONLY_FILES_TRANSFERRED',
+      OverwriteMode: 'NEVER',
+    },
   };
 
   const command = new CreateTaskCommand(taskSettings);
@@ -52,6 +59,22 @@ export const createDatasyncTask = async (
     return response.TaskArn;
   } else {
     throw new ValidationError('Task creation failed');
+  }
+};
+
+export const startDatasyncTaskExecution = async (
+  taskArn: string,
+  dataSyncProvider: DataSyncProvider
+): Promise<string> => {
+  const command = new StartTaskExecutionCommand({
+    TaskArn: taskArn,
+  });
+
+  const response = await dataSyncProvider.dataSyncClient.send(command);
+  if (response.TaskExecutionArn) {
+    return response.TaskExecutionArn;
+  } else {
+    throw new ValidationError('Task execution failed to start');
   }
 };
 

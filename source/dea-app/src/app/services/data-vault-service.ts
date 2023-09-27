@@ -5,8 +5,10 @@
 
 import { OneTableError, Paged } from 'dynamodb-onetable';
 import { DeaDataVault, DeaDataVaultInput } from '../../models/data-vault';
+import { DeaDataVaultExecution } from '../../models/data-vault-execution';
 import { DeaDataVaultTask, DeaDataVaultTaskInput } from '../../models/data-vault-task';
 import * as DataVaultPersistence from '../../persistence/data-vault';
+import * as DataVaultExecutionPersistence from '../../persistence/data-vault-execution';
 import * as DataVaultTaskPersistence from '../../persistence/data-vault-task';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
@@ -68,4 +70,23 @@ export const listDataVaultTasks = async (
   limit = 30
 ): Promise<Paged<DeaDataVaultTask>> => {
   return DataVaultTaskPersistence.listDataVaultTasks(repositoryProvider, dataVaultUlid, nextToken, limit);
+};
+
+export const createDataVaultExecution = async (
+  deaDataVaultExecution: DeaDataVaultExecution,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaDataVaultExecution> => {
+  return await DataVaultExecutionPersistence.createDataVaultExecution(
+    deaDataVaultExecution,
+    repositoryProvider
+  );
+};
+
+export const listDataVaultExecutions = async (
+  repositoryProvider: ModelRepositoryProvider,
+  taskId: string,
+  nextToken: object | undefined,
+  limit = 30
+): Promise<Paged<DeaDataVaultExecution>> => {
+  return DataVaultExecutionPersistence.listDataVaultExecutions(repositoryProvider, taskId, nextToken, limit);
 };

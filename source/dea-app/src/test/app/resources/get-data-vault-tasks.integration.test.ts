@@ -17,7 +17,7 @@ let repositoryProvider: ModelRepositoryProvider;
 
 const dataSyncProvider: DataSyncProvider = defaultDataSyncProvider;
 
-describe('get data vaults', () => {
+describe('get data vault tasks', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('getDataVaultTasksTest');
   });
@@ -30,7 +30,7 @@ describe('get data vaults', () => {
     const dataVaultTaskName1 = 'testDataVault1';
     const dataVaultTaskName2 = 'testDataVault2';
 
-    // Create multiple data vaults for testing
+    // Create multiple data vault for testing
     const response = await createDataVault(
       getDummyEvent({
         body: JSON.stringify({

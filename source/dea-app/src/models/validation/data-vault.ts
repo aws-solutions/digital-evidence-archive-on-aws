@@ -40,3 +40,14 @@ export const dataVaultTaskResponseSchema = Joi.object({
   updated: Joi.date(),
   deleted: Joi.boolean(),
 });
+
+export const createDataVaultExecutionSchema = Joi.object({
+  taskArn: joiArn,
+});
+
+export const dataVaultExecutionResponseSchema = Joi.object({
+  taskId: Joi.string(),
+  executionId: Joi.string(),
+  createdBy: Joi.string(),
+  created: Joi.date(),
+});

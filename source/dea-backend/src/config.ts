@@ -242,6 +242,11 @@ const convictSchema = {
     format: Number,
     default: 60,
   },
+  dataSyncLocationBuckets: {
+    doc: 'Bucket ARN list for any buckets you are using as source locations for Data Vault transfers',
+    format: Array,
+    default: [],
+  },
 };
 
 export interface IdPAttributes {
@@ -296,6 +301,7 @@ interface DEAConfig {
   isTestStack(): boolean;
   isOneClick(): boolean;
   sourceIpValidationEnabled(): boolean;
+  dataSyncLocationBuckets(): string[];
   deaRoleTypes(): DEARoleTypeDefinition[];
   retainPolicy(): RemovalPolicy;
   retentionDays(): RetentionDays;
@@ -400,6 +406,7 @@ export const deaConfig: DEAConfig = {
   uploadFilesTimeoutMinutes: () => convictConfig.get('uploadFilesTimeoutMinutes'),
   includeDynamoDataPlaneEventsInTrail: () => convictConfig.get('includeDynamoDataPlaneEventsInTrail'),
   auditDownloadTimeoutMinutes: () => convictConfig.get('auditDownloadTimeoutMinutes'),
+  dataSyncLocationBuckets: () => convictConfig.get('dataSyncLocationBuckets'),
 };
 
 export const loadConfig = (stage: string): void => {
