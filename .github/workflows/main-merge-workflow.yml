@@ -22,8 +22,9 @@ on:
 permissions:
       id-token: write   # This is required for requesting the JWT
       contents: read    # This is required for actions/checkout
+
 jobs:
-  deploy_Dev: 
+#  deploy_Dev: 
   verify:
     env:
       CONFIGNAME: 'prod'
@@ -55,7 +56,6 @@ jobs:
         run: |
           cd dea-main
           npm run cdk bootstrap aws://${{secrets.AWS_ACCT_NUMBER}}/${{secrets.AWS_REGION}}
-          npm run cdk destroy --force
           npm run cdk deploy
 
   deploy_Test: 
