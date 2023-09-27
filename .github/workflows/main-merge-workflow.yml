@@ -1,8 +1,9 @@
 name: Digital Evidence Archive Deployment
 
 env:
-  STAGE: prod
-  DOMAIN_PREFIX: cfiforensicsprod
+  CONFIGNAME: 'prod'
+  STAGE: PRPIPELINE${{github.event.pull_request.number}}
+  DOMAIN_PREFIX: deaenv${{github.event.pull_request.number}}
 
 #on:
 #  push:
@@ -10,6 +11,9 @@ env:
 
 on:
   pull_request:
+    branches:
+      - "dev"
+      - "main"
     types:
       - opened
       - synchronize
@@ -18,10 +22,15 @@ on:
 permissions:
       id-token: write   # This is required for requesting the JWT
       contents: read    # This is required for actions/checkout
+
 jobs:
-  deploy_Dev: 
-#  verify:
-#    environment: dea-test
+#  deploy_Dev: 
+  verify:
+    env:
+      CONFIGNAME: 'prod'
+      STAGE: RUN${{github.run_number}}verify
+      DOMAIN_PREFIX: deaenv${{github.run_number}}verify 
+    environment: dea-test
     defaults:
       run:
         shell: bash
@@ -47,12 +56,10 @@ jobs:
         run: |
           cd dea-main
           npm run cdk bootstrap aws://${{secrets.AWS_ACCT_NUMBER}}/${{secrets.AWS_REGION}}
-          npm run cdk destroy --force
           npm run cdk deploy
 
   deploy_Test: 
-#  verify:
-#    environment: dea-test
+    environment: dea-test
     defaults:
       run:
         shell: bash
