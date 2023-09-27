@@ -1,8 +1,9 @@
 name: Digital Evidence Archive Deployment
 
 env:
-  STAGE: prod
-  DOMAIN_PREFIX: cfiforensicsprod
+  CONFIGNAME: 'prod'
+  STAGE: PRPIPELINE${{github.event.pull_request.number}}
+  DOMAIN_PREFIX: deaenv${{github.event.pull_request.number}}
 
 #on:
 #  push:
@@ -10,6 +11,9 @@ env:
 
 on:
   pull_request:
+    branches:
+      - "dev"
+      - "main"
     types:
       - opened
       - synchronize
@@ -20,8 +24,12 @@ permissions:
       contents: read    # This is required for actions/checkout
 jobs:
   deploy_Dev: 
-#  verify:
-#    environment: dea-test
+  verify:
+    env:
+      CONFIGNAME: 'devsample'
+      STAGE: RUN${{github.run_number}}verify
+      DOMAIN_PREFIX: deaenv${{github.run_number}}verify 
+    environment: dea-test
     defaults:
       run:
         shell: bash
@@ -51,8 +59,7 @@ jobs:
           npm run cdk deploy
 
   deploy_Test: 
-#  verify:
-#    environment: dea-test
+    environment: dea-test
     defaults:
       run:
         shell: bash
