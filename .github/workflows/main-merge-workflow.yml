@@ -2,25 +2,33 @@ name: Digital Evidence Archive Deployment
 
 env:
   STAGE: prod
-  DOMAIN_PREFIX: cfiforensicsdev
+  DOMAIN_PREFIX: cfiforensicsprod
+
+#on:
+#  push:
+#    branches: main
 
 on:
-  push:
-    branches: main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - closed
 
 permissions:
       id-token: write   # This is required for requesting the JWT
       contents: read    # This is required for actions/checkout
 jobs:
-  deploy: 
+  deploy_Dev: 
 #  verify:
 #    environment: dea-test
     defaults:
       run:
         shell: bash
         working-directory: ./source
-    name: Deploy Playground
+    name: Deploy Dev Playground
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'synchronize'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -39,4 +47,35 @@ jobs:
         run: |
           cd dea-main
           npm run cdk bootstrap aws://${{secrets.AWS_ACCT_NUMBER}}/${{secrets.AWS_REGION}}
+          npm run cdk destroy --force
           npm run cdk deploy
+
+  deploy_Test: 
+#  verify:
+#    environment: dea-test
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./source
+    name: Deploy Test Playground
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/baseAction
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_TEST }}
+          role-session-name: GITHUBACTIONSESSION
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: cdk deploy
+        run: |
+          cd dea-main
+          npm run cdk bootstrap aws://${{secrets.AWS_ACCT_NUMBER_TEST}}/${{secrets.AWS_REGION}}
+          npm run cdk deploy        
