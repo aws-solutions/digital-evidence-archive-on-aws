@@ -406,7 +406,7 @@ const createDeleteCaseFileBatchJob = async (
 };
 
 function getS3KeyForCaseFile(caseFile: DeaCaseFile): string {
-  return `${caseFile.caseUlid}/${caseFile.ulid}`;
+  return caseFile.fileS3Key;
 }
 
 async function getUploadPresignedUrlPromise(

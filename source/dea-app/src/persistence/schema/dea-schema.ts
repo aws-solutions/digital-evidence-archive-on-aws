@@ -99,6 +99,7 @@ export const DeaSchema = {
       contentType: { type: String },
       details: { type: String, validate: allButDisallowed },
       reason: { type: String, validate: allButDisallowed },
+      fileS3Key: { type: String },
 
       //managed by onetable - but included for entity generation
       created: { type: Date },
