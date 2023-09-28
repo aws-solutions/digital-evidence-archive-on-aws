@@ -14,6 +14,7 @@ import {
   FirehoseTransformationResultRecord,
 } from 'aws-lambda';
 import { logger } from '../../logger';
+import ErrorPrefixes from '../error-prefixes';
 
 /*
 For processing data sent to Firehose by Cloudwatch Logs subscription filters.
@@ -187,7 +188,7 @@ function transformLogEvent(logEvent: LogEvent) {
     return `${JSON.stringify(validatedMessage)}\n`;
   } catch (e) {
     // only log the eventId for follow up
-    logger.error('Malformed Event', { recordId: logEvent.id });
+    logger.error(ErrorPrefixes.MALFORMED_JSON_PREFIX, { recordId: logEvent.id });
   }
   return `{}\n`;
 }
@@ -288,6 +289,7 @@ async function putRecordsToFirehoseStream(
       logger.debug(`Some records failed while calling reingesting to Firehose, retrying. ${errMsg}`);
       await putRecordsToFirehoseStream(streamName, failed, client, attemptsMade + 1, maxAttempts);
     } else {
+      logger.error(ErrorPrefixes.KINESIS_PUT_ERROR_PREFIX, { erroMsg: errMsg });
       throw new Error(`Could not put records after ${maxAttempts} attempts. ${errMsg}`);
     }
   }

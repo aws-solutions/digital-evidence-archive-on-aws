@@ -22,7 +22,7 @@ import { validateBackendConstruct } from './validate-backend-construct';
 const PROTECTED_DEA_RESOURCES: string[] = [];
 
 describe('DeaBackend constructs', () => {
-  const expectedLambdaCount = 42;
+  const expectedLambdaCount = 43;
   const expectedMethodCount = 77;
 
   beforeAll(() => {
@@ -60,6 +60,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      opsDashboard: dashboard,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
@@ -156,6 +157,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      opsDashboard: dashboard,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
@@ -238,6 +240,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      opsDashboard: dashboard,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
@@ -344,6 +347,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      opsDashboard: dashboard,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,

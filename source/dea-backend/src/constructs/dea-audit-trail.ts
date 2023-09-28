@@ -20,11 +20,13 @@ import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 import { AuditCloudwatchToAthenaInfra } from './create-cloudwatch-to-athena-infra';
+import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 interface DeaAuditProps extends StackProps {
   readonly kmsKey: Key;
   readonly deaDatasetsBucket: IBucket;
   readonly deaTableArn: string;
+  readonly opsDashboard?: DeaOperationalDashboard;
 }
 
 export class DeaAuditTrail extends Construct {
@@ -49,6 +51,7 @@ export class DeaAuditTrail extends Construct {
       kmsKey: props.kmsKey,
       auditLogGroup: this.auditLogGroup,
       trailLogGroup: this.trailLogGroup,
+      opsDashboard: props.opsDashboard,
     });
 
     this.auditTrail = this.createAuditTrail(

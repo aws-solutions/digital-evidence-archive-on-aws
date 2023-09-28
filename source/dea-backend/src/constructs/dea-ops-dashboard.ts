@@ -17,6 +17,8 @@ import {
 } from 'aws-cdk-lib/aws-cloudwatch';
 import { Operation, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { IFilterPattern, ILogGroup, MetricFilter } from 'aws-cdk-lib/aws-logs';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import { ApiGatewayRoute } from '../resources/api-gateway-route-config';
 
@@ -28,6 +30,9 @@ const API_ERROR_RATE_THRESHOLD_PERCENT = 3;
 const LAMBDA_THROTTLE_THRESHOLD = 1;
 const TABLE_SYSTEM_ERROR_THRESHOLD = 1;
 const TABLE_THROTTLE_THRESHOLD = 1;
+// we should expect DLQs to be always empty
+const DEADLETTERQUEUE_MESSAGE_THRESHOLD = 0;
+const DEADLETTERQUEUE_ALARM_EVALUATION_PERIODS = 1;
 
 export class DeaOperationalDashboard extends NestedStack {
   private apiDashboard: Dashboard;
@@ -181,7 +186,7 @@ export class DeaOperationalDashboard extends NestedStack {
 
     new Alarm(this, `${route.eventName}-error-alarm`, {
       alarmDescription: `Api Errors above ${API_ERROR_RATE_THRESHOLD_PERCENT}%`,
-      evaluationPeriods: ALARM_EVALUATION_PERIOD_MINUTES,
+      evaluationPeriods: 1,
       threshold: API_ERROR_RATE_THRESHOLD_PERCENT,
       treatMissingData: TreatMissingData.IGNORE,
       comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
@@ -266,29 +271,37 @@ export class DeaOperationalDashboard extends NestedStack {
 
     new Alarm(this, `dea-table-system-errors-alarm`, {
       alarmDescription: `DynamoDB Table System Errors above ${TABLE_SYSTEM_ERROR_THRESHOLD}`,
-      evaluationPeriods: ALARM_EVALUATION_PERIOD_MINUTES,
+      evaluationPeriods: 1,
       threshold: API_ERROR_RATE_THRESHOLD_PERCENT,
       treatMissingData: TreatMissingData.IGNORE,
       comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-      metric: table.metricSystemErrorsForOperations({ operations }),
+      metric: table.metricSystemErrorsForOperations({
+        operations,
+        period: Duration.minutes(ALARM_EVALUATION_PERIOD_MINUTES),
+      }),
     });
 
     new Alarm(this, `dea-table-user-errors-alarm`, {
       alarmDescription: `DynamoDB Table User Errors above ${TABLE_SYSTEM_ERROR_THRESHOLD}`,
-      evaluationPeriods: ALARM_EVALUATION_PERIOD_MINUTES,
+      evaluationPeriods: 1,
       threshold: API_ERROR_RATE_THRESHOLD_PERCENT,
       treatMissingData: TreatMissingData.IGNORE,
       comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-      metric: table.metricUserErrors(),
+      metric: table.metricUserErrors({
+        period: Duration.minutes(ALARM_EVALUATION_PERIOD_MINUTES),
+      }),
     });
 
     new Alarm(this, `dea-table-throttle-alarm`, {
       alarmDescription: `DynamoDB Table Throttle Count above ${TABLE_THROTTLE_THRESHOLD}`,
-      evaluationPeriods: ALARM_EVALUATION_PERIOD_MINUTES,
+      evaluationPeriods: 1,
       threshold: TABLE_THROTTLE_THRESHOLD,
       treatMissingData: TreatMissingData.IGNORE,
       comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-      metric: table.metricThrottledRequestsForOperations({ operations }),
+      metric: table.metricThrottledRequestsForOperations({
+        operations,
+        period: Duration.minutes(ALARM_EVALUATION_PERIOD_MINUTES),
+      }),
     });
   }
 
@@ -340,7 +353,7 @@ export class DeaOperationalDashboard extends NestedStack {
     if (includeAlarms) {
       new Alarm(this, `${identifier}-lambda-error-alarm`, {
         alarmDescription: `Api Errors above ${API_ERROR_RATE_THRESHOLD_PERCENT}%`,
-        evaluationPeriods: ALARM_EVALUATION_PERIOD_MINUTES,
+        evaluationPeriods: 1,
         threshold: API_ERROR_RATE_THRESHOLD_PERCENT,
         treatMissingData: TreatMissingData.IGNORE,
         comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
@@ -358,11 +371,13 @@ export class DeaOperationalDashboard extends NestedStack {
 
       new Alarm(this, `${identifier}-lambda-throttles-alarm`, {
         alarmDescription: `Throttles above threshold of ${LAMBDA_THROTTLE_THRESHOLD}`,
-        evaluationPeriods: ALARM_EVALUATION_PERIOD_MINUTES,
+        evaluationPeriods: 1,
         threshold: LAMBDA_THROTTLE_THRESHOLD,
         treatMissingData: TreatMissingData.IGNORE,
         comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-        metric: lambda.metricThrottles(),
+        metric: lambda.metricThrottles({
+          period: Duration.minutes(ALARM_EVALUATION_PERIOD_MINUTES),
+        }),
       });
     }
   }
@@ -378,5 +393,55 @@ export class DeaOperationalDashboard extends NestedStack {
     );
     errorWidget.addLeftMetric(lambda.metricErrors().with({ color: Color.RED, label: `${eventName}_errors` }));
     throttleWidget.addLeftMetric(lambda.metricThrottles().with({ label: `${eventName}_throttles` }));
+  }
+
+  public addMetricFilterAlarmForLogGroup(
+    logGroup: ILogGroup,
+    filterPattern: IFilterPattern,
+    metricName: string
+  ) {
+    const metricFilter = new MetricFilter(this, `${metricName}Filter`, {
+      logGroup,
+      metricNamespace: 'DEALogErrors',
+      metricName,
+      filterPattern,
+      metricValue: '1',
+    });
+
+    new Alarm(this, `${metricName}Alarm`, {
+      alarmDescription: `Alarm for ${metricName}`,
+      evaluationPeriods: 1,
+      threshold: 0,
+      treatMissingData: TreatMissingData.NOT_BREACHING,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+      metric: metricFilter.metric({
+        period: Duration.days(1),
+        statistic: 'sum',
+      }),
+    });
+  }
+
+  public addAuditLambdaErrorAlarm(lambda: NodejsFunction, identifier: string) {
+    new Alarm(this, `${identifier}FailuresAlarm`, {
+      alarmDescription: `${identifier} Failures encountered`,
+      evaluationPeriods: 1,
+      threshold: 0,
+      treatMissingData: TreatMissingData.NOT_BREACHING,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+      metric: lambda.metricErrors({
+        period: Duration.days(1),
+      }),
+    });
+  }
+
+  public addDeadLetterQueueOperationalComponents(identifier: string, queue: Queue) {
+    new Alarm(this, `${identifier}Alarm`, {
+      alarmDescription: `Number of messages visible above ${DEADLETTERQUEUE_MESSAGE_THRESHOLD}`,
+      evaluationPeriods: DEADLETTERQUEUE_ALARM_EVALUATION_PERIODS,
+      threshold: DEADLETTERQUEUE_MESSAGE_THRESHOLD,
+      treatMissingData: TreatMissingData.NOT_BREACHING,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+      metric: queue.metricApproximateNumberOfMessagesVisible(),
+    });
   }
 }

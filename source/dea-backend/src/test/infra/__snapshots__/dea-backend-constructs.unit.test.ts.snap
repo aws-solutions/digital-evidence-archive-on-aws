@@ -473,6 +473,24 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "DeletionPolicy": "Delete",
       "Properties": Object {
         "Parameters": Object {
+          "referencetoteststackDeaAuditauditobjectlockdlq2F89474CQueueName": Object {
+            "Fn::GetAtt": Array [
+              "DeaAuditauditobjectlockdlqF310E49D",
+              "QueueName",
+            ],
+          },
+          "referencetoteststackDeaAuditauditobjectlocker1B633237Ref": Object {
+            "Ref": "DeaAuditauditobjectlockerC902034D",
+          },
+          "referencetoteststackDeaAuditauditprocessinglambda89606C6FRef": Object {
+            "Ref": "DeaAuditauditprocessinglambdaE24A4EB0",
+          },
+          "referencetoteststackDeaAuditauditprocessinglambdaLogRetentionDA0ABAA0LogGroupName": Object {
+            "Fn::GetAtt": Array [
+              "DeaAuditauditprocessinglambdaLogRetention10650E20",
+              "LogGroupName",
+            ],
+          },
           "referencetoteststackDeaBackendConstructDeaTableC6F555E3Ref": Object {
             "Ref": "DeaBackendConstructDeaTableB48721A0",
           },
@@ -1375,6 +1393,28 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
+    },
+    "DeaAuditauditprocessinglambdaLogRetention10650E20": Object {
+      "Properties": Object {
+        "LogGroupName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "/aws/lambda/",
+              Object {
+                "Ref": "DeaAuditauditprocessinglambdaE24A4EB0",
+              },
+            ],
+          ],
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
     },
     "DeaAuditauditprocessinglambdaServiceRole74F0C037": Object {
       "Properties": Object {
@@ -14838,6 +14878,92 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "Roles": Array [
           Object {
             "Ref": "DeaRestApiConstructdeadatasetsrole293FB411",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": Object {
+      "DependsOn": Array [
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+            "Arn",
+          ],
+        },
+        "Runtime": Object {
+          "Fn::FindInMap": Array [
+            "DefaultCrNodeVersionMap",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            "value",
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "logs:PutRetentionPolicy",
+                "logs:DeleteRetentionPolicy",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "Roles": Array [
+          Object {
+            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
           },
         ],
       },

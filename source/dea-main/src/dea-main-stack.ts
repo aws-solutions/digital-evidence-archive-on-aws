@@ -89,6 +89,7 @@ export class DeaMainStack extends cdk.Stack {
       kmsKey,
       deaDatasetsBucket: backendConstruct.datasetsBucket,
       deaTableArn: backendConstruct.deaTable.tableArn,
+      opsDashboard: dashboard,
     });
 
     const deaEventHandlers = new DeaEventHandlers(this, 'DeaEventHandlers', {

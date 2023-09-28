@@ -4,6 +4,7 @@
  */
 
 import path from 'path';
+import ErrorPrefixes from '@aws/dea-app/lib/app/error-prefixes';
 import * as glue from '@aws-cdk/aws-glue-alpha';
 import { Aws, Duration, Fn, StackProps, aws_kinesisfirehose } from 'aws-cdk-lib';
 import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
@@ -28,12 +29,14 @@ import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { auditGlueTableColumns } from './audit-glue-table-columns';
 import { createCfnOutput } from './construct-support';
+import { DeaOperationalDashboard } from './dea-ops-dashboard';
 import { FirehoseDestination } from './firehose-destination';
 
 interface AuditCloudwatchToAthenaProps extends StackProps {
   readonly kmsKey: Key;
   readonly auditLogGroup: LogGroup;
   readonly trailLogGroup: LogGroup;
+  readonly opsDashboard?: DeaOperationalDashboard;
 }
 
 export class AuditCloudwatchToAthenaInfra extends Construct {
@@ -67,7 +70,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
 
     const auditPrefix = 'audit/';
 
-    this.addLegalHoldInfrastructure(this.athenaAuditBucket, auditPrefix);
+    this.addLegalHoldInfrastructure(this.athenaAuditBucket, auditPrefix, props.opsDashboard);
 
     const queryResultBucket = new Bucket(this, 'queryResultBucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
@@ -130,7 +133,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
     );
     props.kmsKey.grantEncrypt(fireHosetoS3Role);
 
-    const lambda = new NodejsFunction(this, 'audit-processing-lambda', {
+    const auditTransformLambda = new NodejsFunction(this, 'audit-processing-lambda', {
       // Our kinesis hint is 1MB, assume a high decompression of 10x, 512mb will be plenty
       memorySize: 512,
       // transformation lambda has a maximum execution of 5 minutes
@@ -149,7 +152,19 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       },
     });
 
-    lambda.grantInvoke(fireHosetoS3Role);
+    props.opsDashboard?.addMetricFilterAlarmForLogGroup(
+      auditTransformLambda.logGroup,
+      FilterPattern.anyTerm(ErrorPrefixes.MALFORMED_JSON_PREFIX),
+      'AuditTransformMalformed'
+    );
+    props.opsDashboard?.addMetricFilterAlarmForLogGroup(
+      auditTransformLambda.logGroup,
+      FilterPattern.anyTerm(ErrorPrefixes.KINESIS_PUT_ERROR_PREFIX),
+      'AuditKinesisFailure'
+    );
+    props.opsDashboard?.addAuditLambdaErrorAlarm(auditTransformLambda, 'AuditTransformLambda');
+
+    auditTransformLambda.grantInvoke(fireHosetoS3Role);
 
     const firehoseName = 'Delivery Stream';
     const fhose = new aws_kinesisfirehose.CfnDeliveryStream(this, firehoseName, {
@@ -191,7 +206,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
             {
               // Allowed values: BufferIntervalInSeconds | BufferSizeInMBs | Delimiter | JsonParsingEngine | LambdaArn | MetadataExtractionQuery | NumberOfRetries | RoleArn | SubRecordType
               parameters: [
-                { parameterName: 'LambdaArn', parameterValue: lambda.functionArn },
+                { parameterName: 'LambdaArn', parameterValue: auditTransformLambda.functionArn },
                 { parameterName: 'BufferSizeInMBs', parameterValue: '1' },
                 { parameterName: 'BufferIntervalInSeconds', parameterValue: '60' },
               ],
@@ -207,7 +222,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
     });
 
     // construct the arn here because using the arn directly leads to a circular dependency
-    lambda.addToRolePolicy(
+    auditTransformLambda.addToRolePolicy(
       new PolicyStatement({
         actions: ['firehose:PutRecordBatch'],
         resources: [
@@ -268,7 +283,11 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
     this.athenaTableName = glueTable.tableName;
   }
 
-  private addLegalHoldInfrastructure(auditBucket: Bucket, auditPrefix: string) {
+  private addLegalHoldInfrastructure(
+    auditBucket: Bucket,
+    auditPrefix: string,
+    opsDashboard?: DeaOperationalDashboard
+  ) {
     const objectLockHandler = new NodejsFunction(this, 'audit-object-locker', {
       memorySize: 512,
       timeout: Duration.seconds(60),
@@ -286,6 +305,8 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       },
     });
 
+    opsDashboard?.addAuditLambdaErrorAlarm(objectLockHandler, 'AuditObjectLockLambda');
+
     objectLockHandler.addToRolePolicy(
       new PolicyStatement({
         actions: ['s3:PutObjectLegalHold', 's3:GetBucketObjectLockConfiguration', 's3:GetObjectLegalHold'],
@@ -302,6 +323,8 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
         maxReceiveCount: 5,
       },
     });
+
+    opsDashboard?.addDeadLetterQueueOperationalComponents('AuditLegalHoldDLQ', objectLockDLQ);
 
     createCfnOutput(this, 'objectLockQueueUrl', {
       value: objectLockQueue.queueUrl,

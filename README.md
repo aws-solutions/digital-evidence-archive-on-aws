@@ -316,6 +316,21 @@ Please note that default DEA limits are conservative, but you can increase the n
 
 DEA does not protect against uploading viruses (as they can be considered evidence in certain investigations), therefore we recommend setting up anti-virus and other security protections, such as crowdstrike to ensure your Criminal Justice devices stay secure. A common product is Crowdstrike.
 
+## Operational Monitoring
+
+When DEA is deployed via CDK, a Nested Stack will be deployed with the identifier `DeaApiOpsDashboard`. This nested stack includes Dashboards and Alarms that we believe are valuable in monitoring the health and normal operation of your Digital Evidence Archive instance. As we expect 0 failures in the Audit System we trigger certain alarms on any single failure. Here is some additional information on some specific alarms:  
+* AuditTransformMalformedAlarm    
+  - This Alarm will trigger when any malformed Audit Event is encountered over the period of a day. To triage, look for the "Malformed Event" text present in `auditprocessinglambda` cloudwatch logs. The log message will include the unique ID of the event in question, which can be viewed by using the log insights filter: `filter eventID = 'your-id-here'` searching against the `deaAuditLogs` and `deaTrailLogs` CloudWatch Log Groups.  
+* AuditObjectLockLambdaFailuresAlarm  
+  - This Alarm will trigger when DEA fails to place a Legal Hold on any Audit Event over the period of a day, due to execution failure. To triage, view the `auditobjectlocker` logs during the time period where the Alarm was triggered. Legal hold can be set on any object via the S3 Console.
+* AuditLegalHoldDLQAlarm  
+  - This Alarm will trigger if the Legal Hold Dead Letter Queue has any pending messages. Triage by investigating any messages in the SQS Queue: `auditobjectlockdlq`  
+* AuditKinesisFailureAlarm  
+  - This Alarm will trigger if DEA fails to put records into the Audit Kinesis Firehose after a number of retries. Review the `auditprocessinglambda` CloudWatch logs during the period where the alarm was triggered.  
+* AuditTransformLambdaFailuresAlarm  
+  - This Alarm will trigger if the Audit Transformation lambda encounters any error that unexpectedly ends execution. Review the `auditprocessinglambda` CloudWatch logs during the period where the alarm was triggered.  
+* Additional alarms are included for standard operational metrics for the DynamoDB table as well as API lambdas
+
 ## Simple Deployment
 
 Deployments are controlled by your `STAGE` environment variable. If unspecified this will default to `devsample`.
@@ -480,12 +495,8 @@ rushx idp-test-setup --username <TEST_USER_NAME> --password <TEST_USER_PASSWORD>
 
 The user should already be created in the IdP, assigned to the DEA application under test, and given DEARole of CaseWorker.
 
-### One Time Package Installs
-
-- Enable pnpm commands (needed for local CDK bundling)
-  `npm install -g pnpm`
-- Install Rush, the monorepo management tool
-  `npm install -g @microsoft/rush`
+### Audit Delay  
+To compile a comprehensive Audit Log of application events Digital Evidence Archive utilizes both Application-Generated events as well as events from CloudTrail. CloudTrail events have been known to be delayed up to 20 minutes before becoming present in CloudWatch Logs. Consequently, be aware that a generated Audit report may be missing events that have occurred recently.
 
 Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
