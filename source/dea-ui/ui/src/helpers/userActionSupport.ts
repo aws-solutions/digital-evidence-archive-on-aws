@@ -9,6 +9,7 @@ const CREATE_CASE_PATH = '/casesPOST';
 const UPDATE_CASE_STATUS_PATH = '/cases/{caseId}/statusPUT';
 const DELETE_CASE_FILES_PATH = '/cases/{caseId}/filesDELETE';
 const RESTORE_CASE_FILE_PATH = '/cases/{caseId}/files/{fileId}/restorePUT';
+const CREATE_DATA_VAULT_PATH = '/datavaultsPOST';
 
 export const canInvite = (actions?: CaseAction[]): boolean => {
   return actions?.includes(CaseAction.INVITE) ?? false;
@@ -54,4 +55,8 @@ export const canDeleteCaseFiles = (endpoints?: string[]): boolean => {
 
 export const canCreateCases = (endpoints?: string[]): boolean => {
   return endpoints?.includes(CREATE_CASE_PATH) ?? false;
+};
+
+export const canCreateDataVaults = (endpoints?: string[]): boolean => {
+  return endpoints?.includes(CREATE_DATA_VAULT_PATH) ?? false;
 };

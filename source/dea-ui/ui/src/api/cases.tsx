@@ -18,21 +18,8 @@ import {
 } from '../models/CaseFiles';
 import { CreateCaseForm, EditCaseForm, UpdateCaseStatusForm } from '../models/Cases';
 import { CaseUserForm } from '../models/CaseUser';
+import { DeaListResult, DeaSingleResult } from './models/api-results';
 import { CaseFileDTO, CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
-
-export interface DeaListResult<T> {
-  data: T[];
-  isLoading: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  mutate?: any;
-}
-
-export interface DeaSingleResult<T> {
-  data: T;
-  isLoading: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  mutate?: any;
-}
 
 const progressStatus = [QueryExecutionState.RUNNING.valueOf(), QueryExecutionState.QUEUED.valueOf()];
 

@@ -22,7 +22,8 @@ import Modal from '@cloudscape-design/components/modal';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
-import { DeaListResult, updateCaseStatus } from '../../api/cases';
+import { updateCaseStatus } from '../../api/cases';
+import { DeaListResult } from '../../api/models/api-results';
 import { DeaCaseDTO } from '../../api/models/case';
 import {
   caseListLabels,

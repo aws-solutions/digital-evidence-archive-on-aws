@@ -45,7 +45,7 @@ describe('create data vaults resource', () => {
     await createDataVault(event, dummyContext, repositoryProvider);
 
     await expect(createDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      'Cannot create unique attributes "name" for "DataVault". An item of the same name already exists.'
+      'Data Vault name is already in use'
     );
   });
 

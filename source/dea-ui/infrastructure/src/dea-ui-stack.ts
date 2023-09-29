@@ -121,6 +121,30 @@ export class DeaUiConstruct extends Construct {
     const proxy = uiResource.addProxy({ anyMethod: false });
     const proxyS3Integration = this.getS3Integration('{proxy}', bucket, executeRole);
     proxy.addMethod('GET', proxyS3Integration, this.getMethodOptions());
+
+    // /data-vaults page
+    const dataVaultsResource = uiResource.addResource('data-vaults');
+    const dataVaultsS3Integration = this.getS3Integration('data-vaults.html', bucket, executeRole);
+    dataVaultsResource.addMethod('GET', dataVaultsS3Integration, this.getMethodOptions());
+
+    // /data-vault-detail page
+    const dataVaultDetailResource = uiResource.addResource('data-vault-detail');
+    const dataVaultDetailS3Integration = this.getS3Integration('data-vault-detail.html', bucket, executeRole);
+    dataVaultDetailResource.addMethod('GET', dataVaultDetailS3Integration, this.getMethodOptions());
+
+    // /create-data-vaults page
+    const createDataVaultsResource = uiResource.addResource('create-data-vaults');
+    const createDataVaultsS3Integration = this.getS3Integration(
+      'create-data-vaults.html',
+      bucket,
+      executeRole
+    );
+    createDataVaultsResource.addMethod('GET', createDataVaultsS3Integration, this.getMethodOptions());
+
+    // /edit-data-vault page
+    const editDataVaultResource = uiResource.addResource('edit-data-vault');
+    const editDataVaultS3Integration = this.getS3Integration('edit-data-vault.html', bucket, executeRole);
+    editDataVaultResource.addMethod('GET', editDataVaultS3Integration, this.getMethodOptions());
   }
 
   private getS3Integration(path: string, bucket: Bucket, executeRole: Role): AwsIntegration {

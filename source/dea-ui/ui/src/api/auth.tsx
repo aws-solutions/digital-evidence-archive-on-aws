@@ -4,7 +4,7 @@
  */
 import useSWR from 'swr';
 import { httpApiGet, httpApiPost } from '../helpers/apiHelper';
-import { DeaListResult } from './cases';
+import { DeaListResult } from './models/api-results';
 
 export interface TokenResponse {
   username: string;

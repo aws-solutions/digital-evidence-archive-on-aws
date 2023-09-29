@@ -57,6 +57,7 @@ export const commonTableLabels = {
   caseFileAudit: 'Download Case File Audit',
   limitShowFewerLabel: 'Show fewer',
   limitShowMoreLabel: 'Show more',
+  dataVaultnameHeader: 'Name',
 };
 
 export const layoutLabels: AppLayoutProps.Labels = {
@@ -302,6 +303,9 @@ export const breadcrumbLabels = {
   uploadFilesAndFoldersLabel: 'Upload folders and files',
   editCaseLabel: 'Edit case',
   fileDetailsLabel: 'File details',
+  dataVaultsLabel: 'Data vaults',
+  createNewDataVaultLabel: 'Create data vault',
+  dataVaultDetailsLabel: 'Data vault details',
 };
 
 export const navigationLabels = {
@@ -309,6 +313,7 @@ export const navigationLabels = {
   myCasesLabel: 'My cases',
   allSystemCasesLabel: 'All cases',
   systemAuditLogsLabel: 'Download system audit log',
+  dataVaultsLabel: 'Data vaults',
 };
 
 export const fileUploadLabels = {
@@ -330,3 +335,36 @@ export const systemUseNotificationText =
   'to your local laws and regulations. This is needed to fulfill CJIS Policy 5.5.4. (Use Notification). ' +
   'Refer to the Implementation Guide for instructions on how to customize this text, and review ' +
   'CJIS Policy 5.5.4 for latest requirement details.';
+
+export const dataVaultListLabels = {
+  loading: 'Loading data vaults',
+  noDataVaultsLabel: 'No data vaults have been created.',
+  noDataVaultsMatchLabel: 'No data vaults matched',
+  noDisplayLabel: 'Once data vaults are created, they will be displayed.',
+  createNewDataVaultLabel: 'Create data vault',
+  searchDataVaultsLabel: 'Search by data vault name',
+  dataVaultsLabel: 'Data vaults',
+  dataVaultsPageDescription:
+    'Search for datavaults, view data vault details, or create new data vaults to store digital evidence.',
+};
+
+export const createDataVaultLabels = {
+  createNewDataVaultLabel: 'Create data vault',
+  createNewDataVaultDescription: 'All fields are required unless specified.',
+  enterDetailsLabel: 'Details',
+  nameLabel: 'Name',
+  nameDescription: ' Create a Unique name that you can easily reference.',
+  nameSubtext: 'The name can have up to 100 characters. Valid characters: A-Z, a-z, 0-9, and spaces.',
+  descriptionLabel: 'Description - ',
+  descriptionDescription: 'Enter a brief description for your data vault.',
+  descriptionSubtext: 'Descriptions can have up to 250 characters.',
+  successNotificationMessage:
+    'Data vault created successfully. Go to DataSync implementation guide for next steps to import data.',
+};
+
+export const dataVaultDetailLabels = {
+  dataVaultDetailsLabel: 'Details',
+  ulidLabel: 'Data vault ULID',
+  objectCounterLabel: 'Number of files',
+  totalSizeLabel: 'Total size',
+};

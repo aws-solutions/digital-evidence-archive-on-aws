@@ -11,7 +11,10 @@ function formatDateFromISOString(isoString: string | undefined, locale = 'en-us'
   return formatDate(new Date(isoString), locale);
 }
 
-function formatDate(date: Date, locale = 'en-us'): string {
+function formatDate(date: Date | undefined, locale = 'en-us'): string {
+  if (!date) {
+    return '-';
+  }
   return date.toLocaleString(locale, {
     year: 'numeric',
     month: 'long',

@@ -70,7 +70,7 @@ describe('DEA UI Infrastructure stack', () => {
     //handlers + authorizer
     const expectedBucketCount = 2;
     const expectedLambdaCount = 2;
-    const expectedMethodCount = 7;
+    const expectedMethodCount = 11;
     template.resourceCountIs('AWS::S3::Bucket', expectedBucketCount);
     template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCount);
     template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCount);
@@ -126,7 +126,7 @@ describe('DEA UI Infrastructure stack', () => {
     //handlers + authorizer
     const expectedBucketCount = 2;
     const expectedLambdaCount = 2;
-    const expectedMethodCount = 7;
+    const expectedMethodCount = 11;
     template.resourceCountIs('AWS::S3::Bucket', expectedBucketCount);
     template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCount);
     template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCount);
