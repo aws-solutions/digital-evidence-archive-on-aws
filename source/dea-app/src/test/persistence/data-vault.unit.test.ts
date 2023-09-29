@@ -5,15 +5,22 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { DeaDataVaultInput, DeaDataVault } from '../../models/data-vault';
-import { createDataVault, listDataVaults } from '../../persistence/data-vault';
+import { createDataVault, getDataVault, listDataVaults, updateDataVault } from '../../persistence/data-vault';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getTestRepositoryProvider } from './local-db-table';
 
 describe('data vault persistence', () => {
   let repositoryProvider: ModelRepositoryProvider;
+  let testDataVault: DeaDataVault;
+  let dataVaultUlid: string;
 
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('dataVaultTestsTable');
+
+    testDataVault =
+      (await createDataVault({ name: 'TheDataVault', description: 'TheDescription' }, repositoryProvider)) ??
+      fail();
+    dataVaultUlid = testDataVault.ulid ?? fail();
   });
 
   afterAll(async () => {
@@ -50,12 +57,70 @@ describe('data vault persistence', () => {
     const dataVaults: Paged<DeaDataVault> = await listDataVaults(repositoryProvider, undefined);
 
     expect(dataVaults).toBeDefined();
-    expect(dataVaults.length).toEqual(3);
+    expect(dataVaults.length).toEqual(4);
   });
 
   it('should list only 1 data vault', async () => {
     const dataVaults: Paged<DeaDataVault> = await listDataVaults(repositoryProvider, undefined, 1);
     expect(dataVaults).toBeDefined();
     expect(dataVaults.length).toEqual(1);
+  });
+
+  it('should return undefined if a data vault is not found', async () => {
+    const currentDataVault = await getDataVault('bogus', undefined, repositoryProvider);
+
+    expect(currentDataVault).toBeUndefined();
+  });
+
+  it('should get a data vault by id', async () => {
+    const currentDataVault = await getDataVault(dataVaultUlid, undefined, repositoryProvider);
+
+    expect(currentDataVault).toEqual(testDataVault);
+  });
+
+  it('should create a data vault, get and update it', async () => {
+    const currentTestDataVault: DeaDataVaultInput = {
+      name: 'DataVault Wars',
+      description: 'In a PD far far away',
+    };
+
+    const createdDataVault = await createDataVault(currentTestDataVault, repositoryProvider);
+
+    const readDataVault = await getDataVault(
+      createdDataVault?.ulid ?? 'bogus',
+      undefined,
+      repositoryProvider
+    );
+
+    const dataVaultCheck: DeaDataVault = {
+      ulid: createdDataVault?.ulid,
+      created: createdDataVault?.created,
+      updated: createdDataVault?.updated,
+      objectCount: 0,
+      totalSizeBytes: 0,
+      ...currentTestDataVault,
+    };
+    expect(readDataVault).toEqual(dataVaultCheck);
+
+    // Update dataVault
+    const updateTestDataVault: DeaDataVault = {
+      ulid: createdDataVault?.ulid,
+      name: 'DataVault Wars7',
+      objectCount: 0,
+      totalSizeBytes: 0,
+      description: 'The first 6 were better',
+    };
+
+    const updatedDataVault = await updateDataVault(updateTestDataVault, repositoryProvider);
+
+    const updateCheck: DeaDataVault = {
+      ...updateTestDataVault,
+      objectCount: updatedDataVault?.objectCount,
+      totalSizeBytes: 0,
+      created: createdDataVault?.created,
+      updated: updatedDataVault?.updated,
+    };
+
+    expect(updatedDataVault).toEqual(updateCheck);
   });
 });

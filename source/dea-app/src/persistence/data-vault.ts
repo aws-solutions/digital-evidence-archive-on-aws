@@ -47,3 +47,42 @@ export const listDataVaults = async (
 
   return dataVaults;
 };
+
+export const getDataVault = async (
+  ulid: string,
+  batch: object | undefined = undefined,
+  repositoryProvider: DataVaultModelRepositoryProvider
+): Promise<DeaDataVault | undefined> => {
+  const dataVaultEntity = await repositoryProvider.DataVaultModel.get(
+    {
+      PK: `DATAVAULT#${ulid}#`,
+      SK: `DATAVAULT#`,
+    },
+    { batch }
+  );
+
+  if (!dataVaultEntity) {
+    return dataVaultEntity;
+  }
+
+  return dataVaultFromEntity(dataVaultEntity);
+};
+
+export const updateDataVault = async (
+  deaDataVault: DeaDataVault,
+  repositoryProvider: DataVaultModelRepositoryProvider
+): Promise<DeaDataVault> => {
+  const newCase = await repositoryProvider.DataVaultModel.update(
+    {
+      ...deaDataVault,
+    },
+    {
+      // Normally, update() will return the updated item automatically,
+      //   however, it the item has unique attributes,
+      //   a transaction is used which does not return the updated item.
+      //   In this case, use {return: 'get'} to retrieve and return the updated item.
+      return: 'get',
+    }
+  );
+  return dataVaultFromEntity(newCase);
+};

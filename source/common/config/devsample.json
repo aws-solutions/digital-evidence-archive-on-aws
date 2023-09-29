@@ -22,6 +22,14 @@
           "method": "GET"
         },
         {
+          "path": "/datavaults/{dataVaultId}/details",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/details",
+          "method": "PUT"
+        },
+        {
           "path": "/datavaults/{dataVaultId}/tasks",
           "method": "POST"
         },

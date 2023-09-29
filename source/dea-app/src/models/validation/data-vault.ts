@@ -11,6 +11,12 @@ export const createDataVaultSchema = Joi.object({
   description: safeDescription,
 });
 
+export const updateDataVaultSchema = Joi.object({
+  ulid: joiUlid,
+  name: safeName,
+  description: safeDescription,
+});
+
 export const dataVaultResponseSchema = Joi.object({
   ulid: joiUlid,
   name: safeName,

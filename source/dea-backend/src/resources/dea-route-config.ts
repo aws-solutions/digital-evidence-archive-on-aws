@@ -199,6 +199,20 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pagination: true,
     },
     {
+      eventName: AuditEventType.GET_DATA_VAULT_DETAILS,
+      path: '/datavaults/{dataVaultId}/details',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-data-vault-details-handler.ts',
+      pagination: true,
+    },
+    {
+      eventName: AuditEventType.UPDATE_DATA_VAULT_DETAILS,
+      path: '/datavaults/{dataVaultId}/details',
+      httpMethod: ApiGatewayMethod.PUT,
+      pathToSource: '../../src/handlers/update-data-vault-handler.ts',
+      pagination: true,
+    },
+    {
       eventName: AuditEventType.CREATE_DATA_VAULT_TASK,
       path: '/datavaults/{dataVaultId}/tasks',
       httpMethod: ApiGatewayMethod.POST,

@@ -42,6 +42,28 @@ export const listDataVaults = async (
   return DataVaultPersistence.listDataVaults(repositoryProvider, nextToken, limit);
 };
 
+export const getDataVault = async (
+  dataVaultId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaDataVault | undefined> => {
+  return await DataVaultPersistence.getDataVault(dataVaultId, undefined, repositoryProvider);
+};
+
+export const updateDataVaults = async (
+  dataVault: DeaDataVault,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaDataVault> => {
+  try {
+    return await DataVaultPersistence.updateDataVault(dataVault, repositoryProvider);
+  } catch (error) {
+    // Check if OneTableError happened because the case name is already in use.
+    if ('code' in error && error.code === 'UniqueError') {
+      throw new ValidationError('Data Vault name is already in use');
+    }
+    throw error;
+  }
+};
+
 export const createDataVaultTask = async (
   deaDataVaultTask: DeaDataVaultTaskInput,
   repositoryProvider: ModelRepositoryProvider

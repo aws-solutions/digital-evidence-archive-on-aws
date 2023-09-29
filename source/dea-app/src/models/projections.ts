@@ -52,6 +52,8 @@ export const dataVaultFromEntity = (dataVaultEntity: DataVaultType): DeaDataVaul
     description: dataVaultEntity.description,
     objectCount: dataVaultEntity.objectCount,
     totalSizeBytes: dataVaultEntity.totalSizeBytes,
+    created: dataVaultEntity.created,
+    updated: dataVaultEntity.updated,
   };
 };
 
