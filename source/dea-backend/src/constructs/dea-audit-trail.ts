@@ -44,8 +44,14 @@ export class DeaAuditTrail extends Construct {
     super(scope, stackName);
 
     this.auditLogGroup = this.createLogGroup(scope, 'deaAuditLogs', props.kmsKey);
+    createCfnOutput(this, 'auditLogName', {
+      value: this.auditLogGroup.logGroupName,
+    });
 
     this.trailLogGroup = this.createLogGroup(scope, 'deaTrailLogs', props.kmsKey);
+    createCfnOutput(this, 'trailLogName', {
+      value: this.trailLogGroup.logGroupName,
+    });
 
     this.auditCloudwatchToS3Infra = new AuditCloudwatchToAthenaInfra(this, stackName, {
       kmsKey: props.kmsKey,

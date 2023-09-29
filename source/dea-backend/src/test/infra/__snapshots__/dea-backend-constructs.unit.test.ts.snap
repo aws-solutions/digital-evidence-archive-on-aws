@@ -43,6 +43,14 @@ Object {
         "Ref": "DeaAuditauditBucketD75893B5",
       },
     },
+    "DeaAuditauditLogNameAC8EDDAB": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-auditLogName",
+      },
+      "Value": Object {
+        "Ref": "deaAuditLogs7B75D3F1",
+      },
+    },
     "DeaAuditdeaTrailBucketNameBE00B0CC": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-deaTrailBucketName",
@@ -73,6 +81,14 @@ Object {
       },
       "Value": Object {
         "Ref": "DeaAuditqueryResultBucket9D5EA764",
+      },
+    },
+    "DeaAudittrailLogName86F223B1": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-trailLogName",
+      },
+      "Value": Object {
+        "Ref": "deaTrailLogs0A0531F5",
       },
     },
     "DeaBackendConstructDeaS3AccessLogs327B4237": Object {
@@ -632,6 +648,239 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::CloudFormation::Stack",
       "UpdateReplacePolicy": "Delete",
+    },
+    "DeaAuditAuditRedrivePolicyC6C6671E": Object {
+      "Properties": Object {
+        "Description": "A Policy which can be attached to an IAM Role, allowing that role to run the Audit Redrive script.",
+        "Path": "/",
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "cloudformation:ListExports",
+                "athena:StartQueryExecution",
+                "athena:GetQueryExecution",
+                "athena:GetQueryResults",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "athena:GetWorkgroup",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:athena:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":workgroup/",
+                    Object {
+                      "Ref": "AWS::StackName",
+                    },
+                    "-dea-athena-workgroup",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "firehose:PutRecordBatch",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:firehose:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":deliverystream/",
+                    Object {
+                      "Ref": "DeaAuditDeliveryStreamBF390C06",
+                    },
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "logs:DescribeLogStreams",
+                "logs:GetLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "deaAuditLogs7B75D3F1",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "deaTrailLogs0A0531F5",
+                    "Arn",
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "s3:GetBucketLocation",
+                "s3:GetObject",
+                "s3:ListBucket",
+                "s3:ListBucketMultipartUploads",
+                "s3:AbortMultipartUpload",
+                "s3:PutObject",
+                "s3:ListMultipartUploadParts",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaAuditqueryResultBucket9D5EA764",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaAuditqueryResultBucket9D5EA764",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaAuditauditBucketD75893B5",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "s3:ListBucket",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaAuditauditBucketD75893B5",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "glue:GetTable",
+                "glue:GetDatabase",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:aws:glue:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":catalog",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:aws:glue:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":database/",
+                      Object {
+                        "Ref": "DeaAuditauditDB8F465ECE",
+                      },
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:aws:glue:",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":table/",
+                      Object {
+                        "Ref": "DeaAuditauditDB8F465ECE",
+                      },
+                      "/",
+                      Object {
+                        "Ref": "DeaAuditauditTableF413E0BA",
+                      },
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:GenerateDataKey",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "testKey1CDDDD5E",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::ManagedPolicy",
     },
     "DeaAuditDeliveryStreamBF390C06": Object {
       "Properties": Object {

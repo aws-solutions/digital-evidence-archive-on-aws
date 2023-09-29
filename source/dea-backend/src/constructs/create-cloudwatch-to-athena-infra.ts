@@ -28,6 +28,8 @@ import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { auditGlueTableColumns } from './audit-glue-table-columns';
+import createAuditRedrivePolicy from './audit-redrive-policy';
+import { subscriptionFilter } from './cloudtrail-filters';
 import { createCfnOutput } from './construct-support';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
 import { FirehoseDestination } from './firehose-destination';
@@ -246,10 +248,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
     // Only CloudTrail events with identifying info
     new SubscriptionFilter(this, 'trailSubFilter', {
       destination,
-      filterPattern: FilterPattern.any(
-        FilterPattern.exists('$.userIdentity.userName'),
-        FilterPattern.exists('$.userIdentity.sessionContext.sessionIssuer.userName')
-      ),
+      filterPattern: subscriptionFilter,
       logGroup: props.trailLogGroup,
     });
 
@@ -281,6 +280,20 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
 
     this.athenaDBName = glueDB.databaseName;
     this.athenaTableName = glueTable.tableName;
+
+    // create a policy for use in audit redrive
+    createAuditRedrivePolicy(
+      this,
+      athenaWorkgroup,
+      fhose,
+      props.auditLogGroup,
+      props.trailLogGroup,
+      queryResultBucket,
+      this.athenaAuditBucket,
+      glueDB.databaseName,
+      glueTable.tableName,
+      props.kmsKey
+    );
   }
 
   private addLegalHoldInfrastructure(

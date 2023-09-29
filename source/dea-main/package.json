@@ -17,6 +17,7 @@
   },
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
+    "audit-redrive": ". ../common/scripts/setRedriveEnv.sh && npx ts-node ../dea-app/src/app/migrations/audit-redrive-command.ts",
     "audit:only": "",
     "build": "heft build",
     "build:clean": "heft build --clean",
@@ -48,6 +49,7 @@
     "version:patch": "npm version patch"
   },
   "dependencies": {
+    "@aws-cdk/aws-glue-alpha": "~2.86.0-alpha.0",
     "@aws/dea-backend": "workspace:*",
     "@aws/dea-ui": "workspace:*",
     "@aws/dea-ui-infrastructure": "workspace:*",
@@ -57,8 +59,7 @@
     "constructs": "10.2.69",
     "dynamodb-onetable": "2.5.1",
     "lodash": "^4.17.21",
-    "source-map-support": "^0.5.16",
-    "@aws-cdk/aws-glue-alpha": "~2.86.0-alpha.0"
+    "source-map-support": "^0.5.16"
   },
   "devDependencies": {
     "@rushstack/eslint-config": "^3.3.3",
@@ -84,6 +85,7 @@
     "npm-package-json-lint-config-default": "^5.0.0",
     "sort-package-json": "^2.4.1",
     "ts-mockito": "~2.6.1",
+    "ts-node": "^10.4.0",
     "typescript": "^4.5.2"
   }
 }

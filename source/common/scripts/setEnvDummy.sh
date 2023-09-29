@@ -7,3 +7,6 @@ export AUDIT_BUCKET_NAME=dummyAuditBucket
 export ATHENA_WORKGROUP_NAME=dummyWorkgroup
 export GLUE_TABLE=dummyTable
 export GLUE_DB=dummyDb
+export FIREHOSE_STREAM_NAME=dummyStream
+export AUDIT_LOG_GROUP=deaAuditLogsDummy
+export TRAIL_LOG_GROUP=deaTrailLogsDummy

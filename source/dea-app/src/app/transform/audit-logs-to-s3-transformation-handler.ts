@@ -255,7 +255,7 @@ function splitCWLRecord(cwlRecord: CWLRecord) {
   return [rec1, rec2].map((r) => zlib.gzipSync(Buffer.from(JSON.stringify(r), 'utf-8')));
 }
 
-async function putRecordsToFirehoseStream(
+export async function putRecordsToFirehoseStream(
   streamName: string,
   records: _Record[],
   client: Firehose,
