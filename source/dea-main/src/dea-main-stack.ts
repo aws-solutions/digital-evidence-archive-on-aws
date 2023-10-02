@@ -61,7 +61,7 @@ export class DeaMainStack extends cdk.Stack {
       solutionId: SOLUTION_ID,
       solutionName: 'Digital Evidence Archive',
       solutionVersion: SOLUTION_VERSION,
-      appRegistryApplicationName: 'DEA',
+      appRegistryApplicationName: 'digital-evidence-archive',
       applicationType: 'AWS-Solutions',
     });
     createCfnOutput(this, 'AppRegistryArn', {

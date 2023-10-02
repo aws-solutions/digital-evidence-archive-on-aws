@@ -32,6 +32,7 @@ export class DeaAppRegisterConstruct extends Construct {
       applicationName: Fn.join('-', [
         this.appRegMap.findInMap('Data', 'AppRegistryApplicationName'),
         Aws.REGION,
+        Aws.ACCOUNT_ID,
         Aws.STACK_NAME, // AWS CloudFormation has an overall limit of 128 characters for the name of a stack.
       ]),
       description: 'Service Catalog application to track and manage all your resources for the solution',

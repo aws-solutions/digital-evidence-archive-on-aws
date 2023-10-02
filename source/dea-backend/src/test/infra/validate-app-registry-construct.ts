@@ -15,7 +15,7 @@ export const validateAppRegistryConstruct = (template: Template, solutionVersion
     Data: {
       ID: 'SO0224',
       SolutionVersion: solutionVersion,
-      AppRegistryApplicationName: 'DEA',
+      AppRegistryApplicationName: 'digital-evidence-archive',
       SolutionName: 'Digital Evidence Archive',
       ApplicationType: 'AWS-Solutions',
     },
