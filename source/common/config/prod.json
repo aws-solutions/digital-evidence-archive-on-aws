@@ -5,7 +5,7 @@
   "fipsEndpointsEnabled": false,
   "isMultiRegionTrail": false,
   "cognito": {
-    "domain": "cfidevforensics"
+    "domain": "cfiprodforensics"
   },
   "deaRoleTypes": [
     {
