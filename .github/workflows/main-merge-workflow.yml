@@ -21,9 +21,9 @@ jobs:
   verify:
     env:
       CONFIGNAME: 'dev'
-      STAGE: RUN${{github.run_number}}dev
-      DOMAIN_PREFIX: deaenv${{github.run_number}}dev 
-    environment: dea-test
+      STAGE: 'cfidev'
+      DOMAIN_PREFIX: 'deadev' 
+    environment: dea-dev
     defaults:
       run:
         shell: bash
@@ -54,8 +54,8 @@ jobs:
   Deploy_Test: 
     env:
       CONFIGNAME: 'test'
-      STAGE: RUN${{github.run_number}}test
-      DOMAIN_PREFIX: deaenv${{github.run_number}}test 
+      STAGE: 'cfitest'
+      DOMAIN_PREFIX: 'deatest'
     environment: dea-test
     defaults:
       run:
@@ -87,9 +87,9 @@ jobs:
   Deploy_Prod: 
     env:
       CONFIGNAME: 'prod'
-      STAGE: RUN${{github.run_number}}prod
-      DOMAIN_PREFIX: deaenv${{github.run_number}}prod 
-    environment: dea-test
+      STAGE: 'cfiprod'
+      DOMAIN_PREFIX: 'deaprod'
+    environment: dea-prod
     defaults:
       run:
         shell: bash
