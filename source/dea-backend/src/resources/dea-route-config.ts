@@ -225,6 +225,12 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/get-data-vault-tasks-handler.ts',
     },
     {
+      eventName: AuditEventType.GET_DATA_SYNC_TASKS,
+      path: '/datasync/tasks',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-data-sync-tasks-handler.ts',
+    },
+    {
       eventName: AuditEventType.CREATE_DATA_VAULT_EXECUTION,
       path: '/datavaults/tasks/{taskId}/executions',
       httpMethod: ApiGatewayMethod.POST,

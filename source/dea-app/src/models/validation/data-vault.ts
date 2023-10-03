@@ -57,3 +57,12 @@ export const dataVaultExecutionResponseSchema = Joi.object({
   createdBy: Joi.string(),
   created: Joi.date(),
 });
+
+export const dataSyncTaskSchema = Joi.object({
+  taskArn: Joi.string(),
+  taskId: Joi.string(),
+  sourceLocationArn: Joi.string(),
+  destinationLocationArn: Joi.string(),
+  dataVaultUlid: Joi.string().empty(''),
+  status: Joi.string(),
+});

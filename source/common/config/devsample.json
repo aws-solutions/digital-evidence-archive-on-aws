@@ -22,6 +22,10 @@
           "method": "GET"
         },
         {
+          "path": "/datasync/tasks",
+          "method": "GET"
+        },
+        {
           "path": "/datavaults/{dataVaultId}/details",
           "method": "GET"
         },

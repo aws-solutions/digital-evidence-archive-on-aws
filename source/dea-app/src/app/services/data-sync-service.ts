@@ -8,8 +8,12 @@ import {
   CreateTaskCommand,
   DeleteLocationCommand,
   DeleteTaskCommand,
+  DescribeLocationS3Command,
+  DescribeTaskCommand,
+  ListTasksCommand,
   StartTaskExecutionCommand,
 } from '@aws-sdk/client-datasync';
+import { DeaDataSyncTask } from '../../models/data-sync-task';
 import { DataSyncProvider } from '../../storage/dataSync';
 import { ValidationError } from '../exceptions/validation-exception';
 
@@ -62,6 +66,53 @@ export const createDatasyncTask = async (
   }
 };
 
+export const listDatasyncTasks = async (dataSyncProvider: DataSyncProvider) => {
+  // List all tasks
+  const listTasksCommand = new ListTasksCommand({});
+
+  const listTasksResponse = await dataSyncProvider.dataSyncClient.send(listTasksCommand);
+  const tasks = listTasksResponse.Tasks || [];
+  return tasks;
+};
+
+export const desrcibeTask = async (
+  taskArn: string,
+  dataSyncProvider: DataSyncProvider
+): Promise<DeaDataSyncTask> => {
+  const describeTaskCommand = new DescribeTaskCommand({
+    TaskArn: taskArn,
+  });
+
+  const describeTaskResponse = await dataSyncProvider.dataSyncClient.send(describeTaskCommand);
+
+  // Get Destination Location info for DATAVAULT ULID
+  const destinationLocationArn = describeTaskResponse.DestinationLocationArn;
+  const describeLocationCommand = new DescribeLocationS3Command({
+    LocationArn: destinationLocationArn,
+  });
+  const describeLocationResponse = await dataSyncProvider.dataSyncClient.send(describeLocationCommand);
+
+  const destinationUri = describeLocationResponse.LocationUri || '';
+  const regex = /DATAVAULT([A-Z0-9]{26})/;
+  const match = destinationUri.match(regex);
+
+  let dataVaultUlid = '';
+  if (match) {
+    dataVaultUlid = match[1];
+  }
+
+  const DataSyncTask: DeaDataSyncTask = {
+    taskArn: taskArn,
+    taskId: taskArn.split('/')[1],
+    sourceLocationArn: describeTaskResponse.SourceLocationArn,
+    destinationLocationArn: describeTaskResponse.DestinationLocationArn,
+    dataVaultUlid,
+    status: describeTaskResponse.Status,
+  };
+
+  return DataSyncTask;
+};
+
 export const startDatasyncTaskExecution = async (
   taskArn: string,
   dataSyncProvider: DataSyncProvider
@@ -86,11 +137,7 @@ export const deleteDatasyncLocation = async (
     LocationArn: locationArn,
   });
 
-  try {
-    await dataSyncProvider.dataSyncClient.send(command);
-  } catch (error) {
-    throw new ValidationError('Error deleting DataSync Location');
-  }
+  await dataSyncProvider.dataSyncClient.send(command);
 
   return locationArn;
 };
@@ -103,11 +150,7 @@ export const deleteDatasyncTask = async (
     TaskArn: taskArn,
   });
 
-  try {
-    await dataSyncProvider.dataSyncClient.send(command);
-  } catch (error) {
-    throw new ValidationError('Error deleting DataSync Task');
-  }
+  await dataSyncProvider.dataSyncClient.send(command);
 
   return taskArn;
 };

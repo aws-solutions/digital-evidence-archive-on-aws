@@ -8,8 +8,11 @@ import {
   createS3Location,
   deleteDatasyncLocation,
   deleteDatasyncTask,
+  desrcibeTask,
+  listDatasyncTasks,
   startDatasyncTaskExecution,
 } from '../../app/services/data-sync-service';
+import { DeaDataSyncTask } from '../../models/data-sync-task';
 import { DataSyncProvider, defaultDataSyncProvider } from '../../storage/dataSync';
 
 const dataSyncProvider: DataSyncProvider = defaultDataSyncProvider;
@@ -36,6 +39,23 @@ describe('data-sync-service integration tests', () => {
     expect(taskArn).toBeTruthy();
     const executionArn = await startDatasyncTaskExecution(taskArn, dataSyncProvider);
     expect(executionArn).toBeTruthy();
+  }, 40000);
+
+  it('should successfully fetch a list of datasync tasks', async () => {
+    const dataSyncTasks = await listDatasyncTasks(dataSyncProvider);
+
+    // Create an array to store DeaDataSyncTask objects
+    const deaDataSyncTasks: DeaDataSyncTask[] = [];
+
+    // Loop through the tasks and fetch details for each
+    for (const task of dataSyncTasks) {
+      if (task.TaskArn) {
+        const deaDataSyncTask = await desrcibeTask(task.TaskArn, dataSyncProvider);
+        deaDataSyncTasks.push(deaDataSyncTask);
+      }
+    }
+
+    expect(deaDataSyncTasks.length).toBeGreaterThan(0);
   }, 40000);
 
   it('should successfully delete location and tasks', async () => {

@@ -1,0 +1,44 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
+import { DeaDataSyncTask } from '../../models/data-sync-task';
+import { defaultProvider } from '../../persistence/schema/entities';
+import { defaultDatasetsProvider } from '../../storage/datasets';
+import { defaultDataSyncProvider } from '../../storage/dataSync';
+import { defaultCloudwatchClient } from '../audit/dea-audit-plugin';
+import * as dataSyncService from '../services/data-sync-service';
+import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { responseOk } from './dea-lambda-utils';
+
+export const getDataSyncTasks: DEAGatewayProxyHandler = async (
+  event,
+  context,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  _repositoryProvider = defaultProvider,
+  /* istanbul ignore next */
+  _datasetsProvider = defaultDatasetsProvider,
+  /* istanbul ignore next */
+  _cloudwatchClient = defaultCloudwatchClient,
+  /* istanbul ignore next */
+  dataSyncProvider = defaultDataSyncProvider
+) => {
+  const dataSyncTasks = await dataSyncService.listDatasyncTasks(dataSyncProvider);
+
+  // Create an array to store DeaDataSyncTask objects
+  const deaDataSyncTasks: DeaDataSyncTask[] = [];
+
+  // Loop through the tasks and fetch details for each
+  for (const task of dataSyncTasks) {
+    if (task.TaskArn) {
+      const deaDataSyncTask = await dataSyncService.desrcibeTask(task.TaskArn, dataSyncProvider);
+      deaDataSyncTasks.push(deaDataSyncTask);
+    }
+  }
+
+  return responseOk(event, {
+    dataSyncTasks: deaDataSyncTasks,
+  });
+};
