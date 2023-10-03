@@ -21,8 +21,8 @@ jobs:
   verify:
     env:
       CONFIGNAME: 'dev'
-      STAGE: 'dev'
-      DOMAIN_PREFIX: 'dev' 
+      STAGE: 'cfidev'
+      DOMAIN_PREFIX: 'deadev' 
     environment: dea-dev
     defaults:
       run:
@@ -54,8 +54,8 @@ jobs:
   Deploy_Test: 
     env:
       CONFIGNAME: 'test'
-      STAGE: 'test'
-      DOMAIN_PREFIX: 'test'
+      STAGE: 'cfitest'
+      DOMAIN_PREFIX: 'deatest'
     environment: dea-test
     defaults:
       run:
@@ -87,8 +87,8 @@ jobs:
   Deploy_Prod: 
     env:
       CONFIGNAME: 'prod'
-      STAGE: 'prod'
-      DOMAIN_PREFIX: 'prod'
+      STAGE: 'cfiprod'
+      DOMAIN_PREFIX: 'deaprod'
     environment: dea-prod
     defaults:
       run:
