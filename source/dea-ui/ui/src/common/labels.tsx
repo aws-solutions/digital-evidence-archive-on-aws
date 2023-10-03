@@ -326,6 +326,6 @@ export const fileDetailLabels = {
 };
 
 export const systemUseNotificationText =
-  'Its is an offence to continue without proper authority ' +
-  'access to use this system restricted to genuine users and limited to the purpose of the organisation business ' +
-  'unauthorised access or attempt to alter or damage data or programme could result in criminal persecution under the computer misuse act, (1990).';
+  'Its is an offence to continue without proper authority, ' +
+  'Access to use this system is restricted to genuine users and limited to the purpose of the organisation business. ' +
+  'Unauthorised access or attempt to alter or damage data or programme could result in criminal persecution under the computer misuse act, (1990).';
