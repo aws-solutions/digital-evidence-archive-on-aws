@@ -1,9 +1,9 @@
 name: Digital Evidence Archive Deployment
 
-env:
-  CONFIGNAME: 'prod'
-  STAGE: PRPIPELINE${{github.event.pull_request.number}}
-  DOMAIN_PREFIX: deaenv${{github.event.pull_request.number}}
+#env:
+#  CONFIGNAME: env${{'dev', 'test', 'prod'}}
+#  STAGE: DEACFI${{github.event.pull_request.number}}
+#  DOMAIN_PREFIX: deaenv${{github.event.pull_request.number}}
 
 on:
   workflow_dispatch:
@@ -20,9 +20,9 @@ permissions:
 jobs:
   verify:
     env:
-      CONFIGNAME: 'prod'
-      STAGE: RUN${{github.run_number}}verify
-      DOMAIN_PREFIX: deaenv${{github.run_number}}verify 
+      CONFIGNAME: 'dev'
+      STAGE: RUN${{github.run_number}}dev
+      DOMAIN_PREFIX: deaenv${{github.run_number}}dev 
     environment: dea-test
     defaults:
       run:
@@ -52,6 +52,10 @@ jobs:
           npm run cdk deploy
 
   Deploy_Test: 
+    env:
+      CONFIGNAME: 'test'
+      STAGE: RUN${{github.run_number}}test
+      DOMAIN_PREFIX: deaenv${{github.run_number}}test 
     environment: dea-test
     defaults:
       run:
@@ -81,6 +85,10 @@ jobs:
           npm run cdk deploy
 
   Deploy_Prod: 
+    env:
+      CONFIGNAME: 'prod'
+      STAGE: RUN${{github.run_number}}prod
+      DOMAIN_PREFIX: deaenv${{github.run_number}}prod 
     environment: dea-test
     defaults:
       run:
