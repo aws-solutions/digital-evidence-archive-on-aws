@@ -21,7 +21,7 @@ jobs:
   verify:
     env:
       CONFIGNAME: 'dev'
-      STAGE: 'cfidev'
+      STAGE: 'cfideadev'
       DOMAIN_PREFIX: 'deadev' 
     environment: dea-dev
     defaults:
