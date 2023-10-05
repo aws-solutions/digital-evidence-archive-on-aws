@@ -39,10 +39,11 @@ type LogEventWithId = {
   eventID: string;
 };
 
-type AuditLogEvent = {
+export type AuditLogEvent = {
   // eventID may be null for pre v1.0.5 events, we'll hash the message body
   eventID?: string;
   userIdentity?: UserIdentity | SessionContextIdentity;
+  [key: string]: unknown;
 };
 
 const terminalStates = [
@@ -53,7 +54,7 @@ const terminalStates = [
 ];
 
 export default class AuditRedriveCandidateBuffer {
-  private candidateLogEvents: LogEventWithId[] = [];
+  public candidateLogEvents: LogEventWithId[] = [];
   private filteredCount = 0;
 
   constructor(
@@ -77,7 +78,8 @@ export default class AuditRedriveCandidateBuffer {
 
     if (!theEvent.eventID) {
       const hash = crypto.createHash('sha256').update(logEvent.message).digest('base64');
-      console.log(`${logEvent.message} | ${hash}`);
+      theEvent['eventID'] = hash;
+      logEvent.message = JSON.stringify(theEvent);
       theEvent.eventID = hash;
     }
 
