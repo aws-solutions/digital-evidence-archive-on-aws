@@ -144,9 +144,9 @@ export class DeaUiConstruct extends Construct {
                 `img-src 'self' blob:;` +
                 `style-src 'unsafe-inline' 'self';` +
                 `connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;` +
-                // `script-src 'strict-dynamic' '${this.sriString}';` +
-                `script-src 'self';` +
+                `script-src 'strict-dynamic' '${this.sriString}';` +
                 `font-src 'self' data:;` +
+                `base-uri 'self';` +
                 `object-src 'none';` +
                 `block-all-mixed-content;'`,
               'method.response.header.Strict-Transport-Security': "'max-age=31540000; includeSubdomains'",
