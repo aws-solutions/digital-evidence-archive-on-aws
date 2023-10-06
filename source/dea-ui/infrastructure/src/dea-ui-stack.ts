@@ -145,6 +145,11 @@ export class DeaUiConstruct extends Construct {
     const editDataVaultResource = uiResource.addResource('edit-data-vault');
     const editDataVaultS3Integration = this.getS3Integration('edit-data-vault.html', bucket, executeRole);
     editDataVaultResource.addMethod('GET', editDataVaultS3Integration, this.getMethodOptions());
+
+    // /data-sync-tasks page
+    const dataSyncTasksResource = uiResource.addResource('data-sync-tasks');
+    const dataSyncTasksS3Integration = this.getS3Integration('data-sync-tasks.html', bucket, executeRole);
+    dataSyncTasksResource.addMethod('GET', dataSyncTasksS3Integration, this.getMethodOptions());
   }
 
   private getS3Integration(path: string, bucket: Bucket, executeRole: Role): AwsIntegration {

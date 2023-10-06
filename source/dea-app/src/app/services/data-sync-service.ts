@@ -108,6 +108,7 @@ export const desrcibeTask = async (
     destinationLocationArn: describeTaskResponse.DestinationLocationArn,
     dataVaultUlid,
     status: describeTaskResponse.Status,
+    created: describeTaskResponse.CreationTime,
   };
 
   return DataSyncTask;

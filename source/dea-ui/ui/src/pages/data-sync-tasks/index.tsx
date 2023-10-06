@@ -4,14 +4,14 @@
  */
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
-import { useListAllDataVaults } from '../../api/data-vaults';
-import { breadcrumbLabels, dataVaultListLabels } from '../../common/labels';
+import { useListAllDataVaults, useListAllDataSyncTasks } from '../../api/data-vaults';
+import { breadcrumbLabels, dataSyncTaskListLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
-import DataVaultsTable from '../../components/data-vaults-table/DataVaultsTable';
+import DataSyncTasksTable from '../../components/data-sync-tasks-table/DataSyncTasksTable';
 import { useSettings } from '../../context/SettingsContext';
 
-export default function DataVaultsPage() {
+export default function DataSyncTasksPage() {
   const { settings } = useSettings();
 
   const baseUrl = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
@@ -22,18 +22,19 @@ export default function DataVaultsPage() {
       href: baseUrl,
     },
     {
-      text: breadcrumbLabels.dataVaultsLabel,
+      text: breadcrumbLabels.dataSyncTasks,
       href: '#',
     },
   ];
   return (
     <BaseLayout breadcrumbs={breadcrumbs}>
-      <DataVaultsTable
+      <DataSyncTasksTable
         detailPage="data-vault-detail"
         useDataVaultFetcher={useListAllDataVaults}
-        headerLabel={dataVaultListLabels.dataVaultsLabel}
-        headerDescription={dataVaultListLabels.dataVaultsPageDescription}
-      ></DataVaultsTable>
+        useDataSyncTasksFectcher={useListAllDataSyncTasks}
+        headerLabel={dataSyncTaskListLabels.dataSyncTasksLabel}
+        headerDescription={dataSyncTaskListLabels.dataSyncTasksPageDescription}
+      ></DataSyncTasksTable>
     </BaseLayout>
   );
 }

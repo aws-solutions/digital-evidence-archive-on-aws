@@ -69,8 +69,9 @@ describe('DataVault Dashboard', () => {
     const breadcrumbWrapper = wrapper(page.container).findBreadcrumbGroup();
     expect(breadcrumbWrapper).toBeTruthy();
     const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
-    expect(breadcrumbLinks.length).toEqual(1);
+    expect(breadcrumbLinks.length).toEqual(2);
     expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
+    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.dataVaultsLabel);
   });
 
   it('navigates to create a new data vault', async () => {

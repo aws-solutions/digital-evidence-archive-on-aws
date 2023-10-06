@@ -120,7 +120,7 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
       columnDefinitions={[
         {
           id: 'name',
-          header: commonTableLabels.dataVaultnameHeader,
+          header: commonTableLabels.nameHeader,
           cell: nameCell,
           width: 350,
           minWidth: 220,

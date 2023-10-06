@@ -5,7 +5,6 @@ import { useAvailableEndpoints } from '../../src/api/auth';
 import { useGetDataVaultById } from '../../src/api/data-vaults';
 import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
 import DataVaultDetailsPage from '../../src/pages/data-vault-detail';
-import { beforeEach } from 'node:test';
 
 let query: { dataVaultId: string | undefined } = { dataVaultId: '100' };
 const push = jest.fn();
@@ -46,9 +45,10 @@ describe('DataVaultDetailsPage', () => {
     const breadcrumbWrapper = wrapper(page.container).findBreadcrumbGroup();
     expect(breadcrumbWrapper).toBeTruthy();
     const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
-    expect(breadcrumbLinks.length).toEqual(2);
-    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.dataVaultsLabel);
-    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.dataVaultDetailsLabel);
+    expect(breadcrumbLinks.length).toEqual(3);
+    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
+    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.dataVaultsLabel);
+    expect(breadcrumbLinks[2].getElement()).toHaveTextContent(breadcrumbLabels.dataVaultDetailsLabel);
   });
 
   it('renders a loading label during fetch', () => {

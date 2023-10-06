@@ -36,11 +36,13 @@ export const commonLabels = {
   requiredLength: 'Required field must be at least 2 characters long.',
   closeModalAriaLabel: 'Close modal',
   optionalLabel: 'optional',
+  goBack: 'Go back',
+  runTask: 'Run Task',
 };
 
 export const commonTableLabels = {
   timestampHeader: 'Timestamp',
-  nameHeader: 'File name',
+  nameHeader: 'Name',
   fileNameHeader: 'File name',
   actionHeader: 'Action',
   reasonHeader: 'Reason',
@@ -57,7 +59,10 @@ export const commonTableLabels = {
   caseFileAudit: 'Download Case File Audit',
   limitShowFewerLabel: 'Show fewer',
   limitShowMoreLabel: 'Show more',
-  dataVaultnameHeader: 'Name',
+  dataSyncTaskIdHeader: 'Task ID',
+  sourceLocationIdHeader: 'Source Location ID',
+  destinationLocationIdHeader: 'Destination Location ID',
+  dataVaultNameHeader: 'Data Vault Name',
 };
 
 export const layoutLabels: AppLayoutProps.Labels = {
@@ -306,6 +311,7 @@ export const breadcrumbLabels = {
   dataVaultsLabel: 'Data vaults',
   createNewDataVaultLabel: 'Create data vault',
   dataVaultDetailsLabel: 'Data vault details',
+  dataSyncTasks: 'Data sync tasks',
 };
 
 export const navigationLabels = {
@@ -314,6 +320,7 @@ export const navigationLabels = {
   allSystemCasesLabel: 'All cases',
   systemAuditLogsLabel: 'Download system audit log',
   dataVaultsLabel: 'Data vaults',
+  dataSyncTasksLabel: 'All Tasks',
 };
 
 export const fileUploadLabels = {
@@ -367,4 +374,25 @@ export const dataVaultDetailLabels = {
   ulidLabel: 'Data vault ULID',
   objectCounterLabel: 'Number of files',
   totalSizeLabel: 'Total size',
+};
+
+export const dataSyncTaskListLabels = {
+  loading: 'Loading data sync tasks',
+  noDataSyncTasksLabel: 'No data sync tasks have been created.',
+  noDataSyncTasksMatchLabel: 'No data sync tasks matched',
+  noDisplayLabel: 'Once data sync tasks are created, they will be displayed.',
+  runDataSyncTaskLabel: 'Run task',
+  searchDataSyncTasksLabel: 'Search by task ID',
+  dataSyncTasksLabel: 'All data sync tasks',
+  dataSyncTasksPageDescription: 'All data sync tasks displayed. Task Creation Instructions.',
+  runTaskModalTitle: 'Confirm details before running tasks',
+  runTaskSubtitle: 'Running the tasks will transfer files into the selected data vault.',
+  startTaskSuccessNotificationMessage: 'The task execution has been started successfully.',
+};
+
+export const dataSyncTasksStatusLabels = {
+  available: 'Available',
+  running: 'Running',
+  queued: 'Queued',
+  unavailable: 'Unavailable',
 };

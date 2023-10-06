@@ -65,4 +65,5 @@ export const dataSyncTaskSchema = Joi.object({
   destinationLocationArn: Joi.string(),
   dataVaultUlid: Joi.string().empty(''),
   status: Joi.string(),
+  created: Joi.date(),
 });

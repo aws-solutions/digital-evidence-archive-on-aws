@@ -347,7 +347,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           columnDefinitions={[
             {
               id: 'name',
-              header: commonTableLabels.nameHeader,
+              header: commonTableLabels.fileNameHeader,
               cell: (e) => e.fileName,
               width: 170,
               minWidth: 165,

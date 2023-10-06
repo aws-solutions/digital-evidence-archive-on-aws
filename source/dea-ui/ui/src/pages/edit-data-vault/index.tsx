@@ -21,7 +21,7 @@ const EditDataVaultPage: NextPage = () => {
   const { settings } = useSettings();
   const { dataVaultId } = router.query;
 
-  const href_prefix = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
+  const baseUrl = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
   if (!dataVaultId || typeof dataVaultId !== 'string') {
     return <h1>{commonLabels.notFoundLabel}</h1>;
@@ -29,12 +29,16 @@ const EditDataVaultPage: NextPage = () => {
 
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
+      text: breadcrumbLabels.homePageLabel,
+      href: baseUrl,
+    },
+    {
       text: breadcrumbLabels.dataVaultsLabel,
-      href: `${href_prefix}/data-vaults`,
+      href: `${baseUrl}/data-vaults`,
     },
     {
       text: breadcrumbLabels.dataVaultDetailsLabel,
-      href: `${href_prefix}/data-vault-detail?dataVaultId=${dataVaultId}`,
+      href: `${baseUrl}/data-vault-detail?dataVaultId=${dataVaultId}`,
     },
     {
       text: breadcrumbLabels.editCaseLabel,

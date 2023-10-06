@@ -579,8 +579,11 @@ export class DeaRestApiConstruct extends Construct {
           'datasync:StartTaskExecution',
           'datasync:UpdateTask',
           'datasync:UpdateTaskExecution',
+          'datasync:ListTasks',
+          'datasync:DescribeTask',
+          'datasync:DescribeLocationS3',
         ],
-        resources: ['*'],
+        resources: [`arn:${Aws.PARTITION}:datasync:${Aws.REGION}:${Aws.ACCOUNT_ID}:*`],
       })
     );
 
