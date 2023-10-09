@@ -107,7 +107,7 @@ describe('DataSyncTasks Dashboard', () => {
     render(<DataSyncTasksPage />);
 
     const table = await screen.findByTestId('data-sync-tasks-table');
-    const link = wrapper(table).findLink();
+    const link = wrapper(table).findLink('[data-test-id="task-04162224cf5ee44ef"]');
 
     if (!link) {
       fail();

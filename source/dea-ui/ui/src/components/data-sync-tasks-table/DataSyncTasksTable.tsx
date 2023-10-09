@@ -212,6 +212,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
     }
     return (
       <Link
+        data-test-id={deaDataSyncTask.taskId}
         href={`${deaDataSyncTask.dataVaultUlid}`}
         onFollow={(e) => {
           e.preventDefault();
@@ -243,6 +244,20 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
     }
   }
 
+  function tableHeaderDescription(): React.ReactNode {
+    return (
+      <>
+        {props.headerDescription}{' '}
+        <Link
+          external
+          href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
+        >
+          {dataSyncTaskListLabels.dataSyncTaskCreationInstructions}
+        </Link>
+      </>
+    );
+  }
+
   return (
     <Table
       {...collectionProps}
@@ -265,7 +280,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           data-testid="data-sync-tasks-header"
           variant="awsui-h1-sticky"
           title={props.headerLabel}
-          description={props.headerDescription}
+          description={tableHeaderDescription()}
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
               {runTaskModal()}

@@ -11,12 +11,13 @@ import {
   FormField,
   Header,
   Input,
+  Link,
   SpaceBetween,
   Textarea,
   TextContent,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { createDataVault } from '../../api/data-vaults';
 import { commonLabels, createDataVaultLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
@@ -31,7 +32,7 @@ function CreateDataVaultsForm(): JSX.Element {
     setIsSubmitLoading(true);
     try {
       const newDataVault = await createDataVault(formData);
-      pushNotification('success', createDataVaultLabels.successNotificationMessage);
+      pushNotification('success', successNotificationContent());
       return router.push(`/data-vault-detail?dataVaultId=${newDataVault.ulid}`);
     } catch (e) {
       if (e instanceof Error) {
@@ -44,6 +45,21 @@ function CreateDataVaultsForm(): JSX.Element {
 
   function onCancelHandler() {
     return router.push('/data-vaults');
+  }
+
+  function successNotificationContent(): React.ReactNode {
+    return (
+      <>
+        {createDataVaultLabels.successNotificationMessage}{' '}
+        <Link
+          color="inverted"
+          external
+          href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
+        >
+          {createDataVaultLabels.viewImplementationGuideText}
+        </Link>
+      </>
+    );
   }
 
   return (

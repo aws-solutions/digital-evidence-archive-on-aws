@@ -365,8 +365,8 @@ export const createDataVaultLabels = {
   descriptionLabel: 'Description - ',
   descriptionDescription: 'Enter a brief description for your data vault.',
   descriptionSubtext: 'Descriptions can have up to 250 characters.',
-  successNotificationMessage:
-    'Data vault created successfully. Go to DataSync implementation guide for next steps to import data.',
+  successNotificationMessage: 'Data vault created successfully.',
+  viewImplementationGuideText: 'View Implementation Guide for next steps.',
 };
 
 export const dataVaultDetailLabels = {
@@ -384,7 +384,8 @@ export const dataSyncTaskListLabels = {
   runDataSyncTaskLabel: 'Run task',
   searchDataSyncTasksLabel: 'Search by task ID',
   dataSyncTasksLabel: 'All data sync tasks',
-  dataSyncTasksPageDescription: 'All data sync tasks displayed. Task Creation Instructions.',
+  dataSyncTasksPageDescription: 'All data sync tasks displayed.',
+  dataSyncTaskCreationInstructions: 'Task Creation Instructions.',
   runTaskModalTitle: 'Confirm details before running tasks',
   runTaskSubtitle: 'Running the tasks will transfer files into the selected data vault.',
   startTaskSuccessNotificationMessage: 'The task execution has been started successfully.',

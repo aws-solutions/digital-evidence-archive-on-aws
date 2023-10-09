@@ -8,7 +8,7 @@ import { ReactElement } from 'react';
 
 interface TableHeaderProps {
   readonly variant: HeaderProps.Variant | undefined;
-  readonly description: string;
+  readonly description: React.ReactNode;
   readonly actionButtons: ReactElement;
   readonly title: string;
   readonly counter?: string;
