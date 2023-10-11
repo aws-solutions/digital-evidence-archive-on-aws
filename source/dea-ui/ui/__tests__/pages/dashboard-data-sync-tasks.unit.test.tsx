@@ -9,6 +9,15 @@ import DataSyncTasksPage from '../../src/pages/data-sync-tasks';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 const push = jest.fn();
+const someDataSynctTask = {
+  taskArn: '/task-04162224cf5ee44ef',
+  taskId: 'task-04162224cf5ee44ef',
+  sourceLocationArn: '/loc-05a0e021c355b87aa',
+  destinationLocationArn: '/loc-04ea3e6a5e3037caa',
+  dataVaultUlid: '01HBVA6EXVZ4HNB05S781NB38D',
+  status: 'AVAILABLE',
+  created: '2023-10-05T01:08:50.890Z',
+};
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
@@ -51,17 +60,7 @@ describe('DataSyncTasks Dashboard', () => {
       } else if (eventObj.url?.includes('/datasync/tasks')) {
         return Promise.resolve({
           data: {
-            dataSyncTasks: [
-              {
-                taskArn: '/task-04162224cf5ee44ef',
-                taskId: 'task-04162224cf5ee44ef',
-                sourceLocationArn: '/loc-05a0e021c355b87aa',
-                destinationLocationArn: '/loc-04ea3e6a5e3037caa',
-                dataVaultUlid: '01HBVA6EXVZ4HNB05S781NB38D',
-                status: 'AVAILABLE',
-                created: '2023-10-05T01:08:50.890Z',
-              },
-            ],
+            dataSyncTasks: [someDataSynctTask],
           },
           status: 200,
           statusText: 'Ok',
@@ -87,34 +86,31 @@ describe('DataSyncTasks Dashboard', () => {
   it('renders a list of data sync tasks', async () => {
     const page = render(<DataSyncTasksPage />);
 
-    const listItem = await screen.findByText('task-04162224cf5ee44ef');
+    const listItem = await screen.findByText(someDataSynctTask.taskId);
 
     expect(page).toBeTruthy();
     expect(listItem).toBeTruthy();
-
-    //screen.debug(undefined, Infinity);
 
     // assert breadcrumb
     const breadcrumbWrapper = wrapper(page.container).findBreadcrumbGroup();
     expect(breadcrumbWrapper).toBeTruthy();
     const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
-    expect(breadcrumbLinks.length).toEqual(2);
-    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
-    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.dataSyncTasks);
+    expect(breadcrumbLinks.length).toEqual(1);
+    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.dataSyncTasks);
   });
 
   it('navigates to data vault details', async () => {
     render(<DataSyncTasksPage />);
 
     const table = await screen.findByTestId('data-sync-tasks-table');
-    const link = wrapper(table).findLink('[data-test-id="task-04162224cf5ee44ef"]');
+    const link = wrapper(table).findLink(`[data-test-id="${someDataSynctTask.taskId}"]`);
 
     if (!link) {
       fail();
     }
     link.click();
 
-    expect(push).toHaveBeenCalledWith('/data-vault-detail?dataVaultId=01HBVA6EXVZ4HNB05S781NB38D');
+    expect(push).toHaveBeenCalledWith(`/data-vault-detail?dataVaultId=${someDataSynctTask.dataVaultUlid}`);
   });
 
   it('can run a task', async () => {

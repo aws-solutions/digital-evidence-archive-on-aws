@@ -11,7 +11,6 @@ import {
   FormField,
   Header,
   Input,
-  Link,
   SpaceBetween,
   Textarea,
   TextContent,
@@ -32,7 +31,7 @@ function CreateDataVaultsForm(): JSX.Element {
     setIsSubmitLoading(true);
     try {
       const newDataVault = await createDataVault(formData);
-      pushNotification('success', successNotificationContent());
+      pushNotification('success', createDataVaultLabels.successNotificationMessage);
       return router.push(`/data-vault-detail?dataVaultId=${newDataVault.ulid}`);
     } catch (e) {
       if (e instanceof Error) {
@@ -45,21 +44,6 @@ function CreateDataVaultsForm(): JSX.Element {
 
   function onCancelHandler() {
     return router.push('/data-vaults');
-  }
-
-  function successNotificationContent(): React.ReactNode {
-    return (
-      <>
-        {createDataVaultLabels.successNotificationMessage}{' '}
-        <Link
-          color="inverted"
-          external
-          href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
-        >
-          {createDataVaultLabels.viewImplementationGuideText}
-        </Link>
-      </>
-    );
   }
 
   return (

@@ -4,12 +4,15 @@
  */
 
 import {
+  Box,
   Button,
   ColumnLayout,
   Container,
   ContentLayout,
   Header,
+  Popover,
   SpaceBetween,
+  StatusIndicator,
   TextContent,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
@@ -18,6 +21,7 @@ import { useGetDataVaultById } from '../../api/data-vaults';
 import { commonLabels, dataVaultDetailLabels } from '../../common/labels';
 import { formatDate } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
+import DataVaultFilesTable from './DataVaultFilesTable';
 
 const DATA_VAULTS_PUT_ENDPOINT = '/datavaults/{dataVaultId}/detailsPUT';
 export interface DataVaultDetailsBodyProps {
@@ -75,7 +79,29 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
                 </div>
                 <div>
                   <h5>{dataVaultDetailLabels.ulidLabel}</h5>
-                  <p>{data.ulid}</p>
+                  <span>
+                    <Box margin={{ right: 'xxs' }} display="inline-block">
+                      <Popover
+                        size="small"
+                        position="top"
+                        triggerType="custom"
+                        dismissButton={false}
+                        content={
+                          <StatusIndicator type="success">
+                            {dataVaultDetailLabels.ulidLabel} copied
+                          </StatusIndicator>
+                        }
+                      >
+                        <Button
+                          variant="inline-icon"
+                          iconName="copy"
+                          ariaLabel={dataVaultDetailLabels.copyDataVaultUlidAriaLabel}
+                          onClick={() => navigator.clipboard.writeText(data.ulid)}
+                        />
+                      </Popover>
+                    </Box>
+                    {data.ulid}
+                  </span>
                 </div>
               </TextContent>
               <TextContent>
@@ -96,6 +122,7 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
               </TextContent>
             </ColumnLayout>
           </Container>
+          <DataVaultFilesTable></DataVaultFilesTable>
         </SpaceBetween>
       </ContentLayout>
     );

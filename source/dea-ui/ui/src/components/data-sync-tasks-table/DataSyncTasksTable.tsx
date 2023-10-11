@@ -7,6 +7,7 @@ import { DeaDataSyncTask } from '@aws/dea-app/lib/models/data-sync-task';
 import { DeaDataVault } from '@aws/dea-app/lib/models/data-vault';
 import { useCollection } from '@cloudscape-design/collection-hooks';
 import {
+  Alert,
   Box,
   Button,
   ColumnLayout,
@@ -175,33 +176,40 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         }
         header={
           <TextContent>
-            <h4>{dataSyncTaskListLabels.runTaskModalTitle}</h4>
-            <p>{dataSyncTaskListLabels.runTaskSubtitle}</p>
+            <h2>{dataSyncTaskListLabels.runTaskModalTitle}</h2>
           </TextContent>
         }
       >
-        <ColumnLayout columns={2} variant="text-grid">
+        <SpaceBetween direction="vertical" size="xs">
           <TextContent>
-            <div>
-              <h5>{commonTableLabels.dataSyncTaskIdHeader}</h5>
-              <p>{selectedTask.length && selectedTask[0].taskId}</p>
-            </div>
-            <div>
-              <h5>{commonTableLabels.sourceLocationIdHeader}</h5>
-              <p>{selectedTask.length && locationIdFromArn(selectedTask[0].sourceLocationArn)}</p>
-            </div>
+            <h5>{commonTableLabels.dataSyncTaskIdHeader}</h5>
+            <p>{selectedTask.length && selectedTask[0].taskId}</p>
           </TextContent>
           <TextContent>
-            <div>
-              <h5>{commonTableLabels.dataVaultNameHeader}</h5>
-              <p>{selectedTask.length && (selectedTask[0].dataVaultName ?? '-')}</p>
-            </div>
-            <div>
-              <h5>{commonTableLabels.destinationLocationIdHeader}</h5>
-              <p>{selectedTask.length && locationIdFromArn(selectedTask[0].destinationLocationArn)}</p>
-            </div>
+            <h5>{commonTableLabels.dataVaultNameHeader}</h5>
+            <p>{selectedTask.length && (selectedTask[0].dataVaultName ?? '-')}</p>
           </TextContent>
-        </ColumnLayout>
+          <TextContent>
+            <h4>{dataSyncTaskListLabels.runTaskLocationsLabel}</h4>
+          </TextContent>
+          <ColumnLayout columns={2} variant="text-grid">
+            <TextContent>
+              <div>
+                <h5>{commonTableLabels.sourceLocationIdHeader}</h5>
+                <p>{selectedTask.length && locationIdFromArn(selectedTask[0].sourceLocationArn)}</p>
+              </div>
+            </TextContent>
+            <TextContent>
+              <div>
+                <h5>{commonTableLabels.destinationLocationIdHeader}</h5>
+                <p>{selectedTask.length && locationIdFromArn(selectedTask[0].destinationLocationArn)}</p>
+              </div>
+            </TextContent>
+          </ColumnLayout>
+          <Alert statusIconAriaLabel="Warning" type="warning">
+            {dataSyncTaskListLabels.runTaskModalAlertText}
+          </Alert>
+        </SpaceBetween>
       </Modal>
     );
   }
@@ -252,7 +260,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           external
           href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
         >
-          {dataSyncTaskListLabels.dataSyncTaskCreationInstructions}
+          {commonTableLabels.fileTransferInstructionsText}
         </Link>
       </>
     );
@@ -302,8 +310,8 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           id: 'taskId',
           header: commonTableLabels.dataSyncTaskIdHeader,
           cell: (e) => e.taskId,
-          width: 350,
-          minWidth: 220,
+          width: 200,
+          minWidth: 165,
           sortingField: 'taskId',
         },
         {
@@ -318,16 +326,16 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           id: 'destinationLocationArn',
           header: commonTableLabels.destinationLocationIdHeader,
           cell: (e) => locationIdFromArn(e.destinationLocationArn),
-          width: 220,
-          minWidth: 165,
+          width: 250,
+          minWidth: 220,
           sortingField: 'destinationLocationArn',
         },
         {
           id: 'dataVaultName',
           header: commonTableLabels.dataVaultNameHeader,
           cell: dataVaultNameCell,
-          width: 350,
-          minWidth: 220,
+          width: 200,
+          minWidth: 165,
           sortingField: 'dataVaultName',
         },
         {
@@ -342,8 +350,8 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           id: 'status',
           header: commonTableLabels.statusHeader,
           cell: statusCell,
-          width: 220,
-          minWidth: 165,
+          width: 165,
+          minWidth: 100,
           sortingField: 'status',
         },
       ]}

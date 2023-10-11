@@ -46,11 +46,14 @@ export default function Navigation({ initialHref }: NavigationProps): JSX.Elemen
   }
 
   if (availableEndpoints.data?.includes(DATA_VAULTS_ENDPOINT)) {
-    navItems.push({ type: 'link', text: navigationLabels.dataVaultsLabel, href: '/data-vaults' });
-  }
-
-  if (availableEndpoints.data?.includes(DATA_SYNC_TASKS_ENDPOINT)) {
-    navItems.push({ type: 'link', text: navigationLabels.dataSyncTasksLabel, href: '/data-sync-tasks' });
+    navItems.push({
+      type: 'link-group',
+      text: navigationLabels.dataVaultsLabel,
+      href: '/data-vaults',
+      items: availableEndpoints.data?.includes(DATA_SYNC_TASKS_ENDPOINT)
+        ? [{ type: 'link', text: navigationLabels.dataSyncTasksLabel, href: '/data-sync-tasks' }]
+        : [],
+    });
   }
 
   const downloadSystemAudit = async () => {

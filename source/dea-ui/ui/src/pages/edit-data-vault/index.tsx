@@ -29,10 +29,6 @@ const EditDataVaultPage: NextPage = () => {
 
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
-      text: breadcrumbLabels.homePageLabel,
-      href: baseUrl,
-    },
-    {
       text: breadcrumbLabels.dataVaultsLabel,
       href: `${baseUrl}/data-vaults`,
     },

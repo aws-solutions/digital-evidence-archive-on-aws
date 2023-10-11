@@ -60,9 +60,14 @@ export const commonTableLabels = {
   limitShowFewerLabel: 'Show fewer',
   limitShowMoreLabel: 'Show more',
   dataSyncTaskIdHeader: 'Task ID',
-  sourceLocationIdHeader: 'Source Location ID',
-  destinationLocationIdHeader: 'Destination Location ID',
-  dataVaultNameHeader: 'Data Vault Name',
+  sourceLocationIdHeader: 'Source location ID',
+  destinationLocationIdHeader: 'Destination location ID',
+  dataVaultNameHeader: 'Data vault name',
+  fileTransferInstructionsText: 'File transfer instructions',
+  implementationGuideLabel: 'Implementation Guide',
+  executionIdHeader: 'Execution ID',
+  caseAssociationHeader: 'Case association',
+  associateButtonLabel: 'Associate to case',
 };
 
 export const layoutLabels: AppLayoutProps.Labels = {
@@ -345,14 +350,15 @@ export const systemUseNotificationText =
 
 export const dataVaultListLabels = {
   loading: 'Loading data vaults',
-  noDataVaultsLabel: 'No data vaults have been created.',
+  noDataVaultsLabel: 'No data vaults to display',
   noDataVaultsMatchLabel: 'No data vaults matched',
-  noDisplayLabel: 'Once data vaults are created, they will be displayed.',
+  noDisplayLabel: "You don't have any data vaults. Start by creating a data vault.",
   createNewDataVaultLabel: 'Create data vault',
   searchDataVaultsLabel: 'Search by data vault name',
   dataVaultsLabel: 'Data vaults',
   dataVaultsPageDescription:
-    'Search for datavaults, view data vault details, or create new data vaults to store digital evidence.',
+    'All data vaults are listed. You can search for a data vault and associate files to a case.',
+  filteringPlaceholder: 'Search by name',
 };
 
 export const createDataVaultLabels = {
@@ -360,7 +366,7 @@ export const createDataVaultLabels = {
   createNewDataVaultDescription: 'All fields are required unless specified.',
   enterDetailsLabel: 'Details',
   nameLabel: 'Name',
-  nameDescription: ' Create a Unique name that you can easily reference.',
+  nameDescription: ' Create a Unique name that you can easily reference and find in Data vaults.',
   nameSubtext: 'The name can have up to 100 characters. Valid characters: A-Z, a-z, 0-9, and spaces.',
   descriptionLabel: 'Description - ',
   descriptionDescription: 'Enter a brief description for your data vault.',
@@ -374,6 +380,13 @@ export const dataVaultDetailLabels = {
   ulidLabel: 'Data vault ULID',
   objectCounterLabel: 'Number of files',
   totalSizeLabel: 'Total size',
+  noFilesLabel: 'No files to display.',
+  noFilesDisplayLabel:
+    'To import data, open the DataSync console and follow the steps in the implementation Guide.',
+  filesLabel: 'Files',
+  filesTableHeaderDescription: 'Folders and file uploaded to the Data Vault.',
+  displayFilesCheckboxLabel: 'Display files not associated with a case',
+  copyDataVaultUlidAriaLabel: 'Copy data vault ulid',
 };
 
 export const dataSyncTaskListLabels = {
@@ -384,11 +397,15 @@ export const dataSyncTaskListLabels = {
   runDataSyncTaskLabel: 'Run task',
   searchDataSyncTasksLabel: 'Search by task ID',
   dataSyncTasksLabel: 'All data sync tasks',
-  dataSyncTasksPageDescription: 'All data sync tasks displayed.',
+  dataSyncTasksPageDescription: 'All data sync tasks displayed. Running a task starts a file transfer.',
   dataSyncTaskCreationInstructions: 'Task Creation Instructions.',
-  runTaskModalTitle: 'Confirm details before running tasks',
-  runTaskSubtitle: 'Running the tasks will transfer files into the selected data vault.',
-  startTaskSuccessNotificationMessage: 'The task execution has been started successfully.',
+  runTaskModalTitle: 'Confirm details are correct',
+  runTaskLocationsLabel: 'Files will be transferred between these locations',
+  runTaskModalAlertText: 'Once the task transfers the files into Data vault, they cannot be deleted.',
+  startTaskSuccessNotificationMessage:
+    'Task is running successfully. This can take a while depending on the size of the files being transferred.',
+  completedTaskSuccessNotificationMessage:
+    'Your DataSync task has successfully completed. All files have been transferred to the Data vault.',
 };
 
 export const dataSyncTasksStatusLabels = {

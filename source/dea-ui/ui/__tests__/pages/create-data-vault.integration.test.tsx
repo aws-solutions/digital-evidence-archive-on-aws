@@ -126,10 +126,9 @@ describe('CreateDataVaults page', () => {
     const breadcrumbWrapper = wrapper(page.container).findBreadcrumbGroup();
     expect(breadcrumbWrapper).toBeTruthy();
     const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
-    expect(breadcrumbLinks.length).toEqual(3);
-    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
-    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.dataVaultsLabel);
-    expect(breadcrumbLinks[2].getElement()).toHaveTextContent(breadcrumbLabels.createNewDataVaultLabel);
+    expect(breadcrumbLinks.length).toEqual(2);
+    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.dataVaultsLabel);
+    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.createNewDataVaultLabel);
 
     const nameInput = screen.getByTestId('input-name');
     const wrappedName = wrapper(nameInput).findInput();

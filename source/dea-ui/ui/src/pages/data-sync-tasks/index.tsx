@@ -6,21 +6,11 @@
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useListAllDataVaults, useListAllDataSyncTasks } from '../../api/data-vaults';
 import { breadcrumbLabels, dataSyncTaskListLabels } from '../../common/labels';
-import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import DataSyncTasksTable from '../../components/data-sync-tasks-table/DataSyncTasksTable';
-import { useSettings } from '../../context/SettingsContext';
 
 export default function DataSyncTasksPage() {
-  const { settings } = useSettings();
-
-  const baseUrl = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
-
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
-    {
-      text: breadcrumbLabels.homePageLabel,
-      href: baseUrl,
-    },
     {
       text: breadcrumbLabels.dataSyncTasks,
       href: '#',

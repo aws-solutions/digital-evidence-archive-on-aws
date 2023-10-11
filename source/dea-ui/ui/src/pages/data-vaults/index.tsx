@@ -6,21 +6,11 @@
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useListAllDataVaults } from '../../api/data-vaults';
 import { breadcrumbLabels, dataVaultListLabels } from '../../common/labels';
-import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import DataVaultsTable from '../../components/data-vaults-table/DataVaultsTable';
-import { useSettings } from '../../context/SettingsContext';
 
 export default function DataVaultsPage() {
-  const { settings } = useSettings();
-
-  const baseUrl = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
-
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
-    {
-      text: breadcrumbLabels.homePageLabel,
-      href: baseUrl,
-    },
     {
       text: breadcrumbLabels.dataVaultsLabel,
       href: '#',

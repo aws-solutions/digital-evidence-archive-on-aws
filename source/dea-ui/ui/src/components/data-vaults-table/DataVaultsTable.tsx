@@ -73,6 +73,7 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
   function nameCell(deaDataVault: DeaDataVault) {
     return (
       <Link
+        data-test-id={deaDataVault.ulid}
         href={`${deaDataVault.ulid}`}
         onFollow={(e) => {
           e.preventDefault();
@@ -81,6 +82,20 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
       >
         {deaDataVault.name}
       </Link>
+    );
+  }
+
+  function tableHeaderDescription(): React.ReactNode {
+    return (
+      <>
+        {props.headerDescription}{' '}
+        <Link
+          external
+          href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
+        >
+          {commonTableLabels.fileTransferInstructionsText}
+        </Link>
+      </>
     );
   }
 
@@ -95,13 +110,24 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
       items={items}
       loadingText={dataVaultListLabels.loading}
       resizableColumns={true}
-      empty={TableEmptyDisplay(dataVaultListLabels.noDataVaultsLabel, dataVaultListLabels.noDisplayLabel)}
+      empty={TableEmptyDisplay(
+        dataVaultListLabels.noDataVaultsLabel,
+        dataVaultListLabels.noDisplayLabel,
+        <>
+          <Button
+            disabled={!canCreateDataVaults(availableEndpoints.data)}
+            onClick={createNewDataVaultHandler}
+          >
+            {dataVaultListLabels.createNewDataVaultLabel}
+          </Button>
+        </>
+      )}
       header={
         <TableHeader
           data-testid="case-table-header"
           variant="awsui-h1-sticky"
           title={props.headerLabel}
-          description={props.headerDescription}
+          description={tableHeaderDescription()}
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
               <Button
@@ -156,7 +182,7 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
           <PropertyFilter
             {...propertyFilterProps}
             countText={getFilterCounterText(filteredItemsCount)}
-            i18nStrings={i18nStrings}
+            i18nStrings={{ ...i18nStrings, filteringPlaceholder: dataVaultListLabels.filteringPlaceholder }}
             filteringOptions={filteringOptions}
             expandToViewport={true}
           />

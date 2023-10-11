@@ -13,17 +13,10 @@ export const filteringProperties: readonly PropertyFilterProperty[] = [
     propertyLabel: 'Data Vault Name',
     groupValuesLabel: 'Data Vault Name Values',
   },
-  {
-    key: 'created',
-    operators: ['<', '<=', '>', '>=', ':'],
-    propertyLabel: 'Creation Date',
-    groupValuesLabel: 'Creation Date Values',
-  },
 ];
 
-export const searchableColumns: string[] = ['name', 'creationDate'];
+export const searchableColumns: string[] = ['name'];
 
 export const filteringOptions: readonly PropertyFilterProps.FilteringOption[] = [
   { propertyKey: 'name', value: '' },
-  { propertyKey: 'creationDate', value: '' },
 ];

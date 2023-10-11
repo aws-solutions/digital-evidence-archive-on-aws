@@ -10,6 +10,13 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 const push = jest.fn();
 
+const someDataVault = {
+  ulid: '01HBF77SAC700F89WTQ7K6Q8QD',
+  name: 'Some Data Vault',
+  description: 'Some description',
+  created: '2023-09-29T01:00:51.916Z',
+};
+
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     query: {},
@@ -34,20 +41,7 @@ describe('DataVault Dashboard', () => {
       } else {
         return Promise.resolve({
           data: {
-            dataVaults: [
-              {
-                ulid: '01HBF77SAC700F89WTQ7K6Q8QD',
-                name: 'Some Data Vault',
-                description: 'Some description',
-                created: '2023-09-29T01:00:51.916Z',
-              },
-              {
-                ulid: '01HBH2V9SHZQ9NVMSD0Q47ZJEJ',
-                name: 'Another Data Vault',
-                description: 'Another Description',
-                created: '2023-09-29T18:22:37.361Z',
-              },
-            ],
+            dataVaults: [someDataVault],
           },
           status: 200,
           statusText: 'Ok',
@@ -60,7 +54,7 @@ describe('DataVault Dashboard', () => {
 
   it('renders a list of data vaults', async () => {
     const page = render(<DataVaultsPage />);
-    const listItem = await screen.findByText('Some Data Vault');
+    const listItem = await screen.findByText(someDataVault.name);
 
     expect(page).toBeTruthy();
     expect(listItem).toBeTruthy();
@@ -69,9 +63,8 @@ describe('DataVault Dashboard', () => {
     const breadcrumbWrapper = wrapper(page.container).findBreadcrumbGroup();
     expect(breadcrumbWrapper).toBeTruthy();
     const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
-    expect(breadcrumbLinks.length).toEqual(2);
-    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
-    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.dataVaultsLabel);
+    expect(breadcrumbLinks.length).toEqual(1);
+    expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.dataVaultsLabel);
   });
 
   it('navigates to create a new data vault', async () => {
@@ -87,13 +80,13 @@ describe('DataVault Dashboard', () => {
     render(<DataVaultsPage />);
 
     const table = await screen.findByTestId('data-vaults-table');
-    const link = wrapper(table).findLink();
+    const link = wrapper(table).findLink(`[data-test-id="${someDataVault.ulid}"]`);
 
     if (!link) {
       fail();
     }
     link.click();
 
-    expect(push).toHaveBeenCalledWith('/data-vault-detail?dataVaultId=01HBF77SAC700F89WTQ7K6Q8QD');
+    expect(push).toHaveBeenCalledWith(`/data-vault-detail?dataVaultId=${someDataVault.ulid}`);
   });
 });
