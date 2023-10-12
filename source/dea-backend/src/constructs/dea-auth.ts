@@ -444,12 +444,6 @@ export class DeaAuth extends Construct {
       },
     });
 
-    userPool.addDomain('CognitoDomain', {
-      cognitoDomain: {
-        domainPrefix: newDomain.domainName,
-      },
-    });
-
     const callbackUrls = [callbackUrl];
     deaConfig.deaAllowedOriginsList().forEach((origin) => {
       callbackUrls.push(`${origin}/${stage}/ui/login`);

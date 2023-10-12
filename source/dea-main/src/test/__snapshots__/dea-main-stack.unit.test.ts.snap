@@ -18034,17 +18034,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::Cognito::UserPool",
       "UpdateReplacePolicy": "Delete",
     },
-    "DeaAuthConstructDEAUserPoolCognitoDomain472B1BE4": Object {
-      "Properties": Object {
-        "Domain": Object {
-          "Ref": "DeaAuthConstructdeauserpooldomain945A7AE8",
-        },
-        "UserPoolId": Object {
-          "Ref": "DeaAuthConstructDEAUserPool522C8769",
-        },
-      },
-      "Type": "AWS::Cognito::UserPoolDomain",
-    },
     "DeaAuthConstructDEAUserPooldeaappclient08A0AC35": Object {
       "Properties": Object {
         "AccessTokenValidity": 60,
