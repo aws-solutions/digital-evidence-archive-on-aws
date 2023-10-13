@@ -103,8 +103,7 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
     <Table
       {...collectionProps}
       data-testid="data-vaults-table"
-      selectionType="single"
-      trackBy="ulid"
+      trackBy="name"
       loading={isLoading}
       variant="full-page"
       items={items}

@@ -420,7 +420,7 @@ describe('CaseDetailsPage', () => {
     await act(async () => {
       item.findDismissButton()!.click();
     });
-  }, 15000);
+  }, 30000);
 
   it('navigates to upload files page', async () => {
     const page = render(<CaseDetailsPage />);

@@ -1,4 +1,7 @@
-const withTM = require('next-transpile-modules')(['@cloudscape-design/components']);
+const withTM = require('next-transpile-modules')([
+  '@cloudscape-design/components',
+  '@cloudscape-design/component-toolkit',
+]);
 
 const STAGE = process.env.NEXT_PUBLIC_STAGE ?? 'devsample';
 const USING_CUSTOM_DOMAIN = process.env.NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN?.trim().toLowerCase() === 'true';

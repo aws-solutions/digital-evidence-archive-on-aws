@@ -54,9 +54,9 @@
     "@aws-sdk/client-cognito-identity-provider": "~3.398.0",
     "@aws/dea-app": "workspace:*",
     "@cloudscape-design/collection-hooks": "^1.0.20",
-    "@cloudscape-design/components": "^3.0.262",
+    "@cloudscape-design/components": "~3.0.405",
     "@cloudscape-design/design-tokens": "~3.0.11",
-    "@cloudscape-design/global-styles": "~1.0.8",
+    "@cloudscape-design/global-styles": "~1.0.13",
     "@cloudscape-design/jest-preset": "~2.0.8",
     "@types/crypto-js": "^4.1.1",
     "aws4-axios": "~2.4.9",
@@ -76,7 +76,9 @@
     "react-dom": "17.0.2",
     "react-i18next": "~11.18.6",
     "swr": "^1.3.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "jest-environment-jsdom": "~29.6.3",
+    "@cloudscape-design/component-toolkit": "~1.0.0-beta.25"
   },
   "devDependencies": {
     "@babel/core": "~7.23.2",

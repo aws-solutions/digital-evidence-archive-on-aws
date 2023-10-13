@@ -57,7 +57,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
   const availableEndpoints = useAvailableEndpoints();
   const { data: dataSyncTasks, isLoading: dataSyncTasksLoading } = props.useDataSyncTasksFectcher();
   const { data: dataVaults, isLoading: dataVaultsLoading } = props.useDataVaultFetcher();
-  const [selectedTask, setSelectedTask] = useState<DeaDataSyncTaskDTO[]>([]);
+  const [selectedTasks, setSelectedTasks] = useState<DeaDataSyncTaskDTO[]>([]);
   const [showRunTaskModal, setShowRunTaskModal] = useState(false);
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const { pushNotification } = useNotifications();
@@ -123,7 +123,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
   );
 
   function canRunDataSyncTaskVaults(endpoints: string[]): boolean {
-    return selectedTask.length === 1 && endpoints.includes(RUN_DATA_SYNC_TASK_PATH);
+    return selectedTasks.length === 1 && endpoints.includes(RUN_DATA_SYNC_TASK_PATH);
   }
 
   function enableRunTaskModal() {
@@ -137,9 +137,9 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
   async function runDataSyncTaskVaultHandler() {
     setIsSubmitLoading(true);
     try {
-      await createDataVaultExecution(selectedTask[0].taskId, { taskArn: selectedTask[0].taskArn });
+      await createDataVaultExecution(selectedTasks[0].taskId, { taskArn: selectedTasks[0].taskArn });
       pushNotification('success', dataSyncTaskListLabels.startTaskSuccessNotificationMessage);
-      setSelectedTask([]);
+      setSelectedTasks([]);
     } catch (e) {
       if (e instanceof Error) {
         pushNotification('error', e.message);
@@ -155,7 +155,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
       <Modal
         data-testid="run-task-modal"
         onDismiss={disableRunTaskModal}
-        visible={showRunTaskModal && selectedTask.length !== 0}
+        visible={showRunTaskModal && selectedTasks.length !== 0}
         closeAriaLabel={commonLabels.closeModalAriaLabel}
         footer={
           <Box float="right">
@@ -183,11 +183,11 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         <SpaceBetween direction="vertical" size="xs">
           <TextContent>
             <h5>{commonTableLabels.dataSyncTaskIdHeader}</h5>
-            <p>{selectedTask.length && selectedTask[0].taskId}</p>
+            <p>{selectedTasks.length && selectedTasks[0].taskId}</p>
           </TextContent>
           <TextContent>
             <h5>{commonTableLabels.dataVaultNameHeader}</h5>
-            <p>{selectedTask.length && (selectedTask[0].dataVaultName ?? '-')}</p>
+            <p>{selectedTasks.length && (selectedTasks[0].dataVaultName ?? '-')}</p>
           </TextContent>
           <TextContent>
             <h4>{dataSyncTaskListLabels.runTaskLocationsLabel}</h4>
@@ -196,13 +196,13 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
             <TextContent>
               <div>
                 <h5>{commonTableLabels.sourceLocationIdHeader}</h5>
-                <p>{selectedTask.length && locationIdFromArn(selectedTask[0].sourceLocationArn)}</p>
+                <p>{selectedTasks.length && locationIdFromArn(selectedTasks[0].sourceLocationArn)}</p>
               </div>
             </TextContent>
             <TextContent>
               <div>
                 <h5>{commonTableLabels.destinationLocationIdHeader}</h5>
-                <p>{selectedTask.length && locationIdFromArn(selectedTask[0].destinationLocationArn)}</p>
+                <p>{selectedTasks.length && locationIdFromArn(selectedTasks[0].destinationLocationArn)}</p>
               </div>
             </TextContent>
           </ColumnLayout>
@@ -270,10 +270,11 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
     <Table
       {...collectionProps}
       data-testid="data-sync-tasks-table"
-      onSelectionChange={({ detail }) => setSelectedTask(detail.selectedItems)}
-      selectedItems={selectedTask}
+      onSelectionChange={({ detail }) => setSelectedTasks(detail.selectedItems)}
+      selectedItems={selectedTasks}
       selectionType="single"
-      trackBy="ulid"
+      isItemDisabled={(item) => !item.dataVaultUlid}
+      trackBy="taskId"
       loading={isLoading}
       variant="full-page"
       items={items}

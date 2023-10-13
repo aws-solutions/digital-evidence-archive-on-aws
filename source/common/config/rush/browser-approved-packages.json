@@ -231,6 +231,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@cloudscape-design/component-toolkit",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@cloudscape-design/components",
       "allowedCategories": [ "production" ]
     },
