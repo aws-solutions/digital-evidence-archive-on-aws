@@ -206,6 +206,12 @@ export DEA_CUSTOM_DOMAIN=<true if using custom domain, otherwise do NOT set>
 export AWS_ACCT_NUMBER=<your 12 digit AWS account number>
 ```
 
+Validate your configuration file and address any errors that appear
+
+```sh
+rushx validate:config
+```
+
 Now run the following commands to launch the stack
 
 **Windows**

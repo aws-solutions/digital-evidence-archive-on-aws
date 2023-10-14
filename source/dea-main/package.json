@@ -46,7 +46,8 @@
     "unit:only": ". ../common/scripts/setEnvDummy.sh && heft test --no-build --test-path-pattern '.*/*unit.test.*'",
     "version:major": "npm version major",
     "version:minor": "npm version minor",
-    "version:patch": "npm version patch"
+    "version:patch": "npm version patch",
+    "validate:config": "npx ts-node ../dea-backend/src/config.ts"
   },
   "dependencies": {
     "@aws-cdk/aws-glue-alpha": "~2.86.0-alpha.0",

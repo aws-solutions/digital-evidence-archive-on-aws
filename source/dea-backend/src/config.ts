@@ -12,6 +12,10 @@ import convict from 'convict';
 
 const UNDEFINED_STRING = 'undefined';
 
+const FG_RED = '\x1b[31m';
+const FG_RESET = '\x1b[0m';
+const FG_GREEN = '\x1b[32m';
+
 function getSourcePath(): string {
   const pathParts = __dirname.split(path.sep);
   let backTrack = '';
@@ -434,7 +438,26 @@ export const deaConfig: DEAConfig = {
 export const loadConfig = (stage: string): void => {
   const sourceDir = getSourcePath();
   convictConfig.loadFile(`${sourceDir}/common/config/${stage}.json`);
-  convictConfig.validate({ allowed: 'strict' });
+  try {
+    convictConfig.validate({ allowed: 'strict' });
+  } catch (e) {
+    console.error(
+      [
+        `${FG_RED}--------------------------------------------------------------------------------------`,
+        `Configuration ${configFilename}.json Failed Schema Validation:`,
+        `${e.message}`,
+        `--------------------------------------------------------------------------------------${FG_RESET}`,
+      ].join('\n')
+    );
+    throw e;
+  }
+  console.info(
+    [
+      `${FG_GREEN}--------------------------------------------------------------------------------------`,
+      `Configuration ${configFilename}.json Passed Schema Validation`,
+      `--------------------------------------------------------------------------------------${FG_RESET}`,
+    ].join('\n')
+  );
 };
 const configFilename = deaConfig.configName() ?? deaConfig.stage();
 loadConfig(configFilename);
