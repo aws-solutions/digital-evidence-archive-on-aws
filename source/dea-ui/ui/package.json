@@ -79,10 +79,10 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@babel/core": "~7.22.5",
-    "@babel/preset-env": "~7.22.5",
+    "@babel/core": "~7.23.2",
+    "@babel/preset-env": "~7.23.2",
     "@babel/preset-react": "~7.22.5",
-    "@babel/preset-typescript": "~7.22.5",
+    "@babel/preset-typescript": "~7.23.2",
     "@rushstack/eslint-config": "^3.3.3",
     "@rushstack/heft": "^0.50.0",
     "@rushstack/heft-jest-plugin": "^0.5.5",
