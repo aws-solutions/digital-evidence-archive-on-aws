@@ -228,7 +228,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       new PolicyStatement({
         actions: ['firehose:PutRecordBatch'],
         resources: [
-          `arn:aws:firehose:${Aws.REGION}:${Aws.ACCOUNT_ID}:deliverystream/${
+          `arn:${Aws.PARTITION}:firehose:${Aws.REGION}:${Aws.ACCOUNT_ID}:deliverystream/${
             Aws.STACK_NAME
           }-${stackName}${firehoseName.replaceAll(' ', '')}*`,
         ],

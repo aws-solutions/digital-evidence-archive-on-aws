@@ -441,6 +441,7 @@ export class DeaRestApiConstruct extends Construct {
         STAGE: deaConfig.stage(),
         ALLOWED_ORIGINS: deaConfig.deaAllowedOrigins(),
         SAMESITE: deaConfig.sameSiteValue(),
+        AWS_PARTITION: Aws.PARTITION,
         ...lambdaEnv,
       },
       bundling: {
@@ -625,7 +626,7 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['athena:GetWorkgroup'],
         resources: [
-          `arn:aws:athena:${Aws.REGION}:${Aws.ACCOUNT_ID}:workgroup/${athenaConfig.athenaWorkGroupName}`,
+          `arn:${Aws.PARTITION}:athena:${Aws.REGION}:${Aws.ACCOUNT_ID}:workgroup/${athenaConfig.athenaWorkGroupName}`,
         ],
       })
     );
@@ -634,9 +635,9 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['glue:GetTable', 'glue:GetDatabase'],
         resources: [
-          `arn:aws:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:catalog`,
-          `arn:aws:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:database/${athenaConfig.athenaDBName}`,
-          `arn:aws:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:table/${athenaConfig.athenaDBName}/${athenaConfig.athenaTableName}`,
+          `arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:catalog`,
+          `arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:database/${athenaConfig.athenaDBName}`,
+          `arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:table/${athenaConfig.athenaDBName}/${athenaConfig.athenaTableName}`,
         ],
       })
     );

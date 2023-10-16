@@ -39,11 +39,15 @@ export default function createAuditRedrivePolicy(
       }),
       new PolicyStatement({
         actions: ['athena:GetWorkgroup'],
-        resources: [`arn:aws:athena:${Aws.REGION}:${Aws.ACCOUNT_ID}:workgroup/${athenaWorkgroup.name}`],
+        resources: [
+          `arn:${Aws.PARTITION}:athena:${Aws.REGION}:${Aws.ACCOUNT_ID}:workgroup/${athenaWorkgroup.name}`,
+        ],
       }),
       new PolicyStatement({
         actions: ['firehose:PutRecordBatch'],
-        resources: [`arn:aws:firehose:${Aws.REGION}:${Aws.ACCOUNT_ID}:deliverystream/${firehose.ref}`],
+        resources: [
+          `arn:${Aws.PARTITION}:firehose:${Aws.REGION}:${Aws.ACCOUNT_ID}:deliverystream/${firehose.ref}`,
+        ],
       }),
       new PolicyStatement({
         actions: ['logs:DescribeLogStreams', 'logs:GetLogEvents'],
@@ -72,9 +76,9 @@ export default function createAuditRedrivePolicy(
       new PolicyStatement({
         actions: ['glue:GetTable', 'glue:GetDatabase'],
         resources: [
-          `arn:aws:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:catalog`,
-          `arn:aws:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:database/${glueDBName}`,
-          `arn:aws:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:table/${glueDBName}/${glueTableName}`,
+          `arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:catalog`,
+          `arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:database/${glueDBName}`,
+          `arn:${Aws.PARTITION}:glue:${Aws.REGION}:${Aws.ACCOUNT_ID}:table/${glueDBName}/${glueTableName}`,
         ],
       }),
       new PolicyStatement({

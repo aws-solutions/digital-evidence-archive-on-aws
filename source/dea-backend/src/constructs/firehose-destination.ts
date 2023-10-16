@@ -29,7 +29,7 @@ export class FirehoseDestination implements ILogSubscriptionDestination {
       assumedBy: new ServicePrincipal('logs.amazonaws.com', {
         conditions: {
           // prevent confused deputy
-          StringLike: { 'aws:SourceArn': `arn:aws:logs:${Aws.REGION}:${Aws.ACCOUNT_ID}:*` },
+          StringLike: { 'aws:SourceArn': `arn:${Aws.PARTITION}:logs:${Aws.REGION}:${Aws.ACCOUNT_ID}:*` },
         },
       }),
     });

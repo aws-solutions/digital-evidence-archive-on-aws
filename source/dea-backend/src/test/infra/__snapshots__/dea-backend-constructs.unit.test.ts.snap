@@ -672,7 +672,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:athena:",
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":athena:",
                     Object {
                       "Ref": "AWS::Region",
                     },
@@ -696,7 +700,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:firehose:",
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":firehose:",
                     Object {
                       "Ref": "AWS::Region",
                     },
@@ -806,7 +814,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "arn:aws:glue:",
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":glue:",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -822,7 +834,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "arn:aws:glue:",
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":glue:",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -841,7 +857,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "arn:aws:glue:",
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":glue:",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1707,7 +1727,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:firehose:",
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":firehose:",
                     Object {
                       "Ref": "AWS::Region",
                     },
@@ -1946,7 +1970,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     "Fn::Join": Array [
                       "",
                       Array [
-                        "arn:aws:logs:",
+                        "arn:",
+                        Object {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":logs:",
                         Object {
                           "Ref": "AWS::Region",
                         },
@@ -2247,7 +2275,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     "Fn::Join": Array [
                       "",
                       Array [
-                        "arn:aws:logs:",
+                        "arn:",
+                        Object {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":logs:",
                         Object {
                           "Ref": "AWS::Region",
                         },
@@ -3228,6 +3260,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -3326,6 +3361,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -3424,6 +3462,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -3522,6 +3563,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -3620,6 +3664,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -3718,6 +3765,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -3816,6 +3866,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -3914,6 +3967,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4012,6 +4068,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4110,6 +4169,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4208,6 +4270,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4306,6 +4371,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4404,6 +4472,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4502,6 +4573,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4600,6 +4674,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4698,6 +4775,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4796,6 +4876,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4894,6 +4977,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4992,6 +5078,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5090,6 +5179,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5188,6 +5280,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5286,6 +5381,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5384,6 +5482,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5482,6 +5583,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5580,6 +5684,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5678,6 +5785,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5776,6 +5886,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5874,6 +5987,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5972,6 +6088,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -6070,6 +6189,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -6168,6 +6290,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -6266,6 +6391,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -6364,6 +6492,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -6462,6 +6593,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -6560,6 +6694,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -14919,7 +15056,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 "Fn::Join": Array [
                   "",
                   Array [
-                    "arn:aws:athena:",
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":athena:",
                     Object {
                       "Ref": "AWS::Region",
                     },
@@ -14947,7 +15088,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "arn:aws:glue:",
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":glue:",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -14963,7 +15108,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "arn:aws:glue:",
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":glue:",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -14982,7 +15131,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "arn:aws:glue:",
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":glue:",
                       Object {
                         "Ref": "AWS::Region",
                       },

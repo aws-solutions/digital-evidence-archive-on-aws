@@ -6,6 +6,7 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { Aws } from 'aws-cdk-lib';
 import { getCustomUserAgent, getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 
@@ -86,7 +87,7 @@ function getPolicyForDownload(
           Sid: 'AllowS3GetObject',
           Effect: 'Allow',
           Action: ['s3:GetObject', 's3:GetObjectVersion'],
-          Resource: [`arn:aws:s3:::${bucketName}/${objectKey}`],
+          Resource: [`arn:${Aws.PARTITION}:s3:::${bucketName}/${objectKey}`],
         },
         {
           Sid: 'AllowDecrypt',
@@ -105,7 +106,7 @@ function getPolicyForDownload(
         Sid: 'AllowS3GetObject',
         Effect: 'Allow',
         Action: ['s3:GetObject', 's3:GetObjectVersion'],
-        Resource: [`arn:aws:s3:::${bucketName}/${objectKey}`],
+        Resource: [`arn:${Aws.PARTITION}:s3:::${bucketName}/${objectKey}`],
         Condition: {
           IpAddress: {
             'aws:SourceIp': sourceIp,
@@ -116,7 +117,7 @@ function getPolicyForDownload(
         Sid: 'DenyRequestsFromOtherIpAddresses',
         Effect: 'Deny',
         Action: ['s3:GetObject', 's3:GetObjectVersion'],
-        Resource: [`arn:aws:s3:::${bucketName}/${objectKey}`],
+        Resource: [`arn:${Aws.PARTITION}:s3:::${bucketName}/${objectKey}`],
         Condition: {
           NotIpAddress: {
             'aws:SourceIp': sourceIp,
