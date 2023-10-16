@@ -55,6 +55,7 @@ describe('get user audit', () => {
     process.env.AUDIT_LOG_GROUP_NAME = 'TESTGROUP';
     process.env.AUDIT_DOWNLOAD_ROLE_ARN = 'AUDIT_DOWNLOAD_ROLE_ARN';
     process.env.AWS_REGION = 'eu-west-1';
+    process.env.AWS_PARTITION = 'aws';
     process.env.KEY_ARN = 'keyarn';
   });
 

@@ -6,7 +6,6 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { Aws } from 'aws-cdk-lib';
 import { getCustomUserAgent, getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 
@@ -17,6 +16,7 @@ export async function getAuditDownloadPresignedUrl(
 ): Promise<string> {
   const sourceIpValidationEnabled = getRequiredEnv('SOURCE_IP_VALIDATION_ENABLED', 'true') === 'true';
   const auditDownloadRoleArn = getRequiredEnv('AUDIT_DOWNLOAD_ROLE_ARN');
+  const awsPartition = getRequiredEnv('AWS_PARTITION');
   const region = getRequiredEnv('AWS_REGION');
   const keyArn = getRequiredEnv('KEY_ARN');
   const auditDownloadExpirySeconds =
@@ -28,7 +28,8 @@ export async function getAuditDownloadPresignedUrl(
     objectKey,
     sourceIp,
     sourceIpValidationEnabled,
-    keyArn
+    keyArn,
+    awsPartition
   );
   const credentials = (
     await client.send(
@@ -76,7 +77,8 @@ function getPolicyForDownload(
   objectKey: string,
   sourceIp: string,
   sourceIpValidationEnabled: boolean,
-  keyArn: string
+  keyArn: string,
+  awsPartition: string
 ): string {
   if (!sourceIpValidationEnabled) {
     logger.info('Not restricting presigned-url by source ip');
@@ -87,7 +89,7 @@ function getPolicyForDownload(
           Sid: 'AllowS3GetObject',
           Effect: 'Allow',
           Action: ['s3:GetObject', 's3:GetObjectVersion'],
-          Resource: [`arn:${Aws.PARTITION}:s3:::${bucketName}/${objectKey}`],
+          Resource: [`arn:${awsPartition}:s3:::${bucketName}/${objectKey}`],
         },
         {
           Sid: 'AllowDecrypt',
@@ -106,7 +108,7 @@ function getPolicyForDownload(
         Sid: 'AllowS3GetObject',
         Effect: 'Allow',
         Action: ['s3:GetObject', 's3:GetObjectVersion'],
-        Resource: [`arn:${Aws.PARTITION}:s3:::${bucketName}/${objectKey}`],
+        Resource: [`arn:${awsPartition}:s3:::${bucketName}/${objectKey}`],
         Condition: {
           IpAddress: {
             'aws:SourceIp': sourceIp,
@@ -117,7 +119,7 @@ function getPolicyForDownload(
         Sid: 'DenyRequestsFromOtherIpAddresses',
         Effect: 'Deny',
         Action: ['s3:GetObject', 's3:GetObjectVersion'],
-        Resource: [`arn:${Aws.PARTITION}:s3:::${bucketName}/${objectKey}`],
+        Resource: [`arn:${awsPartition}:s3:::${bucketName}/${objectKey}`],
         Condition: {
           NotIpAddress: {
             'aws:SourceIp': sourceIp,
