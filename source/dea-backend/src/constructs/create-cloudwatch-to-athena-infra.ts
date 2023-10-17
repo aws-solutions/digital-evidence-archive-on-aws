@@ -9,7 +9,7 @@ import * as glue from '@aws-cdk/aws-glue-alpha';
 import { Aws, Duration, Fn, StackProps, aws_kinesisfirehose } from 'aws-cdk-lib';
 import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
-import { PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { ArnPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
@@ -296,6 +296,16 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       glueDB.databaseName,
       glueTable.tableName,
       props.kmsKey
+    );
+
+    props.kmsKey.addToResourcePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:GenerateDataKey*'],
+        principals: [new ArnPrincipal(fireHosetoS3Role.roleArn)],
+        resources: ['*'],
+        sid: 'Allow Firehose Key access',
+      })
     );
   }
 

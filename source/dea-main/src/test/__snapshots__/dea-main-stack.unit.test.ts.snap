@@ -15796,6 +15796,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
           },
           "EnforceWorkGroupConfiguration": true,
+          "EngineVersion": Object {
+            "SelectedEngineVersion": "Athena engine version 3",
+          },
           "ResultConfiguration": Object {
             "EncryptionConfiguration": Object {
               "EncryptionOption": "SSE_KMS",
@@ -23170,6 +23173,24 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
               "Resource": "*",
               "Sid": "cfn-key-share-statement",
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt*",
+                "kms:Decrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "DeaAuditFireHosetoS3Role97400919",
+                    "Arn",
+                  ],
+                },
+              },
+              "Resource": "*",
+              "Sid": "Allow Firehose Key access",
             },
             Object {
               "Action": Array [
