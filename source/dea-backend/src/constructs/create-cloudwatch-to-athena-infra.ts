@@ -114,6 +114,9 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
         customerContentEncryptionConfiguration: {
           kmsKey: props.kmsKey.keyArn,
         },
+        engineVersion: {
+          selectedEngineVersion: 'Athena engine version 3',
+        },
       },
       recursiveDeleteOption: true,
     });
