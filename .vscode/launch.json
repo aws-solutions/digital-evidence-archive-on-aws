@@ -32,12 +32,26 @@
         "--no-build",
         "--clean",
         "--test-path-pattern",
-        ".*/*unit.test.*"
+        ".*/*.unit.test.*"
       ],
       "console": "integratedTerminal",
       "sourceMaps": true,
       "outFiles": [],
-      "resolveSourceMapLocations": null
+      "resolveSourceMapLocations": null,
+      "env": {
+        "DEA_API_URL": "dummyUrl",
+        "IDENTITY_POOL_ID": "dummyId",
+        "USER_POOL_ID": "dummyPool",
+        "USER_POOL_CLIENT_ID": "dummyClient",
+        "DATASETS_BUCKET_NAME": "dummyBucket",
+        "AUDIT_BUCKET_NAME": "dummyAuditBucket",
+        "ATHENA_WORKGROUP_NAME": "dummyWorkgroup",
+        "GLUE_TABLE": "dummyTable",
+        "GLUE_DB": "dummyDb",
+        "FIREHOSE_STREAM_NAME": "dummyStream",
+        "AUDIT_LOG_GROUP": "deaAuditLogsDummy",
+        "TRAIL_LOG_GROUP": "deaTrailLogsDummy"
+      }
     },
     {
       "type": "node",

@@ -211,6 +211,7 @@ describe('S3 batch delete case-file lambda', () => {
       s3BatchDeleteCaseFileRole: 'arn:aws:iam::1234:role/foo',
       sourceIpValidationEnabled: true,
       datasetsRole: 'arn:aws:iam::1234:role/bar',
+      awsPartition: 'aws',
     };
 
     const response = await deleteCaseFileHandler(

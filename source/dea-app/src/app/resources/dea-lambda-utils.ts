@@ -214,17 +214,6 @@ export const okSetIdTokenCookie = (
   });
 };
 
-export const csvResponse = (event: APIGatewayProxyEvent, csvData: string): APIGatewayProxyResult => {
-  return withAllowedOrigin(event, {
-    statusCode: 200,
-    body: csvData,
-    headers: {
-      'Content-Type': 'text/csv',
-      'Content-Disposition': `attachment; filename="case_audit_${new Date().toDateString()}"`,
-    },
-  });
-};
-
 export const responseNoContent = (event: APIGatewayProxyEvent): APIGatewayProxyResult => {
   return withAllowedOrigin(event, {
     statusCode: 204,

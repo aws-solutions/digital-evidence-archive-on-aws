@@ -31,7 +31,7 @@ interface DeaEventHandlerProps {
   deaDatasetsBucketArn: string;
   lambdaEnv: LambdaEnvironment;
   kmsKey: Key;
-  opsDashboard: DeaOperationalDashboard;
+  opsDashboard?: DeaOperationalDashboard;
 }
 
 export class DeaEventHandlers extends Construct {
@@ -91,13 +91,13 @@ export class DeaEventHandlers extends Construct {
     // create event bridge rule
     this.createEventBridgeRuleForS3BatchJobs(s3BatchJobStatusChangeHandlerLambda);
 
-    props.opsDashboard.addLambdaOperationalComponents(
+    props.opsDashboard?.addLambdaOperationalComponents(
       this.s3BatchDeleteCaseFileLambda,
       'S3BatchDeleteCaseFileLambda',
       undefined,
       true
     );
-    props.opsDashboard.addLambdaOperationalComponents(
+    props.opsDashboard?.addLambdaOperationalComponents(
       s3BatchJobStatusChangeHandlerLambda,
       'S3BatchJobStatusChangeLambda',
       undefined,

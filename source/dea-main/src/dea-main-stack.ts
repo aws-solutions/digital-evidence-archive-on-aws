@@ -37,7 +37,7 @@ import { addLambdaSuppressions, addResourcePolicySuppressions } from './nag-supp
 
 // DEA AppRegistry Constants
 // TODO - would be ideal to reference process.env.npm_package_version here but rush breaks that env
-export const SOLUTION_VERSION = '1.0.4';
+export const SOLUTION_VERSION = '1.0.5';
 export const SOLUTION_ID = 'SO0224';
 
 export class DeaMainStack extends cdk.Stack {
@@ -51,7 +51,10 @@ export class DeaMainStack extends cdk.Stack {
 
     super(scope, id, stackProps);
 
-    const dashboard = new DeaOperationalDashboard(this, 'DeaApiOpsDashboard');
+    let dashboard: DeaOperationalDashboard | undefined = undefined;
+    if (!deaConfig.isOneClick()) {
+      dashboard = new DeaOperationalDashboard(this, 'DeaApiOpsDashboard');
+    }
 
     // DEA App Register Construct
     this.appRegistry = new DeaAppRegisterConstruct(this, this.stackId, {
@@ -86,6 +89,7 @@ export class DeaMainStack extends cdk.Stack {
       kmsKey,
       deaDatasetsBucket: backendConstruct.datasetsBucket,
       deaTableArn: backendConstruct.deaTable.tableArn,
+      opsDashboard: dashboard,
     });
 
     const deaEventHandlers = new DeaEventHandlers(this, 'DeaEventHandlers', {
@@ -112,6 +116,13 @@ export class DeaMainStack extends cdk.Stack {
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey,
+      athenaConfig: {
+        athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
+        athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
+        athenaWorkGroupName: auditTrail.auditCloudwatchToS3Infra.athenaWorkGroupName,
+        athenaTableName: auditTrail.auditCloudwatchToS3Infra.athenaTableName,
+        athenaAuditBucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
+      },
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backendConstruct.deaTable.tableName,
@@ -123,6 +134,10 @@ export class DeaMainStack extends cdk.Stack {
         SOURCE_IP_VALIDATION_ENABLED: deaConfig.sourceIpValidationEnabled().toString(),
         DELETION_ALLOWED: deaConfig.deletionAllowed().toString(),
         UPLOAD_FILES_TIMEOUT_MINUTES: deaConfig.uploadFilesTimeoutMinutes().toString(),
+        ATHENA_WORKGROUP: auditTrail.auditCloudwatchToS3Infra.athenaWorkGroupName,
+        AUDIT_GLUE_DATABASE: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
+        AUDIT_GLUE_TABLE: auditTrail.auditCloudwatchToS3Infra.athenaTableName,
+        AUDIT_DOWNLOAD_FILES_TIMEOUT_MINUTES: deaConfig.auditDownloadTimeoutMinutes().toString(),
         SOLUTION_ID,
         SOLUTION_VERSION,
       },
@@ -192,12 +207,14 @@ export class DeaMainStack extends cdk.Stack {
         kmsKey,
         accessLogsBucket: backendConstruct.accessLogsBucket,
         datasetsBucket: backendConstruct.datasetsBucket,
+        auditQueryBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
       },
       deaApi.lambdaBaseRole,
       deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole,
       deaEventHandlers.s3BatchDeleteCaseFileLambdaRole,
       deaApi.customResourceRole,
-      deaApi.datasetsRole
+      deaApi.datasetsRole,
+      deaApi.auditDownloadRole
     );
 
     const permissionBoundaryOnDeaResources =
@@ -350,7 +367,14 @@ export class DeaMainStack extends cdk.Stack {
     cfnResources.push(
       this.node
         .findChild('DeaApiGateway')
-        .node.findChild('UpdateBucketCORS')
+        .node.findChild('UpdateBucketCORS0')
+        .node.findChild('CustomResourcePolicy').node.defaultChild
+    );
+
+    cfnResources.push(
+      this.node
+        .findChild('DeaApiGateway')
+        .node.findChild('UpdateBucketCORS1')
         .node.findChild('CustomResourcePolicy').node.defaultChild
     );
 

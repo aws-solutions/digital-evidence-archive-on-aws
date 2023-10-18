@@ -118,6 +118,8 @@ export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFileRes
     ttl: caseFileEntity.ttl,
     reason: caseFileEntity.reason,
     details: caseFileEntity.details,
+    // if fileS3Key is set returns their value. Otherwise, fileS3Key value comes from the <caseUlid,ulid> tupple.
+    fileS3Key: caseFileEntity.fileS3Key ?? `${caseFileEntity.caseUlid}/${caseFileEntity.ulid}`,
   };
 };
 

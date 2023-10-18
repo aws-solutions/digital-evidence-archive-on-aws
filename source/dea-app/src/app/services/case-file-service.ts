@@ -194,6 +194,7 @@ const caseFilesToDTO = (
       isFile: file.isFile,
       reason: file.reason,
       details: file.details,
+      fileS3Key: file.fileS3Key,
     };
   });
 };

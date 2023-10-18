@@ -3,9 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
+import { AthenaClient, StartQueryExecutionCommand } from '@aws-sdk/client-athena';
 import Joi from 'joi';
-import { anything, instance, mock, when } from 'ts-mockito';
+import { anyOfClass, instance, mock, when } from 'ts-mockito';
 import { startUserAudit } from '../../../app/resources/start-user-audit';
 import { joiUlid } from '../../../models/validation/joi-common';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
@@ -44,9 +44,12 @@ describe('start user audit', () => {
   });
 
   it('responds with a queryId', async () => {
-    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    const clientMock: AthenaClient = mock(AthenaClient);
     const clientMockInstance = instance(clientMock);
-    when(clientMock.send(anything())).thenResolve({ $metadata: {}, queryId: 'a_query_id' });
+    when(clientMock.send(anyOfClass(StartQueryExecutionCommand))).thenResolve({
+      $metadata: {},
+      QueryExecutionId: 'a_query_id',
+    });
 
     const event = getDummyEvent({
       pathParameters: {
@@ -61,9 +64,12 @@ describe('start user audit', () => {
   });
 
   it('throws an error if no queryId is returned', async () => {
-    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    const clientMock: AthenaClient = mock(AthenaClient);
     const clientMockInstance = instance(clientMock);
-    when(clientMock.send(anything())).thenResolve({ $metadata: {}, queryId: undefined });
+    when(clientMock.send(anyOfClass(StartQueryExecutionCommand))).thenResolve({
+      $metadata: {},
+      QueryExecutionId: undefined,
+    });
 
     const event = getDummyEvent({
       pathParameters: {
@@ -72,11 +78,11 @@ describe('start user audit', () => {
     });
     await expect(
       startUserAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
-    ).rejects.toThrow('Unknown error starting Cloudwatch Logs Query.');
+    ).rejects.toThrow('Unknown error starting Athena Query.');
   });
 
   it('throws an error for an invalid user', async () => {
-    const clientMock: CloudWatchLogsClient = mock(CloudWatchLogsClient);
+    const clientMock: AthenaClient = mock(AthenaClient);
     const clientMockInstance = instance(clientMock);
     const event = getDummyEvent({
       pathParameters: {

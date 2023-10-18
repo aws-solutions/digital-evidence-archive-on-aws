@@ -2,7 +2,6 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-
 import { CfnResource, StackProps } from 'aws-cdk-lib';
 import * as CloudTrail from 'aws-cdk-lib/aws-cloudtrail';
 import { CfnTrail, ReadWriteType } from 'aws-cdk-lib/aws-cloudtrail';
@@ -19,17 +18,22 @@ import {
 } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
+import { createCfnOutput } from './construct-support';
+import { AuditCloudwatchToAthenaInfra } from './create-cloudwatch-to-athena-infra';
+import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 interface DeaAuditProps extends StackProps {
   readonly kmsKey: Key;
   readonly deaDatasetsBucket: IBucket;
   readonly deaTableArn: string;
+  readonly opsDashboard?: DeaOperationalDashboard;
 }
 
 export class DeaAuditTrail extends Construct {
   public auditTrail: CloudTrail.Trail;
   public auditLogGroup: LogGroup;
   public trailLogGroup: LogGroup;
+  public auditCloudwatchToS3Infra: AuditCloudwatchToAthenaInfra;
 
   public constructor(
     scope: Construct,
@@ -40,8 +44,22 @@ export class DeaAuditTrail extends Construct {
     super(scope, stackName);
 
     this.auditLogGroup = this.createLogGroup(scope, 'deaAuditLogs', props.kmsKey);
+    createCfnOutput(this, 'auditLogName', {
+      value: this.auditLogGroup.logGroupName,
+    });
 
     this.trailLogGroup = this.createLogGroup(scope, 'deaTrailLogs', props.kmsKey);
+    createCfnOutput(this, 'trailLogName', {
+      value: this.trailLogGroup.logGroupName,
+    });
+
+    this.auditCloudwatchToS3Infra = new AuditCloudwatchToAthenaInfra(this, stackName, {
+      kmsKey: props.kmsKey,
+      auditLogGroup: this.auditLogGroup,
+      trailLogGroup: this.trailLogGroup,
+      opsDashboard: props.opsDashboard,
+    });
+
     this.auditTrail = this.createAuditTrail(
       scope,
       this.trailLogGroup,
@@ -83,6 +101,10 @@ export class DeaAuditTrail extends Construct {
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+    });
+
+    createCfnOutput(this, 'deaTrailBucketName', {
+      value: trailBucket.bucketName,
     });
 
     if (!deaConfig.isTestStack()) {

@@ -65,6 +65,7 @@ export const DATASETS_PROVIDER = {
   s3BatchDeleteCaseFileRole: 'arn:aws:iam::1234:role/foo',
   sourceIpValidationEnabled: true,
   datasetsRole: 'arn:aws:iam::1234:role/bar',
+  awsPartition: 'aws',
 };
 
 jest.setTimeout(20000);

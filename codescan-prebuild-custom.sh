@@ -59,11 +59,6 @@ echo npm `npm --version`
 echo `python --version`
 
 echo -----------------------------------------------------------
-echo Update npm to latest
-echo -----------------------------------------------------------
-npm install -g npm@latest
-
-echo -----------------------------------------------------------
 echo Scanning all Nodejs projects
 echo -----------------------------------------------------------
 find $source_dir -name package.json | grep -v node_modules | while read folder

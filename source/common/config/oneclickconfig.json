@@ -3,6 +3,7 @@
   "isOneClick": true,
   "fipsEndpointsEnabled": false,
   "isMultiRegionTrail": false,
+  "sourceIpValidation": false,
   "deaRoleTypes": [
     {
       "name": "CaseWorker",

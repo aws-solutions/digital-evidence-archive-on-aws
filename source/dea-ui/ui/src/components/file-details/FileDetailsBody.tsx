@@ -51,12 +51,13 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
     try {
       setAuditDownloadInProgress(true);
       try {
-        const csv = await getCaseFileAuditCSV(props.caseId, props.fileId);
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const fileUrl = window.URL.createObjectURL(blob);
+        const csvDownloadUrl = await getCaseFileAuditCSV(props.caseId, props.fileId);
+        const downloadDate = new Date();
         const alink = document.createElement('a');
-        alink.href = fileUrl;
-        alink.download = `${data?.fileName}_Audit_${new Date().toLocaleString()}`;
+        alink.href = csvDownloadUrl;
+        alink.download = `CaseFileAudit_${data?.fileName}_${downloadDate.getFullYear()}_${
+          downloadDate.getMonth() + 1
+        }_${downloadDate.getDate()}_H${downloadDate.getHours()}.csv`;
         alink.click();
       } catch (e) {
         pushNotification('error', auditLogLabels.downloadCaseAuditFail(data?.fileName ?? 'file'));

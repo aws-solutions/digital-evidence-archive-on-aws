@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
 import { AuditEventType } from '../../app/services/audit-service';
@@ -12,15 +13,15 @@ import { joiUlid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
+  MINUTES_TO_MILLISECONDS,
   callDeaAPIWithCreds,
-  CaseAuditEventEntry,
   createCaseSuccess,
   delay,
   deleteCase,
+  getAuditQueryResults,
   inviteUserToCase,
-  parseCaseAuditCsv,
-  parseTrailEventsFromAuditQuery,
   randomSuffix,
+  verifyAuditEntry,
 } from './test-helpers';
 
 describe('case audit e2e', () => {
@@ -57,289 +58,336 @@ describe('case audit e2e', () => {
     await cognitoHelper.cleanup();
   }, 30000);
 
-  it('retrieves actions taken against a case', async () => {
-    const startTime = Date.now();
-    const caseName = `auditTestCase${randomSuffix()}`;
-    const createdCase = await createCaseSuccess(
-      deaApiUrl,
-      {
-        name: caseName,
-        description: 'this is a description',
-      },
-      idToken,
-      creds
-    );
-    const caseUlid = createdCase.ulid ?? fail();
-    caseIdsToDelete.push(caseUlid);
+  const currentSeconds = () => {
+    return Math.trunc(Date.now() / 1000);
+  };
 
-    const updateResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${caseUlid}/details`,
-      'PUT',
-      idToken,
-      creds,
-      {
-        ulid: caseUlid,
-        name: caseName,
-        description: 'An updated description',
-      }
-    );
-    expect(updateResponse.status).toEqual(200);
+  it(
+    'retrieves actions taken against a case',
+    async () => {
+      const caseName = `auditTestCase${randomSuffix()}`;
 
-    const getResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${caseUlid}/details`,
-      'GET',
-      idToken,
-      creds
-    );
-    expect(getResponse.status).toEqual(200);
+      const startTime = currentSeconds();
+      // ensure separation between the start time and when events roll in
+      await delay(1000);
 
-    const membershipsResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${caseUlid}/userMemberships`,
-      'GET',
-      idToken,
-      creds
-    );
-    expect(membershipsResponse.status).toEqual(200);
-
-    // Create a case user with certain permissions, and have them try
-    // to do something outside the permissions, should show up as failure in the
-    // audit log
-    const failedCaseUser = `caseAuditFailedListFilesTestUser${suffix}`;
-    const firstInvitePermissions = [CaseAction.CASE_AUDIT];
-    // Invite user
-    const inviteeUlid = await inviteUserToCase(
-      deaApiUrl,
-      cognitoHelper,
-      caseUlid,
-      firstInvitePermissions,
-      idToken,
-      creds,
-      failedCaseUser,
-      true
-    );
-
-    // Modify User Permissions
-    const modifyInvitePermissions = [CaseAction.VIEW_CASE_DETAILS, CaseAction.CASE_AUDIT, CaseAction.UPLOAD];
-    const modifyResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${caseUlid}/users/${inviteeUlid}/memberships`,
-      'PUT',
-      idToken,
-      creds,
-      {
-        userUlid: inviteeUlid,
-        caseUlid: caseUlid,
-        actions: modifyInvitePermissions,
-      }
-    );
-    expect(modifyResponse.status).toEqual(200);
-
-    // Remove User Permissions
-    await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${caseUlid}/users/${inviteeUlid}/memberships`,
-      'DELETE',
-      idToken,
-      creds,
-      {
-        userUlid: inviteeUlid,
-        caseUlid: caseUlid,
-      }
-    );
-
-    // Try to call a case API see that it fails.
-    // The three case-invite APIs should show up in the case Audit with the actions taken
-    const [inviteeCreds, inviteeToken] = await cognitoHelper.getCredentialsForUser(failedCaseUser);
-    await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/files`, 'GET', inviteeToken, inviteeCreds);
-
-    // Add another user as an owner, see that the targetUserId is populated in the audit log
-    const createCaseOwnerResp = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${caseUlid}/owner`,
-      'POST',
-      managerToken,
-      managerCreds,
-      {
-        userUlid: inviteeUlid,
-        caseUlid: caseUlid,
-      }
-    );
-    expect(createCaseOwnerResp.status).toEqual(200);
-
-    // allow some time so the events show up in CW logs
-    await delay(5 * 60 * 1000);
-    const endTime = Date.now();
-
-    let csvData: string | undefined;
-    let queryRetries = 10;
-    while (!csvData && queryRetries > 0) {
-      const startAuditQueryResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${caseUlid}/audit?from=${startTime}&to=${endTime}`,
-        'POST',
+      const createdCase = await createCaseSuccess(
+        deaApiUrl,
+        {
+          name: caseName,
+          description: 'this is a description',
+        },
         idToken,
         creds
       );
+      const caseUlid = createdCase.ulid ?? fail();
+      caseIdsToDelete.push(caseUlid);
 
-      expect(startAuditQueryResponse.status).toEqual(200);
-      const auditId: string = startAuditQueryResponse.data.auditId;
-      Joi.assert(auditId, joiUlid);
+      const updateResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${caseUlid}/details`,
+        'PUT',
+        idToken,
+        creds,
+        {
+          ulid: caseUlid,
+          name: caseName,
+          description: 'An updated description',
+        }
+      );
+      expect(updateResponse.status).toEqual(200);
 
-      let retries = 5;
-      await delay(5000);
-      let getQueryReponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${caseUlid}/audit/${auditId}/csv`,
+      const getResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${caseUlid}/details`,
         'GET',
         idToken,
         creds
       );
-      while (getQueryReponse.data.status && retries > 0) {
-        if (getQueryReponse.data.status === 'Complete') {
-          break;
-        }
-        --retries;
-        if (getQueryReponse.status !== 200) {
-          fail();
-        }
-        await delay(2000);
+      expect(getResponse.status).toEqual(200);
 
-        getQueryReponse = await callDeaAPIWithCreds(
-          `${deaApiUrl}cases/${caseUlid}/audit/${auditId}/csv`,
-          'GET',
-          idToken,
-          creds
-        );
+      const membershipsResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${caseUlid}/userMemberships`,
+        'GET',
+        idToken,
+        creds
+      );
+      expect(membershipsResponse.status).toEqual(200);
+
+      // Create a case user with certain permissions, and have them try
+      // to do something outside the permissions, should show up as failure in the
+      // audit log
+      const failedCaseUser = `caseAuditFailedListFilesTestUser${suffix}`;
+      const firstInvitePermissions = [CaseAction.CASE_AUDIT];
+      // Invite user
+      const inviteeUlid = await inviteUserToCase(
+        deaApiUrl,
+        cognitoHelper,
+        caseUlid,
+        firstInvitePermissions,
+        idToken,
+        creds,
+        failedCaseUser,
+        true
+      );
+
+      // Modify User Permissions
+      const modifyInvitePermissions = [
+        CaseAction.VIEW_CASE_DETAILS,
+        CaseAction.CASE_AUDIT,
+        CaseAction.UPLOAD,
+      ];
+      const modifyResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${caseUlid}/users/${inviteeUlid}/memberships`,
+        'PUT',
+        idToken,
+        creds,
+        {
+          userUlid: inviteeUlid,
+          caseUlid: caseUlid,
+          actions: modifyInvitePermissions,
+        }
+      );
+      expect(modifyResponse.status).toEqual(200);
+
+      // Remove User Permissions
+      await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${caseUlid}/users/${inviteeUlid}/memberships`,
+        'DELETE',
+        idToken,
+        creds,
+        {
+          userUlid: inviteeUlid,
+          caseUlid: caseUlid,
+        }
+      );
+
+      // Try to call a case API see that it fails.
+      // The three case-invite APIs should show up in the case Audit with the actions taken
+      const [inviteeCreds, inviteeToken] = await cognitoHelper.getCredentialsForUser(failedCaseUser);
+      await callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/files`, 'GET', inviteeToken, inviteeCreds);
+
+      // Add another user as an owner, see that the targetUserId is populated in the audit log
+      const createCaseOwnerResp = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${caseUlid}/owner`,
+        'POST',
+        managerToken,
+        managerCreds,
+        {
+          userUlid: inviteeUlid,
+          caseUlid: caseUlid,
+        }
+      );
+      expect(createCaseOwnerResp.status).toEqual(200);
+      // add some buffer to the end time
+      const endTime = currentSeconds() + 2;
+
+      //wait a moment so the next event falls outside of our end time
+      await delay(3_000);
+      // this event will not show up in the audit due to occurring after our specified endtime
+      const outOfScopeEventResponse = await callDeaAPIWithCreds(
+        `${deaApiUrl}cases/${caseUlid}/details`,
+        'GET',
+        idToken,
+        creds
+      );
+      expect(outOfScopeEventResponse.status).toEqual(200);
+
+      // wait for data plane events
+      await delay(15 * MINUTES_TO_MILLISECONDS);
+
+      const entries = await getAuditQueryResults(
+        `${deaApiUrl}cases/${caseUlid}/audit`,
+        `?from=${startTime}&to=${endTime}`,
+        idToken,
+        creds,
+        [
+          AuditEventType.CREATE_CASE,
+          AuditEventType.UPDATE_CASE_DETAILS,
+          AuditEventType.GET_CASE_DETAILS,
+          AuditEventType.GET_USERS_FROM_CASE,
+          AuditEventType.GET_CASE_FILES,
+          AuditEventType.INVITE_USER_TO_CASE,
+          AuditEventType.REMOVE_USER_FROM_CASE,
+          AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE,
+          AuditEventType.CREATE_CASE_OWNER,
+        ],
+        [
+          { regex: /dynamodb.amazonaws.com/g, count: 8 },
+          { regex: /TransactWriteItems/g, count: 2 },
+          { regex: /GetItem/g, count: 6 },
+        ]
+      );
+
+      const cloudtrailEntries = entries.filter((entry) => entry.Event_Type === 'AwsApiCall');
+      const applicationEntries = entries.filter((entry) => entry.Event_Type !== 'AwsApiCall');
+
+      // CreateCase
+      // DB - TransactWriteItems
+
+      // UpdateCaseDetails
+      // DB - GetItem
+      // DB - TransactWriteItems
+      // DB - GetItem
+
+      // GetCaseDetails
+      // DB - GetItem
+
+      // GetUsersFromCase
+      // DB - GetItem
+      // DB - Query
+
+      // InviteUserToCase
+      // DB - GetItem
+
+      // ModifyUserCasePermissions
+
+      // RemoveUserFromCase
+
+      // GetCaseFiles - failure
+
+      // CreateCaseOwner
+
+      const expectedSuccessDetails = {
+        expectedCaseUlid: caseUlid,
+        expectedFileHash: '',
+        expectedFileUlid: '',
+        expectedResult: 'success',
+      };
+      const createCaseEntry = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.CREATE_CASE
+      );
+      verifyAuditEntry(createCaseEntry, AuditEventType.CREATE_CASE, testUser, expectedSuccessDetails);
+
+      const updateCaseDetails = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.UPDATE_CASE_DETAILS
+      );
+      verifyAuditEntry(
+        updateCaseDetails,
+        AuditEventType.UPDATE_CASE_DETAILS,
+        testUser,
+        expectedSuccessDetails
+      );
+
+      const getCaseDetailsEntry = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.GET_CASE_DETAILS
+      );
+      verifyAuditEntry(
+        getCaseDetailsEntry,
+        AuditEventType.GET_CASE_DETAILS,
+        testUser,
+        expectedSuccessDetails
+      );
+
+      const getUsersFromCaseEntry = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.GET_USERS_FROM_CASE
+      );
+      verifyAuditEntry(
+        getUsersFromCaseEntry,
+        AuditEventType.GET_USERS_FROM_CASE,
+        testUser,
+        expectedSuccessDetails
+      );
+
+      const failedListCaseFilesEntry = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.GET_CASE_FILES && entry.Username === failedCaseUser
+      );
+      if (!failedListCaseFilesEntry) {
+        fail();
+      }
+      verifyAuditEntry(failedListCaseFilesEntry, AuditEventType.GET_CASE_FILES, failedCaseUser, {
+        expectedResult: 'failure',
+        expectedFileHash: '',
+        expectedFileUlid: '',
+        expectedCaseUlid: caseUlid,
+      });
+
+      const caseInviteEntry = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.INVITE_USER_TO_CASE
+      );
+      if (!caseInviteEntry) {
+        fail();
+      }
+      verifyAuditEntry(caseInviteEntry, AuditEventType.INVITE_USER_TO_CASE, testUser, expectedSuccessDetails);
+
+      expect(caseInviteEntry.Target_User_ID).toStrictEqual(failedListCaseFilesEntry.DEA_User_ID);
+      expect(caseInviteEntry.Case_Actions).toStrictEqual(firstInvitePermissions.join(':'));
+
+      const modifyInviteEntry = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE
+      );
+      if (!modifyInviteEntry) {
+        fail();
       }
 
-      if (getQueryReponse.data && !getQueryReponse.data.status) {
-        const potentialCsvData: string = getQueryReponse.data;
+      verifyAuditEntry(
+        modifyInviteEntry,
+        AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE,
+        testUser,
+        expectedSuccessDetails
+      );
+      expect(modifyInviteEntry.Target_User_ID).toStrictEqual(failedListCaseFilesEntry.DEA_User_ID);
+      expect(modifyInviteEntry.Case_Actions).toStrictEqual(modifyInvitePermissions.join(':'));
 
-        const dynamoMatch = potentialCsvData.match(/dynamodb.amazonaws.com/g);
-        const transactItemMatch = potentialCsvData.match(/TransactWriteItems/g);
-        const getItemMatch = potentialCsvData.match(/GetItem/g);
-
-        const includesAllDeaEvents =
-          potentialCsvData.includes(AuditEventType.CREATE_CASE) &&
-          potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
-          potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
-          potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE) &&
-          potentialCsvData.includes(AuditEventType.GET_CASE_FILES) &&
-          potentialCsvData.includes(AuditEventType.INVITE_USER_TO_CASE) &&
-          potentialCsvData.includes(AuditEventType.REMOVE_USER_FROM_CASE) &&
-          potentialCsvData.includes(AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE) &&
-          potentialCsvData.includes(AuditEventType.CREATE_CASE_OWNER);
-
-        if (
-          includesAllDeaEvents &&
-          dynamoMatch &&
-          dynamoMatch.length >= 7 &&
-          transactItemMatch &&
-          transactItemMatch.length == 2 &&
-          getItemMatch &&
-          getItemMatch.length >= 5
-        ) {
-          csvData = getQueryReponse.data;
-        } else {
-          await delay(10000);
-        }
+      const removeInviteEntry = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.REMOVE_USER_FROM_CASE
+      );
+      if (!removeInviteEntry) {
+        fail();
       }
-      --queryRetries;
-    }
 
-    expect(csvData).toBeDefined();
+      verifyAuditEntry(
+        removeInviteEntry,
+        AuditEventType.REMOVE_USER_FROM_CASE,
+        testUser,
+        expectedSuccessDetails
+      );
+      expect(removeInviteEntry.Target_User_ID).toStrictEqual(failedListCaseFilesEntry.DEA_User_ID);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const entries = parseCaseAuditCsv(csvData!).filter(
-      (entry) =>
-        entry.eventType != AuditEventType.GET_CASE_AUDIT &&
-        entry.eventType != AuditEventType.REQUEST_CASE_AUDIT &&
-        entry.eventDetails != 'StartQuery'
-    );
-
-    // 1. CreateCase
-    // 2. TransactWriteItems
-    // 3. UpdateCaseDetails
-    // 4. DB Get
-    // 5. TransactWriteItems
-    // 6. DB Get
-    // 7. GetCaseDetails
-    // 8. DB Get
-    // 9. GetUsersFromCase
-    // 10. DB Get
-    // 11. GetCaseDeatils (failure, unauthorized user)
-
-    function verifyCaseAuditEntry(
-      entry: CaseAuditEventEntry | undefined,
-      expectedEventType: AuditEventType,
-      expectedUsername: string,
-      shouldSucceed = true
-    ) {
-      if (!entry) {
-        fail('Entry does not exist');
+      const createCaseOwnerEntry = applicationEntries.find(
+        (entry) => entry.Event_Type === AuditEventType.CREATE_CASE_OWNER
+      );
+      if (!createCaseOwnerEntry) {
+        fail();
       }
-      expect(entry.eventType).toStrictEqual(expectedEventType);
-      expect(entry.result).toStrictEqual(shouldSucceed);
-      expect(entry.username).toStrictEqual(expectedUsername);
-      expect(entry.caseId).toStrictEqual(caseUlid);
-    }
 
-    const createCaseEntry = entries.find((entry) => entry.eventType === AuditEventType.CREATE_CASE);
-    verifyCaseAuditEntry(createCaseEntry, AuditEventType.CREATE_CASE, testUser);
+      verifyAuditEntry(
+        createCaseOwnerEntry,
+        AuditEventType.CREATE_CASE_OWNER,
+        unauthorizedUser,
+        expectedSuccessDetails
+      );
+      expect(createCaseOwnerEntry.Target_User_ID).toStrictEqual(failedListCaseFilesEntry.DEA_User_ID);
 
-    const updateCaseDetails = entries.find((entry) => entry.eventType === AuditEventType.UPDATE_CASE_DETAILS);
-    verifyCaseAuditEntry(updateCaseDetails, AuditEventType.UPDATE_CASE_DETAILS, testUser);
+      expect(applicationEntries.length).toBe(9);
 
-    const getCaseDetailsEntry = entries.find((entry) => entry.eventType === AuditEventType.GET_CASE_DETAILS);
-    verifyCaseAuditEntry(getCaseDetailsEntry, AuditEventType.GET_CASE_DETAILS, testUser);
+      // We use toBeGreaterThanOrEqual on some dynamo events because we may have some additional entries coming in from the Audit query requests
+      const dbGetItems = cloudtrailEntries.filter((entry) => entry.Request_Path === 'GetItem');
+      expect(dbGetItems.length).toBeGreaterThanOrEqual(6);
+      const dbTransactItems = cloudtrailEntries.filter(
+        (entry) => entry.Request_Path === 'TransactWriteItems'
+      );
+      expect(dbTransactItems).toHaveLength(2);
+      const dbQueryItems = cloudtrailEntries.filter((entry) => entry.Request_Path === 'Query');
+      expect(dbQueryItems).toHaveLength(1);
 
-    const getUsersFromCaseEntry = entries.find(
-      (entry) => entry.eventType === AuditEventType.GET_USERS_FROM_CASE
-    );
-    verifyCaseAuditEntry(getUsersFromCaseEntry, AuditEventType.GET_USERS_FROM_CASE, testUser);
+      expect(cloudtrailEntries.length).toBeGreaterThanOrEqual(9);
 
-    const failedListCaseFilesEntry = entries.find(
-      (entry) => entry.eventType === AuditEventType.GET_CASE_FILES && entry.username === failedCaseUser
-    );
-    verifyCaseAuditEntry(failedListCaseFilesEntry, AuditEventType.GET_CASE_FILES, failedCaseUser, false);
-
-    const caseInviteEntry = entries.find((entry) => entry.eventType === AuditEventType.INVITE_USER_TO_CASE);
-    verifyCaseAuditEntry(caseInviteEntry, AuditEventType.INVITE_USER_TO_CASE, testUser);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(caseInviteEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(caseInviteEntry!.caseActions).toStrictEqual(firstInvitePermissions.join(':'));
-
-    const modifyInviteEntry = entries.find(
-      (entry) => entry.eventType === AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE
-    );
-    verifyCaseAuditEntry(modifyInviteEntry, AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE, testUser);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(modifyInviteEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(modifyInviteEntry!.caseActions).toStrictEqual(modifyInvitePermissions.join(':'));
-
-    const removeInviteEntry = entries.find(
-      (entry) => entry.eventType === AuditEventType.REMOVE_USER_FROM_CASE
-    );
-    verifyCaseAuditEntry(removeInviteEntry, AuditEventType.REMOVE_USER_FROM_CASE, testUser);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(removeInviteEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
-
-    const createCaseOwnerEntry = entries.find(
-      (entry) => entry.eventType === AuditEventType.CREATE_CASE_OWNER
-    );
-    verifyCaseAuditEntry(createCaseOwnerEntry, AuditEventType.CREATE_CASE_OWNER, unauthorizedUser);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(createCaseOwnerEntry!.targetUser).toStrictEqual(failedListCaseFilesEntry!.userUlid);
-
-    expect(entries.length).toBe(9);
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const cloudtrailEntries = parseTrailEventsFromAuditQuery(csvData!);
-
-    const dbGetItems = cloudtrailEntries.filter((entry) => entry.eventType === 'GetItem');
-    expect(dbGetItems.length).toBeGreaterThanOrEqual(5);
-    const dbTransactItems = cloudtrailEntries.filter((entry) => entry.eventType === 'TransactWriteItems');
-    expect(dbTransactItems).toHaveLength(2);
-
-    expect(cloudtrailEntries.length).toBeGreaterThanOrEqual(7);
-  }, 1800000);
+      const beforeStartTimeEntry = entries.find(
+        (entry) => Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) < startTime
+      );
+      expect(beforeStartTimeEntry).toBeUndefined();
+      const afterEndTimeEntry = entries.find(
+        (entry) => Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) > endTime
+      );
+      expect(afterEndTimeEntry).toBeUndefined();
+      const withinStartAndEndEntry = entries.find(
+        (entry) =>
+          Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) >= startTime &&
+          Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) <= endTime
+      );
+      expect(withinStartAndEndEntry).toBeDefined();
+    },
+    45 * MINUTES_TO_MILLISECONDS
+  );
 
   it('should prevent retrieval by an unauthorized user', async () => {
     const caseName = `auditTestCase${randomSuffix()}`;

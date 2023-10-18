@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-main",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Example infrastructure to deploy express app",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/tree/main/",
   "repository": {
@@ -17,6 +17,7 @@
   },
   "scripts": {
     "add-license-header": "license-check-and-add add -f license-add-config.json",
+    "audit-redrive": ". ../common/scripts/setRedriveEnv.sh && npx ts-node ../dea-app/src/app/migrations/audit-redrive-command.ts",
     "audit:only": "",
     "build": "heft build",
     "build:clean": "heft build --clean",
@@ -24,6 +25,7 @@
     "cdk": "cdk",
     "cdk:bootstrap": "cdk bootstrap",
     "cdk:deploy": "cdk deploy --all --require-approval never --outputs-file cdk-outputs.json",
+    "cdk:destroy": "../common/scripts/preDestroy.sh && cdk destroy --force",
     "cdk:synth": "cdk synth",
     "check-license-header": "license-check-and-add check -f license-add-config.json",
     "e2e:only": "",
@@ -47,19 +49,20 @@
     "version:patch": "npm version patch"
   },
   "dependencies": {
+    "@aws-cdk/aws-glue-alpha": "~2.86.0-alpha.0",
     "@aws/dea-backend": "workspace:*",
     "@aws/dea-ui": "workspace:*",
     "@aws/dea-ui-infrastructure": "workspace:*",
-    "aws-cdk": "2.85.0",
-    "aws-cdk-lib": "2.85.0",
+    "aws-cdk": "2.88.0",
+    "aws-cdk-lib": "2.88.0",
     "aws-lambda": "^1.0.7",
-    "constructs": "10.2.55",
+    "constructs": "10.2.69",
     "dynamodb-onetable": "2.5.1",
     "lodash": "^4.17.21",
     "source-map-support": "^0.5.16"
   },
   "devDependencies": {
-    "@rushstack/eslint-config": "^3.3.2",
+    "@rushstack/eslint-config": "^3.3.3",
     "@rushstack/heft": "^0.50.0",
     "@rushstack/heft-jest-plugin": "^0.5.5",
     "@rushstack/heft-node-rig": "^1.12.5",
@@ -71,8 +74,8 @@
     "@typescript-eslint/parser": "~5.60.0",
     "axios": "^0.27.1",
     "esbuild": "^0.17.13",
-    "eslint": "^8.43.0",
-    "eslint-plugin-import": "^2.27.5",
+    "eslint": "^8.47.0",
+    "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-security": "^1.7.1",
     "istanbul-badges-readme": "1.8.5",
     "jest": "^29.5.0",
@@ -82,6 +85,7 @@
     "npm-package-json-lint-config-default": "^5.0.0",
     "sort-package-json": "^2.4.1",
     "ts-mockito": "~2.6.1",
+    "ts-node": "^10.4.0",
     "typescript": "^4.5.2"
   }
 }

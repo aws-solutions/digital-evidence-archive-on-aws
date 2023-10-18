@@ -12,6 +12,7 @@ export interface ApplicationResources {
   kmsKey: Key;
   datasetsBucket: Bucket;
   accessLogsBucket: Bucket;
+  auditQueryBucket: Bucket;
 }
 
 export const restrictResourcePolicies = (
@@ -20,7 +21,8 @@ export const restrictResourcePolicies = (
   batchDeleteRole: Role,
   batchDeleteLambdaRole: Role,
   customResourceRole: Role,
-  datasetsRole: Role
+  datasetsRole: Role,
+  _auditDownloadRole: Role
 ) => {
   if (!deaConfig.isTestStack()) {
     const datasetsObjectActions = [
@@ -95,6 +97,7 @@ export const restrictResourcePolicies = (
         sid: 'datasets-deny-bucket-policy',
       })
     );
+    // deny dataset actions for everyone else
     resources.datasetsBucket.addToResourcePolicy(
       new PolicyStatement({
         effect: Effect.DENY,
@@ -106,6 +109,7 @@ export const restrictResourcePolicies = (
       })
     );
 
+    // allow cors actions for the custom resource role
     resources.datasetsBucket.addToResourcePolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
@@ -116,7 +120,7 @@ export const restrictResourcePolicies = (
         sid: 'datasets-custom-resource-policy',
       })
     );
-    // deny everything else on the datasets bucket for the application role
+    // deny everything else on the datasets bucket for the custom resource role
     resources.datasetsBucket.addToResourcePolicy(
       new PolicyStatement({
         effect: Effect.DENY,

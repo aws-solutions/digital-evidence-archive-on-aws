@@ -45,7 +45,7 @@ export const getQueryParam = (
   event: APIGatewayProxyEvent,
   paramName: string,
   defaultValue: string,
-  validationSchema: Joi.StringSchema | Joi.NumberSchema
+  validationSchema: Joi.AnySchema
 ): string => {
   let paramValue = defaultValue;
   if (event.queryStringParameters) {
@@ -122,8 +122,9 @@ export const getRequiredHeader = (event: APIGatewayProxyEvent, headerName: strin
 };
 
 export const getCookieValue = (event: APIGatewayProxyEvent, cookieName: string): string | null => {
+  const cookie = event.headers['cookie'] ? event.headers['cookie'] : event.headers['Cookie'];
   return (
-    event.headers['cookie']
+    cookie
       ?.split(';')
       .map((value) => value.trim())
       .filter((cookie) => cookie.startsWith(`${cookieName}=`))

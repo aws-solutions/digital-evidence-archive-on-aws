@@ -16,4 +16,8 @@ export const testEnv = {
   userPoolId: process.env.USER_POOL_ID ?? throwUnset('USER_POOL_ID'),
   clientId: process.env.USER_POOL_CLIENT_ID ?? throwUnset('USER_POOL_CLIENT_ID'),
   datasetsBucketName: process.env.DATASETS_BUCKET_NAME ?? throwUnset('DATASETS_BUCKET_NAME'),
+  auditBucketName: process.env.AUDIT_BUCKET_NAME ?? throwUnset('AUDIT_BUCKET_NAME'),
+  glueDBName: process.env.GLUE_DB ?? throwUnset('GLUE_DB'),
+  glueTableName: process.env.GLUE_TABLE ?? throwUnset('GLUE_TABLE'),
+  athenaWorkgroupName: process.env.ATHENA_WORKGROUP_NAME ?? throwUnset('ATHENA_WORKGROUP_NAME'),
 };

@@ -46,12 +46,13 @@ export default function Navigation({ initialHref }: NavigationProps): JSX.Elemen
   const downloadSystemAudit = async () => {
     setDownloadInProgress(true);
     try {
-      const csv = await getSystemAuditCSV();
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const fileUrl = window.URL.createObjectURL(blob);
+      const csvDownloadUrl = await getSystemAuditCSV();
+      const downloadDate = new Date();
       const alink = document.createElement('a');
-      alink.href = fileUrl;
-      alink.download = `System_Audit_${new Date().toLocaleString()}`;
+      alink.href = csvDownloadUrl;
+      alink.download = `SystemAudit_${downloadDate.getFullYear()}_${
+        downloadDate.getMonth() + 1
+      }_${downloadDate.getDate()}_H${downloadDate.getHours()}.csv`;
       alink.click();
     } catch (e) {
       pushNotification('error', auditLogLabels.errorLabel);
