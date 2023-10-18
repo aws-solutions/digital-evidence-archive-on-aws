@@ -212,6 +212,41 @@ export const DeaSchema = {
       created: { type: Date },
       createdBy: { type: String, validate: ulidRegex, required: true },
     },
+    DataVaultFile: {
+      // Get file or folder by ulid
+      PK: { type: String, value: 'DATAVAULT#${dataVaultUlid}#', required: true },
+      SK: { type: String, value: 'FILE#${ulid}#', required: true },
+
+      // For UI folder navigation. Get all files and folders in given folder path
+      GSI1PK: { type: String, value: 'DATAVAULT#${dataVaultUlid}#${filePath}#', required: true },
+      GSI1SK: { type: String, value: 'FILE#${fileName}#', required: true },
+
+      // Get specific file or folder by full path
+      GSI2PK: {
+        type: String,
+        value: 'DATAVAULT#${dataVaultUlid}#${filePath}${fileName}#',
+        required: true,
+        unique: true,
+      },
+      GSI2SK: { type: String, value: 'FILE#${isFile}#', required: true },
+
+      ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
+      fileName: { type: String, required: true, validate: allButDisallowed },
+      filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // relative path at upload time.
+      dataVaultUlid: { type: String, validate: ulidRegex, required: true },
+      createdBy: { type: String, validate: ulidRegex, required: true },
+      isFile: { type: Boolean, required: true },
+      fileSizeBytes: { type: Number, required: true },
+      versionId: { type: String },
+      sha256Hash: { type: String },
+      contentType: { type: String },
+      fileS3Key: { type: String, required: true },
+      executionId: { type: String, required: true },
+
+      //managed by onetable - but included for entity generation
+      created: { type: Date },
+      updated: { type: Date },
+    },
   } as const,
   params: {
     isoDates: true,

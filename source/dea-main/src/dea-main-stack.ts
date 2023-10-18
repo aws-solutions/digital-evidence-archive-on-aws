@@ -96,6 +96,7 @@ export class DeaMainStack extends cdk.Stack {
     const deaEventHandlers = new DeaEventHandlers(this, 'DeaEventHandlers', {
       deaTableArn: backendConstruct.deaTable.tableArn,
       deaDatasetsBucketArn: backendConstruct.datasetsBucket.bucketArn,
+      dataSyncLogsBucket: backendConstruct.dataSyncLogsBucket,
       kmsKey,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
@@ -114,6 +115,8 @@ export class DeaMainStack extends cdk.Stack {
       deaTableName: backendConstruct.deaTable.tableName,
       deaDatasetsBucket: backendConstruct.datasetsBucket,
       deaDatasetsBucketDataSyncRoleArn: backendConstruct.datasetsDataSyncRole.roleArn,
+      deaDataSyncReportsBucket: backendConstruct.dataSyncLogsBucket,
+      deaDataSyncReportsRoleArn: backendConstruct.dataSyncLogsBucketRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,

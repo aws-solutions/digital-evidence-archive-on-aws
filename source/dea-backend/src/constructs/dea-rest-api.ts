@@ -66,6 +66,8 @@ interface DeaRestApiProps {
   deaDatasetsBucket: Bucket;
   deaDatasetsBucketDataSyncRoleArn: string;
   s3BatchDeleteCaseFileRoleArn: string;
+  deaDataSyncReportsBucket: Bucket;
+  deaDataSyncReportsRoleArn: string;
   deaAuditLogArn: string;
   deaTrailLogArn: string;
   kmsKey: Key;
@@ -105,6 +107,7 @@ export class DeaRestApiConstruct extends Construct {
       props.s3BatchDeleteCaseFileRoleArn,
       props.athenaConfig,
       props.deaDatasetsBucketDataSyncRoleArn,
+      props.deaDataSyncReportsRoleArn
     );
     props.athenaConfig.athenaAuditBucket.grantRead(this.lambdaBaseRole);
 
@@ -121,6 +124,8 @@ export class DeaRestApiConstruct extends Construct {
     props.lambdaEnv['AUDIT_DOWNLOAD_ROLE_ARN'] = this.auditDownloadRole.roleArn;
     props.lambdaEnv['KEY_ARN'] = props.kmsKey.keyArn;
     props.lambdaEnv['DATASYNC_ROLE'] = props.deaDatasetsBucketDataSyncRoleArn;
+    props.lambdaEnv['DATASYNC_REPORTS_BUCKET_NAME'] = props.deaDataSyncReportsBucket.bucketName;
+    props.lambdaEnv['DATASYNC_REPORTS_ROLE'] = props.deaDataSyncReportsRoleArn;
 
     this.customResourceRole = new Role(this, 'custom-resource-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -529,6 +534,7 @@ export class DeaRestApiConstruct extends Construct {
     s3BatchDeleteCaseFileRoleArn: string,
     athenaConfig: AthenaConfig,
     deaDatasetsBucketDataSyncRoleArn: string,
+    deaDataSyncReportsRoleArn: string
   ): Role {
     const STAGE = deaConfig.stage();
 
@@ -612,7 +618,11 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: [s3BatchDeleteCaseFileRoleArn, deaDatasetsBucketDataSyncRoleArn],
+        resources: [
+          s3BatchDeleteCaseFileRoleArn,
+          deaDatasetsBucketDataSyncRoleArn,
+          deaDataSyncReportsRoleArn,
+        ],
       })
     );
 

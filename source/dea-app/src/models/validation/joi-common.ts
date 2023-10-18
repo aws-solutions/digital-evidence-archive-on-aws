@@ -33,6 +33,10 @@ export const ulidRegex = new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$');
 
 export const taskIdRegex = new RegExp('^task-[0-9a-z]{17}$');
 
+export const taskReportRegex = new RegExp(
+  'Detailed-Reports/task-[^/]+/exec-[^/]+/exec-[^/]+.files-verified-[^/]+'
+);
+
 export const jtiRegex = new RegExp('^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$');
 
 export const s3Identifier = Joi.string().pattern(htmlSafeCharsRegex).messages(customMessages);
@@ -102,6 +106,8 @@ export const ttlJoi = Joi.number().min(1500000000).max(5000000000).required();
 export const jti = Joi.string().pattern(jtiRegex).required().messages(customMessages);
 
 export const taskIdJoi = Joi.string().pattern(taskIdRegex).required();
+
+export const taskReportJoi = Joi.string().pattern(taskReportRegex).required();
 
 // https://github.com/odomojuli/RegExAPI
 export const authCode = Joi.string()

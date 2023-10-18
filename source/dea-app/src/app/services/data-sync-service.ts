@@ -6,16 +6,22 @@
 import {
   CreateLocationS3Command,
   CreateTaskCommand,
+  CreateTaskCommandInput,
   DeleteLocationCommand,
   DeleteTaskCommand,
   DescribeLocationS3Command,
   DescribeTaskCommand,
   ListTasksCommand,
+  ReportDestination,
+  ReportDestinationS3,
+  ReportLevel,
+  ReportOutputType,
   StartTaskExecutionCommand,
+  VerifyMode,
 } from '@aws-sdk/client-datasync';
 import { DeaDataSyncTask } from '../../models/data-sync-task';
 import { DataSyncProvider } from '../../storage/dataSync';
-import { ValidationError } from '../exceptions/validation-exception';
+import { retry } from './service-helpers';
 
 export const createS3Location = async (
   destinationFolder: string,
@@ -30,11 +36,18 @@ export const createS3Location = async (
   };
 
   const command = new CreateLocationS3Command(locationSettings);
-  const response = await dataSyncProvider.dataSyncClient.send(command);
+  const response = await retry(async () => {
+    const response = await dataSyncProvider.dataSyncClient.send(command);
+    return response;
+  });
+  if (!response) {
+    throw new Error('Location creation failed');
+  }
+
   if (response.LocationArn) {
     return response.LocationArn;
   } else {
-    throw new ValidationError('Location creation failed');
+    throw new Error('Location creation failed');
   }
 };
 
@@ -46,23 +59,43 @@ export const createDatasyncTask = async (
   destinationLocationArn: string,
   dataSyncProvider: DataSyncProvider
 ): Promise<string> => {
-  const taskSettings = {
-    name,
+  const taskReportS3: ReportDestinationS3 = {
+    S3BucketArn: dataSyncProvider.dataSyncReportsBucketArn,
+    BucketAccessRoleArn: dataSyncProvider.dataSyncReportsRoleArn,
+  };
+
+  const taskReportDestination: ReportDestination = {
+    S3: taskReportS3,
+  };
+
+  const taskSettings: CreateTaskCommandInput = {
+    Name: name,
     SourceLocationArn: sourceLocationArn,
     DestinationLocationArn: destinationLocationArn,
-    options: {
-      VerifyMode: 'ONLY_FILES_TRANSFERRED',
-      OverwriteMode: 'NEVER',
+    Options: {
+      VerifyMode: VerifyMode.ONLY_FILES_TRANSFERRED,
+      OverwriteMode: 'ALWAYS',
+    },
+    TaskReportConfig: {
+      ReportLevel: ReportLevel.SUCCESSES_AND_ERRORS,
+      OutputType: ReportOutputType.STANDARD,
+      Destination: taskReportDestination,
     },
   };
 
   const command = new CreateTaskCommand(taskSettings);
 
-  const response = await dataSyncProvider.dataSyncClient.send(command);
+  const response = await retry(async () => {
+    const response = await dataSyncProvider.dataSyncClient.send(command);
+    return response;
+  });
+  if (!response) {
+    throw new Error('Task creation failed');
+  }
   if (response.TaskArn) {
     return response.TaskArn;
   } else {
-    throw new ValidationError('Task creation failed');
+    throw new Error('Task creation failed');
   }
 };
 
@@ -70,7 +103,13 @@ export const listDatasyncTasks = async (dataSyncProvider: DataSyncProvider) => {
   // List all tasks
   const listTasksCommand = new ListTasksCommand({});
 
-  const listTasksResponse = await dataSyncProvider.dataSyncClient.send(listTasksCommand);
+  const listTasksResponse = await retry(async () => {
+    const listTasksResponse = await dataSyncProvider.dataSyncClient.send(listTasksCommand);
+    return listTasksResponse;
+  });
+  if (!listTasksResponse) {
+    throw new Error('Task listing failed');
+  }
   const tasks = listTasksResponse.Tasks || [];
   return tasks;
 };
@@ -83,14 +122,26 @@ export const desrcibeTask = async (
     TaskArn: taskArn,
   });
 
-  const describeTaskResponse = await dataSyncProvider.dataSyncClient.send(describeTaskCommand);
+  const describeTaskResponse = await retry(async () => {
+    const describeTaskResponse = await dataSyncProvider.dataSyncClient.send(describeTaskCommand);
+    return describeTaskResponse;
+  });
+  if (!describeTaskResponse) {
+    throw new Error('Task description failed');
+  }
 
   // Get Destination Location info for DATAVAULT ULID
   const destinationLocationArn = describeTaskResponse.DestinationLocationArn;
   const describeLocationCommand = new DescribeLocationS3Command({
     LocationArn: destinationLocationArn,
   });
-  const describeLocationResponse = await dataSyncProvider.dataSyncClient.send(describeLocationCommand);
+  const describeLocationResponse = await retry(async () => {
+    const describeLocationResponse = await dataSyncProvider.dataSyncClient.send(describeLocationCommand);
+    return describeLocationResponse;
+  });
+  if (!describeLocationResponse) {
+    throw new Error('Location description failed');
+  }
 
   const destinationUri = describeLocationResponse.LocationUri || '';
   const regex = /DATAVAULT([A-Z0-9]{26})/;
@@ -114,6 +165,15 @@ export const desrcibeTask = async (
   return DataSyncTask;
 };
 
+export const describeDatasyncLocation = async (locationArn: string, dataSyncProvider: DataSyncProvider) => {
+  const command = new DescribeLocationS3Command({
+    LocationArn: locationArn,
+  });
+
+  const response = await dataSyncProvider.dataSyncClient.send(command);
+  return response;
+};
+
 export const startDatasyncTaskExecution = async (
   taskArn: string,
   dataSyncProvider: DataSyncProvider
@@ -126,7 +186,7 @@ export const startDatasyncTaskExecution = async (
   if (response.TaskExecutionArn) {
     return response.TaskExecutionArn;
   } else {
-    throw new ValidationError('Task execution failed to start');
+    throw new Error('Task execution failed to start');
   }
 };
 

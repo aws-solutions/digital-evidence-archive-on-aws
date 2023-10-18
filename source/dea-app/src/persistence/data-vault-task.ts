@@ -19,6 +19,22 @@ export const createDataVaultTask = async (
   return dataVaultTaskFromEntity(dataVaultTaskEntity);
 };
 
+export const getDataVaultTask = async (
+  taskId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaDataVaultTask | undefined> => {
+  const dataVaultTaskEntity = await repositoryProvider.DataVaultTaskModel.get({
+    PK: `TASK#${taskId}#`,
+    SK: `TASK#`,
+  });
+
+  if (!dataVaultTaskEntity) {
+    return undefined;
+  }
+
+  return dataVaultTaskFromEntity(dataVaultTaskEntity);
+};
+
 export const listDataVaultTasks = async (
   repositoryProvider: ModelRepositoryProvider,
   dataVaultUlid: string,

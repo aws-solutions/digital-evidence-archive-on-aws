@@ -33,6 +33,8 @@ export class DeaBackendConstruct extends Construct {
   public datasetsBucket: Bucket;
   public accessLogsBucket: Bucket;
   public datasetsDataSyncRole: Role;
+  public dataSyncLogsBucket: Bucket;
+  public dataSyncLogsBucketRole: Role;
 
   public constructor(
     scope: Construct,
@@ -53,6 +55,8 @@ export class DeaBackendConstruct extends Construct {
       datasetsPrefix
     );
     this.datasetsDataSyncRole = this.createDatasetsBucketAccessRole(props.kmsKey);
+    this.dataSyncLogsBucket = this.createDataSyncLogsBucket();
+    this.dataSyncLogsBucketRole = this.createDataSyncLogsBucketRole(this.dataSyncLogsBucket.bucketArn);
 
     props.opsDashboard?.addDynamoTableOperationalComponents(this.deaTable);
 
@@ -220,7 +224,6 @@ export class DeaBackendConstruct extends Construct {
       assumedBy: new ServicePrincipal('datasync.amazonaws.com'),
     });
 
-    // Define your policy statements based on the provided policy
     const policyStatements: PolicyStatement[] = [
       new PolicyStatement({
         actions: ['s3:GetBucketLocation', 's3:ListBucket', 's3:ListBucketMultipartUploads'],
@@ -235,13 +238,14 @@ export class DeaBackendConstruct extends Construct {
           's3:PutObjectTagging',
           's3:GetObjectTagging',
           's3:PutObject',
+          's3:ListObjectsV2',
         ],
         effect: Effect.ALLOW,
         resources: [`${this.datasetsBucket.bucketArn}/*`],
       }),
       new PolicyStatement({
         effect: Effect.ALLOW,
-        actions: ['kms:GenerateDataKey'],
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
         resources: [kmsKey.keyArn],
       }),
       // DataSync stores temporary objects in S3 to facilitate transfers
@@ -260,6 +264,50 @@ export class DeaBackendConstruct extends Construct {
     });
 
     createCfnOutput(this, 'DeaDataSyncRole', {
+      value: role.roleArn,
+    });
+
+    return role;
+  }
+
+  private createDataSyncLogsBucket() {
+    const datasyncLogBucket = new Bucket(this, 'deaDataSyncReportsBucket', {
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+      encryption: BucketEncryption.S3_MANAGED,
+      enforceSSL: true,
+      publicReadAccess: false,
+      removalPolicy: deaConfig.retainPolicy(),
+      autoDeleteObjects: deaConfig.isTestStack(),
+      versioned: false, // https://github.com/awslabs/aws-solutions-constructs/issues/44,
+      objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+    });
+
+    createCfnOutput(this, 'DeaDataSyncReportsBucketName', {
+      value: datasyncLogBucket.bucketName,
+    });
+
+    return datasyncLogBucket;
+  }
+
+  private createDataSyncLogsBucketRole(bucketArn: string) {
+    const role = new Role(this, 'deaDataSyncLogsBucketRole', {
+      assumedBy: new ServicePrincipal('datasync.amazonaws.com'),
+    });
+
+    const policyStatement = new PolicyStatement({
+      actions: ['s3:PutObject'],
+      effect: Effect.ALLOW,
+      resources: [`${bucketArn}/*`],
+      conditions: {
+        StringEquals: {
+          's3:ResourceAccount': Aws.ACCOUNT_ID,
+        },
+      },
+    });
+
+    role.addToPolicy(policyStatement);
+
+    createCfnOutput(this, 'DeaDataSyncReportsRole', {
       value: role.roleArn,
     });
 

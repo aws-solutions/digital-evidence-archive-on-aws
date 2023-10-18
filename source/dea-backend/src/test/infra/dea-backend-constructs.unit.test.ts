@@ -66,6 +66,7 @@ describe('DeaBackend constructs', () => {
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
+      dataSyncLogsBucket: backend.dataSyncLogsBucket,
       deaTableArn: backend.deaTable.tableArn,
       lambdaEnv: {},
       kmsKey: key,
@@ -77,6 +78,8 @@ describe('DeaBackend constructs', () => {
       deaDatasetsBucket: backend.datasetsBucket,
       deaDatasetsBucketDataSyncRoleArn: backend.datasetsDataSyncRole.roleArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
+      deaDataSyncReportsBucket: backend.dataSyncLogsBucket,
+      deaDataSyncReportsRoleArn: backend.dataSyncLogsBucketRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       athenaConfig: {
@@ -165,6 +168,7 @@ describe('DeaBackend constructs', () => {
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
+      dataSyncLogsBucket: backend.dataSyncLogsBucket,
       deaTableArn: backend.deaTable.tableArn,
       lambdaEnv: {},
       kmsKey: key,
@@ -175,6 +179,8 @@ describe('DeaBackend constructs', () => {
       deaTableName: backend.deaTable.tableName,
       deaDatasetsBucket: backend.datasetsBucket,
       deaDatasetsBucketDataSyncRoleArn: backend.datasetsDataSyncRole.roleArn,
+      deaDataSyncReportsBucket: backend.dataSyncLogsBucket,
+      deaDataSyncReportsRoleArn: backend.dataSyncLogsBucketRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
@@ -250,6 +256,7 @@ describe('DeaBackend constructs', () => {
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
+      dataSyncLogsBucket: backend.dataSyncLogsBucket,
       deaTableArn: backend.deaTable.tableArn,
       lambdaEnv: {},
       kmsKey: key,
@@ -261,6 +268,8 @@ describe('DeaBackend constructs', () => {
       deaDatasetsBucket: backend.datasetsBucket,
       deaDatasetsBucketDataSyncRoleArn: backend.datasetsDataSyncRole.roleArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
+      deaDataSyncReportsBucket: backend.dataSyncLogsBucket,
+      deaDataSyncReportsRoleArn: backend.dataSyncLogsBucketRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
@@ -358,6 +367,7 @@ describe('DeaBackend constructs', () => {
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
+      dataSyncLogsBucket: backend.dataSyncLogsBucket,
       deaTableArn: backend.deaTable.tableArn,
       lambdaEnv: {},
       kmsKey: key,
@@ -369,6 +379,8 @@ describe('DeaBackend constructs', () => {
       deaDatasetsBucket: backend.datasetsBucket,
       deaDatasetsBucketDataSyncRoleArn: backend.datasetsDataSyncRole.roleArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
+      deaDataSyncReportsBucket: backend.dataSyncLogsBucket,
+      deaDataSyncReportsRoleArn: backend.dataSyncLogsBucketRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,

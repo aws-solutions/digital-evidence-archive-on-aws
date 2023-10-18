@@ -20,3 +20,5 @@ export AUDIT_LOG_GROUP=$(aws cloudformation list-exports --region $REGION $profi
 export TRAIL_LOG_GROUP=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-trailLogName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
 export FIREHOSE_STREAM_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-firehoseName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
 export DATASYNC_ROLE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaDataSyncRole'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+export DATASYNC_REPORTS_ROLE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaDataSyncReportsRole'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+export DATASYNC_REPORTS_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaDataSyncReportsBucketName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')

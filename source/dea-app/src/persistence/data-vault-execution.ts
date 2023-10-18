@@ -20,6 +20,22 @@ export const createDataVaultExecution = async (
   return dataVaultExecutionFromEntity(dataVaultExecutionEntity);
 };
 
+export const getDataVaultExecution = async (
+  executionId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaDataVaultExecution | undefined> => {
+  const dataVaultExecutionEntity = await repositoryProvider.DataVaultExecutionModel.get({
+    PK: `EXECUTION#${executionId}#`,
+    SK: `EXECUTION#`,
+  });
+
+  if (!dataVaultExecutionEntity) {
+    return undefined;
+  }
+
+  return dataVaultExecutionFromEntity(dataVaultExecutionEntity);
+};
+
 export const listDataVaultExecutions = async (
   repositoryProvider: ModelRepositoryProvider,
   taskId: string,

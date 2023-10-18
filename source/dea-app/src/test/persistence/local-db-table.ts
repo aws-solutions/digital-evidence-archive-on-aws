@@ -36,5 +36,6 @@ export const getTestRepositoryProvider = async (tableName: string): Promise<Mode
     DataVaultModel: table.getModel('DataVault'),
     DataVaultTaskModel: table.getModel('DataVaultTask'),
     DataVaultExecutionModel: table.getModel('DataVaultExecution'),
+    DataVaultFileModel: table.getModel('DataVaultFile'),
   };
 };

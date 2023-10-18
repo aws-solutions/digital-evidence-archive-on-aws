@@ -49,7 +49,7 @@ describe('dea audit trail', () => {
     const template = Template.fromStack(stack);
 
     const auditLogToS3BucketPolicies = 2;
-    template.resourceCountIs('AWS::S3::BucketPolicy', 3 + auditLogToS3BucketPolicies);
+    template.resourceCountIs('AWS::S3::BucketPolicy', 4 + auditLogToS3BucketPolicies);
   });
 
   it('synthesizes with dynamo dataplane events when enabled', () => {

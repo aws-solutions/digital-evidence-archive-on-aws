@@ -9,10 +9,12 @@ import {
   ServiceInputTypes as S3Input,
   ServiceOutputTypes as S3Output,
   DeleteObjectCommand,
+  S3ClientResolvedConfig,
 } from '@aws-sdk/client-s3';
 import { S3ControlClient } from '@aws-sdk/client-s3-control';
 import {
   STSClient,
+  STSClientResolvedConfig,
   ServiceInputTypes as STSInputs,
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
@@ -47,8 +49,8 @@ const INVOCATION_SCHEMA = '1.0';
 
 let repositoryProvider: ModelRepositoryProvider;
 let caseOwner: DeaUser;
-let s3Mock: AwsStub<S3Input, S3Output>;
-let stsMock: AwsStub<STSInputs, STSOutputs>;
+let s3Mock: AwsStub<S3Input, S3Output, S3ClientResolvedConfig>;
+let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 
 describe('S3 batch delete case-file lambda', () => {
   beforeAll(async () => {

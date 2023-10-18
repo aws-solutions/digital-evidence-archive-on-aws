@@ -21,4 +21,7 @@ export const testEnv = {
   glueTableName: process.env.GLUE_TABLE ?? throwUnset('GLUE_TABLE'),
   athenaWorkgroupName: process.env.ATHENA_WORKGROUP_NAME ?? throwUnset('ATHENA_WORKGROUP_NAME'),
   DataSyncRole: process.env.DATASYNC_ROLE ?? throwUnset('DATASYNC_ROLE'),
+  DataSyncReportsRole: process.env.DATASYNC_REPORTS_ROLE ?? throwUnset('DATASYNC_REPORTS_ROLE'),
+  DataSyncReportsBucket:
+    process.env.DATASYNC_REPORTS_BUCKET_NAME ?? throwUnset('DATASYNC_REPORTS_BUCKET_NAME'),
 };

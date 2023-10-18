@@ -37,6 +37,9 @@ export const DataVaultTaskModel: Model<DataVaultTaskType> = deaTable.getModel('D
 export type DataVaultExecutionType = Entity<typeof DeaSchema.models.DataVaultExecution>;
 export const DataVaultExecutionModel: Model<DataVaultExecutionType> = deaTable.getModel('DataVaultExecution');
 
+export type DataVaultFileType = Entity<typeof DeaSchema.models.DataVaultFile>;
+export const DataVaultFileModel: Model<DataVaultFileType> = deaTable.getModel('DataVaultFile');
+
 export interface CaseModelRepositoryProvider {
   CaseModel: Model<CaseType>;
 }
@@ -77,6 +80,10 @@ export interface DataVaultExecutionModelRepositoryProvider {
   DataVaultExecutionModel: Model<DataVaultExecutionType>;
 }
 
+export interface DataVaultFileModelRepositoryProvider {
+  DataVaultFileModel: Model<DataVaultFileType>;
+}
+
 export interface ModelRepositoryProvider
   extends CaseModelRepositoryProvider,
     CaseUserModelRepositoryProvider,
@@ -87,7 +94,8 @@ export interface ModelRepositoryProvider
     AuditJobModelRepositoryProvider,
     DataVaultModelRepositoryProvider,
     DataVaultTaskModelRepositoryProvider,
-    DataVaultExecutionModelRepositoryProvider {
+    DataVaultExecutionModelRepositoryProvider,
+    DataVaultFileModelRepositoryProvider {
   table: Table;
 }
 
@@ -103,4 +111,5 @@ export const defaultProvider: ModelRepositoryProvider = {
   DataVaultModel: DataVaultModel,
   DataVaultTaskModel: DataVaultTaskModel,
   DataVaultExecutionModel: DataVaultExecutionModel,
+  DataVaultFileModel: DataVaultFileModel,
 };

@@ -50,16 +50,12 @@ export const listDataVaults = async (
 
 export const getDataVault = async (
   ulid: string,
-  batch: object | undefined = undefined,
   repositoryProvider: DataVaultModelRepositoryProvider
 ): Promise<DeaDataVault | undefined> => {
-  const dataVaultEntity = await repositoryProvider.DataVaultModel.get(
-    {
-      PK: `DATAVAULT#${ulid}#`,
-      SK: `DATAVAULT#`,
-    },
-    { batch }
-  );
+  const dataVaultEntity = await repositoryProvider.DataVaultModel.get({
+    PK: `DATAVAULT#${ulid}#`,
+    SK: `DATAVAULT#`,
+  });
 
   if (!dataVaultEntity) {
     return dataVaultEntity;
@@ -85,4 +81,22 @@ export const updateDataVault = async (
     }
   );
   return dataVaultFromEntity(newCase);
+};
+
+export const updateDataVaultSize = async (
+  ulid: string,
+  fileSize: number,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaDataVault> => {
+  const dataVaultEntity = await repositoryProvider.DataVaultModel.update(
+    {
+      PK: `DATAVAULT#${ulid}#`,
+      SK: `DATAVAULT#`,
+    },
+    {
+      add: { objectCount: 1, totalSizeBytes: fileSize },
+    }
+  );
+
+  return dataVaultFromEntity(dataVaultEntity);
 };

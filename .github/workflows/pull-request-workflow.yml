@@ -195,6 +195,8 @@ jobs:
           echo "USER_POOL_CLIENT_ID=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-userPoolClientId'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region us-east-1 --query """Exports[?Name == '${STAGE}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
           echo "export DATASYNC_ROLE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DataSyncPermissionsRole'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "export DATASYNC_REPORTS_ROLE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaDataSyncReportsRole'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+          echo "export DATASYNC_REPORTS_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaDataSyncReportsBucketName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js test:noe2e --verbose

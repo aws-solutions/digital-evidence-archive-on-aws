@@ -5,6 +5,7 @@
 
 import Joi from 'joi';
 import { getDataSyncTasks } from '../../../app/resources/get-data-sync-tasks';
+import { retry } from '../../../app/services/service-helpers';
 import { DeaDataSyncTask } from '../../../models/data-sync-task';
 import { dataSyncTaskSchema } from '../../../models/validation/data-vault';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
@@ -23,7 +24,13 @@ describe('get data sync tasks', () => {
   });
 
   it('should return a list of data sync tasks', async () => {
-    const response = await getDataSyncTasks(getDummyEvent(), dummyContext, repositoryProvider);
+    const response = await retry(async () => {
+      const response = await getDataSyncTasks(getDummyEvent(), dummyContext, repositoryProvider);
+      return response;
+    });
+    if (!response) {
+      throw new Error('No response returned');
+    }
 
     const tasks: DeaDataSyncTask[] = JSON.parse(response.body).dataSyncTasks;
 
@@ -33,5 +40,5 @@ describe('get data sync tasks', () => {
 
     expect(response.statusCode).toEqual(200);
     expect(tasks).toBeDefined();
-  });
+  }, 40000);
 });

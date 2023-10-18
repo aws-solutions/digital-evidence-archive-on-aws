@@ -60,6 +60,7 @@ import { Oauth2Token, RefreshToken, RevokeToken } from './models/auth';
 import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
 import { DeaCaseFile } from './models/case-file';
+import { dataSyncExecutionEvent } from './storage/datasync-event-handler';
 import { deleteCaseFileHandler } from './storage/s3-batch-delete-case-file-handler';
 import {
   s3BatchJobStatusChangeHandler,
@@ -135,6 +136,7 @@ export {
   deleteCaseFileHandler,
   s3BatchJobStatusChangeHandler,
   S3BatchEventBridgeDetail,
+  dataSyncExecutionEvent,
   withAllowedOrigin,
   restoreCaseFile,
   putLegalHoldForCreatedS3AuditObject,

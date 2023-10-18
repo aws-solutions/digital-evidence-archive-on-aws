@@ -15,6 +15,7 @@ import {
   DataVaultType,
   DataVaultTaskType,
   DataVaultExecutionType,
+  DataVaultFileType,
 } from '../persistence/schema/entities';
 import { CaseAction } from './case-action';
 import { CaseFileStatus } from './case-file-status';
@@ -22,6 +23,7 @@ import { CaseStatus } from './case-status';
 import { CaseUser } from './case-user';
 import { DeaDataVault } from './data-vault';
 import { DeaDataVaultExecution } from './data-vault-execution';
+import { DeaDataVaultFile } from './data-vault-file';
 import { DeaDataVaultTask } from './data-vault-task';
 import { Job } from './job';
 import { DeaSession } from './session';
@@ -78,6 +80,24 @@ export const dataVaultExecutionFromEntity = (
     taskId: dataVaultExecutionEntity.taskId,
     created: dataVaultExecutionEntity.created,
     createdBy: dataVaultExecutionEntity.createdBy,
+  };
+};
+
+export const dataVaultFileFromEntity = (dataVaultFileEntity: DataVaultFileType): DeaDataVaultFile => {
+  return {
+    ulid: dataVaultFileEntity.ulid,
+    fileName: dataVaultFileEntity.fileName,
+    filePath: dataVaultFileEntity.filePath,
+    dataVaultUlid: dataVaultFileEntity.dataVaultUlid,
+    isFile: dataVaultFileEntity.isFile,
+    fileSizeBytes: dataVaultFileEntity.fileSizeBytes,
+    contentType: dataVaultFileEntity.contentType,
+    createdBy: dataVaultFileEntity.createdBy,
+    sha256Hash: dataVaultFileEntity.sha256Hash,
+    versionId: dataVaultFileEntity.versionId,
+    executionId: dataVaultFileEntity.executionId,
+    fileS3Key: dataVaultFileEntity.fileS3Key,
+    updated: dataVaultFileEntity.updated,
   };
 };
 

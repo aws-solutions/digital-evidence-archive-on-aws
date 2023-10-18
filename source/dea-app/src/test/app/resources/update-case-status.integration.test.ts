@@ -9,6 +9,7 @@ import {
   ServiceInputTypes as S3Input,
   ServiceOutputTypes as S3Output,
   PutObjectCommand,
+  S3ClientResolvedConfig,
 } from '@aws-sdk/client-s3';
 import {
   S3ControlClient,
@@ -16,9 +17,11 @@ import {
   ServiceOutputTypes as S3ControlOutput,
   CreateJobCommand,
   JobReportScope,
+  S3ControlClientResolvedConfig,
 } from '@aws-sdk/client-s3-control';
 import {
   STSClient,
+  STSClientResolvedConfig,
   ServiceInputTypes as STSInputs,
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
@@ -47,9 +50,9 @@ import {
 
 let repositoryProvider: ModelRepositoryProvider;
 let caseOwner: DeaUser;
-let s3Mock: AwsStub<S3Input, S3Output>;
-let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput>;
-let stsMock: AwsStub<STSInputs, STSOutputs>;
+let s3Mock: AwsStub<S3Input, S3Output, S3ClientResolvedConfig>;
+let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput, S3ControlClientResolvedConfig>;
+let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 
 const ETAG = 'hehe';
 const VERSION_ID = 'haha';

@@ -12,6 +12,8 @@ export interface DataSyncProvider {
   dataSyncClient: DataSyncClient;
   dataSyncRoleArn: string;
   datasetsBucketArn: string;
+  dataSyncReportsRoleArn: string;
+  dataSyncReportsBucketArn: string;
 }
 
 export const defaultDataSyncProvider = {
@@ -20,5 +22,13 @@ export const defaultDataSyncProvider = {
   datasetsBucketArn: `arn:aws:s3:::${getRequiredEnv(
     'DATASETS_BUCKET_NAME',
     'DATASETS_BUCKET_NAME is not set in your lambda!'
+  )}`,
+  dataSyncReportsRoleArn: getRequiredEnv(
+    'DATASYNC_REPORTS_ROLE',
+    'DATASYNC_LOGS_ROLE is not set in your lambda!'
+  ),
+  dataSyncReportsBucketArn: `arn:aws:s3:::${getRequiredEnv(
+    'DATASYNC_REPORTS_BUCKET_NAME',
+    'DATASYNC_REPORTS_BUCKET_NAME is not set in your lambda!'
   )}`,
 };

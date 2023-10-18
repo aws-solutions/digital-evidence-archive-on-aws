@@ -79,7 +79,9 @@
     "pkce-challenge": "^3.0.0",
     "ulid": "~2.3.0",
     "uuid": "^9.0.0",
-    "@aws-sdk/client-datasync": "~3.398.0"
+    "@aws-sdk/client-datasync": "3.423.0",
+    "@aws-sdk/util-stream-node": "~3.374.0",
+    "fs": "~0.0.1-security"
   },
   "devDependencies": {
     "@rushstack/eslint-config": "^3.3.3",

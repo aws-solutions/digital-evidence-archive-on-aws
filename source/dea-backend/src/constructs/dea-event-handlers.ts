@@ -17,6 +17,8 @@ import {
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Bucket, EventType } from 'aws-cdk-lib/aws-s3';
+import { LambdaDestination } from 'aws-cdk-lib/aws-s3-notifications';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
@@ -29,6 +31,7 @@ interface LambdaEnvironment {
 interface DeaEventHandlerProps {
   deaTableArn: string;
   deaDatasetsBucketArn: string;
+  dataSyncLogsBucket: Bucket;
   lambdaEnv: LambdaEnvironment;
   kmsKey: Key;
   opsDashboard?: DeaOperationalDashboard;
@@ -38,6 +41,7 @@ export class DeaEventHandlers extends Construct {
   public s3BatchDeleteCaseFileLambda: NodejsFunction;
   public s3BatchDeleteCaseFileBatchJobRole: Role;
   public s3BatchDeleteCaseFileLambdaRole: Role;
+  public dataSyncExeuctionEventRole: Role;
 
   public constructor(scope: Construct, stackName: string, props: DeaEventHandlerProps) {
     super(scope, stackName);
@@ -102,6 +106,38 @@ export class DeaEventHandlers extends Construct {
       'S3BatchJobStatusChangeLambda',
       undefined,
       true
+    );
+
+    // Create Lambda and event for DataSync
+    this.dataSyncExeuctionEventRole = this.createDataSyncExectutionEventRole(
+      'data-sync-execution-event-role',
+      props.deaTableArn,
+      props.dataSyncLogsBucket.bucketArn,
+      props.deaDatasetsBucketArn,
+      props.kmsKey.keyArn
+    );
+
+    const dataSyncExecutionEventLambda = this.createLambda(
+      `datasync_execution_event`,
+      'DataSyncExecutionEventLambda',
+      '../../src/handlers/datasync-execution-event-handler.ts',
+      { NODE_OPTIONS: '--max-old-space-size=8192', ...props.lambdaEnv },
+      this.dataSyncExeuctionEventRole
+    );
+
+    this.createBucketEventForDataSyncExecution(dataSyncExecutionEventLambda, props.dataSyncLogsBucket);
+  }
+
+  private createBucketEventForDataSyncExecution(
+    dataProcessingLambda: NodejsFunction,
+    dataSyncLogsBucket: Bucket
+  ) {
+    dataSyncLogsBucket.addEventNotification(
+      EventType.OBJECT_CREATED,
+      new LambdaDestination(dataProcessingLambda),
+      {
+        prefix: 'Detailed-Reports',
+      }
     );
   }
 
@@ -288,6 +324,65 @@ export class DeaEventHandlers extends Construct {
       new PolicyStatement({
         actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
         resources: [kmsKeyArn],
+      })
+    );
+
+    return role;
+  }
+
+  private createDataSyncExectutionEventRole(
+    id: string,
+    tableArn: string,
+    datasyncLogBucketArn: string,
+    datasetsBucketArn: string,
+    kmsKeyArn: string
+  ): Role {
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+    const role = new Role(this, id, {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [basicExecutionPolicy],
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          'dynamodb:GetItem',
+          'dynamodb:PutItem',
+          'dynamodb:Query',
+          'dynamodb:UpdateItem',
+          'dynamodb:DeleteItem',
+        ],
+        resources: [tableArn],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['datasync:DescribeTaskExecution', 'datasync:DescribeTask', 'datasync:DescribeLocationS3'],
+        resources: ['*'],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [kmsKeyArn],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:GetObject', 's3:ListBucket', 's3:GetObjectVersion'],
+        resources: [`${datasyncLogBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:GetObject', 's3:ListBucket', 's3:GetObjectVersion'],
+        resources: [`${datasetsBucketArn}/*`],
       })
     );
 

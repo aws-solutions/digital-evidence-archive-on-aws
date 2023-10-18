@@ -5,7 +5,13 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { DeaDataVaultInput, DeaDataVault } from '../../models/data-vault';
-import { createDataVault, getDataVault, listDataVaults, updateDataVault } from '../../persistence/data-vault';
+import {
+  createDataVault,
+  getDataVault,
+  listDataVaults,
+  updateDataVault,
+  updateDataVaultSize,
+} from '../../persistence/data-vault';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getTestRepositoryProvider } from './local-db-table';
 
@@ -67,13 +73,13 @@ describe('data vault persistence', () => {
   });
 
   it('should return undefined if a data vault is not found', async () => {
-    const currentDataVault = await getDataVault('bogus', undefined, repositoryProvider);
+    const currentDataVault = await getDataVault('bogus', repositoryProvider);
 
     expect(currentDataVault).toBeUndefined();
   });
 
   it('should get a data vault by id', async () => {
-    const currentDataVault = await getDataVault(dataVaultUlid, undefined, repositoryProvider);
+    const currentDataVault = await getDataVault(dataVaultUlid, repositoryProvider);
 
     expect(currentDataVault).toEqual(testDataVault);
   });
@@ -86,11 +92,7 @@ describe('data vault persistence', () => {
 
     const createdDataVault = await createDataVault(currentTestDataVault, repositoryProvider);
 
-    const readDataVault = await getDataVault(
-      createdDataVault?.ulid ?? 'bogus',
-      undefined,
-      repositoryProvider
-    );
+    const readDataVault = await getDataVault(createdDataVault?.ulid ?? 'bogus', repositoryProvider);
 
     const dataVaultCheck: DeaDataVault = {
       ulid: createdDataVault?.ulid,
@@ -122,5 +124,18 @@ describe('data vault persistence', () => {
     };
 
     expect(updatedDataVault).toEqual(updateCheck);
+  });
+
+  it('should create a data vault and update the file size', async () => {
+    const currentTestDataVault: DeaDataVaultInput = {
+      name: 'DataVault Wars 3',
+      description: 'Revenge of the Vaults',
+    };
+
+    const createdDataVault = await createDataVault(currentTestDataVault, repositoryProvider);
+    const updatedDataVault = await updateDataVaultSize(createdDataVault.ulid, 100, repositoryProvider);
+    expect(updatedDataVault.totalSizeBytes).toEqual(100);
+    const updatedDataVault2 = await updateDataVaultSize(createdDataVault.ulid, 100, repositoryProvider);
+    expect(updatedDataVault2.totalSizeBytes).toEqual(200);
   });
 });

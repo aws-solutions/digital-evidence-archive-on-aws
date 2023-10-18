@@ -49,7 +49,7 @@ export const getDataVault = async (
   dataVaultId: string,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaDataVault | undefined> => {
-  return await DataVaultPersistence.getDataVault(dataVaultId, undefined, repositoryProvider);
+  return await DataVaultPersistence.getDataVault(dataVaultId, repositoryProvider);
 };
 
 export const updateDataVaults = async (

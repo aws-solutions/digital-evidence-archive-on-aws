@@ -143,6 +143,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@aws-sdk/util-stream-node",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws/dea-app",
       "allowedCategories": [ "production" ]
     },
@@ -288,6 +292,10 @@
     },
     {
       "name": "@rushstack/ts-command-line",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@smithy/types",
       "allowedCategories": [ "production" ]
     },
     {
@@ -460,6 +468,10 @@
     },
     {
       "name": "fast-check",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "fs",
       "allowedCategories": [ "production" ]
     },
     {
