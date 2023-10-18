@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-backend",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Example infrastructure to deploy express app",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/tree/main/",
   "repository": {
