@@ -34,6 +34,10 @@
           "method": "PUT"
         },
         {
+          "path": "/datavaults/{dataVaultId}/files",
+          "method": "GET"
+        },
+        {
           "path": "/datavaults/{dataVaultId}/tasks",
           "method": "POST"
         },

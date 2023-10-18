@@ -30,6 +30,7 @@ export const createS3Location = async (
   const locationSettings = {
     Subdirectory: destinationFolder,
     S3BucketArn: dataSyncProvider.datasetsBucketArn,
+    S3StorageClass: 'INTELLIGENT_TIERING',
     S3Config: {
       BucketAccessRoleArn: dataSyncProvider.dataSyncRoleArn,
     },

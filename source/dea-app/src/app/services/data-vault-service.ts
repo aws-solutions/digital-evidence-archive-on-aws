@@ -6,11 +6,13 @@
 import { OneTableError, Paged } from 'dynamodb-onetable';
 import { DeaDataVault, DeaDataVaultInput } from '../../models/data-vault';
 import { DeaDataVaultExecution } from '../../models/data-vault-execution';
+import { DeaDataVaultFile } from '../../models/data-vault-file';
 import { DeaDataVaultTask, DeaDataVaultTaskInput } from '../../models/data-vault-task';
 import * as DataVaultPersistence from '../../persistence/data-vault';
 import * as DataVaultExecutionPersistence from '../../persistence/data-vault-execution';
 import * as DataVaultTaskPersistence from '../../persistence/data-vault-task';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
+import { getUsers } from '../../persistence/user';
 import { ValidationError } from '../exceptions/validation-exception';
 
 export const createDataVault = async (
@@ -114,4 +116,39 @@ export const listDataVaultExecutions = async (
   limit = 30
 ): Promise<Paged<DeaDataVaultExecution>> => {
   return DataVaultExecutionPersistence.listDataVaultExecutions(repositoryProvider, taskId, nextToken, limit);
+};
+
+export const hydrateUsersForDataVaultFiles = async (
+  files: DeaDataVaultFile[],
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaDataVaultFile[]> => {
+  // get all unique user ulids referenced on the files
+  const userUlids = [...new Set(files.map((file) => file.createdBy))];
+  // fetch the users
+  const userMap = await getUsers(userUlids, repositoryProvider);
+
+  // Update createdBy with usernames
+  return files.map((file) => {
+    const user = userMap.get(file.createdBy);
+    let createdBy = file.createdBy;
+    if (user) {
+      createdBy = `${user?.firstName} ${user?.lastName}`;
+    }
+    return {
+      ulid: file.ulid,
+      fileName: file.fileName,
+      filePath: file.filePath,
+      dataVaultUlid: file.dataVaultUlid,
+      isFile: file.isFile,
+      fileSizeBytes: file.fileSizeBytes,
+      createdBy,
+      contentType: file.contentType,
+      sha256Hash: file.sha256Hash,
+      versionId: file.versionId,
+      fileS3Key: file.fileS3Key,
+      executionId: file.executionId,
+      created: file.created,
+      updated: file.updated,
+    };
+  });
 };

@@ -23,7 +23,7 @@ export const createDataVaultFile = async (
 export const listDataVaultFilesByFilePath = async (
   dataVaultUlid: string,
   filePath: string,
-  limit: number,
+  limit = 30,
   repositoryProvider: ModelRepositoryProvider,
   nextToken?: object
 ): Promise<Paged<DeaDataVaultFile>> => {
