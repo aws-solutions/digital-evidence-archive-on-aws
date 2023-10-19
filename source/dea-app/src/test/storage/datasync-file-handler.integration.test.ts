@@ -19,7 +19,7 @@ import { listDataVaultFilesByFilePath } from '../../persistence/data-vault-file'
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { createUser } from '../../persistence/user';
 import { DataSyncProvider, defaultDataSyncProvider } from '../../storage/dataSync';
-import { dataSyncExecutionEvent } from '../../storage/datasync-event-handler';
+import { dataSyncExecutionEvent, generateFolderPrefixEntries } from '../../storage/datasync-event-handler';
 import { testEnv } from '../../test-e2e/helpers/settings';
 import { dummyContext, getDummyEvent } from '../integration-objects';
 import { getTestRepositoryProvider } from '../persistence/local-db-table';
@@ -110,7 +110,7 @@ describe('datasync event handler', () => {
     // Check for files in data vault
     const dataVaultFiles = await listDataVaultFilesByFilePath(
       deaDataVault.ulid,
-      '/',
+      '/testbucket/',
       10000,
       repositoryProvider
     );
@@ -149,6 +149,76 @@ describe('datasync event handler', () => {
         repositoryProvider
       )
     ).rejects.toThrow('Could not find DataVaultExecution with id exec-00000000000000000');
+  });
+
+  it('should create folders based on location uri', async () => {
+    const name = 'testDataVault2';
+    const event = getDummyEvent({
+      body: JSON.stringify({
+        name,
+      }),
+    });
+    const response = await createDataVault(event, dummyContext, repositoryProvider);
+    const deaDataVault = await JSON.parse(response.body);
+
+    const locationUri = `s3://sampleBucketName/DATAVAULT${deaDataVault.ulid}/folder 1/folder 2/folder 3/folder 4/`;
+    const executionId = 'exec-00000000000000000';
+    let prefixString = await generateFolderPrefixEntries(
+      locationUri,
+      deaDataVault.ulid,
+      user.ulid,
+      executionId,
+      repositoryProvider
+    );
+
+    expect(prefixString).toEqual('/folder 1/folder 2/folder 3/folder 4');
+
+    let dataVaultFiles = await listDataVaultFilesByFilePath(
+      deaDataVault.ulid,
+      '/folder 1/folder 2/folder 3/',
+      10000,
+      repositoryProvider
+    );
+
+    expect(dataVaultFiles).toBeDefined();
+    expect(dataVaultFiles.length).toEqual(1); // should have 1 folder in this directory
+
+    const locationUri2 = `s3://sampleBucketName/DATAVAULT${deaDataVault.ulid}/folder 1/folder 2/folder 3/folder ABC/`;
+    prefixString = await generateFolderPrefixEntries(
+      locationUri2,
+      deaDataVault.ulid,
+      user.ulid,
+      executionId,
+      repositoryProvider
+    );
+
+    expect(prefixString).toEqual('/folder 1/folder 2/folder 3/folder ABC');
+
+    // Check for folders in data vault
+    dataVaultFiles = await listDataVaultFilesByFilePath(deaDataVault.ulid, '/', 10000, repositoryProvider);
+    expect(dataVaultFiles).toBeDefined();
+    expect(dataVaultFiles.length).toEqual(1); // Only 1 folder in root - /folder1/
+
+    dataVaultFiles = await listDataVaultFilesByFilePath(
+      deaDataVault.ulid,
+      '/folder 1/folder 2/folder 3/',
+      10000,
+      repositoryProvider
+    );
+
+    expect(dataVaultFiles).toBeDefined();
+    expect(dataVaultFiles.length).toEqual(2); // should be 2 folders now in this directory
+
+    const locationUri3 = `s3://sampleBucketName/DATAVAULT${deaDataVault.ulid}/`;
+    prefixString = await generateFolderPrefixEntries(
+      locationUri3,
+      deaDataVault.ulid,
+      user.ulid,
+      executionId,
+      repositoryProvider
+    );
+
+    expect(prefixString).toEqual('');
   });
 
   // Dummy event record generation for task/execution report

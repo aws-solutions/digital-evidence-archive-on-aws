@@ -20,7 +20,7 @@ export interface DataVaultTaskDTO {
   readonly name: string;
   readonly sourceLocationArn: string;
   readonly description?: string;
-  readonly destinationFolder: string;
+  readonly destinationFolder?: string;
 }
 
 export interface DeaDataVaultTaskInput {

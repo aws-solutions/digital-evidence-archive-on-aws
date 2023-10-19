@@ -31,7 +31,7 @@ export const createDataVaultTaskSchema = Joi.object({
   name: safeName,
   description: safeDescription,
   sourceLocationArn: joiArn,
-  destinationFolder: Joi.string().required(),
+  destinationFolder: Joi.string().optional(),
 });
 
 export const dataVaultTaskResponseSchema = Joi.object({

@@ -37,10 +37,9 @@ export const createDataVaultTask: DEAGatewayProxyHandler = async (
     createDataVaultTaskSchema
   );
 
-  const destinationFolder = `DATAVAULT${dataVaultId}/${deaDataVaultTask.destinationFolder.replace(
-    /^\//,
-    ''
-  )}`;
+  const destinationFolder = `DATAVAULT${dataVaultId}/${
+    deaDataVaultTask.destinationFolder ? deaDataVaultTask.destinationFolder.replace(/^\//, '') : ''
+  }`;
 
   const destinationLocationArn = await createS3Location(destinationFolder, dataSyncProvider);
   const taskArn = await createDatasyncTask(

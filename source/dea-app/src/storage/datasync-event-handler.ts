@@ -13,7 +13,7 @@ import { getDataVault, updateDataVaultSize } from '../persistence/data-vault';
 import { getDataVaultExecution } from '../persistence/data-vault-execution';
 import { createDataVaultFile } from '../persistence/data-vault-file';
 import { getDataVaultTask } from '../persistence/data-vault-task';
-import { defaultProvider } from '../persistence/schema/entities';
+import { ModelRepositoryProvider, defaultProvider } from '../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider } from './datasets';
 import { DataSyncProvider, defaultDataSyncProvider } from './dataSync';
 
@@ -95,6 +95,15 @@ export const dataSyncExecutionEvent = async (
   const getObjectCommand = new GetObjectCommand(params);
   const response = await datasetsProvider.s3Client.send(getObjectCommand);
 
+  // Create Prefix Directory DataVaultFile Entries
+  const prefixString = await generateFolderPrefixEntries(
+    locationDetails.LocationUri,
+    dataVaultTask.dataVaultUlid,
+    dataVaultExecution.createdBy,
+    executionId,
+    repositoryProvider
+  );
+
   if (response.Body) {
     const responseStr = await response.Body.transformToString();
     const fileData: FileData = JSON.parse(responseStr);
@@ -109,7 +118,7 @@ export const dataSyncExecutionEvent = async (
 
       // Construct file details
       const fileName = fetchFileName(file.RelativePath);
-      const filePath = fetchFilePath(file.RelativePath, fileName);
+      const filePath = prefixString + fetchFilePath(file.RelativePath, fileName);
       const fileS3Key = fetchS3Key(
         locationDetails.LocationUri,
         dataVaultTask.dataVaultUlid,
@@ -211,4 +220,52 @@ export const fetchFileExtension = (contentType: string, fileName: string) => {
   } else {
     return contentType;
   }
+};
+
+export const generateFolderPrefixEntries = async (
+  locationUri: string,
+  dataVaultUlid: string,
+  userUlid: string,
+  executionId: string,
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  const dataVaultUlidString = `DATAVAULT${dataVaultUlid}`;
+  const prefixString = locationUri.substring(
+    locationUri.indexOf(dataVaultUlidString) + dataVaultUlidString.length
+  );
+
+  if (prefixString !== '/') {
+    const parts = prefixString.split('/').filter((part) => part !== '');
+
+    let folderPath = '/';
+    for (let i = 0; i < parts.length; i++) {
+      const folderName = parts[i];
+      try {
+        await createDataVaultFile(
+          {
+            fileName: folderName,
+            filePath: folderPath,
+            dataVaultUlid: dataVaultUlid,
+            isFile: false,
+            fileSizeBytes: 0,
+            createdBy: userUlid,
+            contentType: 'Directory',
+            fileS3Key: folderPath,
+            executionId: executionId,
+          },
+          repositoryProvider
+        );
+      } catch (error) {
+        if ('code' in error && error.code === 'UniqueError') {
+          logger.debug(`${folderName} at ${folderPath} already exists, moving on...`);
+        } else {
+          throw error;
+        }
+      }
+
+      folderPath += `${parts[i]}/`;
+    }
+  }
+
+  return prefixString.substring(0, prefixString.length - 1);
 };
