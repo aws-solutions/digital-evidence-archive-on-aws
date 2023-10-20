@@ -122,7 +122,7 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
               </TextContent>
             </ColumnLayout>
           </Container>
-          <DataVaultFilesTable></DataVaultFilesTable>
+          <DataVaultFilesTable dataVaultId={props.dataVaultId}></DataVaultFilesTable>
         </SpaceBetween>
       </ContentLayout>
     );

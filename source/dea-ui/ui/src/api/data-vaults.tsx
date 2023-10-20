@@ -6,6 +6,8 @@
 import { DeaDataSyncTask } from '@aws/dea-app/lib/models/data-sync-task';
 import { DeaDataVault, DeaDataVaultInput } from '@aws/dea-app/lib/models/data-vault';
 import { DeaDataVaultExecution, DataVaultExecutionDTO } from '@aws/dea-app/lib/models/data-vault-execution';
+import { DeaDataVaultFile} from '@aws/dea-app/lib/models/data-vault-file';
+import { DeaDataVaultTask, DataVaultTaskDTO } from '@aws/dea-app/lib/models/data-vault-task';
 import useSWR from 'swr';
 import { httpApiGet, httpApiPost, httpApiPut } from '../helpers/apiHelper';
 import { DeaListResult, DeaSingleResult } from './models/api-results';
@@ -50,3 +52,21 @@ export const createDataVaultExecution = async (
 ): Promise<DeaDataVaultExecution> => {
   return httpApiPost(`/datavaults/tasks/${taskId}/executions`, { ...dataVaultExecutionDTO });
 };
+
+export const createDataVaultTask = async (
+  dataVaultId: string,
+  task: DataVaultTaskDTO
+): Promise<DeaDataVaultTask> => {
+  return httpApiPost(`datavaults/${dataVaultId}/tasks`, { ...task });
+};
+
+export const useListDataVaultFiles = (id: string, filePath = '/'): DeaListResult<DeaDataVaultFile> => {
+  const { data, error } = useSWR(() => `datavaults/${id}/files?filePath=${filePath}&limit=10000`, httpApiGet<{files: DeaDataVaultFile[]}>);
+  const caseFiles: DeaDataVaultFile[] = data?.files ?? [];
+  return { data: caseFiles, isLoading: !error && !data };
+};
+
+export const useGetDataVaultFileDetailsById = (dataVaultId: string, fileId: string): DeaSingleResult<DeaDataVaultFile | undefined> => {
+  const { data, error } = useSWR(() => `datavaults/${dataVaultId}/files/${fileId}/info`, httpApiGet<DeaDataVaultFile>);
+  return { data, isLoading: !data && !error };
+}

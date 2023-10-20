@@ -37,7 +37,7 @@ function DataVaultDetailsPage() {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
+    <BaseLayout breadcrumbs={breadcrumbs}>
       <DataVaultDetailsBody dataVaultId={dataVaultId}></DataVaultDetailsBody>
     </BaseLayout>
   );

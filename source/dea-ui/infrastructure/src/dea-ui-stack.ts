@@ -150,6 +150,15 @@ export class DeaUiConstruct extends Construct {
     const dataSyncTasksResource = uiResource.addResource('data-sync-tasks');
     const dataSyncTasksS3Integration = this.getS3Integration('data-sync-tasks.html', bucket, executeRole);
     dataSyncTasksResource.addMethod('GET', dataSyncTasksS3Integration, this.getMethodOptions());
+
+    // /data-vault-file-detail page
+    const dataVaultFileDetailResource = uiResource.addResource('data-vault-file-detail');
+    const dataVaultFileDetailS3Integration = this.getS3Integration(
+      'data-vault-file-detail.html',
+      bucket,
+      executeRole
+    );
+    dataVaultFileDetailResource.addMethod('GET', dataVaultFileDetailS3Integration, this.getMethodOptions());
   }
 
   private getS3Integration(path: string, bucket: Bucket, executeRole: Role): AwsIntegration {

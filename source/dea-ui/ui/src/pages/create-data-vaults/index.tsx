@@ -32,7 +32,7 @@ const Home: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
+    <BaseLayout breadcrumbs={breadcrumbs}>
       <Box margin={{ bottom: 'l' }}>
         <CreateDataVaultBody />
       </Box>

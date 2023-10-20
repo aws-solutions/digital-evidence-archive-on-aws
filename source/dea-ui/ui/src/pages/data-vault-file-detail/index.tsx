@@ -3,29 +3,27 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
-import type { NextPage } from 'next';
+import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { breadcrumbLabels, commonLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
-import EditDataVaultBody from '../../components/edit-data-vault/EditDataVaultBody';
+import DataVaultFileDetailsBody from '../../components/data-vault-file-details/DataVaultFileDetailsBody';
 import { useSettings } from '../../context/SettingsContext';
 
-export interface EditDataVaultPageProps {
+export interface IHomeProps {
   locale: string;
 }
 
-const EditDataVaultPage: NextPage = () => {
+function DataVaultFileDetailPage() {
   const router = useRouter();
   const { settings } = useSettings();
-  const { dataVaultId } = router.query;
-
-  const baseUrl = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
-
-  if (!dataVaultId || typeof dataVaultId !== 'string') {
+  const { dataVaultId, fileId } = router.query;
+  if (!dataVaultId || typeof dataVaultId !== 'string' || !fileId || typeof fileId !== 'string') {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
+
+  const baseUrl = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
@@ -37,18 +35,16 @@ const EditDataVaultPage: NextPage = () => {
       href: `${baseUrl}/data-vault-detail?dataVaultId=${dataVaultId}`,
     },
     {
-      text: breadcrumbLabels.editCaseLabel,
-      href: '#',
+      text: breadcrumbLabels.fileDetailsLabel,
+      href: `#`,
     },
   ];
 
   return (
     <BaseLayout breadcrumbs={breadcrumbs}>
-      <Box margin={{ bottom: 'l' }}>
-        <EditDataVaultBody dataVaultId={dataVaultId} />
-      </Box>
+      <DataVaultFileDetailsBody dataVaultId={dataVaultId} fileId={fileId}></DataVaultFileDetailsBody>
     </BaseLayout>
   );
-};
+}
 
-export default EditDataVaultPage;
+export default DataVaultFileDetailPage;

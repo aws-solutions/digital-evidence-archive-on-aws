@@ -33,7 +33,7 @@ import {
   commonLabels,
 } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
-import { formatDateFromISOString } from '../../helpers/dateHelper';
+import { formatDateFromISOString, formatDateTimeFromISOString } from '../../helpers/dateHelper';
 import { DeaDataSyncTaskDTO, TaskStatus } from '../../models/DataSyncTask';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
@@ -114,7 +114,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         ),
         noMatch: TableNoMatchDisplay(dataSyncTaskListLabels.noDataSyncTasksMatchLabel),
       },
-      sorting: {},
+      sorting: { defaultState: { isDescending: false, sortingColumn: { sortingField: 'created' } } },
       selection: {},
       pagination: {
         pageSize: 15,
@@ -218,6 +218,9 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
     if (!deaDataSyncTask.dataVaultUlid) {
       return '-';
     }
+    if (!deaDataSyncTask.dataVaultName) {
+      return deaDataSyncTask.dataVaultUlid;
+    }
     return (
       <Link
         data-test-id={deaDataSyncTask.taskId}
@@ -260,7 +263,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           external
           href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
         >
-          {commonTableLabels.fileTransferInstructionsText}
+          {commonTableLabels.implementationGuideLabel}
         </Link>
       </>
     );
@@ -343,7 +346,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           id: 'created',
           header: commonTableLabels.creationDateHeader,
           cell: (e) => formatDateFromISOString(e.created),
-          width: 200,
+          width: 165,
           minWidth: 165,
           sortingField: 'created',
         },
@@ -351,9 +354,17 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           id: 'status',
           header: commonTableLabels.statusHeader,
           cell: statusCell,
-          width: 165,
+          width: 120,
           minWidth: 100,
           sortingField: 'status',
+        },
+        {
+          id: 'lastExecutionCompleted',
+          header: commonTableLabels.lastExecutionCompletedHeader,
+          cell: (e) => formatDateTimeFromISOString(e.lastExecutionCompleted),
+          width: 260,
+          minWidth: 260,
+          sortingField: 'lastExecutionCompleted',
         },
       ]}
       filter={

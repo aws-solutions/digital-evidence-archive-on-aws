@@ -11,4 +11,5 @@ export interface DeaDataSyncTask {
   readonly dataVaultUlid?: string;
   readonly status?: string;
   readonly created?: Date;
+  readonly lastExecutionCompleted?: Date;
 }

@@ -622,6 +622,8 @@ Object {
         "testApiuidatasynctasks0F02FE8B",
         "testApiuidatavaultdetailGET4A5ECE13",
         "testApiuidatavaultdetailF6C85603",
+        "testApiuidatavaultfiledetailGET045738D4",
+        "testApiuidatavaultfiledetail0956FA73",
         "testApiuidatavaultsGET2DB190CB",
         "testApiuidatavaults57FF5F53",
         "testApiuieditdatavaultGETCCC565D3",
@@ -1331,6 +1333,103 @@ Object {
         },
         "ResourceId": Object {
           "Ref": "testApiuidatavaultdetailF6C85603",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuidatavaultfiledetail0956FA73": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "data-vault-file-detail",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuidatavaultfiledetailGET045738D4": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackrole3432A944",
+              "Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Ref": "DeaUiStackartifactbucketFFC87A37",
+                },
+                "/data-vault-file-detail.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuidatavaultfiledetail0956FA73",
         },
         "RestApiId": Object {
           "Ref": "testApiD6ECAB50",

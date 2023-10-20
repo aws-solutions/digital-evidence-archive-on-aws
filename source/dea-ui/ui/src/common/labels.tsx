@@ -37,7 +37,7 @@ export const commonLabels = {
   closeModalAriaLabel: 'Close modal',
   optionalLabel: 'optional',
   goBack: 'Go back',
-  runTask: 'Run Task',
+  runTask: 'Start file transfer',
 };
 
 export const commonTableLabels = {
@@ -64,10 +64,11 @@ export const commonTableLabels = {
   destinationLocationIdHeader: 'Destination location ID',
   dataVaultNameHeader: 'Data vault name',
   fileTransferInstructionsText: 'File transfer instructions',
-  implementationGuideLabel: 'Implementation Guide',
+  implementationGuideLabel: 'Implementation guide',
   executionIdHeader: 'Execution ID',
   caseAssociationHeader: 'Case association',
   associateButtonLabel: 'Associate to case',
+  lastExecutionCompletedHeader: 'Last execution completed',
 };
 
 export const layoutLabels: AppLayoutProps.Labels = {
@@ -316,7 +317,7 @@ export const breadcrumbLabels = {
   dataVaultsLabel: 'Data vaults',
   createNewDataVaultLabel: 'Create data vault',
   dataVaultDetailsLabel: 'Data vault details',
-  dataSyncTasks: 'Data sync tasks',
+  dataSyncTasks: 'Tasks',
 };
 
 export const navigationLabels = {
@@ -384,9 +385,13 @@ export const dataVaultDetailLabels = {
   noFilesDisplayLabel:
     'To import data, open the DataSync console and follow the steps in the implementation Guide.',
   filesLabel: 'Files',
-  filesTableHeaderDescription: 'Folders and file uploaded to the Data Vault.',
+  filesTableHeaderDescription:
+    'Folders and file uploaded to the Data Vault. For file transfer instructions, see the',
   displayFilesCheckboxLabel: 'Display files not associated with a case',
   copyDataVaultUlidAriaLabel: 'Copy data vault ulid',
+  noAssociatedLabel: 'Not associated',
+  associatedLabel: 'Associated',
+  disassociateLabel: 'Disassociate file',
 };
 
 export const dataSyncTaskListLabels = {
@@ -394,10 +399,11 @@ export const dataSyncTaskListLabels = {
   noDataSyncTasksLabel: 'No data sync tasks have been created.',
   noDataSyncTasksMatchLabel: 'No data sync tasks matched',
   noDisplayLabel: 'Once data sync tasks are created, they will be displayed.',
-  runDataSyncTaskLabel: 'Run task',
+  runDataSyncTaskLabel: 'Transfer files',
   searchDataSyncTasksLabel: 'Search by task ID',
-  dataSyncTasksLabel: 'All data sync tasks',
-  dataSyncTasksPageDescription: 'All data sync tasks displayed. Running a task starts a file transfer.',
+  dataSyncTasksLabel: 'All tasks',
+  dataSyncTasksPageDescription:
+    'All data sync tasks displayed. Choose a task and start the file transfer. For file transfer instructions, see the',
   dataSyncTaskCreationInstructions: 'Task Creation Instructions.',
   runTaskModalTitle: 'Confirm details are correct',
   runTaskLocationsLabel: 'Files will be transferred between these locations',

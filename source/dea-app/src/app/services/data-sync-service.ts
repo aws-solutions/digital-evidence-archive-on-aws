@@ -11,12 +11,16 @@ import {
   DeleteTaskCommand,
   DescribeLocationS3Command,
   DescribeTaskCommand,
+  DescribeTaskExecutionCommand,
+  ListTaskExecutionsCommand,
+  ListTaskExecutionsResponse,
   ListTasksCommand,
   ReportDestination,
   ReportDestinationS3,
   ReportLevel,
   ReportOutputType,
   StartTaskExecutionCommand,
+  TaskExecutionListEntry,
   VerifyMode,
 } from '@aws-sdk/client-datasync';
 import { DeaDataSyncTask } from '../../models/data-sync-task';
@@ -153,6 +157,33 @@ export const desrcibeTask = async (
     dataVaultUlid = match[1];
   }
 
+  //Get the last execution completed if the Task is Available and has a dataVaultUlid
+  let lastExecutionCompleted = undefined;
+  if (describeTaskResponse.Status === 'AVAILABLE' && dataVaultUlid) {
+    let nextToken = undefined;
+    do {
+      const listTaskExecutionsResponse: ListTaskExecutionsResponse | undefined =
+        await listDatasyncTaskExecutions(taskArn, nextToken, dataSyncProvider);
+      if (listTaskExecutionsResponse?.TaskExecutions) {
+        const taskExecutionCompletedArn = listTaskExecutionsResponse.TaskExecutions.slice()
+          .reverse()
+          .find((e: TaskExecutionListEntry) => e.Status === 'SUCCESS')?.TaskExecutionArn;
+        if (taskExecutionCompletedArn) {
+          const describeTaskExecutionResponse = await describeDatasyncTaskExecution(
+            taskExecutionCompletedArn,
+            dataSyncProvider
+          );
+          lastExecutionCompleted = describeTaskExecutionResponse?.StartTime;
+          const totalDurationMilliseconds = describeTaskExecutionResponse?.Result?.TotalDuration ?? 0;
+          lastExecutionCompleted?.setMilliseconds(
+            lastExecutionCompleted?.getMilliseconds() + totalDurationMilliseconds
+          );
+        }
+      }
+      nextToken = listTaskExecutionsResponse?.NextToken;
+    } while (nextToken);
+  }
+
   const DataSyncTask: DeaDataSyncTask = {
     taskArn: taskArn,
     taskId: taskArn.split('/')[1],
@@ -161,6 +192,7 @@ export const desrcibeTask = async (
     dataVaultUlid,
     status: describeTaskResponse.Status,
     created: describeTaskResponse.CreationTime,
+    lastExecutionCompleted,
   };
 
   return DataSyncTask;
@@ -215,4 +247,32 @@ export const deleteDatasyncTask = async (
   await dataSyncProvider.dataSyncClient.send(command);
 
   return taskArn;
+};
+
+export const listDatasyncTaskExecutions = async (
+  taskArn: string,
+  nextToken: string | undefined,
+  dataSyncProvider: DataSyncProvider
+) => {
+  const command = new ListTaskExecutionsCommand({
+    TaskArn: taskArn,
+    NextToken: nextToken,
+  });
+
+  return await retry(async () => {
+    return await dataSyncProvider.dataSyncClient.send(command);
+  });
+};
+
+export const describeDatasyncTaskExecution = async (
+  taskExecutionArn: string,
+  dataSyncProvider: DataSyncProvider
+) => {
+  const command = new DescribeTaskExecutionCommand({
+    TaskExecutionArn: taskExecutionArn,
+  });
+
+  return await retry(async () => {
+    return await dataSyncProvider.dataSyncClient.send(command);
+  });
 };
