@@ -4,6 +4,7 @@
  */
 
 /* eslint-disable no-new */
+import assert from 'assert';
 import {
   DeaAppRegisterConstruct,
   DeaAuditTrail,
@@ -17,6 +18,8 @@ import {
   createCfnOutput,
   deaConfig,
   DeaOperationalDashboard,
+  addLambdaSuppressions,
+  addResourcePolicySuppressions,
 } from '@aws/dea-backend';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
@@ -33,7 +36,6 @@ import {
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Construct } from 'constructs';
 import { restrictResourcePolicies } from './apply-bucket-policies';
-import { addLambdaSuppressions, addResourcePolicySuppressions } from './nag-suppressions';
 
 // DEA AppRegistry Constants
 // TODO - would be ideal to reference process.env.npm_package_version here but rush breaks that env
@@ -230,12 +232,23 @@ export class DeaMainStack extends cdk.Stack {
     });
 
     // DEA UI Construct
-    new DeaUiConstruct(this, 'DeaUiConstruct', {
+    const uiConstruct = new DeaUiConstruct(this, 'DeaUiConstruct', {
       kmsKey: kmsKey,
       restApi: deaApi.deaRestApi,
       accessLogsBucket: backendConstruct.accessLogsBucket,
       accessLogPrefix: uiAccessLogPrefix,
     });
+
+    if (deaConfig.isOneClick()) {
+      if (uiConstruct.nestedStackResource instanceof CfnResource) {
+        // Fetch solutions bucket and version
+        const DIST_BUCKET = process.env.DIST_OUTPUT_BUCKET ?? assert(false);
+        const DIST_VERSION = process.env.DIST_VERSION || '%%VERSION%%';
+        const solutionsBucketName = `${DIST_BUCKET}-reference`;
+        const templateUrl = `https://${solutionsBucketName}.s3.amazonaws.com/digital-evidence-archive/${DIST_VERSION}/DeaUiStack.nested.template`;
+        uiConstruct.nestedStackResource.addPropertyOverride('TemplateURL', templateUrl);
+      }
+    }
 
     // Stack node resource handling
     // ======================================
@@ -252,10 +265,6 @@ export class DeaMainStack extends cdk.Stack {
 
   private uiStackConstructNagSuppress(): void {
     const lambdaSuppresionList = [];
-
-    lambdaSuppresionList.push(
-      this.node.findChild('Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C').node.defaultChild
-    );
 
     // custom resource role
     lambdaSuppresionList.push(this.node.findChild('AWS679f53fac002430cb0da5b7982bd2287').node.defaultChild);

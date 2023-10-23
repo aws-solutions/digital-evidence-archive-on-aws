@@ -109,7 +109,11 @@ create_template_json()
     echo "Rename all *.template.json to *.template"
     echo "copy templates and rename"
     for f in $template_dist_dir/*.template.json; do
-        mv -- "$f" "${f%.template.json}.template"
+        if [[ "$f" == *DeaUiStack* ]]; then
+            mv -- "$f" "${template_dist_dir}/DeaUiStack.nested.template"
+        else
+            mv -- "$f" "${f%.template.json}.template"
+        fi
     done
 }
 

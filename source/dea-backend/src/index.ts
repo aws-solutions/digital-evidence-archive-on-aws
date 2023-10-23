@@ -15,6 +15,7 @@ import { DeaEventHandlers } from './constructs/dea-event-handlers';
 import { DeaOperationalDashboard } from './constructs/dea-ops-dashboard';
 import { DeaParameters, DeaParametersStack } from './constructs/dea-parameters';
 import { DeaRestApiConstruct } from './constructs/dea-rest-api';
+import { addLambdaSuppressions, addResourcePolicySuppressions } from './helpers/nag-suppressions';
 import { addSnapshotSerializers } from './test/infra/dea-snapshot-serializers';
 import { validateAppRegistryConstruct } from './test/infra/validate-app-registry-construct';
 import { validateAuthConstruct } from './test/infra/validate-auth-construct';
@@ -32,6 +33,8 @@ export {
   DeaAppRegisterConstruct,
   DeaOperationalDashboard,
   deaConfig,
+  addLambdaSuppressions,
+  addResourcePolicySuppressions,
   validateBackendConstruct,
   validateAppRegistryConstruct,
   createCfnOutput,

@@ -7,7 +7,8 @@ import assert from 'assert';
 import * as path from 'path';
 import { deaConfig } from '@aws/dea-backend/lib/config';
 import { createCfnOutput } from '@aws/dea-backend/lib/constructs/construct-support';
-import { Aws, StackProps } from 'aws-cdk-lib';
+import { addLambdaSuppressions } from '@aws/dea-backend';
+import { Aws, CfnResource, NestedStack, StackProps } from 'aws-cdk-lib';
 import {
   AuthorizationType,
   AwsIntegration,
@@ -31,7 +32,7 @@ interface IUiStackProps extends StackProps {
   readonly accessLogPrefix: string;
 }
 
-export class DeaUiConstruct extends Construct {
+export class DeaUiConstruct extends NestedStack {
   private uiArtifactPath: string;
   private sriString: string;
   public constructor(scope: Construct, id: string, props: IUiStackProps) {
@@ -82,6 +83,13 @@ export class DeaUiConstruct extends Construct {
     bucket.grantReadWrite(executeRole);
 
     this.routeHandler(props, bucket, executeRole);
+
+    const lambdaToSuppress = this.node.findChild(
+      'Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C'
+    ).node.defaultChild;
+    if (lambdaToSuppress instanceof CfnResource) {
+      addLambdaSuppressions(lambdaToSuppress);
+    }
   }
 
   private routeHandler(props: IUiStackProps, bucket: Bucket, executeRole: Role) {
