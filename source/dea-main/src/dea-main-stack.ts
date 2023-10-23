@@ -89,6 +89,7 @@ export class DeaMainStack extends cdk.Stack {
       kmsKey,
       deaDatasetsBucket: backendConstruct.datasetsBucket,
       deaTableArn: backendConstruct.deaTable.tableArn,
+      accessLoggingBucket: backendConstruct.accessLogsBucket,
       opsDashboard: dashboard,
     });
 

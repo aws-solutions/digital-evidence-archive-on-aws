@@ -43,6 +43,7 @@ describe('dea audit trail', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      accessLoggingBucket: backend.accessLogsBucket,
     });
 
     const template = Template.fromStack(stack);
@@ -76,6 +77,7 @@ describe('dea audit trail', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      accessLoggingBucket: backend.accessLogsBucket,
     });
 
     const template = Template.fromStack(stack);
@@ -118,6 +120,7 @@ describe('dea audit trail', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      accessLoggingBucket: backend.accessLogsBucket,
     });
 
     const template = Template.fromStack(stack);

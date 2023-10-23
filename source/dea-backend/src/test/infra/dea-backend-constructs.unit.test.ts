@@ -60,6 +60,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      accessLoggingBucket: backend.accessLogsBucket,
       opsDashboard: dashboard,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
@@ -157,6 +158,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      accessLoggingBucket: backend.accessLogsBucket,
       opsDashboard: dashboard,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
@@ -240,6 +242,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      accessLoggingBucket: backend.accessLogsBucket,
       opsDashboard: dashboard,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
@@ -347,6 +350,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      accessLoggingBucket: backend.accessLogsBucket,
       opsDashboard: dashboard,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {

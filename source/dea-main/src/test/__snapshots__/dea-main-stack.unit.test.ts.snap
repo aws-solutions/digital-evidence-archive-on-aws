@@ -15846,6 +15846,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
           ],
         },
+        "LoggingConfiguration": Object {
+          "DestinationBucketName": Object {
+            "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+          },
+          "LogFilePrefix": "audit-bucket-access-logs",
+        },
         "ObjectLockEnabled": true,
         "OwnershipControls": Object {
           "Rules": Array [
@@ -16457,6 +16463,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
           ],
         },
+        "LoggingConfiguration": Object {
+          "DestinationBucketName": Object {
+            "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+          },
+          "LogFilePrefix": "trail-bucket-access-logs",
+        },
         "OwnershipControls": Object {
           "Rules": Array [
             Object {
@@ -16763,6 +16775,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
           ],
+        },
+        "LoggingConfiguration": Object {
+          "DestinationBucketName": Object {
+            "Ref": "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+          },
+          "LogFilePrefix": "query-result-bucket-access-logs",
         },
         "OwnershipControls": Object {
           "Rules": Array [

@@ -21,6 +21,7 @@ import {
   BucketEncryption,
   EventType,
   HttpMethods,
+  IBucket,
   ObjectOwnership,
 } from 'aws-cdk-lib/aws-s3';
 import { SqsDestination } from 'aws-cdk-lib/aws-s3-notifications';
@@ -38,6 +39,7 @@ interface AuditCloudwatchToAthenaProps extends StackProps {
   readonly kmsKey: Key;
   readonly auditLogGroup: LogGroup;
   readonly trailLogGroup: LogGroup;
+  readonly accessLogsBucket: IBucket;
   readonly opsDashboard?: DeaOperationalDashboard;
 }
 
@@ -63,6 +65,8 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       removalPolicy: deaConfig.retainPolicy(),
       versioned: true,
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+      serverAccessLogsBucket: props.accessLogsBucket,
+      serverAccessLogsPrefix: 'audit-bucket-access-logs',
       objectLockEnabled: true,
     });
 
@@ -82,6 +86,8 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       enforceSSL: true,
       publicReadAccess: false,
       versioned: true,
+      serverAccessLogsBucket: props.accessLogsBucket,
+      serverAccessLogsPrefix: 'query-result-bucket-access-logs',
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
       cors: [

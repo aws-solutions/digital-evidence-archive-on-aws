@@ -26,6 +26,7 @@ interface DeaAuditProps extends StackProps {
   readonly kmsKey: Key;
   readonly deaDatasetsBucket: IBucket;
   readonly deaTableArn: string;
+  readonly accessLoggingBucket: IBucket;
   readonly opsDashboard?: DeaOperationalDashboard;
 }
 
@@ -57,6 +58,7 @@ export class DeaAuditTrail extends Construct {
       kmsKey: props.kmsKey,
       auditLogGroup: this.auditLogGroup,
       trailLogGroup: this.trailLogGroup,
+      accessLogsBucket: props.accessLoggingBucket,
       opsDashboard: props.opsDashboard,
     });
 
@@ -65,7 +67,8 @@ export class DeaAuditTrail extends Construct {
       this.trailLogGroup,
       props.kmsKey,
       props.deaDatasetsBucket,
-      props.deaTableArn
+      props.deaTableArn,
+      props.accessLoggingBucket
     );
     props.kmsKey.grantEncrypt(new ServicePrincipal('cloudtrail.amazonaws.com'));
 
@@ -90,7 +93,8 @@ export class DeaAuditTrail extends Construct {
     trailLogGroup: LogGroup,
     kmsKey: Key,
     deaDatasetsBucket: IBucket,
-    deaTableArn: string
+    deaTableArn: string,
+    deaAccessLoggingBucket: IBucket
   ) {
     const trailBucket = new Bucket(this, 'deaTrailBucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
@@ -101,6 +105,8 @@ export class DeaAuditTrail extends Construct {
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+      serverAccessLogsBucket: deaAccessLoggingBucket,
+      serverAccessLogsPrefix: 'trail-bucket-access-logs',
     });
 
     createCfnOutput(this, 'deaTrailBucketName', {
