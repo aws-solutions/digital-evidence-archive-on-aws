@@ -325,6 +325,7 @@ describe('DeaBackend constructs', () => {
     const deleteHandlerCount = 1;
     const expectedLambdaCountWithoutDeleteCaseHandler =
       expectedLambdaCount - testAuthHandlerCount - deleteHandlerCount + awsCDKCfnUtilsProviderCount;
+
     const expectedMethodCountWithoutDeleteCaseHandler = deaApiRouteConfig.routes.length - 1;
     template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCountWithoutDeleteCaseHandler);
     template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCountWithoutDeleteCaseHandler);

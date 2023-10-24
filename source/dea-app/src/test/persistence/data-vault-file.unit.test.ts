@@ -7,7 +7,11 @@ import { DeaDataVaultInput } from '../../models/data-vault';
 import { DataVaultFileDTO } from '../../models/data-vault-file';
 import { DeaUser } from '../../models/user';
 import { createDataVault } from '../../persistence/data-vault';
-import { createDataVaultFile, listDataVaultFilesByFilePath } from '../../persistence/data-vault-file';
+import {
+  createDataVaultFile,
+  getDataVaultFileByUlid,
+  listDataVaultFilesByFilePath,
+} from '../../persistence/data-vault-file';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { createUser } from '../../persistence/user';
 import { getTestRepositoryProvider } from './local-db-table';
@@ -188,5 +192,38 @@ describe('data vault file persistence', () => {
 
     expect(dataVaultFiles).toBeDefined();
     expect(dataVaultFiles.length).toEqual(1);
+  });
+
+  it('should get file details from data vault by ULID', async () => {
+    const dataVaultInput: DeaDataVaultInput = {
+      name: 'Data Vault 5',
+      description: 'Test Description',
+    };
+
+    const createdDataVault = await createDataVault(dataVaultInput, repositoryProvider);
+
+    const fileInput: DataVaultFileDTO = {
+      fileName: 'testFile1',
+      filePath: '/dummypath/test/test/',
+      dataVaultUlid: createdDataVault.ulid,
+      isFile: true,
+      fileSizeBytes: 1024,
+      createdBy: user.ulid,
+      contentType: 'regular',
+      sha256Hash: 'SHA256HASH',
+      versionId: 'VERSIONID',
+      fileS3Key: 'S3KEY',
+      executionId: 'exec-00000000000000000',
+    };
+
+    const fileResponse = await createDataVaultFile(fileInput, repositoryProvider);
+
+    const fileDetail = await getDataVaultFileByUlid(
+      fileResponse.ulid,
+      createdDataVault.ulid,
+      repositoryProvider
+    );
+
+    expect(fileDetail).toEqual(fileResponse);
   });
 });

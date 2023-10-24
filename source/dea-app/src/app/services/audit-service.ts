@@ -49,6 +49,7 @@ export enum AuditEventType {
   CREATE_DATA_VAULT_TASK = 'CreateDataVaultTask',
   CREATE_DATA_VAULT_EXECUTION = 'CreateDataVaultExecution',
   GET_DATA_VAULT_EXECUTIONS = 'GetDataVaultExecutions',
+  GET_DATA_VAULT_FILE_DETAIL = 'GetDataVaultFileDetail',
   GET_DATA_VAULT_TASKS = 'GetDataVaultTask',
   GET_DATA_SYNC_TASKS = 'GetDataSyncTask',
   GET_MY_CASES = 'GetMyCases',

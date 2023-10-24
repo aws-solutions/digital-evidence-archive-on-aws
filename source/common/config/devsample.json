@@ -39,10 +39,14 @@
         },
         {
           "path": "/datavaults/{dataVaultId}/tasks",
-          "method": "POST"
+          "method": "GET"
         },
         {
           "path": "/datavaults/{dataVaultId}/tasks",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/info",
           "method": "GET"
         },
         {

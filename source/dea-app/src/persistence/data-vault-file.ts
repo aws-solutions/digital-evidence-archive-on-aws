@@ -20,6 +20,22 @@ export const createDataVaultFile = async (
   return dataVaultFileFromEntity(dataVaultFileEntity);
 };
 
+export const getDataVaultFileByUlid = async (
+  ulid: string,
+  dataVaultUlid: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaDataVaultFile | undefined> => {
+  const dataVaultFileEntity = await repositoryProvider.DataVaultFileModel.get({
+    PK: `DATAVAULT#${dataVaultUlid}#`,
+    SK: `FILE#${ulid}#`,
+  });
+
+  if (!dataVaultFileEntity) {
+    return dataVaultFileEntity;
+  }
+  return dataVaultFileFromEntity(dataVaultFileEntity);
+};
+
 export const listDataVaultFilesByFilePath = async (
   dataVaultUlid: string,
   filePath: string,

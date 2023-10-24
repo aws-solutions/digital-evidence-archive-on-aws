@@ -9,10 +9,12 @@ import { getPaginationParameters, getRequiredPathParam } from '../../lambda-http
 import { DeaDataVaultFile } from '../../models/data-vault-file';
 import { joiUlid, filePath as filePathRegex } from '../../models/validation/joi-common';
 import { getDataVault } from '../../persistence/data-vault';
-import { listDataVaultFilesByFilePath } from '../../persistence/data-vault-file';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
-import { hydrateUsersForDataVaultFiles } from '../services/data-vault-service';
+import {
+  hydrateUsersForDataVaultFiles,
+  listDataVaultFilesByFilePath,
+} from '../services/data-vault-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 import { getNextToken } from './get-next-token';
