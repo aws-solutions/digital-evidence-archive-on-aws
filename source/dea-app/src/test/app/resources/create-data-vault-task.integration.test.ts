@@ -74,7 +74,7 @@ describe('create data vault tasks resource', () => {
     });
 
     await expect(createDataVaultTask(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      'Cannot create unique attributes "name" for "DataVaultTask". An item of the same name already exists.'
+      'Data Vault task name is already in use'
     );
   });
 

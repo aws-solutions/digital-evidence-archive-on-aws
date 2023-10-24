@@ -276,7 +276,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
       onSelectionChange={({ detail }) => setSelectedTasks(detail.selectedItems)}
       selectedItems={selectedTasks}
       selectionType="single"
-      isItemDisabled={(item) => !item.dataVaultUlid}
+      isItemDisabled={(item) => !item.dataVaultName}
       trackBy="taskId"
       loading={isLoading}
       variant="full-page"

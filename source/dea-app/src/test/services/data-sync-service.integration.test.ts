@@ -9,6 +9,7 @@ import {
   deleteDatasyncLocation,
   deleteDatasyncTask,
   desrcibeTask,
+  getDataSyncTask,
   listDatasyncTasks,
   startDatasyncTaskExecution,
 } from '../../app/services/data-sync-service';
@@ -78,4 +79,54 @@ describe('data-sync-service integration tests', () => {
     expect(await deleteDatasyncLocation(deleteLocationTest, dataSyncProvider)).toEqual(deleteLocationTest);
     expect(await deleteDatasyncLocation(deleteLocationTest2, dataSyncProvider)).toEqual(deleteLocationTest2);
   }, 40000);
+
+  it('should fail to get the task if the destination location is not properly set', async () => {
+    // Swap some settings to create a destination location with different settings.
+    const anotherDataSyncProvider: DataSyncProvider = {
+      ...dataSyncProvider,
+      //dataSyncRoleArn: dataSyncProvider.dataSyncReportsRoleArn,
+      datasetsBucketArn: dataSyncProvider.dataSyncReportsBucketArn,
+    };
+    locationArn1 = await createS3Location(`/DATAVAULT${dataVaultUlid}/locationtest1`, dataSyncProvider);
+    expect(locationArn1).toBeTruthy();
+    locationArn2 = await createS3Location(`DATAVAULT${dataVaultUlid}/locationtest2`, anotherDataSyncProvider);
+    expect(locationArn2).toBeTruthy();
+    taskArn = await createDatasyncTask('taskname', locationArn1, locationArn2, dataSyncProvider);
+    expect(taskArn).toBeTruthy();
+
+    await expect(getDataSyncTask(taskArn, dataSyncProvider)).rejects.toThrow(
+      'Destination Location is not properly set'
+    );
+  }, 40000);
+
+  it('should fail to get the task if the task is not properly set', async () => {
+    // Swap some settings to create a task with different settings.
+    const anotherDataSyncProvider: DataSyncProvider = {
+      ...dataSyncProvider,
+      dataSyncReportsBucketArn: dataSyncProvider.datasetsBucketArn,
+      dataSyncReportsRoleArn: dataSyncProvider.dataSyncRoleArn,
+    };
+    locationArn1 = await createS3Location(`/DATAVAULT${dataVaultUlid}/locationtest1`, dataSyncProvider);
+    expect(locationArn1).toBeTruthy();
+    locationArn2 = await createS3Location(`DATAVAULT${dataVaultUlid}/locationtest2`, dataSyncProvider);
+    expect(locationArn2).toBeTruthy();
+    taskArn = await createDatasyncTask('taskname', locationArn1, locationArn2, anotherDataSyncProvider);
+    expect(taskArn).toBeTruthy();
+
+    await expect(getDataSyncTask(taskArn, dataSyncProvider)).rejects.toThrow(
+      'DataSync Task is not properly set'
+    );
+  }, 40000);
+
+  it('should get the task successfully', async () => {
+    locationArn1 = await createS3Location(`/DATAVAULT${dataVaultUlid}/locationtest1`, dataSyncProvider);
+    expect(locationArn1).toBeTruthy();
+    locationArn2 = await createS3Location(`DATAVAULT${dataVaultUlid}/locationtest2`, dataSyncProvider);
+    expect(locationArn2).toBeTruthy();
+    taskArn = await createDatasyncTask('taskname', locationArn1, locationArn2, dataSyncProvider);
+    expect(taskArn).toBeTruthy();
+
+    const task = await getDataSyncTask(taskArn, dataSyncProvider);
+    expect(task.taskArn).toBeDefined();
+  });
 });

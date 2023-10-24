@@ -11,6 +11,7 @@ const region = process.env.AWS_REGION ?? 'us-east-1';
 export interface DataSyncProvider {
   dataSyncClient: DataSyncClient;
   dataSyncRoleArn: string;
+  datasetsBucketName: string;
   datasetsBucketArn: string;
   dataSyncReportsRoleArn: string;
   dataSyncReportsBucketArn: string;
@@ -19,6 +20,10 @@ export interface DataSyncProvider {
 export const defaultDataSyncProvider = {
   dataSyncClient: new DataSyncClient({ region }),
   dataSyncRoleArn: getRequiredEnv('DATASYNC_ROLE', 'DATASYNC_ROLE is not set in your lambda!'),
+  datasetsBucketName: getRequiredEnv(
+    'DATASETS_BUCKET_NAME',
+    'DATASETS_BUCKET_NAME is not set in your lambda!'
+  ),
   datasetsBucketArn: `arn:aws:s3:::${getRequiredEnv(
     'DATASETS_BUCKET_NAME',
     'DATASETS_BUCKET_NAME is not set in your lambda!'

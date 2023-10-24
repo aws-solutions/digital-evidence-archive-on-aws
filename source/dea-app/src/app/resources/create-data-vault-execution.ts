@@ -12,7 +12,7 @@ import { defaultDatasetsProvider } from '../../storage/datasets';
 import { defaultDataSyncProvider } from '../../storage/dataSync';
 import { defaultCloudwatchClient } from '../audit/dea-audit-plugin';
 import { ValidationError } from '../exceptions/validation-exception';
-import { startDatasyncTaskExecution } from '../services/data-sync-service';
+import { getDataSyncTask, startDatasyncTaskExecution } from '../services/data-sync-service';
 import * as DataVaultService from '../services/data-vault-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
@@ -40,6 +40,16 @@ export const createDataVaultExecution: DEAGatewayProxyHandler = async (
 
   if (!dataVaultExecutionDTO.taskArn.includes(taskId)) {
     throw new ValidationError('Requested task ID does not match resource');
+  }
+
+  const dataVaultTask = await getDataSyncTask(dataVaultExecutionDTO.taskArn, dataSyncProvider);
+  // Create the task in DDB if doesn't exists.
+  try {
+    await DataVaultService.createDataVaultTask(dataVaultTask, repositoryProvider);
+  } catch (error) {
+    if (!(error instanceof ValidationError)) {
+      throw error;
+    }
   }
 
   const executionArn = await startDatasyncTaskExecution(dataVaultExecutionDTO.taskArn, dataSyncProvider);

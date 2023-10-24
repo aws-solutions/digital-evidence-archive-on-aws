@@ -80,7 +80,10 @@ export const createDataVaultTask = async (
       const conditionalcheckfailed = oneTableError.context?.err?.CancellationReasons.find(
         (reason: { Code: string }) => reason.Code === 'ConditionalCheckFailed'
       );
-      if (oneTableError.code === 'TransactionCanceledException' && conditionalcheckfailed) {
+      if (
+        oneTableError.code === 'UniqueError' ||
+        (oneTableError.code === 'TransactionCanceledException' && conditionalcheckfailed)
+      ) {
         throw new ValidationError(`Data Vault task name is already in use`);
       }
     }

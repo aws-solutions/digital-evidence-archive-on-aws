@@ -15,16 +15,18 @@ import {
   ListTaskExecutionsCommand,
   ListTaskExecutionsResponse,
   ListTasksCommand,
-  ReportDestination,
-  ReportDestinationS3,
   ReportLevel,
   ReportOutputType,
   StartTaskExecutionCommand,
   TaskExecutionListEntry,
   VerifyMode,
 } from '@aws-sdk/client-datasync';
+import Joi from 'joi';
+import { logger } from '../../logger';
 import { DeaDataSyncTask } from '../../models/data-sync-task';
+import { DeaDataVaultTaskInput } from '../../models/data-vault-task';
 import { DataSyncProvider } from '../../storage/dataSync';
+import { ValidationError } from '../exceptions/validation-exception';
 import { retry } from './service-helpers';
 
 export const createS3Location = async (
@@ -32,12 +34,9 @@ export const createS3Location = async (
   dataSyncProvider: DataSyncProvider
 ): Promise<string> => {
   const locationSettings = {
-    Subdirectory: destinationFolder,
+    ...getDestinationLocationSettings(dataSyncProvider),
     S3BucketArn: dataSyncProvider.datasetsBucketArn,
-    S3StorageClass: 'INTELLIGENT_TIERING',
-    S3Config: {
-      BucketAccessRoleArn: dataSyncProvider.dataSyncRoleArn,
-    },
+    Subdirectory: destinationFolder,
   };
 
   const command = new CreateLocationS3Command(locationSettings);
@@ -64,28 +63,11 @@ export const createDatasyncTask = async (
   destinationLocationArn: string,
   dataSyncProvider: DataSyncProvider
 ): Promise<string> => {
-  const taskReportS3: ReportDestinationS3 = {
-    S3BucketArn: dataSyncProvider.dataSyncReportsBucketArn,
-    BucketAccessRoleArn: dataSyncProvider.dataSyncReportsRoleArn,
-  };
-
-  const taskReportDestination: ReportDestination = {
-    S3: taskReportS3,
-  };
-
   const taskSettings: CreateTaskCommandInput = {
+    ...getDataSyncTaskSettings(dataSyncProvider),
     Name: name,
     SourceLocationArn: sourceLocationArn,
     DestinationLocationArn: destinationLocationArn,
-    Options: {
-      VerifyMode: VerifyMode.ONLY_FILES_TRANSFERRED,
-      OverwriteMode: 'ALWAYS',
-    },
-    TaskReportConfig: {
-      ReportLevel: ReportLevel.SUCCESSES_AND_ERRORS,
-      OutputType: ReportOutputType.STANDARD,
-      Destination: taskReportDestination,
-    },
   };
 
   const command = new CreateTaskCommand(taskSettings);
@@ -148,14 +130,7 @@ export const desrcibeTask = async (
     throw new Error('Location description failed');
   }
 
-  const destinationUri = describeLocationResponse.LocationUri || '';
-  const regex = /DATAVAULT([A-Z0-9]{26})/;
-  const match = destinationUri.match(regex);
-
-  let dataVaultUlid = '';
-  if (match) {
-    dataVaultUlid = match[1];
-  }
+  const dataVaultUlid = getDataVaultUlid(describeLocationResponse.LocationUri);
 
   //Get the last execution completed if the Task is Available and has a dataVaultUlid
   let lastExecutionCompleted = undefined;
@@ -275,4 +250,117 @@ export const describeDatasyncTaskExecution = async (
   return await retry(async () => {
     return await dataSyncProvider.dataSyncClient.send(command);
   });
+};
+
+export const getDataVaultUlid = (locationUri?: string) => {
+  const destinationUri = locationUri || '';
+  const regex = /DATAVAULT([A-Z0-9]{26})/;
+  const match = destinationUri.match(regex);
+
+  let dataVaultUlid = '';
+  if (match) {
+    dataVaultUlid = match[1];
+  }
+  return dataVaultUlid;
+};
+
+export const getDestinationFolder = (locationUri?: string) => {
+  const destinationUri = locationUri || '';
+  const regex = /(DATAVAULT[A-Z0-9]{26}\/.*)/;
+  const match = destinationUri.match(regex);
+
+  let destinationFolder = '';
+  if (match) {
+    destinationFolder = match[1];
+  }
+  return destinationFolder;
+};
+
+export const getDestinationLocationSettings = (dataSyncProvider: DataSyncProvider) => ({
+  S3StorageClass: 'INTELLIGENT_TIERING',
+  S3Config: {
+    BucketAccessRoleArn: dataSyncProvider.dataSyncRoleArn,
+  },
+});
+
+export const getDataSyncTaskSettings = (dataSyncProvider: DataSyncProvider) => ({
+  Options: {
+    VerifyMode: VerifyMode.ONLY_FILES_TRANSFERRED,
+    OverwriteMode: 'ALWAYS',
+  },
+  TaskReportConfig: {
+    ReportLevel: ReportLevel.SUCCESSES_AND_ERRORS,
+    OutputType: ReportOutputType.STANDARD,
+    Destination: {
+      S3: {
+        S3BucketArn: dataSyncProvider.dataSyncReportsBucketArn,
+        BucketAccessRoleArn: dataSyncProvider.dataSyncReportsRoleArn,
+      },
+    },
+  },
+});
+
+export const getDataSyncTask = async (
+  taskArn: string,
+  dataSyncProvider: DataSyncProvider
+): Promise<DeaDataVaultTaskInput> => {
+  // Validate Task settings
+  const datasyncTaskSettingSchema = Joi.compile(getDataSyncTaskSettings(dataSyncProvider));
+  const describeTaskCommand = new DescribeTaskCommand({
+    TaskArn: taskArn,
+  });
+  const describeTaskResponse = await retry(async () => {
+    const describeTaskResponse = await dataSyncProvider.dataSyncClient.send(describeTaskCommand);
+    return describeTaskResponse;
+  });
+  if (!describeTaskResponse) {
+    throw new Error('Task description failed');
+  }
+  const dataSyncTaskValidationResult = datasyncTaskSettingSchema.validate(describeTaskResponse, {
+    allowUnknown: true,
+  });
+  if (dataSyncTaskValidationResult.error) {
+    logger.info('DataSync Task is not properly set', dataSyncTaskValidationResult.error.details);
+    throw new ValidationError('DataSync Task is not properly set');
+  }
+
+  // Validate destination location settings.
+  const destinationLocationSettings = {
+    ...getDestinationLocationSettings(dataSyncProvider),
+    LocationUri: new RegExp(`^s3://${dataSyncProvider.datasetsBucketName}`),
+  };
+  const destinationLocationSettingSchema = Joi.compile(destinationLocationSettings);
+  const destinationLocationArn = describeTaskResponse.DestinationLocationArn;
+  const describeLocationCommand = new DescribeLocationS3Command({
+    LocationArn: destinationLocationArn,
+  });
+  const describeLocationResponse = await retry(async () => {
+    const describeLocationResponse = await dataSyncProvider.dataSyncClient.send(describeLocationCommand);
+    return describeLocationResponse;
+  });
+  if (!describeLocationResponse) {
+    throw new Error('Location description failed');
+  }
+  const destinationLocationValidationResults = destinationLocationSettingSchema.validate(
+    describeLocationResponse,
+    { allowUnknown: true }
+  );
+  if (destinationLocationValidationResults.error) {
+    logger.info(
+      'Destination Location is not properly set',
+      destinationLocationValidationResults.error.details
+    );
+    throw new ValidationError('Destination Location is not properly set');
+  }
+
+  return {
+    taskId: taskArn.split('/')[1],
+    dataVaultUlid: getDataVaultUlid(describeLocationResponse.LocationUri),
+    name: describeTaskResponse.Name || '',
+    destinationFolder: getDestinationFolder(describeLocationResponse.LocationUri),
+    sourceLocationArn: describeTaskResponse.SourceLocationArn || '',
+    destinationLocationArn: destinationLocationArn || '',
+    taskArn: taskArn,
+    deleted: false,
+  };
 };
