@@ -5,7 +5,8 @@
 /* eslint-disable no-new */
 import assert from 'assert';
 import * as path from 'path';
-import { createCfnOutput, deaConfig } from '@aws/dea-backend';
+import { deaConfig } from '@aws/dea-backend/lib/config';
+import { createCfnOutput } from '@aws/dea-backend/lib/constructs/construct-support';
 import { Aws, StackProps } from 'aws-cdk-lib';
 import {
   AuthorizationType,

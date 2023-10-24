@@ -6779,7 +6779,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiAccount1E82C2B3",
         "DeaRestApiConstructdeaapiCloudWatchRole49932FD9",
         "DeaRestApiConstructdeaapiDEAUsagePlanBC29ADF7",
-        "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8",
         "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
         "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenA42BE3E6",
@@ -6796,7 +6795,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
         "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
         "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
-        "DeaRestApiConstructdeaapiauthOPTIONSF807407C",
         "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken099A885C",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
@@ -6823,7 +6821,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGET26466F30",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvOPTIONS428A5C73",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvF0D4AAEB",
-        "DeaRestApiConstructdeaapicasescaseIdauditauditIdOPTIONS517DE0AB",
         "DeaRestApiConstructdeaapicasescaseIdauditauditId33263B8C",
         "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit10091757",
@@ -6846,7 +6843,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGET502B4685",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONS5D0C778E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsv94975A46",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdOPTIONSDBE821E3",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdAF04FFD1",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdaudit5562DDDE",
@@ -6866,7 +6862,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETBCDCA5B2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoOPTIONS11169FBA",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5",
@@ -6881,7 +6876,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfiles39BF2383",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
         "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7",
-        "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954",
         "DeaRestApiConstructdeaapicasescaseIdownerOPTIONSBD3E6D71",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdownerE92895A4",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdowner0B48A767",
@@ -6914,9 +6908,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships748F3883",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdOPTIONS15B78F29",
         "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
-        "DeaRestApiConstructdeaapicasescaseIdusersOPTIONS61C453FB",
         "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
         "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases0A56C052",
         "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases8A384810",
@@ -6933,34 +6925,29 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcases9AE2A82E",
         "DeaRestApiConstructdeaapicasesPOST0A7C65AB",
         "DeaRestApiConstructdeaapicasesC2FD1C2B",
-        "DeaRestApiConstructdeaapiOPTIONSE2FADC9C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsv32688A4B",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsvFC587FF9",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETB3B09D3C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvOPTIONSBC6D4692",
         "DeaRestApiConstructdeaapisystemauditauditIdcsv3DF23375",
-        "DeaRestApiConstructdeaapisystemauditauditIdOPTIONS2EADE5A9",
         "DeaRestApiConstructdeaapisystemauditauditIdB2530B9D",
         "DeaRestApiConstructdeaapisystemauditOPTIONS30FFCB3F",
         "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemaudit92D5D91E",
         "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemauditCB076E78",
         "DeaRestApiConstructdeaapisystemauditPOSTA0F7E161",
         "DeaRestApiConstructdeaapisystemaudit2A5DAEF8",
-        "DeaRestApiConstructdeaapisystemOPTIONS2695AC39",
         "DeaRestApiConstructdeaapisystemAD98847E",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv84743A25",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv64381123",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGET612A031C",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvOPTIONSFD04EC81",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsv119B9333",
-        "DeaRestApiConstructdeaapiusersuserIdauditauditIdOPTIONS3652E037",
         "DeaRestApiConstructdeaapiusersuserIdauditauditId63841CC8",
         "DeaRestApiConstructdeaapiusersuserIdauditOPTIONSEE6E3674",
         "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit6194CA37",
         "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit3F85C343",
         "DeaRestApiConstructdeaapiusersuserIdauditPOST04D75563",
         "DeaRestApiConstructdeaapiusersuserIdaudit60684DFA",
-        "DeaRestApiConstructdeaapiusersuserIdOPTIONS66B09E53",
         "DeaRestApiConstructdeaapiusersuserIdB57BE8EB",
         "DeaRestApiConstructdeaapiusersGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusers8EAF9CF0",
         "DeaRestApiConstructdeaapiusersGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusers52337E4B",
@@ -7111,7 +7098,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiAccount1E82C2B3",
         "DeaRestApiConstructdeaapiCloudWatchRole49932FD9",
         "DeaRestApiConstructdeaapiDEAUsagePlanBC29ADF7",
-        "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8",
         "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
         "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenA42BE3E6",
@@ -7128,7 +7114,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
         "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
         "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
-        "DeaRestApiConstructdeaapiauthOPTIONSF807407C",
         "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken099A885C",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
@@ -7155,7 +7140,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGET26466F30",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvOPTIONS428A5C73",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvF0D4AAEB",
-        "DeaRestApiConstructdeaapicasescaseIdauditauditIdOPTIONS517DE0AB",
         "DeaRestApiConstructdeaapicasescaseIdauditauditId33263B8C",
         "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit10091757",
@@ -7178,7 +7162,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGET502B4685",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONS5D0C778E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsv94975A46",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdOPTIONSDBE821E3",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdAF04FFD1",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdaudit5562DDDE",
@@ -7198,7 +7181,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETBCDCA5B2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoOPTIONS11169FBA",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5",
@@ -7213,7 +7195,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfiles39BF2383",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
         "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7",
-        "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954",
         "DeaRestApiConstructdeaapicasescaseIdownerOPTIONSBD3E6D71",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdownerE92895A4",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdowner0B48A767",
@@ -7246,9 +7227,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships748F3883",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdOPTIONS15B78F29",
         "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
-        "DeaRestApiConstructdeaapicasescaseIdusersOPTIONS61C453FB",
         "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
         "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases0A56C052",
         "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases8A384810",
@@ -7265,34 +7244,29 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcases9AE2A82E",
         "DeaRestApiConstructdeaapicasesPOST0A7C65AB",
         "DeaRestApiConstructdeaapicasesC2FD1C2B",
-        "DeaRestApiConstructdeaapiOPTIONSE2FADC9C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsv32688A4B",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsvFC587FF9",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETB3B09D3C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvOPTIONSBC6D4692",
         "DeaRestApiConstructdeaapisystemauditauditIdcsv3DF23375",
-        "DeaRestApiConstructdeaapisystemauditauditIdOPTIONS2EADE5A9",
         "DeaRestApiConstructdeaapisystemauditauditIdB2530B9D",
         "DeaRestApiConstructdeaapisystemauditOPTIONS30FFCB3F",
         "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemaudit92D5D91E",
         "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemauditCB076E78",
         "DeaRestApiConstructdeaapisystemauditPOSTA0F7E161",
         "DeaRestApiConstructdeaapisystemaudit2A5DAEF8",
-        "DeaRestApiConstructdeaapisystemOPTIONS2695AC39",
         "DeaRestApiConstructdeaapisystemAD98847E",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv84743A25",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv64381123",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGET612A031C",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvOPTIONSFD04EC81",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsv119B9333",
-        "DeaRestApiConstructdeaapiusersuserIdauditauditIdOPTIONS3652E037",
         "DeaRestApiConstructdeaapiusersuserIdauditauditId63841CC8",
         "DeaRestApiConstructdeaapiusersuserIdauditOPTIONSEE6E3674",
         "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit6194CA37",
         "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit3F85C343",
         "DeaRestApiConstructdeaapiusersuserIdauditPOST04D75563",
         "DeaRestApiConstructdeaapiusersuserIdaudit60684DFA",
-        "DeaRestApiConstructdeaapiusersuserIdOPTIONS66B09E53",
         "DeaRestApiConstructdeaapiusersuserIdB57BE8EB",
         "DeaRestApiConstructdeaapiusersGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusers8EAF9CF0",
         "DeaRestApiConstructdeaapiusersGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusers52337E4B",
@@ -7328,7 +7302,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiAccount1E82C2B3",
         "DeaRestApiConstructdeaapiCloudWatchRole49932FD9",
         "DeaRestApiConstructdeaapiDEAUsagePlanBC29ADF7",
-        "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8",
         "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
         "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenA42BE3E6",
@@ -7345,7 +7318,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
         "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
         "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
-        "DeaRestApiConstructdeaapiauthOPTIONSF807407C",
         "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken099A885C",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
@@ -7372,7 +7344,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGET26466F30",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvOPTIONS428A5C73",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvF0D4AAEB",
-        "DeaRestApiConstructdeaapicasescaseIdauditauditIdOPTIONS517DE0AB",
         "DeaRestApiConstructdeaapicasescaseIdauditauditId33263B8C",
         "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit10091757",
@@ -7395,7 +7366,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGET502B4685",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONS5D0C778E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsv94975A46",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdOPTIONSDBE821E3",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdAF04FFD1",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdaudit5562DDDE",
@@ -7415,7 +7385,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETBCDCA5B2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoOPTIONS11169FBA",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5",
@@ -7430,7 +7399,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfiles39BF2383",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
         "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7",
-        "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954",
         "DeaRestApiConstructdeaapicasescaseIdownerOPTIONSBD3E6D71",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdownerE92895A4",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdowner0B48A767",
@@ -7463,9 +7431,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships748F3883",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdOPTIONS15B78F29",
         "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
-        "DeaRestApiConstructdeaapicasescaseIdusersOPTIONS61C453FB",
         "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
         "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases0A56C052",
         "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases8A384810",
@@ -7482,34 +7448,29 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcases9AE2A82E",
         "DeaRestApiConstructdeaapicasesPOST0A7C65AB",
         "DeaRestApiConstructdeaapicasesC2FD1C2B",
-        "DeaRestApiConstructdeaapiOPTIONSE2FADC9C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsv32688A4B",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsvFC587FF9",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETB3B09D3C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvOPTIONSBC6D4692",
         "DeaRestApiConstructdeaapisystemauditauditIdcsv3DF23375",
-        "DeaRestApiConstructdeaapisystemauditauditIdOPTIONS2EADE5A9",
         "DeaRestApiConstructdeaapisystemauditauditIdB2530B9D",
         "DeaRestApiConstructdeaapisystemauditOPTIONS30FFCB3F",
         "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemaudit92D5D91E",
         "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemauditCB076E78",
         "DeaRestApiConstructdeaapisystemauditPOSTA0F7E161",
         "DeaRestApiConstructdeaapisystemaudit2A5DAEF8",
-        "DeaRestApiConstructdeaapisystemOPTIONS2695AC39",
         "DeaRestApiConstructdeaapisystemAD98847E",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv84743A25",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv64381123",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGET612A031C",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvOPTIONSFD04EC81",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsv119B9333",
-        "DeaRestApiConstructdeaapiusersuserIdauditauditIdOPTIONS3652E037",
         "DeaRestApiConstructdeaapiusersuserIdauditauditId63841CC8",
         "DeaRestApiConstructdeaapiusersuserIdauditOPTIONSEE6E3674",
         "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit6194CA37",
         "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit3F85C343",
         "DeaRestApiConstructdeaapiusersuserIdauditPOST04D75563",
         "DeaRestApiConstructdeaapiusersuserIdaudit60684DFA",
-        "DeaRestApiConstructdeaapiusersuserIdOPTIONS66B09E53",
         "DeaRestApiConstructdeaapiusersuserIdB57BE8EB",
         "DeaRestApiConstructdeaapiusersGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusers8EAF9CF0",
         "DeaRestApiConstructdeaapiusersGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusers52337E4B",
@@ -7546,7 +7507,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiAccount1E82C2B3",
         "DeaRestApiConstructdeaapiCloudWatchRole49932FD9",
         "DeaRestApiConstructdeaapiDEAUsagePlanBC29ADF7",
-        "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8",
         "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
         "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenA42BE3E6",
@@ -7563,7 +7523,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
         "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
         "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
-        "DeaRestApiConstructdeaapiauthOPTIONSF807407C",
         "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken099A885C",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
@@ -7590,7 +7549,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGET26466F30",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvOPTIONS428A5C73",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvF0D4AAEB",
-        "DeaRestApiConstructdeaapicasescaseIdauditauditIdOPTIONS517DE0AB",
         "DeaRestApiConstructdeaapicasescaseIdauditauditId33263B8C",
         "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit10091757",
@@ -7613,7 +7571,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGET502B4685",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONS5D0C778E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsv94975A46",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdOPTIONSDBE821E3",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdAF04FFD1",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdaudit5562DDDE",
@@ -7633,7 +7590,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETBCDCA5B2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoOPTIONS11169FBA",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5",
@@ -7648,7 +7604,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfiles39BF2383",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
         "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7",
-        "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954",
         "DeaRestApiConstructdeaapicasescaseIdownerOPTIONSBD3E6D71",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdownerE92895A4",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdowner0B48A767",
@@ -7681,9 +7636,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships748F3883",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdOPTIONS15B78F29",
         "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
-        "DeaRestApiConstructdeaapicasescaseIdusersOPTIONS61C453FB",
         "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
         "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases0A56C052",
         "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases8A384810",
@@ -7700,34 +7653,29 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcases9AE2A82E",
         "DeaRestApiConstructdeaapicasesPOST0A7C65AB",
         "DeaRestApiConstructdeaapicasesC2FD1C2B",
-        "DeaRestApiConstructdeaapiOPTIONSE2FADC9C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsv32688A4B",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsvFC587FF9",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETB3B09D3C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvOPTIONSBC6D4692",
         "DeaRestApiConstructdeaapisystemauditauditIdcsv3DF23375",
-        "DeaRestApiConstructdeaapisystemauditauditIdOPTIONS2EADE5A9",
         "DeaRestApiConstructdeaapisystemauditauditIdB2530B9D",
         "DeaRestApiConstructdeaapisystemauditOPTIONS30FFCB3F",
         "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemaudit92D5D91E",
         "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemauditCB076E78",
         "DeaRestApiConstructdeaapisystemauditPOSTA0F7E161",
         "DeaRestApiConstructdeaapisystemaudit2A5DAEF8",
-        "DeaRestApiConstructdeaapisystemOPTIONS2695AC39",
         "DeaRestApiConstructdeaapisystemAD98847E",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv84743A25",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv64381123",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGET612A031C",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvOPTIONSFD04EC81",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsv119B9333",
-        "DeaRestApiConstructdeaapiusersuserIdauditauditIdOPTIONS3652E037",
         "DeaRestApiConstructdeaapiusersuserIdauditauditId63841CC8",
         "DeaRestApiConstructdeaapiusersuserIdauditOPTIONSEE6E3674",
         "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit6194CA37",
         "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit3F85C343",
         "DeaRestApiConstructdeaapiusersuserIdauditPOST04D75563",
         "DeaRestApiConstructdeaapiusersuserIdaudit60684DFA",
-        "DeaRestApiConstructdeaapiusersuserIdOPTIONS66B09E53",
         "DeaRestApiConstructdeaapiusersuserIdB57BE8EB",
         "DeaRestApiConstructdeaapiusersGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusers8EAF9CF0",
         "DeaRestApiConstructdeaapiusersGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusers52337E4B",
@@ -7975,7 +7923,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     },
     "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8",
         "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
         "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
@@ -7986,7 +7933,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
         "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
         "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
-        "DeaRestApiConstructdeaapiauthOPTIONSF807407C",
         "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D",
         "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
@@ -8003,7 +7949,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGET26466F30",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvOPTIONS428A5C73",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvF0D4AAEB",
-        "DeaRestApiConstructdeaapicasescaseIdauditauditIdOPTIONS517DE0AB",
         "DeaRestApiConstructdeaapicasescaseIdauditauditId33263B8C",
         "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTE1FBCE9C",
@@ -8016,7 +7961,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGET502B4685",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONS5D0C778E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsv94975A46",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdOPTIONSDBE821E3",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdAF04FFD1",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOST3CAF58FE",
@@ -8028,7 +7972,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETBCDCA5B2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoOPTIONS11169FBA",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTA4D1AB12",
@@ -8037,7 +7980,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesOPTIONS18C09E02",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
         "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7",
-        "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954",
         "DeaRestApiConstructdeaapicasescaseIdownerOPTIONSBD3E6D71",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTFB8341CA",
         "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F",
@@ -8056,9 +7998,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdOPTIONS15B78F29",
         "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
-        "DeaRestApiConstructdeaapicasescaseIdusersOPTIONS61C453FB",
         "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
         "DeaRestApiConstructdeaapicasesallcasesGET3D7FE7B4",
         "DeaRestApiConstructdeaapicasesallcasesOPTIONSA5C611C6",
@@ -8069,26 +8009,21 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasesOPTIONS6C23822B",
         "DeaRestApiConstructdeaapicasesPOST0A7C65AB",
         "DeaRestApiConstructdeaapicasesC2FD1C2B",
-        "DeaRestApiConstructdeaapiOPTIONSE2FADC9C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETB3B09D3C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvOPTIONSBC6D4692",
         "DeaRestApiConstructdeaapisystemauditauditIdcsv3DF23375",
-        "DeaRestApiConstructdeaapisystemauditauditIdOPTIONS2EADE5A9",
         "DeaRestApiConstructdeaapisystemauditauditIdB2530B9D",
         "DeaRestApiConstructdeaapisystemauditOPTIONS30FFCB3F",
         "DeaRestApiConstructdeaapisystemauditPOSTA0F7E161",
         "DeaRestApiConstructdeaapisystemaudit2A5DAEF8",
-        "DeaRestApiConstructdeaapisystemOPTIONS2695AC39",
         "DeaRestApiConstructdeaapisystemAD98847E",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGET612A031C",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvOPTIONSFD04EC81",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsv119B9333",
-        "DeaRestApiConstructdeaapiusersuserIdauditauditIdOPTIONS3652E037",
         "DeaRestApiConstructdeaapiusersuserIdauditauditId63841CC8",
         "DeaRestApiConstructdeaapiusersuserIdauditOPTIONSEE6E3674",
         "DeaRestApiConstructdeaapiusersuserIdauditPOST04D75563",
         "DeaRestApiConstructdeaapiusersuserIdaudit60684DFA",
-        "DeaRestApiConstructdeaapiusersuserIdOPTIONS66B09E53",
         "DeaRestApiConstructdeaapiusersuserIdB57BE8EB",
         "DeaRestApiConstructdeaapiusersGET45E97005",
         "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
@@ -8150,53 +8085,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Stage",
     },
-    "DeaRestApiConstructdeaapiOPTIONSE2FADC9C": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeaapi6587DDA1",
-            "RootResourceId",
-          ],
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
     "DeaRestApiConstructdeaapiauthE4846931": Object {
       "Properties": Object {
         "ParentId": Object {
@@ -8212,50 +8100,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapiauthOPTIONSF807407C": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthE4846931",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
     "DeaRestApiConstructdeaapiauthauthCodeFF00F04A": Object {
       "Properties": Object {
         "ParentId": Object {
@@ -8267,50 +8111,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapiauthauthCodeOPTIONS886A6DD8": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
     },
     "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9": Object {
       "Properties": Object {
@@ -9730,50 +9530,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapicasescaseIdOPTIONS28A51954": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
     "DeaRestApiConstructdeaapicasescaseIdactions4A0D9ED8": Object {
       "Properties": Object {
         "ParentId": Object {
@@ -10133,50 +9889,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdauditauditIdOPTIONS517DE0AB": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIdauditauditId33263B8C",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
     },
     "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvF0D4AAEB": Object {
       "Properties": Object {
@@ -11066,50 +10778,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdOPTIONS0739484E": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdaudit231DCFA8": Object {
       "Properties": Object {
         "ParentId": Object {
@@ -11295,50 +10963,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdOPTIONSDBE821E3": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdAF04FFD1",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsv94975A46": Object {
       "Properties": Object {
@@ -12980,50 +12604,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapicasescaseIdusersOPTIONS61C453FB": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
     "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2": Object {
       "Properties": Object {
         "ParentId": Object {
@@ -13035,50 +12615,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdusersuserIdOPTIONS15B78F29": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
     },
     "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6": Object {
       "Properties": Object {
@@ -13569,50 +13105,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapisystemOPTIONS2695AC39": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapisystemAD98847E",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
     "DeaRestApiConstructdeaapisystemaudit2A5DAEF8": Object {
       "Properties": Object {
         "ParentId": Object {
@@ -13798,50 +13290,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapisystemauditauditIdOPTIONS2EADE5A9": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapisystemauditauditIdB2530B9D",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
     },
     "DeaRestApiConstructdeaapisystemauditauditIdcsv3DF23375": Object {
       "Properties": Object {
@@ -14212,50 +13660,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapiusersuserIdOPTIONS66B09E53": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiusersuserIdB57BE8EB",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
     "DeaRestApiConstructdeaapiusersuserIdaudit60684DFA": Object {
       "Properties": Object {
         "ParentId": Object {
@@ -14441,50 +13845,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapiusersuserIdauditauditIdOPTIONS3652E037": Object {
-      "Properties": Object {
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": Object {
-          "IntegrationResponses": Array [
-            Object {
-              "ResponseParameters": Object {
-                "method.response.header.Access-Control-Allow-Credentials": "'true'",
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,CSRF-Token,x-amz-security-token,set-cookie,Host,Content-Length'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,PATCH,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'https://localhost:3001'",
-                "method.response.header.Vary": "'Origin'",
-              },
-              "StatusCode": "204",
-            },
-          ],
-          "RequestTemplates": Object {
-            "application/json": "{ statusCode: 200 }",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": Array [
-          Object {
-            "ResponseParameters": Object {
-              "method.response.header.Access-Control-Allow-Credentials": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Vary": true,
-            },
-            "StatusCode": "204",
-          },
-        ],
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiusersuserIdauditauditId63841CC8",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
     },
     "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsv119B9333": Object {
       "Properties": Object {

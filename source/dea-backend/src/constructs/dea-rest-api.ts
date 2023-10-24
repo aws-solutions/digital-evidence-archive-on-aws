@@ -221,7 +221,6 @@ export class DeaRestApiConstruct extends Construct {
           })
         ),
       },
-      defaultCorsPreflightOptions: deaConfig.preflightOptions(),
       defaultMethodOptions: {
         authorizationType: AuthorizationType.IAM,
       },
@@ -343,6 +342,7 @@ export class DeaRestApiConstruct extends Construct {
       value: this.deaRestApi.url,
     });
 
+    const resourcesWithPreflight: Set<string> = new Set<string>();
     routeConfig.routes.forEach((route) => {
       // Delete Case Handler is only needed for running integration and end-to-end tests.
       if (route.eventName === AuditEventType.DELETE_CASE && !deaConfig.isTestStack()) {
@@ -354,12 +354,18 @@ export class DeaRestApiConstruct extends Construct {
       // otherwise it is a DEA execution API, which needs the
       // full set of permissions
       const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
-      this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv);
+      this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv, resourcesWithPreflight);
       this.opsDashboard?.addMethodOperationalComponents(this.deaRestApi, route);
     });
   }
 
-  private addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, lambdaEnv: LambdaEnvironment): void {
+  private addMethod(
+    api: RestApi,
+    route: ApiGatewayRoute,
+    role: Role,
+    lambdaEnv: LambdaEnvironment,
+    resourcesWithPreflight: Set<string>
+  ): void {
     const urlParts = route.path.split('/').filter((str) => str);
     let parent = api.root;
     urlParts.forEach((part, index) => {
@@ -369,6 +375,13 @@ export class DeaRestApiConstruct extends Construct {
       }
 
       if (index === urlParts.length - 1) {
+        if (!resourcesWithPreflight.has(resource.resourceId)) {
+          resourcesWithPreflight.add(resource.resourceId);
+          const preflightOpts = deaConfig.preflightOptions();
+          if (preflightOpts) {
+            resource.addCorsPreflight(preflightOpts);
+          }
+        }
         const lambda = this.createLambda(
           `${route.httpMethod}_${route.eventName}`,
           role,

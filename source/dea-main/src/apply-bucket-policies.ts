@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { deaConfig } from '@aws/dea-backend';
+import { deaConfig } from '@aws/dea-backend/lib/config';
 import { Effect, PolicyStatement, Role, AnyPrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Bucket } from 'aws-cdk-lib/aws-s3';

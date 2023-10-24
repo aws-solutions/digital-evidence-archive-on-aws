@@ -16,6 +16,7 @@ import { DeaEventHandlers } from '../../constructs/dea-event-handlers';
 import { DeaOperationalDashboard } from '../../constructs/dea-ops-dashboard';
 import { DeaParameters } from '../../constructs/dea-parameters';
 import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
+import { deaApiRouteConfig } from '../../resources/dea-route-config';
 import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
 
@@ -23,7 +24,7 @@ const PROTECTED_DEA_RESOURCES: string[] = [];
 
 describe('DeaBackend constructs', () => {
   const expectedLambdaCount = 43;
-  const expectedMethodCount = 77;
+  const expectedMethodCount = 64;
 
   beforeAll(() => {
     process.env.STAGE = 'RUN1';
@@ -312,8 +313,7 @@ describe('DeaBackend constructs', () => {
     const deleteHandlerCount = 1;
     const expectedLambdaCountWithoutDeleteCaseHandler =
       expectedLambdaCount - testAuthHandlerCount - deleteHandlerCount + awsCDKCfnUtilsProviderCount;
-    // prod stack doesn't have OPTIONS methods, so divide expected methods by 2
-    const expectedMethodCountWithoutDeleteCaseHandler = Math.floor(expectedMethodCount / 2) - 4;
+    const expectedMethodCountWithoutDeleteCaseHandler = deaApiRouteConfig.routes.length - 1;
     template.resourceCountIs('AWS::Lambda::Function', expectedLambdaCountWithoutDeleteCaseHandler);
     template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCountWithoutDeleteCaseHandler);
   });

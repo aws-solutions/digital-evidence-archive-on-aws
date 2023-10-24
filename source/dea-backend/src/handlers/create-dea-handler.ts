@@ -3,7 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Oauth2Token } from '@aws/dea-app';
 import { ValidationError } from '@aws/dea-app/lib/app/exceptions/validation-exception';
 import { DEAGatewayProxyHandler } from '@aws/dea-app/lib/app/resources/dea-gateway-proxy-handler';
 import { runPreExecutionChecks, withAllowedOrigin } from '@aws/dea-app/lib/app/resources/dea-lambda-utils';
@@ -18,6 +17,7 @@ import {
   auditService,
 } from '@aws/dea-app/lib/app/services/audit-service';
 import { removeSensitiveHeaders } from '@aws/dea-app/lib/lambda-http-helpers';
+import { Oauth2Token } from '@aws/dea-app/lib/models/auth';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { CaseOwnerDTO, CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
