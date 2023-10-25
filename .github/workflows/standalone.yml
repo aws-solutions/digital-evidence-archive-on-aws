@@ -16,8 +16,8 @@ jobs:
   deploy:
     env:
       CONFIGNAME: 'sandbox'
-      STAGE: 'sandbox'
-      DOMAIN_PREFIX: 'sandbox'
+      STAGE: 'cfideasandbox'
+      DOMAIN_PREFIX: 'cfideasandbox'
     environment: dea-sandbox
     defaults:
       run:
