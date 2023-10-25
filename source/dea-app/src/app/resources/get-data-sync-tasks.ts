@@ -7,7 +7,7 @@ import { DeaDataSyncTask } from '../../models/data-sync-task';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
 import { defaultDataSyncProvider } from '../../storage/dataSync';
-import { defaultCloudwatchClient } from '../audit/dea-audit-plugin';
+import { defaultAthenaClient } from '../audit/dea-audit-plugin';
 import * as dataSyncService from '../services/data-sync-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
@@ -21,7 +21,7 @@ export const getDataSyncTasks: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   _datasetsProvider = defaultDatasetsProvider,
   /* istanbul ignore next */
-  _cloudwatchClient = defaultCloudwatchClient,
+  _athenaClient = defaultAthenaClient,
   /* istanbul ignore next */
   dataSyncProvider = defaultDataSyncProvider
 ) => {

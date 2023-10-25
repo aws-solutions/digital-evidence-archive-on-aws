@@ -18,6 +18,6 @@ export type DEAGatewayProxyHandler = (
   context: Context,
   repositoryProvider?: ModelRepositoryProvider,
   datasetsProvider?: DatasetsProvider,
-  athenaClientProvider?: AthenaClient
+  athenaClientProvider?: AthenaClient,
   dataSyncProvider?: DataSyncProvider
 ) => Promise<APIGatewayProxyResult>;

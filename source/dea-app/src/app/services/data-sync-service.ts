@@ -5,6 +5,7 @@
 
 import {
   CreateLocationS3Command,
+  CreateLocationS3CommandInput,
   CreateTaskCommand,
   CreateTaskCommandInput,
   DeleteLocationCommand,
@@ -15,8 +16,10 @@ import {
   ListTaskExecutionsCommand,
   ListTaskExecutionsResponse,
   ListTasksCommand,
+  OverwriteMode,
   ReportLevel,
   ReportOutputType,
+  S3StorageClass,
   StartTaskExecutionCommand,
   TaskExecutionListEntry,
   VerifyMode,
@@ -33,7 +36,7 @@ export const createS3Location = async (
   destinationFolder: string,
   dataSyncProvider: DataSyncProvider
 ): Promise<string> => {
-  const locationSettings = {
+  const locationSettings: CreateLocationS3CommandInput = {
     ...getDestinationLocationSettings(dataSyncProvider),
     S3BucketArn: dataSyncProvider.datasetsBucketArn,
     Subdirectory: destinationFolder,
@@ -277,7 +280,7 @@ export const getDestinationFolder = (locationUri?: string) => {
 };
 
 export const getDestinationLocationSettings = (dataSyncProvider: DataSyncProvider) => ({
-  S3StorageClass: 'INTELLIGENT_TIERING',
+  S3StorageClass: S3StorageClass.INTELLIGENT_TIERING,
   S3Config: {
     BucketAccessRoleArn: dataSyncProvider.dataSyncRoleArn,
   },
@@ -286,7 +289,7 @@ export const getDestinationLocationSettings = (dataSyncProvider: DataSyncProvide
 export const getDataSyncTaskSettings = (dataSyncProvider: DataSyncProvider) => ({
   Options: {
     VerifyMode: VerifyMode.ONLY_FILES_TRANSFERRED,
-    OverwriteMode: 'ALWAYS',
+    OverwriteMode: OverwriteMode.ALWAYS,
   },
   TaskReportConfig: {
     ReportLevel: ReportLevel.SUCCESSES_AND_ERRORS,

@@ -7,7 +7,7 @@ import assert from 'assert';
 import * as path from 'path';
 import { deaConfig } from '@aws/dea-backend/lib/config';
 import { createCfnOutput } from '@aws/dea-backend/lib/constructs/construct-support';
-import { addLambdaSuppressions } from '@aws/dea-backend';
+import { addLambdaSuppressions } from '@aws/dea-backend/lib/helpers/nag-suppressions';
 import { Aws, CfnResource, NestedStack, StackProps } from 'aws-cdk-lib';
 import {
   AuthorizationType,

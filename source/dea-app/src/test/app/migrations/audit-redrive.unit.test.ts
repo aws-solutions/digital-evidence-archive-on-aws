@@ -16,17 +16,12 @@ import {
   DescribeLogStreamsCommand,
   GetLogEventsCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
-import {
-  Firehose,
-  PutRecordBatchCommand,
-  ServiceInputTypes,
-  ServiceOutputTypes,
-} from '@aws-sdk/client-firehose';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { Firehose, PutRecordBatchCommand } from '@aws-sdk/client-firehose';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { auditRedrive } from '../../../app/migrations/audit-redrive';
 
 describe('audit-redrive', () => {
-  let firehoseClientMock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
+  let firehoseClientMock: AwsClientStub<Firehose>;
   beforeAll(() => {
     firehoseClientMock = mockClient(Firehose);
   });
