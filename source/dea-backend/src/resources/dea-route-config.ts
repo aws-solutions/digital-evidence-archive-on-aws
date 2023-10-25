@@ -231,12 +231,6 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/create-data-vault-task-handler.ts',
     },
     {
-      eventName: AuditEventType.GET_DATA_VAULT_TASKS,
-      path: '/datavaults/{dataVaultId}/tasks',
-      httpMethod: ApiGatewayMethod.GET,
-      pathToSource: '../../src/handlers/get-data-vault-tasks-handler.ts',
-    },
-    {
       eventName: AuditEventType.GET_DATA_SYNC_TASKS,
       path: '/datasync/tasks',
       httpMethod: ApiGatewayMethod.GET,
@@ -247,12 +241,6 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/datavaults/tasks/{taskId}/executions',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/create-data-vault-execution-handler.ts',
-    },
-    {
-      eventName: AuditEventType.GET_DATA_VAULT_EXECUTIONS,
-      path: '/datavaults/tasks/{taskId}/executions',
-      httpMethod: ApiGatewayMethod.GET,
-      pathToSource: '../../src/handlers/get-data-vault-executions-handler.ts',
     },
     // PRIVILEGED ENDPOINTS
     {

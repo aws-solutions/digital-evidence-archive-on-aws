@@ -39,10 +39,6 @@
         },
         {
           "path": "/datavaults/{dataVaultId}/tasks",
-          "method": "GET"
-        },
-        {
-          "path": "/datavaults/{dataVaultId}/tasks",
           "method": "POST"
         },
         {
@@ -52,10 +48,6 @@
         {
           "path": "/datavaults/tasks/{taskId}/executions",
           "method": "POST"
-        },
-        {
-          "path": "/datavaults/tasks/{taskId}/executions",
-          "method": "GET"
         },
         {
           "path": "/cases/{caseId}/details",
