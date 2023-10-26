@@ -130,6 +130,7 @@ const dummyAuditEvent: CJISAuditEventBody = {
     idPoolUserId: 'us-east-1:1-2-3-4',
   },
   result: AuditEventResult.FAILURE,
+  eventID: '11111111-1111-1111-1111-111111111111',
 };
 
 export const getDummyEvent = (addedData: object = {}): APIGatewayProxyEvent => {

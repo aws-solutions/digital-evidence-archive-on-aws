@@ -7,11 +7,11 @@ import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
-import { defaultCloudwatchClient } from '../audit/dea-audit-plugin';
+import { defaultAthenaClient } from '../audit/dea-audit-plugin';
 import { auditService } from '../services/audit-service';
 import { validateUser } from '../services/user-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
-import { csvResponse, responseOk } from './dea-lambda-utils';
+import { responseOk } from './dea-lambda-utils';
 
 export const getUserAudit: DEAGatewayProxyHandler = async (
   event,
@@ -22,16 +22,18 @@ export const getUserAudit: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   _datasetsProvider = defaultDatasetsProvider,
   /* istanbul ignore next */
-  cloudwatchClient = defaultCloudwatchClient
+  athenaClient = defaultAthenaClient
 ) => {
   const auditId = getRequiredPathParam(event, 'auditId', joiUlid);
   const userId = getRequiredPathParam(event, 'userId', joiUlid);
   await validateUser(userId, repositoryProvider);
-  const result = await auditService.getUserAuditResult(auditId, userId, cloudwatchClient, repositoryProvider);
+  const result = await auditService.getUserAuditResult(
+    auditId,
+    userId,
+    athenaClient,
+    repositoryProvider,
+    `${event.requestContext.identity.sourceIp}/32`
+  );
 
-  if (result.csvFormattedData) {
-    return csvResponse(event, result.csvFormattedData);
-  } else {
-    return responseOk(event, result);
-  }
+  return responseOk(event, result);
 };

@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-ui-infrastructure",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "CDK project for deploying dea-ui",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/blob/main/source/dea-ui/infrastructure",
   "repository": {
@@ -43,14 +43,14 @@
   },
   "dependencies": {
     "@aws/dea-backend": "workspace:*",
-    "aws-cdk": "2.85.0",
-    "aws-cdk-lib": "2.85.0",
+    "aws-cdk": "2.88.0",
+    "aws-cdk-lib": "2.88.0",
     "cheerio": "~1.0.0-rc.12",
-    "constructs": "10.2.55",
+    "constructs": "10.2.69",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
-    "@rushstack/eslint-config": "^3.3.2",
+    "@rushstack/eslint-config": "^3.3.3",
     "@rushstack/heft": "^0.50.0",
     "@rushstack/heft-jest-plugin": "^0.5.5",
     "@rushstack/heft-node-rig": "^1.12.5",
@@ -61,8 +61,8 @@
     "@types/prettier": "2.7.2",
     "@typescript-eslint/eslint-plugin": "~5.60.0",
     "@typescript-eslint/parser": "~5.60.0",
-    "eslint": "^8.43.0",
-    "eslint-plugin-import": "^2.27.5",
+    "eslint": "^8.47.0",
+    "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-security": "^1.7.1",
     "istanbul-badges-readme": "1.8.5",
     "jest": "^29.5.0",

@@ -27,11 +27,27 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@aws-cdk/aws-glue-alpha",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws-cdk/aws-iam",
       "allowedCategories": [ "production", "prototypes" ]
     },
     {
+      "name": "@aws-cdk/aws-kinesisfirehose-alpha",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@aws-cdk/aws-kinesisfirehose-destinations-alpha",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws-cdk/aws-servicecatalogappregistry-alpha",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@aws-sdk/client-athena",
       "allowedCategories": [ "production" ]
     },
     {
@@ -63,7 +79,15 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@aws-sdk/client-firehose",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws-sdk/client-iam",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@aws-sdk/client-kinesis",
       "allowedCategories": [ "production" ]
     },
     {
@@ -372,6 +396,10 @@
     },
     {
       "name": "csurf",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "csv-string",
       "allowedCategories": [ "production" ]
     },
     {

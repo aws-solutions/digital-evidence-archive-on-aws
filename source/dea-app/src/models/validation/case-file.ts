@@ -56,4 +56,5 @@ export const caseFileResponseSchema = Joi.object({
   details: safeDetails,
   created: Joi.date(),
   updated: Joi.date(),
+  fileS3Key: s3Identifier,
 });

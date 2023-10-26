@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
+import { AthenaClient } from '@aws-sdk/client-athena';
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider } from '../../storage/datasets';
@@ -17,5 +17,5 @@ export type DEAGatewayProxyHandler = (
   context: Context,
   repositoryProvider?: ModelRepositoryProvider,
   datasetsProvider?: DatasetsProvider,
-  cloudwatchClientProvider?: CloudWatchLogsClient
+  athenaClientProvider?: AthenaClient
 ) => Promise<APIGatewayProxyResult>;

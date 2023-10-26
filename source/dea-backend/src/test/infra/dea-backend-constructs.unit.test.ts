@@ -22,7 +22,7 @@ import { validateBackendConstruct } from './validate-backend-construct';
 const PROTECTED_DEA_RESOURCES: string[] = [];
 
 describe('DeaBackend constructs', () => {
-  const expectedLambdaCount = 39;
+  const expectedLambdaCount = 43;
   const expectedMethodCount = 77;
 
   beforeAll(() => {
@@ -60,6 +60,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      opsDashboard: dashboard,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
@@ -75,6 +76,13 @@ describe('DeaBackend constructs', () => {
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
+      athenaConfig: {
+        athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
+        athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
+        athenaWorkGroupName: auditTrail.auditCloudwatchToS3Infra.athenaWorkGroupName,
+        athenaTableName: auditTrail.auditCloudwatchToS3Infra.athenaTableName,
+        athenaAuditBucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
+      },
       kmsKey: key,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
@@ -149,6 +157,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      opsDashboard: dashboard,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
@@ -165,6 +174,13 @@ describe('DeaBackend constructs', () => {
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey: key,
+      athenaConfig: {
+        athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
+        athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
+        athenaWorkGroupName: auditTrail.auditCloudwatchToS3Infra.athenaWorkGroupName,
+        athenaTableName: auditTrail.auditCloudwatchToS3Infra.athenaTableName,
+        athenaAuditBucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
+      },
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backend.deaTable.tableName,
@@ -224,6 +240,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      opsDashboard: dashboard,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
@@ -240,6 +257,13 @@ describe('DeaBackend constructs', () => {
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
+      athenaConfig: {
+        athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
+        athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
+        athenaWorkGroupName: auditTrail.auditCloudwatchToS3Infra.athenaWorkGroupName,
+        athenaTableName: auditTrail.auditCloudwatchToS3Infra.athenaTableName,
+        athenaAuditBucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
+      },
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backend.deaTable.tableName,
@@ -323,6 +347,7 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       deaDatasetsBucket: backend.datasetsBucket,
       deaTableArn: backend.deaTable.tableArn,
+      opsDashboard: dashboard,
     });
     const deaEventHandlers = new DeaEventHandlers(stack, 'DeaEventHandlers', {
       deaDatasetsBucketArn: backend.datasetsBucket.bucketArn,
@@ -339,6 +364,13 @@ describe('DeaBackend constructs', () => {
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
+      athenaConfig: {
+        athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
+        athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
+        athenaWorkGroupName: auditTrail.auditCloudwatchToS3Infra.athenaWorkGroupName,
+        athenaTableName: auditTrail.auditCloudwatchToS3Infra.athenaTableName,
+        athenaAuditBucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
+      },
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backend.deaTable.tableName,

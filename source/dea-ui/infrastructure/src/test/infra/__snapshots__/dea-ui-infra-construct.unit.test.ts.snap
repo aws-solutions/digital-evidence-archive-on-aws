@@ -3,6 +3,14 @@
 exports[`DEA UI Infrastructure stack synthesizes the way we expect 1`] = `
 Object {
   "Outputs": Object {
+    "DeaUiStackartifactBucketNameE913A2E8": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-artifactBucketName",
+      },
+      "Value": Object {
+        "Ref": "DeaUiStackartifactbucketFFC87A37",
+      },
+    },
     "testApiEndpointC9D07ADA": Object {
       "Value": Object {
         "Fn::Join": Array [
@@ -228,7 +236,7 @@ Object {
             "Arn",
           ],
         },
-        "Runtime": "nodejs16.x",
+        "Runtime": "nodejs18.x",
         "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
@@ -669,7 +677,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -766,7 +774,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -863,7 +871,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -960,7 +968,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -1057,7 +1065,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -1154,7 +1162,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -1251,7 +1259,7 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "'default-src 'self';img-src 'self' blob:;style-src 'unsafe-inline' 'self';connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;script-src 'self';font-src 'self' data:;object-src 'none';block-all-mixed-content;'",
+                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",

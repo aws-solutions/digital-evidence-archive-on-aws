@@ -91,7 +91,8 @@
   "globalOverrides": {
     "caniuse-lite": "latest",
     "fast-xml-parser": "4.2.5",
-    "semver": "7.5.2"
+    "semver": "7.5.2",
+    "postcss": "8.4.31"
   },
 
   /**

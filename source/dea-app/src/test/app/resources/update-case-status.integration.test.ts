@@ -384,6 +384,7 @@ describe('update case status', () => {
       s3BatchDeleteCaseFileRole: 'arn:aws:iam::1234:role/foo',
       sourceIpValidationEnabled: true,
       datasetsRole: 'arn:aws:iam::1234:role/bar',
+      awsPartition: 'aws',
     };
 
     await expect(

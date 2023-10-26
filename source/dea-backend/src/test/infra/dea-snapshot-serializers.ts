@@ -7,7 +7,7 @@ import { deaConfig } from '../../config';
 
 export const addSnapshotSerializers = (): void => {
   expect.addSnapshotSerializer({
-    test: (val) => typeof val === 'string' && val.includes('zip'),
+    test: (val) => typeof val === 'string' && (val.includes('zip') || val.includes('json')),
     print: (val) => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const newVal = (val as string).replace(/([A-Fa-f0-9]{64})/, '[HASH REMOVED]');

@@ -3,19 +3,20 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
-import Joi from 'joi';
 import { AuditEventType } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
-import { joiUlid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
   callDeaAPIWithCreds,
   createCaseSuccess,
   deleteCase,
+  getAuditQueryResults,
   getSpecificUserByFirstName,
   randomSuffix,
+  verifyAuditEntry,
 } from './test-helpers';
 
 describe('user audit e2e', () => {
@@ -26,7 +27,7 @@ describe('user audit e2e', () => {
   const testManager = `userAuditTestManager${suffix}`;
   const deaApiUrl = testEnv.apiUrlOutput;
   let creds: Credentials;
-  let idToken: Oauth2Token;
+  let workerIdToken: Oauth2Token;
   let userUlid: string;
   let managerCreds: Credentials;
   let managerIdToken: Oauth2Token;
@@ -40,39 +41,52 @@ describe('user audit e2e', () => {
 
     // Create worker
     await cognitoHelper.createUser(testUser, 'CaseWorker', testUser, 'TestUser');
-    [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
+    [creds, workerIdToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
     // initialize the user into the DB
-    await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', idToken, creds);
+    await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', workerIdToken, creds);
     // get the user ulid
     userUlid = (await getSpecificUserByFirstName(deaApiUrl, testUser, managerIdToken, managerCreds)).ulid;
   }, 20000);
 
   afterAll(async () => {
     for (const caseId of caseIdsToDelete) {
-      await deleteCase(deaApiUrl, caseId, idToken, creds);
+      await deleteCase(deaApiUrl, caseId, workerIdToken, creds);
     }
     await cognitoHelper.cleanup();
   }, 30000);
 
-  it('retrieves actions taken against a user', async () => {
+  it('retrieves actions taken by a user', async () => {
     const caseName = `auditTestCase${randomSuffix()}`;
+    const managerCaseName = `managerAuditTestCase${randomSuffix()}`;
     const createdCase = await createCaseSuccess(
       deaApiUrl,
       {
         name: caseName,
         description: 'this is a description',
       },
-      idToken,
+      workerIdToken,
       creds
     );
     const caseUlid = createdCase.ulid ?? fail();
     caseIdsToDelete.push(caseUlid);
 
+    const managerCase = await createCaseSuccess(
+      deaApiUrl,
+      {
+        name: managerCaseName,
+        description: 'this is a description',
+      },
+      managerIdToken,
+      managerCreds
+    );
+    const managerCaseUlid = managerCase.ulid ?? fail();
+    caseIdsToDelete.push(managerCaseUlid);
+
     const updateResponse = await callDeaAPIWithCreds(
       `${deaApiUrl}cases/${caseUlid}/details`,
       'PUT',
-      idToken,
+      workerIdToken,
       creds,
       {
         ulid: caseUlid,
@@ -85,15 +99,23 @@ describe('user audit e2e', () => {
     const getResponse = await callDeaAPIWithCreds(
       `${deaApiUrl}cases/${caseUlid}/details`,
       'GET',
-      idToken,
+      workerIdToken,
       creds
     );
     expect(getResponse.status).toEqual(200);
 
+    const getManagerCaseResponse = await callDeaAPIWithCreds(
+      `${deaApiUrl}cases/${managerCaseUlid}/details`,
+      'GET',
+      workerIdToken,
+      creds
+    );
+    expect(getManagerCaseResponse.status).toEqual(404);
+
     const membershipsResponse = await callDeaAPIWithCreds(
       `${deaApiUrl}cases/${caseUlid}/userMemberships`,
       'GET',
-      idToken,
+      workerIdToken,
       creds
     );
     expect(membershipsResponse.status).toEqual(200);
@@ -101,65 +123,60 @@ describe('user audit e2e', () => {
     // allow some time so the events show up in CW logs
     await delay(25000);
 
-    let csvData: string | undefined;
-    let queryRetries = 50;
-    while (!csvData && queryRetries > 0) {
-      const startAuditQueryResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}users/${userUlid}/audit`,
-        'POST',
-        managerIdToken,
-        managerCreds
-      );
+    const entries = await getAuditQueryResults(
+      `${deaApiUrl}users/${userUlid}/audit`,
+      '',
+      managerIdToken,
+      managerCreds,
+      [
+        AuditEventType.UPDATE_CASE_DETAILS,
+        AuditEventType.GET_CASE_DETAILS,
+        AuditEventType.GET_USERS_FROM_CASE,
+        AuditEventType.GET_MY_CASES,
+      ],
+      []
+    );
 
-      expect(startAuditQueryResponse.status).toEqual(200);
-      const auditId: string = startAuditQueryResponse.data.auditId;
-      Joi.assert(auditId, joiUlid);
+    // 0. GetMyCases
+    const getMyCases = entries.find((entry) => entry.Event_Type === AuditEventType.GET_MY_CASES);
+    // 1. CreateCase
+    const createCaseEvent = entries.find((entry) => entry.Event_Type === AuditEventType.CREATE_CASE);
+    // 2. Update Case Details
+    const updateCaseDetails = entries.find(
+      (entry) => entry.Event_Type === AuditEventType.UPDATE_CASE_DETAILS
+    );
+    // 3. Retrieve Case Details
+    const getCaseDetails = entries.find(
+      (entry) => entry.Event_Type === AuditEventType.GET_CASE_DETAILS && entry.Case_ID === createdCase.ulid
+    );
+    // 4. Get memberships
+    const getCaseMemberships = entries.find(
+      (entry) => entry.Event_Type === AuditEventType.GET_USERS_FROM_CASE
+    );
+    // 5. Get Case Details - failure
+    const getCaseDetailsFailure = entries.find(
+      (entry) => entry.Event_Type === AuditEventType.GET_CASE_DETAILS && entry.Case_ID === managerCase.ulid
+    );
 
-      let retries = 5;
-      let getQueryReponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}users/${userUlid}/audit/${auditId}/csv`,
-        'GET',
-        managerIdToken,
-        managerCreds
-      );
-      while (getQueryReponse.data.status && retries > 0) {
-        if (getQueryReponse.data.status === 'Complete') {
-          break;
-        }
-        --retries;
-        if (getQueryReponse.status !== 200) {
-          fail();
-        }
-        await delay(2000);
+    const expectedDetails = {
+      expectedResult: 'success',
+      expectedFileHash: '',
+      expectedCaseUlid: createdCase.ulid,
+      expectedFileUlid: '',
+    };
+    verifyAuditEntry(getMyCases, AuditEventType.GET_MY_CASES, testUser);
+    verifyAuditEntry(createCaseEvent, AuditEventType.CREATE_CASE, testUser, expectedDetails);
+    verifyAuditEntry(updateCaseDetails, AuditEventType.UPDATE_CASE_DETAILS, testUser, expectedDetails);
+    verifyAuditEntry(getCaseDetails, AuditEventType.GET_CASE_DETAILS, testUser, expectedDetails);
+    verifyAuditEntry(getCaseMemberships, AuditEventType.GET_USERS_FROM_CASE, testUser, expectedDetails);
+    verifyAuditEntry(getCaseDetailsFailure, AuditEventType.GET_CASE_DETAILS, testUser, {
+      expectedResult: 'failure',
+      expectedFileHash: '',
+      expectedCaseUlid: managerCaseUlid,
+      expectedFileUlid: '',
+    });
 
-        getQueryReponse = await callDeaAPIWithCreds(
-          `${deaApiUrl}users/${userUlid}/audit/${auditId}/csv`,
-          'GET',
-          managerIdToken,
-          managerCreds
-        );
-      }
-
-      const potentialCsvData: string = getQueryReponse.data;
-
-      if (
-        getQueryReponse.data &&
-        !getQueryReponse.data.status &&
-        potentialCsvData.includes(AuditEventType.UPDATE_CASE_DETAILS) &&
-        potentialCsvData.includes(AuditEventType.GET_CASE_DETAILS) &&
-        potentialCsvData.includes(AuditEventType.GET_USERS_FROM_CASE)
-      ) {
-        csvData = getQueryReponse.data;
-      }
-      --queryRetries;
-    }
-
-    expect(csvData).toContain('/cases/{caseId}/details');
-    expect(csvData).toContain(testUser);
-    expect(csvData).toContain(caseUlid);
-    expect(csvData).toContain(AuditEventType.GET_CASE_DETAILS);
-    expect(csvData).toContain(AuditEventType.UPDATE_CASE_DETAILS);
-    expect(csvData).toContain(AuditEventType.GET_USERS_FROM_CASE);
+    expect(entries).toHaveLength(6);
   }, 180000);
 
   function delay(ms: number) {

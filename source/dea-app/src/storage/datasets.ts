@@ -47,6 +47,7 @@ export interface DatasetsProvider {
   sourceIpValidationEnabled: boolean;
   deletionAllowed: boolean;
   datasetsRole: string;
+  awsPartition: string;
 }
 
 export interface S3Object {
@@ -71,6 +72,7 @@ export const defaultDatasetsProvider = {
   datasetsRole: getRequiredEnv('DATASETS_ROLE', 'DATASETS_ROLE is not set in your lambda!'),
   uploadPresignedCommandExpirySeconds: Number(getRequiredEnv('UPLOAD_FILES_TIMEOUT_MINUTES', '60')) * 60,
   downloadPresignedCommandExpirySeconds: 15 * 60,
+  awsPartition: getRequiredEnv('AWS_PARTITION', 'AWS_PARTITION is not set in your lambda!'),
 };
 
 export const generatePresignedUrlsForCaseFile = async (
@@ -379,7 +381,7 @@ const createDeleteCaseFileBatchJob = async (
     },
     Report: {
       Enabled: true,
-      Bucket: `arn:aws:s3:::${datasetsProvider.bucketName}`,
+      Bucket: `arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}`,
       Prefix: 'reports',
       Format: 'Report_CSV_20180820',
       ReportScope: JobReportScope.AllTasks,
@@ -390,7 +392,7 @@ const createDeleteCaseFileBatchJob = async (
         Fields: ['Bucket', 'Key', 'VersionId'],
       },
       Location: {
-        ObjectArn: `arn:aws:s3:::${datasetsProvider.bucketName}/${manifestFileName}`,
+        ObjectArn: `arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${manifestFileName}`,
         ETag: manifestFileEtag,
       },
     },
@@ -406,7 +408,7 @@ const createDeleteCaseFileBatchJob = async (
 };
 
 function getS3KeyForCaseFile(caseFile: DeaCaseFile): string {
-  return `${caseFile.caseUlid}/${caseFile.ulid}`;
+  return caseFile.fileS3Key;
 }
 
 async function getUploadPresignedUrlPromise(
@@ -505,7 +507,7 @@ function getPolicyForUpload(objectKey: string, sourceIp: string, datasetsProvide
           Sid: 'AllowS3PutObject',
           Effect: 'Allow',
           Action: ['s3:PutObject'],
-          Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+          Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
         },
       ],
     });
@@ -519,7 +521,7 @@ function getPolicyForUpload(objectKey: string, sourceIp: string, datasetsProvide
         Sid: 'AllowS3PutObject',
         Effect: 'Allow',
         Action: ['s3:PutObject'],
-        Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
         Condition: {
           IpAddress: {
             'aws:SourceIp': sourceIp,
@@ -530,7 +532,7 @@ function getPolicyForUpload(objectKey: string, sourceIp: string, datasetsProvide
         Sid: 'DenyRequestsFromOtherIpAddresses',
         Effect: 'Deny',
         Action: ['s3:GetObject', 's3:GetObjectVersion'],
-        Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
         Condition: {
           NotIpAddress: {
             'aws:SourceIp': sourceIp,
@@ -555,7 +557,7 @@ function getPolicyForDownload(
           Sid: 'AllowS3GetObject',
           Effect: 'Allow',
           Action: ['s3:GetObject', 's3:GetObjectVersion'],
-          Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+          Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
         },
       ],
     });
@@ -568,7 +570,7 @@ function getPolicyForDownload(
         Sid: 'AllowS3GetObject',
         Effect: 'Allow',
         Action: ['s3:GetObject', 's3:GetObjectVersion'],
-        Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
         Condition: {
           IpAddress: {
             'aws:SourceIp': sourceIp,
@@ -579,7 +581,7 @@ function getPolicyForDownload(
         Sid: 'DenyRequestsFromOtherIpAddresses',
         Effect: 'Deny',
         Action: ['s3:GetObject', 's3:GetObjectVersion'],
-        Resource: [`arn:aws:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
         Condition: {
           NotIpAddress: {
             'aws:SourceIp': sourceIp,

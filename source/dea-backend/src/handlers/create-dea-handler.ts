@@ -21,6 +21,7 @@ import { removeSensitiveHeaders } from '@aws/dea-app/lib/lambda-http-helpers';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { CaseOwnerDTO, CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
+import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../logger';
 import { deaApiRouteConfig } from '../resources/dea-route-config';
 import { exceptionHandlers } from './exception-handlers';
@@ -123,6 +124,7 @@ const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
     caseId: event.pathParameters?.caseId,
     fileId: event.pathParameters?.fileId,
     targetUserId: getTargetUserId(event),
+    eventID: uuidv4(),
   };
 };
 

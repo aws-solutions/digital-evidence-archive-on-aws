@@ -25,7 +25,7 @@ import { DeaOperationalDashboard } from './dea-ops-dashboard';
 interface IBackendStackProps extends StackProps {
   readonly kmsKey: Key;
   readonly accessLogsPrefixes: ReadonlyArray<string>;
-  readonly opsDashboard: DeaOperationalDashboard;
+  readonly opsDashboard?: DeaOperationalDashboard;
 }
 
 export class DeaBackendConstruct extends Construct {
@@ -52,7 +52,7 @@ export class DeaBackendConstruct extends Construct {
       datasetsPrefix
     );
 
-    props.opsDashboard.addDynamoTableOperationalComponents(this.deaTable);
+    props.opsDashboard?.addDynamoTableOperationalComponents(this.deaTable);
 
     protectedDeaResourceArns.push(this.deaTable.tableArn);
     protectedDeaResourceArns.push(this.datasetsBucket.bucketArn);
@@ -103,6 +103,10 @@ export class DeaBackendConstruct extends Construct {
       autoDeleteObjects: deaConfig.isTestStack(),
       versioned: false, // https://github.com/awslabs/aws-solutions-constructs/issues/44,
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+    });
+
+    createCfnOutput(this, 'S3AccessLogsBucketName', {
+      value: s3AccessLogsBucket.bucketName,
     });
 
     const resources = accessLogPrefixes.map((prefix) => `${s3AccessLogsBucket.bucketArn}/${prefix}*`);
@@ -170,7 +174,6 @@ export class DeaBackendConstruct extends Construct {
       lifecycleRules: this.getLifeCycleRules(),
       publicReadAccess: false,
       removalPolicy: deaConfig.retainPolicy(),
-      autoDeleteObjects: deaConfig.isTestStack(),
       versioned: true,
       serverAccessLogsBucket: accessLogBucket,
       serverAccessLogsPrefix: accessLogPrefix,

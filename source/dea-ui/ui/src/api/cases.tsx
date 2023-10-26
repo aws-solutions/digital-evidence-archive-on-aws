@@ -3,6 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { QueryExecutionState } from '@aws-sdk/client-athena';
+import { DeaCase } from '@aws/dea-app/lib/models/case';
 import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
 import { CaseUser } from '@aws/dea-app/lib/models/case-user';
 import { DeaUser } from '@aws/dea-app/lib/models/user';
@@ -14,7 +16,7 @@ import {
   DownloadFileResult,
   InitiateUploadForm, RestoreFileForm,
 } from '../models/CaseFiles';
-import {CreateCaseForm, EditCaseForm, UpdateCaseStatusForm} from '../models/Cases';
+import { CreateCaseForm, EditCaseForm, UpdateCaseStatusForm } from '../models/Cases';
 import { CaseUserForm } from '../models/CaseUser';
 import { CaseFileDTO, CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
 
@@ -32,19 +34,11 @@ export interface DeaSingleResult<T> {
   mutate?: any;
 }
 
-enum QueryStatus {
-  Cancelled = "Cancelled",
-  Complete = "Complete",
-  Failed = "Failed",
-  Running = "Running",
-  Scheduled = "Scheduled",
-  Timeout = "Timeout",
-  Unknown = "Unknown"
-}
+const progressStatus = [QueryExecutionState.RUNNING.valueOf(), QueryExecutionState.QUEUED.valueOf()];
 
-const progressStatus = [QueryStatus.Running, QueryStatus.Scheduled]
-export interface DeaAuditStatus {
-  status: QueryStatus;
+interface AuditResult {
+  status: QueryExecutionState | string;
+  downloadUrl: string | undefined;
 }
 
 export interface DeaAuditStartResponse {
@@ -82,8 +76,8 @@ export const useGetScopedCaseInfoById = (id: string): DeaSingleResult<ScopedDeaC
   return { data, isLoading: !data && !error };
 };
 
-export const createCase = async (createCaseForm: CreateCaseForm): Promise<void> => {
-  await httpApiPost(`cases`, { ...createCaseForm });
+export const createCase = async (createCaseForm: CreateCaseForm): Promise<DeaCase> => {
+  return httpApiPost(`cases`, { ...createCaseForm });
 };
 
 export const updateCase = async (editCaseForm: EditCaseForm): Promise<void> => {
@@ -149,16 +143,16 @@ export const getCaseAuditCSV = async (caseId: string): Promise<string> => {
   const auditId = await startCaseAuditQuery(caseId);
   let auditResponse = await retrieveCaseAuditResult(caseId, auditId);
   let maxRetries = 60;
-  while (typeof(auditResponse) !== 'string') {
-    if (!progressStatus.includes(auditResponse.status) ||
-        maxRetries === 0) {
-      throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
-    }
+  while (progressStatus.includes(auditResponse.status.valueOf()) && maxRetries > 0) {
     --maxRetries;
     await delay(1000);
     auditResponse = await retrieveCaseAuditResult(caseId, auditId);
   }
-  return auditResponse;
+
+  if (!auditResponse.downloadUrl) {
+    throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
+  }
+  return auditResponse.downloadUrl;
 }
 
 export const startCaseAuditQuery = async (caseId: string): Promise<string> => {
@@ -166,7 +160,7 @@ export const startCaseAuditQuery = async (caseId: string): Promise<string> => {
   return data.auditId;
 }
 
-export const retrieveCaseAuditResult = async (caseId: string, auditId: string): Promise<string | DeaAuditStatus> => {
+export const retrieveCaseAuditResult = async (caseId: string, auditId: string): Promise<AuditResult> => {
   return await httpApiGet(`cases/${caseId}/audit/${auditId}/csv`, undefined);
 }
 
@@ -174,16 +168,16 @@ export const getCaseFileAuditCSV = async (caseId: string, fileId: string): Promi
   const auditId = await startCaseFileAuditQuery(caseId, fileId);
   let auditResponse = await retrieveCaseFileAuditResult(caseId, fileId, auditId);
   let maxRetries = 60;
-  while (typeof(auditResponse) !== 'string') {
-    if (!progressStatus.includes(auditResponse.status) ||
-        maxRetries === 0) {
-      throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
-    }
+  while (progressStatus.includes(auditResponse.status.valueOf()) && maxRetries > 0) {
     --maxRetries;
     await delay(1000);
     auditResponse = await retrieveCaseFileAuditResult(caseId, fileId, auditId);
   }
-  return auditResponse;
+
+  if (!auditResponse.downloadUrl) {
+    throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
+  }
+  return auditResponse.downloadUrl;
 }
 
 export const startCaseFileAuditQuery = async (caseId: string, fileId: string): Promise<string> => {
@@ -191,7 +185,7 @@ export const startCaseFileAuditQuery = async (caseId: string, fileId: string): P
   return data.auditId;
 }
 
-export const retrieveCaseFileAuditResult = async (caseId: string, fileId: string, auditId: string): Promise<string | DeaAuditStatus> => {
+export const retrieveCaseFileAuditResult = async (caseId: string, fileId: string, auditId: string): Promise<AuditResult> => {
   return await httpApiGet(`cases/${caseId}/files/${fileId}/audit/${auditId}/csv`, undefined);
 }
 
@@ -208,16 +202,16 @@ export const getSystemAuditCSV = async (): Promise<string> => {
   const auditId = await startSystemAuditQuery();
   let auditResponse = await retrieveSystemAuditResult(auditId);
   let maxRetries = 60;
-  while (typeof(auditResponse) !== 'string') {
-    if (!progressStatus.includes(auditResponse.status) ||
-        maxRetries === 0) {
-      throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
-    }
+  while (progressStatus.includes(auditResponse.status.valueOf()) && maxRetries > 0) {
     --maxRetries;
     await delay(1000);
     auditResponse = await retrieveSystemAuditResult(auditId);
   }
-  return auditResponse;
+
+  if (!auditResponse.downloadUrl) {
+    throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
+  }
+  return auditResponse.downloadUrl
 }
 
 export const startSystemAuditQuery = async (): Promise<string> => {
@@ -225,6 +219,6 @@ export const startSystemAuditQuery = async (): Promise<string> => {
   return data.auditId;
 }
 
-export const retrieveSystemAuditResult = async (auditId: string): Promise<string | DeaAuditStatus> => {
+export const retrieveSystemAuditResult = async (auditId: string): Promise<AuditResult> => {
   return await httpApiGet(`system/audit/${auditId}/csv`, undefined);
 }

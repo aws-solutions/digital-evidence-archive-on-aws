@@ -23,6 +23,7 @@ export interface DeaCaseFile {
   versionId?: string;
   readonly details?: string;
   readonly reason?: string;
+  readonly fileS3Key: string;
 
   readonly created?: Date;
   readonly updated?: Date;
@@ -46,6 +47,7 @@ export interface DeaCaseFileResult {
   ttl?: number;
   reason?: string;
   details?: string;
+  fileS3Key: string;
 }
 
 export interface DownloadCaseFileResult {
@@ -69,6 +71,7 @@ export interface CaseFileDTO {
   readonly isFile: boolean;
   readonly reason?: string;
   readonly details?: string;
+  readonly fileS3Key: string;
 }
 
 export interface CompleteCaseFileUploadDTO {
