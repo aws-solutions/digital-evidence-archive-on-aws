@@ -5,6 +5,7 @@
 
 import path from 'path';
 import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
+import * as ServiceConstants from '@aws/dea-app/lib/app/services/service-constants';
 import { Aws, Duration, Fn } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
@@ -638,7 +639,9 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/dea/${STAGE}*`],
+        resources: [
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
+        ],
       })
     );
 
@@ -749,7 +752,9 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/dea/${STAGE}*`],
+        resources: [
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
+        ],
       })
     );
 
@@ -757,7 +762,7 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['secretsmanager:GetSecretValue'],
         resources: [
-          `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:/dea/${STAGE}/clientSecret-*`,
+          `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:${ServiceConstants.PARAM_PREFIX}${STAGE}/clientSecret-*`,
         ],
       })
     );

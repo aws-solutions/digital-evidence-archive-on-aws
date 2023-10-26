@@ -11,18 +11,15 @@ export const addLambdaSuppressions = (cdkLambda: CfnResource): void => {
     rules_to_suppress: [
       {
         id: 'W58',
-        reason:
-          'AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs',
+        reason: '',
       },
       {
         id: 'W92',
-        reason: 'Reserved concurrency is currently not required. Revisit in the future',
+        reason: '',
       },
       {
         id: 'W89',
-        reason:
-          'The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)\
-             indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC',
+        reason: '',
       },
     ],
   });
@@ -34,11 +31,11 @@ export const addResourcePolicySuppressions = (cdkPolicy: CfnResource): void => {
     rules_to_suppress: [
       {
         id: 'W12',
-        reason: 'Star resource is required for the action',
+        reason: '',
       },
       {
         id: 'W76',
-        reason: 'Complexity generated via CDK environment',
+        reason: '',
       },
     ],
   });

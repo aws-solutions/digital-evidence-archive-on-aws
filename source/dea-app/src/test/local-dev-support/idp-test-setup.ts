@@ -3,15 +3,16 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { SSMClient, ParameterType, ParameterTier, PutParameterCommand } from '@aws-sdk/client-ssm';
+import { ParameterTier, ParameterType, PutParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 import minimist from 'minimist';
+import { PARAM_PREFIX } from '../../app/services/service-constants';
 import { testEnv } from '../../test-e2e/helpers/settings';
 
 const args = minimist(process.argv.slice(2));
 
 const putTestUserCredsInSSMParamStore = async (username: string, password: string) => {
   const ssmClient = new SSMClient({ region: testEnv.awsRegion });
-  const idpTestUserSSMPathPrefix = `/dea/${testEnv.stage}-test/idp/idp-test-user-`;
+  const idpTestUserSSMPathPrefix = `${PARAM_PREFIX}${testEnv.stage}-test/idp/idp-test-user-`;
 
   await ssmClient.send(
     new PutParameterCommand({

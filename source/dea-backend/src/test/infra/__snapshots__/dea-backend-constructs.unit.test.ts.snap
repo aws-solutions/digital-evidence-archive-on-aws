@@ -18089,7 +18089,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/dea/[STAGE-REMOVED]*",
+                    ":parameter/dea/1/[STAGE-REMOVED]*",
                   ],
                 ],
               },
@@ -18113,7 +18113,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":secret:/dea/[STAGE-REMOVED]/clientSecret-*",
+                    ":secret:/dea/1/[STAGE-REMOVED]/clientSecret-*",
                   ],
                 ],
               },
@@ -18371,7 +18371,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/dea/[STAGE-REMOVED]*",
+                    ":parameter/dea/1/[STAGE-REMOVED]*",
                   ],
                 ],
               },

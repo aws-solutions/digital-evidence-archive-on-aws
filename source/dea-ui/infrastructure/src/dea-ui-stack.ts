@@ -6,7 +6,6 @@
 import assert from 'assert';
 import * as path from 'path';
 import { deaConfig } from '@aws/dea-backend/lib/config';
-import { createCfnOutput } from '@aws/dea-backend/lib/constructs/construct-support';
 import { addLambdaSuppressions } from '@aws/dea-backend/lib/helpers/nag-suppressions';
 import { Aws, CfnResource, NestedStack, StackProps } from 'aws-cdk-lib';
 import {
@@ -35,10 +34,12 @@ interface IUiStackProps extends StackProps {
 export class DeaUiConstruct extends NestedStack {
   private uiArtifactPath: string;
   private sriString: string;
+  public bucket: Bucket;
+
   public constructor(scope: Construct, id: string, props: IUiStackProps) {
     super(scope, 'DeaUiStack');
 
-    const bucket = new Bucket(this, 'artifact-bucket', {
+    this.bucket = new Bucket(this, 'ui-artifact-bucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       websiteIndexDocument: 'index.html',
       encryption: BucketEncryption.S3_MANAGED,
@@ -49,11 +50,7 @@ export class DeaUiConstruct extends NestedStack {
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
 
-    createCfnOutput(this, 'artifactBucketName', {
-      value: bucket.bucketName,
-    });
-
-    this.addS3TLSSigV4BucketPolicy(bucket);
+    this.addS3TLSSigV4BucketPolicy(this.bucket);
 
     this.uiArtifactPath = path.resolve(__dirname, '../../ui/out');
 
@@ -72,7 +69,7 @@ export class DeaUiConstruct extends NestedStack {
     }
     // eslint-disable-next-line no-new
     new BucketDeployment(this, 'artifact-deployment-bucket', {
-      destinationBucket: bucket,
+      destinationBucket: this.bucket,
       sources,
     });
 
@@ -80,9 +77,9 @@ export class DeaUiConstruct extends NestedStack {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
 
-    bucket.grantReadWrite(executeRole);
+    this.bucket.grantReadWrite(executeRole);
 
-    this.routeHandler(props, bucket, executeRole);
+    this.routeHandler(props, this.bucket, executeRole);
 
     const lambdaToSuppress = this.node.findChild(
       'Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C'

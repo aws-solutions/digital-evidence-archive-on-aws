@@ -15,14 +15,15 @@ import {
   AdminGetUserCommand,
   AdminGetUserResponse,
   AdminSetUserPasswordCommand,
-  AuthenticationResultType,
   AuthFlowType,
+  AuthenticationResultType,
   CognitoIdentityProviderClient,
   InitiateAuthCommand,
   MessageActionType,
 } from '@aws-sdk/client-cognito-identity-provider';
-import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
+import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 import { Credentials } from 'aws4-axios';
+import { PARAM_PREFIX } from '../../app/services/service-constants';
 import { getTokenPayload } from '../../cognito-token-helpers';
 import { Oauth2Token } from '../../models/auth';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
@@ -130,7 +131,7 @@ export default class CognitoHelper {
   }
 
   getClientSecret = async () => {
-    const clientSecretId = `/dea/${this.stage}/clientSecret`;
+    const clientSecretId = `${PARAM_PREFIX}${this.stage}/clientSecret`;
 
     const client = new SecretsManagerClient({ region: this.region });
     const input = {

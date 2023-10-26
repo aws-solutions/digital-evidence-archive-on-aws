@@ -47,6 +47,7 @@ export class DeaMainStack extends cdk.Stack {
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     const stackProps: cdk.StackProps = {
+      suppressTemplateIndentation: true,
       ...props,
       description: `(${SOLUTION_ID}) Digital Evidence Archive v${SOLUTION_VERSION} - This solution helps investigative units manage and store digital evidence on AWS.`,
     };
@@ -203,10 +204,10 @@ export class DeaMainStack extends cdk.Stack {
 
     // Add SSM/SecretManager paths to protected DeaResourceArns
     protectedDeaResourceArns.push(
-      `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/dea/${stage}*`
+      `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/dev/1/${stage}*`
     );
     protectedDeaResourceArns.push(
-      `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:/dea/${stage}/*`
+      `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:/dev/1/${stage}/*`
     );
 
     restrictResourcePolicies(
@@ -232,11 +233,15 @@ export class DeaMainStack extends cdk.Stack {
     });
 
     // DEA UI Construct
-    const uiConstruct = new DeaUiConstruct(this, 'DeaUiConstruct', {
+    const uiConstruct = new DeaUiConstruct(this, 'DeaUiNestedStack', {
       kmsKey: kmsKey,
       restApi: deaApi.deaRestApi,
       accessLogsBucket: backendConstruct.accessLogsBucket,
       accessLogPrefix: uiAccessLogPrefix,
+    });
+
+    createCfnOutput(this, 'artifactBucketName', {
+      value: uiConstruct.bucket.bucketName,
     });
 
     if (deaConfig.isOneClick()) {

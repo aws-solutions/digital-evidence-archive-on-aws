@@ -349,6 +349,17 @@ Object {
         "Ref": "deaResourcesPermissionsBoundary543A378E",
       },
     },
+    "artifactBucketName": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-artifactBucketName",
+      },
+      "Value": Object {
+        "Fn::GetAtt": Array [
+          "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+          "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
+        ],
+      },
+    },
     "mainAccountKmsKey": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-mainAccountKmsKey",
@@ -378,15 +389,15 @@ Object {
           "rules_to_suppress": Array [
             Object {
               "id": "W58",
-              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+              "reason": "",
             },
             Object {
               "id": "W92",
-              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+              "reason": "",
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)             indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "",
             },
           ],
         },
@@ -809,15 +820,15 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W58",
-              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+              "reason": "",
             },
             Object {
               "id": "W92",
-              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+              "reason": "",
             },
             Object {
               "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)             indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+              "reason": "",
             },
           ],
         },
@@ -8223,11 +8234,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W12",
-              "reason": "Star resource is required for the action",
+              "reason": "",
             },
             Object {
               "id": "W76",
-              "reason": "Complexity generated via CDK environment",
+              "reason": "",
             },
           ],
         },
@@ -8897,11 +8908,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W12",
-              "reason": "Star resource is required for the action",
+              "reason": "",
             },
             Object {
               "id": "W76",
-              "reason": "Complexity generated via CDK environment",
+              "reason": "",
             },
           ],
         },
@@ -15796,7 +15807,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/index.html",
@@ -15902,7 +15913,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/auth-test.html",
@@ -16008,7 +16019,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/case-detail.html",
@@ -16114,7 +16125,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/create-cases.html",
@@ -16210,7 +16221,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/create-data-vaults.html",
@@ -16306,7 +16317,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/data-sync-tasks.html",
@@ -16402,7 +16413,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/data-vault-detail.html",
@@ -16498,7 +16509,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/data-vault-file-detail.html",
@@ -16594,7 +16605,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/data-vaults.html",
@@ -16690,7 +16701,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/edit-data-vault.html",
@@ -16796,7 +16807,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/login.html",
@@ -16902,7 +16913,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/{proxy}",
@@ -17008,7 +17019,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 Object {
                   "Fn::GetAtt": Array [
                     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
-                    "Outputs.DeaMainStackDeaUiStackartifactbucketE4DED8C7Ref",
+                    "Outputs.DeaMainStackDeaUiStackuiartifactbucket1AE24901Ref",
                   ],
                 },
                 "/upload-files.html",
@@ -17695,7 +17706,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/dea/[STAGE-REMOVED]*",
+                    ":parameter/dea/1/[STAGE-REMOVED]*",
                   ],
                 ],
               },
@@ -17719,7 +17730,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":secret:/dea/[STAGE-REMOVED]/clientSecret-*",
+                    ":secret:/dea/1/[STAGE-REMOVED]/clientSecret-*",
                   ],
                 ],
               },
@@ -17773,11 +17784,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W12",
-              "reason": "Star resource is required for the action",
+              "reason": "",
             },
             Object {
               "id": "W76",
-              "reason": "Complexity generated via CDK environment",
+              "reason": "",
             },
           ],
         },
@@ -17991,7 +18002,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     Object {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/dea/[STAGE-REMOVED]*",
+                    ":parameter/dea/1/[STAGE-REMOVED]*",
                   ],
                 ],
               },
@@ -26048,11 +26059,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W12",
-              "reason": "Star resource is required for the action",
+              "reason": "",
             },
             Object {
               "id": "W76",
-              "reason": "Complexity generated via CDK environment",
+              "reason": "",
             },
           ],
         },
@@ -26247,11 +26258,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W12",
-              "reason": "Star resource is required for the action",
+              "reason": "",
             },
             Object {
               "id": "W76",
-              "reason": "Complexity generated via CDK environment",
+              "reason": "",
             },
           ],
         },
@@ -26369,215 +26380,60 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::Lambda::Function",
     },
-    "DeaParametersConstructAuthTestGroupactions584EA34A": Object {
+    "DeaParametersConstructNestedStackDeaParametersConstructNestedStackResourceEB1F4707": Object {
+      "DeletionPolicy": "Delete",
       "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/[STAGE-REMOVED]-AuthTestGroup-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/cases/my-casesGET,/auth/tokenPOST,/auth/credentials/{idToken}/exchangeGET,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructCaseWorkeractionsBE9D52BE": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/[STAGE-REMOVED]-CaseWorker-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/casesPOST,/datavaultsPOST,/datavaultsGET,/datasync/tasksGET,/datavaults/{dataVaultId}/detailsGET,/datavaults/{dataVaultId}/detailsPUT,/datavaults/{dataVaultId}/filesGET,/datavaults/{dataVaultId}/tasksPOST,/datavaults/{dataVaultId}/files/{fileId}/infoGET,/datavaults/tasks/{taskId}/executionsPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsPUT,/cases/{caseId}/detailsDELETE,/cases/{caseId}/actionsGET,/cases/{caseId}/statusPUT,/cases/{caseId}/userMembershipsGET,/cases/{caseId}/userMembershipsPOST,/cases/{caseId}/users/{userId}/membershipsPUT,/cases/{caseId}/users/{userId}/membershipsDELETE,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/{caseId}/filesPOST,/cases/{caseId}/filesGET,/cases/{caseId}/files/{fileId}/contentsPUT,/cases/{caseId}/files/{fileId}/restorePUT,/cases/{caseId}/files/{fileId}/infoGET,/cases/{caseId}/files/{fileId}/contentsGET,/cases/my-casesGET,/cases/{caseId}/audit/{auditId}/csvGET,/cases/{caseId}/auditPOST,/availableEndpointsGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructCreateCasesTestGroupactionsAEADA4CB": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/[STAGE-REMOVED]-CreateCasesTestGroup-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/casesPOST,/cases/{caseId}/detailsDELETE,/cases/all-casesGET,/auth/tokenPOST,/auth/credentials/{idToken}/exchangeGET,/auth/loginUrlGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructEvidenceManageractionsC107F87D": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/[STAGE-REMOVED]-EvidenceManager-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/cases/{caseId}/actionsGET,/cases/{caseId}/userMembershipsGET,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/all-casesGET,/availableEndpointsGET,/cases/{caseId}/scopedInformationGET,/cases/{caseId}/ownerPOST,/users/{userId}/auditPOST,/users/{userId}/audit/{auditId}/csvGET,/system/auditPOST,/system/audit/{auditId}/csvGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructGetCaseTestGroupactions0AC8C56D": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/[STAGE-REMOVED]-GetCaseTestGroup-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsDELETE,/auth/tokenPOST,/auth/credentials/{idToken}/exchangeGET,/auth/loginUrlGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructGetMyCasesTestGroupactions68DF22F7": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/[STAGE-REMOVED]-GetMyCasesTestGroup-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsDELETE,/cases/my-casesGET,/cases/{caseId}/userMembershipsPOST,/usersGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructNoPermissionsGroupactions2641487C": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/[STAGE-REMOVED]-NoPermissionsGroup-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/availableEndpointsGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructWorkingManageractions5D91AA95": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the available endpoints for a role",
-        "Name": "/dea/[STAGE-REMOVED]-WorkingManager-actions",
-        "Tier": "Standard",
-        "Type": "StringList",
-        "Value": "/casesPOST,/cases/{caseId}/detailsGET,/cases/{caseId}/detailsPUT,/cases/{caseId}/detailsDELETE,/cases/{caseId}/actionsGET,/cases/{caseId}/userMembershipsGET,/cases/{caseId}/userMembershipsPOST,/cases/{caseId}/users/{userId}/membershipsPUT,/cases/{caseId}/users/{userId}/membershipsDELETE,/auth/{authCode}/tokenPOST,/auth/loginUrlGET,/auth/logoutUrlGET,/auth/refreshTokenPOST,/auth/revokeTokenPOST,/auth/credentials/{idToken}/exchangeGET,/usersGET,/cases/{caseId}/filesPOST,/cases/{caseId}/filesGET,/cases/{caseId}/files/{fileId}/contentsPUT,/cases/{caseId}/files/{fileId}/restorePUT,/cases/{caseId}/files/{fileId}/infoGET,/cases/{caseId}/files/{fileId}/contentsGET,/cases/my-casesGET,/cases/all-casesGET,/cases/{caseId}/audit/{auditId}/csvGET,/cases/{caseId}/auditPOST,/availableEndpointsGET,/cases/{caseId}/scopedInformationGET,/cases/{caseId}/ownerPOST,/users/{userId}/auditPOST,/users/{userId}/audit/{auditId}/csvGET,/system/auditPOST,/system/audit/{auditId}/csvGET",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructclientcallbackurlssmparam3E7C82AF": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the app client callback url for use in token verification on the backend",
-        "Name": "/dea/[STAGE-REMOVED]-client-callback-url-param",
-        "Tier": "Standard",
-        "Type": "String",
-        "Value": Object {
+        "Parameters": Object {
+          "referencetoDeaMainStackDeaApiGatewaydeaapiCF8A7F26Ref": Object {
+            "Ref": "DeaApiGatewaydeaapi822A9228",
+          },
+          "referencetoDeaMainStackDeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref": Object {
+            "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+          },
+          "referencetoDeaMainStackDeaAuthConstructDEAIdentityPoolF798BBC8Ref": Object {
+            "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
+          },
+          "referencetoDeaMainStackDeaAuthConstructDEAUserPool293667A1Ref": Object {
+            "Ref": "DeaAuthConstructDEAUserPool522C8769",
+          },
+          "referencetoDeaMainStackDeaAuthConstructDEAUserPooldeaappclientCAE4594FRef": Object {
+            "Ref": "DeaAuthConstructDEAUserPooldeaappclient08A0AC35",
+          },
+          "referencetoDeaMainStackDeaAuthConstructDEAUserPooldeaappclientDescribeCognitoUserPoolClient3140CD4CUserPoolClientClientSecret": Object {
+            "Fn::GetAtt": Array [
+              "DeaAuthConstructDEAUserPooldeaappclientDescribeCognitoUserPoolClientC581C332",
+              "UserPoolClient.ClientSecret",
+            ],
+          },
+          "referencetoDeaMainStackDeaAuthConstructdeauserpooldomain98C2D6D4Ref": Object {
+            "Ref": "DeaAuthConstructdeauserpooldomain945A7AE8",
+          },
+          "referencetoDeaMainStackprimaryCustomerKeyBB618A60Arn": Object {
+            "Fn::GetAtt": Array [
+              "primaryCustomerKey87EC2263",
+              "Arn",
+            ],
+          },
+        },
+        "TemplateURL": Object {
           "Fn::Join": Array [
             "",
             Array [
-              "https://",
-              Object {
-                "Ref": "DeaApiGatewaydeaapi822A9228",
-              },
-              ".execute-api.us-east-1.",
+              "https://s3.us-east-1.",
               Object {
                 "Ref": "AWS::URLSuffix",
               },
               "/",
               Object {
-                "Ref": "DeaApiGatewaydeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+                "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
               },
-              "/ui/login",
+              "/[HASH REMOVED].json",
             ],
           ],
         },
       },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructdea[STAGE-REMOVED]clientSecret[HASH REMOVED]": Object {
-      "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "KmsKeyId": Object {
-          "Fn::GetAtt": Array [
-            "primaryCustomerKey87EC2263",
-            "Arn",
-          ],
-        },
-        "Name": "/dea/[STAGE-REMOVED]/clientSecret",
-        "SecretString": Object {
-          "Fn::GetAtt": Array [
-            "DeaAuthConstructDEAUserPooldeaappclientDescribeCognitoUserPoolClientC581C332",
-            "UserPoolClient.ClientSecret",
-          ],
-        },
-      },
-      "Type": "AWS::SecretsManager::Secret",
+      "Type": "AWS::CloudFormation::Stack",
       "UpdateReplacePolicy": "Delete",
-    },
-    "DeaParametersConstructdeletionallowedssmparam4A105916": Object {
-      "Properties": Object {
-        "AllowedPattern": "^true|false$",
-        "Description": "Is deletion of files allowed in this installation of DEA",
-        "Name": "/dea/[STAGE-REMOVED]/deletionAllowed",
-        "Tier": "Standard",
-        "Type": "String",
-        "Value": "true",
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructidentitypoolidssmparam1198CBD1": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the identity pool id for use in user verification on the backend",
-        "Name": "/dea/[STAGE-REMOVED]-identity-pool-id-param",
-        "Tier": "Standard",
-        "Type": "String",
-        "Value": Object {
-          "Ref": "DeaAuthConstructDEAIdentityPoolBA60681C",
-        },
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructuserpoolclientidssmparam92523026": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the user pool client id for use in token verification on the backend",
-        "Name": "/dea/[STAGE-REMOVED]-userpool-client-id-param",
-        "Tier": "Standard",
-        "Type": "String",
-        "Value": Object {
-          "Ref": "DeaAuthConstructDEAUserPooldeaappclient08A0AC35",
-        },
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructuserpoolcognitodomainssmparamC0CE290C": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the user pool cognito domain for use in token verification on the backend",
-        "Name": "/dea/[STAGE-REMOVED]-userpool-cognito-domain-param",
-        "Tier": "Standard",
-        "Type": "String",
-        "Value": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "https://",
-              Object {
-                "Ref": "DeaAuthConstructdeauserpooldomain945A7AE8",
-              },
-              ".auth-fips.us-east-1.amazoncognito.com",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::SSM::Parameter",
-    },
-    "DeaParametersConstructuserpoolidssmparam884C48E3": Object {
-      "Properties": Object {
-        "AllowedPattern": ".*",
-        "Description": "stores the user pool id for use in token verification on the backend",
-        "Name": "/dea/[STAGE-REMOVED]-userpool-id-param",
-        "Tier": "Standard",
-        "Type": "String",
-        "Value": Object {
-          "Ref": "DeaAuthConstructDEAUserPool522C8769",
-        },
-      },
-      "Type": "AWS::SSM::Parameter",
     },
     "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96": Object {
       "DeletionPolicy": "Delete",
@@ -26805,7 +26661,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                       Object {
                         "Ref": "AWS::AccountId",
                       },
-                      ":parameter/dea/[STAGE-REMOVED]*",
+                      ":parameter/dev/1/[STAGE-REMOVED]*",
                     ],
                   ],
                 },
@@ -26825,7 +26681,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                       Object {
                         "Ref": "AWS::AccountId",
                       },
-                      ":secret:/dea/[STAGE-REMOVED]/*",
+                      ":secret:/dev/1/[STAGE-REMOVED]/*",
                     ],
                   ],
                 },

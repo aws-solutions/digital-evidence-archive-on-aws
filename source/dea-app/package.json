@@ -51,6 +51,7 @@
     "@aws-sdk/client-cloudwatch-logs": "~3.435.0",
     "@aws-sdk/client-cognito-identity": "~3.435.0",
     "@aws-sdk/client-cognito-identity-provider": "~3.435.0",
+    "@aws-sdk/client-datasync": "3.435.0",
     "@aws-sdk/client-dynamodb": "~3.435.0",
     "@aws-sdk/client-firehose": "~3.435.0",
     "@aws-sdk/client-s3": "~3.435.0",
@@ -60,6 +61,7 @@
     "@aws-sdk/client-sts": "~3.435.0",
     "@aws-sdk/s3-request-presigner": "~3.435.0",
     "@aws-sdk/types": "~3.433.0",
+    "@aws-sdk/util-stream-node": "~3.374.0",
     "@aws/workbench-core-audit": "~0.1.1",
     "@casl/ability": "~6.3.3",
     "@types/aws-lambda": "^8.10.114",
@@ -73,21 +75,20 @@
     "crypto-js": "~4.2.0",
     "csv-string": "~4.1.1",
     "dynamodb-onetable": "2.5.1",
+    "fs": "~0.0.1-security",
     "joi": "~17.9.1",
     "jsonwebtoken": "~9.0.0",
     "lodash": "^4.17.21",
     "pkce-challenge": "^3.0.0",
     "ulid": "~2.3.0",
-    "uuid": "^9.0.0",
-    "@aws-sdk/client-datasync": "3.435.0",
-    "@aws-sdk/util-stream-node": "~3.374.0",
-    "fs": "~0.0.1-security"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@rushstack/eslint-config": "^3.3.3",
     "@rushstack/heft": "^0.50.0",
     "@rushstack/heft-jest-plugin": "^0.5.5",
     "@rushstack/heft-node-rig": "^1.12.5",
+    "@smithy/types": "~2.4.0",
     "@types/cors": "^2.8.13",
     "@types/heft-jest": "1.0.3",
     "@types/jest": "^29.5.0",
@@ -122,7 +123,6 @@
     "ts-mockito": "~2.6.1",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.2",
-    "wait-port": "~1.0.4",
-    "@smithy/types": "~2.4.0"
+    "wait-port": "~1.0.4"
   }
 }

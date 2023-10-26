@@ -3,10 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { SSMClient, GetParametersCommand } from '@aws-sdk/client-ssm';
+import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { ValidationError } from './app/exceptions/validation-exception';
+import { PARAM_PREFIX } from './app/services/service-constants';
 import { getCustomUserAgent, getRequiredEnv } from './lambda-http-helpers';
 import { DeaUserInput } from './models/user';
 
@@ -14,8 +15,8 @@ const stage = getRequiredEnv('STAGE', 'devsample');
 
 export const getTokenPayload = async (idToken: string, region: string): Promise<CognitoIdTokenPayload> => {
   const ssmClient = new SSMClient({ region, customUserAgent: getCustomUserAgent() });
-  const userPoolIdPath = `/dea/${stage}-userpool-id-param`;
-  const clientIdPath = `/dea/${stage}-userpool-client-id-param`;
+  const userPoolIdPath = `${PARAM_PREFIX}${stage}-userpool-id-param`;
+  const clientIdPath = `${PARAM_PREFIX}${stage}-userpool-client-id-param`;
   const response = await ssmClient.send(
     new GetParametersCommand({
       Names: [userPoolIdPath, clientIdPath],

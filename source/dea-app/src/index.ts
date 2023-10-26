@@ -54,6 +54,7 @@ import { updateCases } from './app/resources/update-cases';
 import { verifyCaseACLs } from './app/resources/verify-case-acls';
 import { auditService } from './app/services/audit-service';
 import { getCaseUser } from './app/services/case-user-service';
+import * as ServiceConstants from './app/services/service-constants';
 import { transformAuditEventForS3 } from './app/transform/audit-logs-to-s3-transformation-handler';
 import { getRequiredPathParam, getUserUlid } from './lambda-http-helpers';
 import { Oauth2Token, RefreshToken, RevokeToken } from './models/auth';
@@ -142,4 +143,5 @@ export {
   putLegalHoldForCreatedS3AuditObject,
   transformAuditEventForS3,
   ErrorPrefixes,
+  ServiceConstants,
 };
