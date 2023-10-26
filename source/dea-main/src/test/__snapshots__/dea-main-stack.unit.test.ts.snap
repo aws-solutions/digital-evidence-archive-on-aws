@@ -389,15 +389,15 @@ Object {
           "rules_to_suppress": Array [
             Object {
               "id": "W58",
-              "reason": "",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
             },
             Object {
               "id": "W92",
-              "reason": "",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
             },
             Object {
               "id": "W89",
-              "reason": "",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)        indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -820,15 +820,15 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W58",
-              "reason": "",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
             },
             Object {
               "id": "W92",
-              "reason": "",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
             },
             Object {
               "id": "W89",
-              "reason": "",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)        indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
             },
           ],
         },
@@ -8234,11 +8234,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W12",
-              "reason": "",
+              "reason": "Star resource is required for the action",
             },
             Object {
               "id": "W76",
-              "reason": "",
+              "reason": "Complexity generated via CDK environment",
             },
           ],
         },
@@ -8908,11 +8908,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W12",
-              "reason": "",
+              "reason": "Star resource is required for the action",
             },
             Object {
               "id": "W76",
-              "reason": "",
+              "reason": "Complexity generated via CDK environment",
             },
           ],
         },
@@ -17784,11 +17784,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W12",
-              "reason": "",
+              "reason": "Star resource is required for the action",
             },
             Object {
               "id": "W76",
-              "reason": "",
+              "reason": "Complexity generated via CDK environment",
             },
           ],
         },
@@ -26059,11 +26059,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W12",
-              "reason": "",
+              "reason": "Star resource is required for the action",
             },
             Object {
               "id": "W76",
-              "reason": "",
+              "reason": "Complexity generated via CDK environment",
             },
           ],
         },
@@ -26258,11 +26258,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W12",
-              "reason": "",
+              "reason": "Star resource is required for the action",
             },
             Object {
               "id": "W76",
-              "reason": "",
+              "reason": "Complexity generated via CDK environment",
             },
           ],
         },
