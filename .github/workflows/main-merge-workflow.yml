@@ -1,10 +1,5 @@
 name: Digital Evidence Archive Deployment
 
-#env:
-#  CONFIGNAME: env${{'dev', 'test', 'prod'}}
-#  STAGE: DEACFI${{github.event.pull_request.number}}
-#  DOMAIN_PREFIX: deaenv${{github.event.pull_request.number}}
-
 on:
   workflow_dispatch:
   pull_request:
@@ -28,7 +23,7 @@ jobs:
       run:
         shell: bash
         working-directory: ./source
-    name: Deploy DEACFI Dev
+    name: Deploy DEACFI Dev1.0.5
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'synchronize'
     steps:
