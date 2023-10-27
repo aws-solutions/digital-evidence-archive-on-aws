@@ -14,6 +14,42 @@
           "method": "POST"
         },
         {
+          "path": "/datavaults",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults",
+          "method": "GET"
+        },
+        {
+          "path": "/datasync/tasks",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/details",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/details",
+          "method": "PUT"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/tasks",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/info",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/tasks/{taskId}/executions",
+          "method": "POST"
+        },
+        {
           "path": "/cases/{caseId}/details",
           "method": "GET"
         },
@@ -121,6 +157,42 @@
       "endpoints": [
         {
           "path": "/cases",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults",
+          "method": "GET"
+        },
+        {
+          "path": "/datasync/tasks",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/details",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/details",
+          "method": "PUT"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/tasks",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/info",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/tasks/{taskId}/executions",
           "method": "POST"
         },
         {
