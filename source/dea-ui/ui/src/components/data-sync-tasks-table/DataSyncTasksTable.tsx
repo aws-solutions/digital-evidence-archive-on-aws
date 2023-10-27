@@ -177,6 +177,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         header={
           <TextContent>
             <h2>{dataSyncTaskListLabels.runTaskModalTitle}</h2>
+            <p>{dataSyncTaskListLabels.runTaskModalDescription}</p>
           </TextContent>
         }
       >

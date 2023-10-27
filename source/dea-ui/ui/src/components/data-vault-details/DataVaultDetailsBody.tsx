@@ -19,7 +19,7 @@ import { useRouter } from 'next/router';
 import { useAvailableEndpoints } from '../../api/auth';
 import { useGetDataVaultById } from '../../api/data-vaults';
 import { commonLabels, dataVaultDetailLabels } from '../../common/labels';
-import { formatDate } from '../../helpers/dateHelper';
+import { formatDateTimeFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import DataVaultFilesTable from './DataVaultFilesTable';
 
@@ -72,12 +72,12 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
             }
           >
             <ColumnLayout columns={3} variant="text-grid">
-              <TextContent>
-                <div>
+              <SpaceBetween size="m">
+                <TextContent>
                   <h5>{commonLabels.creationDate}</h5>
-                  <p>{formatDate(data.created)}</p>
-                </div>
-                <div>
+                  <p>{formatDateTimeFromISOString(data.created?.toString())}</p>
+                </TextContent>
+                <TextContent>
                   <h5>{dataVaultDetailLabels.ulidLabel}</h5>
                   <span>
                     <Box margin={{ right: 'xxs' }} display="inline-block">
@@ -102,24 +102,24 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
                     </Box>
                     {data.ulid}
                   </span>
-                </div>
-              </TextContent>
+                </TextContent>
+              </SpaceBetween>
               <TextContent>
                 <div>
                   <h5>{commonLabels.description}</h5>
                   <p>{data.description ?? '-'}</p>
                 </div>
               </TextContent>
-              <TextContent>
-                <div>
+              <SpaceBetween size="m">
+                <TextContent>
                   <h5>{dataVaultDetailLabels.objectCounterLabel}</h5>
                   <p>{data.objectCount ?? '-'}</p>
-                </div>
-                <div>
+                </TextContent>
+                <TextContent>
                   <h5>{dataVaultDetailLabels.totalSizeLabel}</h5>
                   <p>{formatFileSize(data.totalSizeBytes)}</p>
-                </div>
-              </TextContent>
+                </TextContent>
+              </SpaceBetween>
             </ColumnLayout>
           </Container>
           <DataVaultFilesTable dataVaultId={props.dataVaultId}></DataVaultFilesTable>

@@ -5,11 +5,24 @@
 
 import { DeaDataVault } from '@aws/dea-app/lib/models/data-vault';
 import { useCollection } from '@cloudscape-design/collection-hooks';
-import { Button, Link, Pagination, PropertyFilter, SpaceBetween, Table } from '@cloudscape-design/components';
+import {
+  Box,
+  Button,
+  ColumnLayout,
+  Link,
+  Modal,
+  Pagination,
+  PropertyFilter,
+  SpaceBetween,
+  Table,
+  TextContent,
+} from '@cloudscape-design/components';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { DeaListResult } from '../../api/models/api-results';
-import { dataVaultListLabels, commonTableLabels, paginationLabels } from '../../common/labels';
+import { commonLabels, commonTableLabels, dataVaultListLabels, paginationLabels } from '../../common/labels';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canCreateDataVaults } from '../../helpers/userActionSupport';
@@ -17,6 +30,10 @@ import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/Com
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
 import { filteringOptions, filteringProperties, searchableColumns } from './dataVaultListDefinitions';
+import stepOneImage from './svgs/1_enable-security.svg';
+import stepTwoImage from './svgs/2_car.svg';
+import stepThreeImage from './svgs/3_docs.svg';
+import stepFourImage from './svgs/4_computer.svg';
 
 export type DataVaultFetcherSignature = () => DeaListResult<DeaDataVault>;
 export interface DataVaultsTableProps {
@@ -30,6 +47,7 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();
   const { data, isLoading } = props.useDataVaultFetcher();
+  const [showHowItWorksModal, setHowItWorksModal] = useState(false);
 
   // Property and date filter collections
   const { items, filteredItemsCount, propertyFilterProps, collectionProps, paginationProps } = useCollection(
@@ -66,6 +84,60 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
     }
   );
 
+  function enableHowItWorksModal() {
+    setHowItWorksModal(true);
+  }
+
+  function disableHowItWorksModal() {
+    setHowItWorksModal(false);
+  }
+
+  function howItWorksModal() {
+    return (
+      <Modal
+        data-testid="how-it-works-modal"
+        size="large"
+        onDismiss={disableHowItWorksModal}
+        visible={showHowItWorksModal}
+        closeAriaLabel={commonLabels.closeModalAriaLabel}
+        footer={
+          <Box float="right">
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button data-testid="submit-close" variant="primary" onClick={disableHowItWorksModal}>
+                {commonLabels.closeButton}
+              </Button>
+            </SpaceBetween>
+          </Box>
+        }
+        header={
+          <TextContent>
+            <h2>{dataVaultListLabels.howItWorksTitle}</h2>
+            {dataVaultListLabels.howItWorksDescription}{' '}
+            <Link
+              external
+              href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
+            >
+              {commonTableLabels.implementationGuideLabel}
+            </Link>
+          </TextContent>
+        }
+      >
+        <ColumnLayout columns={4}>
+          <Image src={stepOneImage} alt={dataVaultListLabels.howItWorksStepOneImageLabel} />
+          <Image src={stepTwoImage} alt={dataVaultListLabels.howItWorksStepTwoImageLabel} />
+          <Image src={stepThreeImage} alt={dataVaultListLabels.howItWorksStepThreeImageLabel} />
+          <Image src={stepFourImage} alt={dataVaultListLabels.howItWorksStepFourImageLabel} />
+        </ColumnLayout>
+        <ColumnLayout columns={4}>
+          {dataVaultListLabels.howItWorksStepOneDescription}
+          {dataVaultListLabels.howItWorksStepTwoDescription}
+          {dataVaultListLabels.howItWorksStepThreeDescription}
+          {dataVaultListLabels.howItWorksStepFourDescription}
+        </ColumnLayout>
+      </Modal>
+    );
+  }
+
   function createNewDataVaultHandler() {
     return router.push('/create-data-vaults');
   }
@@ -87,15 +159,13 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
 
   function tableHeaderDescription(): React.ReactNode {
     return (
-      <>
-        {props.headerDescription}{' '}
-        <Link
-          external
-          href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
-        >
-          {commonTableLabels.fileTransferInstructionsText}
-        </Link>
-      </>
+      <TextContent>
+        <p>{props.headerDescription}</p>
+        {dataVaultListLabels.fileTransferDescription}{' '}
+        <Button variant="inline-link" onClick={enableHowItWorksModal}>
+          {commonLabels.howItworksLabel}
+        </Button>
+      </TextContent>
     );
   }
 
@@ -129,6 +199,7 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
           description={tableHeaderDescription()}
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
+              {howItWorksModal()}
               <Button
                 disabled={!canCreateDataVaults(availableEndpoints.data)}
                 data-testid="create-data-vault-button"

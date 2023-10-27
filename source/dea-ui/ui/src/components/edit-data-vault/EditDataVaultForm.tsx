@@ -35,6 +35,7 @@ function EditDataVaultForm(props: EditDataVaultFormProps): JSX.Element {
     setIsSubmitLoading(true);
     try {
       await updateDataVault(formData);
+      pushNotification('success', createDataVaultLabels.successNotificationMessageOnUpdate);
       return router.push(dataVaultDetailsRoute);
     } catch (e) {
       if (e instanceof Error) {
@@ -75,7 +76,7 @@ function EditDataVaultForm(props: EditDataVaultFormProps): JSX.Element {
           </SpaceBetween>
         }
       >
-        <Container header={<Header variant="h2">{createDataVaultLabels.enterDetailsLabel}</Header>}>
+        <Container header={<Header variant="h2">{createDataVaultLabels.enterDetailsLabelOnUpdate}</Header>}>
           <SpaceBetween direction="vertical" size="l">
             <FormField
               data-testid="input-name"
@@ -101,7 +102,7 @@ function EditDataVaultForm(props: EditDataVaultFormProps): JSX.Element {
                   {createDataVaultLabels.descriptionLabel} <i> {commonLabels.optionalLabel}</i>{' '}
                 </span>
               }
-              description={createDataVaultLabels.descriptionSubtext}
+              description={createDataVaultLabels.descriptionDescription}
             >
               <Textarea
                 value={formData?.description ?? ''}
@@ -109,6 +110,11 @@ function EditDataVaultForm(props: EditDataVaultFormProps): JSX.Element {
                   setFormData({ ...formData, description: value.trim().length === 0 ? undefined : value });
                 }}
               />
+              <TextContent>
+                <p>
+                  <small>{createDataVaultLabels.descriptionSubtext}</small>
+                </p>
+              </TextContent>
             </FormField>
           </SpaceBetween>
         </Container>

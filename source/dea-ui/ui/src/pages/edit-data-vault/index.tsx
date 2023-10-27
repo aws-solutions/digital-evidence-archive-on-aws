@@ -33,11 +33,7 @@ const EditDataVaultPage: NextPage = () => {
       href: `${baseUrl}/data-vaults`,
     },
     {
-      text: breadcrumbLabels.dataVaultDetailsLabel,
-      href: `${baseUrl}/data-vault-detail?dataVaultId=${dataVaultId}`,
-    },
-    {
-      text: breadcrumbLabels.editCaseLabel,
+      text: breadcrumbLabels.editDataVaultLabel,
       href: '#',
     },
   ];

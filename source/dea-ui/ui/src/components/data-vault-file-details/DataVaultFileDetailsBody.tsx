@@ -4,14 +4,17 @@
  */
 
 import {
+  Box,
   Button,
   ColumnLayout,
   Container,
   ContentLayout,
   Header,
+  Modal,
   SpaceBetween,
   TextContent,
 } from '@cloudscape-design/components';
+import { useState } from 'react';
 import { useGetDataVaultFileDetailsById } from '../../api/data-vaults';
 import {
   auditLogLabels,
@@ -21,6 +24,7 @@ import {
   dataVaultDetailLabels,
   fileDetailLabels,
 } from '../../common/labels';
+import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 
@@ -31,6 +35,72 @@ export interface DataVaultFileDetailsBodyProps {
 
 function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Element {
   const { data, isLoading } = useGetDataVaultFileDetailsById(props.dataVaultId, props.fileId);
+  const [showDisassociateToCaseModal, setShowDisassociateToCaseModal] = useState(false);
+  const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
+  const { pushNotification } = useNotifications();
+
+  function enableDisassociateToCaseModal() {
+    setShowDisassociateToCaseModal(true);
+  }
+
+  function disableDisassociateToCaseModal() {
+    setShowDisassociateToCaseModal(false);
+  }
+
+  async function disassociateToCaseHandler() {
+    setIsSubmitLoading(true);
+    try {
+      // TODO: endpoint call.
+      await Promise.resolve();
+      pushNotification('success', dataVaultDetailLabels.disassociateFromCaseSuccessNotificationMessage);
+    } catch (e) {
+      if (e instanceof Error) {
+        pushNotification('error', e.message);
+      }
+    } finally {
+      setIsSubmitLoading(false);
+      disableDisassociateToCaseModal();
+    }
+  }
+
+  function disassociateModal() {
+    return (
+      <Modal
+        data-testid="disassociate-to-case-modal"
+        onDismiss={disableDisassociateToCaseModal}
+        visible={showDisassociateToCaseModal}
+        closeAriaLabel={commonLabels.closeModalAriaLabel}
+        footer={
+          <Box float="right">
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button variant="link" onClick={disableDisassociateToCaseModal}>
+                {commonLabels.cancelButton}
+              </Button>
+              <Button
+                data-testid="submit-case-disassociation"
+                variant="primary"
+                onClick={disassociateToCaseHandler}
+                disabled={IsSubmitLoading}
+              >
+                {commonLabels.disassociateButton}
+              </Button>
+            </SpaceBetween>
+          </Box>
+        }
+        header={
+          <TextContent>
+            <h2>{`${dataVaultDetailLabels.disassociateFromCaseModalTitle} ${data?.fileName}`}</h2>
+          </TextContent>
+        }
+      >
+        <Box padding={{ bottom: 'xxl' }}>
+          <TextContent>
+            <h5>{dataVaultDetailLabels.disassociateFromCaseModalSectionHeader}</h5>
+          </TextContent>
+        </Box>
+      </Modal>
+    );
+  }
 
   if (isLoading) {
     return <h1>{commonLabels.loadingLabel}</h1>;
@@ -91,7 +161,11 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
                 variant="h2"
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
-                    <Button data-testid="disassociate-data-vault-file-button" disabled={true}>
+                    {disassociateModal()}
+                    <Button
+                      data-testid="disassociate-data-vault-file-button"
+                      onClick={enableDisassociateToCaseModal}
+                    >
                       {dataVaultDetailLabels.disassociateLabel}
                     </Button>
                   </SpaceBetween>

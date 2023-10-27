@@ -38,6 +38,10 @@ export const commonLabels = {
   optionalLabel: 'optional',
   goBack: 'Go back',
   runTask: 'Start file transfer',
+  confirmButton: 'Confirm',
+  howItworksLabel: 'How it works',
+  closeButton: 'Close',
+  disassociateButton: 'Disassociate',
 };
 
 export const commonTableLabels = {
@@ -53,7 +57,7 @@ export const commonTableLabels = {
   creationDateHeader: 'Creation date',
   statusHeader: 'Status',
   fileTypeHeader: 'File type',
-  fileSizeHeader: 'Size',
+  fileSizeHeader: 'File size',
   dateUploadedHeader: 'Upload date',
   uploadedByHeader: 'Uploaded by',
   caseFileAudit: 'Download Case File Audit',
@@ -318,6 +322,7 @@ export const breadcrumbLabels = {
   createNewDataVaultLabel: 'Create data vault',
   dataVaultDetailsLabel: 'Data vault details',
   dataSyncTasks: 'Tasks',
+  editDataVaultLabel: 'Edit data vault',
 };
 
 export const navigationLabels = {
@@ -326,7 +331,7 @@ export const navigationLabels = {
   allSystemCasesLabel: 'All cases',
   systemAuditLogsLabel: 'Download system audit log',
   dataVaultsLabel: 'Data vaults',
-  dataSyncTasksLabel: 'All Tasks',
+  dataSyncTasksLabel: 'DataSync tasks',
 };
 
 export const fileUploadLabels = {
@@ -360,20 +365,36 @@ export const dataVaultListLabels = {
   dataVaultsPageDescription:
     'All data vaults are listed. You can search for a data vault and associate files to a case.',
   filteringPlaceholder: 'Search by name',
+  fileTransferDescription: 'For file transfer, see',
+  howItWorksTitle: 'How it works: Mass files transfers',
+  howItWorksDescription: 'For further details on all steps see the',
+  howItWorksStepOneDescription: "1. In DEA, create a data vault for the files you'd like to transfer.",
+  howItWorksStepTwoDescription:
+    '2. Sign in to AWS DataSync and create a source location, destination location, and a task. Then return to DEA.',
+  howItWorksStepThreeDescription:
+    '3. In DEA, go to All tasks and select the task you created to start the file transfer.',
+  howItWorksStepFourDescription:
+    '4. After your files are transferred, go to the data vault you created and associate them with a case. Done!',
+  howItWorksStepOneImageLabel: 'Step one',
+  howItWorksStepTwoImageLabel: 'Step two',
+  howItWorksStepThreeImageLabel: 'Step three',
+  howItWorksStepFourImageLabel: 'Step four',
 };
 
 export const createDataVaultLabels = {
   createNewDataVaultLabel: 'Create data vault',
   createNewDataVaultDescription: 'All fields are required unless specified.',
-  enterDetailsLabel: 'Details',
+  enterDetailsLabel: 'Enter data vault details',
+  enterDetailsLabelOnUpdate: 'Details',
   nameLabel: 'Name',
-  nameDescription: ' Create a Unique name that you can easily reference and find in Data vaults.',
+  nameDescription: 'Create a unique name that you can easily reference and find in data vaults.',
   nameSubtext: 'The name can have up to 100 characters. Valid characters: A-Z, a-z, 0-9, and spaces.',
   descriptionLabel: 'Description - ',
   descriptionDescription: 'Enter a brief description for your data vault.',
   descriptionSubtext: 'Descriptions can have up to 250 characters.',
-  successNotificationMessage: 'Data vault created successfully.',
+  successNotificationMessage: 'Data vault created successfully. See the implementation guide.',
   viewImplementationGuideText: 'View Implementation Guide for next steps.',
+  successNotificationMessageOnUpdate: 'Data vault has been successfully updated.',
 };
 
 export const dataVaultDetailLabels = {
@@ -382,16 +403,23 @@ export const dataVaultDetailLabels = {
   objectCounterLabel: 'Number of files',
   totalSizeLabel: 'Total size',
   noFilesLabel: 'No files to display.',
-  noFilesDisplayLabel:
-    'To import data, open the DataSync console and follow the steps in the implementation Guide.',
+  noFilesDisplayLabel: 'For file transfer instructions, see the Implementation guide.',
   filesLabel: 'Files',
   filesTableHeaderDescription:
-    'Folders and file uploaded to the Data Vault. For file transfer instructions, see the',
+    'Folders and file uploaded to the data Vault. For file transfer instructions, see the',
   displayFilesCheckboxLabel: 'Display files not associated with a case',
   copyDataVaultUlidAriaLabel: 'Copy data vault ulid',
   noAssociatedLabel: 'Not associated',
   associatedLabel: 'Associated',
   disassociateLabel: 'Disassociate file',
+  associateToCaseModalTitle: 'Choose case to associate to file(s)',
+  associateToCaseDescription: 'Search for case and select',
+  associateToCaseSuccessNotificationMessage: 'File(s) successfully associated to the case',
+  associateToCaseMultiselectPlaceholder: 'Choose case',
+  associateToCaseMultiselectFilteringPlaceholder: 'Search by case name',
+  disassociateFromCaseSuccessNotificationMessage: 'File successfully disassociated from the case(s)',
+  disassociateFromCaseModalTitle: 'Disassociate file',
+  disassociateFromCaseModalSectionHeader: 'Select case to diassociate from the file',
 };
 
 export const dataSyncTaskListLabels = {
@@ -401,11 +429,12 @@ export const dataSyncTaskListLabels = {
   noDisplayLabel: 'Once data sync tasks are created, they will be displayed.',
   runDataSyncTaskLabel: 'Transfer files',
   searchDataSyncTasksLabel: 'Search by task ID',
-  dataSyncTasksLabel: 'All tasks',
+  dataSyncTasksLabel: 'DataSync tasks',
   dataSyncTasksPageDescription:
-    'All data sync tasks displayed. Choose a task and start the file transfer. For file transfer instructions, see the',
+    'Choose a task and start the file transfer. For file transfer instructions, see the',
   dataSyncTaskCreationInstructions: 'Task Creation Instructions.',
   runTaskModalTitle: 'Confirm details are correct',
+  runTaskModalDescription: 'If the details need to be corrected, update task in DataSync',
   runTaskLocationsLabel: 'Files will be transferred between these locations',
   runTaskModalAlertText: 'Once the task transfers the files into Data vault, they cannot be deleted.',
   startTaskSuccessNotificationMessage:

@@ -185,7 +185,7 @@ export class DeaUiConstruct extends NestedStack {
               'method.response.header.Content-Type': 'integration.response.header.Content-Type',
               'method.response.header.Content-Security-Policy':
                 `'default-src 'self';` +
-                `img-src 'self' blob:;` +
+                `img-src 'self' blob: data:;` +
                 `style-src 'unsafe-inline' 'self';` +
                 `connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;` +
                 `script-src 'strict-dynamic' '${this.sriString}';` +

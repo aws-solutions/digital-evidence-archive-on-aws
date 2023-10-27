@@ -6,6 +6,7 @@
 import { DeaDataVaultFile } from '@aws/dea-app/lib/models/data-vault-file';
 import { PropertyFilterProperty, useCollection } from '@cloudscape-design/collection-hooks';
 import {
+  Box,
   BreadcrumbGroup,
   Button,
   Checkbox,
@@ -13,15 +14,21 @@ import {
   Header,
   Icon,
   Link,
+  Modal,
+  Multiselect,
   Pagination,
   SpaceBetween,
   StatusIndicator,
   Table,
+  TextContent,
   TextFilter,
 } from '@cloudscape-design/components';
+import { OptionDefinition } from '@cloudscape-design/components/internal/components/option/interfaces';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useListAllCases } from '../../api/cases';
 import { useListDataVaultFiles } from '../../api/data-vaults';
+import { ScopedDeaCaseDTO } from '../../api/models/case';
 import {
   commonLabels,
   commonTableLabels,
@@ -29,6 +36,7 @@ import {
   filesListLabels,
   paginationLabels,
 } from '../../common/labels';
+import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
@@ -43,7 +51,23 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
     basePath: '/',
   });
   const { data, isLoading } = useListDataVaultFiles(props.dataVaultId, filesTableState.basePath);
-  const [selectedFiles, setSelectedFiles] = React.useState<DeaDataVaultFile[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<DeaDataVaultFile[]>([]);
+  const [showAssociateToCaseModal, setShowAssociateToCaseModal] = useState(false);
+  const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
+  const { pushNotification } = useNotifications();
+  const [selectedCases, setSelectedCases] = useState<ReadonlyArray<OptionDefinition>>([]);
+  const { data: allCases, isLoading: allCasesAreLoading } = useListAllCases();
+
+  function fetchMultiselectOptions(data: ScopedDeaCaseDTO[], isLoading: boolean): OptionDefinition[] {
+    if (isLoading) {
+      return [];
+    }
+    return data.map(({ ulid, name }) => ({ value: ulid, label: name }));
+  }
+  const allOptions = useMemo(
+    () => fetchMultiselectOptions(allCases, allCasesAreLoading),
+    [allCases, allCasesAreLoading]
+  );
 
   const filteringProperties: readonly PropertyFilterProperty[] = [
     {
@@ -87,6 +111,78 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
     }
   });
 
+  async function associateToCaseHandler() {
+    setIsSubmitLoading(true);
+    try {
+      // TODO: endpoint call.
+      await Promise.resolve();
+      pushNotification('success', dataVaultDetailLabels.associateToCaseSuccessNotificationMessage);
+      setSelectedFiles([]);
+      setSelectedCases([]);
+    } catch (e) {
+      if (e instanceof Error) {
+        pushNotification('error', e.message);
+      }
+    } finally {
+      setIsSubmitLoading(false);
+      disableAssociateToCaseModal();
+    }
+  }
+
+  function enableAssociateToCaseModal() {
+    setShowAssociateToCaseModal(true);
+  }
+
+  function disableAssociateToCaseModal() {
+    setShowAssociateToCaseModal(false);
+  }
+
+  function associateToCaseModal() {
+    return (
+      <Modal
+        data-testid="associate-to-case-modal"
+        onDismiss={disableAssociateToCaseModal}
+        visible={showAssociateToCaseModal && selectedFiles.length !== 0}
+        closeAriaLabel={commonLabels.closeModalAriaLabel}
+        footer={
+          <Box float="right">
+            <SpaceBetween direction="horizontal" size="xs">
+              <Button variant="link" onClick={disableAssociateToCaseModal}>
+                {commonLabels.cancelButton}
+              </Button>
+              <Button
+                data-testid="submit-case-association"
+                variant="primary"
+                onClick={associateToCaseHandler}
+                disabled={IsSubmitLoading || selectedCases.length === 0}
+              >
+                {commonLabels.confirmButton}
+              </Button>
+            </SpaceBetween>
+          </Box>
+        }
+        header={
+          <TextContent>
+            <h2>{dataVaultDetailLabels.associateToCaseModalTitle}</h2>
+            <p>{dataVaultDetailLabels.associateToCaseDescription}</p>
+          </TextContent>
+        }
+      >
+        <Box padding={{ bottom: 'xxl' }}>
+          <Multiselect
+            selectedOptions={selectedCases}
+            onChange={({ detail }) => setSelectedCases(detail.selectedOptions)}
+            options={allOptions}
+            filteringType="auto"
+            keepOpen={false}
+            placeholder={dataVaultDetailLabels.associateToCaseMultiselectPlaceholder}
+            filteringPlaceholder={dataVaultDetailLabels.associateToCaseMultiselectFilteringPlaceholder}
+          />
+        </Box>
+      </Modal>
+    );
+  }
+
   const fileFolderCell = (dataVaultFile: DeaDataVaultFile) => {
     return !dataVaultFile.isFile ? (
       <Button
@@ -127,10 +223,12 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
   function tableActions() {
     return (
       <SpaceBetween direction="horizontal" size="xs">
+        {associateToCaseModal()}
         <Button
           disabled={selectedFiles.length === 0}
           data-testid="data-vault-associate-button"
           variant="primary"
+          onClick={enableAssociateToCaseModal}
         >
           {commonTableLabels.associateButtonLabel}
         </Button>
@@ -208,7 +306,7 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
           id: 'fileName',
           header: commonTableLabels.fileNameHeader,
           cell: fileFolderCell,
-          width: 400,
+          width: 350,
           minWidth: 165,
           sortingField: 'fileName',
         },
@@ -224,8 +322,8 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
           id: 'fileSizeBytes',
           header: commonTableLabels.fileSizeHeader,
           cell: (e) => formatFileSize(e.fileSizeBytes),
-          width: 100,
-          minWidth: 100,
+          width: 120,
+          minWidth: 120,
           sortingField: 'fileSizeBytes',
         },
         {
@@ -264,13 +362,15 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
             {...filterProps}
             filteringPlaceholder={filesListLabels.searchLabel}
           />
-          <Checkbox
-            disabled={true}
-            onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
-            checked={displayFilesWithoutACase}
-          >
-            {dataVaultDetailLabels.displayFilesCheckboxLabel}
-          </Checkbox>
+          <Box padding="xxs">
+            <Checkbox
+              disabled={true}
+              onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
+              checked={displayFilesWithoutACase}
+            >
+              {dataVaultDetailLabels.displayFilesCheckboxLabel}
+            </Checkbox>
+          </Box>
         </ColumnLayout>
       }
       header={tableHeader}
