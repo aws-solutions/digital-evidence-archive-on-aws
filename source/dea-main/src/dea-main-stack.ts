@@ -54,6 +54,8 @@ export class DeaMainStack extends cdk.Stack {
 
     super(scope, id, stackProps);
 
+    const nestedConstructs: cdk.NestedStack[] = [];
+
     let dashboard: DeaOperationalDashboard | undefined = undefined;
     if (!deaConfig.isOneClick()) {
       dashboard = new DeaOperationalDashboard(this, 'DeaApiOpsDashboard');
@@ -196,10 +198,12 @@ export class DeaMainStack extends cdk.Stack {
 
       // Store relevant parameters for the functioning of DEA
       // in SSM Param Store and Secrets Manager
-      new DeaParameters(this, `DeaParameters`, {
+      const deaParams = new DeaParameters(this, `DeaParameters`, {
         deaAuthInfo: authConstruct.deaAuthInfo,
         kmsKey,
       });
+
+      nestedConstructs.push(deaParams);
     }
 
     // Add SSM/SecretManager paths to protected DeaResourceArns
@@ -239,19 +243,23 @@ export class DeaMainStack extends cdk.Stack {
       accessLogsBucket: backendConstruct.accessLogsBucket,
       accessLogPrefix: uiAccessLogPrefix,
     });
+    nestedConstructs.push(uiConstruct);
 
     createCfnOutput(this, 'artifactBucketName', {
       value: uiConstruct.bucket.bucketName,
     });
 
     if (deaConfig.isOneClick()) {
-      if (uiConstruct.nestedStackResource instanceof CfnResource) {
-        // Fetch solutions bucket and version
-        const DIST_BUCKET = process.env.DIST_OUTPUT_BUCKET ?? assert(false);
-        const DIST_VERSION = process.env.DIST_VERSION || '%%VERSION%%';
-        const solutionsBucketName = `${DIST_BUCKET}-reference`;
-        const templateUrl = `https://${solutionsBucketName}.s3.amazonaws.com/digital-evidence-archive/${DIST_VERSION}/DeaUiStack.nested.template`;
-        uiConstruct.nestedStackResource.addPropertyOverride('TemplateURL', templateUrl);
+      // Fetch solutions bucket and version
+      const DIST_BUCKET = process.env.DIST_OUTPUT_BUCKET ?? assert(false);
+      const DIST_VERSION = process.env.DIST_VERSION || '%%VERSION%%';
+      const solutionsBucketName = `${DIST_BUCKET}-reference`;
+      for (const nestedConstruct of nestedConstructs) {
+        const nestedStackResource = nestedConstruct.nestedStackResource;
+        if (nestedStackResource instanceof CfnResource) {
+          const templateUrl = `https://${solutionsBucketName}.s3.amazonaws.com/digital-evidence-archive/${DIST_VERSION}/${nestedConstruct.artifactId}.nested.template`;
+          nestedStackResource.addPropertyOverride('TemplateURL', templateUrl);
+        }
       }
     }
 
