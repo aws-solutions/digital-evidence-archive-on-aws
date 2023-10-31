@@ -27,6 +27,7 @@ import { Aws, CfnResource, Duration } from 'aws-cdk-lib';
 import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountPrincipal,
+  ArnPrincipal,
   Effect,
   ManagedPolicy,
   PolicyDocument,
@@ -214,6 +215,13 @@ export class DeaMainStack extends cdk.Stack {
       `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:/dev/1/${stage}/*`
     );
 
+    const applicationAccessRoleArns = [
+      deaApi.lambdaBaseRole.roleArn,
+      deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
+      deaEventHandlers.s3BatchDeleteCaseFileLambdaRole.roleArn,
+      deaApi.datasetsRole.roleArn,
+      backendConstruct.datasetsDataSyncRole.roleArn,
+    ];
     restrictResourcePolicies(
       {
         kmsKey,
@@ -221,12 +229,9 @@ export class DeaMainStack extends cdk.Stack {
         datasetsBucket: backendConstruct.datasetsBucket,
         auditQueryBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
       },
-      deaApi.lambdaBaseRole,
-      deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole,
-      deaEventHandlers.s3BatchDeleteCaseFileLambdaRole,
       deaApi.customResourceRole,
-      deaApi.datasetsRole,
-      deaApi.auditDownloadRole
+      applicationAccessRoleArns,
+      deaConfig.adminRoleArn()
     );
 
     const permissionBoundaryOnDeaResources =
@@ -321,6 +326,19 @@ export class DeaMainStack extends cdk.Stack {
         }),
       ],
     });
+
+    const adminRoleArn = deaConfig.adminRoleArn();
+    if (adminRoleArn) {
+      mainKeyPolicy.addStatements(
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:GenerateDataKey*'],
+          principals: [new ArnPrincipal(adminRoleArn)],
+          resources: ['*'],
+          sid: 'grant admin key access',
+        })
+      );
+    }
 
     const key = new Key(this, 'primaryCustomerKey', {
       enableKeyRotation: true,

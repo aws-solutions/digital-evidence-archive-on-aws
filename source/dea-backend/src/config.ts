@@ -247,6 +247,12 @@ const convictSchema = {
     format: Array,
     default: [],
   },
+  adminRoleArn: {
+    doc: 'Optional ARN to grant KMS and Bucket permissions, useful for pipeline testing',
+    format: String,
+    default: undefined,
+    env: 'ADMIN_ROLE_ARN',
+  },
 };
 
 export interface IdPAttributes {
@@ -317,6 +323,7 @@ interface DEAConfig {
   uploadFilesTimeoutMinutes(): number;
   includeDynamoDataPlaneEventsInTrail(): boolean;
   auditDownloadTimeoutMinutes(): number;
+  adminRoleArn(): string | undefined;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -344,25 +351,22 @@ export const deaConfig: DEAConfig = {
     const value = convictConfig.get('deaAllowedOrigins');
     return value === '' ? [] : value.split(',');
   },
-  kmsAccountActions: () =>
-    convictConfig.get('testStack')
-      ? ['kms:*']
-      : [
-          'kms:Create*',
-          'kms:Describe*',
-          'kms:Enable*',
-          'kms:List*',
-          'kms:Put*',
-          'kms:Update*',
-          'kms:Revoke*',
-          'kms:Disable*',
-          'kms:Get*',
-          'kms:Delete*',
-          'kms:TagResource',
-          'kms:UntagResource',
-          'kms:ScheduleKeyDeletion',
-          'kms:CancelKeyDeletion',
-        ],
+  kmsAccountActions: () => [
+    'kms:Create*',
+    'kms:Describe*',
+    'kms:Enable*',
+    'kms:List*',
+    'kms:Put*',
+    'kms:Update*',
+    'kms:Revoke*',
+    'kms:Disable*',
+    'kms:Get*',
+    'kms:Delete*',
+    'kms:TagResource',
+    'kms:UntagResource',
+    'kms:ScheduleKeyDeletion',
+    'kms:CancelKeyDeletion',
+  ],
   deletionAllowed: () => convictConfig.get('deletionAllowed'),
   sameSiteValue: () => (convictConfig.get('testStack') ? 'None' : 'Strict'),
   preflightOptions: () => {
@@ -407,6 +411,7 @@ export const deaConfig: DEAConfig = {
   includeDynamoDataPlaneEventsInTrail: () => convictConfig.get('includeDynamoDataPlaneEventsInTrail'),
   auditDownloadTimeoutMinutes: () => convictConfig.get('auditDownloadTimeoutMinutes'),
   dataSyncLocationBuckets: () => convictConfig.get('dataSyncLocationBuckets'),
+  adminRoleArn: () => convictConfig.get('adminRoleArn'),
 };
 
 export const loadConfig = (stage: string): void => {

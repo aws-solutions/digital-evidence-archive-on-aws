@@ -4,9 +4,9 @@
  */
 
 /* eslint-disable no-new */
-import { Aws, StackProps, Duration, CfnResource } from 'aws-cdk-lib';
+import { Aws, StackProps, Duration, CfnResource, RemovalPolicy } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
-import { Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { ArnPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import {
   BlockPublicAccess,
@@ -106,7 +106,7 @@ export class DeaBackendConstruct extends Construct {
       enforceSSL: true,
       publicReadAccess: false,
       removalPolicy: deaConfig.retainPolicy(),
-      autoDeleteObjects: deaConfig.isTestStack(),
+      autoDeleteObjects: deaConfig.retainPolicy() === RemovalPolicy.DESTROY,
       versioned: false, // https://github.com/awslabs/aws-solutions-constructs/issues/44,
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
@@ -238,7 +238,7 @@ export class DeaBackendConstruct extends Construct {
           's3:PutObjectTagging',
           's3:GetObjectTagging',
           's3:PutObject',
-          's3:ListObjectsV2',
+          's3:ListBucket',
         ],
         effect: Effect.ALLOW,
         resources: [`${this.datasetsBucket.bucketArn}/*`],
@@ -267,6 +267,16 @@ export class DeaBackendConstruct extends Construct {
       value: role.roleArn,
     });
 
+    kmsKey.addToResourcePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:GenerateDataKey*'],
+        principals: [new ArnPrincipal(role.roleArn)],
+        resources: ['*'],
+        sid: 'allow-datasync-key-access',
+      })
+    );
+
     return role;
   }
 
@@ -277,7 +287,7 @@ export class DeaBackendConstruct extends Construct {
       enforceSSL: true,
       publicReadAccess: false,
       removalPolicy: deaConfig.retainPolicy(),
-      autoDeleteObjects: deaConfig.isTestStack(),
+      autoDeleteObjects: deaConfig.retainPolicy() === RemovalPolicy.DESTROY,
       versioned: false, // https://github.com/awslabs/aws-solutions-constructs/issues/44,
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });

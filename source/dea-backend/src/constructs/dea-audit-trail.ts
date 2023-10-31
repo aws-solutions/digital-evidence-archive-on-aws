@@ -2,7 +2,7 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-import { CfnResource, StackProps } from 'aws-cdk-lib';
+import { CfnResource, RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import * as CloudTrail from 'aws-cdk-lib/aws-cloudtrail';
 import { CfnTrail, ReadWriteType } from 'aws-cdk-lib/aws-cloudtrail';
 import { Effect, PolicyStatement, ServicePrincipal, StarPrincipal } from 'aws-cdk-lib/aws-iam';
@@ -103,7 +103,7 @@ export class DeaAuditTrail extends Construct {
       enforceSSL: true,
       publicReadAccess: false,
       removalPolicy: deaConfig.retainPolicy(),
-      autoDeleteObjects: deaConfig.isTestStack(),
+      autoDeleteObjects: deaConfig.retainPolicy() === RemovalPolicy.DESTROY,
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
       serverAccessLogsBucket: deaAccessLoggingBucket,
       serverAccessLogsPrefix: 'trail-bucket-access-logs',
@@ -130,7 +130,7 @@ export class DeaAuditTrail extends Construct {
           actions: ['s3:PutLifecycleConfiguration'],
           resources: [trailBucket.bucketArn],
           principals: [new StarPrincipal()],
-          sid: 'accesslogs-deny-bucket-policy',
+          sid: 'accesslogs-deny-lifecycle',
         })
       );
     }

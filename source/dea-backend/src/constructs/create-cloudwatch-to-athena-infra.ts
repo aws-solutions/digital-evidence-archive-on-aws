@@ -6,7 +6,7 @@
 import path from 'path';
 import ErrorPrefixes from '@aws/dea-app/lib/app/error-prefixes';
 import * as glue from '@aws-cdk/aws-glue-alpha';
-import { Aws, Duration, Fn, StackProps, aws_kinesisfirehose } from 'aws-cdk-lib';
+import { Aws, Duration, Fn, RemovalPolicy, StackProps, aws_kinesisfirehose } from 'aws-cdk-lib';
 import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import { ArnPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
@@ -89,7 +89,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       serverAccessLogsBucket: props.accessLogsBucket,
       serverAccessLogsPrefix: 'query-result-bucket-access-logs',
       removalPolicy: deaConfig.retainPolicy(),
-      autoDeleteObjects: deaConfig.isTestStack(),
+      autoDeleteObjects: deaConfig.retainPolicy() === RemovalPolicy.DESTROY,
       cors: [
         {
           allowedOrigins: ['*'],

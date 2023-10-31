@@ -2486,7 +2486,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 "s3:PutObjectTagging",
                 "s3:GetObjectTagging",
                 "s3:PutObject",
-                "s3:ListObjectsV2",
+                "s3:ListBucket",
               ],
               "Effect": "Allow",
               "Resource": Object {
@@ -18952,6 +18952,24 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 },
               },
               "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt*",
+                "kms:Decrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendConstructDataSyncPermissionsRoleA297BC9E",
+                    "Arn",
+                  ],
+                },
+              },
+              "Resource": "*",
+              "Sid": "allow-datasync-key-access",
             },
             Object {
               "Action": Array [

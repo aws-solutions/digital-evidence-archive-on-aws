@@ -7,7 +7,7 @@ import assert from 'assert';
 import * as path from 'path';
 import { deaConfig } from '@aws/dea-backend/lib/config';
 import { addLambdaSuppressions } from '@aws/dea-backend/lib/helpers/nag-suppressions';
-import { Aws, CfnResource, NestedStack, StackProps } from 'aws-cdk-lib';
+import { Aws, CfnResource, NestedStack, RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import {
   AuthorizationType,
   AwsIntegration,
@@ -46,7 +46,7 @@ export class DeaUiConstruct extends NestedStack {
       serverAccessLogsBucket: props.accessLogsBucket,
       serverAccessLogsPrefix: props.accessLogPrefix,
       removalPolicy: deaConfig.retainPolicy(),
-      autoDeleteObjects: deaConfig.isTestStack(),
+      autoDeleteObjects: deaConfig.retainPolicy() === RemovalPolicy.DESTROY,
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
 

@@ -25392,7 +25392,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 "s3:PutObjectTagging",
                 "s3:GetObjectTagging",
                 "s3:PutObject",
-                "s3:ListObjectsV2",
+                "s3:ListBucket",
               ],
               "Effect": "Allow",
               "Resource": Object {
@@ -25750,6 +25750,213 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 },
               ],
             },
+            Object {
+              "Action": Array [
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "aws:PrincipalArn": Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaApiGatewaydeabaselambdarole91512884",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaEventHandlerss3batchdeletecasefileroleBAD7A58C",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaEventHandlerss3batchdeletecasefilehandlerrole23FFF03E",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaApiGatewaydeadatasetsrole96DE0218",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaBackendStackDataSyncPermissionsRoleB66D0DF8",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                    "Arn",
+                  ],
+                },
+              ],
+              "Sid": "accesslogs-bucket-policy",
+            },
+            Object {
+              "Condition": Object {
+                "StringEquals": Object {
+                  "aws:PrincipalArn": Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaApiGatewaydeabaselambdarole91512884",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaEventHandlerss3batchdeletecasefileroleBAD7A58C",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaEventHandlerss3batchdeletecasefilehandlerrole23FFF03E",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaApiGatewaydeadatasetsrole96DE0218",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaBackendStackDataSyncPermissionsRoleB66D0DF8",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+              },
+              "Effect": "Deny",
+              "NotAction": Array [
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+              ],
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                    "Arn",
+                  ],
+                },
+              ],
+              "Sid": "accesslogs-deny-other-actions",
+            },
+            Object {
+              "Action": Array [
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+              ],
+              "Condition": Object {
+                "StringNotEquals": Object {
+                  "aws:PrincipalArn": Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaApiGatewaydeabaselambdarole91512884",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaEventHandlerss3batchdeletecasefileroleBAD7A58C",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaEventHandlerss3batchdeletecasefilehandlerrole23FFF03E",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaApiGatewaydeadatasetsrole96DE0218",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaBackendStackDataSyncPermissionsRoleB66D0DF8",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3AccessLogsBucket46FDD3E0",
+                    "Arn",
+                  ],
+                },
+              ],
+              "Sid": "accesslogs-deny-bucket-policy",
+            },
           ],
           "Version": "2012-10-17",
         },
@@ -25880,6 +26087,372 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   ],
                 },
               ],
+            },
+            Object {
+              "Action": Array [
+                "s3:AbortMultipartUpload",
+                "s3:ListMultipartUploadParts",
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:GetObjectLegalHold",
+                "s3:RestoreObject",
+                "s3:ListBucket",
+                "s3:DeleteObject",
+                "s3:DeleteObjectVersion",
+                "s3:PutObjectLegalHold",
+                "s3:ListBucketVersions",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "aws:PrincipalArn": Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaApiGatewaydeabaselambdarole91512884",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaEventHandlerss3batchdeletecasefileroleBAD7A58C",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaEventHandlerss3batchdeletecasefilehandlerrole23FFF03E",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaApiGatewaydeadatasetsrole96DE0218",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaBackendStackDataSyncPermissionsRoleB66D0DF8",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3DatasetsBucket408FF954",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3DatasetsBucket408FF954",
+                    "Arn",
+                  ],
+                },
+              ],
+              "Sid": "datasets-bucket-policy",
+            },
+            Object {
+              "Condition": Object {
+                "StringEquals": Object {
+                  "aws:PrincipalArn": Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaApiGatewaydeabaselambdarole91512884",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaEventHandlerss3batchdeletecasefileroleBAD7A58C",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaEventHandlerss3batchdeletecasefilehandlerrole23FFF03E",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaApiGatewaydeadatasetsrole96DE0218",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaBackendStackDataSyncPermissionsRoleB66D0DF8",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+              },
+              "Effect": "Deny",
+              "NotAction": Array [
+                "s3:AbortMultipartUpload",
+                "s3:ListMultipartUploadParts",
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:GetObjectLegalHold",
+                "s3:RestoreObject",
+                "s3:ListBucket",
+                "s3:DeleteObject",
+                "s3:DeleteObjectVersion",
+                "s3:PutObjectLegalHold",
+                "s3:ListBucketVersions",
+              ],
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3DatasetsBucket408FF954",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3DatasetsBucket408FF954",
+                    "Arn",
+                  ],
+                },
+              ],
+              "Sid": "datasets-deny-bucket-policy",
+            },
+            Object {
+              "Action": Array [
+                "s3:AbortMultipartUpload",
+                "s3:ListMultipartUploadParts",
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:GetObjectLegalHold",
+                "s3:RestoreObject",
+                "s3:ListBucket",
+                "s3:DeleteObject",
+                "s3:DeleteObjectVersion",
+                "s3:PutObjectLegalHold",
+                "s3:ListBucketVersions",
+              ],
+              "Condition": Object {
+                "StringNotEquals": Object {
+                  "aws:PrincipalArn": Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaApiGatewaydeabaselambdarole91512884",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaEventHandlerss3batchdeletecasefileroleBAD7A58C",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaEventHandlerss3batchdeletecasefilehandlerrole23FFF03E",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaApiGatewaydeadatasetsrole96DE0218",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaBackendStackDataSyncPermissionsRoleB66D0DF8",
+                        "Arn",
+                      ],
+                    },
+                  ],
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3DatasetsBucket408FF954",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3DatasetsBucket408FF954",
+                    "Arn",
+                  ],
+                },
+              ],
+              "Sid": "datasets-deny-others-bucket-policy",
+            },
+            Object {
+              "Action": Array [
+                "s3:GetBucketCORS",
+                "s3:PutBucketCORS",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "aws:PrincipalArn": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaApiGatewaycustomresourceroleABCB85DD",
+                      "Arn",
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3DatasetsBucket408FF954",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3DatasetsBucket408FF954",
+                    "Arn",
+                  ],
+                },
+              ],
+              "Sid": "datasets-custom-resource-policy",
+            },
+            Object {
+              "Condition": Object {
+                "StringEquals": Object {
+                  "aws:PrincipalArn": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaApiGatewaycustomresourceroleABCB85DD",
+                      "Arn",
+                    ],
+                  },
+                },
+              },
+              "Effect": "Deny",
+              "NotAction": Array [
+                "s3:GetBucketCORS",
+                "s3:PutBucketCORS",
+              ],
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3DatasetsBucket408FF954",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3DatasetsBucket408FF954",
+                    "Arn",
+                  ],
+                },
+              ],
+              "Sid": "datasets-deny-non-custom-resource-policy",
+            },
+            Object {
+              "Action": Array [
+                "s3:GetBucketCORS",
+                "s3:PutBucketCORS",
+              ],
+              "Condition": Object {
+                "StringNotEquals": Object {
+                  "aws:PrincipalArn": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaApiGatewaycustomresourceroleABCB85DD",
+                      "Arn",
+                    ],
+                  },
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3DatasetsBucket408FF954",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3DatasetsBucket408FF954",
+                    "Arn",
+                  ],
+                },
+              ],
+              "Sid": "datasets-deny-custom-resource-policy",
             },
           ],
           "Version": "2012-10-17",
@@ -27306,7 +27879,22 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Sid": "main-key-share-statement",
             },
             Object {
-              "Action": "kms:*",
+              "Action": Array [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion",
+              ],
               "Effect": "Allow",
               "Principal": Object {
                 "AWS": Object {
@@ -27359,6 +27947,24 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
               "Resource": "*",
               "Sid": "cfn-key-share-statement",
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt*",
+                "kms:Decrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackDataSyncPermissionsRoleB66D0DF8",
+                    "Arn",
+                  ],
+                },
+              },
+              "Resource": "*",
+              "Sid": "allow-datasync-key-access",
             },
             Object {
               "Action": Array [
