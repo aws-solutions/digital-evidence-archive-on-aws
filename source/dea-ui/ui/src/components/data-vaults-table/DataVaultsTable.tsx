@@ -76,7 +76,7 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
         empty: TableEmptyDisplay(dataVaultListLabels.noDataVaultsLabel, dataVaultListLabels.noDisplayLabel),
         noMatch: TableNoMatchDisplay(dataVaultListLabels.noDataVaultsMatchLabel),
       },
-      sorting: {},
+      sorting: { defaultState: { isDescending: false, sortingColumn: { sortingField: 'created' } } },
       selection: {},
       pagination: {
         pageSize: 15,

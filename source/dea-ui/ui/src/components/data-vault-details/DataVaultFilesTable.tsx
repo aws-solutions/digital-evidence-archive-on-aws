@@ -92,7 +92,7 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
       defaultPage: 0,
       pageSize: 50,
     },
-    sorting: {},
+    sorting: { defaultState: { isDescending: false, sortingColumn: { sortingField: 'updated' } } },
     selection: {},
   });
 
