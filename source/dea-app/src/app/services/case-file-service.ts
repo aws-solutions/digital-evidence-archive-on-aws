@@ -142,6 +142,13 @@ export const completeCaseFileUpload = async (
   return await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider);
 };
 
+export const createCaseAssociation = async (
+  deaCaseFile: DeaCaseFile,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCaseFileResult> => {
+  return await CaseFilePersistence.createCaseFileAssociation(deaCaseFile, repositoryProvider);
+};
+
 export const listCaseFilesByFilePath = async (
   caseId: string,
   filePath: string,

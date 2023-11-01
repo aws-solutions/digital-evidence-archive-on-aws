@@ -3,10 +3,14 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { Paged } from 'dynamodb-onetable';
+import { DeaCaseFile } from '../../models/case-file';
+import { CaseFileStatus } from '../../models/case-file-status';
 import { DeaDataVaultFile } from '../../models/data-vault-file';
 import * as DataVaultFilePersistence from '../../persistence/data-vault-file';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getUsers } from '../../persistence/user';
+import { NotFoundError } from '../exceptions/not-found-exception';
+import * as CaseFileService from '../services/case-file-service';
 
 export const listDataVaultFilesByFilePath = async (
   dataVaultId: string,
@@ -30,6 +34,96 @@ export const getDataVaultFile = async (
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaDataVaultFile | undefined> => {
   return await DataVaultFilePersistence.getDataVaultFileByUlid(ulid, dataVaultId, repositoryProvider);
+};
+
+export const fetchNestedFilesInFolders = async (
+  dataVaultId: string,
+  fileUlids: string[],
+  limit = 30,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<string[]> => {
+  const fileUlidsStack = [...fileUlids];
+  const completeFileUlids = [];
+
+  while (fileUlidsStack.length > 0) {
+    const fileUlid = fileUlidsStack.pop();
+
+    if (!fileUlid) {
+      break;
+    }
+
+    const retrievedDataVaultFile = await getDataVaultFile(dataVaultId, fileUlid, repositoryProvider);
+    if (!retrievedDataVaultFile) {
+      throw new NotFoundError(`Could not find file: ${fileUlid} in DataVault: ${dataVaultId} in the DB`);
+    }
+
+    // Handle nested folders
+    if (!retrievedDataVaultFile.isFile) {
+      let nextToken = undefined;
+      do {
+        const pageOfDataVaultFiles: Paged<DeaDataVaultFile> =
+          await DataVaultFilePersistence.listDataVaultFilesByFilePath(
+            dataVaultId,
+            `${retrievedDataVaultFile.filePath}${retrievedDataVaultFile.fileName}/`,
+            limit,
+            repositoryProvider,
+            nextToken
+          );
+        const nestedFiles = pageOfDataVaultFiles.map((file) => file.ulid);
+        fileUlidsStack.push(...nestedFiles);
+        nextToken = pageOfDataVaultFiles.next;
+      } while (nextToken);
+    } else {
+      completeFileUlids.push(retrievedDataVaultFile.ulid);
+    }
+  }
+  return completeFileUlids;
+};
+
+export const associateFilesListToCase = async (
+  dataVaultId: string,
+  userUlid: string,
+  caseUlids: string[],
+  fileUlids: string[],
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  const filesTransferred = [];
+  for (const caseUlid of caseUlids) {
+    for (const fileUlid of fileUlids) {
+      const retrievedDataVaultFile = await getDataVaultFile(dataVaultId, fileUlid, repositoryProvider);
+      if (!retrievedDataVaultFile) {
+        throw new NotFoundError(`Could not find file: ${fileUlid} in DataVault: ${dataVaultId} in the DB`);
+      }
+
+      const caseFileEntry: DeaCaseFile = {
+        ulid: retrievedDataVaultFile.ulid,
+        caseUlid: caseUlid,
+        fileName: retrievedDataVaultFile.fileName,
+        contentType: retrievedDataVaultFile.contentType,
+        createdBy: retrievedDataVaultFile.createdBy,
+        filePath: retrievedDataVaultFile.filePath,
+        fileSizeBytes: retrievedDataVaultFile.fileSizeBytes,
+        sha256Hash: retrievedDataVaultFile.sha256Hash,
+        versionId: retrievedDataVaultFile.versionId,
+        isFile: retrievedDataVaultFile.isFile,
+        status: CaseFileStatus.ACTIVE,
+        fileS3Key: retrievedDataVaultFile.fileS3Key,
+
+        //Data Vault Params
+        dataVaultUlid: retrievedDataVaultFile.dataVaultUlid,
+        associationCreatedBy: userUlid,
+        executionId: retrievedDataVaultFile.executionId,
+      };
+
+      const completeCaseAssociationResponse = await CaseFileService.createCaseAssociation(
+        caseFileEntry,
+        repositoryProvider
+      );
+      filesTransferred.push(completeCaseAssociationResponse);
+    }
+  }
+
+  return filesTransferred;
 };
 
 export const hydrateUsersForDataVaultFiles = async (

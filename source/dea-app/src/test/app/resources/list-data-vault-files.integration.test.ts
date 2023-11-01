@@ -5,7 +5,7 @@
 
 import { listDataVaultFiles } from '../../../app/resources/list-data-vault-files';
 import { DeaDataVaultInput } from '../../../models/data-vault';
-import { DataVaultFileDTO, DeaDataVaultFile } from '../../../models/data-vault-file';
+import { DeaDataVaultFile } from '../../../models/data-vault-file';
 import { DeaUser } from '../../../models/user';
 import { createDataVault } from '../../../persistence/data-vault';
 import { createDataVaultFile } from '../../../persistence/data-vault-file';
@@ -13,6 +13,7 @@ import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
+import { dataVaultFileGenerate } from './data-vault-integration-test-helper';
 
 let user: DeaUser;
 
@@ -131,33 +132,4 @@ describe('data vault file persistence', () => {
       "Required path param 'dataVaultId' is missing."
     );
   }, 40000);
-
-  function dataVaultFileGenerate(
-    count: number,
-    filePath: string,
-    dataVaultUlid: string,
-    userUlid: string
-  ): DataVaultFileDTO[] {
-    const dataVaultFiles: DataVaultFileDTO[] = [];
-
-    for (let i = 1; i <= count; i++) {
-      const fileInput: DataVaultFileDTO = {
-        fileName: `testFile${i}`,
-        filePath: filePath,
-        dataVaultUlid: dataVaultUlid,
-        isFile: true,
-        fileSizeBytes: 1024,
-        createdBy: userUlid,
-        contentType: 'regular',
-        sha256Hash: 'SHA256HASH',
-        versionId: 'VERSIONID',
-        fileS3Key: 'S3KEY',
-        executionId: 'exec-00000000000000000',
-      };
-
-      dataVaultFiles.push(fileInput);
-    }
-
-    return dataVaultFiles;
-  }
 });

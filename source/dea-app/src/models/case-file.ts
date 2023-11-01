@@ -27,6 +27,10 @@ export interface DeaCaseFile {
 
   readonly created?: Date;
   readonly updated?: Date;
+
+  readonly dataVaultUlid?: string;
+  readonly executionId?: string;
+  readonly associationCreatedBy?: string;
 }
 
 export interface DeaCaseFileResult {
@@ -90,6 +94,11 @@ export interface InitiateCaseFileUploadDTO {
   readonly details?: string;
   readonly reason?: string;
   readonly chunkSizeBytes: number;
+}
+
+export interface caseAssociationDTO {
+  readonly caseUlids: string[];
+  readonly fileUlids: string[];
 }
 
 export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;

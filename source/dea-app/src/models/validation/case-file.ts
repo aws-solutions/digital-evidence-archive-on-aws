@@ -58,3 +58,8 @@ export const caseFileResponseSchema = Joi.object({
   updated: Joi.date(),
   fileS3Key: s3Identifier,
 });
+
+export const caseAssociationRequestSchema = Joi.object({
+  caseUlids: Joi.array().items(joiUlid).required(),
+  fileUlids: Joi.array().items(joiUlid).required(),
+});

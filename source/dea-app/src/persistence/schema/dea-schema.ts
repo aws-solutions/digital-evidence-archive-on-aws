@@ -104,6 +104,11 @@ export const DeaSchema = {
       //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },
+
+      // Data vault params
+      dataVaultUlid: { type: String, validate: ulidRegex },
+      executionId: { type: String },
+      associationCreatedBy: { type: String, validate: ulidRegex },
     },
     Session: {
       PK: { type: String, value: 'USER#${userUlid}#', required: true },

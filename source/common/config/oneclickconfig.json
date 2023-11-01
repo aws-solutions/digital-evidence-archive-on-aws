@@ -184,6 +184,10 @@
           "method": "GET"
         },
         {
+          "path": "/datavaults/{dataVaultId}/files",
+          "method": "POST"
+        },
+        {
           "path": "/datavaults/{dataVaultId}/tasks",
           "method": "POST"
         },

@@ -219,6 +219,12 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/list-data-vault-files-handler.ts',
     },
     {
+      eventName: AuditEventType.CREATE_CASE_ASSOCIATION,
+      path: '/datavaults/{dataVaultId}/files',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/create-case-association-handler.ts',
+    },
+    {
       eventName: AuditEventType.GET_DATA_VAULT_FILE_DETAIL,
       path: '/datavaults/{dataVaultId}/files/{fileId}/info',
       httpMethod: ApiGatewayMethod.GET,

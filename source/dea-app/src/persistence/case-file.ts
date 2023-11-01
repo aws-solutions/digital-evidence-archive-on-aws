@@ -61,6 +61,36 @@ export const completeCaseFileUpload = async (
   return caseFileFromEntity(newEntity);
 };
 
+export const createCaseFileAssociation = async (
+  deaCaseFile: DeaCaseFile,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCaseFileResult> => {
+  const transaction = {};
+  const newEntity = await repositoryProvider.CaseFileModel.create(
+    {
+      ...deaCaseFile,
+    },
+    { transaction }
+  );
+
+  if (deaCaseFile.isFile) {
+    await repositoryProvider.CaseModel.update(
+      {
+        PK: `CASE#${deaCaseFile.caseUlid}#`,
+        SK: 'CASE#',
+      },
+      {
+        add: { objectCount: 1, totalSizeBytes: deaCaseFile.fileSizeBytes },
+        transaction,
+      }
+    );
+  }
+
+  await repositoryProvider.table.transact('write', transaction);
+  await createCaseFilePaths(deaCaseFile, repositoryProvider);
+  return caseFileFromEntity(newEntity);
+};
+
 export const getAllCaseFileS3Objects = async (
   caseId: string,
   repositoryProvider: ModelRepositoryProvider
