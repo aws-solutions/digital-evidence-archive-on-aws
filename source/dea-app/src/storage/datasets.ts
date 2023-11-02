@@ -214,7 +214,13 @@ export const getPresignedUrlForDownload = async (
   }
 
   logger.info('Creating presigned URL for caseFile.', caseFile);
-  const presignedUrlS3Client = await getDownloadPresignedUrlClient(s3Key, sourceIp, datasetsProvider);
+  const roleSessionName = `${caseFile.caseUlid}-${caseFile.ulid}`;
+  const presignedUrlS3Client = await getDownloadPresignedUrlClient(
+    s3Key,
+    sourceIp,
+    roleSessionName,
+    datasetsProvider
+  );
   const getObjectCommand = new GetObjectCommand({
     Bucket: datasetsProvider.bucketName,
     Key: s3Key,
@@ -433,6 +439,7 @@ async function getUploadPresignedUrlPromise(
 async function getDownloadPresignedUrlClient(
   objectKey: string,
   sourceIp: string,
+  roleSessionName: string,
   datasetsProvider: DatasetsProvider
 ): Promise<S3Client> {
   const client = new STSClient({ region, customUserAgent: getCustomUserAgent() });
@@ -440,7 +447,7 @@ async function getDownloadPresignedUrlClient(
     await client.send(
       new AssumeRoleCommand({
         RoleArn: datasetsProvider.datasetsRole,
-        RoleSessionName: objectKey.replace('/', '-'),
+        RoleSessionName: roleSessionName,
         DurationSeconds: datasetsProvider.downloadPresignedCommandExpirySeconds,
         Policy: getPolicyForDownload(objectKey, sourceIp, datasetsProvider),
       })
@@ -549,6 +556,7 @@ function getPolicyForDownload(
   sourceIp: string,
   datasetsProvider: DatasetsProvider
 ): string {
+  const keyArn = getRequiredEnv('KEY_ARN');
   if (!datasetsProvider.sourceIpValidationEnabled) {
     logger.info('Not restricting presigned-url by source ip');
     return JSON.stringify({
@@ -559,6 +567,12 @@ function getPolicyForDownload(
           Effect: 'Allow',
           Action: ['s3:GetObject', 's3:GetObjectVersion'],
           Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        },
+        {
+          Sid: 'AllowDecrypt',
+          Effect: 'Allow',
+          Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+          Resource: [keyArn],
         },
       ],
     });
@@ -583,6 +597,23 @@ function getPolicyForDownload(
         Effect: 'Deny',
         Action: ['s3:GetObject', 's3:GetObjectVersion'],
         Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        Condition: {
+          NotIpAddress: {
+            'aws:SourceIp': sourceIp,
+          },
+        },
+      },
+      {
+        Sid: 'AllowDecrypt',
+        Effect: 'Allow',
+        Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        Resource: [keyArn],
+      },
+      {
+        Sid: 'DenyKeyRequestsFromOtherIpAddresses',
+        Effect: 'Deny',
+        Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        Resource: [keyArn],
         Condition: {
           NotIpAddress: {
             'aws:SourceIp': sourceIp,

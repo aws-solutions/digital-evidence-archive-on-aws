@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { CaseAssociationDTO, DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
 import { DeaDataSyncTask } from '@aws/dea-app/lib/models/data-sync-task';
 import { DeaDataVault, DeaDataVaultInput } from '@aws/dea-app/lib/models/data-vault';
 import { DeaDataVaultExecution, DataVaultExecutionDTO } from '@aws/dea-app/lib/models/data-vault-execution';
@@ -70,3 +71,10 @@ export const useGetDataVaultFileDetailsById = (dataVaultId: string, fileId: stri
   const { data, error } = useSWR(() => `datavaults/${dataVaultId}/files/${fileId}/info`, httpApiGet<DeaDataVaultFile>);
   return { data, isLoading: !data && !error };
 }
+
+export const createDataVaultFileAssociation = async (
+  dataVaultId: string,
+  caseAssociationDTO: CaseAssociationDTO
+): Promise<DeaCaseFile[]> => {
+  return httpApiPost(`datavaults/${dataVaultId}/files`, { ...caseAssociationDTO });
+};

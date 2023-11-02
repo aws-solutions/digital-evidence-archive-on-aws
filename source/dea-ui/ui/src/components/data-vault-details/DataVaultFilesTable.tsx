@@ -27,7 +27,7 @@ import { OptionDefinition } from '@cloudscape-design/components/internal/compone
 import { useRouter } from 'next/router';
 import { useMemo, useState } from 'react';
 import { useListAllCases } from '../../api/cases';
-import { useListDataVaultFiles } from '../../api/data-vaults';
+import { createDataVaultFileAssociation, useListDataVaultFiles } from '../../api/data-vaults';
 import { ScopedDeaCaseDTO } from '../../api/models/case';
 import {
   commonLabels,
@@ -114,8 +114,10 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
   async function associateToCaseHandler() {
     setIsSubmitLoading(true);
     try {
-      // TODO: endpoint call.
-      await Promise.resolve();
+      await createDataVaultFileAssociation(props.dataVaultId, {
+        caseUlids: selectedCases.map((option) => option.value ?? ''),
+        fileUlids: selectedFiles.map((file) => file.ulid),
+      });
       pushNotification('success', dataVaultDetailLabels.associateToCaseSuccessNotificationMessage);
       setSelectedFiles([]);
       setSelectedCases([]);
@@ -147,7 +149,11 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
         footer={
           <Box float="right">
             <SpaceBetween direction="horizontal" size="xs">
-              <Button variant="link" onClick={disableAssociateToCaseModal}>
+              <Button
+                data-testid="cancel-case-association"
+                variant="link"
+                onClick={disableAssociateToCaseModal}
+              >
                 {commonLabels.cancelButton}
               </Button>
               <Button

@@ -9,7 +9,7 @@ import {
   getRequiredPayload,
   getUserUlid,
 } from '../../lambda-http-helpers';
-import { caseAssociationDTO } from '../../models/case-file';
+import { CaseAssociationDTO } from '../../models/case-file';
 import { caseAssociationRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
@@ -27,7 +27,7 @@ export const createCaseAssociation: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   repositoryProvider = defaultProvider
 ) => {
-  const caseAssociationRequest: caseAssociationDTO = getRequiredPayload(
+  const caseAssociationRequest: CaseAssociationDTO = getRequiredPayload(
     event,
     'Create case associations',
     caseAssociationRequestSchema

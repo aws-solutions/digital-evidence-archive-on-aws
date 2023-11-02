@@ -96,7 +96,7 @@ export interface InitiateCaseFileUploadDTO {
   readonly chunkSizeBytes: number;
 }
 
-export interface caseAssociationDTO {
+export interface CaseAssociationDTO {
   readonly caseUlids: string[];
   readonly fileUlids: string[];
 }

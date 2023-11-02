@@ -79,6 +79,7 @@ describe('Test case file download', () => {
       UploadId: UPLOAD_ID,
       VersionId: VERSION_ID,
     });
+    process.env.KEY_ARN = 'keyarn';
   });
 
   it('should successfully download a file', async () => {
