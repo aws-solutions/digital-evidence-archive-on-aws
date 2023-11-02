@@ -19740,10 +19740,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::SQS::QueuePolicy",
     },
     "DeaAuditauditprocessinglambdaE24A4EB0": Object {
-      "DependsOn": Array [
-        "DeaAuditauditprocessinglambdaServiceRoleDefaultPolicy603DB2EE",
-        "DeaAuditauditprocessinglambdaServiceRole74F0C037",
-      ],
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
@@ -19831,27 +19827,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Action": "firehose:PutRecordBatch",
               "Effect": "Allow",
               "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":firehose:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":deliverystream/",
-                    Object {
-                      "Ref": "AWS::StackName",
-                    },
-                    "-DeaAuditDeliveryStream*",
-                  ],
+                "Fn::GetAtt": Array [
+                  "DeaAuditDeliveryStreamBF390C06",
+                  "Arn",
                 ],
               },
             },

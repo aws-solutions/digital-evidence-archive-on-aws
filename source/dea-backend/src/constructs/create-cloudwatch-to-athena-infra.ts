@@ -11,7 +11,7 @@ import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import { ArnPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { FilterPattern, LogGroup, SubscriptionFilter } from 'aws-cdk-lib/aws-logs';
@@ -232,19 +232,19 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       value: fhose.ref,
     });
 
-    // construct the arn here because using the arn directly leads to a circular dependency
+    const fhoseArn = Fn.getAtt(fhose.logicalId, 'Arn').toString();
+
     auditTransformLambda.addToRolePolicy(
       new PolicyStatement({
         actions: ['firehose:PutRecordBatch'],
-        resources: [
-          `arn:${Aws.PARTITION}:firehose:${Aws.REGION}:${Aws.ACCOUNT_ID}:deliverystream/${
-            Aws.STACK_NAME
-          }-${stackName}${firehoseName.replaceAll(' ', '')}*`,
-        ],
+        resources: [fhoseArn],
       })
     );
 
-    const fhoseArn = Fn.getAtt(fhose.logicalId, 'Arn').toString();
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const cfnRole = auditTransformLambda.node.defaultChild as CfnFunction | undefined;
+    cfnRole?.addOverride('DependsOn', undefined);
+
     const destination = new FirehoseDestination(fhoseArn);
 
     // All application-generated events
