@@ -56,10 +56,26 @@ const cognitoDomainFormat: convict.Format = {
   },
 };
 
+const STAGE_MAX_LENGTH = 21;
+const deaStageFormat: convict.Format = {
+  name: 'dea-stage',
+  validate: function (val) {
+    if (typeof val !== 'string') {
+      throw new Error('The Stage value must be a string');
+    }
+    if (val.length > STAGE_MAX_LENGTH) {
+      throw new Error('The Stage name must not exceed 21 characters');
+    }
+    if (!/^[a-zA-Z0-9-]+$/.test(val)) {
+      throw new Error('The Stage name may only contain alphanumerics and hyphens.');
+    }
+  },
+};
+
 const convictSchema = {
   stage: {
     doc: 'The deployment stage.',
-    format: String,
+    format: deaStageFormat.name,
     default: 'devsample',
     env: 'STAGE',
   },
@@ -295,6 +311,7 @@ export interface VpcEndpointInfo {
 convict.addFormat(deaRoleTypesFormat);
 convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
+convict.addFormat(deaStageFormat);
 
 interface DEAConfig {
   stage(): string;

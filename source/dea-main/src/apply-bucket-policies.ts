@@ -37,7 +37,7 @@ export const restrictResourcePolicies = (
 
   const customResourceActions = ['s3:GetBucketCORS', 's3:PutBucketCORS'];
 
-  const rolesForAllow = applicationAccessRoleArns;
+  const rolesForAllow = applicationAccessRoleArns.slice();
   if (adminRoleArn) {
     rolesForAllow.push(adminRoleArn);
   }
