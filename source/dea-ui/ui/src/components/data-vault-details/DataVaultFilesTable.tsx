@@ -222,7 +222,13 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
     );
   };
 
-  function statusCell(/*dataVaultFile: DeaDataVaultFile*/) {
+  function statusCell(dataVaultFile: DeaDataVaultFile) {
+    if (!dataVaultFile.isFile) {
+      return '-';
+    }
+    if (dataVaultFile.caseCount) {
+      return <StatusIndicator>{dataVaultDetailLabels.associatedLabel}</StatusIndicator>;
+    }
     return <StatusIndicator type="stopped">{dataVaultDetailLabels.noAssociatedLabel}</StatusIndicator>;
   }
 
@@ -310,7 +316,7 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
       columnDefinitions={[
         {
           id: 'fileName',
-          header: commonTableLabels.fileNameHeader,
+          header: commonTableLabels.nameHeader,
           cell: fileFolderCell,
           width: 350,
           minWidth: 165,

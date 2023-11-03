@@ -3,9 +3,11 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { ScopedDeaCase } from '@aws/dea-app/lib/models/case';
 import {
   Box,
   Button,
+  Checkbox,
   ColumnLayout,
   Container,
   ContentLayout,
@@ -38,6 +40,7 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
   const [showDisassociateToCaseModal, setShowDisassociateToCaseModal] = useState(false);
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const { pushNotification } = useNotifications();
+  const [checkedState, setCheckedState] = useState<boolean[]>([]);
 
   function enableDisassociateToCaseModal() {
     setShowDisassociateToCaseModal(true);
@@ -63,6 +66,12 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
     }
   }
 
+  function handleOnChange(position: number) {
+    const updatedCheckedState = checkedState.map((item, index) => (index === position ? !item : item));
+
+    setCheckedState(updatedCheckedState);
+  }
+
   function disassociateModal() {
     return (
       <Modal
@@ -73,14 +82,18 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
         footer={
           <Box float="right">
             <SpaceBetween direction="horizontal" size="xs">
-              <Button variant="link" onClick={disableDisassociateToCaseModal}>
+              <Button
+                data-testid="cancel-case-disassociation"
+                variant="link"
+                onClick={disableDisassociateToCaseModal}
+              >
                 {commonLabels.cancelButton}
               </Button>
               <Button
                 data-testid="submit-case-disassociation"
                 variant="primary"
                 onClick={disassociateToCaseHandler}
-                disabled={IsSubmitLoading}
+                disabled={IsSubmitLoading || !checkedState.find((checked) => checked)}
               >
                 {commonLabels.disassociateButton}
               </Button>
@@ -94,12 +107,33 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
         }
       >
         <Box padding={{ bottom: 'xxl' }}>
-          <TextContent>
-            <h5>{dataVaultDetailLabels.disassociateFromCaseModalSectionHeader}</h5>
-          </TextContent>
+          <SpaceBetween size="s">
+            <TextContent>
+              <h5>{dataVaultDetailLabels.disassociateFromCaseModalSectionHeader}</h5>
+            </TextContent>
+            <TextContent>{associatedCasesOption(data?.cases)}</TextContent>
+          </SpaceBetween>
         </Box>
       </Modal>
     );
+  }
+
+  function associatedCasesOption(cases: ScopedDeaCase[] | undefined) {
+    if (cases && checkedState.length !== cases?.length) {
+      setCheckedState(new Array(cases.length).fill(false));
+    }
+    return cases?.map(({ ulid, name }: { ulid: string; name: string }, index: number) => (
+      <Checkbox key={`check-${ulid}`} checked={checkedState[index]} onChange={() => handleOnChange(index)}>
+        {name}
+      </Checkbox>
+    ));
+  }
+
+  function associatedCasesTextContent(cases: ScopedDeaCase[] | undefined) {
+    if (!cases?.length) {
+      return '-';
+    }
+    return cases?.map(({ ulid, name }: { ulid: string; name: string }) => <p key={`p-${ulid}`}>{name}</p>);
   }
 
   if (isLoading) {
@@ -165,6 +199,7 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
                     <Button
                       data-testid="disassociate-data-vault-file-button"
                       onClick={enableDisassociateToCaseModal}
+                      disabled={!data.caseCount}
                     >
                       {dataVaultDetailLabels.disassociateLabel}
                     </Button>
@@ -177,20 +212,12 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
           >
             <ColumnLayout columns={2} variant="text-grid">
               <TextContent>
-                <div>
-                  <SpaceBetween size="l">
-                    <h5>{commonTableLabels.executionIdHeader}</h5>
-                  </SpaceBetween>
-                  <p>{data.executionId}</p>
-                </div>
+                <h5>{commonTableLabels.executionIdHeader}</h5>
+                <p>{data.executionId}</p>
               </TextContent>
               <TextContent>
-                <div>
-                  <SpaceBetween size="l">
-                    <h5>{commonTableLabels.caseAssociationHeader}</h5>
-                  </SpaceBetween>
-                  <p>-</p>
-                </div>
+                <h5>{commonTableLabels.caseAssociationHeader}</h5>
+                {associatedCasesTextContent(data.cases)}
               </TextContent>
             </ColumnLayout>
           </Container>

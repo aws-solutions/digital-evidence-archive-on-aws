@@ -307,7 +307,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       columnDefinitions={[
         {
           id: 'fileName',
-          header: commonTableLabels.fileNameHeader,
+          header: commonTableLabels.nameHeader,
           cell: fileFolderCell,
           width: 400,
           minWidth: 165,

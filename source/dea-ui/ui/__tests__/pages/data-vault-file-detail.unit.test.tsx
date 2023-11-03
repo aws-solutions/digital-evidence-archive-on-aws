@@ -1,5 +1,6 @@
+import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useGetDataVaultFileDetailsById } from '../../src/api/data-vaults';
 import { commonLabels } from '../../src/common/labels';
 import DataVaultFileDetailPage from '../../src/pages/data-vault-file-detail';
@@ -30,6 +31,8 @@ const dataVaultFile = {
   fileS3Key: 'DATAVAULT01HD2S8KR23WJNNFGSBZEEGGA5/destination/joi-17.9.1/README.md',
   executionId: 'exec-07a3f261f2f985d5f',
   updated: new Date('2023-10-19T01:41:39.515Z'),
+  caseCount: 1,
+  cases: [{ ulid: '01HD2SGVHV8DEAZQP5ZEEZ6F81', name: 'Boodycam footage' }],
 };
 
 describe('CaseDetailsPage', () => {
@@ -39,10 +42,31 @@ describe('CaseDetailsPage', () => {
       isLoading: false,
     }));
     const page = render(<DataVaultFileDetailPage />);
+    const pageWrapper = wrapper(page.baseElement);
     expect(page).toBeTruthy();
 
     const mockedCaseInfo = await screen.findByText(dataVaultFile.fileName);
     expect(mockedCaseInfo).toBeTruthy();
+
+    const disassociateButton = screen.queryByTestId('disassociate-data-vault-file-button');
+    await waitFor(() => expect(disassociateButton).toBeEnabled());
+    fireEvent.click(disassociateButton);
+
+    const cancelCaseAsssociationButton = screen.queryByTestId('cancel-case-disassociation');
+    expect(cancelCaseAsssociationButton).toBeTruthy();
+    fireEvent.click(cancelCaseAsssociationButton);
+
+    const checkboxWrapper = pageWrapper.findCheckbox();
+    expect(checkboxWrapper).toBeTruthy();
+    fireEvent.click(checkboxWrapper?.findNativeInput().getElement());
+
+    const confirmCaseDisasssociationButton = screen.queryByTestId('submit-case-disassociation');
+    expect(confirmCaseDisasssociationButton).toBeTruthy();
+    fireEvent.click(confirmCaseDisasssociationButton);
+
+    // success notification is visible
+    const notificationsWrapper = wrapper(page.container).findFlashbar()!;
+    expect(notificationsWrapper).toBeTruthy();
   });
 
   it('renders a blank page with no dataVaultId', async () => {

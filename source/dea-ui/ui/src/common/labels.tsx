@@ -398,7 +398,7 @@ export const createDataVaultLabels = {
 };
 
 export const dataVaultDetailLabels = {
-  dataVaultDetailsLabel: 'Details',
+  dataVaultDetailsLabel: 'Data vault details',
   ulidLabel: 'Data vault ULID',
   objectCounterLabel: 'Number of files',
   totalSizeLabel: 'Total size',

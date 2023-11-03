@@ -346,15 +346,15 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           variant="embedded"
           columnDefinitions={[
             {
-              id: 'name',
-              header: commonTableLabels.fileNameHeader,
+              id: 'fileName',
+              header: commonTableLabels.nameHeader,
               cell: (e) => e.fileName,
               width: 170,
               minWidth: 165,
               sortingField: 'fileName',
             },
             {
-              id: 'size',
+              id: 'fileSizeBytes',
               header: commonTableLabels.fileSizeHeader,
               cell: (e) => formatFileSize(e.fileSizeBytes),
               width: 170,
