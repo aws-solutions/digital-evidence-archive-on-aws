@@ -203,14 +203,12 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/datavaults/{dataVaultId}/details',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-data-vault-details-handler.ts',
-      pagination: true,
     },
     {
       eventName: AuditEventType.UPDATE_DATA_VAULT_DETAILS,
       path: '/datavaults/{dataVaultId}/details',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/update-data-vault-handler.ts',
-      pagination: true,
     },
     {
       eventName: AuditEventType.GET_DATA_VAULT_FILES,
@@ -304,6 +302,30 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/system/audit',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/request-system-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.REQUEST_DATA_VAULT_FILE_AUDIT,
+      path: '/datavaults/{dataVaultId}/files/{fileId}/audit',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/request-datavault-file-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.REQUEST_DATA_VAULT_AUDIT,
+      path: '/datavaults/{dataVaultId}/audit',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/request-datavault-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.GET_DATA_VAULT_FILE_AUDIT,
+      path: '/datavaults/{dataVaultId}/files/{fileId}/audit/{auditId}/csv',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-datavault-file-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.GET_DATA_VAULT_AUDIT,
+      path: '/datavaults/{dataVaultId}/audit/{auditId}/csv',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-datavault-audit-handler.ts',
     },
   ],
 };

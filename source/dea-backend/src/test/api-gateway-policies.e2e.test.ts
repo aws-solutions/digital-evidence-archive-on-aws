@@ -3,7 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { CognitoHelper, testEnv, testHelpers } from '@aws/dea-app';
+import CognitoHelper from '@aws/dea-app/lib/test-e2e/helpers/cognito-helper';
+import { testEnv } from '@aws/dea-app/lib/test-e2e/helpers/settings';
+import * as testHelpers from '@aws/dea-app/lib/test-e2e/resources/test-helpers';
 import { callDeaAPIWithCreds, randomSuffix } from '@aws/dea-app/lib/test-e2e/resources/test-helpers';
 import { AuthorizationType } from 'aws-cdk-lib/aws-apigateway';
 import { deaApiRouteConfig } from '../resources/dea-route-config';

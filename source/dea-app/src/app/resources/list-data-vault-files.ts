@@ -7,14 +7,13 @@ import { Paged } from 'dynamodb-onetable';
 import Joi from 'joi';
 import { getPaginationParameters, getRequiredPathParam } from '../../lambda-http-helpers';
 import { DeaDataVaultFile } from '../../models/data-vault-file';
-import { joiUlid, filePath as filePathRegex } from '../../models/validation/joi-common';
-import { getDataVault } from '../../persistence/data-vault';
+import { filePath as filePathRegex, joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
-import { NotFoundError } from '../exceptions/not-found-exception';
 import {
   hydrateUsersForDataVaultFiles,
   listDataVaultFilesByFilePath,
 } from '../services/data-vault-file-service';
+import { getRequiredDataVault } from '../services/data-vault-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 import { getNextToken } from './get-next-token';
@@ -36,10 +35,7 @@ export const listDataVaultFiles: DEAGatewayProxyHandler = async (
   const paginationParams = getPaginationParameters(event);
 
   const DataVaultId = getRequiredPathParam(event, 'dataVaultId', joiUlid);
-  const deaDataVault = await getDataVault(DataVaultId, repositoryProvider);
-  if (!deaDataVault) {
-    throw new NotFoundError(`Could not find DataVault: ${DataVaultId} in the DB`);
-  }
+  await getRequiredDataVault(DataVaultId, repositoryProvider);
 
   const pageOfDataVaultFiles: Paged<DeaDataVaultFile> = await listDataVaultFilesByFilePath(
     DataVaultId,

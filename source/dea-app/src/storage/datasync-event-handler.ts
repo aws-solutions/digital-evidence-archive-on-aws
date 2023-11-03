@@ -6,10 +6,11 @@ import { GetObjectCommand, HeadObjectCommand, S3Client } from '@aws-sdk/client-s
 import { Context, Callback, S3Event } from 'aws-lambda';
 import { ValidationError } from '../app/exceptions/validation-exception';
 import { describeDatasyncLocation } from '../app/services/data-sync-service';
+import { getRequiredDataVault } from '../app/services/data-vault-service';
 import { logger } from '../logger';
 import { DataVaultFileDTO } from '../models/data-vault-file';
 import { taskReportJoi } from '../models/validation/joi-common';
-import { getDataVault, updateDataVaultSize } from '../persistence/data-vault';
+import { updateDataVaultSize } from '../persistence/data-vault';
 import { getDataVaultExecution } from '../persistence/data-vault-execution';
 import { createDataVaultFile } from '../persistence/data-vault-file';
 import { getDataVaultTask } from '../persistence/data-vault-task';
@@ -74,10 +75,7 @@ export const dataSyncExecutionEvent = async (
   if (!dataVaultTask) {
     throw new Error(`Could not find DataVaultTask with id ${dataVaultExecution.taskId}`);
   }
-  const dataVault = await getDataVault(dataVaultTask.dataVaultUlid, repositoryProvider);
-  if (!dataVault) {
-    throw new Error(`Could not find DataVault with id ${dataVaultTask.dataVaultUlid}`);
-  }
+  const dataVault = await getRequiredDataVault(dataVaultTask.dataVaultUlid, repositoryProvider);
 
   const locationDetails = await describeDatasyncLocation(
     dataVaultTask.destinationLocationArn,

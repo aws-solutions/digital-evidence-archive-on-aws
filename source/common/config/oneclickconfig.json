@@ -4,6 +4,7 @@
   "fipsEndpointsEnabled": false,
   "isMultiRegionTrail": false,
   "sourceIpValidation": false,
+  "testStack": true,
   "deaRoleTypes": [
     {
       "name": "CaseWorker",

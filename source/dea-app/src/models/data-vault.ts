@@ -17,3 +17,9 @@ export interface DeaDataVaultInput {
   readonly name: string;
   readonly description?: string;
 }
+
+export interface DeaDataVaultUpdateInput {
+  readonly ulid: string;
+  readonly name: string;
+  readonly description?: string;
+}

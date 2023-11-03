@@ -299,7 +299,7 @@ export const listCasesByFile = async (
 };
 
 export const deleteCaseFileAssociation = async (
-  deaCaseFile: DeaCaseFileResult,
+  deaCaseFile: DeaCaseFile,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<void> => {
   const transaction = {};

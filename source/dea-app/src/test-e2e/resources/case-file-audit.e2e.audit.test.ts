@@ -226,6 +226,7 @@ describe('case file audit e2e', () => {
         expectedFileHash: '',
         expectedCaseUlid: caseUlid,
         expectedFileUlid: fileUlid,
+        expectedDataVaultId: '',
       });
 
       const completeUploadEntry = applicationEntries.find(
@@ -236,6 +237,7 @@ describe('case file audit e2e', () => {
         expectedFileUlid: fileUlid,
         expectedResult: 'success',
         expectedFileHash: fileHash,
+        expectedDataVaultId: '',
       });
 
       const getFileDetailsEntry = applicationEntries.find(
@@ -246,6 +248,7 @@ describe('case file audit e2e', () => {
         expectedFileUlid: fileUlid,
         expectedResult: 'success',
         expectedFileHash: '',
+        expectedDataVaultId: '',
       });
 
       const downloadEntry = applicationEntries.find(
@@ -256,6 +259,7 @@ describe('case file audit e2e', () => {
         expectedFileUlid: fileUlid,
         expectedResult: 'success',
         expectedFileHash: '',
+        expectedDataVaultId: '',
       });
 
       const failedDownloadEntry = applicationEntries.find(
@@ -267,6 +271,7 @@ describe('case file audit e2e', () => {
         expectedFileUlid: fileUlid,
         expectedResult: 'failure',
         expectedFileHash: '',
+        expectedDataVaultId: '',
       });
 
       // Verify Cloudtrail audit trail events

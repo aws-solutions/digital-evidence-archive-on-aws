@@ -227,7 +227,7 @@ export const getRequiredCaseFile = async (
 };
 
 export const deleteCaseAssociation = async (
-  deaCaseFile: DeaCaseFileResult,
+  deaCaseFile: DeaCaseFile,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<void> => {
   await CaseFilePersistence.deleteCaseFileAssociation(deaCaseFile, repositoryProvider);

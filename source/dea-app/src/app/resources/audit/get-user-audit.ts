@@ -3,15 +3,16 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getRequiredPathParam } from '../../lambda-http-helpers';
-import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
-import { defaultDatasetsProvider } from '../../storage/datasets';
-import { defaultAthenaClient } from '../audit/dea-audit-plugin';
-import { auditService } from '../services/audit-service';
-import { validateUser } from '../services/user-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
-import { responseOk } from './dea-lambda-utils';
+import { getRequiredPathParam } from '../../../lambda-http-helpers';
+import { joiUlid } from '../../../models/validation/joi-common';
+import { AuditType } from '../../../persistence/schema/dea-schema';
+import { defaultProvider } from '../../../persistence/schema/entities';
+import { defaultDatasetsProvider } from '../../../storage/datasets';
+import { defaultAthenaClient } from '../../audit/dea-audit-plugin';
+import { auditService } from '../../services/audit-service';
+import { validateUser } from '../../services/user-service';
+import { DEAGatewayProxyHandler } from '../dea-gateway-proxy-handler';
+import { responseOk } from '../dea-lambda-utils';
 
 export const getUserAudit: DEAGatewayProxyHandler = async (
   event,
@@ -27,9 +28,10 @@ export const getUserAudit: DEAGatewayProxyHandler = async (
   const auditId = getRequiredPathParam(event, 'auditId', joiUlid);
   const userId = getRequiredPathParam(event, 'userId', joiUlid);
   await validateUser(userId, repositoryProvider);
-  const result = await auditService.getUserAuditResult(
+  const result = await auditService.getAuditResult(
     auditId,
     userId,
+    AuditType.USER,
     athenaClient,
     repositoryProvider,
     `${event.requestContext.identity.sourceIp}/32`

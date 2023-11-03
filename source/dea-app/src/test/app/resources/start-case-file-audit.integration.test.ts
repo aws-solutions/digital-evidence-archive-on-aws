@@ -15,7 +15,7 @@ import {
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import Joi from 'joi';
 import { anyOfClass, instance, mock, when } from 'ts-mockito';
-import { startCaseFileAudit } from '../../../app/resources/start-case-file-audit';
+import { startCaseFileAudit } from '../../../app/resources/audit/start-case-file-audit';
 import { joiUlid } from '../../../models/validation/joi-common';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';

@@ -14,7 +14,8 @@ import {
 } from '@aws-sdk/client-sts';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { anyOfClass, anything, instance, mock, when } from 'ts-mockito';
-import { getCaseFileAudit } from '../../../app/resources/get-case-file-audit';
+import { getCaseFileAudit } from '../../../app/resources/audit/get-case-file-audit';
+import { AuditResult } from '../../../app/services/audit-service';
 import { AuditType } from '../../../persistence/schema/dea-schema';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
@@ -144,9 +145,9 @@ describe('get case file audit', () => {
     });
     const result = await getCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
-    const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
+    const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');
-    expect(responseBody.csvFormattedData).toBeUndefined();
+    expect(responseBody.downloadUrl).toBeUndefined();
   });
 
   it('throws an error if case does not exist', async () => {

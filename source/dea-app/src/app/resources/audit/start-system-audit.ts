@@ -4,13 +4,13 @@
  */
 
 import Joi from 'joi';
-import { getQueryParam } from '../../lambda-http-helpers';
-import { defaultProvider } from '../../persistence/schema/entities';
-import { defaultDatasetsProvider } from '../../storage/datasets';
-import { defaultAthenaClient } from '../audit/dea-audit-plugin';
-import { auditService } from '../services/audit-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
-import { responseOk } from './dea-lambda-utils';
+import { getQueryParam } from '../../../lambda-http-helpers';
+import { defaultProvider } from '../../../persistence/schema/entities';
+import { defaultDatasetsProvider } from '../../../storage/datasets';
+import { defaultAthenaClient } from '../../audit/dea-audit-plugin';
+import { auditService } from '../../services/audit-service';
+import { DEAGatewayProxyHandler } from '../dea-gateway-proxy-handler';
+import { responseOk } from '../dea-lambda-utils';
 
 export const startSystemAudit: DEAGatewayProxyHandler = async (
   event,

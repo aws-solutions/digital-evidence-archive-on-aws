@@ -88,6 +88,10 @@ export class DeaMainStack extends cdk.Stack {
       opsDashboard: dashboard,
     });
 
+    createCfnOutput(this, 'deaTableName', {
+      value: backendConstruct.deaTable.tableName,
+    });
+
     const region = deaConfig.region();
     const stage = deaConfig.stage();
 

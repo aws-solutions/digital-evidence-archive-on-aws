@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getCaseFileAudit } from '@aws/dea-app/lib/app/resources/get-case-file-audit';
+import { getCaseFileAudit } from '@aws/dea-app/lib/app/resources/audit/get-case-file-audit';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { createDeaHandler } from './create-dea-handler';
 

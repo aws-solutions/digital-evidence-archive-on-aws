@@ -249,7 +249,7 @@ components:
           type: string
           items:
             $ref: '#/components/schemas/QueryStatus'
-        csvFormattedData:
+        downloadUrl:
           type: string
 
     QueryStatus:

@@ -3,7 +3,18 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import * as DataVaultService from '../../../app/services/data-vault-service';
+import { DeaDataVault } from '../../../models/data-vault';
 import { DataVaultFileDTO } from '../../../models/data-vault-file';
+import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
+
+export const callCreateDataVault = async (
+  repositoryProvider: ModelRepositoryProvider,
+  name: string,
+  description: string
+): Promise<DeaDataVault> => {
+  return await DataVaultService.createDataVault({ name, description }, repositoryProvider);
+};
 
 export const dataVaultFileGenerate = (
   count: number,

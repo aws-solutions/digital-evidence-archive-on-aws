@@ -4,16 +4,16 @@
  */
 
 import Joi from 'joi';
-import { getQueryParam, getRequiredPathParam } from '../../lambda-http-helpers';
-import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
-import { defaultDatasetsProvider } from '../../storage/datasets';
-import { defaultAthenaClient } from '../audit/dea-audit-plugin';
-import { auditService } from '../services/audit-service';
-import { getRequiredCaseFile } from '../services/case-file-service';
-import { getRequiredCase } from '../services/case-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
-import { responseOk } from './dea-lambda-utils';
+import { getQueryParam, getRequiredPathParam } from '../../../lambda-http-helpers';
+import { joiUlid } from '../../../models/validation/joi-common';
+import { defaultProvider } from '../../../persistence/schema/entities';
+import { defaultDatasetsProvider } from '../../../storage/datasets';
+import { defaultAthenaClient } from '../../audit/dea-audit-plugin';
+import { auditService } from '../../services/audit-service';
+import { getRequiredCaseFile } from '../../services/case-file-service';
+import { getRequiredCase } from '../../services/case-service';
+import { DEAGatewayProxyHandler } from '../dea-gateway-proxy-handler';
+import { responseOk } from '../dea-lambda-utils';
 
 export const startCaseFileAudit: DEAGatewayProxyHandler = async (
   event,
@@ -44,6 +44,7 @@ export const startCaseFileAudit: DEAGatewayProxyHandler = async (
       fileId,
       fileName: caseFile.fileName,
       filePath: caseFile.filePath,
+      s3Key: caseFile.fileS3Key,
     },
     startTime,
     endTime,

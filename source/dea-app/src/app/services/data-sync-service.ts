@@ -43,10 +43,14 @@ export const createS3Location = async (
   };
 
   const command = new CreateLocationS3Command(locationSettings);
-  const response = await retry(async () => {
-    const response = await dataSyncProvider.dataSyncClient.send(command);
-    return response;
-  });
+  const response = await retry(
+    async () => {
+      const response = await dataSyncProvider.dataSyncClient.send(command);
+      return response;
+    },
+    5,
+    1000
+  );
   if (!response) {
     throw new Error('Location creation failed');
   }

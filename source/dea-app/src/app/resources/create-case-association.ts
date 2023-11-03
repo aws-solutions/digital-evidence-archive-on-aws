@@ -13,10 +13,8 @@ import { CaseAssociationDTO } from '../../models/case-file';
 import { caseAssociationRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
-import { NotFoundError } from '../exceptions/not-found-exception';
-
 import { associateFilesListToCase, fetchNestedFilesInFolders } from '../services/data-vault-file-service';
-import { getDataVault } from '../services/data-vault-service';
+import { getRequiredDataVault } from '../services/data-vault-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
@@ -34,10 +32,7 @@ export const createCaseAssociation: DEAGatewayProxyHandler = async (
   );
 
   const DataVaultId = getRequiredPathParam(event, 'dataVaultId', joiUlid);
-  const deaDataVault = await getDataVault(DataVaultId, repositoryProvider);
-  if (!deaDataVault) {
-    throw new NotFoundError(`Could not find DataVault: ${DataVaultId} in the DB`);
-  }
+  await getRequiredDataVault(DataVaultId, repositoryProvider);
 
   const paginationParams = getPaginationParameters(event);
 

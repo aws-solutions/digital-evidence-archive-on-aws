@@ -163,6 +163,10 @@ export const auditGlueTableColumns = [
     type: glue.Schema.STRING,
   },
   {
+    name: 'dataVaultId',
+    type: glue.Schema.STRING,
+  },
+  {
     name: 'fileId',
     type: glue.Schema.STRING,
   },

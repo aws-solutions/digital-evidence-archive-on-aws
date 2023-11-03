@@ -56,10 +56,7 @@ export const fetchNestedFilesInFolders = async (
       break;
     }
 
-    const retrievedDataVaultFile = await getDataVaultFile(dataVaultId, fileUlid, repositoryProvider);
-    if (!retrievedDataVaultFile) {
-      throw new NotFoundError(`Could not find file: ${fileUlid} in DataVault: ${dataVaultId} in the DB`);
-    }
+    const retrievedDataVaultFile = await getRequiredDataVaultFile(dataVaultId, fileUlid, repositoryProvider);
 
     // Handle nested folders
     if (!retrievedDataVaultFile.isFile) {
@@ -94,10 +91,11 @@ export const associateFilesListToCase = async (
   const filesTransferred = [];
   for (const caseUlid of caseUlids) {
     for (const fileUlid of fileUlids) {
-      const retrievedDataVaultFile = await getDataVaultFile(dataVaultId, fileUlid, repositoryProvider);
-      if (!retrievedDataVaultFile) {
-        throw new NotFoundError(`Could not find file: ${fileUlid} in DataVault: ${dataVaultId} in the DB`);
-      }
+      const retrievedDataVaultFile = await getRequiredDataVaultFile(
+        dataVaultId,
+        fileUlid,
+        repositoryProvider
+      );
 
       const caseFileEntry: DeaCaseFile = {
         ulid: retrievedDataVaultFile.ulid,
@@ -206,20 +204,24 @@ export const disassociateFileFromCases = async (
   caseUlids: string[],
   repositoryProvider: ModelRepositoryProvider
 ) => {
-  const deaDataVault = await DataVaultService.getDataVault(dataVaultId, repositoryProvider);
-  if (!deaDataVault) {
-    throw new NotFoundError(`Could not find DataVault: ${dataVaultId} in the DB`);
-  }
+  await DataVaultService.getRequiredDataVault(dataVaultId, repositoryProvider);
 
-  const retrievedDataVaultFile = await getDataVaultFile(dataVaultId, fileUlid, repositoryProvider);
-  if (!retrievedDataVaultFile) {
-    throw new NotFoundError(`Could not find file: ${fileUlid} in DataVault: ${dataVaultId} in the DB`);
-  }
+  await getRequiredDataVaultFile(dataVaultId, fileUlid, repositoryProvider);
+
   for (const caseUlid of caseUlids) {
-    const caseFileEntry = await CaseFileService.getCaseFile(caseUlid, fileUlid, repositoryProvider);
-    if (!caseFileEntry) {
-      throw new NotFoundError(`Could not find file: ${fileUlid} in Case: ${caseUlid} in the DB`);
-    }
+    const caseFileEntry = await CaseFileService.getRequiredCaseFile(caseUlid, fileUlid, repositoryProvider);
     await CaseFileService.deleteCaseAssociation(caseFileEntry, repositoryProvider);
   }
+};
+
+export const getRequiredDataVaultFile = async (
+  dataVaultId: string,
+  fileId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaDataVaultFile> => {
+  const dataVaultFile = await getDataVaultFile(dataVaultId, fileId, repositoryProvider);
+  if (!dataVaultFile) {
+    throw new NotFoundError(`DataVault File not found.`);
+  }
+  return dataVaultFile;
 };

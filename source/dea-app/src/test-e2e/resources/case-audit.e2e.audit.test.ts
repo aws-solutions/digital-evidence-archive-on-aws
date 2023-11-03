@@ -13,6 +13,7 @@ import { joiUlid } from '../../models/validation/joi-common';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
+  AuditExpectations,
   MINUTES_TO_MILLISECONDS,
   callDeaAPIWithCreds,
   createCaseSuccess,
@@ -246,11 +247,12 @@ describe('case audit e2e', () => {
 
       // CreateCaseOwner
 
-      const expectedSuccessDetails = {
+      const expectedSuccessDetails: AuditExpectations = {
         expectedCaseUlid: caseUlid,
         expectedFileHash: '',
         expectedFileUlid: '',
         expectedResult: 'success',
+        expectedDataVaultId: '',
       };
       const createCaseEntry = applicationEntries.find(
         (entry) => entry.Event_Type === AuditEventType.CREATE_CASE
@@ -298,6 +300,7 @@ describe('case audit e2e', () => {
         expectedFileHash: '',
         expectedFileUlid: '',
         expectedCaseUlid: caseUlid,
+        expectedDataVaultId: '',
       });
 
       const caseInviteEntry = applicationEntries.find(

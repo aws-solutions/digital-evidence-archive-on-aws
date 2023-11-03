@@ -124,7 +124,7 @@ describe('data vault file persistence', () => {
         dummyContext,
         repositoryProvider
       )
-    ).rejects.toThrow(`Could not find DataVault: ${dataVaultId} in the DB`);
+    ).rejects.toThrow(`DataVault not found.`);
   }, 40000);
 
   it('should fail for a missing data vault id', async () => {

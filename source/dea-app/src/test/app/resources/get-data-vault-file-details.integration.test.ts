@@ -123,7 +123,7 @@ describe('test data vault file details', () => {
     });
 
     await expect(getDataVaultFileDetails(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      `Could not find file: ${dummyFileUlid} in the DB`
+      `DataVault File not found.`
     );
   });
 });

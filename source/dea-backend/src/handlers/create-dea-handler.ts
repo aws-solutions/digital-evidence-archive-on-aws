@@ -19,6 +19,7 @@ import {
 import { removeSensitiveHeaders } from '@aws/dea-app/lib/lambda-http-helpers';
 import { Oauth2Token } from '@aws/dea-app/lib/models/auth';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
+import { CaseAssociationDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseOwnerDTO, CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { v4 as uuidv4 } from 'uuid';
@@ -123,6 +124,7 @@ const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
     result: AuditEventResult.FAILURE,
     caseId: event.pathParameters?.caseId,
     fileId: event.pathParameters?.fileId,
+    dataVaultId: event.pathParameters?.dataVaultId,
     targetUserId: getTargetUserId(event),
     eventID: uuidv4(),
   };
@@ -238,6 +240,8 @@ const parseEventForExtendedAuditFields = (
     eventType !== AuditEventType.CREATE_CASE &&
     eventType !== AuditEventType.INITIATE_CASE_FILE_UPLOAD &&
     eventType !== AuditEventType.COMPLETE_CASE_FILE_UPLOAD &&
+    eventType !== AuditEventType.CREATE_DATA_VAULT &&
+    eventType !== AuditEventType.CREATE_CASE_ASSOCIATION &&
     !isCaseInviteAPI
   ) {
     return;
@@ -246,7 +250,7 @@ const parseEventForExtendedAuditFields = (
   const body = JSON.parse(result.body);
 
   //Warn if caseId was not included on the CreateCase Operation
-  if (eventType == AuditEventType.CREATE_CASE) {
+  if (eventType === AuditEventType.CREATE_CASE) {
     // Include case id if it was populated
     auditEvent.caseId = body.ulid;
     if (!auditEvent.caseId) {
@@ -260,7 +264,7 @@ const parseEventForExtendedAuditFields = (
   }
 
   // Warn if fileId was not included on the InitiateFileUpload Operation
-  if (eventType == AuditEventType.INITIATE_CASE_FILE_UPLOAD) {
+  if (eventType === AuditEventType.INITIATE_CASE_FILE_UPLOAD) {
     // Include file id if it was populated
     auditEvent.fileId = body.ulid;
     if (!auditEvent.fileId) {
@@ -271,6 +275,27 @@ const parseEventForExtendedAuditFields = (
       auditEvent.fileId = 'ERROR: file id is absent';
       auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
     }
+  }
+
+  if (eventType === AuditEventType.CREATE_DATA_VAULT) {
+    auditEvent.dataVaultId = body.ulid;
+    if (!auditEvent.dataVaultId) {
+      logger.error(
+        'DataVaultId was not included in auditEvent after complete data vault creation operation.',
+        {
+          resource: event.resource,
+          httpMethod: event.httpMethod,
+        }
+      );
+      auditEvent.dataVaultId = 'ERROR: data vault id is absent';
+      auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
+    }
+  }
+
+  if (event.body && eventType === AuditEventType.CREATE_CASE_ASSOCIATION) {
+    const associationBody: CaseAssociationDTO = JSON.parse(event.body);
+    auditEvent.caseId = associationBody.caseUlids.join(', ');
+    auditEvent.fileId = associationBody.fileUlids.join(', ');
   }
 
   // include file hash if it was included in the body of the response

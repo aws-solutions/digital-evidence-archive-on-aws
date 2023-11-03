@@ -26,7 +26,7 @@ import { Credentials } from 'aws4-axios';
 import { PARAM_PREFIX } from '../../app/services/service-constants';
 import { getTokenPayload } from '../../cognito-token-helpers';
 import { Oauth2Token } from '../../models/auth';
-import { ModelRepositoryProvider } from '../../persistence/schema/entities';
+import { ModelRepositoryProvider, UserModelRepositoryProvider } from '../../persistence/schema/entities';
 import { deleteUser, getUserByTokenId } from '../../persistence/user';
 import { testEnv } from './settings';
 
@@ -233,6 +233,16 @@ export default class CognitoHelper {
     } else {
       throw new Error('Failed to get credentials from the identity pool:');
     }
+  }
+
+  public async getUserDbId(username: string, repositoryProvider: UserModelRepositoryProvider) {
+    const { id_token } = await this.getIdTokenForUser(username);
+    const tokenId = (await getTokenPayload(id_token, this.region)).sub;
+    const dbUser = await getUserByTokenId(tokenId, repositoryProvider);
+    if (!dbUser) {
+      throw new Error('Failed to get user from db');
+    }
+    return dbUser?.ulid;
   }
 
   public async cleanup(repositoryProvider?: ModelRepositoryProvider): Promise<void> {

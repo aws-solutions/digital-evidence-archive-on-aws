@@ -4,7 +4,7 @@
  */
 
 import { Paged } from 'dynamodb-onetable';
-import { DeaDataVault, DeaDataVaultInput } from '../models/data-vault';
+import { DeaDataVault, DeaDataVaultInput, DeaDataVaultUpdateInput } from '../models/data-vault';
 import { dataVaultFromEntity } from '../models/projections';
 import { isDefined } from './persistence-helpers';
 import { DataVaultModelRepositoryProvider, ModelRepositoryProvider } from './schema/entities';
@@ -65,7 +65,7 @@ export const getDataVault = async (
 };
 
 export const updateDataVault = async (
-  deaDataVault: DeaDataVault,
+  deaDataVault: DeaDataVaultUpdateInput,
   repositoryProvider: DataVaultModelRepositoryProvider
 ): Promise<DeaDataVault> => {
   const newCase = await repositoryProvider.DataVaultModel.update(

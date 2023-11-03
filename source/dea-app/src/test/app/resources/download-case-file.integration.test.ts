@@ -127,7 +127,7 @@ describe('Test case file download', () => {
   it("should throw an exception when case-file doesn't exist", async () => {
     await expect(
       callDownloadCaseFile(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToDownloadFrom)
-    ).rejects.toThrow(`Could not find file: ${FILE_ULID} in the DB`);
+    ).rejects.toThrow(`Could not find file`);
   });
 
   it("should throw an exception when case-file isn't active", async () => {

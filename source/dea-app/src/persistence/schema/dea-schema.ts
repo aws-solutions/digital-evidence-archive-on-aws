@@ -15,6 +15,8 @@ export enum AuditType {
   CASEFILE = 'CASEFILE',
   SYSTEM = 'SYSTEM',
   USER = 'USER',
+  DATAVAULT = 'DATAVAULT',
+  DATAVAULTFILE = 'DATAVAULTFILE',
 }
 
 export const DeaSchema = {

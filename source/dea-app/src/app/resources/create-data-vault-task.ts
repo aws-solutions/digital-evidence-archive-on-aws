@@ -13,7 +13,6 @@ import { defaultDataSyncProvider } from '../../storage/dataSync';
 import { defaultAthenaClient } from '../audit/dea-audit-plugin';
 import { createDatasyncTask, createS3Location } from '../services/data-sync-service';
 import * as DataVaultService from '../services/data-vault-service';
-import { getDataVault } from '../services/data-vault-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
@@ -32,10 +31,7 @@ export const createDataVaultTask: DEAGatewayProxyHandler = async (
 ) => {
   const dataVaultId = getRequiredPathParam(event, 'dataVaultId', joiUlid);
 
-  const dataVault = await getDataVault(dataVaultId, repositoryProvider);
-  if (!dataVault) {
-    throw new Error(`Could not find DataVault with id ${dataVaultId}`);
-  }
+  await DataVaultService.getRequiredDataVault(dataVaultId, repositoryProvider);
 
   const deaDataVaultTask: DataVaultTaskDTO = getRequiredPayload(
     event,

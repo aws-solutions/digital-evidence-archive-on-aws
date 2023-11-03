@@ -14,7 +14,7 @@ import {
   PutObjectLegalHoldCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { aws4Interceptor, Credentials } from 'aws4-axios';
+import { Credentials, aws4Interceptor } from 'aws4-axios';
 import axios, { AxiosResponse } from 'axios';
 import sha256 from 'crypto-js/sha256';
 import * as CSV from 'csv-string';
@@ -583,6 +583,7 @@ export type AuditEventEntry = {
   DEA_User_ID?: string;
   Case_ID?: string;
   File_ID?: string;
+  DataVault_ID?: string;
   File_SHA_256?: string;
   Target_User_ID?: string;
   Case_Actions?: string;
@@ -598,6 +599,7 @@ export type AuditExpectations = {
   expectedCaseUlid: string;
   expectedFileUlid: string;
   expectedFileHash: string;
+  expectedDataVaultId: string;
 };
 
 export function verifyAuditEntry(
@@ -609,6 +611,7 @@ export function verifyAuditEntry(
     expectedCaseUlid: '',
     expectedFileUlid: '',
     expectedFileHash: '',
+    expectedDataVaultId: '',
   }
 ) {
   if (!entry) {
@@ -620,6 +623,7 @@ export function verifyAuditEntry(
   expect(entry.Case_ID).toStrictEqual(expectations.expectedCaseUlid);
   expect(entry.File_ID).toStrictEqual(expectations.expectedFileUlid);
   expect(entry.File_SHA_256).toStrictEqual(expectations.expectedFileHash);
+  expect(entry.DataVault_ID).toStrictEqual(expectations.expectedDataVaultId);
 }
 
 export type CloudTrailMatches = {

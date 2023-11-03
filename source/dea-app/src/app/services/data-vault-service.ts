@@ -4,13 +4,14 @@
  */
 
 import { OneTableError, Paged } from 'dynamodb-onetable';
-import { DeaDataVault, DeaDataVaultInput } from '../../models/data-vault';
+import { DeaDataVault, DeaDataVaultInput, DeaDataVaultUpdateInput } from '../../models/data-vault';
 import { DeaDataVaultExecution } from '../../models/data-vault-execution';
 import { DeaDataVaultTask, DeaDataVaultTaskInput } from '../../models/data-vault-task';
 import * as DataVaultPersistence from '../../persistence/data-vault';
 import * as DataVaultExecutionPersistence from '../../persistence/data-vault-execution';
 import * as DataVaultTaskPersistence from '../../persistence/data-vault-task';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
+import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 
 export const createDataVault = async (
@@ -53,7 +54,7 @@ export const getDataVault = async (
 };
 
 export const updateDataVaults = async (
-  dataVault: DeaDataVault,
+  dataVault: DeaDataVaultUpdateInput,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaDataVault> => {
   try {
@@ -117,4 +118,15 @@ export const listDataVaultExecutions = async (
   limit = 30
 ): Promise<Paged<DeaDataVaultExecution>> => {
   return DataVaultExecutionPersistence.listDataVaultExecutions(repositoryProvider, taskId, nextToken, limit);
+};
+
+export const getRequiredDataVault = async (
+  dataVaultId: string,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaDataVault> => {
+  const dataVault = await getDataVault(dataVaultId, repositoryProvider);
+  if (!dataVault) {
+    throw new NotFoundError(`DataVault not found.`);
+  }
+  return dataVault;
 };

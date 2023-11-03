@@ -276,7 +276,7 @@ describe('test data vault file disassociation from cases', () => {
         dummyContext,
         repositoryProvider
       )
-    ).rejects.toThrow(`Could not find DataVault: ${dataVaultId} in the DB`);
+    ).rejects.toThrow(`DataVault not found.`);
   }, 40000);
 
   it('should fail for a data vault file id that does not exist', async () => {
@@ -288,7 +288,6 @@ describe('test data vault file disassociation from cases', () => {
     });
     const response = await createDataVault(event, dummyContext, repositoryProvider);
     const newDataVault = await JSON.parse(response.body);
-    const fileUlid = 'AAAAAAAAAAAAAAAAAAAAAAAAAA';
     await expect(
       deleteCaseAssociation(
         getDummyEvent({
@@ -303,7 +302,7 @@ describe('test data vault file disassociation from cases', () => {
         dummyContext,
         repositoryProvider
       )
-    ).rejects.toThrow(`Could not find file: ${fileUlid} in DataVault: ${newDataVault.ulid} in the DB`);
+    ).rejects.toThrow(`DataVault File not found.`);
   }, 40000);
 
   it('should fail for a data vault file non associated to a case', async () => {
@@ -340,6 +339,6 @@ describe('test data vault file disassociation from cases', () => {
         dummyContext,
         repositoryProvider
       )
-    ).rejects.toThrow(`Could not find file: ${dataVaultFile.ulid} in Case: ${createdCase.ulid} in the DB`);
+    ).rejects.toThrow(`Could not find file`);
   }, 40000);
 });
