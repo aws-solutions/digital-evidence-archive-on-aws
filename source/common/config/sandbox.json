@@ -8,15 +8,15 @@
     "domain": "cfisandbox"
   },
   "idpInfo": {
-  "metadataPath": "https://portal.sso.eu-west-2.amazonaws.com/saml/metadata/Mzc0ODA2MDAyNzcxX2lucy1hMDljZjcyODdlYjMxM2Jl",
-  "metadataPathType": "URL",
-  "attributeMap": {
-    "username": "username",
-    "email": "email",
-    "firstName": "firstName",
-    "lastName": "lastName"
-  }
- },
+    "metadataPath": "https://portal.sso.eu-west-2.amazonaws.com/saml/metadata/Mzc0ODA2MDAyNzcxX2lucy1hMDljZjcyODdlYjMxM2Jl",
+    "metadataPathType": "URL",
+    "attributeMap": {
+      "username": "username",
+      "email": "email",
+      "firstName": "firstName",
+      "lastName": "lastName"
+    }
+  },
   "deaRoleTypes": [
     {
       "name": "CaseWorker",

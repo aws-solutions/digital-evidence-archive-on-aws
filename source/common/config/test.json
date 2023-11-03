@@ -1,5 +1,5 @@
 {
-    "deletionAllowed": false,
+    "deletionAllowed": true,
     "isOneClick": false,  
     "sourceIpValidation": false,
     "fipsEndpointsEnabled": false,

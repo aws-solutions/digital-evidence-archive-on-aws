@@ -1,9 +1,0 @@
-{
-  "deaRoleTypes": [
-    {
-      "name": "InvalidEndpointConfig",
-      "description": "used for auth e2e testing",
-      "endpoints": "InvalidEndpoints"
-    }
-  ]
-}
