@@ -1,6 +1,6 @@
 {
-  "deletionAllowed": false,
-  "isOneClick": false,  
+  "deletionAllowed": true,
+  "isOneClick": false,
   "sourceIpValidation": false,
   "fipsEndpointsEnabled": false,
   "isMultiRegionTrail": false,
@@ -328,4 +328,3 @@
     }
   ]
 }
-
