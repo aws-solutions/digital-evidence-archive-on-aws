@@ -1,4 +1,4 @@
-name: Digital Evidence Archive - main
+name: Digital Evidence Archive - release
 
 on:
   workflow_dispatch:
