@@ -112,4 +112,18 @@ describe('convict based config', () => {
     }
     expect(Object.keys(preflightOpt).length).toBeGreaterThan(0);
   });
+
+  it('errors if the stage name is too long', () => {
+    convictConfig.set('stage', 'abcdefghijklmnopqrstuvwxyz');
+    expect(() => {
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('The Stage name must not exceed 21 characters');
+  });
+
+  it('errors if the stage has invalid characters', () => {
+    convictConfig.set('stage', 'invalidst@ge');
+    expect(() => {
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('The Stage name may only contain alphanumerics and hyphens.');
+  });
 });
