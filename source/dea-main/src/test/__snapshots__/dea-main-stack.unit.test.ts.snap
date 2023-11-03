@@ -18113,6 +18113,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     ],
                   ],
                 },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackDeaTableE9FE4A05",
+                          "Arn",
+                        ],
+                      },
+                      "/index/GSI3",
+                    ],
+                  ],
+                },
               ],
             },
             Object {
@@ -25806,6 +25820,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AttributeName": "GSI2SK",
             "AttributeType": "S",
           },
+          Object {
+            "AttributeName": "GSI3PK",
+            "AttributeType": "S",
+          },
+          Object {
+            "AttributeName": "GSI3SK",
+            "AttributeType": "S",
+          },
         ],
         "BillingMode": "PAY_PER_REQUEST",
         "GlobalSecondaryIndexes": Array [
@@ -25834,6 +25856,22 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
               Object {
                 "AttributeName": "GSI2SK",
+                "KeyType": "RANGE",
+              },
+            ],
+            "Projection": Object {
+              "ProjectionType": "ALL",
+            },
+          },
+          Object {
+            "IndexName": "GSI3",
+            "KeySchema": Array [
+              Object {
+                "AttributeName": "GSI3PK",
+                "KeyType": "HASH",
+              },
+              Object {
+                "AttributeName": "GSI3SK",
                 "KeyType": "RANGE",
               },
             ],

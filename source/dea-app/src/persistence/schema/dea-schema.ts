@@ -24,6 +24,7 @@ export const DeaSchema = {
     primary: { hash: 'PK', sort: 'SK' },
     GSI1: { hash: 'GSI1PK', sort: 'GSI1SK', follow: false },
     GSI2: { hash: 'GSI2PK', sort: 'GSI2SK', follow: false },
+    GSI3: { hash: 'GSI3PK', sort: 'GSI3SK', follow: false },
   },
   models: {
     Case: {
@@ -83,6 +84,10 @@ export const DeaSchema = {
         unique: true,
       },
       GSI2SK: { type: String, value: 'FILE#${isFile}#', required: true },
+
+      // Get all cases associated to the file.
+      GSI3PK: { type: String, value: 'FILE#${ulid}#', required: true },
+      GSI3SK: { type: String, value: 'CASE#${caseUlid}#', required: true },
 
       ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
       fileName: { type: String, required: true, validate: allButDisallowed },
@@ -247,6 +252,7 @@ export const DeaSchema = {
       contentType: { type: String },
       fileS3Key: { type: String, required: true },
       executionId: { type: String, required: true },
+      caseCount: { type: Number, required: true, default: 0 },
 
       //managed by onetable - but included for entity generation
       created: { type: Date },

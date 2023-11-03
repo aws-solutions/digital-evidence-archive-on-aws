@@ -7,7 +7,7 @@ import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
-import { getDataVaultFile, hydrateUsersForDataVaultFiles } from '../services/data-vault-file-service';
+import { getDataVaultFile, hydrateDataVaultFile } from '../services/data-vault-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
@@ -26,7 +26,7 @@ export const getDataVaultFileDetails: DEAGatewayProxyHandler = async (
     throw new NotFoundError(`Could not find file: ${fileId} in the DB`);
   }
 
-  const hydratedFiles = await hydrateUsersForDataVaultFiles([retrievedDataVaultFile], repositoryProvider);
+  const hydratedFile = await hydrateDataVaultFile(retrievedDataVaultFile, repositoryProvider);
 
-  return responseOk(event, hydratedFiles[0]);
+  return responseOk(event, hydratedFile);
 };

@@ -93,6 +93,13 @@ export class DeaBackendConstruct extends Construct {
       sortKey: { name: 'GSI2SK', type: AttributeType.STRING },
     });
 
+    deaTable.addGlobalSecondaryIndex({
+      indexName: 'GSI3',
+      projectionType: ProjectionType.ALL,
+      partitionKey: { name: 'GSI3PK', type: AttributeType.STRING },
+      sortKey: { name: 'GSI3SK', type: AttributeType.STRING },
+    });
+
     return deaTable;
   }
 

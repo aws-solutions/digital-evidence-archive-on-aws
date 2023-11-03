@@ -84,6 +84,16 @@ export const createCaseFileAssociation = async (
         transaction,
       }
     );
+    await repositoryProvider.DataVaultFileModel.update(
+      {
+        PK: `DATAVAULT#${deaCaseFile.dataVaultUlid}#`,
+        SK: `FILE#${deaCaseFile.ulid}#`,
+      },
+      {
+        add: { caseCount: 1 },
+        transaction,
+      }
+    );
   }
 
   await repositoryProvider.table.transact('write', transaction);
@@ -256,5 +266,34 @@ export const listCaseFilesByFilePath = async (
     .filter(isDefined);
   caseFiles.count = caseFileEntities.length;
   caseFiles.next = caseFileEntities.next;
+  return caseFiles;
+};
+
+export const listCasesByFile = async (
+  ulid: string,
+  repositoryProvider: ModelRepositoryProvider,
+  nextToken: object | undefined,
+  limit = 30
+): Promise<Paged<DeaCaseFileResult>> => {
+  const caseFileEntities = await repositoryProvider.CaseFileModel.find(
+    {
+      GSI3PK: `FILE#${ulid}#`,
+      GSI3SK: {
+        begins_with: 'CASE#',
+      },
+    },
+    {
+      next: nextToken,
+      limit,
+      index: 'GSI3',
+    }
+  );
+
+  const caseFiles: Paged<DeaCaseFileResult> = caseFileEntities
+    .map((entity) => caseFileFromEntity(entity))
+    .filter(isDefined);
+  caseFiles.count = caseFileEntities.count;
+  caseFiles.next = caseFileEntities.next;
+
   return caseFiles;
 };

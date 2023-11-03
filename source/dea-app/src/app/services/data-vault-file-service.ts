@@ -3,9 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { Paged } from 'dynamodb-onetable';
-import { DeaCaseFile } from '../../models/case-file';
+import { ScopedDeaCase } from '../../models/case';
+import { DeaCaseFile, DeaCaseFileResult } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { DeaDataVaultFile } from '../../models/data-vault-file';
+import { getCases } from '../../persistence/case';
+import { listCasesByFile } from '../../persistence/case-file';
 import * as DataVaultFilePersistence from '../../persistence/data-vault-file';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getUsers } from '../../persistence/user';
@@ -157,6 +160,41 @@ export const hydrateUsersForDataVaultFiles = async (
       executionId: file.executionId,
       created: file.created,
       updated: file.updated,
+      caseCount: file.caseCount,
     };
   });
+};
+
+export const hydrateDataVaultFile = async (
+  file: DeaDataVaultFile,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaDataVaultFile> => {
+  // hydrate the user.
+  const hydratedFiles = await hydrateUsersForDataVaultFiles([file], repositoryProvider);
+
+  // Get's the cases associated to the file
+  const caseUlids: string[] = [];
+  let nextToken = undefined;
+  do {
+    const caseFilePage: Paged<DeaCaseFileResult> = await listCasesByFile(
+      file.ulid,
+      repositoryProvider,
+      nextToken
+    );
+    caseUlids.push(...caseFilePage.map((caseFile) => caseFile.caseUlid));
+    nextToken = caseFilePage.next;
+  } while (nextToken);
+
+  // fetch the cases
+  const caseMap = await getCases(caseUlids, repositoryProvider);
+  const cases: ScopedDeaCase[] = caseUlids.map((caseUlid) => {
+    const deaCase = caseMap.get(caseUlid);
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    return {
+      ulid: deaCase?.ulid,
+      name: deaCase?.name,
+    } as ScopedDeaCase;
+  });
+
+  return { ...hydratedFiles[0], cases };
 };

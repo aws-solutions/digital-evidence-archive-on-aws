@@ -558,7 +558,7 @@ export class DeaRestApiConstruct extends Construct {
           'dynamodb:Query',
           'dynamodb:UpdateItem',
         ],
-        resources: [tableArn, `${tableArn}/index/GSI1`, `${tableArn}/index/GSI2`],
+        resources: [tableArn, `${tableArn}/index/GSI1`, `${tableArn}/index/GSI2`, `${tableArn}/index/GSI3`],
       })
     );
 

@@ -97,12 +97,13 @@ describe('test data vault file details', () => {
     };
     const createdCase2 = await createCase(theCase2, user, repositoryProvider);
 
+    const caseUlids = [createdCase.ulid, createdCase2.ulid];
     const caseAssociateEvent = getDummyEvent({
       pathParameters: {
         dataVaultId: newDataVault.ulid,
       },
       body: JSON.stringify({
-        caseUlids: [createdCase.ulid, createdCase2.ulid],
+        caseUlids,
         fileUlids: rootFolderUlids,
       }),
     });
@@ -152,6 +153,22 @@ describe('test data vault file details', () => {
 
     const retrievedCase: DeaCase = jsonParseWithDates(caseResponse.body);
     expect(retrievedCase.objectCount).toEqual(6);
+
+    // Get updated files from root directory
+    const pageOfDataVaultFiles2: Paged<DeaDataVaultFile> = await listDataVaultFilesByFilePath(
+      newDataVault.ulid,
+      '/',
+      10000,
+      repositoryProvider,
+      undefined
+    );
+
+    // Check files for case association
+    for (const file of pageOfDataVaultFiles2) {
+      if (file.isFile) {
+        expect(file.caseCount).toEqual(caseUlids.length);
+      }
+    }
   }, 40000);
 
   it('should check fetching nested files is working as intended', async () => {

@@ -98,6 +98,7 @@ export const dataVaultFileFromEntity = (dataVaultFileEntity: DataVaultFileType):
     executionId: dataVaultFileEntity.executionId,
     fileS3Key: dataVaultFileEntity.fileS3Key,
     updated: dataVaultFileEntity.updated,
+    caseCount: dataVaultFileEntity.caseCount,
   };
 };
 

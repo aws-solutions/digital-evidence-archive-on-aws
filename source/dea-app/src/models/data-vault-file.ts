@@ -3,6 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { ScopedDeaCase } from './case';
+
 export interface DeaDataVaultFile {
   readonly ulid: string;
   readonly fileName: string;
@@ -18,6 +20,8 @@ export interface DeaDataVaultFile {
   readonly executionId: string;
   readonly created?: Date;
   readonly updated?: Date;
+  readonly caseCount: number;
+  readonly cases?: ScopedDeaCase[];
 }
 
 export interface DataVaultFileDTO {
