@@ -10,7 +10,7 @@ export const addSnapshotSerializers = (): void => {
     test: (val) => typeof val === 'string' && (val.includes('zip') || val.includes('json')),
     print: (val) => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      const newVal = (val as string).replace(/([A-Fa-f0-9]{64})/, '[HASH REMOVED]');
+      const newVal = (val as string).replace(/([A-Fa-f0-9]{64})/g, '[HASH REMOVED]');
       return `"${newVal}"`;
     },
   });
@@ -36,8 +36,8 @@ export const addSnapshotSerializers = (): void => {
     test: (val) => typeof val === 'string' && val.includes(deaConfig.stage()),
     print: (val) => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      const newVal1 = (val as string).replace(deaConfig.stage(), '[STAGE-REMOVED]');
-      const newVal = newVal1.replace(/([A-Fa-f0-9]{8})/, '[HASH REMOVED]');
+      const newVal1 = (val as string).replaceAll(deaConfig.stage(), '[STAGE-REMOVED]');
+      const newVal = newVal1.replace(/([A-Fa-f0-9]{8})/g, '[HASH REMOVED]');
       return `"${newVal}"`;
     },
   });
@@ -48,8 +48,8 @@ export const addSnapshotSerializers = (): void => {
       test: (val) => typeof val === 'string' && val.includes(domain),
       print: (val) => {
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const newVal1 = (val as string).replace(domain, '[DOMAIN-REMOVED]');
-        const newVal = newVal1.replace(/([A-Fa-f0-9]{8})/, '[HASH REMOVED]');
+        const newVal1 = (val as string).replaceAll(domain, '[DOMAIN-REMOVED]');
+        const newVal = newVal1.replace(/([A-Fa-f0-9]{8})/g, '[HASH REMOVED]');
         return `"${newVal}"`;
       },
     });

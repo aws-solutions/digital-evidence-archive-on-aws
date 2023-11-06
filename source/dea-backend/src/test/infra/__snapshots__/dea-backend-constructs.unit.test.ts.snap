@@ -9086,224 +9086,179 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiDEAUsagePlanBC29ADF7",
         "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
         "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
-        "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenA42BE3E6",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenE48A5552",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
         "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
-        "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl21F61114",
         "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF",
         "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D",
         "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0",
         "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrlF8A5551B",
         "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548",
         "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
         "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
         "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
         "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken099A885C",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D",
         "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
         "DeaRestApiConstructdeaapiauthE4846931",
         "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeToken13FAD07F",
         "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeTokenD51670A5",
         "DeaRestApiConstructdeaapiauthrevokeTokenPOSTD4C71CFF",
         "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
-        "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpointsBF1A4F6F",
         "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpoints4616DB7F",
         "DeaRestApiConstructdeaapiavailableEndpointsGET587EF9CF",
         "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289",
         "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
-        "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsE4633CE0",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsFAD4690C",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETDE6D1CEA",
         "DeaRestApiConstructdeaapicasescaseIdactionsOPTIONSE258076A",
         "DeaRestApiConstructdeaapicasescaseIdactions4A0D9ED8",
-        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsv8740F849",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsvC4D46A81",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGET26466F30",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvOPTIONS428A5C73",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvF0D4AAEB",
         "DeaRestApiConstructdeaapicasescaseIdauditauditId33263B8C",
         "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B",
-        "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit10091757",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit5D5BA22A",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTE1FBCE9C",
         "DeaRestApiConstructdeaapicasescaseIdaudit16BF85CD",
-        "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails918BFC1A",
         "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails2FC44B5A",
         "DeaRestApiConstructdeaapicasescaseIddetailsDELETED0F47C2D",
-        "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails7EEFD469",
         "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails44CA90D4",
         "DeaRestApiConstructdeaapicasescaseIddetailsGET0AC0D58C",
         "DeaRestApiConstructdeaapicasescaseIddetailsOPTIONSA19CA131",
-        "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetailsD3729DE8",
         "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetails7B2B7A41",
         "DeaRestApiConstructdeaapicasescaseIddetailsPUT33A3214F",
         "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsv61B26B23",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsvA8F10AD2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGET502B4685",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONS5D0C778E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsv94975A46",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdAF04FFD1",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdaudit5562DDDE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdauditF20DF571",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOST3CAF58FE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdaudit231DCFA8",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents8F8D422E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents28CE2C11",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontents638F2797",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoBE59735B",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoCCF7F8BF",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETBCDCA5B2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoOPTIONS11169FBA",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore06D2657C",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTA4D1AB12",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreE48E6E5F",
-        "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesF013B694",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesA389BD7D",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETB7EECD96",
         "DeaRestApiConstructdeaapicasescaseIdfilesOPTIONS18C09E02",
-        "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesC519AD34",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfiles39BF2383",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
         "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7",
         "DeaRestApiConstructdeaapicasescaseIdownerOPTIONSBD3E6D71",
-        "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdownerE92895A4",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdowner0B48A767",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTFB8341CA",
         "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F",
         "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation5EA98B1E",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation45DD1C2C",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETB786FCDD",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
         "DeaRestApiConstructdeaapicasescaseIdstatusOPTIONS0760E14E",
-        "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus03BDFD4A",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus787AC3AD",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUT31B9CA11",
         "DeaRestApiConstructdeaapicasescaseIdstatus0AD7015F",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMembershipsBF5873AE",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMemberships87E19089",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMembershipsBD47C55D",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships7FD5F1FA",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships94BCD26D",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships4134D8D9",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships748F3883",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
         "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
         "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
-        "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases0A56C052",
         "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases8A384810",
         "DeaRestApiConstructdeaapicasesallcasesGET3D7FE7B4",
         "DeaRestApiConstructdeaapicasesallcasesOPTIONSA5C611C6",
         "DeaRestApiConstructdeaapicasesallcases5A486593",
-        "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesC2E61486",
         "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesEA5EFE48",
         "DeaRestApiConstructdeaapicasesmycasesGETC5597167",
         "DeaRestApiConstructdeaapicasesmycasesOPTIONSE1C2DE04",
         "DeaRestApiConstructdeaapicasesmycases5E6BEFAC",
         "DeaRestApiConstructdeaapicasesOPTIONS6C23822B",
-        "DeaRestApiConstructdeaapicasesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasesB76BA281",
         "DeaRestApiConstructdeaapicasesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcases9AE2A82E",
         "DeaRestApiConstructdeaapicasesPOST0A7C65AB",
         "DeaRestApiConstructdeaapicasesC2FD1C2B",
         "DeaRestApiConstructdeaapidatasync4FCE5BAC",
-        "DeaRestApiConstructdeaapidatasynctasksGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatasynctasks7DAEE58F",
         "DeaRestApiConstructdeaapidatasynctasksGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatasynctasks5C5D8675",
         "DeaRestApiConstructdeaapidatasynctasksGET01653B7E",
         "DeaRestApiConstructdeaapidatasynctasksOPTIONS004A9B9F",
         "DeaRestApiConstructdeaapidatasynctasksE10084C3",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails57B038EC",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails77C4C7BF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGET9FD745C9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsOPTIONSF037F791",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTdatavaultsdataVaultIddetails722FA32B",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTdatavaultsdataVaultIddetails8BA48A61",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUT925FD572",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsD8DDCCE8",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfoCE9AE0B7",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfo58AF901A",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGET02C2F5DE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoOPTIONS67146261",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoCCCD7E15",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileId50FC80BE",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfiles45890CB8",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesED962CD8",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGET66F9B69A",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesOPTIONS1C5DE8AD",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesAEC2B5D2",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesECDA3F90",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOST82D8A4DF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfiles3717C3AF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultId186748E9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksOPTIONS2672D6ED",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdtasksCA3DEDA7",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdtasksAF1402D9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOST9AED5530",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksD6F835AC",
-        "DeaRestApiConstructdeaapidatavaultsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaults277BBD53",
         "DeaRestApiConstructdeaapidatavaultsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsA8114A91",
         "DeaRestApiConstructdeaapidatavaultsGET2A09E206",
         "DeaRestApiConstructdeaapidatavaultsOPTIONS9D24957E",
-        "DeaRestApiConstructdeaapidatavaultsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaults4B299964",
         "DeaRestApiConstructdeaapidatavaultsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaults46A12C02",
         "DeaRestApiConstructdeaapidatavaultsPOST14ED7314",
         "DeaRestApiConstructdeaapidatavaultsA7E85AE5",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsOPTIONSD881F5FA",
-        "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultstaskstaskIdexecutions9062438B",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultstaskstaskIdexecutions39EC4955",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOST80A287BC",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutions6A12A620",
         "DeaRestApiConstructdeaapidatavaultstaskstaskId4E3CA7BB",
         "DeaRestApiConstructdeaapidatavaultstasksC9FCB3F4",
-        "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsv32688A4B",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsvFC587FF9",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETB3B09D3C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvOPTIONSBC6D4692",
         "DeaRestApiConstructdeaapisystemauditauditIdcsv3DF23375",
         "DeaRestApiConstructdeaapisystemauditauditIdB2530B9D",
         "DeaRestApiConstructdeaapisystemauditOPTIONS30FFCB3F",
-        "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemaudit92D5D91E",
         "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemauditCB076E78",
         "DeaRestApiConstructdeaapisystemauditPOSTA0F7E161",
         "DeaRestApiConstructdeaapisystemaudit2A5DAEF8",
         "DeaRestApiConstructdeaapisystemAD98847E",
-        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv84743A25",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv64381123",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGET612A031C",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvOPTIONSFD04EC81",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsv119B9333",
         "DeaRestApiConstructdeaapiusersuserIdauditauditId63841CC8",
         "DeaRestApiConstructdeaapiusersuserIdauditOPTIONSEE6E3674",
-        "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit6194CA37",
         "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit3F85C343",
         "DeaRestApiConstructdeaapiusersuserIdauditPOST04D75563",
         "DeaRestApiConstructdeaapiusersuserIdaudit60684DFA",
         "DeaRestApiConstructdeaapiusersuserIdB57BE8EB",
-        "DeaRestApiConstructdeaapiusersGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusers8EAF9CF0",
         "DeaRestApiConstructdeaapiusersGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusers52337E4B",
         "DeaRestApiConstructdeaapiusersGET45E97005",
         "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
@@ -9454,224 +9409,179 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiDEAUsagePlanBC29ADF7",
         "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
         "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
-        "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenA42BE3E6",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenE48A5552",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
         "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
-        "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl21F61114",
         "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF",
         "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D",
         "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0",
         "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrlF8A5551B",
         "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548",
         "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
         "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
         "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
         "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken099A885C",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D",
         "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
         "DeaRestApiConstructdeaapiauthE4846931",
         "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeToken13FAD07F",
         "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeTokenD51670A5",
         "DeaRestApiConstructdeaapiauthrevokeTokenPOSTD4C71CFF",
         "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
-        "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpointsBF1A4F6F",
         "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpoints4616DB7F",
         "DeaRestApiConstructdeaapiavailableEndpointsGET587EF9CF",
         "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289",
         "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
-        "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsE4633CE0",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsFAD4690C",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETDE6D1CEA",
         "DeaRestApiConstructdeaapicasescaseIdactionsOPTIONSE258076A",
         "DeaRestApiConstructdeaapicasescaseIdactions4A0D9ED8",
-        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsv8740F849",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsvC4D46A81",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGET26466F30",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvOPTIONS428A5C73",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvF0D4AAEB",
         "DeaRestApiConstructdeaapicasescaseIdauditauditId33263B8C",
         "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B",
-        "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit10091757",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit5D5BA22A",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTE1FBCE9C",
         "DeaRestApiConstructdeaapicasescaseIdaudit16BF85CD",
-        "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails918BFC1A",
         "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails2FC44B5A",
         "DeaRestApiConstructdeaapicasescaseIddetailsDELETED0F47C2D",
-        "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails7EEFD469",
         "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails44CA90D4",
         "DeaRestApiConstructdeaapicasescaseIddetailsGET0AC0D58C",
         "DeaRestApiConstructdeaapicasescaseIddetailsOPTIONSA19CA131",
-        "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetailsD3729DE8",
         "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetails7B2B7A41",
         "DeaRestApiConstructdeaapicasescaseIddetailsPUT33A3214F",
         "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsv61B26B23",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsvA8F10AD2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGET502B4685",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONS5D0C778E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsv94975A46",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdAF04FFD1",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdaudit5562DDDE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdauditF20DF571",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOST3CAF58FE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdaudit231DCFA8",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents8F8D422E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents28CE2C11",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontents638F2797",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoBE59735B",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoCCF7F8BF",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETBCDCA5B2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoOPTIONS11169FBA",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore06D2657C",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTA4D1AB12",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreE48E6E5F",
-        "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesF013B694",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesA389BD7D",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETB7EECD96",
         "DeaRestApiConstructdeaapicasescaseIdfilesOPTIONS18C09E02",
-        "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesC519AD34",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfiles39BF2383",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
         "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7",
         "DeaRestApiConstructdeaapicasescaseIdownerOPTIONSBD3E6D71",
-        "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdownerE92895A4",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdowner0B48A767",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTFB8341CA",
         "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F",
         "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation5EA98B1E",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation45DD1C2C",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETB786FCDD",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
         "DeaRestApiConstructdeaapicasescaseIdstatusOPTIONS0760E14E",
-        "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus03BDFD4A",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus787AC3AD",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUT31B9CA11",
         "DeaRestApiConstructdeaapicasescaseIdstatus0AD7015F",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMembershipsBF5873AE",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMemberships87E19089",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMembershipsBD47C55D",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships7FD5F1FA",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships94BCD26D",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships4134D8D9",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships748F3883",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
         "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
         "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
-        "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases0A56C052",
         "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases8A384810",
         "DeaRestApiConstructdeaapicasesallcasesGET3D7FE7B4",
         "DeaRestApiConstructdeaapicasesallcasesOPTIONSA5C611C6",
         "DeaRestApiConstructdeaapicasesallcases5A486593",
-        "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesC2E61486",
         "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesEA5EFE48",
         "DeaRestApiConstructdeaapicasesmycasesGETC5597167",
         "DeaRestApiConstructdeaapicasesmycasesOPTIONSE1C2DE04",
         "DeaRestApiConstructdeaapicasesmycases5E6BEFAC",
         "DeaRestApiConstructdeaapicasesOPTIONS6C23822B",
-        "DeaRestApiConstructdeaapicasesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasesB76BA281",
         "DeaRestApiConstructdeaapicasesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcases9AE2A82E",
         "DeaRestApiConstructdeaapicasesPOST0A7C65AB",
         "DeaRestApiConstructdeaapicasesC2FD1C2B",
         "DeaRestApiConstructdeaapidatasync4FCE5BAC",
-        "DeaRestApiConstructdeaapidatasynctasksGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatasynctasks7DAEE58F",
         "DeaRestApiConstructdeaapidatasynctasksGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatasynctasks5C5D8675",
         "DeaRestApiConstructdeaapidatasynctasksGET01653B7E",
         "DeaRestApiConstructdeaapidatasynctasksOPTIONS004A9B9F",
         "DeaRestApiConstructdeaapidatasynctasksE10084C3",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails57B038EC",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails77C4C7BF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGET9FD745C9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsOPTIONSF037F791",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTdatavaultsdataVaultIddetails722FA32B",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTdatavaultsdataVaultIddetails8BA48A61",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUT925FD572",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsD8DDCCE8",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfoCE9AE0B7",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfo58AF901A",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGET02C2F5DE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoOPTIONS67146261",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoCCCD7E15",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileId50FC80BE",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfiles45890CB8",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesED962CD8",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGET66F9B69A",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesOPTIONS1C5DE8AD",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesAEC2B5D2",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesECDA3F90",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOST82D8A4DF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfiles3717C3AF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultId186748E9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksOPTIONS2672D6ED",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdtasksCA3DEDA7",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdtasksAF1402D9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOST9AED5530",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksD6F835AC",
-        "DeaRestApiConstructdeaapidatavaultsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaults277BBD53",
         "DeaRestApiConstructdeaapidatavaultsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsA8114A91",
         "DeaRestApiConstructdeaapidatavaultsGET2A09E206",
         "DeaRestApiConstructdeaapidatavaultsOPTIONS9D24957E",
-        "DeaRestApiConstructdeaapidatavaultsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaults4B299964",
         "DeaRestApiConstructdeaapidatavaultsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaults46A12C02",
         "DeaRestApiConstructdeaapidatavaultsPOST14ED7314",
         "DeaRestApiConstructdeaapidatavaultsA7E85AE5",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsOPTIONSD881F5FA",
-        "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultstaskstaskIdexecutions9062438B",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultstaskstaskIdexecutions39EC4955",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOST80A287BC",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutions6A12A620",
         "DeaRestApiConstructdeaapidatavaultstaskstaskId4E3CA7BB",
         "DeaRestApiConstructdeaapidatavaultstasksC9FCB3F4",
-        "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsv32688A4B",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsvFC587FF9",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETB3B09D3C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvOPTIONSBC6D4692",
         "DeaRestApiConstructdeaapisystemauditauditIdcsv3DF23375",
         "DeaRestApiConstructdeaapisystemauditauditIdB2530B9D",
         "DeaRestApiConstructdeaapisystemauditOPTIONS30FFCB3F",
-        "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemaudit92D5D91E",
         "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemauditCB076E78",
         "DeaRestApiConstructdeaapisystemauditPOSTA0F7E161",
         "DeaRestApiConstructdeaapisystemaudit2A5DAEF8",
         "DeaRestApiConstructdeaapisystemAD98847E",
-        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv84743A25",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv64381123",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGET612A031C",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvOPTIONSFD04EC81",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsv119B9333",
         "DeaRestApiConstructdeaapiusersuserIdauditauditId63841CC8",
         "DeaRestApiConstructdeaapiusersuserIdauditOPTIONSEE6E3674",
-        "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit6194CA37",
         "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit3F85C343",
         "DeaRestApiConstructdeaapiusersuserIdauditPOST04D75563",
         "DeaRestApiConstructdeaapiusersuserIdaudit60684DFA",
         "DeaRestApiConstructdeaapiusersuserIdB57BE8EB",
-        "DeaRestApiConstructdeaapiusersGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusers8EAF9CF0",
         "DeaRestApiConstructdeaapiusersGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusers52337E4B",
         "DeaRestApiConstructdeaapiusersGET45E97005",
         "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
@@ -9707,224 +9617,179 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiDEAUsagePlanBC29ADF7",
         "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
         "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
-        "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenA42BE3E6",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenE48A5552",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
         "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
-        "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl21F61114",
         "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF",
         "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D",
         "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0",
         "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrlF8A5551B",
         "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548",
         "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
         "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
         "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
         "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken099A885C",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D",
         "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
         "DeaRestApiConstructdeaapiauthE4846931",
         "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeToken13FAD07F",
         "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeTokenD51670A5",
         "DeaRestApiConstructdeaapiauthrevokeTokenPOSTD4C71CFF",
         "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
-        "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpointsBF1A4F6F",
         "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpoints4616DB7F",
         "DeaRestApiConstructdeaapiavailableEndpointsGET587EF9CF",
         "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289",
         "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
-        "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsE4633CE0",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsFAD4690C",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETDE6D1CEA",
         "DeaRestApiConstructdeaapicasescaseIdactionsOPTIONSE258076A",
         "DeaRestApiConstructdeaapicasescaseIdactions4A0D9ED8",
-        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsv8740F849",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsvC4D46A81",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGET26466F30",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvOPTIONS428A5C73",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvF0D4AAEB",
         "DeaRestApiConstructdeaapicasescaseIdauditauditId33263B8C",
         "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B",
-        "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit10091757",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit5D5BA22A",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTE1FBCE9C",
         "DeaRestApiConstructdeaapicasescaseIdaudit16BF85CD",
-        "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails918BFC1A",
         "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails2FC44B5A",
         "DeaRestApiConstructdeaapicasescaseIddetailsDELETED0F47C2D",
-        "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails7EEFD469",
         "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails44CA90D4",
         "DeaRestApiConstructdeaapicasescaseIddetailsGET0AC0D58C",
         "DeaRestApiConstructdeaapicasescaseIddetailsOPTIONSA19CA131",
-        "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetailsD3729DE8",
         "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetails7B2B7A41",
         "DeaRestApiConstructdeaapicasescaseIddetailsPUT33A3214F",
         "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsv61B26B23",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsvA8F10AD2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGET502B4685",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONS5D0C778E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsv94975A46",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdAF04FFD1",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdaudit5562DDDE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdauditF20DF571",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOST3CAF58FE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdaudit231DCFA8",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents8F8D422E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents28CE2C11",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontents638F2797",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoBE59735B",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoCCF7F8BF",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETBCDCA5B2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoOPTIONS11169FBA",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore06D2657C",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTA4D1AB12",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreE48E6E5F",
-        "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesF013B694",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesA389BD7D",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETB7EECD96",
         "DeaRestApiConstructdeaapicasescaseIdfilesOPTIONS18C09E02",
-        "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesC519AD34",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfiles39BF2383",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
         "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7",
         "DeaRestApiConstructdeaapicasescaseIdownerOPTIONSBD3E6D71",
-        "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdownerE92895A4",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdowner0B48A767",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTFB8341CA",
         "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F",
         "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation5EA98B1E",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation45DD1C2C",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETB786FCDD",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
         "DeaRestApiConstructdeaapicasescaseIdstatusOPTIONS0760E14E",
-        "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus03BDFD4A",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus787AC3AD",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUT31B9CA11",
         "DeaRestApiConstructdeaapicasescaseIdstatus0AD7015F",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMembershipsBF5873AE",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMemberships87E19089",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMembershipsBD47C55D",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships7FD5F1FA",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships94BCD26D",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships4134D8D9",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships748F3883",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
         "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
         "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
-        "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases0A56C052",
         "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases8A384810",
         "DeaRestApiConstructdeaapicasesallcasesGET3D7FE7B4",
         "DeaRestApiConstructdeaapicasesallcasesOPTIONSA5C611C6",
         "DeaRestApiConstructdeaapicasesallcases5A486593",
-        "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesC2E61486",
         "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesEA5EFE48",
         "DeaRestApiConstructdeaapicasesmycasesGETC5597167",
         "DeaRestApiConstructdeaapicasesmycasesOPTIONSE1C2DE04",
         "DeaRestApiConstructdeaapicasesmycases5E6BEFAC",
         "DeaRestApiConstructdeaapicasesOPTIONS6C23822B",
-        "DeaRestApiConstructdeaapicasesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasesB76BA281",
         "DeaRestApiConstructdeaapicasesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcases9AE2A82E",
         "DeaRestApiConstructdeaapicasesPOST0A7C65AB",
         "DeaRestApiConstructdeaapicasesC2FD1C2B",
         "DeaRestApiConstructdeaapidatasync4FCE5BAC",
-        "DeaRestApiConstructdeaapidatasynctasksGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatasynctasks7DAEE58F",
         "DeaRestApiConstructdeaapidatasynctasksGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatasynctasks5C5D8675",
         "DeaRestApiConstructdeaapidatasynctasksGET01653B7E",
         "DeaRestApiConstructdeaapidatasynctasksOPTIONS004A9B9F",
         "DeaRestApiConstructdeaapidatasynctasksE10084C3",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails57B038EC",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails77C4C7BF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGET9FD745C9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsOPTIONSF037F791",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTdatavaultsdataVaultIddetails722FA32B",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTdatavaultsdataVaultIddetails8BA48A61",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUT925FD572",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsD8DDCCE8",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfoCE9AE0B7",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfo58AF901A",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGET02C2F5DE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoOPTIONS67146261",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoCCCD7E15",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileId50FC80BE",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfiles45890CB8",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesED962CD8",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGET66F9B69A",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesOPTIONS1C5DE8AD",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesAEC2B5D2",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesECDA3F90",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOST82D8A4DF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfiles3717C3AF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultId186748E9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksOPTIONS2672D6ED",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdtasksCA3DEDA7",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdtasksAF1402D9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOST9AED5530",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksD6F835AC",
-        "DeaRestApiConstructdeaapidatavaultsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaults277BBD53",
         "DeaRestApiConstructdeaapidatavaultsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsA8114A91",
         "DeaRestApiConstructdeaapidatavaultsGET2A09E206",
         "DeaRestApiConstructdeaapidatavaultsOPTIONS9D24957E",
-        "DeaRestApiConstructdeaapidatavaultsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaults4B299964",
         "DeaRestApiConstructdeaapidatavaultsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaults46A12C02",
         "DeaRestApiConstructdeaapidatavaultsPOST14ED7314",
         "DeaRestApiConstructdeaapidatavaultsA7E85AE5",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsOPTIONSD881F5FA",
-        "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultstaskstaskIdexecutions9062438B",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultstaskstaskIdexecutions39EC4955",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOST80A287BC",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutions6A12A620",
         "DeaRestApiConstructdeaapidatavaultstaskstaskId4E3CA7BB",
         "DeaRestApiConstructdeaapidatavaultstasksC9FCB3F4",
-        "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsv32688A4B",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsvFC587FF9",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETB3B09D3C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvOPTIONSBC6D4692",
         "DeaRestApiConstructdeaapisystemauditauditIdcsv3DF23375",
         "DeaRestApiConstructdeaapisystemauditauditIdB2530B9D",
         "DeaRestApiConstructdeaapisystemauditOPTIONS30FFCB3F",
-        "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemaudit92D5D91E",
         "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemauditCB076E78",
         "DeaRestApiConstructdeaapisystemauditPOSTA0F7E161",
         "DeaRestApiConstructdeaapisystemaudit2A5DAEF8",
         "DeaRestApiConstructdeaapisystemAD98847E",
-        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv84743A25",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv64381123",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGET612A031C",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvOPTIONSFD04EC81",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsv119B9333",
         "DeaRestApiConstructdeaapiusersuserIdauditauditId63841CC8",
         "DeaRestApiConstructdeaapiusersuserIdauditOPTIONSEE6E3674",
-        "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit6194CA37",
         "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit3F85C343",
         "DeaRestApiConstructdeaapiusersuserIdauditPOST04D75563",
         "DeaRestApiConstructdeaapiusersuserIdaudit60684DFA",
         "DeaRestApiConstructdeaapiusersuserIdB57BE8EB",
-        "DeaRestApiConstructdeaapiusersGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusers8EAF9CF0",
         "DeaRestApiConstructdeaapiusersGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusers52337E4B",
         "DeaRestApiConstructdeaapiusersGET45E97005",
         "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
@@ -9961,224 +9826,179 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiDEAUsagePlanBC29ADF7",
         "DeaRestApiConstructdeaapiauthauthCodeFF00F04A",
         "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
-        "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenA42BE3E6",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenE48A5552",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
         "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
-        "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl21F61114",
         "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF",
         "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D",
         "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0",
         "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrlF8A5551B",
         "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548",
         "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
         "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
         "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
         "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken099A885C",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
         "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D",
         "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
         "DeaRestApiConstructdeaapiauthE4846931",
         "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeToken13FAD07F",
         "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeTokenD51670A5",
         "DeaRestApiConstructdeaapiauthrevokeTokenPOSTD4C71CFF",
         "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
-        "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpointsBF1A4F6F",
         "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpoints4616DB7F",
         "DeaRestApiConstructdeaapiavailableEndpointsGET587EF9CF",
         "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289",
         "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
-        "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsE4633CE0",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsFAD4690C",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETDE6D1CEA",
         "DeaRestApiConstructdeaapicasescaseIdactionsOPTIONSE258076A",
         "DeaRestApiConstructdeaapicasescaseIdactions4A0D9ED8",
-        "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsv8740F849",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsvC4D46A81",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGET26466F30",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvOPTIONS428A5C73",
         "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvF0D4AAEB",
         "DeaRestApiConstructdeaapicasescaseIdauditauditId33263B8C",
         "DeaRestApiConstructdeaapicasescaseIdauditOPTIONSDEA3525B",
-        "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit10091757",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit5D5BA22A",
         "DeaRestApiConstructdeaapicasescaseIdauditPOSTE1FBCE9C",
         "DeaRestApiConstructdeaapicasescaseIdaudit16BF85CD",
-        "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails918BFC1A",
         "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails2FC44B5A",
         "DeaRestApiConstructdeaapicasescaseIddetailsDELETED0F47C2D",
-        "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails7EEFD469",
         "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails44CA90D4",
         "DeaRestApiConstructdeaapicasescaseIddetailsGET0AC0D58C",
         "DeaRestApiConstructdeaapicasescaseIddetailsOPTIONSA19CA131",
-        "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetailsD3729DE8",
         "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetails7B2B7A41",
         "DeaRestApiConstructdeaapicasescaseIddetailsPUT33A3214F",
         "DeaRestApiConstructdeaapicasescaseIddetailsBD77A885",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsv61B26B23",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsvA8F10AD2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGET502B4685",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvOPTIONS5D0C778E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsv94975A46",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdAF04FFD1",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdaudit5562DDDE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdauditF20DF571",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOST3CAF58FE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdaudit231DCFA8",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents8F8D422E",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents28CE2C11",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontents638F2797",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoBE59735B",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoCCF7F8BF",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETBCDCA5B2",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoOPTIONS11169FBA",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfo2981169F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileId71AE0C3F",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreOPTIONSE2C15A72",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore06D2657C",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTA4D1AB12",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestoreE48E6E5F",
-        "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesF013B694",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesA389BD7D",
         "DeaRestApiConstructdeaapicasescaseIdfilesGETB7EECD96",
         "DeaRestApiConstructdeaapicasescaseIdfilesOPTIONS18C09E02",
-        "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesC519AD34",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfiles39BF2383",
         "DeaRestApiConstructdeaapicasescaseIdfilesPOST6C02B6FD",
         "DeaRestApiConstructdeaapicasescaseIdfilesC98413A7",
         "DeaRestApiConstructdeaapicasescaseIdownerOPTIONSBD3E6D71",
-        "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdownerE92895A4",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdowner0B48A767",
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTFB8341CA",
         "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F",
         "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation5EA98B1E",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation45DD1C2C",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETB786FCDD",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD",
         "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
         "DeaRestApiConstructdeaapicasescaseIdstatusOPTIONS0760E14E",
-        "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus03BDFD4A",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus787AC3AD",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUT31B9CA11",
         "DeaRestApiConstructdeaapicasescaseIdstatus0AD7015F",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMembershipsBF5873AE",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMemberships87E19089",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMembershipsBD47C55D",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
         "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships7FD5F1FA",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships94BCD26D",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
-        "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships4134D8D9",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships748F3883",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmemberships2E2BE7E6",
         "DeaRestApiConstructdeaapicasescaseIdusersuserId4ECBA1E2",
         "DeaRestApiConstructdeaapicasescaseIdusers13CDB0B7",
-        "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases0A56C052",
         "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases8A384810",
         "DeaRestApiConstructdeaapicasesallcasesGET3D7FE7B4",
         "DeaRestApiConstructdeaapicasesallcasesOPTIONSA5C611C6",
         "DeaRestApiConstructdeaapicasesallcases5A486593",
-        "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesC2E61486",
         "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesEA5EFE48",
         "DeaRestApiConstructdeaapicasesmycasesGETC5597167",
         "DeaRestApiConstructdeaapicasesmycasesOPTIONSE1C2DE04",
         "DeaRestApiConstructdeaapicasesmycases5E6BEFAC",
         "DeaRestApiConstructdeaapicasesOPTIONS6C23822B",
-        "DeaRestApiConstructdeaapicasesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasesB76BA281",
         "DeaRestApiConstructdeaapicasesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcases9AE2A82E",
         "DeaRestApiConstructdeaapicasesPOST0A7C65AB",
         "DeaRestApiConstructdeaapicasesC2FD1C2B",
         "DeaRestApiConstructdeaapidatasync4FCE5BAC",
-        "DeaRestApiConstructdeaapidatasynctasksGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatasynctasks7DAEE58F",
         "DeaRestApiConstructdeaapidatasynctasksGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatasynctasks5C5D8675",
         "DeaRestApiConstructdeaapidatasynctasksGET01653B7E",
         "DeaRestApiConstructdeaapidatasynctasksOPTIONS004A9B9F",
         "DeaRestApiConstructdeaapidatasynctasksE10084C3",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails57B038EC",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails77C4C7BF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGET9FD745C9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsOPTIONSF037F791",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTdatavaultsdataVaultIddetails722FA32B",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTdatavaultsdataVaultIddetails8BA48A61",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUT925FD572",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsD8DDCCE8",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfoCE9AE0B7",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfo58AF901A",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGET02C2F5DE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoOPTIONS67146261",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoCCCD7E15",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileId50FC80BE",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfiles45890CB8",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesED962CD8",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGET66F9B69A",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesOPTIONS1C5DE8AD",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesAEC2B5D2",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesECDA3F90",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOST82D8A4DF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfiles3717C3AF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultId186748E9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksOPTIONS2672D6ED",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdtasksCA3DEDA7",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdtasksAF1402D9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOST9AED5530",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksD6F835AC",
-        "DeaRestApiConstructdeaapidatavaultsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaults277BBD53",
         "DeaRestApiConstructdeaapidatavaultsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsA8114A91",
         "DeaRestApiConstructdeaapidatavaultsGET2A09E206",
         "DeaRestApiConstructdeaapidatavaultsOPTIONS9D24957E",
-        "DeaRestApiConstructdeaapidatavaultsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaults4B299964",
         "DeaRestApiConstructdeaapidatavaultsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaults46A12C02",
         "DeaRestApiConstructdeaapidatavaultsPOST14ED7314",
         "DeaRestApiConstructdeaapidatavaultsA7E85AE5",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsOPTIONSD881F5FA",
-        "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultstaskstaskIdexecutions9062438B",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultstaskstaskIdexecutions39EC4955",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOST80A287BC",
         "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutions6A12A620",
         "DeaRestApiConstructdeaapidatavaultstaskstaskId4E3CA7BB",
         "DeaRestApiConstructdeaapidatavaultstasksC9FCB3F4",
-        "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsv32688A4B",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsvFC587FF9",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvGETB3B09D3C",
         "DeaRestApiConstructdeaapisystemauditauditIdcsvOPTIONSBC6D4692",
         "DeaRestApiConstructdeaapisystemauditauditIdcsv3DF23375",
         "DeaRestApiConstructdeaapisystemauditauditIdB2530B9D",
         "DeaRestApiConstructdeaapisystemauditOPTIONS30FFCB3F",
-        "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemaudit92D5D91E",
         "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemauditCB076E78",
         "DeaRestApiConstructdeaapisystemauditPOSTA0F7E161",
         "DeaRestApiConstructdeaapisystemaudit2A5DAEF8",
         "DeaRestApiConstructdeaapisystemAD98847E",
-        "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv84743A25",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv64381123",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGET612A031C",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvOPTIONSFD04EC81",
         "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsv119B9333",
         "DeaRestApiConstructdeaapiusersuserIdauditauditId63841CC8",
         "DeaRestApiConstructdeaapiusersuserIdauditOPTIONSEE6E3674",
-        "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit6194CA37",
         "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit3F85C343",
         "DeaRestApiConstructdeaapiusersuserIdauditPOST04D75563",
         "DeaRestApiConstructdeaapiusersuserIdaudit60684DFA",
         "DeaRestApiConstructdeaapiusersuserIdB57BE8EB",
-        "DeaRestApiConstructdeaapiusersGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusers8EAF9CF0",
         "DeaRestApiConstructdeaapiusersGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusers52337E4B",
         "DeaRestApiConstructdeaapiusersGET45E97005",
         "DeaRestApiConstructdeaapiusersOPTIONS8F715BE6",
@@ -10738,43 +10558,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenA42BE3E6": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTGetAuthenticationToken7831CF5E",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/auth/*/token",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenE48A5552": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -10867,43 +10650,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl21F61114": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetLoginUrlA95063AD",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/auth/loginUrl",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF": Object {
       "Properties": Object {
@@ -11001,43 +10747,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrlF8A5551B": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetLogoutUrl77EA9407",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/auth/logoutUrl",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548": Object {
       "Properties": Object {
@@ -11260,43 +10969,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken099A885C": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTRefreshIdToken16E1721D",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/auth/refreshToken",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -11393,43 +11065,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeToken13FAD07F": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTRevokeAuthToken4994A05B",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/auth/revokeToken",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeTokenD51670A5": Object {
       "Properties": Object {
@@ -11566,43 +11201,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpointsBF1A4F6F": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetAvailableEndpoints64673B60",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/availableEndpoints",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpoints4616DB7F": Object {
       "Properties": Object {
@@ -11788,43 +11386,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasesB76BA281": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTCreateCase203FC2B5",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/cases",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcases9AE2A82E": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -11925,43 +11486,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases0A56C052": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetAllCasesD64E9594",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/all-cases",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasesallcasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesallcases8A384810": Object {
       "Properties": Object {
@@ -12071,43 +11595,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsE4633CE0": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetCaseActions7D38DBB9",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/*/actions",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsFAD4690C": Object {
       "Properties": Object {
@@ -12290,43 +11777,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit10091757": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTRequestCaseAudit31F3AA5B",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/cases/*/audit",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdaudit5D5BA22A": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -12472,43 +11922,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsv8740F849": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetCaseAuditB3A2988F",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/*/audit/*/csv",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdauditauditIdcsvC4D46A81": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -12605,43 +12018,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails918BFC1A": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructDELETEDeleteCase9C8CBC88",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/DELETE/cases/*/details",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasescaseIddetailsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIddetails2FC44B5A": Object {
       "Properties": Object {
@@ -12763,43 +12139,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails7EEFD469": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetCaseDetails37F7FEA5",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/*/details",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasescaseIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIddetails44CA90D4": Object {
       "Properties": Object {
@@ -12926,43 +12265,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetailsD3729DE8": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPUTUpdateCaseDetailsCAA16781",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/PUT/cases/*/details",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIddetails7B2B7A41": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -13015,43 +12317,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesF013B694": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetCaseFilesB601FAF5",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/*/files",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesA389BD7D": Object {
       "Properties": Object {
@@ -13218,43 +12483,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesC519AD34": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTInitiateCaseFileUpload4072CE29",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/cases/*/files",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfiles39BF2383": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -13404,43 +12632,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdaudit5562DDDE": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTRequestCaseFileAuditB217F48B",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/cases/*/files/*/audit",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdauditF20DF571": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -13545,43 +12736,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsv61B26B23": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetCaseFileAuditEC14BB8D",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/*/files/*/audit/*/csv",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdauditauditIdcsvA8F10AD2": Object {
       "Properties": Object {
@@ -13720,43 +12874,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents8F8D422E": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETDownloadCaseFile04DF0D0C",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/*/files/*/contents",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents28CE2C11": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -13841,43 +12958,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontents638F2797": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPUTCompleteCaseFileUpload51639C21",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/PUT/cases/*/files/*/contents",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949": Object {
       "Properties": Object {
@@ -13971,43 +13051,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoBE59735B": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetCaseFileDetailAC2C6003",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/*/files/*/info",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdinfoCCF7F8BF": Object {
       "Properties": Object {
@@ -14230,43 +13273,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore95D02FC5": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPUTRestoreCaseFile94160087",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/PUT/cases/*/files/*/restore",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdrestorePUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdrestore06D2657C": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -14364,43 +13370,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdownerE92895A4": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTCreateCaseOwner07019161",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/cases/*/owner",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIdownerPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdowner0B48A767": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -14493,43 +13462,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation5EA98B1E": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetScopedCaseInformationC679F03C",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/*/scopedInformation",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation45DD1C2C": Object {
       "Properties": Object {
@@ -14752,43 +13684,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus03BDFD4A": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPUTUpdateCaseStatusBE885A0D",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/PUT/cases/*/status",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus787AC3AD": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -14841,43 +13736,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMembershipsBF5873AE": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetUsersFromCase05D0A5BE",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/*/userMemberships",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMemberships87E19089": Object {
       "Properties": Object {
@@ -15044,43 +13902,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMembershipsBD47C55D": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTInviteUserToCaseE52152F4",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/cases/*/userMemberships",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -15197,43 +14018,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships7FD5F1FA": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructDELETERemoveUserFromCase315FE1CE",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/DELETE/cases/*/users/*/memberships",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships94BCD26D": Object {
       "Properties": Object {
@@ -15360,43 +14144,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships4134D8D9": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPUTModifyUserCasePermissions3887B3D5",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/PUT/cases/*/users/*/memberships",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdusersuserIdmemberships748F3883": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -15449,43 +14196,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesC2E61486": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetMyCasesBB9194E7",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/cases/my-cases",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasesmycasesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasesmycasesEA5EFE48": Object {
       "Properties": Object {
@@ -15687,43 +14397,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapidatasynctasksGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatasynctasks7DAEE58F": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetDataSyncTaskEFFCB1CF",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/datasync/tasks",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapidatasynctasksGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatasynctasks5C5D8675": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -15872,43 +14545,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapidatavaultsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaults277BBD53": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetDataVaults7A4CE784",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/datavaults",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapidatavaultsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsA8114A91": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -16034,43 +14670,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapidatavaultsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaults4B299964": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTCreateDataVaultEB3D6439",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/datavaults",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapidatavaultsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaults46A12C02": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -16183,43 +14782,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails57B038EC": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetDataVaultDetails09477D7C",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/datavaults/*/details",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails77C4C7BF": Object {
       "Properties": Object {
@@ -16354,43 +14916,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4PUTdatavaultsdataVaultIddetails722FA32B": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPUTUpdateDataVaultDetailsCA83FEC4",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/PUT/datavaults/*/details",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTdatavaultsdataVaultIddetails8BA48A61": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -16483,43 +15008,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfiles45890CB8": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetDataVaultFilesAB9A1958",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/datavaults/*/files",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesED962CD8": Object {
       "Properties": Object {
@@ -16646,43 +15134,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesAEC2B5D2": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTCreateCaseAssociation9A9F0D84",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/datavaults/*/files",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesECDA3F90": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -16787,43 +15238,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfoCE9AE0B7": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetDataVaultFileDetailE9A27C10",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/datavaults/*/files/*/info",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfo58AF901A": Object {
       "Properties": Object {
@@ -17006,43 +15420,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdtasksCA3DEDA7": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTCreateDataVaultTask04BD9449",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/datavaults/*/tasks",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapidatavaultsdataVaultIdtasksPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdtasksAF1402D9": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -17204,43 +15581,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultstaskstaskIdexecutions9062438B": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTCreateDataVaultExecution645B3913",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/datavaults/tasks/*/executions",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapidatavaultstaskstaskIdexecutionsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultstaskstaskIdexecutions39EC4955": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -17281,6 +15621,33 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapistackNestedStackdeaapistackNestedStackResourceFD7F40E5": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "TemplateURL": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "https://s3.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".",
+              Object {
+                "Ref": "AWS::URLSuffix",
+              },
+              "/",
+              Object {
+                "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+              },
+              "/[HASH REMOVED].json",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::CloudFormation::Stack",
+      "UpdateReplacePolicy": "Delete",
     },
     "DeaRestApiConstructdeaapisystemAD98847E": Object {
       "Properties": Object {
@@ -17393,43 +15760,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemaudit92D5D91E": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTRequestSystemAuditF9687588",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/system/audit",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapisystemauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTsystemauditCB076E78": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -17494,43 +15824,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Resource",
-    },
-    "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsv32688A4B": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetSystemAuditE4C86CC7",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/system/audit/*/csv",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapisystemauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETsystemauditauditIdcsvFC587FF9": Object {
       "Properties": Object {
@@ -17717,43 +16010,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiusersGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusers8EAF9CF0": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetAllUsers77F79D7D",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/users",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapiusersGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusers52337E4B": Object {
       "Properties": Object {
@@ -17948,43 +16204,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit6194CA37": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructPOSTRequestUserAudit18A97521",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/POST/users/*/audit",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapiusersuserIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTusersuserIdaudit3F85C343": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -18089,43 +16308,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionTestteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv84743A25": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETGetUserAudit8C04FC39",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/test-invoke-stage/GET/users/*/audit/*/csv",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapiusersuserIdauditauditIdcsvGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETusersuserIdauditauditIdcsv64381123": Object {
       "Properties": Object {

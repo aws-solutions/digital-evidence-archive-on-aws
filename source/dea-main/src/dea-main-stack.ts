@@ -441,6 +441,7 @@ export class DeaMainStack extends cdk.Stack {
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
+        .node.findChild('dea-api-stack')
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('ui')
@@ -452,6 +453,7 @@ export class DeaMainStack extends cdk.Stack {
       apiGwMethodArray.push(
         this.node
           .findChild('DeaApiGateway')
+          .node.findChild('dea-api-stack')
           .node.findChild('dea-api')
           .node.findChild('Default')
           .node.findChild('ui')
@@ -463,6 +465,7 @@ export class DeaMainStack extends cdk.Stack {
       apiGwMethodArray.push(
         this.node
           .findChild('DeaApiGateway')
+          .node.findChild('dea-api-stack')
           .node.findChild('dea-api')
           .node.findChild('Default')
           .node.findChild('ui')
@@ -475,6 +478,7 @@ export class DeaMainStack extends cdk.Stack {
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
+        .node.findChild('dea-api-stack')
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
@@ -486,6 +490,7 @@ export class DeaMainStack extends cdk.Stack {
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
+        .node.findChild('dea-api-stack')
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
@@ -496,6 +501,7 @@ export class DeaMainStack extends cdk.Stack {
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
+        .node.findChild('dea-api-stack')
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
@@ -506,6 +512,7 @@ export class DeaMainStack extends cdk.Stack {
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
+        .node.findChild('dea-api-stack')
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
@@ -516,6 +523,7 @@ export class DeaMainStack extends cdk.Stack {
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
+        .node.findChild('dea-api-stack')
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')

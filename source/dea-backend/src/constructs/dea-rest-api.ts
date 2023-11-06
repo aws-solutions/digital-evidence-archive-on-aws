@@ -6,7 +6,7 @@
 import path from 'path';
 import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
 import * as ServiceConstants from '@aws/dea-app/lib/app/services/service-constants';
-import { Aws, Duration, Fn } from 'aws-cdk-lib';
+import { Aws, Duration, Fn, NestedStack } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   AuthorizationType,
@@ -75,6 +75,8 @@ interface DeaRestApiProps {
   lambdaEnv: LambdaEnvironment;
   opsDashboard?: DeaOperationalDashboard;
   athenaConfig: AthenaConfig;
+  // this is exclusively for our snapshot/cdk testing as they currently don't support rendering nested stacks
+  flattenRestApi?: boolean;
 }
 
 export class DeaRestApiConstruct extends Construct {
@@ -182,7 +184,9 @@ export class DeaRestApiConstruct extends Construct {
     const policy = this.getApiGatewayPolicy();
     const vpcEndpoints = this.getVpcEndPointObject();
 
-    this.deaRestApi = new RestApi(this, `dea-api`, {
+    const deaApiNestedStack = new NestedStack(this, 'dea-api-stack');
+
+    this.deaRestApi = new RestApi(props.flattenRestApi ? this : deaApiNestedStack, `dea-api`, {
       description: 'Backend API',
       endpointConfiguration: {
         types: [endpoint],
@@ -426,6 +430,8 @@ export class DeaRestApiConstruct extends Construct {
         const methodIntegration = new LambdaIntegration(lambda, {
           proxy: true,
           requestParameters: queryParams,
+          // allowTestInvoke allows method invocation from the console, and also costs us a resource per method
+          allowTestInvoke: false,
         });
         const method = resource.addMethod(route.httpMethod, methodIntegration, {
           requestParameters: methodQueryParams,

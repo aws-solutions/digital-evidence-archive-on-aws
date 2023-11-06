@@ -97,6 +97,7 @@ describe('DeaBackend constructs', () => {
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
       },
       opsDashboard: dashboard,
+      flattenRestApi: true,
     });
 
     // Prepare the stack for assertions.
@@ -287,6 +288,7 @@ describe('DeaBackend constructs', () => {
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
       },
       opsDashboard: dashboard,
+      flattenRestApi: true,
     });
 
     //Auth construct
@@ -399,6 +401,7 @@ describe('DeaBackend constructs', () => {
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
       },
       opsDashboard: dashboard,
+      flattenRestApi: true,
     });
 
     //Auth construct

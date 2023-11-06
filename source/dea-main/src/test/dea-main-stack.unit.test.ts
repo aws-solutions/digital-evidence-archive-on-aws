@@ -7,10 +7,8 @@ import {
   addSnapshotSerializers,
   validateAppRegistryConstruct,
   validateAuthConstruct,
-  validateBackendConstruct,
 } from '@aws/dea-backend';
 import { convictConfig } from '@aws/dea-backend/lib/config';
-import { validateDeaUiConstruct } from '@aws/dea-ui-infrastructure';
 import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import 'source-map-support/register';
@@ -37,12 +35,7 @@ describe('DeaMainStack', () => {
 
     validateAppRegistryConstruct(template, SOLUTION_VERSION);
 
-    validateBackendConstruct(template);
-
     validateAuthConstruct(template);
-
-    // Assert it creates the api with the correct properties...
-    validateDeaUiConstruct(template);
 
     addSnapshotSerializers();
 
