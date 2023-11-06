@@ -1,0 +1,75 @@
+name: Digital Evidence Archive - release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+jobs:
+  deploy_to_test:
+    env:
+      CONFIGNAME: 'test'
+      STAGE: 'cfitest'
+      DOMAIN_PREFIX: 'deatest'
+    environment: dea-test
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./source
+    name: Deploy DEA to CFI-Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/baseAction
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_TEST }}
+          role-session-name: GITHUBACTIONSESSION
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: cdk deploy
+        run: |
+          cd dea-main
+          npm run cdk bootstrap aws://${{secrets.AWS_ACCT_NUMBER_TEST}}/${{secrets.AWS_REGION}}
+          npm run cdk deploy
+
+  deploy_to_prod:
+    needs:
+      - deploy_to_test
+    env:
+      CONFIGNAME: 'prod'
+      STAGE: 'cfiprod'
+      DOMAIN_PREFIX: 'deaprod'
+    environment: dea-prod
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./source
+    name: Deploy DEA to CFI-Prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/baseAction
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_PROD }}
+          role-session-name: GITHUBACTIONSESSION
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: cdk deploy
+        run: |
+          cd dea-main
+          npm run cdk bootstrap aws://${{secrets.AWS_ACCT_NUMBER_PROD}}/${{secrets.AWS_REGION}}
+          npm run cdk deploy
