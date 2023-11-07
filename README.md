@@ -238,17 +238,27 @@ After the command is done, copy the list of outputs somewhere safe, You will nee
 ### Step 4: Integrate your CJIS Compliant Identity Provider
 Cognito is not CJIS compliant, therefore you need to use your CJIS Compliant IdP to federate with Cognito for use in DEA. This will require you to create an App Integration in your IdP, relaunch the stack, create a custom attribute for users called DEARole, and assign users to DEA via the App Integration.
 
-1) First in your IdP, create a new custom attribute for users called DEARole, limit the possible values to only the Roles you configured in step 3.
+1) First in your IdP, create a new custom attribute for users called DEARole, limit the possible values to only the Roles you configured in step 3. (For example: for the prodexample.json, the only possible attribute values would be CaseWorker, EvidenceManager, and WorkingManager)
 * Okta: https://help.okta.com/en-us/Content/Topics/users-groups-profiles/usgp-add-custom-user-attributes.htm
 * Active Directory: https://windowstechno.com/how-to-create-custom-attributes-in-active-directory/
 
 2) Add the new user pool as a SAML 2.0 enterprise application in your IdP. For this you will need your cognito domain prefix (as you stated in your configuration file) and your user pool Id (listed in the named CDK outputs as DeaAuthConstructuserPoolId).
 AWS has articles on how to integrate Okta and Active Directory with Cognito for Federation. See below for links. NOTE: DEA has already created the User Pool and App Client for you skip those steps. 
 
-* For Okta: Complete ONLY the steps "Create a SAML app in Okta" and "Configure SAML integration for your Okta App" in https://repost.aws/knowledge-center/cognito-okta-saml-identity-provider.
-** For Attribute Statements, ensure you have the following fields: first name, last name, email, username, DEARole (the custom attribute you created in step 1)
+Below are the links to articles on how to connect your IdP to the Cognito User Pool. You will need the following two values for the SAML Application you will create in your IdP:
+* Single sign on URL: replace DOMAIN_PREFIX with the cognito domain you defined in your configuration file, and REGION with the region you are deploying in (e.g. us-east-1)
+  - For non-Gov Cloud regions: 
+   https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse
+  - For Gov Cloud regions: 
+  https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse
+* Audience URL: urn:amazon:cognito:sp:USER_POOL_ID (replace USER_POOL_ID with the id listed in the named CDK outputs called DeaAuthConstructuserPoolId)
+
+* For Okta: 
+Complete ONLY the steps "Create a SAML app in Okta" and "Configure SAML integration for your Okta App" in https://repost.aws/knowledge-center/cognito-okta-saml-identity-provider.
+- For Attribute Statements, ensure you have the following fields: first name, last name, email, username, DEARole (the custom attribute you created in step 1)
+
 * For Active Directory: Complete ONLY Step 2: Add Amazon Cognito as an entrpise application in Azure AD in the following article https://aws.amazon.com/blogs/security/how-to-set-up-amazon-cognito-for-federated-authentication-using-azure-ad/.
-** For User Attributes and Claims,, ensure you have the following fields: first name, last name, email, username, DEARole (the custom attribute you created in step 1)
+- For User Attributes and Claims, ensure you have the following fields: first name, last name, email, username, DEARole (the custom attribute you created in step 1)
 
 One you have created the SAML 2.0 integration in your IdP, with the appropriate User Attribute Mapping, you can now start the integration process with DEA.
 
@@ -260,8 +270,8 @@ One you have created the SAML 2.0 integration in your IdP, with the appropriate 
 E.g.
 ```
 "idpInfo": {
-  "metadataPath": <URL link to IdP metatdata, or path to the file locally>
-  "metadataPathType": "URL", // or “FILE” if you used the path to the metadata file locally
+  "metadataPath": "<URL link to IdP metatdata>",
+  "metadataPathType": "URL",
   "attributeMap": {
     "username": "username",
     "email": "email",
@@ -274,17 +284,8 @@ E.g.
 
 4) Update the stack to use the information you provided in the configuration file to integrate your IdP with the DEA stack. Run the following commands:
 
-**Windows**
 ```sh
 rush rebuild
-rushx cdk bootstrap aws://%AWS_ACCT_NUMBER%/%AWS_REGION%
-rushx cdk deploy
-```
-
-**Linux**
-```sh
-rush rebuild
-rushx cdk bootstrap aws://${AWS_ACCT_NUMBER}/${AWS_REGION}
 rushx cdk deploy
 ```
 

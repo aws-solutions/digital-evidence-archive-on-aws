@@ -26,6 +26,7 @@ import {
   StringAttribute,
   UserPool,
   UserPoolClient,
+  UserPoolClientIdentityProvider,
   UserPoolDomain,
   UserPoolIdentityProviderSaml,
   UserPoolIdentityProviderSamlMetadata,
@@ -458,6 +459,7 @@ export class DeaAuth extends Construct {
     // integrate it into the user pool here
     const idpInfo = deaConfig.idpMetadata();
     let agencyIdpName: string | undefined;
+    let supportedIdentityProviders: UserPoolClientIdentityProvider[] | undefined;
     if (idpInfo && idpInfo.metadataPath) {
       const idpSamlMetadata = this.createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
       const idp = new UserPoolIdentityProviderSaml(this, 'AgencyIdP', {
@@ -476,6 +478,7 @@ export class DeaAuth extends Construct {
 
       // Will be placed in SSM so the hosted UI can automaticaly redirect to the IdP Signin page
       agencyIdpName = idp.providerName;
+      supportedIdentityProviders = [UserPoolClientIdentityProvider.custom(agencyIdpName)];
     }
 
     const poolClient = userPool.addClient('dea-app-client', {
@@ -499,6 +502,7 @@ export class DeaAuth extends Construct {
       preventUserExistenceErrors: true,
       refreshTokenValidity: refreshTokenValidity,
       userPoolClientName: 'dea-app-client',
+      supportedIdentityProviders,
     });
 
     const cognitoDomain =
