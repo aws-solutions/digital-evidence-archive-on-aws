@@ -1027,6 +1027,158 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::Lambda::Function",
     },
+    "DeaApiGatewayDELETEDeleteCaseAssociationBB78DD60": Object {
+      "DependsOn": Array [
+        "DeaApiGatewaydeabaselambdaroleDefaultPolicy124421D1",
+        "DeaApiGatewaydeabaselambdarole91512884",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "ALLOWED_ORIGINS": "https://localhost:3001",
+            "ATHENA_WORKGROUP": Object {
+              "Fn::Join": Array [
+                "",
+                Array [
+                  Object {
+                    "Ref": "AWS::StackName",
+                  },
+                  "-dea-athena-workgroup",
+                ],
+              ],
+            },
+            "AUDIT_DOWNLOAD_FILES_TIMEOUT_MINUTES": "60",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeaauditdownloadroleAAE4B7E5",
+                "Arn",
+              ],
+            },
+            "AUDIT_GLUE_DATABASE": Object {
+              "Ref": "DeaAuditauditDB8F465ECE",
+            },
+            "AUDIT_GLUE_TABLE": Object {
+              "Ref": "DeaAuditauditTableF413E0BA",
+            },
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
+            "AWS_USE_FIPS_ENDPOINT": "true",
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
+            },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaApiGatewaydeadatasetsrole96DE0218",
+                "Arn",
+              ],
+            },
+            "DATASYNC_REPORTS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendStackdeaDataSyncReportsBucketC2315882",
+            },
+            "DATASYNC_REPORTS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaBackendStackdeaDataSyncLogsBucketRoleE676ADD1",
+                "Arn",
+              ],
+            },
+            "DATASYNC_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaBackendStackDataSyncPermissionsRoleB66D0DF8",
+                "Arn",
+              ],
+            },
+            "DELETE_CASE_FILE_LAMBDA_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
+                "Arn",
+              ],
+            },
+            "DELETE_CASE_FILE_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaEventHandlerss3batchdeletecasefileroleBAD7A58C",
+                "Arn",
+              ],
+            },
+            "DELETION_ALLOWED": "true",
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "primaryCustomerKey87EC2263",
+                "Arn",
+              ],
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
+            "SOLUTION_ID": "SO0224",
+            "SOLUTION_VERSION": "1.0.6",
+            "SOURCE_IP_VALIDATION_ENABLED": "false",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendStackDeaTableE9FE4A05",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_FILES_TIMEOUT_MINUTES": "60",
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 2048,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewaydeabaselambdarole91512884",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 20,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaApiGatewayDELETEDeleteCaseAssociationInvokeLambdaPermissionB3C72EC7": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaApiGatewayDELETEDeleteCaseAssociationBB78DD60",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaApiGatewayDELETEDeleteCaseInvokeLambdaPermission640A6577": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -8140,6 +8292,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Arn",
             ],
           },
+          "referencetoDeaMainStackDeaApiGatewayDELETEDeleteCaseAssociationF7BB3D91Arn": Object {
+            "Fn::GetAtt": Array [
+              "DeaApiGatewayDELETEDeleteCaseAssociationBB78DD60",
+              "Arn",
+            ],
+          },
           "referencetoDeaMainStackDeaApiGatewayDELETERemoveUserFromCase13BCAAB8Arn": Object {
             "Fn::GetAtt": Array [
               "DeaApiGatewayDELETERemoveUserFromCaseD22CC76C",
@@ -9166,6 +9324,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "Parameters": Object {
           "referencetoDeaMainStackDeaApiGatewayDELETEDeleteCase73F7F3AERef": Object {
             "Ref": "DeaApiGatewayDELETEDeleteCase91CB5F89",
+          },
+          "referencetoDeaMainStackDeaApiGatewayDELETEDeleteCaseAssociationF7BB3D91Ref": Object {
+            "Ref": "DeaApiGatewayDELETEDeleteCaseAssociationBB78DD60",
           },
           "referencetoDeaMainStackDeaApiGatewayDELETERemoveUserFromCase13BCAAB8Ref": Object {
             "Ref": "DeaApiGatewayDELETERemoveUserFromCaseD22CC76C",
@@ -13715,7 +13876,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                           "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
                         ],
                       },
-                      "/POST/datavaults/*/files",
+                      "/POST/datavaults/*/caseAssociations",
                     ],
                   ],
                 },
@@ -13776,6 +13937,36 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                         ],
                       },
                       "/GET/datavaults/*/files/*/info",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/DELETE/datavaults/*/files/*/caseAssociations",
                     ],
                   ],
                 },
@@ -15814,7 +16005,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                           "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
                         ],
                       },
-                      "/POST/datavaults/*/files",
+                      "/POST/datavaults/*/caseAssociations",
                     ],
                   ],
                 },
@@ -15875,6 +16066,36 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                         ],
                       },
                       "/GET/datavaults/*/files/*/info",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/DELETE/datavaults/*/files/*/caseAssociations",
                     ],
                   ],
                 },
@@ -16918,7 +17139,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                           "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
                         ],
                       },
-                      "/POST/datavaults/*/files",
+                      "/POST/datavaults/*/caseAssociations",
                     ],
                   ],
                 },
@@ -16949,6 +17170,36 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                         ],
                       },
                       "/GET/datavaults/*/files/*/info",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
+                      "/DELETE/datavaults/*/files/*/caseAssociations",
                     ],
                   ],
                 },

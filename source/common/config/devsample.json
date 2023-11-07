@@ -316,7 +316,7 @@
           "method": "GET"
         },
         {
-          "path": "/datavaults/{dataVaultId}/files",
+          "path": "/datavaults/{dataVaultId}/caseAssociations",
           "method": "POST"
         },
         {
@@ -326,6 +326,10 @@
         {
           "path": "/datavaults/{dataVaultId}/files/{fileId}/info",
           "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/caseAssociations",
+          "method": "DELETE"
         },
         {
           "path": "/datavaults/tasks/{taskId}/executions",
@@ -430,7 +434,7 @@
           "method": "GET"
         },
         {
-          "path": "/datavaults/{dataVaultId}/files",
+          "path": "/datavaults/{dataVaultId}/caseAssociations",
           "method": "POST"
         },
         {
@@ -440,6 +444,10 @@
         {
           "path": "/datavaults/{dataVaultId}/files/{fileId}/info",
           "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/caseAssociations",
+          "method": "DELETE"
         },
         {
           "path": "/datavaults/tasks/{taskId}/executions",

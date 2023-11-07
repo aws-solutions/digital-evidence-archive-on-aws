@@ -52,6 +52,9 @@ export interface DeaCaseFileResult {
   reason?: string;
   details?: string;
   fileS3Key: string;
+  dataVaultUlid?: string;
+  executionId?: string;
+  associationCreatedBy?: string;
 }
 
 export interface DownloadCaseFileResult {
@@ -99,6 +102,10 @@ export interface InitiateCaseFileUploadDTO {
 export interface CaseAssociationDTO {
   readonly caseUlids: string[];
   readonly fileUlids: string[];
+}
+
+export interface RemoveCaseAssociationDTO {
+  readonly caseUlids: string[];
 }
 
 export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;

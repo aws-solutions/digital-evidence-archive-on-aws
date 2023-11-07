@@ -17,7 +17,7 @@ import {
   TextContent,
 } from '@cloudscape-design/components';
 import { useState } from 'react';
-import { useGetDataVaultFileDetailsById } from '../../api/data-vaults';
+import { removeDataVaultFileCaseAssociation, useGetDataVaultFileDetailsById } from '../../api/data-vaults';
 import {
   auditLogLabels,
   breadcrumbLabels,
@@ -36,7 +36,7 @@ export interface DataVaultFileDetailsBodyProps {
 }
 
 function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Element {
-  const { data, isLoading } = useGetDataVaultFileDetailsById(props.dataVaultId, props.fileId);
+  const { data, isLoading, mutate } = useGetDataVaultFileDetailsById(props.dataVaultId, props.fileId);
   const [showDisassociateToCaseModal, setShowDisassociateToCaseModal] = useState(false);
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const { pushNotification } = useNotifications();
@@ -53,9 +53,13 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
   async function disassociateToCaseHandler() {
     setIsSubmitLoading(true);
     try {
-      // TODO: endpoint call.
-      await Promise.resolve();
+      const caseUlids =
+        data?.cases?.filter((_item, index) => checkedState[index]).map((item) => item.ulid) ?? [];
+      await removeDataVaultFileCaseAssociation(props.dataVaultId, props.fileId, {
+        caseUlids,
+      });
       pushNotification('success', dataVaultDetailLabels.disassociateFromCaseSuccessNotificationMessage);
+      mutate();
     } catch (e) {
       if (e instanceof Error) {
         pushNotification('error', e.message);

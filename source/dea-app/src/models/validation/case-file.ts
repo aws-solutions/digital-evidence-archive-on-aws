@@ -63,3 +63,7 @@ export const caseAssociationRequestSchema = Joi.object({
   caseUlids: Joi.array().items(joiUlid).required(),
   fileUlids: Joi.array().items(joiUlid).required(),
 });
+
+export const removeCaseAssociationRequestSchema = Joi.object({
+  caseUlids: Joi.array().items(joiUlid).required(),
+});

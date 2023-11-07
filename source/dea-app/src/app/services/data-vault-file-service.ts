@@ -14,6 +14,7 @@ import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getUsers } from '../../persistence/user';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import * as CaseFileService from '../services/case-file-service';
+import * as DataVaultService from '../services/data-vault-service';
 
 export const listDataVaultFilesByFilePath = async (
   dataVaultId: string,
@@ -197,4 +198,28 @@ export const hydrateDataVaultFile = async (
   });
 
   return { ...hydratedFiles[0], cases };
+};
+
+export const disassociateFileFromCases = async (
+  dataVaultId: string,
+  fileUlid: string,
+  caseUlids: string[],
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  const deaDataVault = await DataVaultService.getDataVault(dataVaultId, repositoryProvider);
+  if (!deaDataVault) {
+    throw new NotFoundError(`Could not find DataVault: ${dataVaultId} in the DB`);
+  }
+
+  const retrievedDataVaultFile = await getDataVaultFile(dataVaultId, fileUlid, repositoryProvider);
+  if (!retrievedDataVaultFile) {
+    throw new NotFoundError(`Could not find file: ${fileUlid} in DataVault: ${dataVaultId} in the DB`);
+  }
+  for (const caseUlid of caseUlids) {
+    const caseFileEntry = await CaseFileService.getCaseFile(caseUlid, fileUlid, repositoryProvider);
+    if (!caseFileEntry) {
+      throw new NotFoundError(`Could not find file: ${fileUlid} in Case: ${caseUlid} in the DB`);
+    }
+    await CaseFileService.deleteCaseAssociation(caseFileEntry, repositoryProvider);
+  }
 };

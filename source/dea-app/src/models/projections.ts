@@ -183,6 +183,9 @@ export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFileRes
     details: caseFileEntity.details,
     // if fileS3Key is set returns their value. Otherwise, fileS3Key value comes from the <caseUlid,ulid> tupple.
     fileS3Key: caseFileEntity.fileS3Key ?? `${caseFileEntity.caseUlid}/${caseFileEntity.ulid}`,
+    dataVaultUlid: caseFileEntity.dataVaultUlid,
+    executionId: caseFileEntity.executionId,
+    associationCreatedBy: caseFileEntity.associationCreatedBy,
   };
 };
 

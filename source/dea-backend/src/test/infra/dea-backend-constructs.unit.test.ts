@@ -23,8 +23,8 @@ import { validateBackendConstruct } from './validate-backend-construct';
 const PROTECTED_DEA_RESOURCES: string[] = [];
 
 describe('DeaBackend constructs', () => {
-  const expectedLambdaCount = 54;
-  const expectedMethodCount = 81;
+  const expectedLambdaCount = 55;
+  const expectedMethodCount = 84;
 
   beforeAll(() => {
     process.env.STAGE = 'RUN1';

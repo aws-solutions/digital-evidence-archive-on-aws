@@ -297,3 +297,80 @@ export const listCasesByFile = async (
 
   return caseFiles;
 };
+
+export const deleteCaseFileAssociation = async (
+  deaCaseFile: DeaCaseFileResult,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<void> => {
+  const transaction = {};
+  await repositoryProvider.CaseFileModel.remove(
+    {
+      PK: `CASE#${deaCaseFile.caseUlid}#`,
+      SK: `FILE#${deaCaseFile.ulid}#`,
+    },
+    { transaction }
+  );
+  if (deaCaseFile.isFile) {
+    await repositoryProvider.CaseModel.update(
+      {
+        PK: `CASE#${deaCaseFile.caseUlid}#`,
+        SK: 'CASE#',
+      },
+      {
+        add: { objectCount: -1, totalSizeBytes: -deaCaseFile.fileSizeBytes },
+        transaction,
+      }
+    );
+    await repositoryProvider.DataVaultFileModel.update(
+      {
+        PK: `DATAVAULT#${deaCaseFile.dataVaultUlid}#`,
+        SK: `FILE#${deaCaseFile.ulid}#`,
+      },
+      {
+        add: { caseCount: -1 },
+        transaction,
+      }
+    );
+  }
+
+  await repositoryProvider.table.transact('write', transaction);
+  // Remove case file paths if empty.
+  await removeCaseFilePaths(deaCaseFile.caseUlid, deaCaseFile.filePath, repositoryProvider);
+};
+
+const removeCaseFilePaths = async (
+  caseUlid: string,
+  filePath: string,
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  const noTrailingSlashPath = filePath.substring(0, filePath.length - 1);
+  if (noTrailingSlashPath.length > 0) {
+    const caseFiles = await listCaseFilesByFilePath(caseUlid, filePath, 1, repositoryProvider);
+    if (caseFiles.length > 0) {
+      // file path non empty.
+      logger.info('file path non empty', { caseUlid, filePath, count: caseFiles.length });
+      return;
+    }
+
+    // Get's the case file entry by location.
+    const caseFileEntity = await repositoryProvider.CaseFileModel.get(
+      {
+        GSI2PK: `CASE#${caseUlid}#${noTrailingSlashPath}#`,
+      },
+      {
+        index: 'GSI2',
+      }
+    );
+
+    if (!caseFileEntity) {
+      // file path has been deleted.
+      logger.info('file path has been deleted', { caseUlid, noTrailingSlashPath });
+      return;
+    }
+    await repositoryProvider.CaseFileModel.remove({
+      PK: `CASE#${caseFileEntity.caseUlid}#`,
+      SK: `FILE#${caseFileEntity.ulid}#`,
+    });
+    await removeCaseFilePaths(caseUlid, caseFileEntity.filePath, repositoryProvider);
+  }
+};

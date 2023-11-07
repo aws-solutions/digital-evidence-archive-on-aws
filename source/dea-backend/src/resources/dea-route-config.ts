@@ -220,7 +220,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.CREATE_CASE_ASSOCIATION,
-      path: '/datavaults/{dataVaultId}/files',
+      path: '/datavaults/{dataVaultId}/caseAssociations',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/create-case-association-handler.ts',
     },
@@ -229,6 +229,12 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/datavaults/{dataVaultId}/files/{fileId}/info',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-data-vault-file-detail-handler.ts',
+    },
+    {
+      eventName: AuditEventType.DELETE_CASE_ASSOCIATION,
+      path: '/datavaults/{dataVaultId}/files/{fileId}/caseAssociations',
+      httpMethod: ApiGatewayMethod.DELETE,
+      pathToSource: '../../src/handlers/delete-case-association-handler.ts',
     },
     {
       eventName: AuditEventType.CREATE_DATA_VAULT_TASK,
