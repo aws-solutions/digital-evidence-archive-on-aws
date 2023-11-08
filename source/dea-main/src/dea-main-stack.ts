@@ -153,8 +153,8 @@ export class DeaMainStack extends cdk.Stack {
         SOLUTION_VERSION,
       },
       opsDashboard: dashboard,
+      nestedConstructs,
     });
-
     // For OneClick we need to have one Cfn template, so we will
     // deploy DeaAuth and DeaParameters as constructs
     // However for us-gov-east-1, we need to deploy DeaAuth in

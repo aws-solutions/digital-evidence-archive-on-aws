@@ -77,6 +77,7 @@ interface DeaRestApiProps {
   athenaConfig: AthenaConfig;
   // this is exclusively for our snapshot/cdk testing as they currently don't support rendering nested stacks
   flattenRestApi?: boolean;
+  nestedConstructs?: NestedStack[];
 }
 
 export class DeaRestApiConstruct extends Construct {
@@ -185,6 +186,9 @@ export class DeaRestApiConstruct extends Construct {
     const vpcEndpoints = this.getVpcEndPointObject();
 
     const deaApiNestedStack = new NestedStack(this, 'dea-api-stack');
+    if (!props.flattenRestApi) {
+      props.nestedConstructs?.push(deaApiNestedStack);
+    }
 
     this.deaRestApi = new RestApi(props.flattenRestApi ? this : deaApiNestedStack, `dea-api`, {
       description: 'Backend API',
