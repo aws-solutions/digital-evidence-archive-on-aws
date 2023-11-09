@@ -16,3 +16,8 @@ export interface DeaSingleResult<T> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mutate?: any;
 }
+
+export interface DeaFilesResponse<T> {
+  files: T[];
+  next: string;
+}

@@ -6,11 +6,12 @@
 import { CaseAssociationDTO, DeaCaseFile, RemoveCaseAssociationDTO } from '@aws/dea-app/lib/models/case-file';
 import { DeaDataSyncTask } from '@aws/dea-app/lib/models/data-sync-task';
 import { DeaDataVault, DeaDataVaultInput } from '@aws/dea-app/lib/models/data-vault';
-import { DeaDataVaultExecution, DataVaultExecutionDTO } from '@aws/dea-app/lib/models/data-vault-execution';
+import { DataVaultExecutionDTO, DeaDataVaultExecution } from '@aws/dea-app/lib/models/data-vault-execution';
 import { DeaDataVaultFile } from '@aws/dea-app/lib/models/data-vault-file';
-import { DeaDataVaultTask, DataVaultTaskDTO } from '@aws/dea-app/lib/models/data-vault-task';
+import { DataVaultTaskDTO, DeaDataVaultTask } from '@aws/dea-app/lib/models/data-vault-task';
 import useSWR from 'swr';
 import { httpApiDelete, httpApiGet, httpApiPost, httpApiPut } from '../helpers/apiHelper';
+import { useListDeaFiles } from './base';
 import { DeaListResult, DeaSingleResult } from './models/api-results';
 
 interface DataVaultListReponse {
@@ -62,12 +63,7 @@ export const createDataVaultTask = async (
 };
 
 export const useListDataVaultFiles = (id: string, filePath = '/'): DeaListResult<DeaDataVaultFile> => {
-  const { data, error } = useSWR(
-    () => `datavaults/${id}/files?filePath=${filePath}&limit=10000`,
-    httpApiGet<{ files: DeaDataVaultFile[] }>
-  );
-  const caseFiles: DeaDataVaultFile[] = data?.files ?? [];
-  return { data: caseFiles, isLoading: !error && !data };
+  return useListDeaFiles<DeaDataVaultFile>(`datavaults/${id}/files?filePath=${filePath}`);
 };
 
 export const useGetDataVaultFileDetailsById = (
@@ -93,5 +89,7 @@ export const removeDataVaultFileCaseAssociation = async (
   fileId: string,
   removeCaseAssociationDTO: RemoveCaseAssociationDTO
 ): Promise<void> => {
-  await httpApiDelete(`/datavaults/${dataVaultId}/files/${fileId}/caseAssociations`, { ...removeCaseAssociationDTO });
+  await httpApiDelete(`/datavaults/${dataVaultId}/files/${fileId}/caseAssociations`, {
+    ...removeCaseAssociationDTO,
+  });
 };

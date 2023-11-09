@@ -3,7 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { fail } from 'assert';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { convictConfig, deaConfig, loadConfig } from '../config';
@@ -99,18 +98,18 @@ describe('convict based config', () => {
     expect(deaConfig.deaAllowedOriginsList()).toEqual(['https://localhost', 'https://test']);
   });
 
-  it('returns preflight options for production', () => {
-    convictConfig.set('testStack', false);
-    expect(deaConfig.preflightOptions()).toBeUndefined();
-  });
-
-  it('returns preflight options for test stack', () => {
-    convictConfig.set('testStack', true);
+  it('returns preflight options when allowedOrigins is set', () => {
+    convictConfig.set('deaAllowedOrigins', 'https://localhost,https://test');
     const preflightOpt = deaConfig.preflightOptions();
     if (!preflightOpt) {
       fail();
     }
     expect(Object.keys(preflightOpt).length).toBeGreaterThan(0);
+  });
+
+  it('returns no preflight options when not allowedOrigins is set', () => {
+    convictConfig.set('deaAllowedOrigins', '');
+    expect(deaConfig.preflightOptions()).toBeUndefined();
   });
 
   it('errors if the stage name is too long', () => {

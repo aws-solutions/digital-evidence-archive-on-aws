@@ -104,3 +104,4 @@ lib
 **/cases.tsx
 **/auth.tsx
 **/data-vaults.tsx
+**/base.tsx

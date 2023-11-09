@@ -18,6 +18,7 @@ import {
 } from '../models/CaseFiles';
 import { CreateCaseForm, EditCaseForm, UpdateCaseStatusForm } from '../models/Cases';
 import { CaseUserForm } from '../models/CaseUser';
+import { useListDeaFiles } from './base';
 import { DeaListResult, DeaSingleResult } from './models/api-results';
 import { CaseFileDTO, CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
 
@@ -72,9 +73,7 @@ export const updateCase = async (editCaseForm: EditCaseForm): Promise<void> => {
 };
 
 export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DeaCaseFile> => {
-  const { data, error } = useSWR(() => `cases/${id}/files?filePath=${filePath}&limit=10000`, httpApiGet<{files: DeaCaseFile[]}>);
-  const caseFiles: DeaCaseFile[] = data?.files ?? [];
-  return { data: caseFiles, isLoading: !error && !data };
+  return useListDeaFiles<DeaCaseFile>(`cases/${id}/files?filePath=${filePath}`);
 };
 
 export const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFile> => {

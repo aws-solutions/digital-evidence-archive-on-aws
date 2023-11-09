@@ -229,6 +229,7 @@ describe('DeaBackend constructs', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const domain: any = 'deaprodenv';
     convictConfig.set('cognito.domain', domain);
+    convictConfig.set('deaAllowedOrigins', '');
     convictConfig.set('testStack', false);
 
     const app = new cdk.App();

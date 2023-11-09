@@ -396,24 +396,26 @@ export const deaConfig: DEAConfig = {
       allowOrigins.push(`https://${deaConfig.customDomainInfo().domainName}`);
     }
 
-    return convictConfig.get('testStack')
-      ? {
-          allowHeaders: [
-            'Content-Type',
-            'X-Amz-Date',
-            'Authorization',
-            'X-Api-Key',
-            'CSRF-Token',
-            'x-amz-security-token',
-            'set-cookie',
-            'Host',
-            'Content-Length',
-          ],
-          allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-          allowCredentials: true,
-          allowOrigins,
-        }
-      : undefined;
+    if (allowOrigins.length > 0) {
+      return {
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+          'CSRF-Token',
+          'x-amz-security-token',
+          'set-cookie',
+          'Host',
+          'Content-Length',
+        ],
+        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowCredentials: true,
+        allowOrigins,
+      };
+    }
+
+    return undefined;
   },
   vpcEndpointInfo: () => {
     const vpcEndpoint = convictConfig.get('vpcEndpoint');
