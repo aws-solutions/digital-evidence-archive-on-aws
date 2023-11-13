@@ -14,7 +14,8 @@ import {
   CompleteUploadForm,
   DownloadFileForm,
   DownloadFileResult,
-  InitiateUploadForm, RestoreFileForm,
+  InitiateUploadForm,
+  RestoreFileForm,
 } from '../models/CaseFiles';
 import { CreateCaseForm, EditCaseForm, UpdateCaseStatusForm } from '../models/Cases';
 import { CaseUserForm } from '../models/CaseUser';
@@ -34,17 +35,17 @@ export interface DeaAuditStartResponse {
 }
 
 interface CaseListReponse {
-  cases: DeaCaseDTO[]
+  cases: DeaCaseDTO[];
 }
 
 export const useListAllCases = (): DeaListResult<DeaCaseDTO> => {
-  const { data, error } = useSWR(() => `cases/all-cases?limit=10000`, httpApiGet<CaseListReponse> );
+  const { data, error } = useSWR(() => `cases/all-cases?limit=10000`, httpApiGet<CaseListReponse>);
   const cases: DeaCaseDTO[] = data?.cases ?? [];
   return { data: cases, isLoading: !data && !error };
 };
 
 export const useListMyCases = (): DeaListResult<DeaCaseDTO> => {
-  const { data, error, mutate } = useSWR(() => `cases/my-cases?limit=10000`, (httpApiGet<CaseListReponse>) );
+  const { data, error, mutate } = useSWR(() => `cases/my-cases?limit=10000`, httpApiGet<CaseListReponse>);
   const cases: DeaCaseDTO[] = data?.cases ?? [];
   return { data: cases, isLoading: !data && !error, mutate };
 };
@@ -54,10 +55,13 @@ export const useGetCaseById = (id: string): DeaSingleResult<DeaCaseDTO | undefin
   return { data, isLoading: !data && !error };
 };
 
-export const useGetFileDetailsById = (caseId: string, fileId: string): DeaSingleResult<CaseFileDTO | undefined> => {
+export const useGetFileDetailsById = (
+  caseId: string,
+  fileId: string
+): DeaSingleResult<CaseFileDTO | undefined> => {
   const { data, error } = useSWR(() => `cases/${caseId}/files/${fileId}/info`, httpApiGet<CaseFileDTO>);
   return { data, isLoading: !data && !error };
-}
+};
 
 export const useGetScopedCaseInfoById = (id: string): DeaSingleResult<ScopedDeaCaseDTO | undefined> => {
   const { data, error } = useSWR(() => `cases/${id}/scopedInformation`, httpApiGet<ScopedDeaCaseDTO>);
@@ -93,7 +97,10 @@ export const restoreFile = async (apiInput: RestoreFileForm): Promise<void> => {
 };
 
 export const useGetUsers = (nameBeginsWith: string): DeaListResult<DeaUser> => {
-  const { data, error } = useSWR(() => `users?nameBeginsWith=${nameBeginsWith}&limit=10000`, httpApiGet<{users: DeaUser[]}>);
+  const { data, error } = useSWR(
+    () => `users?nameBeginsWith=${nameBeginsWith}&limit=10000`,
+    httpApiGet<{ users: DeaUser[] }>
+  );
   const users: DeaUser[] = data?.users ?? [];
   return { data: users, isLoading: !data && !error };
 };
@@ -107,7 +114,10 @@ export const addCaseOwner = async (caseOwner: CaseOwnerDTO): Promise<void> => {
 };
 
 export const useGetCaseMembers = (id: string): DeaListResult<CaseUser> => {
-  const { data, error, mutate } = useSWR(() => `cases/${id}/userMemberships`, httpApiGet<{caseUsers: CaseUser[]}>);
+  const { data, error, mutate } = useSWR(
+    () => `cases/${id}/userMemberships`,
+    httpApiGet<{ caseUsers: CaseUser[] }>
+  );
   const cases: CaseUser[] = data?.caseUsers ?? [];
   return { data: cases, isLoading: !error && !data, mutate };
 };
@@ -121,7 +131,7 @@ export const updateCaseMember = async (caseUser: CaseUserForm): Promise<void> =>
 };
 
 export const updateCaseStatus = async (apiInput: UpdateCaseStatusForm): Promise<void> => {
-  const {caseId, ...data} = apiInput;
+  const { caseId, ...data } = apiInput;
   await httpApiPut(`cases/${caseId}/status`, data);
 };
 
@@ -139,16 +149,16 @@ export const getCaseAuditCSV = async (caseId: string): Promise<string> => {
     throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
   }
   return auditResponse.downloadUrl;
-}
+};
 
 export const startCaseAuditQuery = async (caseId: string): Promise<string> => {
   const data: DeaAuditStartResponse = await httpApiPost(`cases/${caseId}/audit`, undefined);
   return data.auditId;
-}
+};
 
 export const retrieveCaseAuditResult = async (caseId: string, auditId: string): Promise<AuditResult> => {
   return await httpApiGet(`cases/${caseId}/audit/${auditId}/csv`, undefined);
-}
+};
 
 export const getCaseFileAuditCSV = async (caseId: string, fileId: string): Promise<string> => {
   const auditId = await startCaseFileAuditQuery(caseId, fileId);
@@ -164,16 +174,20 @@ export const getCaseFileAuditCSV = async (caseId: string, fileId: string): Promi
     throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
   }
   return auditResponse.downloadUrl;
-}
+};
 
 export const startCaseFileAuditQuery = async (caseId: string, fileId: string): Promise<string> => {
   const data: DeaAuditStartResponse = await httpApiPost(`cases/${caseId}/files/${fileId}/audit`, undefined);
   return data.auditId;
-}
+};
 
-export const retrieveCaseFileAuditResult = async (caseId: string, fileId: string, auditId: string): Promise<AuditResult> => {
+export const retrieveCaseFileAuditResult = async (
+  caseId: string,
+  fileId: string,
+  auditId: string
+): Promise<AuditResult> => {
   return await httpApiGet(`cases/${caseId}/files/${fileId}/audit/${auditId}/csv`, undefined);
-}
+};
 
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -197,14 +211,14 @@ export const getSystemAuditCSV = async (): Promise<string> => {
   if (!auditResponse.downloadUrl) {
     throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
   }
-  return auditResponse.downloadUrl
-}
+  return auditResponse.downloadUrl;
+};
 
 export const startSystemAuditQuery = async (): Promise<string> => {
   const data: DeaAuditStartResponse = await httpApiPost(`system/audit`, undefined);
   return data.auditId;
-}
+};
 
 export const retrieveSystemAuditResult = async (auditId: string): Promise<AuditResult> => {
   return await httpApiGet(`system/audit/${auditId}/csv`, undefined);
-}
+};

@@ -3,8 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import Joi from 'joi';
-import { getQueryParam } from '../../../lambda-http-helpers';
+import { getOptionalPayload } from '../../../lambda-http-helpers';
+import { DEAAuditQuery, defaultAuditQuery } from '../../../models/audit';
+import { auditQuerySchema } from '../../../models/validation/audit';
 import { defaultProvider } from '../../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../../storage/datasets';
 import { defaultAthenaClient } from '../../audit/dea-audit-plugin';
@@ -23,12 +24,18 @@ export const startSystemAudit: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   athenaClient = defaultAthenaClient
 ) => {
-  const now = Date.now();
-  const start = getQueryParam(event, 'from', '0', Joi.date().timestamp('unix'));
-  const end = getQueryParam(event, 'to', now.toString(), Joi.date().timestamp('unix'));
-  const startTime = Number.parseInt(start);
-  const endTime = Number.parseInt(end);
-  const queryId = await auditService.requestSystemAudit(startTime, endTime, athenaClient, repositoryProvider);
+  const startAudit: DEAAuditQuery = getOptionalPayload(
+    event,
+    'Start system audit',
+    auditQuerySchema,
+    defaultAuditQuery
+  );
+  const queryId = await auditService.requestSystemAudit(
+    startAudit.from,
+    startAudit.to,
+    athenaClient,
+    repositoryProvider
+  );
 
   return responseOk(event, { auditId: queryId });
 };

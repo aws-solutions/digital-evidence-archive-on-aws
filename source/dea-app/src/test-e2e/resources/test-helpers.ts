@@ -159,7 +159,7 @@ export async function callDeaAPIWithCreds(
   url: string,
   method: DeaHttpMethod,
   cookie: Oauth2Token,
-  creds: Credentials,
+  credentials: Credentials,
   data?: unknown
 ) {
   const client = axios.create({
@@ -168,13 +168,13 @@ export async function callDeaAPIWithCreds(
     },
   });
 
-  const interceptor = aws4Interceptor(
-    {
+  const interceptor = aws4Interceptor({
+    options: {
       service: 'execute-api',
       region: testEnv.awsRegion,
     },
-    creds
-  );
+    credentials,
+  });
 
   client.interceptors.request.use(interceptor);
 
@@ -638,7 +638,8 @@ export async function getAuditQueryResults(
   creds: Credentials,
   expectedDeaEvents: AuditEventType[],
   expectedCloudtrailMatches: CloudTrailMatches[],
-  delayMillisBetweenAttempts = 45000
+  delayMillisBetweenAttempts = 45000,
+  data?: unknown
 ) {
   let csvData: string | undefined;
   let queryRetries = 15;
@@ -647,7 +648,8 @@ export async function getAuditQueryResults(
       `${requestUrl}${queryParams}`,
       'POST',
       idToken,
-      creds
+      creds,
+      data
     );
 
     expect(startAuditQueryResponse.status).toEqual(200);

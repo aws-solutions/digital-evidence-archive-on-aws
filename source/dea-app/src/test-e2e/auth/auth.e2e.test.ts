@@ -70,13 +70,13 @@ describe('API authentication', () => {
 
   it('should disallow calls without id token in the header', async () => {
     const client = axios.create();
-    const interceptor = aws4Interceptor(
-      {
+    const interceptor = aws4Interceptor({
+      options: {
         service: 'execute-api',
         region: region,
       },
-      creds
-    );
+      credentials: { ...creds },
+    });
     client.interceptors.request.use(interceptor);
 
     const url = `${deaApiUrl}cases/my-cases`;

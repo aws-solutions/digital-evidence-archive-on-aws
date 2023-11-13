@@ -3,8 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import Joi from 'joi';
-import { getQueryParam, getRequiredPathParam } from '../../../lambda-http-helpers';
+import { getOptionalPayload, getRequiredPathParam } from '../../../lambda-http-helpers';
+import { DEAAuditQuery, defaultAuditQuery } from '../../../models/audit';
+import { auditQuerySchema } from '../../../models/validation/audit';
 import { joiUlid } from '../../../models/validation/joi-common';
 import { defaultProvider } from '../../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../../storage/datasets';
@@ -25,19 +26,20 @@ export const startCaseAudit: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   athenaClient = defaultAthenaClient
 ) => {
-  const now = Date.now();
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
-  const start = getQueryParam(event, 'from', '0', Joi.date().timestamp('unix'));
-  const end = getQueryParam(event, 'to', now.toString(), Joi.date().timestamp('unix'));
-  const startTime = Number.parseInt(start);
-  const endTime = Number.parseInt(end);
+  const startAudit: DEAAuditQuery = getOptionalPayload(
+    event,
+    'Start case audit',
+    auditQuerySchema,
+    defaultAuditQuery
+  );
 
   await getRequiredCase(caseId, repositoryProvider);
 
   const queryId = await auditService.requestAuditForCase(
     caseId,
-    startTime,
-    endTime,
+    startAudit.from,
+    startAudit.to,
     caseId,
     athenaClient,
     repositoryProvider

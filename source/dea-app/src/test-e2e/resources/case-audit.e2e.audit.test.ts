@@ -197,7 +197,7 @@ describe('case audit e2e', () => {
 
       const entries = await getAuditQueryResults(
         `${deaApiUrl}cases/${caseUlid}/audit`,
-        `?from=${startTime}&to=${endTime}`,
+        '',
         idToken,
         creds,
         [
@@ -215,7 +215,12 @@ describe('case audit e2e', () => {
           { regex: /dynamodb.amazonaws.com/g, count: 8 },
           { regex: /TransactWriteItems/g, count: 2 },
           { regex: /GetItem/g, count: 6 },
-        ]
+        ],
+        45000,
+        {
+          from: startTime,
+          to: endTime,
+        }
       );
 
       const cloudtrailEntries = entries.filter((entry) => entry.Event_Type === 'AwsApiCall');
