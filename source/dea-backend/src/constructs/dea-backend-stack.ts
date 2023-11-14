@@ -232,11 +232,24 @@ export class DeaBackendConstruct extends Construct {
       assumedBy: new ServicePrincipal('datasync.amazonaws.com'),
     });
 
+    // For E2E Testing we create various S3 Buckets to be used as source locations
+    // So when it is a testing stack, include those buckets in the IAM Role
+    const mdiE2ETestBucketArnPrefix = 'arn:*:s3:::dea-mdi-e2e-test-source-bucket';
+    const buckets = deaConfig.isTestStack()
+      ? [this.datasetsBucket.bucketArn, `${mdiE2ETestBucketArnPrefix}*`]
+      : [this.datasetsBucket.bucketArn];
+    const objects = deaConfig.isTestStack()
+      ? [`${this.datasetsBucket.bucketArn}/*`, `${mdiE2ETestBucketArnPrefix}*/*`]
+      : [`${this.datasetsBucket.bucketArn}/*`];
+    const deleteObjects = deaConfig.isTestStack()
+      ? [`${this.datasetsBucket.bucketArn}*/.aws-datasync/*`, `${mdiE2ETestBucketArnPrefix}*/.aws-datasync/*`]
+      : [`${this.datasetsBucket.bucketArn}*/.aws-datasync/*`];
+
     const policyStatements: PolicyStatement[] = [
       new PolicyStatement({
         actions: ['s3:GetBucketLocation', 's3:ListBucket', 's3:ListBucketMultipartUploads'],
         effect: Effect.ALLOW,
-        resources: [this.datasetsBucket.bucketArn],
+        resources: buckets,
       }),
       new PolicyStatement({
         actions: [
@@ -249,7 +262,7 @@ export class DeaBackendConstruct extends Construct {
           's3:ListBucket',
         ],
         effect: Effect.ALLOW,
-        resources: [`${this.datasetsBucket.bucketArn}/*`],
+        resources: objects,
       }),
       new PolicyStatement(restrictAccountStatementStatementProps),
       new PolicyStatement({
@@ -263,7 +276,7 @@ export class DeaBackendConstruct extends Construct {
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ['s3:DeleteObject'],
-        resources: [`${this.datasetsBucket.bucketArn}*/.aws-datasync/*`],
+        resources: deleteObjects,
       }),
     ];
 

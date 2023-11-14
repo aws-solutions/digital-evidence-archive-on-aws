@@ -32,6 +32,7 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix --max-warnings=0",
     "make-badges": "istanbul-badges-readme --coverageDir=./temp/coverage --exitCode=1",
+    "mdi:only": ". ../common/scripts/setEnv.sh && heft test --no-build --disable-code-coverage --test-path-pattern '.*/*e2e.mdi.test.*'",
     "pkg-json-lint": "npmPkgJsonLint -c ../../.npmpackagejsonlintrc.json .",
     "serve": "node lib/dev-launch.js",
     "sort-package-json": "sort-package-json package.json",
@@ -87,6 +88,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-iam": "~3.435.0",
     "@rushstack/eslint-config": "^3.3.3",
     "@rushstack/heft": "^0.50.0",
     "@rushstack/heft-jest-plugin": "^0.5.5",

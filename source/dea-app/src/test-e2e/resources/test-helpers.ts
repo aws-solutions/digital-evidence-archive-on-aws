@@ -65,6 +65,70 @@ export interface s3Object {
   uploadId?: string;
 }
 
+export async function cleanupCaseAndFiles(
+  baseUrl: string,
+  caseUlid: string,
+  caseName: string,
+  idToken: Oauth2Token,
+  creds: Credentials
+): Promise<void> {
+  // First iterate over every file in the case to get the s3Objects we will have to delete
+  // and to delete the files from the ddb
+  const s3ObjectsToDelete: s3Object[] = [];
+  const files: Set<string> = new Set();
+  const folders: Set<string> = new Set();
+  folders.add('/');
+  while (folders.size > 0) {
+    const filePath: string = folders.values().next().value;
+    folders.delete(filePath);
+    // List files
+    const listCaseFilesResponse = await listCaseFilesSuccess(baseUrl, idToken, creds, caseUlid, filePath);
+    listCaseFilesResponse.files.forEach((file) => {
+      if (!file.isFile) {
+        // If folder, add to folders for further recursion
+        folders.add(`${file.filePath}${file.fileName}/`);
+      } else {
+        // If  (non datavault) file, add to files set, and add to the S3Objects to delete
+        if (!file.dataVaultUlid) {
+          files.add(`${file.ulid}`);
+          s3ObjectsToDelete.push({ key: file.fileS3Key });
+        }
+      }
+    });
+  }
+
+  // Mark case as deleted
+  let updatedCase = await updateCaseStatus(
+    baseUrl,
+    idToken,
+    creds,
+    caseUlid,
+    caseName,
+    CaseStatus.INACTIVE,
+    true
+  );
+
+  expect(updatedCase.status).toEqual(CaseStatus.INACTIVE);
+  expect(updatedCase.filesStatus).toEqual(CaseFileStatus.DELETING);
+  expect(updatedCase.s3BatchJobId).toBeTruthy();
+
+  // Give S3 batch 2 minutes to do the async job. Increase if necessary (EventBridge SLA is 15min)
+  const retries = 8;
+  while (updatedCase.filesStatus !== CaseFileStatus.DELETED && retries > 0) {
+    await delay(15_000);
+    updatedCase = await describeCaseSuccess(baseUrl, caseUlid, idToken, creds);
+
+    if (updatedCase.filesStatus === CaseFileStatus.DELETE_FAILED) {
+      break;
+    }
+  }
+
+  // delete case
+  await deleteCase(baseUrl, caseUlid, idToken, creds);
+
+  await s3Cleanup(s3ObjectsToDelete);
+}
+
 export async function deleteCase(
   baseUrl: string,
   caseUlid: string,
@@ -102,7 +166,7 @@ export async function deleteCaseFiles(
   const retries = 8;
   while (updatedCase.filesStatus !== CaseFileStatus.DELETED && retries > 0) {
     await delay(15_000);
-    updatedCase = await getCase(baseUrl, caseUlid, idToken, creds);
+    updatedCase = await describeCaseSuccess(baseUrl, caseUlid, idToken, creds);
 
     if (updatedCase.filesStatus === CaseFileStatus.DELETE_FAILED) {
       break;
@@ -126,10 +190,7 @@ export async function createCaseSuccess(
 ): Promise<DeaCase> {
   const response = await callDeaAPIWithCreds(`${baseUrl}cases`, 'POST', idToken, creds, deaCase);
 
-  if (response.status !== 200) {
-    console.log(response.data);
-  }
-  expect(response.status).toEqual(200);
+  verifyDeaRequestSuccess(response);
 
   const createdCase: DeaCase = response.data;
   Joi.assert(createdCase, caseResponseSchema);
@@ -137,7 +198,12 @@ export async function createCaseSuccess(
   return createdCase;
 }
 
-async function getCase(baseUrl: string, caseId: string, idToken: Oauth2Token, creds: Credentials) {
+export async function describeCaseSuccess(
+  baseUrl: string,
+  caseId: string,
+  idToken: Oauth2Token,
+  creds: Credentials
+): Promise<DeaCase> {
   const getResponse = await callDeaAPIWithCreds(`${baseUrl}cases/${caseId}/details`, 'GET', idToken, creds);
 
   expect(getResponse.status).toEqual(200);
@@ -195,9 +261,18 @@ export async function callDeaAPIWithCreds(
       });
     case 'DELETE':
       return await client.delete(url, {
+        data,
         validateStatus,
       });
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function verifyDeaRequestSuccess(response: AxiosResponse<any, any>) {
+  if (response.status !== 200) {
+    console.log(response.data);
+  }
+  expect(response.status).toEqual(200);
 }
 
 export const getSpecificUserByFirstName = async (
@@ -301,14 +376,12 @@ export const listCaseFilesSuccess = async (
   idToken: Oauth2Token,
   creds: Credentials,
   caseUlid: string | undefined,
-  filePath: string
+  filePath?: string
 ): Promise<ResponseCaseFilePage> => {
-  const response = await callDeaAPIWithCreds(
-    `${deaApiUrl}cases/${caseUlid}/files?filePath=${filePath}`,
-    'GET',
-    idToken,
-    creds
-  );
+  const url = filePath
+    ? `${deaApiUrl}cases/${caseUlid}/files?filePath=${filePath}`
+    : `${deaApiUrl}cases/${caseUlid}/files`;
+  const response = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
 
   expect(response.status).toEqual(200);
   return response.data;
@@ -482,16 +555,18 @@ export const s3Cleanup = async (s3ObjectsToDelete: s3Object[]): Promise<void> =>
     } catch (e) {
       console.log('[INFO] Could not delete object. Perhaps it does not exist', e);
     }
-    try {
-      await s3Client.send(
-        new AbortMultipartUploadCommand({
-          Key: object.key,
-          Bucket: testEnv.datasetsBucketName,
-          UploadId: object.uploadId,
-        })
-      );
-    } catch (e) {
-      console.log('[INFO] Could not delete multipart upload. Perhaps the upload completed', e);
+    if (object.uploadId) {
+      try {
+        await s3Client.send(
+          new AbortMultipartUploadCommand({
+            Key: object.key,
+            Bucket: testEnv.datasetsBucketName,
+            UploadId: object.uploadId,
+          })
+        );
+      } catch (e) {
+        console.log('[INFO] Could not delete multipart upload. Perhaps the upload completed', e);
+      }
     }
   }
 };
@@ -553,6 +628,8 @@ export type CloudTrailEventEntry = {
   caseId?: string;
   fileId?: string;
 };
+
+// ------------------- Audit Helpers ------------------- //
 
 export const parseTrailEventsFromAuditQuery = (csvData: string): CloudTrailEventEntry[] => {
   function parseFn(event: string): CloudTrailEventEntry {

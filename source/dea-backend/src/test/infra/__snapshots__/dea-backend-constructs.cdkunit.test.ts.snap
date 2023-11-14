@@ -2262,12 +2262,15 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 "s3:ListBucketMultipartUploads",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-                  "Arn",
-                ],
-              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                    "Arn",
+                  ],
+                },
+                "arn:*:s3:::dea-mdi-e2e-test-source-bucket*",
+              ],
             },
             Object {
               "Action": Array [
@@ -2280,20 +2283,23 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 "s3:ListBucket",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
-                        "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-                        "Arn",
-                      ],
-                    },
-                    "/*",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
                   ],
-                ],
-              },
+                },
+                "arn:*:s3:::dea-mdi-e2e-test-source-bucket*/*",
+              ],
             },
             Object {
               "Action": Array [
@@ -2329,20 +2335,23 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             Object {
               "Action": "s3:DeleteObject",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
-                        "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-                        "Arn",
-                      ],
-                    },
-                    "*/.aws-datasync/*",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                          "Arn",
+                        ],
+                      },
+                      "*/.aws-datasync/*",
+                    ],
                   ],
-                ],
-              },
+                },
+                "arn:*:s3:::dea-mdi-e2e-test-source-bucket*/.aws-datasync/*",
+              ],
             },
           ],
           "Version": "2012-10-17",
@@ -18280,12 +18289,15 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             Object {
               "Action": "s3:ListBucket",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-                  "Arn",
-                ],
-              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                    "Arn",
+                  ],
+                },
+                "arn:*:s3:::dea-mdi-e2e-test-source-bucket*",
+              ],
             },
             Object {
               "Action": "logs:StartQuery",

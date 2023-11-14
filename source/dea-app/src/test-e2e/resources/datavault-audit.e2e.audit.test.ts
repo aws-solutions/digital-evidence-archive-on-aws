@@ -15,7 +15,7 @@ import {
   createCaseAssociationSuccess,
   createDataVaultSuccess,
   describeDataVaultFileDetailsSuccess,
-  lisDataVaultFilesSuccess,
+  listDataVaultFilesSuccess,
   listDataVaultsSuccess,
   updateDataVaultSuccess,
 } from './support/datavault-support';
@@ -129,7 +129,7 @@ describe('datavault and file audit e2e', () => {
       // AuditEventType.GET_DATA_VAULT_FILES
       // db read vault
       // query
-      await lisDataVaultFilesSuccess(deaApiUrl, idToken, creds, deaDataVault.ulid);
+      await listDataVaultFilesSuccess(deaApiUrl, idToken, creds, deaDataVault.ulid);
 
       // AuditEventType.CREATE_CASE_ASSOCIATION
       // get vault

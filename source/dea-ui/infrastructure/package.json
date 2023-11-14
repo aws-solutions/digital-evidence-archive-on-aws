@@ -28,6 +28,7 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix --max-warnings=0",
     "make-badges": "istanbul-badges-readme --coverageDir=./temp/coverage --exitCode=1",
+    "mdi:only": "",
     "sort-package-json": "sort-package-json package.json",
     "test": "rushx test:only",
     "test:dev": "heft test --test-path-pattern test --watch",

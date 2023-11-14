@@ -226,8 +226,34 @@ jobs:
       - name: Rush Test
         run: |
           node common/scripts/install-run-rush.js audit:only --verbose
+  Mass-Data-Ingestion-Test:
+    needs: Deploy
+    environment: dea-test
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./source
+    name: Mass Data Ingestion E2E
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install
+        uses: ./.github/actions/baseAction
+      - name: Rush Build
+        run: |
+          node common/scripts/install-run-rush.js build
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: GITHUBACTIONSESSION
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Rush Test
+        run: |
+          node common/scripts/install-run-rush.js mdi:only --verbose
   destroy:
-    needs: [Test, E2E, Audit-Test, ACL]
+    needs: [Test, E2E, Audit-Test, Mass-Data-Ingestion-Test, ACL]
     environment: dea-test
     defaults:
       run:

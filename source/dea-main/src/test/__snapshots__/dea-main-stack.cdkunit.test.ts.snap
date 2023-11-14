@@ -9739,12 +9739,15 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             Object {
               "Action": "s3:ListBucket",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "DeaBackendStackS3DatasetsBucket408FF954",
-                  "Arn",
-                ],
-              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3DatasetsBucket408FF954",
+                    "Arn",
+                  ],
+                },
+                "arn:*:s3:::dea-mdi-e2e-test-source-bucket*",
+              ],
             },
             Object {
               "Action": "logs:StartQuery",
@@ -15843,6 +15846,36 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                           "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
                         ],
                       },
+                      "/PUT/cases/*/status",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":execute-api:us-east-1:",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapi234F39DERef",
+                        ],
+                      },
+                      "/",
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaApiGatewaydeaapistackNestedStackdeaapistackNestedStackResource0B17B008",
+                          "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
+                        ],
+                      },
                       "/GET/cases/*/userMemberships",
                     ],
                   ],
@@ -18646,12 +18679,15 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 "s3:ListBucketMultipartUploads",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "DeaBackendStackS3DatasetsBucket408FF954",
-                  "Arn",
-                ],
-              },
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3DatasetsBucket408FF954",
+                    "Arn",
+                  ],
+                },
+                "arn:*:s3:::dea-mdi-e2e-test-source-bucket*",
+              ],
             },
             Object {
               "Action": Array [
@@ -18664,20 +18700,23 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 "s3:ListBucket",
               ],
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
-                        "DeaBackendStackS3DatasetsBucket408FF954",
-                        "Arn",
-                      ],
-                    },
-                    "/*",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3DatasetsBucket408FF954",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
                   ],
-                ],
-              },
+                },
+                "arn:*:s3:::dea-mdi-e2e-test-source-bucket*/*",
+              ],
             },
             Object {
               "Action": Array [
@@ -18713,20 +18752,23 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             Object {
               "Action": "s3:DeleteObject",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
-                        "DeaBackendStackS3DatasetsBucket408FF954",
-                        "Arn",
-                      ],
-                    },
-                    "*/.aws-datasync/*",
+              "Resource": Array [
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3DatasetsBucket408FF954",
+                          "Arn",
+                        ],
+                      },
+                      "*/.aws-datasync/*",
+                    ],
                   ],
-                ],
-              },
+                },
+                "arn:*:s3:::dea-mdi-e2e-test-source-bucket*/.aws-datasync/*",
+              ],
             },
           ],
           "Version": "2012-10-17",

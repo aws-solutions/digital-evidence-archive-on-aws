@@ -256,6 +256,14 @@
       "allowWarningsInSuccessfulBuild": true
     },
     {
+      "name": "mdi:only",
+      "commandKind": "bulk",
+      "summary": "Used to perform MDI e2e tests only on the packages",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
+    },
+    {
       "name": "sort-package-json",
       "commandKind": "bulk",
       "summary": "Sort package.json file",

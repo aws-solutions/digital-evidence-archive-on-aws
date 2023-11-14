@@ -611,7 +611,14 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
-    const listBucketResources = [...deaConfig.dataSyncLocationBuckets(), datasetsBucketArn];
+    // If it is a test stack, include the source buckets created for MDI E2E tests
+    const listBucketResources = deaConfig.isTestStack()
+      ? [
+          ...deaConfig.dataSyncLocationBuckets(),
+          datasetsBucketArn,
+          'arn:*:s3:::dea-mdi-e2e-test-source-bucket*',
+        ]
+      : [...deaConfig.dataSyncLocationBuckets(), datasetsBucketArn];
     role.addToPolicy(
       new PolicyStatement({
         actions: ['s3:ListBucket'],
