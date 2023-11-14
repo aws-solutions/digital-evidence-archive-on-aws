@@ -33,7 +33,7 @@ export const getDataSyncTasks: DEAGatewayProxyHandler = async (
   // Loop through the tasks and fetch details for each
   for (const task of dataSyncTasks) {
     if (task.TaskArn) {
-      const deaDataSyncTask = await dataSyncService.desrcibeTask(task.TaskArn, dataSyncProvider);
+      const deaDataSyncTask = await dataSyncService.describeTask(task.TaskArn, dataSyncProvider);
       deaDataSyncTasks.push(deaDataSyncTask);
     }
   }

@@ -14,3 +14,4 @@ export DATASYNC_REPORTS_BUCKET_NAME=dummySyncBucket
 export DATASYNC_ROLE=dummyDatasyncRole
 export DATASYNC_REPORTS_ROLE=dummyDatasyncReportsRole
 export TABLE_NAME=dummyTable
+unset ADMIN_ROLE_ARN

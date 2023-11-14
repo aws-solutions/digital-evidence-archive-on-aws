@@ -5,13 +5,14 @@
 
 import path from 'path';
 import ErrorPrefixes from '@aws/dea-app/lib/app/error-prefixes';
+import { restrictAccountStatementStatementProps } from '@aws/dea-app/lib/storage/restrict-account-statement';
 import * as glue from '@aws-cdk/aws-glue-alpha';
 import { Aws, Duration, Fn, RemovalPolicy, StackProps, aws_kinesisfirehose } from 'aws-cdk-lib';
 import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import { ArnPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { FilterPattern, LogGroup, SubscriptionFilter } from 'aws-cdk-lib/aws-logs';
@@ -142,6 +143,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
         resources: [this.athenaAuditBucket.bucketArn, `${this.athenaAuditBucket.bucketArn}/*`],
       })
     );
+    fireHosetoS3Role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
     props.kmsKey.grantEncrypt(fireHosetoS3Role);
 
     const auditTransformLambda = new NodejsFunction(this, 'audit-processing-lambda', {
@@ -150,6 +152,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       // transformation lambda has a maximum execution of 5 minutes
       timeout: Duration.minutes(5),
       runtime: Runtime.NODEJS_18_X,
+      tracing: Tracing.ACTIVE,
       handler: 'handler',
       entry: path.join(__dirname, '../../src/handlers/audit-logs-transform-handler.ts'),
       depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
@@ -322,6 +325,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
   ) {
     const objectLockHandler = new NodejsFunction(this, 'audit-object-locker', {
       memorySize: 512,
+      tracing: Tracing.ACTIVE,
       timeout: Duration.seconds(60),
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
@@ -346,9 +350,12 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       })
     );
 
-    const objectLockDLQ = new Queue(this, 'audit-object-lock-dlq', {});
+    const objectLockDLQ = new Queue(this, 'audit-object-lock-dlq', {
+      enforceSSL: true,
+    });
 
     const objectLockQueue = new Queue(this, 'audit-object-lock-queue', {
+      enforceSSL: true,
       visibilityTimeout: objectLockHandler.timeout,
       deadLetterQueue: {
         queue: objectLockDLQ,

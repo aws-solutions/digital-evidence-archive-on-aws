@@ -66,6 +66,10 @@ import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
 import { DeaCaseFile } from './models/case-file';
 import { dataSyncExecutionEvent } from './storage/datasync-event-handler';
+import {
+  restrictAccountStatement,
+  restrictAccountStatementStatementProps,
+} from './storage/restrict-account-statement';
 import { deleteCaseFileHandler } from './storage/s3-batch-delete-case-file-handler';
 import {
   S3BatchEventBridgeDetail,
@@ -84,6 +88,8 @@ export {
   DEAPreLambdaExecutionChecks,
   DeaCase,
   DeaCaseFile,
+  restrictAccountStatement,
+  restrictAccountStatementStatementProps,
   ErrorPrefixes,
   FORBIDDEN_ERROR_NAME,
   ForbiddenError,

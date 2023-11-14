@@ -4,6 +4,7 @@
  */
 
 /* eslint-disable no-new */
+import { restrictAccountStatementStatementProps } from '@aws/dea-app/lib/storage/restrict-account-statement';
 import { Aws, StackProps, Duration, CfnResource, RemovalPolicy } from 'aws-cdk-lib';
 import { AttributeType, BillingMode, ProjectionType, Table, TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { ArnPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
@@ -250,6 +251,7 @@ export class DeaBackendConstruct extends Construct {
         effect: Effect.ALLOW,
         resources: [`${this.datasetsBucket.bucketArn}/*`],
       }),
+      new PolicyStatement(restrictAccountStatementStatementProps),
       new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
@@ -323,6 +325,8 @@ export class DeaBackendConstruct extends Construct {
     });
 
     role.addToPolicy(policyStatement);
+
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
 
     createCfnOutput(this, 'DeaDataSyncReportsRole', {
       value: role.roleArn,

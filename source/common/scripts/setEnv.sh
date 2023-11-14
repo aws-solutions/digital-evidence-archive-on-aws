@@ -23,3 +23,4 @@ export DATASYNC_ROLE=$(aws cloudformation list-exports --region $REGION $profile
 export DATASYNC_REPORTS_ROLE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaDataSyncReportsRole'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
 export DATASYNC_REPORTS_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaDataSyncReportsBucketName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
 export TABLE_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-deaTableName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+unset ADMIN_ROLE_ARN

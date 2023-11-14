@@ -6,6 +6,7 @@
 import path from 'path';
 import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
 import * as ServiceConstants from '@aws/dea-app/lib/app/services/service-constants';
+import { restrictAccountStatementStatementProps } from '@aws/dea-app/lib/storage/restrict-account-statement';
 import { Aws, Duration, Fn, NestedStack } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
@@ -30,7 +31,7 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
@@ -199,6 +200,7 @@ export class DeaRestApiConstruct extends Construct {
       deployOptions: {
         stageName: STAGE,
         metricsEnabled: true,
+        tracingEnabled: true,
         // Per method throttling limit. Conservative setting based on fact that we have 35 APIs and Lambda concurrency is 1000
         // Worst case this setting could potentially initiate up to 1750 API calls running at any moment (which is over lambda limit),
         // but it is unlikely that all the APIs are going to be used at the 50TPS limit.
@@ -466,6 +468,8 @@ export class DeaRestApiConstruct extends Construct {
       timeout: Duration.seconds(20),
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
+      tracing: Tracing.PASS_THROUGH,
+      // nosemgrep
       entry: path.join(__dirname, pathToSource),
       depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
       environment: {
@@ -552,6 +556,7 @@ export class DeaRestApiConstruct extends Construct {
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
     );
+
     const role = new Role(this, 'dea-base-lambda-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [basicExecutionPolicy],
@@ -701,6 +706,8 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
+
     return role;
   }
 
@@ -722,6 +729,8 @@ export class DeaRestApiConstruct extends Construct {
         resources: [kmsKeyArn],
       })
     );
+
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
 
     return role;
   }
@@ -750,7 +759,6 @@ export class DeaRestApiConstruct extends Construct {
 
   private createAuthLambdaRole(): Role {
     const STAGE = deaConfig.stage();
-
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
     );

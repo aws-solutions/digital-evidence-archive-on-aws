@@ -8,7 +8,7 @@ import {
   createS3Location,
   deleteDatasyncLocation,
   deleteDatasyncTask,
-  desrcibeTask,
+  describeTask,
   getDataSyncTask,
   listDatasyncTasks,
   startDatasyncTaskExecution,
@@ -51,7 +51,7 @@ describe('data-sync-service integration tests', () => {
     // Loop through the tasks and fetch details for each
     for (const task of dataSyncTasks) {
       if (task.TaskArn) {
-        const deaDataSyncTask = await desrcibeTask(task.TaskArn, dataSyncProvider);
+        const deaDataSyncTask = await describeTask(task.TaskArn, dataSyncProvider);
         deaDataSyncTasks.push(deaDataSyncTask);
       }
     }

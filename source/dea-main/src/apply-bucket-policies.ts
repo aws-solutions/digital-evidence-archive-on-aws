@@ -33,6 +33,10 @@ export const restrictResourcePolicies = (
     's3:DeleteObjectVersion',
     's3:PutObjectLegalHold',
     's3:ListBucketVersions',
+    's3:GetBucketLocation',
+    's3:ListBucketMultipartUploads',
+    's3:PutObjectTagging',
+    's3:GetObjectTagging',
   ];
 
   const customResourceActions = ['s3:GetBucketCORS', 's3:PutBucketCORS'];

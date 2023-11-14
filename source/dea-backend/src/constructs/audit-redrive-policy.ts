@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { restrictAccountStatementStatementProps } from '@aws/dea-app/lib/storage/restrict-account-statement';
 import { Aws } from 'aws-cdk-lib';
 import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
 import { ManagedPolicy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
@@ -65,6 +66,7 @@ export default function createAuditRedrivePolicy(
         ],
         resources: [queryResultBucket.bucketArn, `${queryResultBucket.bucketArn}/*`],
       }),
+      new PolicyStatement(restrictAccountStatementStatementProps),
       new PolicyStatement({
         actions: ['s3:GetObject'],
         resources: [`${auditBucket.bucketArn}/*`],

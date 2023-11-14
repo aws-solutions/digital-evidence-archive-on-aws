@@ -5,23 +5,21 @@
 
 /* eslint-disable no-new */
 import assert from 'assert';
+import { deaConfig } from '@aws/dea-backend/lib/config';
+import { createCfnOutput } from '@aws/dea-backend/lib/constructs/construct-support';
+import { DeaAppRegisterConstruct } from '@aws/dea-backend/lib/constructs/dea-app-registry';
+import { DeaAuditTrail } from '@aws/dea-backend/lib/constructs/dea-audit-trail';
+import { DeaAuth, DeaAuthStack } from '@aws/dea-backend/lib/constructs/dea-auth';
+import { DeaBackendConstruct } from '@aws/dea-backend/lib/constructs/dea-backend-stack';
+import { DeaEventHandlers } from '@aws/dea-backend/lib/constructs/dea-event-handlers';
+import { DeaOperationalDashboard } from '@aws/dea-backend/lib/constructs/dea-ops-dashboard';
+import { DeaParameters, DeaParametersStack } from '@aws/dea-backend/lib/constructs/dea-parameters';
+import { DeaRestApiConstruct } from '@aws/dea-backend/lib/constructs/dea-rest-api';
 import {
-  DeaAppRegisterConstruct,
-  DeaAuditTrail,
-  DeaAuth,
-  DeaAuthStack,
-  DeaBackendConstruct,
-  DeaEventHandlers,
-  DeaParameters,
-  DeaParametersStack,
-  DeaRestApiConstruct,
-  createCfnOutput,
-  deaConfig,
-  DeaOperationalDashboard,
   addLambdaSuppressions,
   addResourcePolicySuppressions,
-} from '@aws/dea-backend';
-import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
+} from '@aws/dea-backend/lib/helpers/nag-suppressions';
+import { DeaUiConstruct } from '@aws/dea-ui-infrastructure/lib/dea-ui-stack';
 import * as cdk from 'aws-cdk-lib';
 import { Aws, CfnResource, Duration } from 'aws-cdk-lib';
 import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
@@ -225,6 +223,7 @@ export class DeaMainStack extends cdk.Stack {
       deaEventHandlers.s3BatchDeleteCaseFileLambdaRole.roleArn,
       deaApi.datasetsRole.roleArn,
       backendConstruct.datasetsDataSyncRole.roleArn,
+      deaEventHandlers.dataSyncExecutionEventRole.roleArn,
     ];
     restrictResourcePolicies(
       {

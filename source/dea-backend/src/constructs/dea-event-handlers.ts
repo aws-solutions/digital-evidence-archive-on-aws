@@ -4,6 +4,7 @@
  */
 
 import path from 'path';
+import { restrictAccountStatementStatementProps } from '@aws/dea-app/lib/storage/restrict-account-statement';
 import { Duration, aws_events_targets } from 'aws-cdk-lib';
 import { Rule } from 'aws-cdk-lib/aws-events';
 import {
@@ -15,7 +16,7 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Bucket, EventType } from 'aws-cdk-lib/aws-s3';
 import { LambdaDestination } from 'aws-cdk-lib/aws-s3-notifications';
@@ -41,7 +42,7 @@ export class DeaEventHandlers extends Construct {
   public s3BatchDeleteCaseFileLambda: NodejsFunction;
   public s3BatchDeleteCaseFileBatchJobRole: Role;
   public s3BatchDeleteCaseFileLambdaRole: Role;
-  public dataSyncExeuctionEventRole: Role;
+  public dataSyncExecutionEventRole: Role;
 
   public constructor(scope: Construct, stackName: string, props: DeaEventHandlerProps) {
     super(scope, stackName);
@@ -109,7 +110,7 @@ export class DeaEventHandlers extends Construct {
     );
 
     // Create Lambda and event for DataSync
-    this.dataSyncExeuctionEventRole = this.createDataSyncExectutionEventRole(
+    this.dataSyncExecutionEventRole = this.createDataSyncExecutionEventRole(
       'data-sync-execution-event-role',
       props.deaTableArn,
       props.dataSyncLogsBucket.bucketArn,
@@ -122,7 +123,7 @@ export class DeaEventHandlers extends Construct {
       'DataSyncExecutionEventLambda',
       '../../src/handlers/datasync-execution-event-handler.ts',
       { NODE_OPTIONS: '--max-old-space-size=8192', ...props.lambdaEnv },
-      this.dataSyncExeuctionEventRole
+      this.dataSyncExecutionEventRole
     );
 
     this.createBucketEventForDataSyncExecution(dataSyncExecutionEventLambda, props.dataSyncLogsBucket);
@@ -164,10 +165,12 @@ export class DeaEventHandlers extends Construct {
   ): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
       memorySize: 512,
+      tracing: Tracing.ACTIVE,
       role,
       timeout: Duration.seconds(60),
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
+      // nosemgrep
       entry: path.join(__dirname, pathToSource),
       depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
       environment: {
@@ -232,6 +235,8 @@ export class DeaEventHandlers extends Construct {
         resources: [this.s3BatchDeleteCaseFileLambda.functionArn],
       })
     );
+
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
 
     return role;
   }
@@ -330,7 +335,7 @@ export class DeaEventHandlers extends Construct {
     return role;
   }
 
-  private createDataSyncExectutionEventRole(
+  private createDataSyncExecutionEventRole(
     id: string,
     tableArn: string,
     datasyncLogBucketArn: string,

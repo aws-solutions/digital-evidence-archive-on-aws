@@ -35,6 +35,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getCustomUserAgent, getRequiredEnv } from '../lambda-http-helpers';
 import { logger } from '../logger';
 import { DeaCaseFile, DownloadCaseFileResult } from '../models/case-file';
+import { restrictAccountStatement } from './restrict-account-statement';
 
 const region = process.env.AWS_REGION;
 
@@ -517,6 +518,7 @@ function getPolicyForUpload(objectKey: string, sourceIp: string, datasetsProvide
           Action: ['s3:PutObject'],
           Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
         },
+        restrictAccountStatement,
       ],
     });
   }
@@ -547,6 +549,7 @@ function getPolicyForUpload(objectKey: string, sourceIp: string, datasetsProvide
           },
         },
       },
+      restrictAccountStatement,
     ],
   });
 }

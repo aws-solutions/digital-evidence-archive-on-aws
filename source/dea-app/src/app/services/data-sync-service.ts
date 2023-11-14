@@ -108,7 +108,7 @@ export const listDatasyncTasks = async (dataSyncProvider: DataSyncProvider) => {
   return tasks;
 };
 
-export const desrcibeTask = async (
+export const describeTask = async (
   taskArn: string,
   dataSyncProvider: DataSyncProvider
 ): Promise<DeaDataSyncTask> => {
@@ -334,6 +334,7 @@ export const getDataSyncTask = async (
   // Validate destination location settings.
   const destinationLocationSettings = {
     ...getDestinationLocationSettings(dataSyncProvider),
+    // nosemgrep
     LocationUri: new RegExp(`^s3://${dataSyncProvider.datasetsBucketName}`),
   };
   const destinationLocationSettingSchema = Joi.compile(destinationLocationSettings);

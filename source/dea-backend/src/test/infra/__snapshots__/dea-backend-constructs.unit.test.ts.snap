@@ -862,6 +862,23 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             Object {
+              "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "s3:ResourceAccount": Array [
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
               "Action": "s3:GetObject",
               "Effect": "Allow",
               "Resource": Object {
@@ -1139,6 +1156,23 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   ],
                 },
               ],
+            },
+            Object {
+              "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "s3:ResourceAccount": Array [
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
             },
             Object {
               "Action": Array [
@@ -1534,6 +1568,39 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::SQS::Queue",
       "UpdateReplacePolicy": "Delete",
     },
+    "DeaAuditauditobjectlockdlqPolicyB8ECFFC5": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sqs:*",
+              "Condition": Object {
+                "Bool": Object {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaAuditauditobjectlockdlqF310E49D",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": Array [
+          Object {
+            "Ref": "DeaAuditauditobjectlockdlqF310E49D",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
     "DeaAuditauditobjectlockerC902034D": Object {
       "DependsOn": Array [
         "DeaAuditauditobjectlockerServiceRoleDefaultPolicyF8DF7136",
@@ -1562,6 +1629,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 60,
+        "TracingConfig": Object {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -1600,6 +1670,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
             Object {
               "Action": Array [
                 "s3:PutObjectLegalHold",
@@ -1694,6 +1772,24 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "PolicyDocument": Object {
           "Statement": Array [
             Object {
+              "Action": "sqs:*",
+              "Condition": Object {
+                "Bool": Object {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaAuditauditobjectlockqueue5FAA6838",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
               "Action": Array [
                 "sqs:SendMessage",
                 "sqs:GetQueueAttributes",
@@ -1755,6 +1851,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 300,
+        "TracingConfig": Object {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -1815,6 +1914,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
             Object {
               "Action": "firehose:PutRecordBatch",
               "Effect": "Allow",
@@ -2506,6 +2613,23 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "s3:ResourceAccount": Array [
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
                 "kms:Encrypt",
                 "kms:Decrypt",
                 "kms:GenerateDataKey",
@@ -3051,6 +3175,23 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 ],
               },
             },
+            Object {
+              "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "s3:ResourceAccount": Array [
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
           ],
           "Version": "2012-10-17",
         },
@@ -3363,6 +3504,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 60,
+        "TracingConfig": Object {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3452,6 +3596,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   ],
                 ],
               },
+            },
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
             },
           ],
           "Version": "2012-10-17",
@@ -3543,6 +3695,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 60,
+        "TracingConfig": Object {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3638,6 +3793,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 ],
               },
             },
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
           ],
           "Version": "2012-10-17",
         },
@@ -3718,6 +3881,23 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   "Arn",
                 ],
               },
+            },
+            Object {
+              "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "s3:ResourceAccount": Array [
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
             },
           ],
           "Version": "2012-10-17",
@@ -3801,6 +3981,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 ],
               },
             },
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
           ],
           "Version": "2012-10-17",
         },
@@ -3860,6 +4048,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 60,
+        "TracingConfig": Object {
+          "Mode": "Active",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -3974,6 +4165,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4074,6 +4268,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4206,6 +4403,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4322,6 +4522,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4438,6 +4641,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4554,6 +4760,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4670,6 +4879,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4786,6 +4998,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -4902,6 +5117,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5018,6 +5236,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5134,6 +5355,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5250,6 +5474,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5366,6 +5593,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5482,6 +5712,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5598,6 +5831,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5714,6 +5950,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5830,6 +6069,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -5946,6 +6188,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -6062,6 +6307,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -6178,6 +6426,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -6294,6 +6545,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -6410,6 +6664,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -6526,6 +6783,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -6642,6 +6902,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -6758,6 +7021,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -6874,6 +7140,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -6990,6 +7259,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -7106,6 +7378,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -7206,6 +7481,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -7338,6 +7616,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -7454,6 +7735,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -7554,6 +7838,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -7686,6 +7973,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -7802,6 +8092,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -7918,6 +8211,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -8034,6 +8330,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -8150,6 +8449,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -8266,6 +8568,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -8382,6 +8687,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -8498,6 +8806,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -8614,6 +8925,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -8730,6 +9044,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -8846,6 +9163,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -8962,6 +9282,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -9078,6 +9401,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -9194,6 +9520,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -9310,6 +9639,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -9426,6 +9758,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -9542,6 +9877,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -9658,6 +9996,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Runtime": "nodejs18.x",
         "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -11146,6 +11487,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
         "StageName": "[STAGE-REMOVED]",
+        "TracingEnabled": true,
       },
       "Type": "AWS::ApiGateway::Stage",
     },
@@ -18015,6 +18357,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                 ],
               },
             },
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
           ],
           "Version": "2012-10-17",
         },
@@ -18439,6 +18789,23 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "s3:ResourceAccount": Array [
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
@@ -18479,6 +18846,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   "Arn",
                 ],
               },
+            },
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
             },
           ],
           "Version": "2012-10-17",
@@ -18553,6 +18928,23 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   "Arn",
                 ],
               },
+            },
+            Object {
+              "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "s3:ResourceAccount": Array [
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
             },
           ],
           "Version": "2012-10-17",
