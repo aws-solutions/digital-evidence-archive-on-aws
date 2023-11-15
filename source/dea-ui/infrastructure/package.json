@@ -32,10 +32,12 @@
     "test": "rushx test:only",
     "test:dev": "heft test --test-path-pattern test --watch",
     "test:noe2e": "heft test --no-build --test-path-pattern '.*/*(integration|unit).test.*' && rushx make-badges",
+    "test:noe2enocdk": "heft test --no-build --test-path-pattern '.*/*.(integration|unit).test.*' && rushx make-badges",
     "test:only": "heft test --no-build --verbose --test-path-pattern test",
-    "test:only:u": "heft test -u --no-build --verbose --test-path-pattern test",
+    "cdkunit:only": ". ../../common/scripts/setEnv.sh && heft test --no-build --verbose --test-path-pattern '.*/*cdkunit.test.*'",
+    "cdkunit:only:u": ". ../../common/scripts/setEnv.sh && heft test -u --no-build --verbose --test-path-pattern '.*/*cdkunit.test.*'",
     "test:sonar": "rushx test:only",
-    "unit:only": ". ../common/scripts/setEnvDummy.sh && heft test --no-build --test-path-pattern '.*/*unit.test.*'",
+    "unit:only": ". ../../common/scripts/setEnvDummy.sh && heft test --no-build --test-path-pattern '.*/*.unit.test.*'",
     "version:major": "npm version major",
     "version:minor": "npm version minor",
     "version:patch": "npm version patch",
@@ -50,6 +52,7 @@
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@aws/dea-ui": "workspace:*",
     "@rushstack/eslint-config": "^3.3.3",
     "@rushstack/heft": "^0.50.0",
     "@rushstack/heft-jest-plugin": "^0.5.5",

@@ -347,6 +347,7 @@ importers:
   ../../dea-ui/infrastructure:
     specifiers:
       '@aws/dea-backend': workspace:*
+      '@aws/dea-ui': workspace:*
       '@rushstack/eslint-config': ^3.3.3
       '@rushstack/heft': ^0.50.0
       '@rushstack/heft-jest-plugin': ^0.5.5
@@ -382,6 +383,7 @@ importers:
       constructs: 10.2.69
       js-yaml: 4.1.0
     devDependencies:
+      '@aws/dea-ui': link:../ui
       '@rushstack/eslint-config': 3.3.3_omwtwah7bpqs4shhhbjyuyh7oa
       '@rushstack/heft': 0.50.0_@types+node@18.15.7
       '@rushstack/heft-jest-plugin': 0.5.5_snnxf3nvbglbfxdd6jpku5a5la
@@ -6575,7 +6577,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001554
+      caniuse-lite: 1.0.30001562
       electron-to-chromium: 1.4.438
       node-releases: 2.0.12
       update-browserslist-db: 1.0.11_browserslist@4.21.9
@@ -6585,7 +6587,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001554
+      caniuse-lite: 1.0.30001562
       electron-to-chromium: 1.4.554
       node-releases: 2.0.13
       update-browserslist-db: 1.0.13_browserslist@4.22.1
@@ -6660,8 +6662,8 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  /caniuse-lite/1.0.30001554:
-    resolution: {integrity: sha512-A2E3U//MBwbJVzebddm1YfNp7Nud5Ip+IPn4BozBmn4KqVX7AvluoIDFWjsv5OkGnKUXQVmMSoMKLa3ScCblcQ==}
+  /caniuse-lite/1.0.30001562:
+    resolution: {integrity: sha512-kfte3Hym//51EdX4239i+Rmp20EsLIYGdPkERegTgU19hQWCRhsRFGKHTliUlsry53tv17K7n077Kqa0WJU4ng==}
 
   /case/1.6.3:
     resolution: {integrity: sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==}
@@ -10564,7 +10566,7 @@ packages:
     dependencies:
       '@next/env': 12.3.2
       '@swc/helpers': 0.4.11
-      caniuse-lite: 1.0.30001554
+      caniuse-lite: 1.0.30001562
       postcss: 8.4.31
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2

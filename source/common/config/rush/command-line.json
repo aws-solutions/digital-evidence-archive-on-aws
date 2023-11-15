@@ -192,6 +192,22 @@
       "allowWarningsInSuccessfulBuild": true
     },
     {
+      "name": "cdkunit:only",
+      "commandKind": "bulk",
+      "summary": "Used to run cdk tests that include snapshots",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
+    },
+    {
+      "name": "cdkunit:only:u",
+      "commandKind": "bulk",
+      "summary": "Used to run cdk tests that include snapshots, additionally updates snapshots",
+      "safeForSimultaneousRushProcesses": true,
+      "enableParallelism": true,
+      "allowWarningsInSuccessfulBuild": true
+    },
+    {
       "name": "test:sonar",
       "commandKind": "bulk",
       "summary": "Used to perform static tests on the packages on the build pipeline",

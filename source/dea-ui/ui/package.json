@@ -42,6 +42,8 @@
     "test:dev": "jest --watch",
     "test:noe2e": "jest --ci --coverage '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": "jest --ci --coverage",
+    "cdkunit:only": "echo ':)'",
+    "cdkunit:only:u": "echo ':)'",
     "test:sonar": "rushx test:only",
     "unit:only": "jest --ci '.*/*unit.test.*'",
     "version:major": "npm version major",
