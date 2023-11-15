@@ -293,7 +293,7 @@ export const getDestinationLocationSettings = (dataSyncProvider: DataSyncProvide
 export const getDataSyncTaskSettings = (dataSyncProvider: DataSyncProvider) => ({
   Options: {
     VerifyMode: VerifyMode.ONLY_FILES_TRANSFERRED,
-    OverwriteMode: OverwriteMode.ALWAYS,
+    OverwriteMode: OverwriteMode.NEVER,
   },
   TaskReportConfig: {
     ReportLevel: ReportLevel.SUCCESSES_AND_ERRORS,
