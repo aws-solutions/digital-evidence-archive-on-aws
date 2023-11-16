@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { CaseFileDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
 import {
   Button,
@@ -22,6 +23,7 @@ import {
   breadcrumbLabels,
   caseStatusLabels,
   commonLabels,
+  commonTableLabels,
   fileDetailLabels,
 } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
@@ -68,6 +70,26 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
     }
   }
 
+  function getDataVaultSection(data: CaseFileDTO | undefined) {
+    if (!data?.dataVaultUlid) {
+      return;
+    }
+    return (
+      <Container header={<Header variant="h2">{breadcrumbLabels.dataVaultDetailsLabel}</Header>}>
+        <ColumnLayout columns={2} variant="text-grid">
+          <TextContent>
+            <h5>{commonTableLabels.executionIdHeader}</h5>
+            <p>{data.executionId}</p>
+          </TextContent>
+          <TextContent>
+            <h5>{fileDetailLabels.associatedBy}</h5>
+            {data.associationCreatedBy}
+          </TextContent>
+        </ColumnLayout>
+      </Container>
+    );
+  }
+
   if (isLoading) {
     return <h1>{commonLabels.loadingLabel}</h1>;
   } else {
@@ -82,68 +104,71 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
           </SpaceBetween>
         }
       >
-        <Container
-          header={
-            <Header
-              variant="h2"
-              actions={
-                <SpaceBetween direction="horizontal" size="xs">
-                  <Button
-                    data-testid="download-case-file-audit-button"
-                    onClick={downloadCaseFileAuditHandler}
-                    disabled={auditDownloadInProgress || !canDownloadCaseAudit(userActions.data?.actions)}
-                  >
-                    {auditLogLabels.caseFileAuditLogLabel}
-                    {auditDownloadInProgress ? <Spinner size="big" /> : null}
-                  </Button>
-                </SpaceBetween>
-              }
-            >
-              {breadcrumbLabels.fileDetailsLabel}
-              {auditDownloadInProgress ? <Spinner size="big" /> : null}
-            </Header>
-          }
-        >
-          <ColumnLayout columns={3} variant="text-grid">
-            <TextContent>
-              <div>
-                {' '}
-                <h5>{fileDetailLabels.uploadDateLabel}</h5>
-                <SpaceBetween size="l">
-                  <p>
-                    {data.created
-                      ? new Date(data.created).toLocaleString([], {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })
-                      : '-'}
-                  </p>
+        <SpaceBetween size="xxl">
+          <Container
+            header={
+              <Header
+                variant="h2"
+                actions={
+                  <SpaceBetween direction="horizontal" size="xs">
+                    <Button
+                      data-testid="download-case-file-audit-button"
+                      onClick={downloadCaseFileAuditHandler}
+                      disabled={auditDownloadInProgress || !canDownloadCaseAudit(userActions.data?.actions)}
+                    >
+                      {auditLogLabels.caseFileAuditLogLabel}
+                      {auditDownloadInProgress ? <Spinner size="big" /> : null}
+                    </Button>
+                  </SpaceBetween>
+                }
+              >
+                {breadcrumbLabels.fileDetailsLabel}
+                {auditDownloadInProgress ? <Spinner size="big" /> : null}
+              </Header>
+            }
+          >
+            <ColumnLayout columns={3} variant="text-grid">
+              <TextContent>
+                <div>
+                  {' '}
+                  <h5>{fileDetailLabels.uploadDateLabel}</h5>
+                  <SpaceBetween size="l">
+                    <p>
+                      {data.created
+                        ? new Date(data.created).toLocaleString([], {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })
+                        : '-'}
+                    </p>
 
-                  <h5>{fileDetailLabels.fileSizeLabel}</h5>
-                </SpaceBetween>
-                <p>{formatFileSize(data.fileSizeBytes)}</p>
-              </div>
-            </TextContent>
-            <TextContent>
-              <div>
-                <h5>{commonLabels.description}</h5>
-                <p>{data.details}</p>
-              </div>
-            </TextContent>
-            <TextContent>
-              <div>
-                <h5>{commonLabels.statusLabel}</h5>
-                <SpaceBetween size="l">
-                  <p>{getStatusIcon(data.status)}</p>
+                    <h5>{fileDetailLabels.fileSizeLabel}</h5>
+                  </SpaceBetween>
+                  <p>{formatFileSize(data.fileSizeBytes)}</p>
+                </div>
+              </TextContent>
+              <TextContent>
+                <div>
+                  <h5>{commonLabels.description}</h5>
+                  <p>{data.details}</p>
+                </div>
+              </TextContent>
+              <TextContent>
+                <div>
+                  <h5>{commonLabels.statusLabel}</h5>
+                  <SpaceBetween size="l">
+                    <p>{getStatusIcon(data.status)}</p>
 
-                  <h5>{fileDetailLabels.shaHashLabel}</h5>
-                </SpaceBetween>
-                <p>{data.sha256Hash}</p>
-              </div>
-            </TextContent>
-          </ColumnLayout>
-        </Container>
+                    <h5>{fileDetailLabels.shaHashLabel}</h5>
+                  </SpaceBetween>
+                  <p>{data.sha256Hash}</p>
+                </div>
+              </TextContent>
+            </ColumnLayout>
+          </Container>
+          {getDataVaultSection(data)}
+        </SpaceBetween>
       </ContentLayout>
     );
   }

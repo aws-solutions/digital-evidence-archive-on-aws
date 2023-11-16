@@ -346,6 +346,7 @@ export const fileDetailLabels = {
   uploadDateLabel: 'Upload date',
   fileSizeLabel: 'File size',
   shaHashLabel: 'SHA 256 hash',
+  associatedBy: 'Associated by',
 };
 
 export const systemUseNotificationText =

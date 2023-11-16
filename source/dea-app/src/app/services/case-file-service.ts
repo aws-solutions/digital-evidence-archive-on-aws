@@ -3,7 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Paged } from 'dynamodb-onetable';
+import { OneTableError, Paged } from 'dynamodb-onetable';
+import { logger } from '../../logger';
 import {
   CaseFileDTO,
   CompleteCaseFileUploadDTO,
@@ -146,7 +147,20 @@ export const createCaseAssociation = async (
   deaCaseFile: DeaCaseFile,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFileResult> => {
-  return await CaseFilePersistence.createCaseFileAssociation(deaCaseFile, repositoryProvider);
+  try {
+    return await CaseFilePersistence.createCaseFileAssociation(deaCaseFile, repositoryProvider);
+  } catch (error) {
+    const oneTableError: OneTableError = error;
+    const conditionalcheckfailed = oneTableError.context?.err?.CancellationReasons.find(
+      (reason: { Code: string }) => reason.Code === 'ConditionalCheckFailed'
+    );
+    if (oneTableError.code === 'TransactionCanceledException' && conditionalcheckfailed) {
+      const errorMessage = `A file with the same name has been previously uploaded or attached to the case.`;
+      logger.info(errorMessage, deaCaseFile);
+      throw new ValidationError(errorMessage);
+    }
+    throw error;
+  }
 };
 
 export const listCaseFilesByFilePath = async (
@@ -170,7 +184,14 @@ export const hydrateUsersForFiles = async (
   repositoryProvider: ModelRepositoryProvider
 ): Promise<CaseFileDTO[]> => {
   // get all unique user ulids referenced on the files
-  const userUlids = [...new Set(files.map((file) => file.createdBy))];
+  const userUlids = [
+    ...new Set([
+      ...files.map((file) => file.createdBy),
+      ...files
+        .filter((file) => file.associationCreatedBy?.length)
+        .map((file) => file.associationCreatedBy ?? ''),
+    ]),
+  ];
   // fetch the users
   const userMap = await getUsers(userUlids, repositoryProvider);
   return caseFilesToDTO(files, userMap);
@@ -186,6 +207,10 @@ const caseFilesToDTO = (
     if (user) {
       createdBy = `${user?.firstName} ${user?.lastName}`;
     }
+    const associationUser = userMap.get(file.associationCreatedBy ?? '');
+    const associationCreatedBy = associationUser
+      ? `${associationUser?.firstName} ${associationUser?.lastName}`
+      : file.associationCreatedBy;
     return {
       ulid: file.ulid,
       caseUlid: file.caseUlid,
@@ -202,6 +227,9 @@ const caseFilesToDTO = (
       reason: file.reason,
       details: file.details,
       fileS3Key: file.fileS3Key,
+      dataVaultUlid: file.dataVaultUlid,
+      executionId: file.executionId,
+      associationCreatedBy,
     };
   });
 };

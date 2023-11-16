@@ -278,4 +278,96 @@ describe('test data vault file details', () => {
       "Required path param 'dataVaultId' is missing."
     );
   }, 40000);
+
+  it('should fail if a file with a same path/name is associated to the case', async () => {
+    const name = 'duplicateCaseFileTest';
+    const event = getDummyEvent({
+      body: JSON.stringify({
+        name,
+      }),
+    });
+    const response = await createDataVault(event, dummyContext, repositoryProvider);
+    const newDataVault = await JSON.parse(response.body);
+
+    // Add files to data vault
+    const pathsToGenerate = ['/'];
+
+    const totalFiles = [];
+
+    for (const path of pathsToGenerate) {
+      const generatedFiles = dataVaultFileGenerate(1, path, newDataVault.ulid, user.ulid);
+      totalFiles.push(...generatedFiles);
+    }
+    const filesList = [];
+    for (const file of totalFiles) {
+      const response = await createDataVaultFile(file, repositoryProvider);
+      filesList.push(response);
+    }
+
+    // Get files from root directory
+    const pageOfDataVaultFiles: Paged<DeaDataVaultFile> = await listDataVaultFilesByFilePath(
+      newDataVault.ulid,
+      '/',
+      10000,
+      repositoryProvider,
+      undefined
+    );
+
+    const rootFolderUlids = pageOfDataVaultFiles.map((file) => file.ulid);
+
+    // Create the association
+    const theCase: DeaCaseInput = {
+      name: 'duplicateCaseFileTest',
+      description: 'An initial description',
+    };
+    const createdCase = await createCase(theCase, user, repositoryProvider);
+
+    const caseUlids = [createdCase.ulid];
+    const caseAssociateEvent = getDummyEvent({
+      pathParameters: {
+        dataVaultId: newDataVault.ulid,
+      },
+      body: JSON.stringify({
+        caseUlids,
+        fileUlids: rootFolderUlids,
+      }),
+    });
+
+    caseAssociateEvent.headers['userUlid'] = user.ulid;
+
+    const caseAssociateResponse = await createCaseAssociation(
+      caseAssociateEvent,
+      dummyContext,
+      repositoryProvider
+    );
+
+    expect(caseAssociateResponse.statusCode).toEqual(200);
+    expect(JSON.parse(caseAssociateResponse.body).filesTransferred.length).toEqual(1);
+
+    // Check cases root directory for number of files
+    const caseFiles1 = await callListCaseFiles(user.ulid, repositoryProvider, createdCase.ulid, '30', '/');
+    expect(caseFiles1.files.length).toEqual(1);
+
+    // Check case details for total number of files
+    const caseEvent = getDummyEvent({
+      pathParameters: {
+        caseId: createdCase.ulid,
+      },
+    });
+
+    const caseResponse = await getCase(caseEvent, dummyContext, repositoryProvider);
+
+    expect(caseResponse.statusCode).toEqual(200);
+
+    if (!caseResponse.body) {
+      fail();
+    }
+
+    const retrievedCase: DeaCase = jsonParseWithDates(caseResponse.body);
+    expect(retrievedCase.objectCount).toEqual(1);
+
+    await expect(createCaseAssociation(caseAssociateEvent, dummyContext, repositoryProvider)).rejects.toThrow(
+      'A file with the same name has been previously uploaded or attached to the case.'
+    );
+  }, 40000);
 });

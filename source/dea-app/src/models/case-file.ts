@@ -79,6 +79,9 @@ export interface CaseFileDTO {
   readonly reason?: string;
   readonly details?: string;
   readonly fileS3Key: string;
+  readonly dataVaultUlid?: string;
+  readonly executionId?: string;
+  readonly associationCreatedBy?: string;
 }
 
 export interface CompleteCaseFileUploadDTO {

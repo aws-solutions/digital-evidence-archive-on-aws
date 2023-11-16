@@ -5,7 +5,7 @@
 
 import { QueryExecutionState } from '@aws-sdk/client-athena';
 import { DeaCase } from '@aws/dea-app/lib/models/case';
-import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
+import { CaseFileDTO, DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
 import { CaseUser } from '@aws/dea-app/lib/models/case-user';
 import { DeaUser } from '@aws/dea-app/lib/models/user';
 import useSWR from 'swr';
@@ -20,7 +20,7 @@ import { CreateCaseForm, EditCaseForm, UpdateCaseStatusForm } from '../models/Ca
 import { CaseUserForm } from '../models/CaseUser';
 import { useListDeaFiles } from './base';
 import { DeaListResult, DeaSingleResult } from './models/api-results';
-import { CaseFileDTO, CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
+import { CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
 
 const progressStatus = [QueryExecutionState.RUNNING.valueOf(), QueryExecutionState.QUEUED.valueOf()];
 
