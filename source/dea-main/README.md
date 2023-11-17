@@ -1,7 +1,5 @@
 # `dea-main`
 
-⚠️ $\textcolor{red}{\text{Experimental}}$ ⚠️ : Not for use in any critical, production, or otherwise important deployments
-
 # Code Coverage
 
 | Statements                                                                               | Branches                                                                             | Functions                                                                              | Lines                                                                          |

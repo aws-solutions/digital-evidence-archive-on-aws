@@ -22,9 +22,9 @@ import { useListDeaFiles } from './base';
 import { DeaListResult, DeaSingleResult } from './models/api-results';
 import { CaseOwnerDTO, DeaCaseDTO, ScopedDeaCaseDTO } from './models/case';
 
-const progressStatus = [QueryExecutionState.RUNNING.valueOf(), QueryExecutionState.QUEUED.valueOf()];
+export const progressStatus = [QueryExecutionState.RUNNING.valueOf(), QueryExecutionState.QUEUED.valueOf()];
 
-interface AuditResult {
+export interface AuditResult {
   status: QueryExecutionState | string;
   downloadUrl: string | undefined;
 }

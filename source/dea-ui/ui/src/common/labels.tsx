@@ -173,13 +173,14 @@ export const auditLogLabels = {
   caseAuditLogLabel: 'Audit log',
   caseFileAuditLogLabel: 'Download file audit log CSV',
   downloadFileAuditLabel: 'Download file audit log CSV',
+  dataVaultAuditLogLabel: 'Download Data vault audit log CSV',
   descriptionLabel:
     'This table records all activity and changes having to do with this case. SHA 256 Hash will display in downloaded file.',
   emptyAuditLabel: 'No audit',
   noDisplayAuditLabel: 'No audit to display.',
   loadingLabel: 'loading audit log',
   errorLabel: 'Error downloading audit logs. Audit query is empty or encountered an error or cancellation.',
-  downloadCaseAuditFail: (fileName: string) => `Failed to download case file audit for ${fileName}`,
+  downloadAuditFail: (targetName: string) => `Failed to download audit report for ${targetName}`,
 };
 
 export const paginationLabels = {

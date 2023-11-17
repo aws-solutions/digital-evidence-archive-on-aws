@@ -17,7 +17,12 @@ import {
   TextContent,
 } from '@cloudscape-design/components';
 import { useState } from 'react';
-import { removeDataVaultFileCaseAssociation, useGetDataVaultFileDetailsById } from '../../api/data-vaults';
+import { useAvailableEndpoints } from '../../api/auth';
+import {
+  getDataVaultFileAuditCSV,
+  removeDataVaultFileCaseAssociation,
+  useGetDataVaultFileDetailsById,
+} from '../../api/data-vaults';
 import {
   auditLogLabels,
   breadcrumbLabels,
@@ -29,11 +34,15 @@ import {
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
+import { AuditDownloadButton } from '../audit/audit-download-button';
 
 export interface DataVaultFileDetailsBodyProps {
   readonly dataVaultId: string;
   readonly fileId: string;
 }
+
+export const DATA_VAULTS_FILE_AUDIT_ENDPOINT = '/datavaults/{dataVaultId}/files/{fileId}/auditPOST';
+export const DOWNLOAD_VAULT_FILE_AUDIT_TEST_ID = 'download-data-vault-file-audit-button';
 
 function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Element {
   const { data, isLoading, mutate } = useGetDataVaultFileDetailsById(props.dataVaultId, props.fileId);
@@ -41,6 +50,7 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const { pushNotification } = useNotifications();
   const [checkedState, setCheckedState] = useState<boolean[]>([]);
+  const availableEndpoints = useAvailableEndpoints();
 
   function enableDisassociateToCaseModal() {
     setShowDisassociateToCaseModal(true);
@@ -162,9 +172,18 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
                 variant="h2"
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
-                    <Button data-testid="download-data-vault-file-audit-button" disabled={true}>
-                      {auditLogLabels.downloadFileAuditLabel}
-                    </Button>
+                    <AuditDownloadButton
+                      label={auditLogLabels.downloadFileAuditLabel}
+                      testId={DOWNLOAD_VAULT_FILE_AUDIT_TEST_ID}
+                      permissionCallback={() =>
+                        availableEndpoints.data?.includes(DATA_VAULTS_FILE_AUDIT_ENDPOINT)
+                      }
+                      downloadCallback={async () =>
+                        await getDataVaultFileAuditCSV(data.dataVaultUlid, data.ulid)
+                      }
+                      type="DataVault"
+                      targetName={data.fileName}
+                    />
                   </SpaceBetween>
                 }
               >

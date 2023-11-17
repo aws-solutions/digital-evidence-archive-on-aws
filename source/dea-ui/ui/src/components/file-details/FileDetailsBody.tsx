@@ -6,17 +6,14 @@
 import { CaseFileDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
 import {
-  Button,
   ColumnLayout,
   Container,
   ContentLayout,
   Header,
   SpaceBetween,
-  Spinner,
   StatusIndicator,
   TextContent,
 } from '@cloudscape-design/components';
-import { useState } from 'react';
 import { getCaseFileAuditCSV, useGetCaseActions, useGetFileDetailsById } from '../../api/cases';
 import {
   auditLogLabels,
@@ -26,9 +23,9 @@ import {
   commonTableLabels,
   fileDetailLabels,
 } from '../../common/labels';
-import { useNotifications } from '../../context/NotificationsContext';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadCaseAudit } from '../../helpers/userActionSupport';
+import { AuditDownloadButton } from '../audit/audit-download-button';
 
 export interface FileDetailsBodyProps {
   readonly caseId: string;
@@ -36,37 +33,14 @@ export interface FileDetailsBodyProps {
 }
 
 function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
-  const [auditDownloadInProgress, setAuditDownloadInProgress] = useState(false);
   const { data, isLoading } = useGetFileDetailsById(props.caseId, props.fileId);
   const userActions = useGetCaseActions(props.caseId);
-  const { pushNotification } = useNotifications();
 
   function getStatusIcon(status: string) {
     if (status == CaseFileStatus.ACTIVE) {
       return <StatusIndicator>{caseStatusLabels.active}</StatusIndicator>;
     } else {
       return <StatusIndicator type="stopped">{caseStatusLabels.inactive}</StatusIndicator>;
-    }
-  }
-
-  async function downloadCaseFileAuditHandler() {
-    try {
-      setAuditDownloadInProgress(true);
-      try {
-        const csvDownloadUrl = await getCaseFileAuditCSV(props.caseId, props.fileId);
-        const downloadDate = new Date();
-        const alink = document.createElement('a');
-        alink.href = csvDownloadUrl;
-        alink.download = `CaseFileAudit_${data?.fileName}_${downloadDate.getFullYear()}_${
-          downloadDate.getMonth() + 1
-        }_${downloadDate.getDate()}_H${downloadDate.getHours()}.csv`;
-        alink.click();
-      } catch (e) {
-        pushNotification('error', auditLogLabels.downloadCaseAuditFail(data?.fileName ?? 'file'));
-        console.log(`failed to download case file audit for ${data?.fileName ?? 'unknown file'}`, e);
-      }
-    } finally {
-      setAuditDownloadInProgress(false);
     }
   }
 
@@ -111,19 +85,18 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
                 variant="h2"
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
-                    <Button
-                      data-testid="download-case-file-audit-button"
-                      onClick={downloadCaseFileAuditHandler}
-                      disabled={auditDownloadInProgress || !canDownloadCaseAudit(userActions.data?.actions)}
-                    >
-                      {auditLogLabels.caseFileAuditLogLabel}
-                      {auditDownloadInProgress ? <Spinner size="big" /> : null}
-                    </Button>
+                    <AuditDownloadButton
+                      label={auditLogLabels.caseFileAuditLogLabel}
+                      testId="download-case-file-audit-button"
+                      permissionCallback={() => canDownloadCaseAudit(userActions.data?.actions)}
+                      downloadCallback={async () => await getCaseFileAuditCSV(props.caseId, props.fileId)}
+                      type="CaseFileAudit"
+                      targetName={data?.fileName}
+                    />
                   </SpaceBetween>
                 }
               >
                 {breadcrumbLabels.fileDetailsLabel}
-                {auditDownloadInProgress ? <Spinner size="big" /> : null}
               </Header>
             }
           >

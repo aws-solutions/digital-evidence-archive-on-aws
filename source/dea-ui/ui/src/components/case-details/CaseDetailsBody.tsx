@@ -11,17 +11,14 @@ import {
   ContentLayout,
   Header,
   SpaceBetween,
-  Spinner,
   StatusIndicator,
   TextContent,
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
 import { getCaseAuditCSV, useGetCaseActions, useGetCaseById } from '../../api/cases';
-import { DeaCaseDTO } from '../../api/models/case';
 import { auditLogLabels, caseDetailLabels, caseStatusLabels, commonLabels } from '../../common/labels';
-import { useNotifications } from '../../context/NotificationsContext';
 import { canDownloadCaseAudit, canUpdateCaseDetails } from '../../helpers/userActionSupport';
+import { AuditDownloadButton } from '../audit/audit-download-button';
 import CaseDetailsTabs from './CaseDetailsTabs';
 
 export interface CaseDetailsBodyProps {
@@ -30,10 +27,8 @@ export interface CaseDetailsBodyProps {
 
 function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
   const router = useRouter();
-  const [downloadInProgress, setDownloadInProgress] = useState(false);
   const userActions = useGetCaseActions(props.caseId);
   const { data, isLoading } = useGetCaseById(props.caseId);
-  const { pushNotification } = useNotifications();
 
   function getStatusIcon(status: CaseStatus) {
     if (status == CaseStatus.ACTIVE) {
@@ -68,23 +63,14 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
                 variant="h2"
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
-                    <Button
-                      data-testid="download-case-audit-csv-button"
-                      disabled={downloadInProgress || !canDownloadCaseAudit(userActions.data?.actions)}
-                      onClick={async () => {
-                        setDownloadInProgress(true);
-                        try {
-                          await downloadCaseAudit(data);
-                        } catch (e) {
-                          pushNotification('error', auditLogLabels.errorLabel);
-                        } finally {
-                          setDownloadInProgress(false);
-                        }
-                      }}
-                    >
-                      {auditLogLabels.downloadCSVLabel}
-                      {downloadInProgress ? <Spinner /> : null}
-                    </Button>
+                    <AuditDownloadButton
+                      label={auditLogLabels.downloadCSVLabel}
+                      testId="download-case-audit-csv-button"
+                      permissionCallback={() => canDownloadCaseAudit(userActions.data?.actions)}
+                      downloadCallback={async () => await getCaseAuditCSV(data.ulid)}
+                      type="CaseAudit"
+                      targetName={data.name}
+                    />
                     <Button
                       disabled={!canUpdateCaseDetails(userActions.data?.actions)}
                       onClick={editCaseHandler}
@@ -135,16 +121,5 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
     );
   }
 }
-
-const downloadCaseAudit = async (deaCase: DeaCaseDTO) => {
-  const csvDownloadUrl = await getCaseAuditCSV(deaCase.ulid);
-  const downloadDate = new Date();
-  const alink = document.createElement('a');
-  alink.href = csvDownloadUrl;
-  alink.download = `CaseAudit_${deaCase.name}_${downloadDate.getFullYear()}_${
-    downloadDate.getMonth() + 1
-  }_${downloadDate.getDate()}_H${downloadDate.getHours()}.csv`;
-  alink.click();
-};
 
 export default CaseDetailsBody;

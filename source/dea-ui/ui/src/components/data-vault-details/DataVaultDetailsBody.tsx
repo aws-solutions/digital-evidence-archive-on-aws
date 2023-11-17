@@ -17,13 +17,16 @@ import {
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { useAvailableEndpoints } from '../../api/auth';
-import { useGetDataVaultById } from '../../api/data-vaults';
-import { commonLabels, dataVaultDetailLabels } from '../../common/labels';
+import { getDataVaultAuditCSV, useGetDataVaultById } from '../../api/data-vaults';
+import { auditLogLabels, commonLabels, dataVaultDetailLabels } from '../../common/labels';
 import { formatDateTimeFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
+import { AuditDownloadButton } from '../audit/audit-download-button';
 import DataVaultFilesTable from './DataVaultFilesTable';
 
-const DATA_VAULTS_PUT_ENDPOINT = '/datavaults/{dataVaultId}/detailsPUT';
+export const DATA_VAULTS_PUT_ENDPOINT = '/datavaults/{dataVaultId}/detailsPUT';
+export const DATA_VAULTS_AUDIT_ENDPOINT = '/datavaults/{dataVaultId}/auditPOST';
+export const DOWNLOAD_AUDIT_TEST_ID = 'download-datavault-audit-csv-button';
 export interface DataVaultDetailsBodyProps {
   readonly dataVaultId: string;
 }
@@ -58,6 +61,14 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
                 variant="h2"
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
+                    <AuditDownloadButton
+                      label={auditLogLabels.dataVaultAuditLogLabel}
+                      testId={DOWNLOAD_AUDIT_TEST_ID}
+                      permissionCallback={() => availableEndpoints.data?.includes(DATA_VAULTS_AUDIT_ENDPOINT)}
+                      downloadCallback={async () => await getDataVaultAuditCSV(data.ulid)}
+                      type="DataVault"
+                      targetName={data.name}
+                    />
                     <Button
                       disabled={!availableEndpoints.data?.includes(DATA_VAULTS_PUT_ENDPOINT)}
                       onClick={editHandler}
