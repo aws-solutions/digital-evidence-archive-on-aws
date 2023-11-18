@@ -75,17 +75,18 @@ export type SQSS3ObjectCreatedSignature = (
   s3Client: S3Client
 ) => Promise<string>;
 
-export const putLegalHoldForCreatedS3AuditObject: SQSS3ObjectCreatedSignature = async (
+export const putLegalHoldForCreatedS3Object: SQSS3ObjectCreatedSignature = async (
   event: SQSS3ObjectCreatedEvent,
   _context: Context,
   _callback: Callback,
   s3Client = new S3Client({})
 ) => {
+  logger.debug('Event', { Data: JSON.stringify(event, null, 2) });
   const legalHoldPromises: Promise<PutObjectLegalHoldCommandOutput>[] = [];
   event.Records.forEach((record) => {
     const recordBody: SQSS3ObjectCreatedDetailRecords = JSON.parse(record.body);
     recordBody.Records?.forEach((s3ObjectCreatedEvent) => {
-      logger.info('locking audit object', {
+      logger.info('locking created s3 object', {
         bucket: s3ObjectCreatedEvent.s3.bucket,
         object: s3ObjectCreatedEvent.s3.object,
       });

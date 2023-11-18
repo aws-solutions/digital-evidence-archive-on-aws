@@ -13,20 +13,16 @@ import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import { ArnPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
-import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { FilterPattern, LogGroup, SubscriptionFilter } from 'aws-cdk-lib/aws-logs';
 import {
   BlockPublicAccess,
   Bucket,
   BucketEncryption,
-  EventType,
   HttpMethods,
   IBucket,
   ObjectOwnership,
 } from 'aws-cdk-lib/aws-s3';
-import { SqsDestination } from 'aws-cdk-lib/aws-s3-notifications';
-import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { auditGlueTableColumns } from './audit-glue-table-columns';
@@ -50,6 +46,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
   public athenaWorkGroupName: string;
   public athenaOutputBucket: Bucket;
   public athenaAuditBucket: Bucket;
+  public auditPrefix: string;
 
   public constructor(scope: Construct, stackName: string, props: AuditCloudwatchToAthenaProps) {
     super(scope, stackName);
@@ -75,9 +72,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       value: this.athenaAuditBucket.bucketName,
     });
 
-    const auditPrefix = 'audit/';
-
-    this.addLegalHoldInfrastructure(this.athenaAuditBucket, auditPrefix, props.opsDashboard);
+    this.auditPrefix = 'audit/';
 
     const queryResultBucket = new Bucket(this, 'queryResultBucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
@@ -205,7 +200,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
           intervalInSeconds: 60,
         },
         bucketArn: this.athenaAuditBucket.bucketArn,
-        prefix: auditPrefix,
+        prefix: this.auditPrefix,
         errorOutputPrefix: 'deliveryErrors',
         roleArn: fireHosetoS3Role.roleArn,
         cloudWatchLoggingOptions: {
@@ -316,65 +311,5 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
         sid: 'Allow Firehose Key access',
       })
     );
-  }
-
-  private addLegalHoldInfrastructure(
-    auditBucket: Bucket,
-    auditPrefix: string,
-    opsDashboard?: DeaOperationalDashboard
-  ) {
-    const objectLockHandler = new NodejsFunction(this, 'audit-object-locker', {
-      memorySize: 512,
-      tracing: Tracing.ACTIVE,
-      timeout: Duration.seconds(60),
-      runtime: Runtime.NODEJS_18_X,
-      handler: 'handler',
-      entry: path.join(__dirname, '../../src/handlers/put-legal-hold-for-created-s3-audit-object-handler.ts'),
-      depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
-      environment: {
-        NODE_OPTIONS: '--enable-source-maps',
-      },
-      bundling: {
-        externalModules: ['aws-sdk'],
-        minify: true,
-        sourceMap: true,
-      },
-    });
-
-    opsDashboard?.addAuditLambdaErrorAlarm(objectLockHandler, 'AuditObjectLockLambda');
-
-    objectLockHandler.addToRolePolicy(
-      new PolicyStatement({
-        actions: ['s3:PutObjectLegalHold', 's3:GetBucketObjectLockConfiguration', 's3:GetObjectLegalHold'],
-        resources: [`${auditBucket.bucketArn}`, `${auditBucket.bucketArn}/${auditPrefix}*`],
-      })
-    );
-
-    const objectLockDLQ = new Queue(this, 'audit-object-lock-dlq', {
-      enforceSSL: true,
-    });
-
-    const objectLockQueue = new Queue(this, 'audit-object-lock-queue', {
-      enforceSSL: true,
-      visibilityTimeout: objectLockHandler.timeout,
-      deadLetterQueue: {
-        queue: objectLockDLQ,
-        maxReceiveCount: 5,
-      },
-    });
-
-    opsDashboard?.addDeadLetterQueueOperationalComponents('AuditLegalHoldDLQ', objectLockDLQ);
-
-    createCfnOutput(this, 'objectLockQueueUrl', {
-      value: objectLockQueue.queueUrl,
-    });
-
-    const eventSource = new SqsEventSource(objectLockQueue);
-
-    objectLockHandler.addEventSource(eventSource);
-
-    auditBucket.addEventNotification(EventType.OBJECT_CREATED, new SqsDestination(objectLockQueue), {
-      prefix: auditPrefix,
-    });
   }
 }

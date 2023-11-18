@@ -5,11 +5,11 @@
 
 import { ObjectLockLegalHoldStatus, PutObjectLegalHoldCommand, S3Client } from '@aws-sdk/client-s3';
 import { anything, instance, mock, strictEqual, verify } from 'ts-mockito';
-import { putLegalHoldForCreatedS3AuditObject } from '../../../app/event-handlers/put-legal-hold-for-created-s3-audit-object';
+import { putLegalHoldForCreatedS3Object } from '../../../app/event-handlers/put-legal-hold-for-created-s3-object';
 import {
   SQSS3ObjectCreatedDetailRecords,
   SQSS3ObjectCreatedRecord,
-} from '../../../app/event-handlers/put-legal-hold-for-created-s3-audit-object';
+} from '../../../app/event-handlers/put-legal-hold-for-created-s3-object';
 import { dummyContext } from '../../integration-objects';
 
 describe('put legal hold for created s3 object', () => {
@@ -94,7 +94,7 @@ describe('put legal hold for created s3 object', () => {
       awsRegion: 'us-east-1',
     };
 
-    await putLegalHoldForCreatedS3AuditObject(
+    await putLegalHoldForCreatedS3Object(
       {
         Records: [objectCreatedRecord, testRecord],
       },

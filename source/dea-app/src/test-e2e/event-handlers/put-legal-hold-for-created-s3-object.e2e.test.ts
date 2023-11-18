@@ -24,7 +24,7 @@ import {
   s3KeyHasLegalHold,
 } from '../resources/test-helpers';
 
-describe('the audit object legal hold process', () => {
+describe('the created object legal hold process', () => {
   const terminalStates = [
     QueryExecutionState.CANCELLED.valueOf(),
     QueryExecutionState.FAILED.valueOf(),
@@ -34,7 +34,7 @@ describe('the audit object legal hold process', () => {
   const cognitoHelper = new CognitoHelper();
 
   const suffix = randomSuffix();
-  const testUser = `caseAuditTestUser${suffix}`;
+  const testUser = `legalHoldTestUser${suffix}`;
   const deaApiUrl = testEnv.apiUrlOutput;
   let creds: Credentials;
   let idToken: Oauth2Token;
@@ -55,12 +55,12 @@ describe('the audit object legal hold process', () => {
   }, 30000);
 
   it(
-    'applies legal hold to newly created audit s3 objects',
+    'applies legal hold to newly created s3 objects',
     async () => {
       const athenaClient = new AthenaClient({ region: testEnv.awsRegion });
       const s3Client = new S3({ region: testEnv.awsRegion });
 
-      const caseName = `auditTestCase${randomSuffix()}`;
+      const caseName = `legalHoldCase${randomSuffix()}`;
 
       const createdCase = await createCaseSuccess(
         deaApiUrl,
@@ -75,12 +75,12 @@ describe('the audit object legal hold process', () => {
       caseIdsToDelete.push(caseUlid);
       const queryString = `SELECT "$PATH" FROM "${testEnv.glueDBName}"."${testEnv.glueTableName}" where caseid='${caseUlid}';`;
 
-      // wait for the audit object to be created
+      // wait for the object to be created
       await delay(2 * MINUTES_TO_MILLISECONDS);
 
-      let auditObjParts: string[] | undefined = undefined;
+      let s3ObjParts: string[] | undefined = undefined;
       let retries = 10;
-      while (retries > 0 && !auditObjParts) {
+      while (retries > 0 && !s3ObjParts) {
         const startAthenaQueryCmd = new StartQueryExecutionCommand({
           QueryString: queryString,
           WorkGroup: testEnv.athenaWorkgroupName,
@@ -116,11 +116,11 @@ describe('the audit object legal hold process', () => {
         const objstr = await getObjectResponse.Body?.transformToString();
 
         if (objstr?.includes('s3://')) {
-          const auditObj = objstr?.substring(objstr.indexOf('s3://'), objstr.indexOf('.gz') + 3);
-          if (!auditObj) {
-            fail('No audit object found.');
+          const createdObj = objstr?.substring(objstr.indexOf('s3://'), objstr.indexOf('.gz') + 3);
+          if (!createdObj) {
+            fail('No created object found.');
           }
-          auditObjParts = auditObj.split('/');
+          s3ObjParts = createdObj.split('/');
         } else {
           console.log('Empty results', { objstr: objstr });
         }
@@ -129,11 +129,11 @@ describe('the audit object legal hold process', () => {
         await delay(1 * MINUTES_TO_MILLISECONDS);
       }
 
-      if (!auditObjParts) {
+      if (!s3ObjParts) {
         fail();
       }
 
-      const hasLegalHold = await s3KeyHasLegalHold(auditObjParts[2], auditObjParts.slice(3).join('/'));
+      const hasLegalHold = await s3KeyHasLegalHold(s3ObjParts[2], s3ObjParts.slice(3).join('/'));
       expect(hasLegalHold).toBe(true);
     },
     15 * MINUTES_TO_MILLISECONDS

@@ -23,7 +23,7 @@ import { validateBackendConstruct } from './validate-backend-construct';
 const PROTECTED_DEA_RESOURCES: string[] = [];
 
 describe('DeaBackend constructs', () => {
-  const expectedLambdaCount = 59;
+  const expectedLambdaCount = 58;
   const expectedMethodCount = 92;
 
   beforeAll(() => {

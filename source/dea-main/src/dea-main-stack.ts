@@ -15,6 +15,7 @@ import { DeaEventHandlers } from '@aws/dea-backend/lib/constructs/dea-event-hand
 import { DeaOperationalDashboard } from '@aws/dea-backend/lib/constructs/dea-ops-dashboard';
 import { DeaParameters, DeaParametersStack } from '@aws/dea-backend/lib/constructs/dea-parameters';
 import { DeaRestApiConstruct } from '@aws/dea-backend/lib/constructs/dea-rest-api';
+import { addLegalHoldInfrastructure } from '@aws/dea-backend/lib/constructs/legal-hold-infra';
 import {
   addLambdaSuppressions,
   addResourcePolicySuppressions,
@@ -117,6 +118,18 @@ export class DeaMainStack extends cdk.Stack {
       },
       opsDashboard: dashboard,
     });
+
+    const objectLockHandlerRole = addLegalHoldInfrastructure(
+      this,
+      [
+        {
+          bucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
+          prefix: `${auditTrail.auditCloudwatchToS3Infra.auditPrefix}`,
+        },
+        { bucket: backendConstruct.datasetsBucket, prefix: '' },
+      ],
+      dashboard
+    );
 
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', protectedDeaResourceArns, {
       deaTableArn: backendConstruct.deaTable.tableArn,
@@ -224,6 +237,7 @@ export class DeaMainStack extends cdk.Stack {
       deaApi.datasetsRole.roleArn,
       backendConstruct.datasetsDataSyncRole.roleArn,
       deaEventHandlers.dataSyncExecutionEventRole.roleArn,
+      objectLockHandlerRole.roleArn,
     ];
     restrictResourcePolicies(
       {

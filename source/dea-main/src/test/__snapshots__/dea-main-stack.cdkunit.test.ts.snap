@@ -163,14 +163,6 @@ Object {
         "Ref": "DeaAuditDeliveryStreamBF390C06",
       },
     },
-    "DeaAuditobjectLockQueueUrlD0E84161": Object {
-      "Export": Object {
-        "Name": "[STAGE-REMOVED]-objectLockQueueUrl",
-      },
-      "Value": Object {
-        "Ref": "DeaAuditauditobjectlockqueue5FAA6838",
-      },
-    },
     "DeaAuditqueryResultBucketName7763E648": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-queryResultBucketName",
@@ -367,6 +359,14 @@ Object {
           "primaryCustomerKey87EC2263",
           "Arn",
         ],
+      },
+    },
+    "objectLockQueueUrl": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-objectLockQueueUrl",
+      },
+      "Value": Object {
+        "Ref": "s3objectlockqueue113069A2",
       },
     },
   },
@@ -10318,15 +10318,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Outputs.DeaMainStackDeaApiGatewaydeaapistackdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref",
             ],
           },
-          "referencetoDeaMainStackDeaAuditauditobjectlockdlqEA9CE5CCQueueName": Object {
-            "Fn::GetAtt": Array [
-              "DeaAuditauditobjectlockdlqF310E49D",
-              "QueueName",
-            ],
-          },
-          "referencetoDeaMainStackDeaAuditauditobjectlocker843F4D9DRef": Object {
-            "Ref": "DeaAuditauditobjectlockerC902034D",
-          },
           "referencetoDeaMainStackDeaAuditauditprocessinglambdaB66AA4C7Ref": Object {
             "Ref": "DeaAuditauditprocessinglambdaE24A4EB0",
           },
@@ -10353,6 +10344,15 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
           "referencetoDeaMainStackDeaEventHandlerss3batchstatushandlerA9D9E340Ref": Object {
             "Ref": "DeaEventHandlerss3batchstatushandlerB5D8C0EA",
+          },
+          "referencetoDeaMainStacks3objectlockdlqFD682F83QueueName": Object {
+            "Fn::GetAtt": Array [
+              "s3objectlockdlq6924D087",
+              "QueueName",
+            ],
+          },
+          "referencetoDeaMainStacks3objectlocker492FD0F1Ref": Object {
+            "Ref": "s3objectlockerF358CD71",
           },
         },
         "TemplateURL": Object {
@@ -10969,8 +10969,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     },
     "DeaAuditauditBucketNotifications37F46D9A": Object {
       "DependsOn": Array [
-        "DeaAuditauditobjectlockqueuePolicyABC0A859",
-        "DeaAuditauditobjectlockqueue5FAA6838",
+        "s3objectlockqueuePolicy306ABF3E",
+        "s3objectlockqueue113069A2",
       ],
       "Properties": Object {
         "BucketName": Object {
@@ -10995,7 +10995,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
               "QueueArn": Object {
                 "Fn::GetAtt": Array [
-                  "DeaAuditauditobjectlockqueue5FAA6838",
+                  "s3objectlockqueue113069A2",
                   "Arn",
                 ],
               },
@@ -11202,270 +11202,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::Glue::Table",
-    },
-    "DeaAuditauditobjectlockdlqF310E49D": Object {
-      "DeletionPolicy": "Delete",
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DeaAuditauditobjectlockdlqPolicyB8ECFFC5": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sqs:*",
-              "Condition": Object {
-                "Bool": Object {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": Object {
-                "AWS": "*",
-              },
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "DeaAuditauditobjectlockdlqF310E49D",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Queues": Array [
-          Object {
-            "Ref": "DeaAuditauditobjectlockdlqF310E49D",
-          },
-        ],
-      },
-      "Type": "AWS::SQS::QueuePolicy",
-    },
-    "DeaAuditauditobjectlockerC902034D": Object {
-      "DependsOn": Array [
-        "DeaAuditauditobjectlockerServiceRoleDefaultPolicyF8DF7136",
-        "DeaAuditauditobjectlockerServiceRole8481B518",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
-          },
-          "S3Key": "[HASH REMOVED].zip",
-        },
-        "Environment": Object {
-          "Variables": Object {
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "NODE_OPTIONS": "--enable-source-maps",
-          },
-        },
-        "Handler": "index.handler",
-        "MemorySize": 512,
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "DeaAuditauditobjectlockerServiceRole8481B518",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs18.x",
-        "Timeout": 60,
-        "TracingConfig": Object {
-          "Mode": "Active",
-        },
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "DeaAuditauditobjectlockerServiceRole8481B518": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DeaAuditauditobjectlockerServiceRoleDefaultPolicyF8DF7136": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "xray:PutTraceSegments",
-                "xray:PutTelemetryRecords",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "s3:PutObjectLegalHold",
-                "s3:GetBucketObjectLockConfiguration",
-                "s3:GetObjectLegalHold",
-              ],
-              "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaAuditauditBucketD75893B5",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::Join": Array [
-                    "",
-                    Array [
-                      Object {
-                        "Fn::GetAtt": Array [
-                          "DeaAuditauditBucketD75893B5",
-                          "Arn",
-                        ],
-                      },
-                      "/audit/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            Object {
-              "Action": Array [
-                "sqs:ReceiveMessage",
-                "sqs:ChangeMessageVisibility",
-                "sqs:GetQueueUrl",
-                "sqs:DeleteMessage",
-                "sqs:GetQueueAttributes",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "DeaAuditauditobjectlockqueue5FAA6838",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "DeaAuditauditobjectlockerServiceRoleDefaultPolicyF8DF7136",
-        "Roles": Array [
-          Object {
-            "Ref": "DeaAuditauditobjectlockerServiceRole8481B518",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "DeaAuditauditobjectlockerSqsEventSourceDeaMainStackDeaAuditauditobjectlockqueue684294FC7D8C10FD": Object {
-      "Properties": Object {
-        "EventSourceArn": Object {
-          "Fn::GetAtt": Array [
-            "DeaAuditauditobjectlockqueue5FAA6838",
-            "Arn",
-          ],
-        },
-        "FunctionName": Object {
-          "Ref": "DeaAuditauditobjectlockerC902034D",
-        },
-      },
-      "Type": "AWS::Lambda::EventSourceMapping",
-    },
-    "DeaAuditauditobjectlockqueue5FAA6838": Object {
-      "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "RedrivePolicy": Object {
-          "deadLetterTargetArn": Object {
-            "Fn::GetAtt": Array [
-              "DeaAuditauditobjectlockdlqF310E49D",
-              "Arn",
-            ],
-          },
-          "maxReceiveCount": 5,
-        },
-        "VisibilityTimeout": 60,
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DeaAuditauditobjectlockqueuePolicyABC0A859": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sqs:*",
-              "Condition": Object {
-                "Bool": Object {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": Object {
-                "AWS": "*",
-              },
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "DeaAuditauditobjectlockqueue5FAA6838",
-                  "Arn",
-                ],
-              },
-            },
-            Object {
-              "Action": Array [
-                "sqs:SendMessage",
-                "sqs:GetQueueAttributes",
-                "sqs:GetQueueUrl",
-              ],
-              "Condition": Object {
-                "ArnLike": Object {
-                  "aws:SourceArn": Object {
-                    "Fn::GetAtt": Array [
-                      "DeaAuditauditBucketD75893B5",
-                      "Arn",
-                    ],
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "s3.amazonaws.com",
-              },
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "DeaAuditauditobjectlockqueue5FAA6838",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Queues": Array [
-          Object {
-            "Ref": "DeaAuditauditobjectlockqueue5FAA6838",
-          },
-        ],
-      },
-      "Type": "AWS::SQS::QueuePolicy",
     },
     "DeaAuditauditprocessinglambdaE24A4EB0": Object {
       "Properties": Object {
@@ -19368,6 +19104,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                         "Arn",
                       ],
                     },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "s3objectlockerServiceRole1F047986",
+                        "Arn",
+                      ],
+                    },
                   ],
                 },
               },
@@ -19436,6 +19178,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     Object {
                       "Fn::GetAtt": Array [
                         "DeaEventHandlersdatasyncexecutioneventroleFC5B28C9",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "s3objectlockerServiceRole1F047986",
                         "Arn",
                       ],
                     },
@@ -19515,6 +19263,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     Object {
                       "Fn::GetAtt": Array [
                         "DeaEventHandlersdatasyncexecutioneventroleFC5B28C9",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "s3objectlockerServiceRole1F047986",
                         "Arn",
                       ],
                     },
@@ -19629,6 +19383,40 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
     },
+    "DeaBackendStackS3DatasetsBucketNotifications6B1A671F": Object {
+      "DependsOn": Array [
+        "s3objectlockqueuePolicy306ABF3E",
+        "s3objectlockqueue113069A2",
+      ],
+      "Properties": Object {
+        "BucketName": Object {
+          "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
+        },
+        "Managed": true,
+        "NotificationConfiguration": Object {
+          "QueueConfigurations": Array [
+            Object {
+              "Events": Array [
+                "s3:ObjectCreated:*",
+              ],
+              "QueueArn": Object {
+                "Fn::GetAtt": Array [
+                  "s3objectlockqueue113069A2",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+        },
+        "ServiceToken": Object {
+          "Fn::GetAtt": Array [
+            "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::S3BucketNotifications",
+    },
     "DeaBackendStackS3DatasetsBucketPolicy328F21B8": Object {
       "Metadata": Object {
         "cfn_nag": Object {
@@ -19738,6 +19526,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                         "Arn",
                       ],
                     },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "s3objectlockerServiceRole1F047986",
+                        "Arn",
+                      ],
+                    },
                   ],
                 },
               },
@@ -19806,6 +19600,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     Object {
                       "Fn::GetAtt": Array [
                         "DeaEventHandlersdatasyncexecutioneventroleFC5B28C9",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "s3objectlockerServiceRole1F047986",
                         "Arn",
                       ],
                     },
@@ -19913,6 +19713,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     Object {
                       "Fn::GetAtt": Array [
                         "DeaEventHandlersdatasyncexecutioneventroleFC5B28C9",
+                        "Arn",
+                      ],
+                    },
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "s3objectlockerServiceRole1F047986",
                         "Arn",
                       ],
                     },
@@ -21890,6 +21696,329 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::KMS::Key",
       "UpdateReplacePolicy": "Delete",
+    },
+    "s3objectlockdlq6924D087": Object {
+      "DeletionPolicy": "Delete",
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "s3objectlockdlqPolicy337F6BC9": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sqs:*",
+              "Condition": Object {
+                "Bool": Object {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "s3objectlockdlq6924D087",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": Array [
+          Object {
+            "Ref": "s3objectlockdlq6924D087",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "s3objectlockerF358CD71": Object {
+      "DependsOn": Array [
+        "s3objectlockerServiceRoleDefaultPolicy38D3854F",
+        "s3objectlockerServiceRole1F047986",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps",
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "s3objectlockerServiceRole1F047986",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 60,
+        "TracingConfig": Object {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "s3objectlockerServiceRole1F047986": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "s3objectlockerServiceRoleDefaultPolicy38D3854F": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "sqs:ReceiveMessage",
+                "sqs:ChangeMessageVisibility",
+                "sqs:GetQueueUrl",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "s3objectlockqueue113069A2",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "s3:PutObjectLegalHold",
+                "s3:GetBucketObjectLockConfiguration",
+                "s3:GetObjectLegalHold",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaAuditauditBucketD75893B5",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaAuditauditBucketD75893B5",
+                          "Arn",
+                        ],
+                      },
+                      "/audit/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "s3:PutObjectLegalHold",
+                "s3:GetBucketObjectLockConfiguration",
+                "s3:GetObjectLegalHold",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendStackS3DatasetsBucket408FF954",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendStackS3DatasetsBucket408FF954",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "s3objectlockerServiceRoleDefaultPolicy38D3854F",
+        "Roles": Array [
+          Object {
+            "Ref": "s3objectlockerServiceRole1F047986",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "s3objectlockerSqsEventSourceDeaMainStacks3objectlockqueueD70EDF0C323B939F": Object {
+      "Properties": Object {
+        "BatchSize": 20,
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "s3objectlockqueue113069A2",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Ref": "s3objectlockerF358CD71",
+        },
+        "MaximumBatchingWindowInSeconds": 30,
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "s3objectlockqueue113069A2": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "RedrivePolicy": Object {
+          "deadLetterTargetArn": Object {
+            "Fn::GetAtt": Array [
+              "s3objectlockdlq6924D087",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 5,
+        },
+        "VisibilityTimeout": 60,
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "s3objectlockqueuePolicy306ABF3E": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sqs:*",
+              "Condition": Object {
+                "Bool": Object {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "s3objectlockqueue113069A2",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Condition": Object {
+                "ArnLike": Object {
+                  "aws:SourceArn": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaAuditauditBucketD75893B5",
+                      "Arn",
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "s3.amazonaws.com",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "s3objectlockqueue113069A2",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Condition": Object {
+                "ArnLike": Object {
+                  "aws:SourceArn": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaBackendStackS3DatasetsBucket408FF954",
+                      "Arn",
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "s3.amazonaws.com",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "s3objectlockqueue113069A2",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": Array [
+          Object {
+            "Ref": "s3objectlockqueue113069A2",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
     },
   },
   "Rules": Object {

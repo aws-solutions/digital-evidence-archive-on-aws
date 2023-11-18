@@ -4,7 +4,7 @@
  */
 
 import ErrorPrefixes from './app/error-prefixes';
-import { putLegalHoldForCreatedS3AuditObject } from './app/event-handlers/put-legal-hold-for-created-s3-audit-object';
+import { putLegalHoldForCreatedS3Object } from './app/event-handlers/put-legal-hold-for-created-s3-object';
 import { FORBIDDEN_ERROR_NAME, ForbiddenError } from './app/exceptions/forbidden-exception';
 import { NOT_FOUND_ERROR_NAME, NotFoundError } from './app/exceptions/not-found-exception';
 import {
@@ -138,7 +138,7 @@ export {
   getUsers,
   initiateCaseFileUpload,
   listCaseFiles,
-  putLegalHoldForCreatedS3AuditObject,
+  putLegalHoldForCreatedS3Object,
   refreshToken,
   restoreCaseFile,
   revokeToken,

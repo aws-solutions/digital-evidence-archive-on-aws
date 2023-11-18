@@ -38,8 +38,8 @@ describe('audit logs to s3 infrastructure', () => {
 
     template.resourceCountIs('AWS::S3::Bucket', 3);
     template.resourceCountIs('AWS::Athena::WorkGroup', 1);
-    template.resourceCountIs('AWS::IAM::Role', 7);
-    template.resourceCountIs('AWS::Lambda::Function', 4);
+    template.resourceCountIs('AWS::IAM::Role', 5);
+    template.resourceCountIs('AWS::Lambda::Function', 2);
     template.resourceCountIs('AWS::KinesisFirehose::DeliveryStream', 1);
     template.resourceCountIs('AWS::Glue::Table', 1);
     template.resourceCountIs('AWS::Glue::Database', 1);

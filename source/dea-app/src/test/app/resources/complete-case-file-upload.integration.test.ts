@@ -7,8 +7,6 @@ import { fail } from 'assert';
 import {
   CompleteMultipartUploadCommand,
   ListPartsCommand,
-  ObjectLockLegalHoldStatus,
-  PutObjectLegalHoldCommand,
   S3Client,
   S3ClientResolvedConfig,
   ServiceInputTypes,
@@ -329,13 +327,6 @@ async function completeCaseFileUploadAndValidate(
     Bucket: DATASETS_PROVIDER.bucketName,
     Key: `${caseUlid}/${deaCaseFile.ulid}`,
     UploadId: deaCaseFile.uploadId,
-  });
-
-  expect(s3Mock).toHaveReceivedCommandTimes(PutObjectLegalHoldCommand, callCount);
-  expect(s3Mock).toHaveReceivedCommandWith(PutObjectLegalHoldCommand, {
-    Bucket: DATASETS_PROVIDER.bucketName,
-    Key: `${caseUlid}/${deaCaseFile.ulid}`,
-    LegalHold: { Status: ObjectLockLegalHoldStatus.ON },
   });
 
   return deaCaseFile;

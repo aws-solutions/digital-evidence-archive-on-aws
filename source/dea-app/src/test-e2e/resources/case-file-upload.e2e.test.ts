@@ -13,8 +13,10 @@ import { CaseFileStatus } from '../../models/case-file-status';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
+  MINUTES_TO_MILLISECONDS,
   completeCaseFileUploadSuccess,
   createCaseSuccess,
+  delay,
   deleteCase,
   deleteCaseFiles,
   describeCaseFileDetailsSuccess,
@@ -162,6 +164,9 @@ describe('Test case file APIs', () => {
     expect(
       listCaseFilesResponse.files.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
     ).toBeTruthy();
+
+    // wait for the object to be processed
+    await delay(1 * MINUTES_TO_MILLISECONDS);
 
     // Verify that the S3 Objects have Object Locks (Legal Hold) on them
     expect(s3ObjectHasLegalHold(file1Object)).toBeTruthy();

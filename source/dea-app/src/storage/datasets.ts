@@ -165,16 +165,6 @@ export const completeUploadForCaseFile = async (
     })
   );
   caseFile.versionId = uploadResponse.VersionId;
-
-  logger.info('Marked upload as completed. Putting legal hold on object..', { s3Key });
-  await datasetsProvider.s3Client.send(
-    new PutObjectLegalHoldCommand({
-      Bucket: datasetsProvider.bucketName,
-      Key: s3Key,
-      LegalHold: { Status: ObjectLockLegalHoldStatus.ON },
-      VersionId: uploadResponse.VersionId,
-    })
-  );
 };
 
 export const getPresignedUrlForDownload = async (
