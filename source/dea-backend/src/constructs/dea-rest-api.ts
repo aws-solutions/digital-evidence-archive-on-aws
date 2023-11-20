@@ -181,12 +181,7 @@ export class DeaRestApiConstruct extends Construct {
     // Define your custom domain for use with the API if provided
     let domainNameOptions: DomainNameOptions | undefined;
     const customDomainNameInfo = deaConfig.customDomainInfo();
-    const useCustomDomain = !!(
-      customDomainNameInfo.domainName &&
-      customDomainNameInfo.certificateArn &&
-      customDomainNameInfo.hostedZoneId &&
-      customDomainNameInfo.hostedZoneName
-    );
+    const useCustomDomain = !!(customDomainNameInfo.domainName && customDomainNameInfo.certificateArn);
     if (useCustomDomain) {
       domainNameOptions = {
         certificate: Certificate.fromCertificateArn(
@@ -265,7 +260,7 @@ export class DeaRestApiConstruct extends Construct {
       policy,
     });
 
-    if (useCustomDomain) {
+    if (useCustomDomain && customDomainNameInfo.hostedZoneId && customDomainNameInfo.hostedZoneName) {
       new ARecord(this, 'AliasRecord', {
         zone: HostedZone.fromHostedZoneAttributes(this, 'HostedZoneId', {
           hostedZoneId: customDomainNameInfo.hostedZoneId ?? fail(),

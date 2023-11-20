@@ -19,6 +19,8 @@ You can deploy using your local computer via the terminal (for Mac/Linux users) 
 ### Step 0: Setup a Custom Domain (Recommended)
 We recommend using a custom domain, otherwise the URL for the solution will not be human readable. You will need to register a domain using AWS Route53 or other provider, and import a certificate for the domain using AWS Certificate Manager.
 
+#### Option 1: Using a Route53 Domain
+
 1. Register a Domain with Route53 by following https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-register.html#register_new_console
 2. Wait for confirmation email
 3. Keep Note of the domain name: e.g. digitalevidencearchive.com
@@ -26,6 +28,14 @@ We recommend using a custom domain, otherwise the URL for the solution will not 
 5. Next go to AWS Certificate Manager to request a certificate for your domain: (MAKE SURE TO DO IT IN THE REGION YOU WANT TO DEPLOY) https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html
 6. Navigate to the certificate table. The request should be pending. Click on the Certificate ID link, scroll to the Domains section, and on the upper right hand side of that section, click Create Records in Route53. Wait about 10 minutes
 7. Once the Certificate is issued, click the Certificate ID link and copy the ARN in the first section. Save this somewhere safe.
+
+#### Option 2: Using a non-Route53 Domain
+
+1. Get a certificate for your domain by following: https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html.
+ -- NOTE: make sure you create the certificate in the same region as the solution deployment
+ -- Alternatively, you can import a certificate from a third party: https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html
+2. After the certificate is created, copy the ARN of the certificate and save it somewhere, you will need it for step 2.
+3. After the deployment is complete in step 3, you will have to add a CNAME record to point the domain at the solution. Follow the last instruction in Step 3.
 
 ### Pre-requisites:
 
@@ -98,7 +108,9 @@ Inside the configuration file, change the following fields
   “domain”: “exampleexampleexample”
 },
 ```
-3. If you completed step 0, then import the domainName, hostedZoneId, hostedZoneName, and ACM Certificate ARN like so:
+3. If you completed step 0, then import the domainName and ACM Certificate ARN (and hostedZoneId, hostedZoneName for Route53 domains)
+
+Route 53 Domains:
 ```
 "customDomain": {
   "domainName": "example.com",
@@ -107,6 +119,15 @@ Inside the configuration file, change the following fields
   "hostedZoneName": "example.com"
 },
 ```
+
+Non Route53 Domains:
+```
+"customDomain": {
+  "domainName": "example.com",
+  "certificateArn": "arn:aws:acm:us-east-1:ACCTNUM:certificate/CERT_NUM"
+},
+```
+
 4. Define your User Role Types.
 You can see examples of role types already in the file. Feel free to modify these endpoints or create new roles as necessary for your use case.
 For each role, specify the name, description, and an array of endpoints defined by path and endpoint method. You can refer to API Reference section of the Implementation Guide for a list of available endpoints. Alternatively, you can view the file called dea-route-config.ts under the dea-backend folder for the most up to date list of API endpoints.  
@@ -234,6 +255,10 @@ rushx cdk deploy --all
 ```
 
 After the command is done, copy the list of outputs somewhere safe, You will need them for next steps.
+
+NOTE: If you used a non-Route53 domain, then after the deployment is complete, you must add a CNAME alias to point your domain at the solution. To do this you will need the API Gateway Domain Name for the custom domain, which you can find by going to API Gateway on the console, selecting "Custom domain names" on the left hand side, and selecting the domain name; the API Gateway Domain Name will be under the Configurations tab in the second box. It should look something like: d-rtxxxxxxxx.execute-api.us-east-1.amazonaws.com.
+
+NOTE: For custom domains, you can access the solution using your domain; to view the ui, append the url with '/ui': e.g. dea.digitalevidencearchive.com/ui
 
 ### Step 4: Integrate your CJIS Compliant Identity Provider
 Cognito is not CJIS compliant, therefore you need to use your CJIS Compliant IdP to federate with Cognito for use in DEA. This will require you to create an App Integration in your IdP, relaunch the stack, create a custom attribute for users called DEARole, and assign users to DEA via the App Integration.
