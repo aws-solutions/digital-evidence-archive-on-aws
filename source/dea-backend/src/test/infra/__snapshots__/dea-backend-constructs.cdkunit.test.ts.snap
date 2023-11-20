@@ -551,6 +551,15 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "referencetoteststackDeaBackendConstructDeaTableC6F555E3Ref": Object {
             "Ref": "DeaBackendConstructDeaTableB48721A0",
           },
+          "referencetoteststackDeaEventHandlersdatasyncexecutioneventCAD1C471Ref": Object {
+            "Ref": "DeaEventHandlersdatasyncexecutioneventC6A84299",
+          },
+          "referencetoteststackDeaEventHandlersdatasyncfilesprocessingdlqB508ED45QueueName": Object {
+            "Fn::GetAtt": Array [
+              "DeaEventHandlersdatasyncfilesprocessingdlq1F4AB033",
+              "QueueName",
+            ],
+          },
           "referencetoteststackDeaEventHandlerss3batchdeletecasefile24B933DERef": Object {
             "Ref": "DeaEventHandlerss3batchdeletecasefileF6E3BAAE",
           },
@@ -3487,6 +3496,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
           "S3Key": "[HASH REMOVED].zip",
         },
+        "DeadLetterConfig": Object {
+          "TargetArn": Object {
+            "Fn::GetAtt": Array [
+              "DeaEventHandlersdatasyncfilesprocessingdlq1F4AB033",
+              "Arn",
+            ],
+          },
+        },
         "Environment": Object {
           "Variables": Object {
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
@@ -3598,6 +3615,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
+              "Action": "sqs:SendMessage",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaEventHandlersdatasyncfilesprocessingdlq1F4AB033",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
               "Action": Array [
                 "xray:PutTraceSegments",
                 "xray:PutTelemetryRecords",
@@ -3647,6 +3674,44 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "DeaEventHandlersdatasyncfilesprocessingdlq1F4AB033": Object {
+      "DeletionPolicy": "Delete",
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DeaEventHandlersdatasyncfilesprocessingdlqPolicyA29577FD": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sqs:*",
+              "Condition": Object {
+                "Bool": Object {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaEventHandlersdatasyncfilesprocessingdlq1F4AB033",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": Array [
+          Object {
+            "Ref": "DeaEventHandlersdatasyncfilesprocessingdlq1F4AB033",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
     },
     "DeaEventHandlerss3batchdeletecasefileF6E3BAAE": Object {
       "DependsOn": Array [

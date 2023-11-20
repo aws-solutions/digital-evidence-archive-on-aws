@@ -17,9 +17,10 @@ import {
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { CfnFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Bucket, EventType } from 'aws-cdk-lib/aws-s3';
 import { LambdaDestination } from 'aws-cdk-lib/aws-s3-notifications';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
@@ -118,12 +119,29 @@ export class DeaEventHandlers extends Construct {
       props.kmsKey.keyArn
     );
 
+    const dataSyncFileProcessingDLQ = new Queue(this, 'datasync-files-processing-dlq', {
+      enforceSSL: true,
+    });
+
+    props.opsDashboard?.addDeadLetterQueueOperationalComponents(
+      'DataSyncFilesProcessingDLQ',
+      dataSyncFileProcessingDLQ
+    );
+
     const dataSyncExecutionEventLambda = this.createLambda(
       `datasync_execution_event`,
       'DataSyncExecutionEventLambda',
       '../../src/handlers/datasync-execution-event-handler.ts',
       { NODE_OPTIONS: '--max-old-space-size=8192', ...props.lambdaEnv },
-      this.dataSyncExecutionEventRole
+      this.dataSyncExecutionEventRole,
+      dataSyncFileProcessingDLQ
+    );
+
+    props.opsDashboard?.addLambdaOperationalComponents(
+      dataSyncExecutionEventLambda,
+      'DataSyncExecutionEventLambda',
+      undefined,
+      true
     );
 
     this.createBucketEventForDataSyncExecution(dataSyncExecutionEventLambda, props.dataSyncLogsBucket);
@@ -161,9 +179,10 @@ export class DeaEventHandlers extends Construct {
     cfnExportName: string,
     pathToSource: string,
     lambdaEnv: LambdaEnvironment,
-    role: Role
+    role: Role,
+    dlq?: Queue
   ): NodejsFunction {
-    const lambda = new NodejsFunction(this, id, {
+    const lambdaProps: NodejsFunctionProps = {
       memorySize: 512,
       tracing: Tracing.ACTIVE,
       role,
@@ -183,7 +202,11 @@ export class DeaEventHandlers extends Construct {
         minify: true,
         sourceMap: true,
       },
-    });
+      deadLetterQueue: dlq ? dlq : undefined,
+      deadLetterQueueEnabled: dlq ? true : false,
+    };
+
+    const lambda = new NodejsFunction(this, id, lambdaProps);
 
     //CFN NAG Suppression
     const lambdaMetaDataNode = lambda.node.defaultChild;
