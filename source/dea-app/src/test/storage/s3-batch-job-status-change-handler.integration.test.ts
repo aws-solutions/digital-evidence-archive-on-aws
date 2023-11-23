@@ -275,14 +275,19 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
   const caseId = createdCase.ulid;
 
   // setup file
-  let caseFile = await callInitiateCaseFileUpload(
+  const caseFileUpload = await callInitiateCaseFileUpload(
     caseOwner.ulid,
     repositoryProvider,
     createdCase.ulid,
     'file1'
   );
-  const fileId = caseFile.ulid ?? fail();
-  caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, createdCase.ulid);
+  const fileId = caseFileUpload.ulid ?? fail();
+  const caseFile = await callCompleteCaseFileUpload(
+    caseOwner.ulid,
+    repositoryProvider,
+    fileId,
+    createdCase.ulid
+  );
 
   const jobId = uuidv4();
   s3ControlMock.resolves({

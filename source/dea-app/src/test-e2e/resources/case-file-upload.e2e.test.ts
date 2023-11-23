@@ -8,7 +8,6 @@ import { Credentials } from 'aws4-axios';
 import sha256 from 'crypto-js/sha256';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
-import { DeaCaseFile } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -77,7 +76,7 @@ describe('Test case file APIs', () => {
     expect(listCaseFilesResponse.next).toBeUndefined();
 
     // initiate upload
-    const initiatedCaseFile: DeaCaseFile = await initiateCaseFileUploadSuccess(
+    const initiatedCaseFile = await initiateCaseFileUploadSuccess(
       DEA_API_URL,
       idToken,
       creds,
@@ -87,7 +86,7 @@ describe('Test case file APIs', () => {
       FILE_SIZE_BYTES
     );
 
-    const initiatedCaseFile2: DeaCaseFile = await initiateCaseFileUploadSuccess(
+    const initiatedCaseFile2 = await initiateCaseFileUploadSuccess(
       DEA_API_URL,
       idToken,
       creds,
@@ -99,14 +98,14 @@ describe('Test case file APIs', () => {
 
     const fileUlid = initiatedCaseFile.ulid ?? fail();
     const fileUlid2 = initiatedCaseFile2.ulid ?? fail();
-    const file1Object = { key: `${caseUlid}/${fileUlid}`, uploadId: initiatedCaseFile.uploadId };
+    const key1 = `${caseUlid}/${fileUlid}`;
+    const file1Object = { key: key1, uploadId: initiatedCaseFile.uploadId };
     s3ObjectsToDelete.push(file1Object);
-    const file2Object = { key: `${caseUlid}/${fileUlid2}`, uploadId: initiatedCaseFile2.uploadId };
+    const key2 = `${caseUlid}/${fileUlid2}`;
+    const file2Object = { key: key2, uploadId: initiatedCaseFile2.uploadId };
     s3ObjectsToDelete.push(file2Object);
     const uploadId = initiatedCaseFile.uploadId ?? fail();
     const uploadId2 = initiatedCaseFile2.uploadId ?? fail();
-    const presignedUrls = initiatedCaseFile.presignedUrls ?? fail();
-    const presignedUrls2 = initiatedCaseFile2.presignedUrls ?? fail();
 
     // verify list-case-files and describe-case-file match expected state after initiate-upload
     listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
@@ -124,9 +123,22 @@ describe('Test case file APIs', () => {
       listCaseFilesResponse.files.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
     ).toBeTruthy();
 
+    await uploadContentToS3(
+      initiatedCaseFile.federationCredentials,
+      uploadId,
+      FILE_CONTENT,
+      initiatedCaseFile.bucket,
+      key1
+    );
+    await uploadContentToS3(
+      initiatedCaseFile2.federationCredentials,
+      uploadId2,
+      FILE_CONTENT,
+      initiatedCaseFile2.bucket,
+      key2
+    );
+
     // complete upload
-    await uploadContentToS3(presignedUrls, FILE_CONTENT);
-    await uploadContentToS3(presignedUrls2, FILE_CONTENT);
     await completeCaseFileUploadSuccess(
       DEA_API_URL,
       idToken,

@@ -7,6 +7,11 @@ import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
 import { AuthorizationType } from 'aws-cdk-lib/aws-apigateway';
 import { ApiGatewayMethod, ApiGatewayRouteConfig } from './api-gateway-route-config';
 
+export enum DeaApiRoleName {
+  AUTH_ROLE = 'AUTH_ROLE',
+  INITIATE_UPLOAD_ROLE = 'INITIATE_UPLOAD_ROLE',
+}
+
 export const deaApiRouteConfig: ApiGatewayRouteConfig = {
   routes: [
     {
@@ -75,6 +80,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/cases/{caseId}/files',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/initiate-case-file-upload-handler.ts',
+      roleName: DeaApiRoleName.INITIATE_UPLOAD_ROLE,
     },
     {
       eventName: AuditEventType.GET_CASE_FILES,
@@ -115,6 +121,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       // None for now, since this is the first endpoint we hit after logging in before
       // we have the id_token
       authMethod: AuthorizationType.NONE,
+      roleName: DeaApiRoleName.AUTH_ROLE,
     },
     {
       eventName: AuditEventType.REFRESH_AUTH_TOKEN,
@@ -123,6 +130,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/refresh-token-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
       authMethod: AuthorizationType.NONE,
+      roleName: DeaApiRoleName.AUTH_ROLE,
     },
     {
       eventName: AuditEventType.REVOKE_AUTH_TOKEN,
@@ -131,6 +139,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/revoke-token-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
       authMethod: AuthorizationType.NONE,
+      roleName: DeaApiRoleName.AUTH_ROLE,
     },
     {
       eventName: AuditEventType.GET_LOGIN_URL,
@@ -139,6 +148,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/get-login-url-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
       authMethod: AuthorizationType.NONE,
+      roleName: DeaApiRoleName.AUTH_ROLE,
     },
     {
       eventName: AuditEventType.GET_LOGOUT_URL,
@@ -147,6 +157,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/get-logout-url-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
       authMethod: AuthorizationType.NONE,
+      roleName: DeaApiRoleName.AUTH_ROLE,
     },
     {
       eventName: AuditEventType.GET_ALL_USERS,

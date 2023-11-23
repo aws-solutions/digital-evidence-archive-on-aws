@@ -5,7 +5,12 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { logger } from '../logger';
-import { DeaCaseFile, DeaCaseFileResult, InitiateCaseFileUploadDTO } from '../models/case-file';
+import {
+  CompleteCaseFileUploadObject,
+  DeaCaseFile,
+  DeaCaseFileResult,
+  InitiateCaseFileUploadDTO,
+} from '../models/case-file';
 import { CaseFileStatus } from '../models/case-file-status';
 import { caseFileFromEntity } from '../models/projections';
 import { S3Object } from '../storage/datasets';
@@ -19,10 +24,8 @@ export const initiateCaseFileUpload = async (
   userUlid: string,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFileResult> => {
-  // strip out chunkSizeBytes before saving in dynamo-db
-  const { chunkSizeBytes: _, ...deaCaseFile } = uploadDTO;
   const newEntity = await repositoryProvider.CaseFileModel.create({
-    ...deaCaseFile,
+    ...uploadDTO,
     isFile: true,
     createdBy: userUlid,
     status: CaseFileStatus.PENDING,
@@ -32,7 +35,7 @@ export const initiateCaseFileUpload = async (
 };
 
 export const completeCaseFileUpload = async (
-  deaCaseFile: DeaCaseFile,
+  deaCaseFile: CompleteCaseFileUploadObject,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFileResult> => {
   const transaction = {};

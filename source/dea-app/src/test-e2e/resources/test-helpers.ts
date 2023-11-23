@@ -8,14 +8,18 @@ import { randomBytes } from 'crypto';
 import { QueryExecutionState } from '@aws-sdk/client-athena';
 import {
   AbortMultipartUploadCommand,
+  ChecksumAlgorithm,
   DeleteObjectCommand,
   GetObjectLegalHoldCommand,
   ObjectLockLegalHoldStatus,
   PutObjectLegalHoldCommand,
   S3Client,
+  UploadPartCommand,
+  UploadPartCommandInput,
 } from '@aws-sdk/client-s3';
 import { Credentials, aws4Interceptor } from 'aws4-axios';
 import axios, { AxiosResponse } from 'axios';
+import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
 import * as CSV from 'csv-string';
 import Joi from 'joi';
@@ -23,18 +27,18 @@ import { AuditEventType, AuditResult } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
-import { DeaCaseFile } from '../../models/case-file';
+import { DeaCaseFile, DeaCaseFileResult, DeaCaseFileUpload } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
-import { caseFileResponseSchema } from '../../models/validation/case-file';
-import { joiUlid } from '../../models/validation/joi-common';
 import {
-  CHUNK_SIZE_BYTES,
-  ResponseCaseFilePage,
-} from '../../test/app/resources/case-file-integration-test-helper';
+  caseFileResponseSchema,
+  initiateCaseFileUploadResponseSchema,
+} from '../../models/validation/case-file';
+import { joiUlid } from '../../models/validation/joi-common';
+import { ResponseCaseFilePage } from '../../test/app/resources/case-file-integration-test-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 
@@ -347,9 +351,8 @@ export const initiateCaseFileUploadSuccess = async (
   fileName: string,
   filePath: string,
   fileSizeBytes: number,
-  contentType: string = CONTENT_TYPE,
-  chunkSizeBytes = CHUNK_SIZE_BYTES
-): Promise<DeaCaseFile> => {
+  contentType: string = CONTENT_TYPE
+): Promise<DeaCaseFileUpload> => {
   const initiateUploadResponse = await callDeaAPIWithCreds(
     `${deaApiUrl}cases/${caseUlid}/files`,
     'POST',
@@ -361,13 +364,12 @@ export const initiateCaseFileUploadSuccess = async (
       filePath,
       contentType,
       fileSizeBytes,
-      chunkSizeBytes,
     }
   );
 
   expect(initiateUploadResponse.status).toEqual(200);
-  const initiatedCaseFile: DeaCaseFile = await initiateUploadResponse.data;
-  Joi.assert(initiatedCaseFile, caseFileResponseSchema);
+  const initiatedCaseFile: DeaCaseFileUpload = await initiateUploadResponse.data;
+  Joi.assert(initiatedCaseFile, initiateCaseFileUploadResponseSchema);
   return initiatedCaseFile;
 };
 
@@ -449,26 +451,28 @@ export const delay = async (ms: number) => {
 };
 
 export const uploadContentToS3 = async (
-  presignedUrls: readonly string[],
-  fileContent: string
+  federationCredentials: Credentials,
+  uploadId: string,
+  fileContent: string,
+  bucket: string,
+  key: string
 ): Promise<void> => {
-  const uploadResponses: Promise<Response>[] = [];
-
-  const httpClient = axios.create({
-    headers: {
-      'Content-Type': CONTENT_TYPE,
-    },
+  const federationS3Client = new S3Client({
+    region: testEnv.awsRegion,
+    credentials: federationCredentials,
   });
 
-  presignedUrls.forEach((url, index) => {
-    uploadResponses[index] = httpClient.put(url, fileContent, { validateStatus });
-  });
-
-  await Promise.all(uploadResponses).then((responses) => {
-    responses.forEach((response) => {
-      expect(response.status).toEqual(200);
-    });
-  });
+  const uploadInput: UploadPartCommandInput = {
+    Bucket: bucket,
+    Key: key,
+    PartNumber: 1,
+    UploadId: uploadId,
+    Body: fileContent,
+    ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
+    ChecksumSHA256: sha256(fileContent).toString(enc.Base64),
+  };
+  const uploadCommand = new UploadPartCommand(uploadInput);
+  await federationS3Client.send(uploadCommand);
 };
 
 export const downloadContentFromS3 = async (
@@ -494,7 +498,7 @@ export const completeCaseFileUploadSuccess = async (
   ulid: string | undefined,
   uploadId: string | undefined,
   fileContent: string
-): Promise<DeaCaseFile> => {
+): Promise<DeaCaseFileResult> => {
   const completeUploadResponse = await callDeaAPIWithCreds(
     `${deaApiUrl}cases/${caseUlid}/files/${ulid}/contents`,
     'PUT',
@@ -512,7 +516,7 @@ export const completeCaseFileUploadSuccess = async (
     console.log(completeUploadResponse);
   }
   expect(completeUploadResponse.status).toEqual(200);
-  const uploadedCaseFile: DeaCaseFile = await completeUploadResponse.data;
+  const uploadedCaseFile: DeaCaseFileResult = await completeUploadResponse.data;
   Joi.assert(uploadedCaseFile, caseFileResponseSchema);
   return uploadedCaseFile;
 };

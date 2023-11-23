@@ -8,8 +8,10 @@ import { logger } from '../../logger';
 import {
   CaseFileDTO,
   CompleteCaseFileUploadDTO,
+  CompleteCaseFileUploadObject,
   DeaCaseFile,
   DeaCaseFileResult,
+  DeaCaseFileUpload,
   InitiateCaseFileUploadDTO,
   UploadDTO,
 } from '../../models/case-file';
@@ -20,11 +22,7 @@ import * as CaseFilePersistence from '../../persistence/case-file';
 import { getCaseFileByFileLocation, getCaseFileByUlid } from '../../persistence/case-file';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getUsers } from '../../persistence/user';
-import {
-  completeUploadForCaseFile,
-  DatasetsProvider,
-  generatePresignedUrlsForCaseFile,
-} from '../../storage/datasets';
+import { completeUploadForCaseFile, DatasetsProvider, createCaseFileUpload } from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getRequiredCase } from './case-service';
@@ -38,15 +36,14 @@ export const initiateCaseFileUpload = async (
   datasetsProvider: DatasetsProvider,
   // retryDepth exists to limit recursive retry count
   retryDepth = 0
-): Promise<DeaCaseFile> => {
+): Promise<DeaCaseFileUpload> => {
   try {
     const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
       uploadDTO,
       userUlid,
       repositoryProvider
     );
-    await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider, uploadDTO.chunkSizeBytes, sourceIp);
-    return { ...caseFile, chunkSizeBytes: uploadDTO.chunkSizeBytes };
+    return await createCaseFileUpload(caseFile, datasetsProvider, sourceIp, userUlid);
   } catch (error) {
     if ('code' in error && error.code === 'UniqueError' && retryDepth === 0) {
       // potential race-condition when we ran validate earlier. double check to ensure no case-file exists
@@ -135,7 +132,7 @@ async function validateUploadRequirements(
 }
 
 export const completeCaseFileUpload = async (
-  deaCaseFile: DeaCaseFile,
+  deaCaseFile: CompleteCaseFileUploadObject,
   repositoryProvider: ModelRepositoryProvider,
   datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFileResult> => {

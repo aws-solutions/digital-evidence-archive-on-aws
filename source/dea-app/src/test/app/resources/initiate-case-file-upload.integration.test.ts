@@ -31,7 +31,6 @@ import { bogusUlid, fakeUlid } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
-  CHUNK_SIZE_BYTES,
   DATASETS_PROVIDER,
   callCompleteCaseFileUpload,
   callCreateCase,
@@ -360,9 +359,6 @@ async function initiateCaseFileUploadAndValidate(caseUlid: string, fileName: str
     CaseFileStatus.PENDING,
     fileName
   );
-
-  // initiate-case-file should return chunkSizeBytes in its response
-  expect(deaCaseFile.chunkSizeBytes).toEqual(CHUNK_SIZE_BYTES);
 
   expect(s3Mock).toHaveReceivedCommandTimes(CreateMultipartUploadCommand, 1);
   expect(s3Mock).toHaveReceivedCommandWith(CreateMultipartUploadCommand, {

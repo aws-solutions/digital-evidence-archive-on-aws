@@ -9,7 +9,6 @@ import sha256 from 'crypto-js/sha256';
 import { AuditEventType } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
 import { CaseAction } from '../../models/case-action';
-import { DeaCaseFile } from '../../models/case-file';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
@@ -80,7 +79,7 @@ describe('case file audit e2e', () => {
       caseIdsToDelete.push(caseUlid);
 
       // Create file
-      const initiatedCaseFile: DeaCaseFile = await initiateCaseFileUploadSuccess(
+      const initiatedCaseFile = await initiateCaseFileUploadSuccess(
         deaApiUrl,
         idToken,
         creds,
@@ -90,11 +89,12 @@ describe('case file audit e2e', () => {
         FILE_SIZE_MB
       );
       const fileUlid = initiatedCaseFile.ulid ?? fail();
-      s3ObjectsToDelete.push({ key: `${caseUlid}/${fileUlid}`, uploadId: initiatedCaseFile.uploadId });
+      const key = `${caseUlid}/${fileUlid}`;
+      s3ObjectsToDelete.push({ key, uploadId: initiatedCaseFile.uploadId });
       const uploadId = initiatedCaseFile.uploadId ?? fail();
-      const presignedUrls = initiatedCaseFile.presignedUrls ?? fail();
+      const federationCredentials = initiatedCaseFile.federationCredentials ?? fail();
       const fileHash = sha256(FILE_CONTENT).toString();
-      await uploadContentToS3(presignedUrls, FILE_CONTENT);
+      await uploadContentToS3(federationCredentials, uploadId, FILE_CONTENT, initiatedCaseFile.bucket, key);
       await completeCaseFileUploadSuccess(
         deaApiUrl,
         idToken,
@@ -122,7 +122,7 @@ describe('case file audit e2e', () => {
       expect(sha256(downloadedContent).toString()).toEqual(describedCaseFile.sha256Hash);
 
       // Create another file on the case, to later ensure it does not show up on the audit log
-      const otherInitiatedCaseFile: DeaCaseFile = await initiateCaseFileUploadSuccess(
+      const otherInitiatedCaseFile = await initiateCaseFileUploadSuccess(
         deaApiUrl,
         idToken,
         creds,
@@ -132,13 +132,19 @@ describe('case file audit e2e', () => {
         FILE_SIZE_MB
       );
       const otherFileUlid = otherInitiatedCaseFile.ulid ?? fail();
+      const otherKey = `${caseUlid}/${otherFileUlid}`;
       s3ObjectsToDelete.push({
-        key: `${caseUlid}/${otherFileUlid}`,
+        key,
         uploadId: otherInitiatedCaseFile.uploadId,
       });
       const otherUploadId = otherInitiatedCaseFile.uploadId ?? fail();
-      const otherPresignedUrls = otherInitiatedCaseFile.presignedUrls ?? fail();
-      await uploadContentToS3(otherPresignedUrls, FILE_CONTENT);
+      await uploadContentToS3(
+        otherInitiatedCaseFile.federationCredentials,
+        otherInitiatedCaseFile.uploadId,
+        FILE_CONTENT,
+        otherInitiatedCaseFile.bucket,
+        otherKey
+      );
       await completeCaseFileUploadSuccess(
         deaApiUrl,
         idToken,

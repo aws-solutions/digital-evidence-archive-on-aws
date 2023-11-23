@@ -5,7 +5,7 @@
 
 import { QueryExecutionState } from '@aws-sdk/client-athena';
 import { DeaCase } from '@aws/dea-app/lib/models/case';
-import { CaseFileDTO, DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
+import { CaseFileDTO, DeaCaseFile, DeaCaseFileUpload } from '@aws/dea-app/lib/models/case-file';
 import { CaseUser } from '@aws/dea-app/lib/models/case-user';
 import { DeaUser } from '@aws/dea-app/lib/models/user';
 import useSWR from 'swr';
@@ -80,7 +80,7 @@ export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DeaC
   return useListDeaFiles<DeaCaseFile>(`cases/${id}/files?filePath=${filePath}`);
 };
 
-export const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFile> => {
+export const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFileUpload> => {
   return httpApiPost(`cases/${apiInput.caseUlid}/files`, { ...apiInput });
 };
 

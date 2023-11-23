@@ -8,6 +8,8 @@ Config
 
 # Line specific ignores
 source/dea-app/lib/test/integration-objects.js:79
+source/dea-app/src/storage/datasets.ts:155
+source/dea-app/src/storage/datasets.ts:156
 
 # Bogus email ignores
 source/release.config.js:3

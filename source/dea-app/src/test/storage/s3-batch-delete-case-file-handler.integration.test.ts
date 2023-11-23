@@ -106,9 +106,14 @@ describe('S3 batch delete case-file lambda', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
     const caseId = createdCase.ulid;
 
-    let caseFile = await callInitiateCaseFileUpload(caseOwner.ulid, repositoryProvider, caseId, 'file1');
-    const fileId = caseFile.ulid ?? fail();
-    caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, caseId);
+    const caseFileUpload = await callInitiateCaseFileUpload(
+      caseOwner.ulid,
+      repositoryProvider,
+      caseId,
+      'file1'
+    );
+    const fileId = caseFileUpload.ulid ?? fail();
+    const caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, caseId);
 
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, caseFile.versionId ?? null),
@@ -212,6 +217,7 @@ describe('S3 batch delete case-file lambda', () => {
       s3BatchDeleteCaseFileLambdaArn: 'arn:aws:lambda:us-east-1:1234:function:foo',
       s3BatchDeleteCaseFileRole: 'arn:aws:iam::1234:role/foo',
       sourceIpValidationEnabled: true,
+      endUserUploadRole: 'arn:aws:iam::1234:role/baz',
       datasetsRole: 'arn:aws:iam::1234:role/bar',
       awsPartition: 'aws',
     };
@@ -237,9 +243,14 @@ describe('S3 batch delete case-file lambda', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
     const caseId = createdCase.ulid;
 
-    let caseFile = await callInitiateCaseFileUpload(caseOwner.ulid, repositoryProvider, caseId, 'file1');
-    const fileId = caseFile.ulid ?? fail();
-    caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, caseId);
+    const caseFileUpload = await callInitiateCaseFileUpload(
+      caseOwner.ulid,
+      repositoryProvider,
+      caseId,
+      'file1'
+    );
+    const fileId = caseFileUpload.ulid ?? fail();
+    const caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, caseId);
 
     s3Mock.rejects('failure time!!');
 

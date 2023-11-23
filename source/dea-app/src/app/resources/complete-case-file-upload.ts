@@ -4,7 +4,7 @@
  */
 
 import { getRequiredPathParam, getRequiredPayload, getUserUlid } from '../../lambda-http-helpers';
-import { CompleteCaseFileUploadDTO } from '../../models/case-file';
+import { CompleteCaseFileUploadDTO, CompleteCaseFileUploadObject } from '../../models/case-file';
 import { completeCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
@@ -44,7 +44,7 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
     userUlid,
     repositoryProvider
   );
-  const patchedFile = Object.assign(
+  const patchedFile: CompleteCaseFileUploadObject = Object.assign(
     {},
     {
       ...existingFile,

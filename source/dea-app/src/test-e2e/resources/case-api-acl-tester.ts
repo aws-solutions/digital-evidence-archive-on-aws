@@ -9,7 +9,7 @@ import { AxiosResponse } from 'axios';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
-import { DeaCaseFile } from '../../models/case-file';
+import { DeaCaseFileUpload } from '../../models/case-file';
 import { DeaUser } from '../../models/user';
 import { isDefined } from '../../persistence/persistence-helpers';
 import CognitoHelper from '../helpers/cognito-helper';
@@ -35,8 +35,8 @@ export interface ACLTestHarness {
   userWithNoMembership: ACLTestUser;
   companionIds: string[];
   targetCase: DeaCase;
-  ownerCaseFile?: DeaCaseFile;
-  userCaseFile?: DeaCaseFile;
+  ownerCaseFile?: DeaCaseFileUpload;
+  userCaseFile?: DeaCaseFileUpload;
   auditId?: string;
 }
 
@@ -424,8 +424,8 @@ const setupCaseFile = async (
   caseUlid: string,
   s3ObjectsToDelete: s3Object[],
   testRequiresDownload: boolean
-): Promise<DeaCaseFile> => {
-  let caseFile = await initiateCaseFileUploadSuccess(
+): Promise<DeaCaseFileUpload> => {
+  const caseFile = await initiateCaseFileUploadSuccess(
     deaApiUrl,
     testUser.idToken,
     testUser.creds,
@@ -434,14 +434,21 @@ const setupCaseFile = async (
     `/`,
     1
   );
+  const key = `${caseFile.caseUlid}/${caseFile.ulid}`;
   s3ObjectsToDelete.push({
-    key: `${caseFile.caseUlid}/${caseFile.ulid}`,
+    key,
     uploadId: caseFile.uploadId,
   });
 
-  await uploadContentToS3(caseFile.presignedUrls ?? fail(), 'hello world');
+  await uploadContentToS3(
+    caseFile.federationCredentials,
+    caseFile.uploadId,
+    'hello world',
+    caseFile.bucket,
+    key
+  );
   if (testRequiresDownload) {
-    caseFile = await completeCaseFileUploadSuccess(
+    await completeCaseFileUploadSuccess(
       deaApiUrl,
       testUser.idToken,
       testUser.creds,
@@ -469,7 +476,7 @@ function getUpdatedDataAndUrl(
   baseData: string | undefined,
   baseUrl: string,
   caseUlid: string,
-  caseFile?: DeaCaseFile
+  caseFile?: DeaCaseFileUpload
 ): ApiParameters {
   let url = baseUrl;
   let data = baseData;

@@ -21,6 +21,7 @@ import {
   CaseFileDTO,
   DeaCaseFile,
   DeaCaseFileResult,
+  DeaCaseFileUpload,
   DownloadCaseFileResult,
 } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
@@ -64,6 +65,7 @@ export const DATASETS_PROVIDER = {
   s3BatchDeleteCaseFileLambdaArn: 'arn:aws:lambda:us-east-1:1234:function:foo',
   s3BatchDeleteCaseFileRole: 'arn:aws:iam::1234:role/foo',
   sourceIpValidationEnabled: true,
+  endUserUploadRole: 'arn:aws:iam:1234:role/baz',
   datasetsRole: 'arn:aws:iam::1234:role/bar',
   awsPartition: 'aws',
 };
@@ -81,7 +83,7 @@ export const callInitiateCaseFileUpload = async (
   reason = REASON,
   details = DETAILS,
   chunkSizeBytes = CHUNK_SIZE_BYTES
-): Promise<DeaCaseFile> => {
+): Promise<DeaCaseFileUpload> => {
   const event = getDummyEvent({
     headers: {
       userUlid: uploaderId,

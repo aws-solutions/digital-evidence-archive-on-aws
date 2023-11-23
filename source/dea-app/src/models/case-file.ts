@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { Credentials } from 'aws-lambda';
 import { CaseFileStatus } from './case-file-status';
 
 export interface DeaCaseFile {
@@ -16,9 +17,6 @@ export interface DeaCaseFile {
   readonly ulid?: string; // ulid will not exist before case-file is persisted
   readonly contentType?: string;
   readonly sha256Hash?: string;
-  uploadId?: string;
-  presignedUrls?: ReadonlyArray<string>;
-  chunkSizeBytes?: number;
   ttl?: number;
   versionId?: string;
   readonly details?: string;
@@ -34,6 +32,13 @@ export interface DeaCaseFile {
   readonly associationDate?: Date;
   readonly dataVaultUploadDate?: Date;
 }
+
+export type DeaCaseFileUpload = DeaCaseFile & {
+  readonly uploadId: string;
+  readonly federationCredentials: Credentials;
+  readonly bucket: string;
+  readonly region: string;
+};
 
 export interface DeaCaseFileResult {
   ulid: string;
@@ -98,6 +103,11 @@ export interface CompleteCaseFileUploadDTO {
   readonly uploadId: string;
 }
 
+export type CompleteCaseFileUploadObject = DeaCaseFile & {
+  readonly sha256Hash: string;
+  readonly uploadId: string;
+};
+
 export interface InitiateCaseFileUploadDTO {
   readonly caseUlid: string;
   readonly fileName: string;
@@ -106,7 +116,6 @@ export interface InitiateCaseFileUploadDTO {
   readonly fileSizeBytes: number;
   readonly details?: string;
   readonly reason?: string;
-  readonly chunkSizeBytes: number;
 }
 
 export interface CaseAssociationDTO {

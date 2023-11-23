@@ -414,6 +414,7 @@ importers:
       '@aws-sdk/client-athena': ~3.435.0
       '@aws-sdk/client-cognito-identity': ~3.435.0
       '@aws-sdk/client-cognito-identity-provider': ~3.435.0
+      '@aws-sdk/client-s3': ~3.435.0
       '@aws/dea-app': workspace:*
       '@babel/core': ~7.23.2
       '@babel/preset-env': ~7.23.2
@@ -489,6 +490,7 @@ importers:
       '@aws-sdk/client-athena': 3.435.0
       '@aws-sdk/client-cognito-identity': 3.435.0
       '@aws-sdk/client-cognito-identity-provider': 3.435.0
+      '@aws-sdk/client-s3': 3.435.0
       '@aws/dea-app': link:../../dea-app
       '@cloudscape-design/collection-hooks': 1.0.20_react@17.0.2
       '@cloudscape-design/component-toolkit': 1.0.0-beta.27

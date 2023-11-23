@@ -29,6 +29,35 @@ export const initiateCaseFileUploadRequestSchema = Joi.object({
   details: safeDetails,
 });
 
+export const initiateCaseFileUploadResponseSchema = Joi.object({
+  caseUlid: joiUlid,
+  uploadId: s3Identifier,
+  versionId: s3Identifier,
+  ulid: joiUlid,
+  fileName: fileName,
+  filePath: filePath,
+  contentType: contentType,
+  createdBy: joiUlid,
+  isFile: Joi.boolean(),
+  chunkSizeBytes: safeChunkSize,
+  fileSizeBytes: safeFileSize,
+  ttl: Joi.number().greater(0),
+  federationCredentials: Joi.object({
+    accessKeyId: Joi.string(),
+    secretAccessKey: Joi.string(),
+    sessionToken: Joi.string(),
+  }),
+  sha256Hash: sha256Hash,
+  status: caseFileStatus,
+  reason: safeReason,
+  details: safeDetails,
+  created: Joi.date(),
+  updated: Joi.date(),
+  fileS3Key: s3Identifier,
+  bucket: Joi.string(),
+  region: Joi.string(),
+});
+
 export const completeCaseFileUploadRequestSchema = Joi.object({
   caseUlid: joiUlid,
   ulid: joiUlid,
@@ -49,7 +78,6 @@ export const caseFileResponseSchema = Joi.object({
   chunkSizeBytes: safeChunkSize,
   fileSizeBytes: safeFileSize,
   ttl: Joi.number().greater(0),
-  presignedUrls: Joi.array().items(Joi.string().uri()),
   sha256Hash: sha256Hash,
   status: caseFileStatus,
   reason: safeReason,

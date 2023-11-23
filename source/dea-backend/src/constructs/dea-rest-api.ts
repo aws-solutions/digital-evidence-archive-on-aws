@@ -46,7 +46,7 @@ import {
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway-route-config';
-import { deaApiRouteConfig } from '../resources/dea-route-config';
+import { DeaApiRoleName, deaApiRouteConfig } from '../resources/dea-route-config';
 import { createCfnOutput } from './construct-support';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
@@ -84,8 +84,10 @@ interface DeaRestApiProps {
 export class DeaRestApiConstruct extends Construct {
   public authLambdaRole: Role;
   public lambdaBaseRole: Role;
+  public roleMap: Map<DeaApiRoleName, Role>;
   // datasetsRole and auditDownloadRole are needed to create session credentials to restrict pre-signed URL access parameters such as ip-address
   public datasetsRole: Role;
+  public endUserUploadRole: Role;
   public auditDownloadRole: Role;
   public customResourceRole: Role;
   public deaRestApi: RestApi;
@@ -118,6 +120,19 @@ export class DeaRestApiConstruct extends Construct {
 
     this.authLambdaRole = this.createAuthLambdaRole();
 
+    this.roleMap = new Map<DeaApiRoleName, Role>();
+    this.roleMap.set(DeaApiRoleName.AUTH_ROLE, this.authLambdaRole);
+    const initiateUploadRole = this.createInitiateUploadRole(
+      props.kmsKey.keyArn,
+      props.deaDatasetsBucket.bucketArn,
+      props.deaTableArn
+    );
+    this.roleMap.set(DeaApiRoleName.INITIATE_UPLOAD_ROLE, initiateUploadRole);
+    this.endUserUploadRole = this.createEndUserUploadRole(
+      initiateUploadRole,
+      props.deaDatasetsBucket.bucketArn
+    );
+
     this.datasetsRole = this.createDatasetsRole(props.kmsKey.keyArn, props.deaDatasetsBucket.bucketArn);
 
     this.auditDownloadRole = this.createAuditDownloadRole(
@@ -125,6 +140,7 @@ export class DeaRestApiConstruct extends Construct {
       props.athenaConfig.athenaOutputBucket.bucketArn
     );
 
+    props.lambdaEnv['UPLOAD_ROLE'] = this.endUserUploadRole.roleArn;
     props.lambdaEnv['DATASETS_ROLE'] = this.datasetsRole.roleArn;
     props.lambdaEnv['AUDIT_DOWNLOAD_ROLE_ARN'] = this.auditDownloadRole.roleArn;
     props.lambdaEnv['KEY_ARN'] = props.kmsKey.keyArn;
@@ -142,9 +158,9 @@ export class DeaRestApiConstruct extends Construct {
         actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
         principals: [
           new ArnPrincipal(this.lambdaBaseRole.roleArn),
-          new ArnPrincipal(this.authLambdaRole.roleArn),
           new ArnPrincipal(this.datasetsRole.roleArn),
           new ArnPrincipal(this.auditDownloadRole.roleArn),
+          ...Array.from(this.roleMap).map(([_, role]) => new ArnPrincipal(role.roleArn)),
         ],
         resources: ['*'],
         sid: 'lambda-roles-key-share-statement',
@@ -372,7 +388,14 @@ export class DeaRestApiConstruct extends Construct {
       // and we should give the lambda limited permissions
       // otherwise it is a DEA execution API, which needs the
       // full set of permissions
-      const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
+      let lambdaRole = this.lambdaBaseRole;
+      if (route.roleName) {
+        const maybeRole = this.roleMap.get(route.roleName);
+        if (!maybeRole) {
+          throw new Error(`Route requested unspecified role ${route.roleName}`);
+        }
+        lambdaRole = maybeRole;
+      }
       this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv, resourcesWithPreflight);
       this.opsDashboard?.addMethodOperationalComponents(this.deaRestApi, route);
     });
@@ -760,6 +783,76 @@ export class DeaRestApiConstruct extends Construct {
         resources: [kmsKeyArn],
       })
     );
+
+    return role;
+  }
+
+  private createEndUserUploadRole(assumingRole: Role, datasetsBucketArn: string) {
+    const role = new Role(this, 'dea-end-user-upload-role', {
+      assumedBy: assumingRole,
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    return role;
+  }
+
+  private createInitiateUploadRole(kmsKeyArn: string, datasetsBucketArn: string, tableArn: string): Role {
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+
+    const role = new Role(this, 'dea-initiate-upload-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [basicExecutionPolicy],
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          'dynamodb:GetItem',
+          'dynamodb:DeleteItem',
+          'dynamodb:BatchGetItem',
+          'dynamodb:BatchWriteItem',
+          'dynamodb:PutItem',
+          'dynamodb:Query',
+          'dynamodb:UpdateItem',
+        ],
+        resources: [tableArn, `${tableArn}/index/GSI1`, `${tableArn}/index/GSI2`, `${tableArn}/index/GSI3`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject', 's3:GetObject', 's3:GetObjectVersion'],
+        resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
+        resources: [
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${
+            ServiceConstants.PARAM_PREFIX
+          }${deaConfig.stage()}*`,
+        ],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [kmsKeyArn],
+      })
+    );
+
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
 
     return role;
   }

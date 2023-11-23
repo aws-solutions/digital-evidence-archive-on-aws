@@ -3903,6 +3903,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -4005,6 +4011,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -4141,6 +4153,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -4259,6 +4277,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -4379,6 +4403,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -4497,6 +4527,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -4617,6 +4653,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -4735,6 +4777,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -4855,6 +4903,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -4973,6 +5027,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -5093,6 +5153,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -5211,6 +5277,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -5331,6 +5403,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -5449,6 +5527,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -5569,6 +5653,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -5687,6 +5777,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -5807,6 +5903,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -5925,6 +6027,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -6045,6 +6153,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -6163,6 +6277,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -6283,6 +6403,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -6401,6 +6527,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -6521,6 +6653,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -6639,6 +6777,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -6759,6 +6903,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -6877,6 +7027,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -6997,6 +7153,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -7116,6 +7278,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -7218,6 +7386,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -7354,6 +7528,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -7473,6 +7653,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -7575,6 +7761,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -7711,6 +7903,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -7830,6 +8028,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -7866,8 +8070,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     },
     "DeaRestApiConstructPOSTInitiateCaseFileUpload4072CE29": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+        "DeaRestApiConstructdeainitiateuploadroleDefaultPolicy5E75E5DB",
+        "DeaRestApiConstructdeainitiateuploadrole47691B14",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -7949,13 +8153,19 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
         "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "DeaRestApiConstructdeainitiateuploadrole47691B14",
             "Arn",
           ],
         },
@@ -8067,6 +8277,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -8187,6 +8403,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -8305,6 +8527,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -8425,6 +8653,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -8543,6 +8777,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -8663,6 +8903,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -8781,6 +9027,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -8901,6 +9153,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -9019,6 +9277,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -9139,6 +9403,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -9257,6 +9527,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -9377,6 +9653,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -9495,6 +9777,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -9615,6 +9903,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
             },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
           },
         },
         "Handler": "index.handler",
@@ -9733,6 +10027,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "TRAIL_LOG_GROUP_NAME": Object {
               "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
             },
           },
         },
@@ -18711,6 +19011,259 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::IAM::Policy",
     },
+    "DeaRestApiConstructdeaenduseruploadrole9A688CB2": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructdeainitiateuploadrole47691B14",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaRestApiConstructdeaenduseruploadroleDefaultPolicy853AADF8": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "s3:PutObject",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaRestApiConstructdeaenduseruploadroleDefaultPolicy853AADF8",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DeaRestApiConstructdeainitiateuploadrole47691B14": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaRestApiConstructdeainitiateuploadroleDefaultPolicy5E75E5DB": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:GetItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendConstructDeaTableB48721A0",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructDeaTableB48721A0",
+                          "Arn",
+                        ],
+                      },
+                      "/index/GSI1",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructDeaTableB48721A0",
+                          "Arn",
+                        ],
+                      },
+                      "/index/GSI2",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructDeaTableB48721A0",
+                          "Arn",
+                        ],
+                      },
+                      "/index/GSI3",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/dea/1/[STAGE-REMOVED]*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:GenerateDataKey",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "testKey1CDDDD5E",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "s3:ResourceAccount": Array [
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaRestApiConstructdeainitiateuploadroleDefaultPolicy5E75E5DB",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaRestApiConstructdeainitiateuploadrole47691B14",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": Object {
       "DependsOn": Array [
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
@@ -19108,12 +19661,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   },
                   Object {
                     "Fn::GetAtt": Array [
-                      "DeaRestApiConstructdeaauthlambdarole2081E9E6",
-                      "Arn",
-                    ],
-                  },
-                  Object {
-                    "Fn::GetAtt": Array [
                       "DeaRestApiConstructdeadatasetsrole293FB411",
                       "Arn",
                     ],
@@ -19121,6 +19668,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   Object {
                     "Fn::GetAtt": Array [
                       "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaRestApiConstructdeaauthlambdarole2081E9E6",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaRestApiConstructdeainitiateuploadrole47691B14",
                       "Arn",
                     ],
                   },

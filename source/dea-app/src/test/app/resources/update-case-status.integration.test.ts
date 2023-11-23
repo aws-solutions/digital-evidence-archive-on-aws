@@ -386,6 +386,7 @@ describe('update case status', () => {
       s3BatchDeleteCaseFileLambdaArn: 'arn:aws:lambda:us-east-1:1234:function:foo',
       s3BatchDeleteCaseFileRole: 'arn:aws:iam::1234:role/foo',
       sourceIpValidationEnabled: true,
+      endUserUploadRole: 'arn:aws:iam::1234:role/baz',
       datasetsRole: 'arn:aws:iam::1234:role/bar',
       awsPartition: 'aws',
     };

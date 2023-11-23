@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { Effect, PolicyStatement, Role, AnyPrincipal } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyStatement, Role, AnyPrincipal, ArnPrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 
@@ -18,7 +18,8 @@ export const restrictResourcePolicies = (
   resources: ApplicationResources,
   customResourceRole: Role,
   applicationAccessRoleArns: string[],
-  adminRoleArn: string | undefined
+  adminRoleArn: string | undefined,
+  endUserUploadRoleArn: string
 ) => {
   const datasetsObjectActions = [
     's3:AbortMultipartUpload',
@@ -60,7 +61,7 @@ export const restrictResourcePolicies = (
 
   const notApplicationCondition = {
     StringNotEquals: {
-      'aws:PrincipalArn': rolesForAllow,
+      'aws:PrincipalArn': [...rolesForAllow, endUserUploadRoleArn],
     },
   };
 
@@ -85,6 +86,26 @@ export const restrictResourcePolicies = (
       principals: [new AnyPrincipal()],
       conditions: applicationConditionAllow,
       sid: 'datasets-bucket-policy',
+    })
+  );
+
+  resources.datasetsBucket.addToResourcePolicy(
+    new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: [`s3:PutObject`],
+      resources: [`${resources.datasetsBucket.bucketArn}/*`],
+      principals: [new ArnPrincipal(endUserUploadRoleArn)],
+      sid: 'allow-user-upload',
+    })
+  );
+
+  resources.datasetsBucket.addToResourcePolicy(
+    new PolicyStatement({
+      effect: Effect.DENY,
+      notActions: [`s3:PutObject`],
+      resources: [`${resources.datasetsBucket.bucketArn}/*`, resources.datasetsBucket.bucketArn],
+      principals: [new ArnPrincipal(endUserUploadRoleArn)],
+      sid: 'deny-everything-except-upload-for-user',
     })
   );
 

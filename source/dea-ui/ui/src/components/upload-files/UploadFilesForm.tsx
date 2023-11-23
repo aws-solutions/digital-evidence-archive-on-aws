@@ -3,7 +3,15 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
+import crypto from 'crypto';
+import {
+  ChecksumAlgorithm,
+  S3Client,
+  UploadPartCommand,
+  UploadPartCommandInput,
+  UploadPartCommandOutput,
+} from '@aws-sdk/client-s3';
+import { DeaCaseFileUpload } from '@aws/dea-app/lib/models/case-file';
 import {
   Alert,
   Box,
@@ -20,10 +28,9 @@ import {
   Table,
   Textarea,
 } from '@cloudscape-design/components';
-import cryptoJS from 'crypto-js';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { completeUpload, initiateUpload, useGetCaseActions } from '../../api/cases';
+import { completeUpload, initiateUpload } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import FileUpload from '../common-components/FileUpload';
@@ -44,11 +51,10 @@ enum UploadStatus {
 
 interface ActiveFileUpload {
   file: FileWithPath;
-  initiatedCaseFilePromise: Promise<DeaCaseFile>;
+  initiatedCaseFilePromise: Promise<DeaCaseFileUpload>;
 }
 
 export const ONE_MB = 1024 * 1024;
-const MAX_PARALLEL_PART_UPLOADS = 10;
 const MAX_PARALLEL_UPLOADS = 1; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
@@ -58,7 +64,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [reason, setReason] = useState('');
   const [uploadInProgress, setUploadInProgress] = useState(false);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
-  const userActions = useGetCaseActions(props.caseId);
   const router = useRouter();
 
   async function onSubmitHandler() {
@@ -89,52 +94,76 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     }
   }
 
-  async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload) {
-    const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
-    let uploadPromises: Promise<Response>[] = [];
-    const hash = cryptoJS.algo.SHA256.create();
-    if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
-      const numberOfUrls = initiatedCaseFile.presignedUrls.length;
-      const chunkSizeBytes = initiatedCaseFile.chunkSizeBytes
-        ? initiatedCaseFile.chunkSizeBytes
-        : 50 * ONE_MB;
-      for (let index = 0; index < initiatedCaseFile.presignedUrls.length; index += 1) {
-        const url = initiatedCaseFile.presignedUrls[index];
-        const start = index * chunkSizeBytes;
-        const end = (index + 1) * chunkSizeBytes;
-        const filePartPointer =
-          index === numberOfUrls - 1
-            ? activeFileUpload.file.slice(start)
-            : activeFileUpload.file.slice(start, end);
-        const loadedFilePart = await readFileSlice(filePartPointer);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
-        hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
-        uploadPromises.push(fetch(url, { method: 'PUT', body: loadedFilePart }));
-
-        if (index > 0 && index % MAX_PARALLEL_PART_UPLOADS === 0) {
-          // getting user actions from api to reset idle timer while upload is in progress
-          userActions.mutate();
-          await Promise.all(uploadPromises);
-          uploadPromises = [];
-        }
-      }
-      await Promise.all(uploadPromises);
-
-      await completeUpload({
-        caseUlid: props.caseId,
-        ulid: initiatedCaseFile.ulid,
-        uploadId: initiatedCaseFile.uploadId,
-        sha256Hash: hash.finalize().toString(),
-      });
+  async function blobToArrayBuffer(blob: Blob) {
+    if ('arrayBuffer' in blob) {
+      return await blob.arrayBuffer();
     }
+
+    return new Promise<ArrayBuffer>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.result && typeof reader.result !== 'string') {
+          resolve(reader.result);
+        }
+        reject();
+      };
+      reader.onerror = () => reject();
+      reader.readAsArrayBuffer(blob);
+    });
+  }
+
+  async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
+    const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
+
+    const federationS3Client = new S3Client({
+      credentials: initiatedCaseFile.federationCredentials,
+      region: initiatedCaseFile.region,
+    });
+
+    const uploadPromises: Promise<UploadPartCommandOutput>[] = [];
+
+    const fullHash = crypto.createHash('sha256');
+    const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
+    for (let i = 0; i < totalChunks; i++) {
+      const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
+
+      const arrayFromBlob = new Uint8Array(await blobToArrayBuffer(chunkBlob));
+      const partHash = crypto.createHash('sha256').update(arrayFromBlob).digest('base64');
+      fullHash.update(arrayFromBlob);
+
+      const uploadInput: UploadPartCommandInput = {
+        Bucket: initiatedCaseFile.bucket,
+        Key: `${initiatedCaseFile.caseUlid}/${initiatedCaseFile.ulid}`,
+        PartNumber: i + 1,
+        UploadId: initiatedCaseFile.uploadId,
+        Body: arrayFromBlob,
+        ChecksumSHA256: partHash,
+        ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
+      };
+      const uploadCommand = new UploadPartCommand(uploadInput);
+
+      uploadPromises.push(federationS3Client.send(uploadCommand));
+    }
+
+    await Promise.all(uploadPromises);
+
+    const fullHashFinal = fullHash.digest('hex');
+
+    await completeUpload({
+      caseUlid: props.caseId,
+      ulid: initiatedCaseFile.ulid,
+      uploadId: initiatedCaseFile.uploadId,
+      sha256Hash: fullHashFinal,
+    });
     updateFileProgress(activeFileUpload.file, UploadStatus.complete);
   }
 
   async function uploadFile(selectedFile: FileWithPath) {
     const fileSizeBytes = Math.max(selectedFile.size, 1);
     // Trying to use small chunk size (50MB) to reduce memory use.
-    // However, since S3 allows a max of 10,000 parts for multipart uploads, we will increase chunk size for larger files
+    // Maximum object size	5 TiB
+    // Maximum number of parts per upload	10,000
+    // 5 MiB to 5 GiB. There is no minimum size limit on the last part of your multipart upload.
     const chunkSizeBytes = Math.max(selectedFile.size / 10_000, 50 * ONE_MB);
     // per file try/finally state to initiate uploads
     try {
@@ -153,7 +182,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         file: selectedFile,
         initiatedCaseFilePromise,
       };
-      await uploadFilePartsAndComplete(activeFileUpload);
+      await uploadFilePartsAndComplete(activeFileUpload, chunkSizeBytes);
     } catch (e) {
       updateFileProgress(selectedFile, UploadStatus.failed);
       console.log('Upload failed', e);
@@ -173,19 +202,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         fileToUpdateStatus.status = status;
       }
       return newList;
-    });
-  }
-
-  async function readFileSlice(blob: Blob): Promise<Uint8Array> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        // reader.result is of type <string | ArrayBuffer | null>
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions
-        resolve(new Uint8Array(reader.result as any));
-      };
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(blob);
     });
   }
 
@@ -235,8 +251,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   }
 
   function onDoneHandler() {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    router.push(`/case-detail?caseId=${props.caseId}`);
+    void router.push(`/case-detail?caseId=${props.caseId}`);
   }
 
   function validateFields(): boolean {

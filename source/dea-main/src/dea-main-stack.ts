@@ -232,6 +232,7 @@ export class DeaMainStack extends cdk.Stack {
 
     const applicationAccessRoleArns = [
       deaApi.lambdaBaseRole.roleArn,
+      ...Array.from(deaApi.roleMap).map(([, role]) => role.roleArn),
       deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       deaEventHandlers.s3BatchDeleteCaseFileLambdaRole.roleArn,
       deaApi.datasetsRole.roleArn,
@@ -248,7 +249,8 @@ export class DeaMainStack extends cdk.Stack {
       },
       deaApi.customResourceRole,
       applicationAccessRoleArns,
-      deaConfig.adminRoleArn()
+      deaConfig.adminRoleArn(),
+      deaApi.endUserUploadRole.roleArn
     );
 
     const permissionBoundaryOnDeaResources =
