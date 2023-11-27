@@ -119,21 +119,6 @@ describe('datasync event handler', () => {
     expect(dataVaultFiles.length).toEqual(2);
   }, 40000);
 
-  it('should fail when object detected is not task report', async () => {
-    const event = getEventBridgeEvent(region, 'BADKEY.json');
-
-    await expect(
-      dataSyncExecutionEvent(
-        event,
-        dummyContext,
-        () => {
-          return;
-        },
-        repositoryProvider
-      )
-    ).rejects.toThrow('Object is not a task report');
-  });
-
   it('should fail when executionId and taskId are not valid', async () => {
     // Create invalid Task Report Location
     const reportKey = `Detailed-Reports/task-00000000000000000/exec-00000000000000000/exec-00000000000000000.files-verified-v1-00001-00000000000000000.json`;

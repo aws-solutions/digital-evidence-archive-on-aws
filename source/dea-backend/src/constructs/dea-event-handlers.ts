@@ -26,6 +26,8 @@ import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
+const DATASYNC_POST_PROCESSING_LAMBDA_EXECUTION_TIME_IN_SECONDS = 900;
+
 interface LambdaEnvironment {
   [key: string]: string;
 }
@@ -134,6 +136,9 @@ export class DeaEventHandlers extends Construct {
       '../../src/handlers/datasync-execution-event-handler.ts',
       { NODE_OPTIONS: '--max-old-space-size=8192', ...props.lambdaEnv },
       this.dataSyncExecutionEventRole,
+      DATASYNC_POST_PROCESSING_LAMBDA_EXECUTION_TIME_IN_SECONDS,
+      512,
+      5,
       dataSyncFileProcessingDLQ
     );
 
@@ -180,13 +185,17 @@ export class DeaEventHandlers extends Construct {
     pathToSource: string,
     lambdaEnv: LambdaEnvironment,
     role: Role,
+    timeoutSeconds = 60,
+    memorySize = 512,
+    reservedConcurrentExecutions?: number,
     dlq?: Queue
   ): NodejsFunction {
     const lambdaProps: NodejsFunctionProps = {
-      memorySize: 512,
+      memorySize: memorySize,
       tracing: Tracing.ACTIVE,
       role,
-      timeout: Duration.seconds(60),
+      timeout: Duration.seconds(timeoutSeconds),
+      reservedConcurrentExecutions,
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
       // nosemgrep

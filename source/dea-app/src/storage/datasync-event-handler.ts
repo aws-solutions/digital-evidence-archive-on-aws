@@ -58,7 +58,8 @@ export const dataSyncExecutionEvent = async (
   let executionId = '';
   // Check if object is verified task report
   if (taskReportJoi.validate(s3Key).error) {
-    throw new Error('Object is not a task report');
+    logger.info('Object is not a files-verified report', { s3Bucket, s3Key });
+    return;
   } else {
     const regex = /Detailed-Reports\/task-[^/]+\/(exec-[^/]+)\/exec-[^/]+\.files-verified-[^/]+/;
     const match = s3Key.match(regex);
@@ -124,19 +125,27 @@ export const dataSyncExecutionEvent = async (
       );
 
       if (file.DstMetadata.Type == 'Directory') {
-        const dataVaultFileDTO: DataVaultFileDTO = {
-          fileName: fileName,
-          filePath: filePath,
-          dataVaultUlid: dataVaultTask.dataVaultUlid,
-          isFile: false,
-          fileSizeBytes: 0,
-          createdBy: dataVaultExecution.createdBy,
-          contentType: file.SrcMetadata.Type,
-          fileS3Key: fileS3Key,
-          executionId: dataVaultExecution.executionId,
-        };
+        try {
+          const dataVaultFileDTO: DataVaultFileDTO = {
+            fileName: fileName,
+            filePath: filePath,
+            dataVaultUlid: dataVaultTask.dataVaultUlid,
+            isFile: false,
+            fileSizeBytes: 0,
+            createdBy: dataVaultExecution.createdBy,
+            contentType: file.SrcMetadata.Type,
+            fileS3Key: fileS3Key,
+            executionId: dataVaultExecution.executionId,
+          };
 
-        await createDataVaultFile(dataVaultFileDTO, repositoryProvider);
+          await createDataVaultFile(dataVaultFileDTO, repositoryProvider);
+        } catch (error) {
+          if ('code' in error && error.code === 'UniqueError') {
+            logger.debug(`Path ${filePath}/${fileName} already exists, moving on...`);
+          } else {
+            throw error;
+          }
+        }
       } else {
         const s3Object = await desrcibeS3Object(
           datasetsProvider.bucketName,
