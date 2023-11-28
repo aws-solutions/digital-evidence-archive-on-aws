@@ -238,36 +238,79 @@ After the command is done, copy the list of outputs somewhere safe, You will nee
 ### Step 4: Integrate your CJIS Compliant Identity Provider
 Cognito is not CJIS compliant, therefore you need to use your CJIS Compliant IdP to federate with Cognito for use in DEA. This will require you to create an App Integration in your IdP, relaunch the stack, create a custom attribute for users called DEARole, and assign users to DEA via the App Integration.
 
-1) First in your IdP, create a new custom attribute for users called DEARole, limit the possible values to only the Roles you configured in step 3. (For example: for the prodexample.json, the only possible attribute values would be CaseWorker, EvidenceManager, and WorkingManager)
-* Okta: https://help.okta.com/en-us/Content/Topics/users-groups-profiles/usgp-add-custom-user-attributes.htm
-* Active Directory: https://windowstechno.com/how-to-create-custom-attributes-in-active-directory/
+#### 1: IdP Side Integration
+The solution can integrate with either Okta or Active Directory. You can also choose how to determine what access the user has to the solution either by defining rules based on
+user group membership or by defining a custom attribute on your IdP, and for each dea user
+assigning the role name to that attribute for the user. See below for more details.
 
-2) Add the new user pool as a SAML 2.0 enterprise application in your IdP. For this you will need your cognito domain prefix (as you stated in your configuration file) and your user pool Id (listed in the named CDK outputs as DeaAuthConstructuserPoolId).
-AWS has articles on how to integrate Okta and Active Directory with Cognito for Federation. See below for links. NOTE: DEA has already created the User Pool and App Client for you skip those steps. 
+##### Integrating with Okta
 
-Below are the links to articles on how to connect your IdP to the Cognito User Pool. You will need the following two values for the SAML Application you will create in your IdP:
+**Create Attribute**
+
+If you are using group membership to define access to DEA, you can skip this step.
+
+Otherwise, in Okta create a new custom attribute for users called DEARole, limit the possible values to only the Roles you configured in step 3. (For example: for the prodexample.json, the only possible attribute values would be CaseWorker, EvidenceManager, and WorkingManager). You can follow the instructions for doing that [here](https://help.okta.com/en-us/Content/Topics/users-groups-profiles/usgp-add-custom-user-attributes.htm).
+
+**Create SAML 2.0 Application in Okta**
+
+You will need your cognito domain prefix (as you stated in your configuration file) and your user pool Id (listed in the named CDK outputs as DeaAuthConstructuserPoolId).
+
+Complete ONLY the steps "Create a SAML app in Okta" and "Configure SAML integration for your Okta App" in this (aws article)[https://repost.aws/knowledge-center/cognito-okta-saml-identity-provider].
+Use the Following Values:
 * Single sign on URL: replace DOMAIN_PREFIX with the cognito domain you defined in your configuration file, and REGION with the region you are deploying in (e.g. us-east-1)
-  - For non-Gov Cloud regions: 
+  - For non-US Cloud regions: (or regions/stacks not using FIPs endpoints)
    https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse
-  - For Gov Cloud regions: 
+  - For US regions: 
   https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse
-* Audience URL: urn:amazon:cognito:sp:USER_POOL_ID (replace USER_POOL_ID with the id listed in the named CDK outputs called DeaAuthConstructuserPoolId)
+* Audience URL: urn:amazon:cognito:sp:USER_POOL_ID (replace USER_POOL_ID with the id listed in the named CDK outputs called DeaAuthConstructuserPoolId, should look like us-east-1_xxxxxxxxx)
+* Attribute Statements: Set the following Attributes 
+  - firstName
+  - lastName
+  - email
+  - username
+  - If using Custom Attribute: the name of the custom attribute you created, e.g. deaRole
+* If using Groups: add a Group Claim
+  - E.g. send all groups: Name=groups, NameFormat=Unspecified, Filter: Select Matches regex Value=.*
 
-* For Okta: 
-Complete ONLY the steps "Create a SAML app in Okta" and "Configure SAML integration for your Okta App" in https://repost.aws/knowledge-center/cognito-okta-saml-identity-provider.
-- For Attribute Statements, ensure you have the following fields: first name, last name, email, username, DEARole (the custom attribute you created in step 1)
+##### Integrating with Active Directory
 
-* For Active Directory: Complete ONLY Step 2: Add Amazon Cognito as an entrpise application in Azure AD in the following article https://aws.amazon.com/blogs/security/how-to-set-up-amazon-cognito-for-federated-authentication-using-azure-ad/.
-- For User Attributes and Claims, ensure you have the following fields: first name, last name, email, username, DEARole (the custom attribute you created in step 1)
+**Create Attribute**
 
+If you are using group membership to define access to DEA, you can skip this step.
+
+Otherwise, in AD create a new custom attribute for users called DEARole, limit the possible values to only the Roles you configured in step 3. (For example: for the prodexample.json, the only possible attribute values would be CaseWorker, EvidenceManager, and WorkingManager). You can follow the instructions for doing that [here](https://windowstechno.com/how-to-create-custom-attributes-in-active-directory/).
+
+**Create SAML 2.0 Application in AD**
+
+You will need your cognito domain prefix (as you stated in your configuration file) and your user pool Id (listed in the named CDK outputs as DeaAuthConstructuserPoolId).
+
+Complete ONLY Step 2: Add Amazon Cognito as an entrpise application in Azure AD in the  (following article)[https://aws.amazon.com/blogs/security/how-to-set-up-amazon-cognito-for-federated-authentication-using-azure-ad/].
+Use the Following Values:
+* Single sign on URL: replace DOMAIN_PREFIX with the cognito domain you defined in your configuration file, and REGION with the region you are deploying in (e.g. us-east-1)
+  - For non-US Cloud regions: (or regions/stacks not using FIPs endpoints)
+   https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse
+  - For US regions: 
+  https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse
+* Audience URL: urn:amazon:cognito:sp:USER_POOL_ID (replace USER_POOL_ID with the id listed in the named CDK outputs called DeaAuthConstructuserPoolId, should look like us-east-1_xxxxxxxxx)
+* User Attributes and Claims: Set the following Attributes
+  - firstName
+  - lastName
+  - email
+  - username
+  - If using Custom Attribute: the name of the custom attribute you created, e.g. deaRole
+* If using Groups: add a Group Claim (see here)[https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/how-to-connect-fed-group-claims]
+
+#### 2: DEA Side Integration
 One you have created the SAML 2.0 integration in your IdP, with the appropriate User Attribute Mapping, you can now start the integration process with DEA.
 
-3) Open your configuration file from step 3 and add the following (with your specific values for each of the fields) to the configuration file.
+Open your configuration file from step 3 and add the following (with your specific values for each of the fields) to the configuration file.
 * metadataPath : the URL link to the IdP App Integration Metadata (recommended) or the path to the metadata file locally
 * metadataPathType: either URL or FILE
 * attributeMap: mapping from what Cognito fields are named to what you named them in your App Integration (App Integration names are on right hand side, do not modify left hand side)
+* Optional: you can set the default role, so if no rule mapping matches during federation, the user gets defined the default role. If not set, the default role is NO access to DEA
 
-E.g.
+E.g. Using Custom Attribute
+
 ```
 "idpInfo": {
   "metadataPath": "<URL link to IdP metatdata>",
@@ -278,11 +321,48 @@ E.g.
     "firstName": "firstName",
     "lastName": "lastName",
     "deaRoleName": "DEARole"
-  }
+  },
+  "defaultRole": 'CaseWorker'
 }
 ```
 
-4) Update the stack to use the information you provided in the configuration file to integrate your IdP with the DEA stack. Run the following commands:
+E.g. Using Group Membership
+
+For each rule your define the deaRoleName (one ofthe roles you defined in Step 3, e.g. CaseWorker, EvidenceManager) and the FilterValue (a string you want to search for in groups). For example if my filterValue is Troop and the deaRole is CaseWorker, then if the user's group contains the string Troop they will be assigned the CaseWorker role in the system.
+
+NOTE: You can define up to 25 GroupToDeaRoleRules, and they are evaluated in order.
+
+```
+  "idpInfo": {
+    "metadataPath": "<URL link to IdP metatdata>",
+    "metadataPathType": "URL",
+    "attributeMap": {
+      "username": "username",
+      "email": "email",
+      "firstName": "firstname",
+      "lastName": "lastname",
+      "groups": "groups"
+    },
+    "groupToDeaRoleRules": [
+      {
+        "filterValue": "DEAEvidenceManager",
+        "deaRoleName": "EvidenceManager"
+      },
+      {
+        "filterValue": "SuperUser",
+        "deaRoleName": "WorkingManager"
+      },
+      {
+        "filterValue": "DEA",
+        "deaRoleName": "CaseWorker"
+      },
+    ],
+    "defaultRole": 'CaseWorker'
+  },
+```
+
+#### 3: Relaunch Stack to Update with Authentication Information
+Update the stack to use the information you provided in the configuration file to integrate your IdP with the DEA stack. Run the following commands:
 
 ```sh
 rush rebuild
@@ -294,11 +374,11 @@ NOTE: if you are running cdk deploy in us-gov-east-1 region, run the command wit
 rushx cdk deploy --all
 ```
 
-5) Save your Configuration File
+### Step 5: Save your Configuration File
 
 Save your configuration file somewhere safe, like s3, so you can reuse it when you want to update your stack.
 
-6) Post Deployment Steps:
+### Step 6:  Post Deployment Steps:
 
 **DEA Permissions Boundary**
 

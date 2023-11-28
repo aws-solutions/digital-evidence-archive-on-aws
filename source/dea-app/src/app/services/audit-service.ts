@@ -150,6 +150,7 @@ export type CognitoTokenId = {
   username: string;
   deaRole: string;
   userPoolUserId: string;
+  groupMemberships?: string;
 };
 
 export type LoginUrlId = {
@@ -173,6 +174,7 @@ export type FullUserId = {
   userUlid: string; // unique id for user granted and used by DEA system. Stored in DDB and used for CaseUser
   deaRole: string;
   userPoolUserId: string; // unique id given to federated user by the Cognito User Pool. Stored in DDB and used to determine whether user is in DB already or not
+  groupMemberships?: string;
 };
 
 // We support different progressions of identifier, anticipating that we may encounter an error along the authentication process

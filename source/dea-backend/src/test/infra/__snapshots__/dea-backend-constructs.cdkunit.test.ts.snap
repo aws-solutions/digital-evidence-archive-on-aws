@@ -1408,7 +1408,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
               Object {
                 "Name": "actorIdentity",
-                "Type": "struct<idType:string,sourceIp:string,idPoolUserId:string,username:string,firstName:string,lastName:string,userUlid:string,deaRole:string,userPoolUserId:string,authCode:string,idToken:string>",
+                "Type": "struct<idType:string,sourceIp:string,idPoolUserId:string,username:string,firstName:string,lastName:string,userUlid:string,deaRole:string,groupMemberships:string,userPoolUserId:string,authCode:string,idToken:string>",
               },
               Object {
                 "Name": "dateTime",

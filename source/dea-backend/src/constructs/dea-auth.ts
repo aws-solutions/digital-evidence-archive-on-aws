@@ -22,6 +22,7 @@ import {
   AccountRecovery,
   CfnIdentityPool,
   CfnIdentityPoolRoleAttachment,
+  ClientAttributes,
   ProviderAttribute,
   StringAttribute,
   UserPool,
@@ -119,15 +120,15 @@ export class DeaAuth extends Construct {
     }
 
     // Auth Stack. Used to determine which APIs a user can access by assigning them
-    // an IAM Role based on the DEARole specified by the Agency IdP during federation.
-    // E.g. User federates with the auth stack, given credentials based on the DEARole in the id Token
+    // an IAM Role based on the group membership to DEARole mapping specified by the Agency IdP during federation.
+    // E.g. User federates with the auth stack, given credentials based on the group membership in the id Token
     // and the role mapping in the Identity Pool, then user can call APIs as neccessary.
     // A Cognito UserPool will be used as the token vendor, and will ONLY be used
     // for federation with the Agency IdP. During federation, Cognito receives
-    // a SAML assertion from the IdP, and uses it attached attribute mapping
-    // to update the user. In particular, one field will be called DEARole, which
-    // is a custom attribute and will be used during authorization to determine
-    // the credentials for the user.
+    // a SAML assertion from the IdP, and uses its attached attribute mapping
+    // to update the user. In particular, one field will be called SAMLGroups, which
+    // is a list of groups memberships in the external IDP and will be used during authorization to determine
+    // the credentials for the user. (In the configuration file map the group names to desired DEARole)
     // For production deployments, follow the ImplementationGuide on how to setup
     // and connect your existing CJIS-compatible IdP for SSO and attribute mapping for the UserPool
     // and role mapping rules for the identity pool for authorization
@@ -141,9 +142,11 @@ export class DeaAuth extends Construct {
     principal: WebIdentityPrincipal,
     roleBoundary: ManagedPolicy
   ): Role {
+    const stage = deaConfig.stage();
     const role = new Role(this, roleName, {
       assumedBy: principal,
       description: description,
+      roleName: `${stage}-${roleName}`,
     });
     const endpointstatment = new PolicyStatement({
       actions: ['execute-api:Invoke'],
@@ -171,9 +174,9 @@ export class DeaAuth extends Construct {
   // During the authorization process, the client sends the the IdToken from
   // the authentication process, sends it to the /credentials DEA endpoint
   // which then sends it to the IdentityPool to get the appropriate credentials
-  // for the user. To determine the credentials, the DEARole field in the
+  // for the user. To determine the credentials, the SAMLGroups field in the
   // identity token is used and compared to the identity pool attached role mapping.
-  // Thus from this function we send a mapping of DEARole values to the appropriate
+  // Thus from this function we send a mapping of groups (using regex) values to the appropriate
   // IAM Role, which we will use to define the role mapping in cdk for the ID Pool.
   private createDEARoles(
     apiEndpointArns: Map<string, string>,
@@ -294,19 +297,50 @@ export class DeaAuth extends Construct {
       idPool.ref,
       usGovCondition.logicalId
     );
-    const rules: CfnIdentityPoolRoleAttachment.MappingRuleProperty[] = new Array(deaRoles.size);
-    Array.from(deaRoles.entries()).forEach((entry) => {
-      rules.push({
-        claim: 'custom:DEARole',
-        value: entry[0],
-        matchType: RoleMappingMatchType.EQUALS,
-        roleArn: entry[1].roleArn,
+    let rules: CfnIdentityPoolRoleAttachment.MappingRuleProperty[];
+    const idpInfo = deaConfig.idpMetadata();
+    // If the user has defined rules, use that to generate the rule mapping
+    if (idpInfo && idpInfo.groupToDeaRoleRules.length > 0) {
+      const groupToDeaRoleRules = idpInfo.groupToDeaRoleRules;
+      rules = new Array(groupToDeaRoleRules.length);
+      groupToDeaRoleRules.forEach((ruleMapping) => {
+        const roleArn = deaRoles.get(ruleMapping.deaRoleName)?.roleArn;
+        if (!roleArn) {
+          throw new Error(
+            `Malformed Rule Mapping: DeaRole Name ${ruleMapping.deaRoleName} is not a valid dea role`
+          );
+        }
+        rules.push({
+          claim: 'custom:SAMLGroups',
+          value: ruleMapping.filterValue,
+          matchType: RoleMappingMatchType.CONTAINS,
+          roleArn,
+        });
       });
-    });
+    } else {
+      // Rely on assigned DEARole based on DEA attribute
+      rules = new Array(deaRoles.size);
+      Array.from(deaRoles.entries()).forEach((entry) => {
+        rules.push({
+          claim: 'custom:DEARole',
+          value: entry[0],
+          matchType: RoleMappingMatchType.EQUALS,
+          roleArn: entry[1].roleArn,
+        });
+      });
+    }
 
+    let defaultRoleArn;
+    if (idpInfo?.defaultRole) {
+      const defaultRoleArn = deaRoles.get(idpInfo.defaultRole)?.roleArn;
+      if (!defaultRoleArn) {
+        throw new Error(`Default Role is an invalid DeaRole Name ${idpInfo.defaultRole}`);
+      }
+    }
     const { authenticated, unauthenticated } = this._createIdPoolDefaultRoles(
       idPool.ref,
-      usGovCondition.logicalId
+      usGovCondition.logicalId,
+      defaultRoleArn
     );
     new CfnIdentityPoolRoleAttachment(this, 'IdentityPoolCognitoRoleAttachment', {
       identityPoolId: idPool.ref,
@@ -404,6 +438,7 @@ export class DeaAuth extends Construct {
         // NOTE for a user pool attribute that is mapped to
         // an IdP atribute, mutable must be set to true, otherwise
         // Cognito will throw an error during federation
+        SAMLGroups: new StringAttribute({ mutable: true }),
         DEARole: new StringAttribute({ mutable: true }),
       },
       standardAttributes: {
@@ -413,6 +448,14 @@ export class DeaAuth extends Construct {
         },
         givenName: {
           required: true,
+          mutable: true,
+        },
+        email: {
+          required: true,
+          mutable: true,
+        },
+        preferredUsername: {
+          required: false,
           mutable: true,
         },
       },
@@ -461,6 +504,27 @@ export class DeaAuth extends Construct {
     let agencyIdpName: string | undefined;
     let supportedIdentityProviders: UserPoolClientIdentityProvider[] | undefined;
     if (idpInfo && idpInfo.metadataPath) {
+      let custom;
+      // Determine which attributes are being sent via SAML from the IDP
+      // Must be at least 1, can be both.
+      if (idpInfo.attributeMap.deaRoleName && idpInfo.attributeMap.groups) {
+        custom = {
+          'custom:DEARole': ProviderAttribute.other(idpInfo.attributeMap.deaRoleName),
+          'custom:SAMLGroups': ProviderAttribute.other(idpInfo.attributeMap.groups),
+        };
+      } else if (idpInfo.attributeMap.groups) {
+        // Check that the rule mapping rules are assigned
+        if (!idpInfo.groupToDeaRoleRules) {
+          throw new Error('Must define Rule Mappings when using Groups Attribute for authorization');
+        }
+        custom = {
+          'custom:SAMLGroups': ProviderAttribute.other(idpInfo.attributeMap.groups),
+        };
+      } else if (idpInfo.attributeMap.deaRoleName) {
+        custom = {
+          'custom:DEARole': ProviderAttribute.other(idpInfo.attributeMap.deaRoleName),
+        };
+      }
       const idpSamlMetadata = this.createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
       const idp = new UserPoolIdentityProviderSaml(this, 'AgencyIdP', {
         metadata: idpSamlMetadata,
@@ -470,9 +534,7 @@ export class DeaAuth extends Construct {
           email: ProviderAttribute.other(idpInfo.attributeMap.email),
           familyName: ProviderAttribute.other(idpInfo.attributeMap.lastName),
           givenName: ProviderAttribute.other(idpInfo.attributeMap.firstName),
-          custom: {
-            'custom:DEARole': ProviderAttribute.other(idpInfo.attributeMap.deaRoleName),
-          },
+          custom,
         },
       });
 
@@ -481,6 +543,15 @@ export class DeaAuth extends Construct {
       supportedIdentityProviders = [UserPoolClientIdentityProvider.custom(agencyIdpName)];
     }
 
+    const clientWriteAttributes = new ClientAttributes()
+      .withStandardAttributes({
+        familyName: true,
+        givenName: true,
+        email: true,
+        preferredUsername: true,
+        lastUpdateTime: true,
+      })
+      .withCustomAttributes('SAMLGroups', 'DEARole');
     const poolClient = userPool.addClient('dea-app-client', {
       accessTokenValidity: accessTokenValidity,
       // use Server-side authentication workflow
@@ -503,6 +574,7 @@ export class DeaAuth extends Construct {
       refreshTokenValidity: refreshTokenValidity,
       userPoolClientName: 'dea-app-client',
       supportedIdentityProviders,
+      writeAttributes: clientWriteAttributes,
     });
 
     const cognitoDomain =
@@ -545,7 +617,8 @@ export class DeaAuth extends Construct {
 
   private _createIdPoolDefaultRoles(
     idPoolRef: string,
-    isUsGovConditionId: string
+    isUsGovConditionId: string,
+    defaultRoleArn?: string
   ): { authenticated: string; unauthenticated: string } {
     const cognitoPartition = Fn.conditionIf(
       isUsGovConditionId,
@@ -566,16 +639,18 @@ export class DeaAuth extends Construct {
       value: { [amrConditionString]: 'unauthenticated' },
     });
 
-    const authenticated = new Role(this, 'IdPoolAuthenticatedRole', {
-      assumedBy: new FederatedPrincipal(
-        `${cognitoPartition}.amazonaws.com`,
-        {
-          StringEquals: audJson,
-          'ForAnyValue:StringLike': amrJson,
-        },
-        'sts:AssumeRoleWithWebIdentity'
-      ),
-    }).roleArn;
+    const authenticated = defaultRoleArn
+      ? defaultRoleArn
+      : new Role(this, 'IdPoolAuthenticatedRole', {
+          assumedBy: new FederatedPrincipal(
+            `${cognitoPartition}.amazonaws.com`,
+            {
+              StringEquals: audJson,
+              'ForAnyValue:StringLike': amrJson,
+            },
+            'sts:AssumeRoleWithWebIdentity'
+          ),
+        }).roleArn;
 
     const unauthenticated = new Role(this, 'IdPoolUnAuthenticatedRole', {
       assumedBy: new FederatedPrincipal(

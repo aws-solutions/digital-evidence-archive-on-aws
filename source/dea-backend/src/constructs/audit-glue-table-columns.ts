@@ -107,6 +107,10 @@ export const auditGlueTableColumns = [
         type: glue.Schema.STRING,
       },
       {
+        name: 'groupMemberships',
+        type: glue.Schema.STRING,
+      },
+      {
         name: 'userPoolUserId',
         type: glue.Schema.STRING,
       },

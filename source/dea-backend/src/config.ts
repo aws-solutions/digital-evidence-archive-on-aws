@@ -38,6 +38,23 @@ const deaRoleTypesFormat: convict.Format = {
   },
 };
 
+const groupDeaRoleRulesFormat: convict.Format = {
+  name: 'group-to-dearole-rules',
+  validate: function (mappingRules, schema) {
+    if (!Array.isArray(mappingRules)) {
+      throw new Error('must be of type Array');
+    }
+
+    if (mappingRules.length > 25) {
+      throw new Error('You can only define up to 25 rule mappings.');
+    }
+
+    for (const mappingRule of mappingRules) {
+      convict(schema.mappingRules).load(mappingRule).validate();
+    }
+  },
+};
+
 const endpointArrayFormat: convict.Format = {
   name: 'endpoint-array',
   validate: function (endpoints, schema) {
@@ -155,12 +172,12 @@ const convictSchema = {
         default: 'username',
       },
       email: {
-        doc: 'name of the IDP attribute field to get the last name of the user',
+        doc: 'name of the IDP attribute field to get the email of the user',
         format: String,
         default: 'email',
       },
       firstName: {
-        doc: 'name of the IDP attribute field to get the last name of the user',
+        doc: 'name of the IDP attribute field to get the first name of the user',
         format: String,
         default: 'firstName',
       },
@@ -170,9 +187,37 @@ const convictSchema = {
         default: 'lastName',
       },
       deaRoleName: {
-        doc: 'name of the IDP attribute field to get the last name of the user',
+        doc: 'name of the IDP attribute field to get the role to use for user. Either set this or use the groups attribute and define the rule mappings.',
         format: String,
-        default: 'deaRoleName',
+        default: undefined,
+      },
+      groups: {
+        doc: 'name of the IDP attribute field to get the group memberships of the user',
+        format: String,
+        default: undefined,
+      },
+    },
+    defaultRole: {
+      doc: "Default role to assign to users that don't match the other roles.",
+      format: String,
+      default: undefined,
+    },
+    groupToDeaRoleRules: {
+      doc: 'define the role mapping rules for user membership to defined DEARole which defines access to the system',
+      format: groupDeaRoleRulesFormat.name,
+      default: [],
+
+      mappingRules: {
+        filterValue: {
+          doc: 'string to search for E.g. Troop',
+          format: String,
+          default: null,
+        },
+        deaRoleName: {
+          doc: 'DEA Role Type name to assign this group of users',
+          format: String,
+          default: null,
+        },
       },
     },
   },
@@ -275,18 +320,26 @@ const convictSchema = {
   },
 };
 
+export interface GroupToDEARoleRule {
+  readonly filterValue: string;
+  readonly deaRoleName: string;
+}
+
 export interface IdPAttributes {
   readonly username: string;
   readonly email: string;
   readonly firstName: string;
   readonly lastName: string;
-  readonly deaRoleName: string;
+  readonly deaRoleName: string | undefined;
+  readonly groups: string | undefined;
 }
 
 export interface IdpMetadataInfo {
   readonly metadataPath: string | undefined;
   readonly metadataPathType: string;
   readonly attributeMap: IdPAttributes;
+  readonly defaultRole: string | undefined;
+  readonly groupToDeaRoleRules: GroupToDEARoleRule[];
 }
 
 export interface DEAEndpointDefinition {
@@ -312,6 +365,7 @@ export interface VpcEndpointInfo {
   readonly vpcId: string;
 }
 
+convict.addFormat(groupDeaRoleRulesFormat);
 convict.addFormat(deaRoleTypesFormat);
 convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);

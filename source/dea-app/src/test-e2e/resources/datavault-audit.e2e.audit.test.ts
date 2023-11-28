@@ -34,6 +34,7 @@ describe('datavault and file audit e2e', () => {
   const cognitoHelper = new CognitoHelper();
 
   const testUser = `dataVaultAuditTestUser${randomSuffix()}`;
+  const testRole = 'WorkingManager';
   const deaApiUrl = testEnv.apiUrlOutput;
   let creds: Credentials;
   let idToken: Oauth2Token;
@@ -42,7 +43,7 @@ describe('datavault and file audit e2e', () => {
 
   beforeAll(async () => {
     // Create user in test group
-    await cognitoHelper.createUser(testUser, 'WorkingManager', 'DataVaultAudit', 'TestUser');
+    await cognitoHelper.createUser(testUser, testRole, 'DataVaultAudit', 'TestUser');
     [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
   }, 10000);
 
@@ -189,7 +190,7 @@ describe('datavault and file audit e2e', () => {
       const createDatavault = applicationEntriesDV.find(
         (entry) => entry.Event_Type === AuditEventType.CREATE_DATA_VAULT
       );
-      verifyAuditEntry(createDatavault, AuditEventType.CREATE_DATA_VAULT, testUser, {
+      verifyAuditEntry(createDatavault, AuditEventType.CREATE_DATA_VAULT, testUser, testRole, {
         expectedResult: 'success',
         expectedFileHash: '',
         expectedCaseUlid: '',
@@ -200,7 +201,7 @@ describe('datavault and file audit e2e', () => {
       const getFileDetailsDV = applicationEntriesDV.find(
         (entry) => entry.Event_Type === AuditEventType.GET_DATA_VAULT_FILE_DETAIL
       );
-      verifyAuditEntry(getFileDetailsDV, AuditEventType.GET_DATA_VAULT_FILE_DETAIL, testUser, {
+      verifyAuditEntry(getFileDetailsDV, AuditEventType.GET_DATA_VAULT_FILE_DETAIL, testUser, testRole, {
         expectedResult: 'success',
         expectedFileHash: '',
         expectedCaseUlid: '',
@@ -211,7 +212,7 @@ describe('datavault and file audit e2e', () => {
       const getFileDetailsDVF = applicationEntriesDVF.find(
         (entry) => entry.Event_Type === AuditEventType.GET_DATA_VAULT_FILE_DETAIL
       );
-      verifyAuditEntry(getFileDetailsDVF, AuditEventType.GET_DATA_VAULT_FILE_DETAIL, testUser, {
+      verifyAuditEntry(getFileDetailsDVF, AuditEventType.GET_DATA_VAULT_FILE_DETAIL, testUser, testRole, {
         expectedResult: 'success',
         expectedFileHash: '',
         expectedCaseUlid: '',
@@ -222,7 +223,7 @@ describe('datavault and file audit e2e', () => {
       const updateDataVault = applicationEntriesDV.find(
         (entry) => entry.Event_Type === AuditEventType.UPDATE_DATA_VAULT_DETAILS
       );
-      verifyAuditEntry(updateDataVault, AuditEventType.UPDATE_DATA_VAULT_DETAILS, testUser, {
+      verifyAuditEntry(updateDataVault, AuditEventType.UPDATE_DATA_VAULT_DETAILS, testUser, testRole, {
         expectedResult: 'success',
         expectedFileHash: '',
         expectedCaseUlid: '',
@@ -233,7 +234,7 @@ describe('datavault and file audit e2e', () => {
       const getDataVaultFiles = applicationEntriesDV.find(
         (entry) => entry.Event_Type === AuditEventType.GET_DATA_VAULT_FILES
       );
-      verifyAuditEntry(getDataVaultFiles, AuditEventType.GET_DATA_VAULT_FILES, testUser, {
+      verifyAuditEntry(getDataVaultFiles, AuditEventType.GET_DATA_VAULT_FILES, testUser, testRole, {
         expectedResult: 'success',
         expectedFileHash: '',
         expectedCaseUlid: '',
@@ -244,7 +245,7 @@ describe('datavault and file audit e2e', () => {
       const createCaseAssociation = applicationEntriesDV.find(
         (entry) => entry.Event_Type === AuditEventType.CREATE_CASE_ASSOCIATION
       );
-      verifyAuditEntry(createCaseAssociation, AuditEventType.CREATE_CASE_ASSOCIATION, testUser, {
+      verifyAuditEntry(createCaseAssociation, AuditEventType.CREATE_CASE_ASSOCIATION, testUser, testRole, {
         expectedResult: 'success',
         expectedFileHash: '',
         expectedCaseUlid: caseForAssociation.ulid,

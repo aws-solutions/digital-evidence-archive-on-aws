@@ -46,15 +46,20 @@ export const runPreExecutionChecks = async (
   // Additionally we get the first and last name of the user from the id token
   const idToken = getOauthToken(event).id_token;
   const idTokenPayload = await getTokenPayload(idToken, process.env.AWS_REGION ?? 'us-east-1');
-  const deaRole = idTokenPayload['custom:DEARole'] ? String(idTokenPayload['custom:DEARole']) : undefined;
-  if (!deaRole) {
+  const deaRoleString = event.requestContext.identity.userArn;
+  if (!deaRoleString) {
     logger.error(
-      'PreExecution checks running without/invalid DEARole in token: ' + idTokenPayload['custom:DEARole']
+      'PreExecution checks running without/invalid IAM Role identifier in request context: ' +
+        event.requestContext.identity.userArn
     );
     throw new NotFoundError('Resource Not Found');
   }
+  const deaRole = getDeaRoleFromUserArn(deaRoleString);
   event.headers['deaRole'] = deaRole;
   const tokenSub = idTokenPayload.sub;
+  const groupMemberships = idTokenPayload['custom:SAMLGroups']
+    ? String(idTokenPayload['custom:SAMLGroups'])
+    : undefined;
   // got token payload - progress audit identity
   auditEvent.actorIdentity = {
     idType: IdentityType.COGNITO_TOKEN,
@@ -63,6 +68,7 @@ export const runPreExecutionChecks = async (
     username: idTokenPayload['cognito:username'],
     deaRole,
     userPoolUserId: tokenSub,
+    groupMemberships,
   };
   const idPoolId = auditEvent.actorIdentity.idPoolUserId;
   let maybeUser = await getUserFromTokenId(tokenSub, repositoryProvider);
@@ -113,6 +119,7 @@ export const runPreExecutionChecks = async (
     userUlid,
     deaRole,
     userPoolUserId: tokenSub,
+    groupMemberships,
   };
 
   event.headers['userUlid'] = userUlid;
@@ -156,6 +163,13 @@ export const runPreExecutionChecks = async (
 };
 
 // ------------------- HELPER FUNCTIONS -------------------
+
+const getDeaRoleFromUserArn = (userArn: string): string => {
+  // User ARN is in the format of
+  // arn:<PARTITION>:sts::<ACCT_NUM>:assumed-role/<STAGE>-<DEARoleName>Role/CognitoIdentityCredentials
+  // We want to extract the <DEARoleName>
+  return userArn.split('/')[1].split('-')[1].split('Role')[0];
+};
 
 // First time Federated User Helper Functions
 

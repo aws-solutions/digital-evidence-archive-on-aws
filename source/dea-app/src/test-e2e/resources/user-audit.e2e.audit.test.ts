@@ -25,7 +25,9 @@ describe('user audit e2e', () => {
 
   const suffix = randomSuffix(5);
   const testUser = `userAuditTestUser${suffix}`;
+  const userRole = 'CaseWorker';
   const testManager = `userAuditTestManager${suffix}`;
+  const managerRole = 'WorkingManager';
   const deaApiUrl = testEnv.apiUrlOutput;
   let creds: Credentials;
   let workerIdToken: Oauth2Token;
@@ -37,11 +39,11 @@ describe('user audit e2e', () => {
 
   beforeAll(async () => {
     // Create manager
-    await cognitoHelper.createUser(testManager, 'WorkingManager', testManager, 'TestManager');
+    await cognitoHelper.createUser(testManager, managerRole, testManager, 'TestManager');
     [managerCreds, managerIdToken] = await cognitoHelper.getCredentialsForUser(testManager);
 
     // Create worker
-    await cognitoHelper.createUser(testUser, 'CaseWorker', testUser, 'TestUser');
+    await cognitoHelper.createUser(testUser, userRole, testUser, 'TestUser');
     [creds, workerIdToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
     // initialize the user into the DB
@@ -166,12 +168,24 @@ describe('user audit e2e', () => {
       expectedFileUlid: '',
       expectedDataVaultId: '',
     };
-    verifyAuditEntry(getMyCases, AuditEventType.GET_MY_CASES, testUser);
-    verifyAuditEntry(createCaseEvent, AuditEventType.CREATE_CASE, testUser, expectedDetails);
-    verifyAuditEntry(updateCaseDetails, AuditEventType.UPDATE_CASE_DETAILS, testUser, expectedDetails);
-    verifyAuditEntry(getCaseDetails, AuditEventType.GET_CASE_DETAILS, testUser, expectedDetails);
-    verifyAuditEntry(getCaseMemberships, AuditEventType.GET_USERS_FROM_CASE, testUser, expectedDetails);
-    verifyAuditEntry(getCaseDetailsFailure, AuditEventType.GET_CASE_DETAILS, testUser, {
+    verifyAuditEntry(getMyCases, AuditEventType.GET_MY_CASES, testUser, userRole);
+    verifyAuditEntry(createCaseEvent, AuditEventType.CREATE_CASE, testUser, userRole, expectedDetails);
+    verifyAuditEntry(
+      updateCaseDetails,
+      AuditEventType.UPDATE_CASE_DETAILS,
+      testUser,
+      userRole,
+      expectedDetails
+    );
+    verifyAuditEntry(getCaseDetails, AuditEventType.GET_CASE_DETAILS, testUser, userRole, expectedDetails);
+    verifyAuditEntry(
+      getCaseMemberships,
+      AuditEventType.GET_USERS_FROM_CASE,
+      testUser,
+      userRole,
+      expectedDetails
+    );
+    verifyAuditEntry(getCaseDetailsFailure, AuditEventType.GET_CASE_DETAILS, testUser, userRole, {
       expectedResult: 'failure',
       expectedFileHash: '',
       expectedCaseUlid: managerCaseUlid,

@@ -11656,7 +11656,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
               Object {
                 "Name": "actorIdentity",
-                "Type": "struct<idType:string,sourceIp:string,idPoolUserId:string,username:string,firstName:string,lastName:string,userUlid:string,deaRole:string,userPoolUserId:string,authCode:string,idToken:string>",
+                "Type": "struct<idType:string,sourceIp:string,idPoolUserId:string,username:string,firstName:string,lastName:string,userUlid:string,deaRole:string,groupMemberships:string,userPoolUserId:string,authCode:string,idToken:string>",
               },
               Object {
                 "Name": "dateTime",
@@ -12562,6 +12562,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "PermissionsBoundary": Object {
           "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
+        "RoleName": "[STAGE-REMOVED]-AuthTestGroupRole",
       },
       "Type": "AWS::IAM::Role",
     },
@@ -12783,6 +12784,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "PermissionsBoundary": Object {
           "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
+        "RoleName": "[STAGE-REMOVED]-CaseWorkerRole",
       },
       "Type": "AWS::IAM::Role",
     },
@@ -13904,6 +13906,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "PermissionsBoundary": Object {
           "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
+        "RoleName": "[STAGE-REMOVED]-CreateCasesTestGroupRole",
       },
       "Type": "AWS::IAM::Role",
     },
@@ -14113,6 +14116,21 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "Required": true,
           },
           Object {
+            "Mutable": true,
+            "Name": "email",
+            "Required": true,
+          },
+          Object {
+            "Mutable": true,
+            "Name": "preferred_username",
+            "Required": false,
+          },
+          Object {
+            "AttributeDataType": "String",
+            "Mutable": true,
+            "Name": "SAMLGroups",
+          },
+          Object {
             "AttributeDataType": "String",
             "Mutable": true,
             "Name": "DEARole",
@@ -14220,6 +14238,15 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "UserPoolId": Object {
           "Ref": "DeaAuthConstructDEAUserPool522C8769",
         },
+        "WriteAttributes": Array [
+          "custom:DEARole",
+          "custom:SAMLGroups",
+          "email",
+          "family_name",
+          "given_name",
+          "preferred_username",
+          "updated_at",
+        ],
       },
       "Type": "AWS::Cognito::UserPoolClient",
     },
@@ -14443,6 +14470,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "PermissionsBoundary": Object {
           "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
+        "RoleName": "[STAGE-REMOVED]-EvidenceManagerRole",
       },
       "Type": "AWS::IAM::Role",
     },
@@ -15444,6 +15472,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "PermissionsBoundary": Object {
           "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
+        "RoleName": "[STAGE-REMOVED]-GetCaseTestGroupRole",
       },
       "Type": "AWS::IAM::Role",
     },
@@ -15635,6 +15664,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "PermissionsBoundary": Object {
           "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
+        "RoleName": "[STAGE-REMOVED]-GetMyCasesTestGroupRole",
       },
       "Type": "AWS::IAM::Role",
     },
@@ -16113,6 +16143,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "PermissionsBoundary": Object {
           "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
+        "RoleName": "[STAGE-REMOVED]-NoPermissionsGroupRole",
       },
       "Type": "AWS::IAM::Role",
     },
@@ -16212,6 +16243,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "PermissionsBoundary": Object {
           "Ref": "DeaAuthConstructdeaRoleBoundaryF9AC80F7",
         },
+        "RoleName": "[STAGE-REMOVED]-WorkingManagerRole",
       },
       "Type": "AWS::IAM::Role",
     },

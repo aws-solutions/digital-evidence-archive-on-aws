@@ -19,6 +19,7 @@ import {
   getDummyAuditEvent,
   getDummyEvent,
   setCookieToCookie,
+  setUserArnWithRole,
 } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
@@ -91,6 +92,7 @@ describe('refresh-token', () => {
         cookie,
       },
     });
+    setUserArnWithRole(dummyEvent, /*roleName=*/ 'CaseWorker');
     const auditEvent = getDummyAuditEvent();
 
     // call runLambdaPrechecks to add session to database
@@ -116,6 +118,7 @@ describe('refresh-token', () => {
     // call API with the new id token, it should pass session checks
     const dummyEvent1 = getDummyEvent();
     dummyEvent1.headers['cookie'] = newCookie;
+    setUserArnWithRole(dummyEvent1, /*roleName=*/ 'CaseWorker');
     await runPreExecutionChecks(dummyEvent1, dummyContext, auditEvent, repositoryProvider);
 
     // Check only one session for the user
@@ -179,6 +182,7 @@ describe('refresh-token', () => {
         cookie,
       },
     });
+    setUserArnWithRole(dummyEvent, /*roleName=*/ 'CaseWorker');
     const auditEvent = getDummyAuditEvent();
 
     // call runLambdaPrechecks to add session to database

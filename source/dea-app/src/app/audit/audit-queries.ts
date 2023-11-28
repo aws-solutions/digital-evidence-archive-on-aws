@@ -23,6 +23,7 @@ const queryFields =
   "COALESCE(actorIdentity.userUlid, '') AS DEA_User_ID," +
   "COALESCE(actorIdentity.firstName, '') AS First_Name," +
   "COALESCE(actorIdentity.lastName, '') AS Last_Name," +
+  "COALESCE(actorIdentity.groupMemberships, '') AS Groups," +
   "COALESCE(actorIdentity.idPoolUserId, '') AS Identity_Pool_User_ID," +
   "COALESCE(actorIdentity.authCode, '') AS Auth_Code," +
   "COALESCE(actorIdentity.idToken, '') AS ID_Token," +

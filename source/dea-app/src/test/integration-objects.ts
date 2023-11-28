@@ -156,3 +156,7 @@ export const setCookieToCookie = (response: APIGatewayProxyResult): string => {
   const setCookie = response.headers['Set-Cookie'];
   return setCookie.substring(0, setCookie.indexOf(';'));
 };
+
+export const setUserArnWithRole = (event: APIGatewayProxyEvent, roleName: string) => {
+  event.requestContext.identity.userArn = `arn:aws:sts::123456789012:assumed-role/Stage-${roleName}Role/CognitoIdentityCredentials`;
+};
