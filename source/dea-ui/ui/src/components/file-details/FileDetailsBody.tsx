@@ -20,12 +20,12 @@ import {
   breadcrumbLabels,
   caseStatusLabels,
   commonLabels,
-  commonTableLabels,
   fileDetailLabels,
 } from '../../common/labels';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadCaseAudit } from '../../helpers/userActionSupport';
 import { AuditDownloadButton } from '../audit/audit-download-button';
+import DataVaultAssociationDetailsBody from './DataVaultAssociationDetailsBody';
 
 export interface FileDetailsBodyProps {
   readonly caseId: string;
@@ -47,21 +47,16 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
   function getDataVaultSection(data: CaseFileDTO | undefined) {
     if (!data?.dataVaultUlid) {
       return;
+    } else {
+      const dataVaultData = {
+        dataVaultUlid: data.dataVaultUlid,
+        dataVaultName: data.dataVaultName ? data.dataVaultName : data.dataVaultUlid,
+        executionId: data.executionId ? data.executionId : '-',
+        associationCreatedBy: data.associationCreatedBy ? data.associationCreatedBy : '-',
+        associationDate: data.associationDate,
+      };
+      return <DataVaultAssociationDetailsBody {...dataVaultData} />;
     }
-    return (
-      <Container header={<Header variant="h2">{breadcrumbLabels.dataVaultDetailsLabel}</Header>}>
-        <ColumnLayout columns={2} variant="text-grid">
-          <TextContent>
-            <h5>{commonTableLabels.executionIdHeader}</h5>
-            <p>{data.executionId}</p>
-          </TextContent>
-          <TextContent>
-            <h5>{fileDetailLabels.associatedBy}</h5>
-            {data.associationCreatedBy}
-          </TextContent>
-        </ColumnLayout>
-      </Container>
-    );
   }
 
   if (isLoading) {
@@ -107,7 +102,13 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
                   <h5>{fileDetailLabels.uploadDateLabel}</h5>
                   <SpaceBetween size="l">
                     <p>
-                      {data.created
+                      {data.dataVaultUploadDate
+                        ? new Date(data.dataVaultUploadDate).toLocaleString([], {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })
+                        : data.created
                         ? new Date(data.created).toLocaleString([], {
                             year: 'numeric',
                             month: 'long',

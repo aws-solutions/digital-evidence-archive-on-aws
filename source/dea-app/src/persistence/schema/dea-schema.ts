@@ -116,6 +116,8 @@ export const DeaSchema = {
       dataVaultUlid: { type: String, validate: ulidRegex },
       executionId: { type: String },
       associationCreatedBy: { type: String, validate: ulidRegex },
+      associationDate: { type: Date },
+      dataVaultUploadDate: { type: Date },
     },
     Session: {
       PK: { type: String, value: 'USER#${userUlid}#', required: true },

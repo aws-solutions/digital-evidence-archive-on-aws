@@ -230,6 +230,8 @@ const caseFilesToDTO = (
       dataVaultUlid: file.dataVaultUlid,
       executionId: file.executionId,
       associationCreatedBy,
+      associationDate: file.associationDate,
+      dataVaultUploadDate: file.dataVaultUploadDate,
     };
   });
 };

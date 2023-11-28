@@ -348,6 +348,8 @@ export const fileDetailLabels = {
   fileSizeLabel: 'File size',
   shaHashLabel: 'SHA 256 hash',
   associatedBy: 'Associated by',
+  dataVaultLabel: 'Data vault',
+  associationDateLabel: 'Case association date',
 };
 
 export const systemUseNotificationText =

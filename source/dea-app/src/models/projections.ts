@@ -97,6 +97,7 @@ export const dataVaultFileFromEntity = (dataVaultFileEntity: DataVaultFileType):
     versionId: dataVaultFileEntity.versionId,
     executionId: dataVaultFileEntity.executionId,
     fileS3Key: dataVaultFileEntity.fileS3Key,
+    created: dataVaultFileEntity.created,
     updated: dataVaultFileEntity.updated,
     caseCount: dataVaultFileEntity.caseCount,
   };
@@ -186,6 +187,8 @@ export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFileRes
     dataVaultUlid: caseFileEntity.dataVaultUlid,
     executionId: caseFileEntity.executionId,
     associationCreatedBy: caseFileEntity.associationCreatedBy,
+    associationDate: caseFileEntity.associationDate,
+    dataVaultUploadDate: caseFileEntity.dataVaultUploadDate,
   };
 };
 

@@ -115,6 +115,8 @@ export const associateFilesListToCase = async (
         dataVaultUlid: retrievedDataVaultFile.dataVaultUlid,
         associationCreatedBy: userUlid,
         executionId: retrievedDataVaultFile.executionId,
+        associationDate: new Date(),
+        dataVaultUploadDate: retrievedDataVaultFile.created,
       };
 
       const completeCaseAssociationResponse = await CaseFileService.createCaseAssociation(

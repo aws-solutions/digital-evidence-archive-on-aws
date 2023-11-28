@@ -195,7 +195,7 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
               <TextContent>
                 <h5>{fileDetailLabels.uploadDateLabel}</h5>
                 <SpaceBetween size="l">
-                  <p>{formatDateFromISOString(data.updated?.toString())}</p>
+                  <p>{formatDateFromISOString(data.created?.toString())}</p>
                 </SpaceBetween>
               </TextContent>
               <TextContent>

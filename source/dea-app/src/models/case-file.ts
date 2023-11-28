@@ -31,6 +31,8 @@ export interface DeaCaseFile {
   readonly dataVaultUlid?: string;
   readonly executionId?: string;
   readonly associationCreatedBy?: string;
+  readonly associationDate?: Date;
+  readonly dataVaultUploadDate?: Date;
 }
 
 export interface DeaCaseFileResult {
@@ -55,6 +57,8 @@ export interface DeaCaseFileResult {
   dataVaultUlid?: string;
   executionId?: string;
   associationCreatedBy?: string;
+  associationDate?: Date;
+  dataVaultUploadDate?: Date;
 }
 
 export interface DownloadCaseFileResult {
@@ -82,6 +86,9 @@ export interface CaseFileDTO {
   readonly dataVaultUlid?: string;
   readonly executionId?: string;
   readonly associationCreatedBy?: string;
+  readonly associationDate?: Date;
+  readonly dataVaultUploadDate?: Date;
+  dataVaultName?: string;
 }
 
 export interface CompleteCaseFileUploadDTO {

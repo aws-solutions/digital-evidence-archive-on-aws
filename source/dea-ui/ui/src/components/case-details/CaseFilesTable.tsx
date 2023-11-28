@@ -332,7 +332,10 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         {
           id: 'created',
           header: commonTableLabels.dateUploadedHeader,
-          cell: (e) => formatDateFromISOString(e.created?.toString()),
+          cell: (e) =>
+            formatDateFromISOString(
+              e.dataVaultUploadDate ? e.dataVaultUploadDate.toString() : e.created?.toString()
+            ),
           width: 165,
           minWidth: 165,
           sortingField: 'created',
