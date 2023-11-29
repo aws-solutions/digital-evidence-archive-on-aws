@@ -17,6 +17,7 @@ import {
   ListTaskExecutionsResponse,
   ListTasksCommand,
   OverwriteMode,
+  PreserveDeletedFiles,
   ReportLevel,
   ReportOutputType,
   S3StorageClass,
@@ -28,8 +29,10 @@ import Joi from 'joi';
 import { logger } from '../../logger';
 import { DeaDataSyncTask } from '../../models/data-sync-task';
 import { DeaDataVaultTaskInput } from '../../models/data-vault-task';
+import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { DataSyncProvider } from '../../storage/dataSync';
 import { ValidationError } from '../exceptions/validation-exception';
+import { getDataVault } from './data-vault-service';
 import { retry } from './service-helpers';
 
 export const createS3Location = async (
@@ -294,6 +297,7 @@ export const getDataSyncTaskSettings = (dataSyncProvider: DataSyncProvider) => (
   Options: {
     VerifyMode: VerifyMode.ONLY_FILES_TRANSFERRED,
     OverwriteMode: OverwriteMode.NEVER,
+    PreserveDeletedFiles: PreserveDeletedFiles.PRESERVE,
   },
   TaskReportConfig: {
     ReportLevel: ReportLevel.SUCCESSES_AND_ERRORS,
@@ -309,7 +313,8 @@ export const getDataSyncTaskSettings = (dataSyncProvider: DataSyncProvider) => (
 
 export const getDataSyncTask = async (
   taskArn: string,
-  dataSyncProvider: DataSyncProvider
+  dataSyncProvider: DataSyncProvider,
+  repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaDataVaultTaskInput> => {
   // Validate Task settings
   const datasyncTaskSettingSchema = Joi.compile(getDataSyncTaskSettings(dataSyncProvider));
@@ -322,6 +327,10 @@ export const getDataSyncTask = async (
   });
   if (!describeTaskResponse) {
     throw new Error('Task description failed');
+  }
+  if (!describeTaskResponse.TaskReportConfig) {
+    logger.info('DataSync Task is not properly set, task report settings not present.');
+    throw new ValidationError('DataSync Task is not properly set');
   }
   const dataSyncTaskValidationResult = datasyncTaskSettingSchema.validate(describeTaskResponse, {
     allowUnknown: true,
@@ -360,10 +369,19 @@ export const getDataSyncTask = async (
     );
     throw new ValidationError('Destination Location is not properly set');
   }
+  // Check that the datavault exists
+  const dataVaultUlid = getDataVaultUlid(describeLocationResponse.LocationUri);
+  if (dataVaultUlid === '') {
+    throw new ValidationError('Destination Location is not a data vault');
+  }
+  const maybeDataVault = await getDataVault(dataVaultUlid, repositoryProvider);
+  if (!maybeDataVault) {
+    throw new ValidationError('Data Vault does not exist');
+  }
 
   return {
     taskId: taskArn.split('/')[1],
-    dataVaultUlid: getDataVaultUlid(describeLocationResponse.LocationUri),
+    dataVaultUlid,
     name: describeTaskResponse.Name || '',
     destinationFolder: getDestinationFolder(describeLocationResponse.LocationUri),
     sourceLocationArn: describeTaskResponse.SourceLocationArn || '',

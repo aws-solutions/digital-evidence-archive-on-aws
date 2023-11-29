@@ -42,7 +42,11 @@ export const createDataVaultExecution: DEAGatewayProxyHandler = async (
     throw new ValidationError('Requested task ID does not match resource');
   }
 
-  const dataVaultTask = await getDataSyncTask(dataVaultExecutionDTO.taskArn, dataSyncProvider);
+  const dataVaultTask = await getDataSyncTask(
+    dataVaultExecutionDTO.taskArn,
+    dataSyncProvider,
+    repositoryProvider
+  );
   // Create the task in DDB if doesn't exists.
   try {
     await DataVaultService.createDataVaultTask(dataVaultTask, repositoryProvider);

@@ -4,6 +4,17 @@
  */
 
 import {
+  CreateLocationS3Command,
+  CreateTaskCommand,
+  CreateTaskCommandOutput,
+  OverwriteMode,
+  PreserveDeletedFiles,
+  ReportLevel,
+  ReportOutputType,
+  S3StorageClass,
+  VerifyMode,
+} from '@aws-sdk/client-datasync';
+import {
   CreateBucketCommand,
   DeleteBucketCommand,
   DeleteObjectsCommand,
@@ -13,6 +24,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { Credentials } from 'aws4-axios';
 import sha256 from 'crypto-js/sha256';
+import { retry } from '../../app/services/service-helpers';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { CaseFileDTO, DeaCaseFileResult } from '../../models/case-file';
@@ -21,14 +33,14 @@ import { DeaDataVaultFile } from '../../models/data-vault-file';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
+  cleanupDataSyncTestResources,
   createCaseAssociationSuccess,
   createDataSyncTaskWithSDKSuccess,
   createDataVaultSuccess,
   createDataVaultExecutionSuccess,
   createDataVaultTaskSuccess,
   createS3DataSyncLocation,
-  deleteDataSyncTasks,
-  deleteS3DataSyncLocation,
+  deleteCaseAssociationSuccess,
   describeDataVaultDetailsSuccess,
   describeDataVaultFileDetailsSuccess,
   listDataVaultFilesSuccess,
@@ -36,7 +48,9 @@ import {
   updateDataVaultSuccess,
   verifyAllExecutionsSucceeded,
   waitForTaskExecutionCompletions,
-  deleteCaseAssociationSuccess,
+  dataSyncClient,
+  DATA_SYNC_THROTTLE_RETRIES,
+  DATA_SYNC_THROTTLE_WAIT_INTERVAL_IN_MS,
 } from './support/datavault-support';
 import {
   callDeaAPIWithCreds,
@@ -117,12 +131,20 @@ describe('mass data ingestion e2e tests', () => {
 
     // Create 3 S3 Buckets in different regions, (Will be used as source locations) and create files in each
     await createS3BucketForSourceLocation(sourceBucket1, s3BucketToObjectKeysMap);
-    sourceLocation1Arn = await createS3DataSyncLocation(`arn:aws:s3:::${sourceBucket1}`);
+    sourceLocation1Arn = await createS3DataSyncLocation(
+      dataSyncLocationsToCleanUp,
+      `arn:aws:s3:::${sourceBucket1}`
+    );
     await createS3BucketForSourceLocation(sourceBucket2, s3BucketToObjectKeysMap);
-    sourceLocation2Arn = await createS3DataSyncLocation(`arn:aws:s3:::${sourceBucket2}`);
+    sourceLocation2Arn = await createS3DataSyncLocation(
+      dataSyncLocationsToCleanUp,
+      `arn:aws:s3:::${sourceBucket2}`
+    );
     await createS3BucketForSourceLocation(sourceBucket3, s3BucketToObjectKeysMap);
-    sourceLocation3Arn = await createS3DataSyncLocation(`arn:aws:s3:::${sourceBucket3}`);
-    dataSyncLocationsToCleanUp.push(sourceLocation1Arn, sourceLocation2Arn, sourceLocation3Arn);
+    sourceLocation3Arn = await createS3DataSyncLocation(
+      dataSyncLocationsToCleanUp,
+      `arn:aws:s3:::${sourceBucket3}`
+    );
 
     // For each bucket create some files, see comment at top of file
     // for S3 object/folder structure
@@ -231,43 +253,39 @@ describe('mass data ingestion e2e tests', () => {
       await deleteBucket(bucketName);
     }
 
-    await deleteDataSyncTasks(tasksToCleanUp);
-
-    for (const locationArn of dataSyncLocationsToCleanUp) {
-      await deleteS3DataSyncLocation(locationArn);
-    }
+    await cleanupDataSyncTestResources(tasksToCleanUp, dataSyncLocationsToCleanUp);
 
     await cognitoHelper.cleanup();
   }, 3000000);
 
   /* Test Mass Data Ingestion Workflow Using the DEA APIs
-1. Create 2 Data Vaults
-   VERIFY
-     -- Call ListDataVaults, see both vaults are there
-2. Create Data Sync Tasks for each vault
-3. Execute the Tasks
-   VERIFY
-     -- Query DataSync For Execution Statuses, ensure all finished with status SUCCESS
-     -- Verify the Data Vault Folder/File Structure for both data vaults (BFS Tree Traversal)
-4. Create 2 Cases
-5. Create Case Associations for various Data Vault Files
-   VERIFY
-     -- Verify the Case Folder/File Structure for both cases
-     -- For Each File Associated, verify the case count and ScopedCases has been updated by calling GetDataVaultFileDetails
-     -- Download the case files and verify the hash matches the hash of the source object
-6. Delete Case Association from Both Cases
-   VERIFY
-     -- Verify the Case File Objects decreased by 1 for both cases
-     -- Verify DescribeCaseFileDetails fail for the file for both cases
-     -- GetDataVaultFile shows 0 case count and no scoped cases info
-7. Delete Case Association from Case1 but not from Case2
-    VERIFY
-     -- Case File Objects decreased by 1 for Case1, but Case2 stays the same
-     -- DescribeCaseFileDetails fail for the file for Case1
-     -- DescribeCaseFileDetails succeeds for the file for Case2
-     -- GetDataVaultFile shows 1 case count and only case2 shows up in scoped cases
-8. Reverify Case Folder/File Structure for Both Cases after Disassociations
-*/
+  1. Create 2 Data Vaults
+     VERIFY
+       -- Call ListDataVaults, see both vaults are there
+  2. Create Data Sync Tasks for each vault
+  3. Execute the Tasks
+     VERIFY
+       -- Query DataSync For Execution Statuses, ensure all finished with status SUCCESS
+       -- Verify the Data Vault Folder/File Structure for both data vaults (BFS Tree Traversal)
+  4. Create 2 Cases
+  5. Create Case Associations for various Data Vault Files
+     VERIFY
+       -- Verify the Case Folder/File Structure for both cases
+       -- For Each File Associated, verify the case count and ScopedCases has been updated by calling GetDataVaultFileDetails
+       -- Download the case files and verify the hash matches the hash of the source object
+  6. Delete Case Association from Both Cases
+     VERIFY
+       -- Verify the Case File Objects decreased by 1 for both cases
+       -- Verify DescribeCaseFileDetails fail for the file for both cases
+       -- GetDataVaultFile shows 0 case count and no scoped cases info
+  7. Delete Case Association from Case1 but not from Case2
+      VERIFY
+       -- Case File Objects decreased by 1 for Case1, but Case2 stays the same
+       -- DescribeCaseFileDetails fail for the file for Case1
+       -- DescribeCaseFileDetails succeeds for the file for Case2
+       -- GetDataVaultFile shows 1 case count and only case2 shows up in scoped cases
+  8. Reverify Case Folder/File Structure for Both Cases after Disassociations
+  */
   it('performs data ingestion using only DEA APIs and case association', async () => {
     // 1. Create Data Vaults
     const dataVault1 = await createDataVaultSuccess(
@@ -293,42 +311,62 @@ describe('mass data ingestion e2e tests', () => {
     expect(dataVaults.filter((vault) => vault.ulid === dataVault2.ulid).length).toBe(1);
 
     // 2. Create Data Sync tasks for each vault
-    const taskDv1Sl1 = await createDataVaultTaskSuccess(deaApiUrl, idToken, creds, dataVault1.ulid, {
-      name: `DEA API Migration SL1 to DV1: ${randSuffix}`,
-      sourceLocationArn: sourceLocation1Arn,
-      description: `testing using all DEA APIs for migration, using sourceLocation1 to dataVault1`,
-      destinationFolder: `filesFromSL1`,
-    });
+    const taskDv1Sl1 = await createDataVaultTaskSuccess(
+      deaApiUrl,
+      idToken,
+      creds,
+      dataVault1.ulid,
+      tasksToCleanUp,
+      {
+        name: `DEA API Migration SL1 to DV1: ${randSuffix}`,
+        sourceLocationArn: sourceLocation1Arn,
+        description: `testing using all DEA APIs for migration, using sourceLocation1 to dataVault1`,
+        destinationFolder: `filesFromSL1`,
+      }
+    );
 
     // All files from SL2 go to destination folder filesFromSL2
-    const taskDv1Sl2 = await createDataVaultTaskSuccess(deaApiUrl, idToken, creds, dataVault1.ulid, {
-      name: `DEA API Migration SL2 to DV1: ${randSuffix}`,
-      sourceLocationArn: sourceLocation2Arn,
-      description: `testing using all DEA APIs for migration, using sourceLocation2 to dataVault1`,
-      destinationFolder: `filesFromSL2`,
-    });
+    const taskDv1Sl2 = await createDataVaultTaskSuccess(
+      deaApiUrl,
+      idToken,
+      creds,
+      dataVault1.ulid,
+      tasksToCleanUp,
+      {
+        name: `DEA API Migration SL2 to DV1: ${randSuffix}`,
+        sourceLocationArn: sourceLocation2Arn,
+        description: `testing using all DEA APIs for migration, using sourceLocation2 to dataVault1`,
+        destinationFolder: `filesFromSL2`,
+      }
+    );
 
-    const taskDv2Sl1 = await createDataVaultTaskSuccess(deaApiUrl, idToken, creds, dataVault2.ulid, {
-      name: `DEA API Migration SL1 to DV2: ${randSuffix}`,
-      sourceLocationArn: sourceLocation1Arn,
-      description: `testing using all DEA APIs for migration, using sourceLocation1 to dataVault2`,
-      destinationFolder: `filesFromSL1`,
-    });
+    const taskDv2Sl1 = await createDataVaultTaskSuccess(
+      deaApiUrl,
+      idToken,
+      creds,
+      dataVault2.ulid,
+      tasksToCleanUp,
+      {
+        name: `DEA API Migration SL1 to DV2: ${randSuffix}`,
+        sourceLocationArn: sourceLocation1Arn,
+        description: `testing using all DEA APIs for migration, using sourceLocation1 to dataVault2`,
+        destinationFolder: `filesFromSL1`,
+      }
+    );
 
     // All files from SL2 go to destination folder filesFromSL2
-    const taskDv2Sl3 = await createDataVaultTaskSuccess(deaApiUrl, idToken, creds, dataVault2.ulid, {
-      name: `DEA API Migration SL3 to DV2: ${randSuffix}`,
-      sourceLocationArn: sourceLocation3Arn,
-      description: `testing using all DEA APIs for migration, using sourceLocation3 to dataVault2`,
-      destinationFolder: `filesFromSL3`,
-    });
-
-    tasksToCleanUp.push(taskDv1Sl1.taskArn, taskDv1Sl2.taskArn, taskDv2Sl1.taskArn, taskDv2Sl3.taskArn);
-    dataSyncLocationsToCleanUp.push(
-      taskDv1Sl1.destinationLocationArn,
-      taskDv1Sl2.destinationLocationArn,
-      taskDv2Sl1.destinationLocationArn,
-      taskDv2Sl3.destinationLocationArn
+    const taskDv2Sl3 = await createDataVaultTaskSuccess(
+      deaApiUrl,
+      idToken,
+      creds,
+      dataVault2.ulid,
+      tasksToCleanUp,
+      {
+        name: `DEA API Migration SL3 to DV2: ${randSuffix}`,
+        sourceLocationArn: sourceLocation3Arn,
+        description: `testing using all DEA APIs for migration, using sourceLocation3 to dataVault2`,
+        destinationFolder: `filesFromSL3`,
+      }
     );
 
     // 3. Execute the tasks
@@ -840,34 +878,34 @@ describe('mass data ingestion e2e tests', () => {
   }, 3000000);
 
   /* Test Mass Data Ingestion Workflow Mimicking the Console Process (using DataSync SDK)
-1. Create 2 Data Vaults (DEA API)
-   VERIFY
-     -- Call ListDataVaults, see both vaults are there
-2. Create Destination Locations (DATA SYNC SDK)
-3. Create Data Sync Tasks for each vault (DATA SYNC SDK) [choose which folders to move]
-4. Execute the Tasks (DEA API)
-   VERIFY
-     -- Query DataSync For Execution Statuses, ensure all finished with status SUCCESS
-     -- Verify the Data Vault Folder/File Structure for both data vaults (BFS Tree Traversal)
-5. Create 2 Cases (DEA API)
-6. Create Case Associations for various Data Vault Files (DEA API)
-   VERIFY
-     -- Verify the Case Folder/File Structure for both cases
-     -- For Each File Associated, verify the case count and ScopedCases has been updated by calling GetDataVaultFileDetails
-     -- Download the case files and verify the hash matches the hash of the source object
-7. Delete Case Association from Both Cases (DEA API)
-   VERIFY
-     -- Verify the Case File Objects decreased by 1 for both cases
-     -- Verify DescribeCaseFileDetails fail for the file for both cases
-     -- GetDataVaultFile shows 0 case count and no scoped cases info
-8. Delete Case Association from Case1 but not from Case2 (DEA API)
-    VERIFY
-     -- Case File Objects decreased by 1 for Case1, but Case2 stays the same
-     -- DescribeCaseFileDetails fail for the file for Case1
-     -- DescribeCaseFileDetails succeeds for the file for Case2
-     -- GetDataVaultFile shows 1 case count and only case2 shows up in scoped cases
-9. Reverify Case Folder/File Structure for Both Cases after Disassociations
-*/
+  1. Create 2 Data Vaults (DEA API)
+     VERIFY
+       -- Call ListDataVaults, see both vaults are there
+  2. Create Destination Locations (DATA SYNC SDK)
+  3. Create Data Sync Tasks for each vault (DATA SYNC SDK) [choose which folders to move]
+  4. Execute the Tasks (DEA API)
+     VERIFY
+       -- Query DataSync For Execution Statuses, ensure all finished with status SUCCESS
+       -- Verify the Data Vault Folder/File Structure for both data vaults (BFS Tree Traversal)
+  5. Create 2 Cases (DEA API)
+  6. Create Case Associations for various Data Vault Files (DEA API)
+     VERIFY
+       -- Verify the Case Folder/File Structure for both cases
+       -- For Each File Associated, verify the case count and ScopedCases has been updated by calling GetDataVaultFileDetails
+       -- Download the case files and verify the hash matches the hash of the source object
+  7. Delete Case Association from Both Cases (DEA API)
+     VERIFY
+       -- Verify the Case File Objects decreased by 1 for both cases
+       -- Verify DescribeCaseFileDetails fail for the file for both cases
+       -- GetDataVaultFile shows 0 case count and no scoped cases info
+  8. Delete Case Association from Case1 but not from Case2 (DEA API)
+      VERIFY
+       -- Case File Objects decreased by 1 for Case1, but Case2 stays the same
+       -- DescribeCaseFileDetails fail for the file for Case1
+       -- DescribeCaseFileDetails succeeds for the file for Case2
+       -- GetDataVaultFile shows 1 case count and only case2 shows up in scoped cases
+  9. Reverify Case Folder/File Structure for Both Cases after Disassociations
+  */
   it('performs data ingestion mimicking the console process and case association', async () => {
     // 1. Create 2 Data Vaults (DEA API)
     const dataVault1 = await createDataVaultSuccess(
@@ -895,47 +933,51 @@ describe('mass data ingestion e2e tests', () => {
     // 2. Create Destination Locations (DATA SYNC SDK)
     // We will put SL1 into its own folder for DV1
     const destinationLocation1 = await createS3DataSyncLocation(
+      dataSyncLocationsToCleanUp,
       DATASETS_BUCKET_ARN,
       `/DATAVAULT${dataVault1.ulid}/fromSL1`
     );
     // We will put SL2 into its own folder for DV2
     const destinationLocation2 = await createS3DataSyncLocation(
+      dataSyncLocationsToCleanUp,
       DATASETS_BUCKET_ARN,
       `/DATAVAULT${dataVault1.ulid}/fromSL2`
     );
     // We will put SL1 and 3 into the same folder for DV2
     const destinationLocation3 = await createS3DataSyncLocation(
+      dataSyncLocationsToCleanUp,
       DATASETS_BUCKET_ARN,
       `/DATAVAULT${dataVault2.ulid}/fromSLs1and3`
     );
-    dataSyncLocationsToCleanUp.push(destinationLocation1, destinationLocation2, destinationLocation3);
 
     // 3. Create Data Sync Tasks for each vault (DATA SYNC SDK)
     // SL1 to DV1 in its own folder
     const taskDv1Sl1Arn = await createDataSyncTaskWithSDKSuccess(
       `DataSyncProcessTestSL1DV1 ${randSuffix}`,
       sourceLocation1Arn,
-      destinationLocation1
+      destinationLocation1,
+      tasksToCleanUp
     );
     // SL2 to DV1 in its own folder
     const taskDv1Sl2Arn = await createDataSyncTaskWithSDKSuccess(
       `DataSyncProcessTestSL2DV1 ${randSuffix}`,
       sourceLocation2Arn,
-      destinationLocation2
+      destinationLocation2,
+      tasksToCleanUp
     );
     // We will put SL1 and 3 into the same folder for DV2
     const taskDv2Sl1Arn = await createDataSyncTaskWithSDKSuccess(
       `DataSyncProcessTestSL1DV2 ${randSuffix}`,
       sourceLocation1Arn,
-      destinationLocation3
+      destinationLocation3,
+      tasksToCleanUp
     );
     const taskDv2Sl3Arn = await createDataSyncTaskWithSDKSuccess(
       `DataSyncProcessTestSL3DV2 ${randSuffix}`,
       sourceLocation3Arn,
-      destinationLocation3
+      destinationLocation3,
+      tasksToCleanUp
     );
-
-    tasksToCleanUp.push(taskDv1Sl1Arn, taskDv1Sl2Arn, taskDv2Sl1Arn, taskDv2Sl3Arn);
 
     // Get the task ids
     const taskDv1Sl1TaskId = taskDv1Sl1Arn.split('/')[1];
@@ -1472,8 +1514,10 @@ describe('mass data ingestion e2e tests', () => {
     // 1. Create Source Location with some files
     const bucketName = `dea-mdi-e2e-test-source-bucket-sourcefileschangetest-${randSuffix}`;
     await createS3BucketForSourceLocation(bucketName, s3BucketToObjectKeysMap);
-    const sourceLocation = await createS3DataSyncLocation(`arn:aws:s3:::${bucketName}`);
-    dataSyncLocationsToCleanUp.push(sourceLocation);
+    const sourceLocation = await createS3DataSyncLocation(
+      dataSyncLocationsToCleanUp,
+      `arn:aws:s3:::${bucketName}`
+    );
     // Create 3 files
     const originalNumFiles = 3;
     for (let i = 1; i <= originalNumFiles; i++) {
@@ -1497,12 +1541,11 @@ describe('mass data ingestion e2e tests', () => {
     );
 
     // 3. Create Data Sync Task
-    const task = await createDataVaultTaskSuccess(deaApiUrl, idToken, creds, dataVault.ulid, {
+    const task = await createDataVaultTaskSuccess(deaApiUrl, idToken, creds, dataVault.ulid, tasksToCleanUp, {
       name: `Source Size E2ETests ${randSuffix} Task`,
       sourceLocationArn: sourceLocation,
       description: `task for changing source size by adding and removing files E2E tests`,
     });
-    tasksToCleanUp.push(task.taskArn);
 
     // 4. Execute Task
     async function executeTask(): Promise<string> {
@@ -1670,26 +1713,248 @@ describe('mass data ingestion e2e tests', () => {
     );
   }, 3000000);
 
-  // TODO: Add Verifications to the CreateDataVaultExecutionAPI and test various incorrect
-  // task settings cause it to fail
-  // it('tries to execute tasks with incorrect settings', async() => {
+  it('tries to execute tasks with incorrect settings', async () => {
+    // Create a Data Vault and Destination Location
+    const dataVault = await createDataVaultSuccess(
+      deaApiUrl,
+      {
+        name: `IncorrectTasks E2ETest ${randSuffix} Vault`,
+      },
+      idToken,
+      creds
+    );
+    const correctDestinationLocation = await createS3DataSyncLocation(
+      dataSyncLocationsToCleanUp,
+      DATASETS_BUCKET_ARN,
+      `/DATAVAULT${dataVault.ulid}`
+    );
 
-  // }, 300000);
+    const correctSourceLocation = sourceLocation1Arn;
+
+    // Now try calling ExecuteTask (DEA API) with various incorrect settings and verify they fail
+
+    type TaskInputMask = {
+      sourceLocationArn?: string;
+      destinationLocationArn?: string;
+      verifyMode?: VerifyMode;
+      overwriteMode?: OverwriteMode;
+      preserveDeletedFiles?: PreserveDeletedFiles;
+      taskReportS3Bucket?: string;
+      bucketAccessRoleArn?: string;
+      reportOutputType?: ReportOutputType;
+      reportLevel?: ReportLevel;
+    };
+    async function createTask(
+      name: string,
+      input: TaskInputMask,
+      expectedError?: string
+    ): Promise<CreateTaskCommandOutput | void> {
+      return await retry(
+        async () => {
+          try {
+            const response = await dataSyncClient.send(
+              new CreateTaskCommand({
+                SourceLocationArn: input.sourceLocationArn ?? correctSourceLocation,
+                DestinationLocationArn: input.destinationLocationArn ?? correctDestinationLocation,
+                Name: name,
+                Options: {
+                  VerifyMode: input.verifyMode ?? VerifyMode.ONLY_FILES_TRANSFERRED,
+                  OverwriteMode: input.overwriteMode ?? OverwriteMode.NEVER,
+                  PreserveDeletedFiles: input.preserveDeletedFiles ?? PreserveDeletedFiles.PRESERVE,
+                },
+                TaskReportConfig: {
+                  Destination: {
+                    S3: {
+                      S3BucketArn:
+                        input.taskReportS3Bucket ?? `arn:aws:s3:::${testEnv.DataSyncReportsBucket}`,
+                      BucketAccessRoleArn: input.bucketAccessRoleArn ?? testEnv.DataSyncReportsRole,
+                    },
+                  },
+                  OutputType: input.reportOutputType ?? ReportOutputType.STANDARD,
+                  ReportLevel:
+                    input.reportOutputType === ReportOutputType.SUMMARY_ONLY
+                      ? undefined
+                      : input.reportLevel ?? ReportLevel.SUCCESSES_AND_ERRORS,
+                },
+              })
+            );
+
+            if (expectedError) {
+              throw new Error('Expected to fail creating Data Sync Task, but it succeeded');
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            tasksToCleanUp.push(response.TaskArn!);
+            return response;
+          } catch (e) {
+            if (!expectedError) {
+              throw e;
+            }
+
+            expect(e.message).toStrictEqual(expectedError);
+          }
+        },
+        DATA_SYNC_THROTTLE_RETRIES,
+        DATA_SYNC_THROTTLE_WAIT_INTERVAL_IN_MS
+      );
+    }
+
+    async function createFailedExecution(
+      task: CreateTaskCommandOutput | void,
+      expectedErr = 'Bad Request',
+      expectedStatus = 400
+    ) {
+      if (!task) {
+        throw new Error('Invalid task input');
+      }
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const taskArn = task.TaskArn!;
+      const taskId = taskArn.split('/')[1];
+
+      const response = await callDeaAPIWithCreds(
+        `${deaApiUrl}datavaults/tasks/${taskId}/executions`,
+        'POST',
+        idToken,
+        creds,
+        {
+          taskArn,
+        }
+      );
+
+      expect(response.status).toBe(expectedStatus);
+      expect(response.statusText).toStrictEqual(expectedErr);
+    }
+
+    function changeLastLetter(arn: string): string {
+      const newLastLetter = arn.charAt(arn.length - 1) === '0' ? '1' : '0';
+      const newArn = arn.substring(0, arn.length - 1) + newLastLetter;
+      return newArn;
+    }
+
+    // CASE: Source Location Doesn't Exist
+    const incorrectSource = changeLastLetter(correctSourceLocation);
+    const expectedError = `Location ${incorrectSource.split('/')[1]} is not found.`;
+    await createTask(
+      `Source Location does not exist ${randSuffix}`,
+      { sourceLocationArn: incorrectSource },
+      expectedError
+    );
+
+    // CASE: Destination Location is not the datasets bucket
+    const incorrectDestinationTask = await createTask(
+      `Destination is not the datasets bucket ${randSuffix}`,
+      { destinationLocationArn: sourceLocation2Arn }
+    );
+    await createFailedExecution(incorrectDestinationTask);
+
+    // CASE: Destination Location is not a data vault
+    const nonDataVaultLocation = await createS3DataSyncLocation(
+      dataSyncLocationsToCleanUp,
+      DATASETS_BUCKET_ARN,
+      ``
+    );
+    const nonDataVaultLocationTask = await createTask(`Destination is not a data vault ${randSuffix}`, {
+      destinationLocationArn: nonDataVaultLocation,
+    });
+    await createFailedExecution(nonDataVaultLocationTask);
+
+    // CASE: Data Vault does not exist
+    const nonExistentDataVaultUlid = `XXXXXXXXXXXXXXXXXXXXXXXXXX`;
+    const nonExistentDataVaultLocation = await createS3DataSyncLocation(
+      dataSyncLocationsToCleanUp,
+      DATASETS_BUCKET_ARN,
+      `/DATAVAULT${nonExistentDataVaultUlid}`
+    );
+    const nonExistentDataVaultTask = await createTask(`Destination data vault does not exist ${randSuffix}`, {
+      destinationLocationArn: nonExistentDataVaultLocation,
+    });
+    await createFailedExecution(nonExistentDataVaultTask);
+
+    // CASE: Destination Location's storage class is not Intelligent Tiering
+    const nonIntelligentTieringDestination = await retry(
+      async () => {
+        const locationArn = (
+          await dataSyncClient.send(
+            new CreateLocationS3Command({
+              S3BucketArn: DATASETS_BUCKET_ARN,
+              S3Config: {
+                BucketAccessRoleArn: testEnv.DataSyncRole,
+              },
+              Subdirectory: `/DATAVAULT${dataVault.ulid}`,
+              S3StorageClass: S3StorageClass.STANDARD,
+            })
+          )
+        ).LocationArn;
+
+        if (!locationArn) {
+          throw new Error('Unable to create destination location');
+        }
+        dataSyncLocationsToCleanUp.push(locationArn);
+
+        return locationArn;
+      },
+      DATA_SYNC_THROTTLE_RETRIES,
+      DATA_SYNC_THROTTLE_WAIT_INTERVAL_IN_MS
+    );
+    if (!nonIntelligentTieringDestination) {
+      throw new Error('Unable to create destination location');
+    }
+    const nonIntelligentTieringDestinationTask = await createTask(
+      `Destination has incorrect S3 Storage Tier ${randSuffix}`,
+      { destinationLocationArn: nonIntelligentTieringDestination }
+    );
+    await createFailedExecution(nonIntelligentTieringDestinationTask);
+
+    // Test Incorrect Task Report Settings
+
+    // CASE: The IAM Role is not the correct IAM Role
+    const incorrectIamRoleForReportTask = await createTask(
+      `inccorect IAM Role for task report ${randSuffix}`,
+      { bucketAccessRoleArn: testEnv.DataSyncRole }
+    );
+    await createFailedExecution(incorrectIamRoleForReportTask);
+
+    // CASE: Report type is not STANDARD
+    const incorrectReportTypeForReportTask = await createTask(
+      `inccorect report type for task report ${randSuffix}`,
+      { reportOutputType: ReportOutputType.SUMMARY_ONLY }
+    );
+    await createFailedExecution(incorrectReportTypeForReportTask);
+
+    // CASE: Report Level is not SUCCESSES and errors
+    const incorrectLevelForReportTask = await createTask(`inccorect level for task report ${randSuffix}`, {
+      reportLevel: ReportLevel.ERRORS_ONLY,
+    });
+    await createFailedExecution(incorrectLevelForReportTask);
+
+    // Test Incorrect Options Settings
+
+    // CASE: Overwrite files is checked
+    const overwriteTask = await createTask(`overwrite files task ${randSuffix}`, {
+      overwriteMode: OverwriteMode.ALWAYS,
+    });
+    await createFailedExecution(overwriteTask);
+
+    // CASE: Preserve deleted files is not selected
+    const deleteDeletedFilesTask = await createTask(`delete deleted files task ${randSuffix}`, {
+      preserveDeletedFiles: PreserveDeletedFiles.REMOVE,
+    });
+    await createFailedExecution(deleteDeletedFilesTask);
+
+    // CASE: Verify Mode is incorrect
+    const noVerificationTask = await createTask(`dont verify files task ${randSuffix}`, {
+      verifyMode: VerifyMode.NONE,
+    });
+    await createFailedExecution(noVerificationTask);
+
+    const pitVerificationTask = await createTask(`point in time verification files task ${randSuffix}`, {
+      verifyMode: VerifyMode.POINT_IN_TIME_CONSISTENT,
+    });
+    await createFailedExecution(pitVerificationTask);
+  }, 300000);
 
   // TODO: Implement this test
-  //  it('creates a > 5MB file and move with mass ingestion', async() => {
-  //   // 1. Create source location
-  //   // 2. Create 10 MB file
-  //   // Verify object size
-  //   // 3. Create Data Vault
-  //   // 4. Create Task
-  //   // 5. Execute Task
-  //   // 6. Verify Data Vault File Exist
-  //   // 7. Assign to Case and Download file to verify the hash
-  //  }, 30000000);
-
-  // TODO: Implement this test
-  //    it('creates 10,000 files and move with mass ingestion', async() => {
+  //    it('creates 10,000 files and moves them with mass ingestion', async() => {
   // DOWNLOAD AND TEST HASH AFTER ASSIGNED TO CASE?
 
   //    }, 3000000);
@@ -2221,16 +2486,19 @@ const putObjectS3 = async (
 const deleteSourceObjects = async (bucket: string, files: SourceLocationFile[]) => {
   const objectsToDelete: ObjectIdentifier[] = [];
   files.forEach((files) => objectsToDelete.push({ Key: files.fileS3Key }));
-  const response = await s3Client.send(
-    new DeleteObjectsCommand({
-      Bucket: bucket,
-      Delete: {
-        Objects: objectsToDelete,
-      },
-    })
-  );
-
-  console.log(`Removed ${response.Deleted?.length} objects from bucket ${bucket}`);
+  try {
+    const response = await s3Client.send(
+      new DeleteObjectsCommand({
+        Bucket: bucket,
+        Delete: {
+          Objects: objectsToDelete,
+        },
+      })
+    );
+    console.log(`Removed ${response.Deleted?.length} objects from bucket ${bucket}`);
+  } catch (e) {
+    console.log(`Error removing objects from bucket ${bucket}`);
+  }
 };
 
 const deleteBucket = async (bucketName: string) => {

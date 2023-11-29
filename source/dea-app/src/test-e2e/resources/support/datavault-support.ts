@@ -20,6 +20,7 @@ import {
 } from '@aws-sdk/client-datasync';
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
+import { retry } from '../../../app/services/service-helpers';
 import { Oauth2Token } from '../../../models/auth';
 import { CaseAssociationDTO, DeaCaseFileResult, RemoveCaseAssociationDTO } from '../../../models/case-file';
 import { DeaDataVault, DeaDataVaultInput, DeaDataVaultUpdateInput } from '../../../models/data-vault';
@@ -39,11 +40,26 @@ import {
   verifyDeaRequestSuccess,
 } from '../test-helpers';
 
-const dataSyncClient = new DataSyncClient({ region: testEnv.awsRegion });
+export const dataSyncClient = new DataSyncClient({ region: testEnv.awsRegion });
 
+export const DATA_SYNC_THROTTLE_RETRIES = 50;
+export const DATA_SYNC_THROTTLE_WAIT_INTERVAL_IN_MS = 5000;
 const EXECUTION_STATUS_WAIT_TIME = 3 * MINUTES_TO_MILLISECONDS;
 const EXECUTION_STATUS_RETRIES = 20;
 const LIST_QUERY_LIMIT = 1000;
+
+export async function cleanupDataSyncTestResources(
+  tasksToCleanUp: string[],
+  dataSyncLocationsToCleanUp: string[]
+) {
+  await deleteDataSyncTasks(tasksToCleanUp);
+
+  for (const locationArn of dataSyncLocationsToCleanUp) {
+    await deleteS3DataSyncLocation(locationArn);
+  }
+}
+
+// -------------------- DEA MDI API HELPERS  --------------------
 
 export async function createDataVaultSuccess(
   baseUrl: string,
@@ -130,6 +146,7 @@ export const createDataVaultTaskSuccess = async (
   idToken: Oauth2Token,
   creds: Credentials,
   dataVaultId: string,
+  tasksToCleanUp: string[],
   deaDataVaultTask: DataVaultTaskDTO
 ): Promise<DeaDataVaultTask> => {
   const response = await callDeaAPIWithCreds(
@@ -145,6 +162,9 @@ export const createDataVaultTaskSuccess = async (
   const createdTask: DeaDataVaultTask = response.data;
   Joi.assert(createdTask, dataVaultTaskResponseSchema);
   expect(createdTask.name).toEqual(deaDataVaultTask.name);
+
+  tasksToCleanUp.push(createdTask.taskArn);
+
   return createdTask;
 };
 
@@ -265,43 +285,69 @@ export const deleteCaseAssociationSuccess = async (
   return response.data;
 };
 
-// Data Sync SDK Helpers
+// -------------------- Data Sync SDK Helpers  --------------------
 
-export const createS3DataSyncLocation = async (bucketArn: string, folder?: string): Promise<string> => {
-  const locationArn = (
-    await dataSyncClient.send(
-      new CreateLocationS3Command({
-        S3BucketArn: bucketArn,
-        S3Config: {
-          BucketAccessRoleArn: testEnv.DataSyncRole,
-        },
-        Subdirectory: folder,
-        S3StorageClass: S3StorageClass.INTELLIGENT_TIERING,
-      })
-    )
-  ).LocationArn;
+export const createS3DataSyncLocation = async (
+  dataSyncLocationsToCleanUp: string[],
+  bucketArn: string,
+  folder?: string
+): Promise<string> => {
+  const locArn = await retry(
+    async () => {
+      const locationArn = (
+        await dataSyncClient.send(
+          new CreateLocationS3Command({
+            S3BucketArn: bucketArn,
+            S3Config: {
+              BucketAccessRoleArn: testEnv.DataSyncRole,
+            },
+            Subdirectory: folder,
+            S3StorageClass: S3StorageClass.INTELLIGENT_TIERING,
+          })
+        )
+      ).LocationArn;
 
-  if (!locationArn) {
+      return locationArn;
+    },
+    DATA_SYNC_THROTTLE_RETRIES,
+    DATA_SYNC_THROTTLE_WAIT_INTERVAL_IN_MS
+  );
+
+  if (!locArn) {
     throw new Error('Unable to create DataSync Location');
   }
 
-  return locationArn;
+  dataSyncLocationsToCleanUp.push(locArn);
+
+  return locArn;
 };
 
 export const deleteS3DataSyncLocation = async (locationArn: string) => {
-  await dataSyncClient.send(
-    new DeleteLocationCommand({
-      LocationArn: locationArn,
-    })
+  await retry(
+    async () => {
+      await dataSyncClient.send(
+        new DeleteLocationCommand({
+          LocationArn: locationArn,
+        })
+      );
+    },
+    DATA_SYNC_THROTTLE_RETRIES,
+    DATA_SYNC_THROTTLE_WAIT_INTERVAL_IN_MS
   );
 };
 
 export const deleteDataSyncTasks = async (taskArns: string[]) => {
   for (const taskArn of taskArns) {
-    await dataSyncClient.send(
-      new DeleteTaskCommand({
-        TaskArn: taskArn,
-      })
+    await retry(
+      async () => {
+        await dataSyncClient.send(
+          new DeleteTaskCommand({
+            TaskArn: taskArn,
+          })
+        );
+      },
+      DATA_SYNC_THROTTLE_RETRIES,
+      DATA_SYNC_THROTTLE_WAIT_INTERVAL_IN_MS
     );
   }
 };
@@ -335,15 +381,25 @@ export const waitForTaskExecutionCompletions = async (
   while (uncompletedTasks.size > 0 && attempt < maxRetries) {
     console.log(`Waiting on ${uncompletedTasks.size} tasks, attempt number ${attempt}`);
     for (const taskArn of uncompletedTasks.values()) {
-      const status = (
-        await dataSyncClient.send(
-          new DescribeTaskExecutionCommand({
-            TaskExecutionArn: taskArn,
-          })
-        )
-      ).Status;
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      taskStatusMap.set(taskArn, status!);
+      const status = await retry(
+        async () => {
+          return (
+            await dataSyncClient.send(
+              new DescribeTaskExecutionCommand({
+                TaskExecutionArn: taskArn,
+              })
+            )
+          ).Status;
+        },
+        DATA_SYNC_THROTTLE_RETRIES,
+        DATA_SYNC_THROTTLE_WAIT_INTERVAL_IN_MS
+      );
+
+      if (!status) {
+        throw new Error('Failed to retrieve task status.');
+      }
+
+      taskStatusMap.set(taskArn, status);
       if (taskIsComplete(status)) {
         uncompletedTasks.delete(taskArn);
       }
@@ -370,34 +426,45 @@ export const verifyAllExecutionsSucceeded = (taskStatuses: Map<string, TaskExecu
 export const createDataSyncTaskWithSDKSuccess = async (
   name: string,
   sourceLocationArn: string,
-  destinationLocationArn: string
+  destinationLocationArn: string,
+  tasksToCleanUp: string[]
 ): Promise<string> => {
-  const response = await dataSyncClient.send(
-    new CreateTaskCommand({
-      SourceLocationArn: sourceLocationArn,
-      DestinationLocationArn: destinationLocationArn,
-      Name: name,
-      Options: {
-        VerifyMode: VerifyMode.ONLY_FILES_TRANSFERRED,
-        OverwriteMode: OverwriteMode.NEVER,
-        PreserveDeletedFiles: PreserveDeletedFiles.PRESERVE,
-      },
-      TaskReportConfig: {
-        Destination: {
-          S3: {
-            S3BucketArn: `arn:aws:s3:::${testEnv.DataSyncReportsBucket}`,
-            BucketAccessRoleArn: testEnv.DataSyncReportsRole,
+  const maybeTaskArn = await retry(
+    async () => {
+      const response = await dataSyncClient.send(
+        new CreateTaskCommand({
+          SourceLocationArn: sourceLocationArn,
+          DestinationLocationArn: destinationLocationArn,
+          Name: name,
+          Options: {
+            VerifyMode: VerifyMode.ONLY_FILES_TRANSFERRED,
+            OverwriteMode: OverwriteMode.NEVER,
+            PreserveDeletedFiles: PreserveDeletedFiles.PRESERVE,
           },
-        },
-        OutputType: ReportOutputType.STANDARD,
-        ReportLevel: ReportLevel.SUCCESSES_AND_ERRORS,
-      },
-    })
+          TaskReportConfig: {
+            Destination: {
+              S3: {
+                S3BucketArn: `arn:aws:s3:::${testEnv.DataSyncReportsBucket}`,
+                BucketAccessRoleArn: testEnv.DataSyncReportsRole,
+              },
+            },
+            OutputType: ReportOutputType.STANDARD,
+            ReportLevel: ReportLevel.SUCCESSES_AND_ERRORS,
+          },
+        })
+      );
+
+      return response.TaskArn;
+    },
+    DATA_SYNC_THROTTLE_RETRIES,
+    DATA_SYNC_THROTTLE_WAIT_INTERVAL_IN_MS
   );
 
-  if (!response.TaskArn) {
+  if (!maybeTaskArn) {
     throw new Error('Unable to create data sync task using the sdk.');
   }
 
-  return response.TaskArn;
+  tasksToCleanUp.push(maybeTaskArn);
+
+  return maybeTaskArn;
 };
