@@ -339,6 +339,7 @@ importers:
   ../../dea-ui/infrastructure:
     specifiers:
       '@aws/dea-backend': workspace:*
+      '@aws/dea-ui': workspace:*
       '@rushstack/eslint-config': ^3.3.3
       '@rushstack/heft': ^0.50.0
       '@rushstack/heft-jest-plugin': ^0.5.5
@@ -374,6 +375,7 @@ importers:
       constructs: 10.2.69
       js-yaml: 4.1.0
     devDependencies:
+      '@aws/dea-ui': link:../ui
       '@rushstack/eslint-config': 3.3.3_omwtwah7bpqs4shhhbjyuyh7oa
       '@rushstack/heft': 0.50.0_@types+node@18.15.7
       '@rushstack/heft-jest-plugin': 0.5.5_snnxf3nvbglbfxdd6jpku5a5la
