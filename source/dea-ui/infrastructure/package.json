@@ -50,6 +50,7 @@
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@aws/dea-ui": "workspace:*",
     "@rushstack/eslint-config": "^3.3.3",
     "@rushstack/heft": "^0.50.0",
     "@rushstack/heft-jest-plugin": "^0.5.5",
