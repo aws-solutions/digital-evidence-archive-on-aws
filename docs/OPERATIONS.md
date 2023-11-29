@@ -1,3 +1,30 @@
+## Applying Updates  
+
+As new functionality and fixes are developed you can pull the latest updates and deploy them to your existing stack. To do so use the following commands:
+> Ensure your STAGE and AWS_REGION are set appropriately to direct the CDK deployment:  
+
+**Windows**
+```sh
+set STAGE=prod
+set AWS_REGION=us-east-2
+set DEA_CUSTOM_DOMAIN=<true if using custom domain, otherwise do NOT set>
+```
+**Linux**
+```sh
+export STAGE=prod
+export AWS_REGION="us-east-2"
+export DEA_CUSTOM_DOMAIN=<true if using custom domain, otherwise do NOT set>
+```
+> :warning: Be mindful of the name of your remote, in this example we are using the default "origin". Further, any changes you've made to the application code and configuration should be commited to a forked repository.
+
+```sh
+cd ./digital-evidence-archive-on-aws/source/dea-main
+git pull origin main --rebase
+rush update
+rush rebuild
+rushx cdk:deploy
+```
+
 ## Operational Monitoring
 
 When DEA is deployed via CDK, a Nested Stack will be deployed with the identifier `DeaApiOpsDashboard`. This nested stack includes Dashboards and Alarms that we believe are valuable in monitoring the health and normal operation of your Digital Evidence Archive instance. As we expect 0 failures in the Audit System we trigger certain alarms on any single failure. Here is some additional information on some specific alarms:  
@@ -16,7 +43,24 @@ When DEA is deployed via CDK, a Nested Stack will be deployed with the identifie
 ## Audit Migration & Event Redrive  
 An administrative script is provided for Audit Event Redrive. This script is provided for two use cases:
 > :information_source: The DEA Deployment includes a Managed Policy to support the execution of the Audit Redrive script. This Policy should be attached to the Role that you intend to run the Audit Redrive with, and the Role should be individually identifiable for the purposes of Audit. To attach the Policy, search for "AuditRedrivePolicy" within the `IAM > Policies` AWS Console, or reference the target Role name and Policy ARN with the `attach-role-policy` AWS CLI command.   
-e.g. `aws iam attach-role-policy --role-name example-role --policy-arn "arn:aws:iam::aws:policy/ExamplePolicy"`
+e.g. `aws iam attach-role-policy --role-name example-role --policy-arn "arn:aws:iam::aws:policy/ExamplePolicy"`  
+The role that you are using to perform redrive will also need to be added to your KMS "Key Policy". Your key can be found in the "Resources" tab when viewing your stack in the CloudFormation Console. When viewing your Customer Managed Key in the Key Management Service Console, on the "Key policy" tab, click "Edit". Add a statement to the key policy granting access to your desired role.  
+Example:
+```
+{
+    "Sid": "Allow redrive",
+    "Effect": "Allow",
+    "Principal": {
+        "AWS": "arn:aws:iam::<account_number>:role/AuditRedriveRole"
+    },
+    "Action": [
+        "kms:Encrypt*",
+        "kms:Decrypt*",
+        "kms:GenerateDataKey*"
+    ],
+    "Resource": "*"
+},
+``` 
 1. Audit Event Migration  
 If you deployed Digital Evidence Archive into production prior to release v1.0.5 your system will include Audit events that need to be migrated into the new Audit infrastructure. To do so, run the `audit-redrive` npm task from the `dea-main` package. For `startTimeMilliseconds` provide 0, and for `endTimeMilliseconds` provide a Javascript Timestamp (13 digits) equal to the time when you finished the v1.0.5 deploy. The end time doesn't need to be precise, and can overlap into the deployment as the script will check for the event before redriving. By default the script will run in `dryRun` mode, this will output information about what the script will do, without actually pushing events through Kinesis. When you are ready to push events, run with the `dryRun=false` parameter.
 > e.g `npm run audit-redrive -- --startTimeMilliseconds=0 --endTimeMilliseconds=1696005186940 --dryRun=false`
