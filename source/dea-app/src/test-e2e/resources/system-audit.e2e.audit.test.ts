@@ -111,7 +111,7 @@ describe('system audit e2e', () => {
 
       const entries = await getAuditQueryResults(
         `${deaApiUrl}system/audit`,
-        `?from=${startTime}&to=${endTime}`,
+        '',
         managerIdToken,
         managerCreds,
         [
@@ -129,7 +129,12 @@ describe('system audit e2e', () => {
           { regex: /kms.amazonaws.com/g, count: 1 },
           { regex: /ssm.amazonaws.com/g, count: 1 },
           { regex: /logs.amazonaws.com/g, count: 1 },
-        ]
+        ],
+        45000,
+        {
+          from: startTime,
+          to: endTime,
+        }
       );
 
       // CreateCase

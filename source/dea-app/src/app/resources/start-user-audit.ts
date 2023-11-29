@@ -3,8 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import Joi from 'joi';
-import { getQueryParam, getRequiredPathParam } from '../../lambda-http-helpers';
+import { getOptionalPayload, getRequiredPathParam } from '../../lambda-http-helpers';
+import { DEAAuditQuery, defaultAuditQuery } from '../../models/audit';
+import { auditQuerySchema } from '../../models/validation/audit';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
@@ -25,17 +26,18 @@ export const startUserAudit: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   athenaClient = defaultAthenaClient
 ) => {
-  const now = Date.now();
   const userId = getRequiredPathParam(event, 'userId', joiUlid);
   await validateUser(userId, repositoryProvider);
-  const start = getQueryParam(event, 'from', '0', Joi.date().timestamp('unix'));
-  const end = getQueryParam(event, 'to', now.toString(), Joi.date().timestamp('unix'));
-  const startTime = Number.parseInt(start);
-  const endTime = Number.parseInt(end);
+  const startAudit: DEAAuditQuery = getOptionalPayload(
+    event,
+    'Start user audit',
+    auditQuerySchema,
+    defaultAuditQuery
+  );
   const queryId = await auditService.requestAuditForUser(
     userId,
-    startTime,
-    endTime,
+    startAudit.from,
+    startAudit.to,
     userId,
     athenaClient,
     repositoryProvider
