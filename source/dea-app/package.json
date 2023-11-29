@@ -70,7 +70,7 @@
     "aws-jwt-verify": "^4.0.0",
     "aws-lambda": "^1.0.7",
     "constructs": "10.2.69",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^4.2.0",
     "csv-string": "~4.1.1",
     "dynamodb-onetable": "2.5.1",
     "joi": "~17.9.1",

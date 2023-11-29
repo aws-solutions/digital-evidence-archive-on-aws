@@ -56,7 +56,7 @@ importers:
       axios: ^1.6.2
       concurrently: ^7.6.0
       constructs: 10.2.69
-      crypto-js: ^4.1.1
+      crypto-js: ^4.2.0
       csv-string: ~4.1.1
       dynamo-db-local: ~5.0.1
       dynamodb-onetable: 2.5.1
@@ -108,7 +108,7 @@ importers:
       aws-jwt-verify: 4.0.0
       aws-lambda: 1.0.7
       constructs: 10.2.69
-      crypto-js: 4.1.1
+      crypto-js: 4.2.0
       csv-string: 4.1.1
       dynamodb-onetable: 2.5.1
       joi: 17.9.1
@@ -436,7 +436,7 @@ importers:
       babel-jest: 27.5.1
       concurrently: ^7.6.0
       constructs: 10.2.69
-      crypto-js: ^4.1.1
+      crypto-js: ^4.2.0
       cypress: ~13.1.0
       date-fns: ^2.28.0
       eslint: ^8.47.0
@@ -485,7 +485,7 @@ importers:
       '@types/crypto-js': 4.1.1
       aws4-axios: 3.3.0_axios@1.6.2
       axios: 1.6.2
-      crypto-js: 4.1.1
+      crypto-js: 4.2.0
       date-fns: 2.29.3
       i18next: 21.10.0
       jest-environment-jsdom: 29.6.3
@@ -6818,8 +6818,8 @@ packages:
     resolution: {integrity: sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==}
     dev: true
 
-  /crypto-js/4.1.1:
-    resolution: {integrity: sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==}
+  /crypto-js/4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
     dev: false
 
   /css-select/5.1.0:
@@ -10808,7 +10808,7 @@ packages:
   /pkce-challenge/3.0.0:
     resolution: {integrity: sha512-sQ8sJJJuLhA5pFnoxayMCrFnBMNj7DDpa+TWxOXl4B24oXHlVSADi/3Bowm66QuzWkBuF6DhmaelCdlC2JKwsg==}
     dependencies:
-      crypto-js: 4.1.1
+      crypto-js: 4.2.0
     dev: false
 
   /pkg-dir/4.2.0:
