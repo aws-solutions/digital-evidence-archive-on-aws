@@ -14116,16 +14116,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "Required": true,
           },
           Object {
-            "Mutable": true,
-            "Name": "email",
-            "Required": true,
-          },
-          Object {
-            "Mutable": true,
-            "Name": "preferred_username",
-            "Required": false,
-          },
-          Object {
             "AttributeDataType": "String",
             "Mutable": true,
             "Name": "SAMLGroups",

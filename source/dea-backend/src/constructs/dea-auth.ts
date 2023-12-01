@@ -450,14 +450,6 @@ export class DeaAuth extends Construct {
           required: true,
           mutable: true,
         },
-        email: {
-          required: true,
-          mutable: true,
-        },
-        preferredUsername: {
-          required: false,
-          mutable: true,
-        },
       },
       userInvitation: {
         emailSubject: 'Digital Evidence Archive Signup Invitation',
