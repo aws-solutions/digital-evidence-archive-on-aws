@@ -169,6 +169,7 @@ export class DeaRestApiConstruct extends Construct {
 
     this.accessLogGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
       encryptionKey: props.kmsKey,
+      retention: deaConfig.retentionDays(),
     });
 
     protectedDeaResourceArns.push(this.accessLogGroup.logGroupArn);

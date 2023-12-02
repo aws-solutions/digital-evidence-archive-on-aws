@@ -48,6 +48,7 @@ export class DeaUiConstruct extends NestedStack {
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.retainPolicy() === RemovalPolicy.DESTROY,
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+      enforceSSL: true,
     });
 
     this.addS3TLSSigV4BucketPolicy(this.bucket);
