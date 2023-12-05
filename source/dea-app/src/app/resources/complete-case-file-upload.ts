@@ -44,12 +44,16 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
     userUlid,
     repositoryProvider
   );
+  if (!existingFile.ulid) {
+    throw new ValidationError('File not found');
+  }
+  const ulid = existingFile.ulid;
   const patchedFile: CompleteCaseFileUploadObject = Object.assign(
     {},
     {
+      ulid,
       ...existingFile,
       uploadId: requestCaseFile.uploadId,
-      sha256Hash: requestCaseFile.sha256Hash,
       fileS3Key: `${requestCaseFile.caseUlid}/${requestCaseFile.ulid}`,
     }
   );

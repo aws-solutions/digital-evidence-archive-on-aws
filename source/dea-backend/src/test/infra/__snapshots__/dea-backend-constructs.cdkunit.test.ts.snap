@@ -702,6 +702,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "referencetoteststackDeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]Ref": Object {
             "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
           },
+          "referencetoteststackmultipartchecksumdlq7D152A30QueueName": Object {
+            "Fn::GetAtt": Array [
+              "multipartchecksumdlq4D3A785A",
+              "QueueName",
+            ],
+          },
         },
         "TemplateURL": Object {
           "Fn::Join": Array [
@@ -3865,6 +3871,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -3973,6 +3982,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -4115,6 +4127,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4239,6 +4254,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -4365,6 +4383,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4489,6 +4510,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -4615,6 +4639,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4739,6 +4766,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -4865,6 +4895,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -4989,6 +5022,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -5115,6 +5151,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5239,6 +5278,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -5365,6 +5407,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5489,6 +5534,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -5615,6 +5663,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5739,6 +5790,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -5865,6 +5919,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -5989,6 +6046,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -6115,6 +6175,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -6239,6 +6302,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -6365,6 +6431,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -6489,6 +6558,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -6615,6 +6687,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -6739,6 +6814,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -6865,6 +6943,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -6989,6 +7070,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -7115,6 +7199,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -7240,6 +7327,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -7348,6 +7438,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -7490,6 +7583,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -7615,6 +7711,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -7723,6 +7822,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -7865,6 +7967,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -7989,6 +8094,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -8115,6 +8223,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -8239,6 +8350,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -8365,6 +8479,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -8489,6 +8606,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -8615,6 +8735,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -8739,6 +8862,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -8865,6 +8991,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -8989,6 +9118,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -9115,6 +9247,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -9240,6 +9375,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -9321,8 +9459,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     },
     "DeaRestApiConstructPUTCompleteCaseFileUpload51639C21": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+        "DeaRestApiConstructdeacompleteuploadroleDefaultPolicyDD759D31",
+        "DeaRestApiConstructdeacompleteuploadrole5698638D",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -9364,6 +9502,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -9416,7 +9557,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "DeaRestApiConstructdeacompleteuploadrole5698638D",
             "Arn",
           ],
         },
@@ -9489,6 +9630,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -9615,6 +9759,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -9739,6 +9886,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -9865,6 +10015,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
             },
@@ -9989,6 +10142,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
@@ -18269,6 +18425,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           ],
           "Version": "2012-10-17",
         },
+        "MaxSessionDuration": 3600,
       },
       "Type": "AWS::IAM::Role",
     },
@@ -18921,6 +19078,193 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::IAM::Policy",
     },
+    "DeaRestApiConstructdeacompleteuploadrole5698638D": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaRestApiConstructdeacompleteuploadroleDefaultPolicyDD759D31": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaBackendConstructDeaTableB48721A0",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": "dynamodb:Query",
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendConstructDeaTableB48721A0",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructDeaTableB48721A0",
+                          "Arn",
+                        ],
+                      },
+                      "/index/GSI2",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": "sqs:SendMessage",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "multipartchecksumqueueCA9DCDB8",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/dea/1/[STAGE-REMOVED]*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "s3:AbortMultipartUpload",
+                "s3:ListMultipartUploadParts",
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:GetObjectVersion",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:GenerateDataKey",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "testKey1CDDDD5E",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "s3:ResourceAccount": Array [
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaRestApiConstructdeacompleteuploadroleDefaultPolicyDD759D31",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaRestApiConstructdeacompleteuploadrole5698638D",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "DeaRestApiConstructdeadatasetsrole293FB411": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -18940,6 +19284,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           ],
           "Version": "2012-10-17",
         },
+        "MaxSessionDuration": 3600,
       },
       "Type": "AWS::IAM::Role",
     },
@@ -19031,6 +19376,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           ],
           "Version": "2012-10-17",
         },
+        "MaxSessionDuration": 3600,
       },
       "Type": "AWS::IAM::Role",
     },
@@ -19351,6 +19697,33 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::IAM::Policy",
     },
+    "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "TemplateURL": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "https://s3.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".",
+              Object {
+                "Ref": "AWS::URLSuffix",
+              },
+              "/",
+              Object {
+                "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+              },
+              "/[HASH REMOVED].json",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::CloudFormation::Stack",
+      "UpdateReplacePolicy": "Delete",
+    },
     "deaAuditLogs7B75D3F1": Object {
       "DeletionPolicy": "Delete",
       "Metadata": Object {
@@ -19534,6 +19907,269 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::IAM::Policy",
     },
+    "multipartchecksumdlq4D3A785A": Object {
+      "DeletionPolicy": "Delete",
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "multipartchecksumdlqPolicy47861464": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sqs:*",
+              "Condition": Object {
+                "Bool": Object {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "multipartchecksumdlq4D3A785A",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": Array [
+          Object {
+            "Ref": "multipartchecksumdlq4D3A785A",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "multipartchecksumhandlerF99349F8": Object {
+      "DependsOn": Array [
+        "multipartchecksumhandlerServiceRoleDefaultPolicyE37D90EA",
+        "multipartchecksumhandlerServiceRoleB1CB1518",
+      ],
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "NODE_OPTIONS": "--enable-source-maps",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendConstructDeaTableB48721A0",
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 1024,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "multipartchecksumhandlerServiceRoleB1CB1518",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 30,
+        "TracingConfig": Object {
+          "Mode": "Active",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "multipartchecksumhandlerServiceRoleB1CB1518": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "multipartchecksumhandlerServiceRoleDefaultPolicyE37D90EA": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "sqs:ReceiveMessage",
+                "sqs:ChangeMessageVisibility",
+                "sqs:GetQueueUrl",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "multipartchecksumqueueCA9DCDB8",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:GenerateDataKey",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "testKey1CDDDD5E",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": "sqs:SendMessage",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "multipartchecksumqueueCA9DCDB8",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    Object {
+                      "Fn::GetAtt": Array [
+                        "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "dynamodb:UpdateItem",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "DeaBackendConstructDeaTableB48721A0",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "multipartchecksumhandlerServiceRoleDefaultPolicyE37D90EA",
+        "Roles": Array [
+          Object {
+            "Ref": "multipartchecksumhandlerServiceRoleB1CB1518",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "multipartchecksumhandlerSqsEventSourceteststackmultipartchecksumqueue926B6E6A67CB5878": Object {
+      "Properties": Object {
+        "BatchSize": 1,
+        "EventSourceArn": Object {
+          "Fn::GetAtt": Array [
+            "multipartchecksumqueueCA9DCDB8",
+            "Arn",
+          ],
+        },
+        "FunctionName": Object {
+          "Ref": "multipartchecksumhandlerF99349F8",
+        },
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "multipartchecksumqueueCA9DCDB8": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "RedrivePolicy": Object {
+          "deadLetterTargetArn": Object {
+            "Fn::GetAtt": Array [
+              "multipartchecksumdlq4D3A785A",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 5,
+        },
+        "VisibilityTimeout": 30,
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "multipartchecksumqueuePolicy5565D7FB": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sqs:*",
+              "Condition": Object {
+                "Bool": Object {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": Object {
+                "AWS": "*",
+              },
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "multipartchecksumqueueCA9DCDB8",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": Array [
+          Object {
+            "Ref": "multipartchecksumqueueCA9DCDB8",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
     "testKey1CDDDD5E": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
@@ -19681,6 +20317,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   Object {
                     "Fn::GetAtt": Array [
                       "DeaRestApiConstructdeainitiateuploadrole47691B14",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaRestApiConstructdeacompleteuploadrole5698638D",
                       "Arn",
                     ],
                   },

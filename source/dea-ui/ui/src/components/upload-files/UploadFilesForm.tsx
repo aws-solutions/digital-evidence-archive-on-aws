@@ -122,14 +122,12 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
     const uploadPromises: Promise<UploadPartCommandOutput>[] = [];
 
-    const fullHash = crypto.createHash('sha256');
     const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
     for (let i = 0; i < totalChunks; i++) {
       const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
 
       const arrayFromBlob = new Uint8Array(await blobToArrayBuffer(chunkBlob));
       const partHash = crypto.createHash('sha256').update(arrayFromBlob).digest('base64');
-      fullHash.update(arrayFromBlob);
 
       const uploadInput: UploadPartCommandInput = {
         Bucket: initiatedCaseFile.bucket,
@@ -147,13 +145,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
     await Promise.all(uploadPromises);
 
-    const fullHashFinal = fullHash.digest('hex');
-
     await completeUpload({
       caseUlid: props.caseId,
       ulid: initiatedCaseFile.ulid,
       uploadId: initiatedCaseFile.uploadId,
-      sha256Hash: fullHashFinal,
     });
     updateFileProgress(activeFileUpload.file, UploadStatus.complete);
   }

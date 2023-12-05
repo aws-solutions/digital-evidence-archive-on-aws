@@ -5,6 +5,7 @@
 
 import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
+import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
 import { AuditEventType } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
@@ -33,7 +34,6 @@ import {
 
 const FILE_PATH = '/important/investigation/';
 const FILE_CONTENT = 'I like turtles';
-const OTHER_FILE_CONTENT = 'I DO NOT like turtles';
 const FILE_SIZE_MB = 1;
 
 describe('case file audit e2e', () => {
@@ -94,17 +94,9 @@ describe('case file audit e2e', () => {
       s3ObjectsToDelete.push({ key, uploadId: initiatedCaseFile.uploadId });
       const uploadId = initiatedCaseFile.uploadId ?? fail();
       const federationCredentials = initiatedCaseFile.federationCredentials ?? fail();
-      const fileHash = sha256(FILE_CONTENT).toString();
-      await uploadContentToS3(federationCredentials, uploadId, FILE_CONTENT, initiatedCaseFile.bucket, key);
-      await completeCaseFileUploadSuccess(
-        deaApiUrl,
-        idToken,
-        creds,
-        caseUlid,
-        fileUlid,
-        uploadId,
-        FILE_CONTENT
-      );
+      const fileHash = sha256(FILE_CONTENT).toString(enc.Base64);
+      await uploadContentToS3(federationCredentials, uploadId, [FILE_CONTENT], initiatedCaseFile.bucket, key);
+      await completeCaseFileUploadSuccess(deaApiUrl, idToken, creds, caseUlid, fileUlid, uploadId);
 
       const describedCaseFile = await describeCaseFileDetailsSuccess(
         deaApiUrl,
@@ -119,8 +111,8 @@ describe('case file audit e2e', () => {
       const downloadUrl = await getCaseFileDownloadUrl(deaApiUrl, idToken, creds, caseUlid, fileUlid);
       const downloadedContent = await downloadContentFromS3(downloadUrl, describedCaseFile.contentType);
       expect(downloadedContent).toEqual(FILE_CONTENT);
-      expect(sha256(downloadedContent).toString()).toEqual(fileHash);
-      expect(sha256(downloadedContent).toString()).toEqual(describedCaseFile.sha256Hash);
+      expect(sha256(downloadedContent).toString(enc.Base64)).toEqual(fileHash);
+      expect(sha256(downloadedContent).toString(enc.Base64)).toEqual(describedCaseFile.sha256Hash);
 
       // Create another file on the case, to later ensure it does not show up on the audit log
       const otherInitiatedCaseFile = await initiateCaseFileUploadSuccess(
@@ -142,19 +134,11 @@ describe('case file audit e2e', () => {
       await uploadContentToS3(
         otherInitiatedCaseFile.federationCredentials,
         otherInitiatedCaseFile.uploadId,
-        FILE_CONTENT,
+        [FILE_CONTENT],
         otherInitiatedCaseFile.bucket,
         otherKey
       );
-      await completeCaseFileUploadSuccess(
-        deaApiUrl,
-        idToken,
-        creds,
-        caseUlid,
-        otherFileUlid,
-        otherUploadId,
-        OTHER_FILE_CONTENT
-      );
+      await completeCaseFileUploadSuccess(deaApiUrl, idToken, creds, caseUlid, otherFileUlid, otherUploadId);
 
       // Create a case user who DOES not have permission to download the file
       // and have them try to download, will show up in audit log as failure

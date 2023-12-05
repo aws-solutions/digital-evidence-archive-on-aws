@@ -25,10 +25,12 @@ import {
 
 let pkceStrings: PkceStrings;
 
+const suffix = randomSuffix();
+
 describe('API authentication', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
-  const testUser = `authE2ETestUser-${randomSuffix()}`;
+  const testUser = `authE2ETestUser-${suffix}`;
   const deaApiUrl = testEnv.apiUrlOutput;
   const region = testEnv.awsRegion;
   const stage = testEnv.stage;
@@ -101,7 +103,7 @@ describe('API authentication', () => {
     expect(response.status).toBe(200);
 
     // Now try to use someone else's credentials, should fail
-    const otherUser = 'StolenCredentialsUser';
+    const otherUser = `StolenCredentialsUser${suffix}`;
     await cognitoHelper.createUser(otherUser, 'AuthTestGroup', 'StolenCredentials', 'TestUser');
     const [otherCreds] = await cognitoHelper.getCredentialsForUser(otherUser);
     const [_creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
@@ -120,7 +122,7 @@ describe('API authentication', () => {
 
     // Make another user, try to use first user's credentials to call API for
     // the first time. Should fail since another user is assigned that identity id
-    const otherUser = 'DuplicateCredentialsUser';
+    const otherUser = `DuplicateCredentialsUser${suffix}`;
     await cognitoHelper.createUser(otherUser, 'AuthTestGroup', 'DuplicateCredentials', 'TestUser');
     const [_otherCreds, otherIdToken] = await cognitoHelper.getCredentialsForUser(otherUser);
 
@@ -130,7 +132,7 @@ describe('API authentication', () => {
 
   it('should add first time federated user to DDB', async () => {
     // 1. create user
-    const firstTimeFederatedUser = 'CheckFirstTimeFederatedUserTestUser';
+    const firstTimeFederatedUser = `CheckFirstTimeFederatedUserTestUser${suffix}`;
     const firstName = 'CheckFirstTimeFederatedUser';
     const lastName = 'TestUser';
     await cognitoHelper.createUser(firstTimeFederatedUser, 'AuthTestGroup', firstName, lastName);
@@ -226,7 +228,7 @@ describe('API authentication', () => {
 
   it('should successfully revoke refresh token', async () => {
     // Create user
-    const user = 'RevokeTokenE2ETest';
+    const user = `RevokeTokenE2ETest${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'RevokeTokenE2E', 'AuthTester');
 
     // Get credentials
@@ -251,7 +253,7 @@ describe('API authentication', () => {
 
   it('should successfully use refresh token for a new idtoken', async () => {
     // Create user
-    const user = 'RefreshTokenE2ETest';
+    const user = `RefreshTokenE2ETest${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'RefreshTokenE2E', 'AuthTester');
 
     // Get credentials
@@ -272,7 +274,7 @@ describe('API authentication', () => {
 
   it('should disallow concurrent active session', async () => {
     // Create user
-    const user = 'ConcurrentUserE2ETest';
+    const user = `ConcurrentUserE2ETest${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'ConcurrentE2E', 'AuthTester');
 
     // Get credentials

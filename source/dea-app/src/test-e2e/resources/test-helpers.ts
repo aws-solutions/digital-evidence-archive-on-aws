@@ -16,6 +16,7 @@ import {
   S3Client,
   UploadPartCommand,
   UploadPartCommandInput,
+  UploadPartCommandOutput,
 } from '@aws-sdk/client-s3';
 import { Credentials, aws4Interceptor } from 'aws4-axios';
 import axios, { AxiosResponse } from 'axios';
@@ -453,7 +454,7 @@ export const delay = async (ms: number) => {
 export const uploadContentToS3 = async (
   federationCredentials: Credentials,
   uploadId: string,
-  fileContent: string,
+  fileContents: string[],
   bucket: string,
   key: string
 ): Promise<void> => {
@@ -462,17 +463,23 @@ export const uploadContentToS3 = async (
     credentials: federationCredentials,
   });
 
-  const uploadInput: UploadPartCommandInput = {
-    Bucket: bucket,
-    Key: key,
-    PartNumber: 1,
-    UploadId: uploadId,
-    Body: fileContent,
-    ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
-    ChecksumSHA256: sha256(fileContent).toString(enc.Base64),
-  };
-  const uploadCommand = new UploadPartCommand(uploadInput);
-  await federationS3Client.send(uploadCommand);
+  let PartNumber = 1;
+  const commands: Promise<UploadPartCommandOutput>[] = [];
+  for (const fileContent of fileContents) {
+    const uploadInput: UploadPartCommandInput = {
+      Bucket: bucket,
+      Key: key,
+      PartNumber,
+      UploadId: uploadId,
+      Body: fileContent,
+      ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
+      ChecksumSHA256: sha256(fileContent).toString(enc.Base64),
+    };
+    const uploadCommand = new UploadPartCommand(uploadInput);
+    commands.push(federationS3Client.send(uploadCommand));
+    ++PartNumber;
+  }
+  await Promise.all(commands);
 };
 
 export const downloadContentFromS3 = async (
@@ -496,8 +503,7 @@ export const completeCaseFileUploadSuccess = async (
   creds: Credentials,
   caseUlid: string | undefined,
   ulid: string | undefined,
-  uploadId: string | undefined,
-  fileContent: string
+  uploadId: string | undefined
 ): Promise<DeaCaseFileResult> => {
   const completeUploadResponse = await callDeaAPIWithCreds(
     `${deaApiUrl}cases/${caseUlid}/files/${ulid}/contents`,
@@ -507,13 +513,12 @@ export const completeCaseFileUploadSuccess = async (
     {
       caseUlid,
       ulid,
-      sha256Hash: sha256(fileContent).toString(),
       uploadId,
     }
   );
 
   if (completeUploadResponse.status !== 200) {
-    console.log(completeUploadResponse);
+    console.log(completeUploadResponse.data);
   }
   expect(completeUploadResponse.status).toEqual(200);
   const uploadedCaseFile: DeaCaseFileResult = await completeUploadResponse.data;

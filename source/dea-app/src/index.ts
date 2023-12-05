@@ -4,6 +4,7 @@
  */
 
 import ErrorPrefixes from './app/error-prefixes';
+import { calculateIncrementalChecksum } from './app/event-handlers/calculate-incremental-checksum';
 import { addGroupsClaimToToken } from './app/event-handlers/pretoken-generation-trigger';
 import { putLegalHoldForCreatedS3Object } from './app/event-handlers/put-legal-hold-for-created-s3-object';
 import { FORBIDDEN_ERROR_NAME, ForbiddenError } from './app/exceptions/forbidden-exception';
@@ -89,8 +90,6 @@ export {
   DEAPreLambdaExecutionChecks,
   DeaCase,
   DeaCaseFile,
-  restrictAccountStatement,
-  restrictAccountStatementStatementProps,
   ErrorPrefixes,
   FORBIDDEN_ERROR_NAME,
   ForbiddenError,
@@ -106,6 +105,7 @@ export {
   VALIDATION_ERROR_NAME,
   ValidationError,
   auditService,
+  calculateIncrementalChecksum,
   completeCaseFileUpload,
   createCaseMembership,
   createCases,
@@ -143,6 +143,8 @@ export {
   putLegalHoldForCreatedS3Object,
   refreshToken,
   restoreCaseFile,
+  restrictAccountStatement,
+  restrictAccountStatementStatementProps,
   revokeToken,
   runPreExecutionChecks,
   s3BatchJobStatusChangeHandler,

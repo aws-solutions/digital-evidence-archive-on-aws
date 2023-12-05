@@ -51,6 +51,7 @@
     "version:patch": "npm version patch"
   },
   "dependencies": {
+    "@aws-sdk/client-sqs": "~3.435.0",
     "@aws-sdk/client-athena": "~3.435.0",
     "@aws-sdk/client-cloudwatch-logs": "~3.435.0",
     "@aws-sdk/client-cognito-identity": "~3.435.0",

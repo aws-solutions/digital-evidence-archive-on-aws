@@ -30,9 +30,11 @@ import {
   JobReportScope,
   S3ControlClient,
 } from '@aws-sdk/client-s3-control';
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { AssumeRoleCommand, AssumeRoleCommandInput, STSClient } from '@aws-sdk/client-sts';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
+import { MultipartChecksumBody } from '../app/event-handlers/calculate-incremental-checksum';
 import { getCustomUserAgent, getRequiredEnv } from '../lambda-http-helpers';
 import { logger } from '../logger';
 import {
@@ -57,6 +59,7 @@ export interface DatasetsProvider {
   datasetsRole: string;
   endUserUploadRole: string;
   awsPartition: string;
+  checksumQueueUrl: string;
 }
 
 export interface S3Object {
@@ -65,6 +68,7 @@ export interface S3Object {
 }
 
 const stsClient = new STSClient({ region, customUserAgent: getCustomUserAgent() });
+const sqsClient = new SQSClient({ region, customUserAgent: getCustomUserAgent() });
 
 export const defaultDatasetsProvider = {
   s3Client: new S3Client({ region, customUserAgent: getCustomUserAgent() }),
@@ -85,6 +89,7 @@ export const defaultDatasetsProvider = {
   uploadPresignedCommandExpirySeconds: Number(getRequiredEnv('UPLOAD_FILES_TIMEOUT_MINUTES', '60')) * 60,
   downloadPresignedCommandExpirySeconds: 15 * 60,
   awsPartition: getRequiredEnv('AWS_PARTITION', 'AWS_PARTITION is not set in your lambda!'),
+  checksumQueueUrl: getRequiredEnv('CHECKSUM_QUEUE_URL', 'CHECKSUM_QUEUE_URL is not set in your lambda!'),
 };
 
 export const createCaseFileUpload = async (
@@ -166,7 +171,7 @@ export const createCaseFileUpload = async (
 export const completeUploadForCaseFile = async (
   caseFile: CompleteCaseFileUploadObject,
   datasetsProvider: DatasetsProvider
-): Promise<void> => {
+): Promise<string | undefined> => {
   let uploadedParts: Part[] = [];
   let listPartsResponse: ListPartsOutput;
   let partNumberMarker;
@@ -208,6 +213,46 @@ export const completeUploadForCaseFile = async (
     })
   );
   caseFile.versionId = uploadResponse.VersionId;
+
+  return handleUploadChecksum(
+    uploadedParts,
+    caseFile,
+    s3Key,
+    datasetsProvider.bucketName,
+    datasetsProvider.checksumQueueUrl
+  );
+};
+
+const handleUploadChecksum = async (
+  uploadedParts: Part[],
+  caseFile: CompleteCaseFileUploadObject,
+  s3Key: string,
+  s3Bucket: string,
+  queueUrl: string
+) => {
+  if (uploadedParts.length === 1) {
+    return uploadedParts[0].ChecksumSHA256;
+  }
+
+  // Add messsage to sqs for checksum calculation
+  const messageBody: MultipartChecksumBody = {
+    caseUlid: caseFile.caseUlid,
+    caseFileUlid: caseFile.ulid,
+    s3Key,
+    s3Bucket,
+    currentPart: 1,
+    totalParts: uploadedParts.length,
+    serializedHasher: undefined,
+    queueUrl,
+  };
+  const sendMessageCommand = new SendMessageCommand({
+    QueueUrl: queueUrl,
+    MessageBody: JSON.stringify(messageBody),
+  });
+
+  await sqsClient.send(sendMessageCommand);
+
+  return undefined;
 };
 
 export const getPresignedUrlForDownload = async (

@@ -5,6 +5,7 @@
 
 import { DeleteObjectsCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Credentials } from 'aws4-axios';
+import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
 import { Oauth2Token } from '../../models/auth';
 import CognitoHelper from '../helpers/cognito-helper';
@@ -223,7 +224,7 @@ describe('evolves source location structure and re-runs tasks', () => {
       caseFile[0].ulid
     );
     const downloadedContent = await downloadContentFromS3(downloadUrl, caseFile[0].contentType);
-    expect(sha256(downloadedContent).toString()).toEqual(originalFile.sha256Hash);
+    expect(sha256(downloadedContent).toString(enc.Base64)).toEqual(originalFile.sha256Hash);
 
     // 8. Remove the modified file from the source, re-run task
     const response = await s3Client.send(

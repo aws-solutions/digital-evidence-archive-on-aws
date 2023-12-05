@@ -36,12 +36,14 @@ export const initiateCaseFileUpload = async (
 
 export const completeCaseFileUpload = async (
   deaCaseFile: CompleteCaseFileUploadObject,
-  repositoryProvider: ModelRepositoryProvider
+  repositoryProvider: ModelRepositoryProvider,
+  checksum: string | undefined
 ): Promise<DeaCaseFileResult> => {
   const transaction = {};
   const newEntity = await repositoryProvider.CaseFileModel.update(
     {
       ...deaCaseFile,
+      sha256Hash: checksum,
       status: CaseFileStatus.ACTIVE,
       ttl: null,
     },
@@ -376,4 +378,17 @@ const removeCaseFilePaths = async (
     });
     await removeCaseFilePaths(caseUlid, caseFileEntity.filePath, repositoryProvider);
   }
+};
+
+export const updateCaseFileChecksum = async (
+  caseUlid: string,
+  fileUlid: string,
+  checksum: string,
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  await repositoryProvider.CaseFileModel.update({
+    PK: `CASE#${caseUlid}#`,
+    SK: `FILE#${fileUlid}#`,
+    sha256Hash: checksum,
+  });
 };

@@ -49,7 +49,6 @@ const CASE_NAME = 'Dinner';
 const CASE_DESCRIPTION = 'Yummy';
 const FILE_NAME = 'tuna.jpeg';
 const FILE_PATH = '/food/sushi/';
-const SHA256_HASH = '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B';
 export const FILE_SIZE_BYTES = 50;
 export const CHUNK_SIZE_BYTES = 499 * ONE_MB;
 const CONTENT_TYPE = 'image/jpeg';
@@ -68,6 +67,7 @@ export const DATASETS_PROVIDER = {
   endUserUploadRole: 'arn:aws:iam:1234:role/baz',
   datasetsRole: 'arn:aws:iam::1234:role/bar',
   awsPartition: 'aws',
+  checksumQueueUrl: 'checksumQueueUrl',
 };
 
 jest.setTimeout(20000);
@@ -111,8 +111,7 @@ export const callCompleteCaseFileUpload = async (
   uploaderId: string | undefined,
   repositoryProvider: ModelRepositoryProvider,
   ulid: string,
-  caseUlid: string,
-  sha256Hash: string = SHA256_HASH
+  caseUlid: string
 ): Promise<DeaCaseFileResult> => {
   const event = getDummyEvent({
     headers: {
@@ -124,7 +123,6 @@ export const callCompleteCaseFileUpload = async (
     },
     body: JSON.stringify({
       caseUlid,
-      sha256Hash,
       ulid,
     }),
   });

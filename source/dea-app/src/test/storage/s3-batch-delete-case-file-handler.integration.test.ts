@@ -12,6 +12,7 @@ import {
   S3ClientResolvedConfig,
 } from '@aws-sdk/client-s3';
 import { S3ControlClient } from '@aws-sdk/client-s3-control';
+import { SQSClient } from '@aws-sdk/client-sqs';
 import {
   STSClient,
   STSClientResolvedConfig,
@@ -19,7 +20,7 @@ import {
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
 import { S3BatchEvent, S3BatchResult, S3BatchResultResultCode } from 'aws-lambda';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { getCase } from '../../app/services/case-service';
 import { DeaCaseInput } from '../../models/case';
@@ -51,6 +52,7 @@ let repositoryProvider: ModelRepositoryProvider;
 let caseOwner: DeaUser;
 let s3Mock: AwsStub<S3Input, S3Output, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
+let sqsMock: AwsClientStub<SQSClient>;
 
 describe('S3 batch delete case-file lambda', () => {
   beforeAll(async () => {
@@ -76,6 +78,9 @@ describe('S3 batch delete case-file lambda', () => {
         Expiration: new Date(),
       },
     });
+
+    sqsMock = mockClient(SQSClient);
+    sqsMock.resolves({});
   });
 
   afterAll(async () => {
@@ -220,6 +225,7 @@ describe('S3 batch delete case-file lambda', () => {
       endUserUploadRole: 'arn:aws:iam::1234:role/baz',
       datasetsRole: 'arn:aws:iam::1234:role/bar',
       awsPartition: 'aws',
+      checksumQueueUrl: 'checksumQueueUrl',
     };
 
     const response = await deleteCaseFileHandler(

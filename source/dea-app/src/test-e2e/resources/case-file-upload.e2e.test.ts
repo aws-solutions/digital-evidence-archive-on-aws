@@ -5,6 +5,7 @@
 
 import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
+import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
@@ -32,6 +33,8 @@ import {
 
 const FILE_PATH = '/food/sushi/';
 const FILE_CONTENT = 'hello world';
+// for multipart test -> part size can be 5 MiB to 5 GiB. There is no minimum size limit on the last part of your multipart upload.
+const LARGE_FILE_CONTENT = Buffer.alloc(6 * 1024 * 1024, 'a');
 const TEST_USER = `caseFileUploadTestUser${randomSuffix()}`;
 const FILE_SIZE_BYTES = 50;
 const DEA_API_URL = testEnv.apiUrlOutput;
@@ -65,133 +68,152 @@ describe('Test case file APIs', () => {
     await s3Cleanup(s3ObjectsToDelete);
   });
 
-  it('Upload a case file', async () => {
-    const createdCase = await createCase(idToken, creds);
-    const caseUlid = createdCase.ulid ?? fail();
-    caseIdsToDelete.push(caseUlid);
+  it(
+    'Upload a case file',
+    async () => {
+      const createdCase = await createCase(idToken, creds);
+      const caseUlid = createdCase.ulid ?? fail();
+      caseIdsToDelete.push(caseUlid);
 
-    // verify list-case-files returns zero case-files
-    let listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
-    expect(listCaseFilesResponse.files.length).toEqual(0);
-    expect(listCaseFilesResponse.next).toBeUndefined();
+      // verify list-case-files returns zero case-files
+      let listCaseFilesResponse = await listCaseFilesSuccess(
+        DEA_API_URL,
+        idToken,
+        creds,
+        caseUlid,
+        FILE_PATH
+      );
+      expect(listCaseFilesResponse.files.length).toEqual(0);
+      expect(listCaseFilesResponse.next).toBeUndefined();
 
-    // initiate upload
-    const initiatedCaseFile = await initiateCaseFileUploadSuccess(
-      DEA_API_URL,
-      idToken,
-      creds,
-      caseUlid,
-      'positiveTest',
-      FILE_PATH,
-      FILE_SIZE_BYTES
-    );
+      // initiate upload
+      const initiatedCaseFile = await initiateCaseFileUploadSuccess(
+        DEA_API_URL,
+        idToken,
+        creds,
+        caseUlid,
+        'positiveTest',
+        FILE_PATH,
+        FILE_SIZE_BYTES
+      );
 
-    const initiatedCaseFile2 = await initiateCaseFileUploadSuccess(
-      DEA_API_URL,
-      idToken,
-      creds,
-      caseUlid,
-      'colocatedPositiveTest',
-      FILE_PATH,
-      FILE_SIZE_BYTES
-    );
+      const initiatedCaseFile2 = await initiateCaseFileUploadSuccess(
+        DEA_API_URL,
+        idToken,
+        creds,
+        caseUlid,
+        'colocatedPositiveTest',
+        FILE_PATH,
+        FILE_SIZE_BYTES
+      );
 
-    const fileUlid = initiatedCaseFile.ulid ?? fail();
-    const fileUlid2 = initiatedCaseFile2.ulid ?? fail();
-    const key1 = `${caseUlid}/${fileUlid}`;
-    const file1Object = { key: key1, uploadId: initiatedCaseFile.uploadId };
-    s3ObjectsToDelete.push(file1Object);
-    const key2 = `${caseUlid}/${fileUlid2}`;
-    const file2Object = { key: key2, uploadId: initiatedCaseFile2.uploadId };
-    s3ObjectsToDelete.push(file2Object);
-    const uploadId = initiatedCaseFile.uploadId ?? fail();
-    const uploadId2 = initiatedCaseFile2.uploadId ?? fail();
+      const fileUlid = initiatedCaseFile.ulid ?? fail();
+      const fileUlid2 = initiatedCaseFile2.ulid ?? fail();
+      const key1 = `${caseUlid}/${fileUlid}`;
+      const file1Object = { key: key1, uploadId: initiatedCaseFile.uploadId };
+      s3ObjectsToDelete.push(file1Object);
+      const key2 = `${caseUlid}/${fileUlid2}`;
+      const file2Object = { key: key2, uploadId: initiatedCaseFile2.uploadId };
+      s3ObjectsToDelete.push(file2Object);
+      const uploadId = initiatedCaseFile.uploadId ?? fail();
+      const uploadId2 = initiatedCaseFile2.uploadId ?? fail();
 
-    // verify list-case-files and describe-case-file match expected state after initiate-upload
-    listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
-    expect(listCaseFilesResponse.files.length).toEqual(2);
-    expect(listCaseFilesResponse.next).toBeUndefined();
-    let describedCaseFile = await describeCaseFileDetailsSuccess(
-      DEA_API_URL,
-      idToken,
-      creds,
-      caseUlid,
-      initiatedCaseFile.ulid
-    );
-    expect(describedCaseFile.status).toEqual(CaseFileStatus.PENDING);
-    expect(
-      listCaseFilesResponse.files.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
-    ).toBeTruthy();
+      // verify list-case-files and describe-case-file match expected state after initiate-upload
+      listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
+      expect(listCaseFilesResponse.files.length).toEqual(2);
+      expect(listCaseFilesResponse.next).toBeUndefined();
+      let describedCaseFile = await describeCaseFileDetailsSuccess(
+        DEA_API_URL,
+        idToken,
+        creds,
+        caseUlid,
+        initiatedCaseFile.ulid
+      );
+      expect(describedCaseFile.status).toEqual(CaseFileStatus.PENDING);
+      expect(
+        listCaseFilesResponse.files.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
+      ).toBeTruthy();
 
-    await uploadContentToS3(
-      initiatedCaseFile.federationCredentials,
-      uploadId,
-      FILE_CONTENT,
-      initiatedCaseFile.bucket,
-      key1
-    );
-    await uploadContentToS3(
-      initiatedCaseFile2.federationCredentials,
-      uploadId2,
-      FILE_CONTENT,
-      initiatedCaseFile2.bucket,
-      key2
-    );
+      await uploadContentToS3(
+        initiatedCaseFile.federationCredentials,
+        uploadId,
+        [FILE_CONTENT],
+        initiatedCaseFile.bucket,
+        key1
+      );
+      await uploadContentToS3(
+        initiatedCaseFile2.federationCredentials,
+        uploadId2,
+        [
+          LARGE_FILE_CONTENT.subarray(0, LARGE_FILE_CONTENT.length - 100).toString(),
+          LARGE_FILE_CONTENT.subarray(LARGE_FILE_CONTENT.length - 100).toString(),
+        ],
+        initiatedCaseFile2.bucket,
+        key2
+      );
 
-    // complete upload
-    await completeCaseFileUploadSuccess(
-      DEA_API_URL,
-      idToken,
-      creds,
-      caseUlid,
-      fileUlid,
-      uploadId,
-      FILE_CONTENT
-    );
+      // complete upload
+      await completeCaseFileUploadSuccess(DEA_API_URL, idToken, creds, caseUlid, fileUlid, uploadId);
 
-    await completeCaseFileUploadSuccess(
-      DEA_API_URL,
-      idToken,
-      creds,
-      caseUlid,
-      fileUlid2,
-      uploadId2,
-      FILE_CONTENT
-    );
+      await completeCaseFileUploadSuccess(DEA_API_URL, idToken, creds, caseUlid, fileUlid2, uploadId2);
 
-    // verify list-case-files and describe-case-file match expected state after complete-upload
-    listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, '/');
-    expect(listCaseFilesResponse.files.length).toEqual(1);
-    expect(listCaseFilesResponse.files[0].fileName).toEqual('food');
-    expect(listCaseFilesResponse.files[0].isFile).toEqual(false);
-    listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, '/food/');
-    expect(listCaseFilesResponse.files.length).toEqual(1);
-    expect(listCaseFilesResponse.files[0].fileName).toEqual('sushi');
-    expect(listCaseFilesResponse.files[0].isFile).toEqual(false);
-    listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
-    expect(listCaseFilesResponse.files.length).toEqual(2);
-    expect(listCaseFilesResponse.next).toBeUndefined();
-    describedCaseFile = await describeCaseFileDetailsSuccess(DEA_API_URL, idToken, creds, caseUlid, fileUlid);
-    expect(describedCaseFile.status).toEqual(CaseFileStatus.ACTIVE);
-    expect(
-      listCaseFilesResponse.files.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
-    ).toBeTruthy();
+      // verify list-case-files and describe-case-file match expected state after complete-upload
+      listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, '/');
+      expect(listCaseFilesResponse.files.length).toEqual(1);
+      expect(listCaseFilesResponse.files[0].fileName).toEqual('food');
+      expect(listCaseFilesResponse.files[0].isFile).toEqual(false);
+      listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, '/food/');
+      expect(listCaseFilesResponse.files.length).toEqual(1);
+      expect(listCaseFilesResponse.files[0].fileName).toEqual('sushi');
+      expect(listCaseFilesResponse.files[0].isFile).toEqual(false);
+      listCaseFilesResponse = await listCaseFilesSuccess(DEA_API_URL, idToken, creds, caseUlid, FILE_PATH);
+      expect(listCaseFilesResponse.files.length).toEqual(2);
+      expect(listCaseFilesResponse.next).toBeUndefined();
+      describedCaseFile = await describeCaseFileDetailsSuccess(
+        DEA_API_URL,
+        idToken,
+        creds,
+        caseUlid,
+        fileUlid
+      );
 
-    // wait for the object to be processed
-    await delay(1 * MINUTES_TO_MILLISECONDS);
+      // wait for the object to be processed for object lock and checksum
+      await delay(2 * MINUTES_TO_MILLISECONDS);
 
-    // Verify that the S3 Objects have Object Locks (Legal Hold) on them
-    expect(s3ObjectHasLegalHold(file1Object)).toBeTruthy();
-    expect(s3ObjectHasLegalHold(file2Object)).toBeTruthy();
+      const describedCaseFile2 = await describeCaseFileDetailsSuccess(
+        DEA_API_URL,
+        idToken,
+        creds,
+        caseUlid,
+        fileUlid2
+      );
+      expect(describedCaseFile.status).toEqual(CaseFileStatus.ACTIVE);
+      expect(
+        listCaseFilesResponse.files.find((caseFile) => caseFile.fileName === describedCaseFile.fileName)
+      ).toBeTruthy();
 
-    // verify download-case-file works as expected
-    const downloadUrl = await getCaseFileDownloadUrl(DEA_API_URL, idToken, creds, caseUlid, fileUlid);
-    const downloadedContent = await downloadContentFromS3(downloadUrl, describedCaseFile.contentType);
-    expect(downloadedContent).toEqual(FILE_CONTENT);
-    expect(sha256(downloadedContent).toString()).toEqual(describedCaseFile.sha256Hash);
+      // Verify that the S3 Objects have Object Locks (Legal Hold) on them
+      expect(s3ObjectHasLegalHold(file1Object)).toBeTruthy();
+      expect(s3ObjectHasLegalHold(file2Object)).toBeTruthy();
 
-    await deleteCaseFiles(DEA_API_URL, caseUlid, createdCase.name, FILE_PATH, idToken, creds);
-  });
+      // verify download-case-file works as expected
+      const downloadUrl = await getCaseFileDownloadUrl(DEA_API_URL, idToken, creds, caseUlid, fileUlid);
+      const downloadedContent = await downloadContentFromS3(downloadUrl, describedCaseFile.contentType);
+      expect(downloadedContent).toEqual(FILE_CONTENT);
+      expect(sha256(downloadedContent).toString(enc.Base64)).toEqual(describedCaseFile.sha256Hash);
+
+      // verify the multipart-uploaded file
+      const downloadUrl2 = await getCaseFileDownloadUrl(DEA_API_URL, idToken, creds, caseUlid, fileUlid2);
+      const downloadedContent2 = await downloadContentFromS3(downloadUrl2, describedCaseFile2.contentType);
+      expect(downloadedContent2).toEqual(LARGE_FILE_CONTENT.toString());
+      console.log(`checking hash ${new Date()}`);
+      console.log(`response: ${describedCaseFile2.sha256Hash}`);
+      expect(sha256(downloadedContent2).toString(enc.Base64)).toEqual(describedCaseFile2.sha256Hash);
+
+      await deleteCaseFiles(DEA_API_URL, caseUlid, createdCase.name, FILE_PATH, idToken, creds);
+    },
+    10 * MINUTES_TO_MILLISECONDS
+  );
 });
 
 async function createCase(idToken: Oauth2Token, creds: Credentials): Promise<DeaCase> {

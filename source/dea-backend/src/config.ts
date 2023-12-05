@@ -93,6 +93,21 @@ const deaStageFormat: convict.Format = {
   },
 };
 
+const uploadTimeoutFormat: convict.Format = {
+  name: 'upload-timeout',
+  validate: function (val) {
+    if (typeof val !== 'number') {
+      throw new Error('The Upload Timeout value must be a number');
+    }
+    if (val < 0) {
+      throw new Error('The Upload Timeout value must be a positive number');
+    }
+    if (val > 60) {
+      throw new Error('The Upload Timeout value must be less than 60 minutes');
+    }
+  },
+};
+
 const convictSchema = {
   stage: {
     doc: 'The deployment stage.',
@@ -305,7 +320,7 @@ const convictSchema = {
   },
   uploadFilesTimeoutMinutes: {
     doc: 'Timeout in minutes for S3 pre-signed URLs generated for file upload',
-    format: Number,
+    format: uploadTimeoutFormat.name,
     default: 60,
   },
   includeDynamoDataPlaneEventsInTrail: {
@@ -383,6 +398,7 @@ convict.addFormat(deaRoleTypesFormat);
 convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
 convict.addFormat(deaStageFormat);
+convict.addFormat(uploadTimeoutFormat);
 
 interface DEAConfig {
   stage(): string;

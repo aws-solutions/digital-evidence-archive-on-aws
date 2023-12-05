@@ -16,6 +16,7 @@ import { DeaEventHandlers } from '../../constructs/dea-event-handlers';
 import { DeaOperationalDashboard } from '../../constructs/dea-ops-dashboard';
 import { DeaParameters } from '../../constructs/dea-parameters';
 import { DeaRestApiConstruct } from '../../constructs/dea-rest-api';
+import { ObjectChecksumStack } from '../../constructs/object-checksum-stack';
 import { deaApiRouteConfig } from '../../resources/dea-route-config';
 import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
@@ -26,7 +27,7 @@ const context = {
 };
 
 describe('DeaBackend constructs', () => {
-  const expectedLambdaCount = 58;
+  const expectedLambdaCount = 59;
   const expectedMethodCount = 92;
 
   beforeAll(() => {
@@ -77,6 +78,12 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       opsDashboard: dashboard,
     });
+    const checksumStack = new ObjectChecksumStack(stack, 'ObjectChecksumStack', {
+      kmsKey: key,
+      deaTable: backend.deaTable,
+      opsDashboard: dashboard,
+      objectBucket: backend.datasetsBucket,
+    });
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', PROTECTED_DEA_RESOURCES, {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
@@ -85,6 +92,7 @@ describe('DeaBackend constructs', () => {
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       deaDataSyncReportsBucket: backend.dataSyncLogsBucket,
       deaDataSyncReportsRoleArn: backend.dataSyncLogsBucketRole.roleArn,
+      checksumQueue: checksumStack.checksumQueue,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       athenaConfig: {
@@ -180,6 +188,12 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       opsDashboard: dashboard,
     });
+    const checksumStack = new ObjectChecksumStack(stack, 'ObjectChecksumStack', {
+      kmsKey: key,
+      deaTable: backend.deaTable,
+      opsDashboard: dashboard,
+      objectBucket: backend.datasetsBucket,
+    });
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', PROTECTED_DEA_RESOURCES, {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
@@ -187,6 +201,7 @@ describe('DeaBackend constructs', () => {
       deaDatasetsBucketDataSyncRoleArn: backend.datasetsDataSyncRole.roleArn,
       deaDataSyncReportsBucket: backend.dataSyncLogsBucket,
       deaDataSyncReportsRoleArn: backend.dataSyncLogsBucketRole.roleArn,
+      checksumQueue: checksumStack.checksumQueue,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
@@ -269,6 +284,12 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       opsDashboard: dashboard,
     });
+    const checksumStack = new ObjectChecksumStack(stack, 'ObjectChecksumStack', {
+      kmsKey: key,
+      deaTable: backend.deaTable,
+      opsDashboard: dashboard,
+      objectBucket: backend.datasetsBucket,
+    });
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', PROTECTED_DEA_RESOURCES, {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
@@ -277,6 +298,7 @@ describe('DeaBackend constructs', () => {
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       deaDataSyncReportsBucket: backend.dataSyncLogsBucket,
       deaDataSyncReportsRoleArn: backend.dataSyncLogsBucketRole.roleArn,
+      checksumQueue: checksumStack.checksumQueue,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
@@ -382,6 +404,12 @@ describe('DeaBackend constructs', () => {
       kmsKey: key,
       opsDashboard: dashboard,
     });
+    const checksumStack = new ObjectChecksumStack(stack, 'ObjectChecksumStack', {
+      kmsKey: key,
+      deaTable: backend.deaTable,
+      opsDashboard: dashboard,
+      objectBucket: backend.datasetsBucket,
+    });
     const restApi = new DeaRestApiConstruct(stack, 'DeaRestApiConstruct', PROTECTED_DEA_RESOURCES, {
       deaTableArn: backend.deaTable.tableArn,
       deaTableName: backend.deaTable.tableName,
@@ -389,6 +417,7 @@ describe('DeaBackend constructs', () => {
       deaDatasetsBucketDataSyncRoleArn: backend.datasetsDataSyncRole.roleArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       deaDataSyncReportsBucket: backend.dataSyncLogsBucket,
+      checksumQueue: checksumStack.checksumQueue,
       deaDataSyncReportsRoleArn: backend.dataSyncLogsBucketRole.roleArn,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,

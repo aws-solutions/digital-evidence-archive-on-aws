@@ -12,13 +12,14 @@ import {
   ServiceInputTypes,
   ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
+import { SQSClient } from '@aws-sdk/client-sqs';
 import {
   STSClient,
   STSClientResolvedConfig,
   ServiceInputTypes as STSInputs,
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
 import { listCaseFilesByFilePath } from '../../../app/services/case-file-service';
@@ -44,6 +45,7 @@ import {
 let repositoryProvider: ModelRepositoryProvider;
 let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
+let sqsMock: AwsClientStub<SQSClient>;
 let fileUploader: DeaUser;
 let caseToUploadTo = '';
 
@@ -70,6 +72,9 @@ describe('Test complete case file upload', () => {
         Expiration: new Date(),
       },
     });
+
+    sqsMock = mockClient(SQSClient);
+    sqsMock.resolves({});
   });
 
   afterAll(async () => {
@@ -245,28 +250,16 @@ describe('Test complete case file upload', () => {
 
     // validate sha256Hash
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToUploadTo, '')
+      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToUploadTo)
     ).rejects.toThrow(); // empty hash
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToUploadTo, 'sha')
+      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToUploadTo)
     ).rejects.toThrow(); // short hash
     await expect(
-      callCompleteCaseFileUpload(
-        fileUploader.ulid,
-        repositoryProvider,
-        FILE_ULID,
-        caseToUploadTo,
-        '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFFFF02EBE0'
-      )
+      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToUploadTo)
     ).rejects.toThrow(); // long hash
     await expect(
-      callCompleteCaseFileUpload(
-        fileUploader.ulid,
-        repositoryProvider,
-        FILE_ULID,
-        caseToUploadTo,
-        '&30A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B'
-      )
+      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToUploadTo)
     ).rejects.toThrow(); // illegal character
   });
 
@@ -278,7 +271,6 @@ describe('Test complete case file upload', () => {
       },
       body: JSON.stringify({
         caseUlid: fakeUlid,
-        sha256Hash: '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B',
         ulid: bogusUlid,
       }),
     });
@@ -295,7 +287,6 @@ describe('Test complete case file upload', () => {
       },
       body: JSON.stringify({
         caseUlid: bogusUlid,
-        sha256Hash: '030A1D0D2808C9487C6F4F67745BD05A298FDF216B8BFDBFFDECE4EFF02EBE0B',
         ulid: fakeUlid,
       }),
     });

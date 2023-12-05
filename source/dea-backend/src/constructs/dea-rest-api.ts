@@ -37,6 +37,7 @@ import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { ApiGateway } from 'aws-cdk-lib/aws-route53-targets';
 import { Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
 import {
   AwsCustomResource,
   AwsCustomResourcePolicy,
@@ -67,6 +68,7 @@ interface DeaRestApiProps {
   deaTableName: string;
   deaDatasetsBucket: Bucket;
   deaDatasetsBucketDataSyncRoleArn: string;
+  checksumQueue: Queue;
   s3BatchDeleteCaseFileRoleArn: string;
   deaDataSyncReportsBucket: Bucket;
   deaDataSyncReportsRoleArn: string;
@@ -121,6 +123,7 @@ export class DeaRestApiConstruct extends Construct {
     this.authLambdaRole = this.createAuthLambdaRole();
 
     this.roleMap = new Map<DeaApiRoleName, Role>();
+
     this.roleMap.set(DeaApiRoleName.AUTH_ROLE, this.authLambdaRole);
     const initiateUploadRole = this.createInitiateUploadRole(
       props.kmsKey.keyArn,
@@ -128,6 +131,15 @@ export class DeaRestApiConstruct extends Construct {
       props.deaTableArn
     );
     this.roleMap.set(DeaApiRoleName.INITIATE_UPLOAD_ROLE, initiateUploadRole);
+
+    const completeUploadRole = this.createCompleteUploadRole(
+      props.kmsKey.keyArn,
+      props.deaDatasetsBucket.bucketArn,
+      props.deaTableArn,
+      props.checksumQueue
+    );
+    this.roleMap.set(DeaApiRoleName.COMPLETE_UPLOAD_ROLE, completeUploadRole);
+
     this.endUserUploadRole = this.createEndUserUploadRole(
       initiateUploadRole,
       props.deaDatasetsBucket.bucketArn
@@ -147,6 +159,7 @@ export class DeaRestApiConstruct extends Construct {
     props.lambdaEnv['DATASYNC_ROLE'] = props.deaDatasetsBucketDataSyncRoleArn;
     props.lambdaEnv['DATASYNC_REPORTS_BUCKET_NAME'] = props.deaDataSyncReportsBucket.bucketName;
     props.lambdaEnv['DATASYNC_REPORTS_ROLE'] = props.deaDataSyncReportsRoleArn;
+    props.lambdaEnv['CHECKSUM_QUEUE_URL'] = props.checksumQueue.queueUrl;
 
     this.customResourceRole = new Role(this, 'custom-resource-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -740,6 +753,7 @@ export class DeaRestApiConstruct extends Construct {
   private createDatasetsRole(kmsKeyArn: string, datasetsBucketArn: string): Role {
     const role = new Role(this, 'dea-datasets-role', {
       assumedBy: this.lambdaBaseRole,
+      maxSessionDuration: Duration.minutes(deaConfig.uploadFilesTimeoutMinutes()),
     });
 
     role.addToPolicy(
@@ -764,6 +778,7 @@ export class DeaRestApiConstruct extends Construct {
   private createAuditDownloadRole(kmsKeyArn: string, auditResultsBucketArn: string): Role {
     const role = new Role(this, 'dea-audit-download-role', {
       assumedBy: this.lambdaBaseRole,
+      maxSessionDuration: Duration.minutes(deaConfig.auditDownloadTimeoutMinutes()),
     });
 
     role.addToPolicy(
@@ -786,6 +801,7 @@ export class DeaRestApiConstruct extends Construct {
   private createEndUserUploadRole(assumingRole: Role, datasetsBucketArn: string) {
     const role = new Role(this, 'dea-end-user-upload-role', {
       assumedBy: assumingRole,
+      maxSessionDuration: Duration.minutes(deaConfig.uploadFilesTimeoutMinutes()),
     });
 
     role.addToPolicy(
@@ -838,6 +854,78 @@ export class DeaRestApiConstruct extends Construct {
             ServiceConstants.PARAM_PREFIX
           }${deaConfig.stage()}*`,
         ],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [kmsKeyArn],
+      })
+    );
+
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
+
+    return role;
+  }
+
+  private createCompleteUploadRole(
+    kmsKeyArn: string,
+    datasetsBucketArn: string,
+    tableArn: string,
+    checksumQueue: Queue
+  ): Role {
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+
+    const role = new Role(this, 'dea-complete-upload-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [basicExecutionPolicy],
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:UpdateItem'],
+        resources: [tableArn],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['dynamodb:Query'],
+        resources: [tableArn, `${tableArn}/index/GSI2`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [checksumQueue.queueArn],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
+        resources: [
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${
+            ServiceConstants.PARAM_PREFIX
+          }${deaConfig.stage()}*`,
+        ],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          's3:AbortMultipartUpload',
+          's3:ListMultipartUploadParts',
+          's3:GetObject',
+          's3:PutObject',
+          's3:GetObjectVersion',
+        ],
+        resources: [`${datasetsBucketArn}/*`],
       })
     );
 

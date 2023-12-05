@@ -443,7 +443,7 @@ const setupCaseFile = async (
   await uploadContentToS3(
     caseFile.federationCredentials,
     caseFile.uploadId,
-    'hello world',
+    ['hello world'],
     caseFile.bucket,
     key
   );
@@ -454,8 +454,7 @@ const setupCaseFile = async (
       testUser.creds,
       caseUlid,
       caseFile.ulid,
-      caseFile.uploadId,
-      'hello world'
+      caseFile.uploadId
     );
   }
   return caseFile;

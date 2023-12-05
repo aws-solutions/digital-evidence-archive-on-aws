@@ -99,12 +99,27 @@ export interface CaseFileDTO {
 export interface CompleteCaseFileUploadDTO {
   readonly caseUlid: string;
   readonly ulid: string;
-  readonly sha256Hash: string;
   readonly uploadId: string;
 }
 
-export type CompleteCaseFileUploadObject = DeaCaseFile & {
-  readonly sha256Hash: string;
+export type CompleteCaseFileUploadObject = {
+  readonly caseUlid: string;
+  readonly fileName: string;
+  readonly filePath: string;
+  readonly isFile: boolean;
+  readonly fileSizeBytes: number;
+  readonly createdBy: string;
+  status: CaseFileStatus;
+  readonly ulid: string;
+  readonly contentType?: string;
+  ttl?: number;
+  versionId?: string;
+  readonly details?: string;
+  readonly reason?: string;
+  readonly fileS3Key: string;
+
+  readonly created?: Date;
+  readonly updated?: Date;
   readonly uploadId: string;
 };
 

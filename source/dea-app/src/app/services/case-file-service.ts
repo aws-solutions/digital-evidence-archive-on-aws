@@ -136,8 +136,17 @@ export const completeCaseFileUpload = async (
   repositoryProvider: ModelRepositoryProvider,
   datasetsProvider: DatasetsProvider
 ): Promise<DeaCaseFileResult> => {
-  await completeUploadForCaseFile(deaCaseFile, datasetsProvider);
-  return await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider);
+  const checksum = await completeUploadForCaseFile(deaCaseFile, datasetsProvider);
+  return await CaseFilePersistence.completeCaseFileUpload(deaCaseFile, repositoryProvider, checksum);
+};
+
+export const updateCaseFileChecksum = async (
+  caseUlid: string,
+  fileUlid: string,
+  checksum: string,
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  return CaseFilePersistence.updateCaseFileChecksum(caseUlid, fileUlid, checksum, repositoryProvider);
 };
 
 export const createCaseAssociation = async (

@@ -152,7 +152,7 @@ export const dataSyncExecutionEvent = async (
           fileSizeBytes: file.SrcMetadata.ContentSize || 0,
           createdBy: dataVaultExecution.createdBy,
           contentType: fileExtension,
-          sha256Hash: file.DstChecksum,
+          sha256Hash: Buffer.from(file.DstChecksum.split(':')[1], 'hex').toString('base64'),
           fileS3Key: fileS3Key,
           executionId: dataVaultExecution.executionId,
         };

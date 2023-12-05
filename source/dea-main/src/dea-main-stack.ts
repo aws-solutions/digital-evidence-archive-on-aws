@@ -16,6 +16,7 @@ import { DeaOperationalDashboard } from '@aws/dea-backend/lib/constructs/dea-ops
 import { DeaParameters, DeaParametersStack } from '@aws/dea-backend/lib/constructs/dea-parameters';
 import { DeaRestApiConstruct } from '@aws/dea-backend/lib/constructs/dea-rest-api';
 import { addLegalHoldInfrastructure } from '@aws/dea-backend/lib/constructs/legal-hold-infra';
+import { ObjectChecksumStack } from '@aws/dea-backend/lib/constructs/object-checksum-stack';
 import {
   addLambdaSuppressions,
   addResourcePolicySuppressions,
@@ -131,6 +132,12 @@ export class DeaMainStack extends cdk.Stack {
       dashboard
     );
 
+    const checksumStack = new ObjectChecksumStack(this, 'ObjectChecksumStack', {
+      deaTable: backendConstruct.deaTable,
+      kmsKey,
+      objectBucket: backendConstruct.datasetsBucket,
+    });
+
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', protectedDeaResourceArns, {
       deaTableArn: backendConstruct.deaTable.tableArn,
       deaTableName: backendConstruct.deaTable.tableName,
@@ -138,6 +145,7 @@ export class DeaMainStack extends cdk.Stack {
       deaDatasetsBucketDataSyncRoleArn: backendConstruct.datasetsDataSyncRole.roleArn,
       deaDataSyncReportsBucket: backendConstruct.dataSyncLogsBucket,
       deaDataSyncReportsRoleArn: backendConstruct.dataSyncLogsBucketRole.roleArn,
+      checksumQueue: checksumStack.checksumQueue,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
@@ -241,6 +249,7 @@ export class DeaMainStack extends cdk.Stack {
       backendConstruct.datasetsDataSyncRole.roleArn,
       deaEventHandlers.dataSyncExecutionEventRole.roleArn,
       objectLockHandlerRole.roleArn,
+      checksumStack.checksumHandlerRole.roleArn,
     ];
     restrictResourcePolicies(
       {

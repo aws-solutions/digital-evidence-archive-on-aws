@@ -36,9 +36,6 @@ const htmlSafeMessage = 'The following characters are not allowed in {{#label}}:
 export const ulidRegex = new RegExp('^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$');
 const ulidMessage = '{{#label}} is not a valid ULID';
 
-const sha256HashRegex = new RegExp('^[a-fA-F0-9]{64}$');
-const sha256HashMessage = '{{#label}} is not a valid SHA256 hash value';
-
 const arnMessage = '{{#label}} is not a valid ARN';
 
 export const taskIdRegex = new RegExp('^task-[0-9a-z]{17}$');
@@ -56,10 +53,6 @@ export const s3Identifier = Joi.string()
 export const joiUlid = Joi.string().pattern(ulidRegex).messages(customJoiMessages(ulidMessage));
 
 export const joiUuid = Joi.string().uuid();
-
-export const sha256Hash = Joi.string()
-  .pattern(sha256HashRegex)
-  .messages(customJoiMessages(sha256HashMessage));
 
 export const joiArn = Joi.string()
   .pattern(new RegExp('.*\\S.*'))

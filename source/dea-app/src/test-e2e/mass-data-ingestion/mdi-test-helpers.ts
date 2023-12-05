@@ -11,6 +11,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Credentials } from 'aws4-axios';
+import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
@@ -134,7 +135,7 @@ export class MdiTestHelper {
       })
     );
 
-    const sha256Hash = sha256(body).toString();
+    const sha256Hash = sha256(body).toString(enc.Base64);
 
     sourceLocation.files.push({
       fileName,
@@ -235,7 +236,7 @@ export function verifyDataVaultFile(
   if (sourceLocationFile) {
     expect(dataVaultFile?.fileName).toStrictEqual(sourceLocationFile.fileName);
     expect(dataVaultFile?.filePath).toStrictEqual(`${dataVaultFolderPrefix}${sourceLocationFile.filePath}`);
-    expect(dataVaultFile?.sha256Hash?.split(':')[1]).toStrictEqual(sourceLocationFile.sha256Hash);
+    expect(dataVaultFile?.sha256Hash).toStrictEqual(sourceLocationFile.sha256Hash);
   }
 
   if (caseCount) {
@@ -330,7 +331,7 @@ export async function downloadCaseFileAndValidateHash(
   );
   const downloadedContent = await downloadContentFromS3(downloadUrl, caseFile.contentType);
 
-  expect(sha256(downloadedContent).toString()).toEqual(expectedHash);
+  expect(sha256(downloadedContent).toString(enc.Base64)).toEqual(expectedHash);
 }
 
 // ------------------ Data Vault File/Folder Helpers ------------------

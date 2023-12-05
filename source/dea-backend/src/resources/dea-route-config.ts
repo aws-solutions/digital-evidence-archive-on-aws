@@ -10,6 +10,7 @@ import { ApiGatewayMethod, ApiGatewayRouteConfig } from './api-gateway-route-con
 export enum DeaApiRoleName {
   AUTH_ROLE = 'AUTH_ROLE',
   INITIATE_UPLOAD_ROLE = 'INITIATE_UPLOAD_ROLE',
+  COMPLETE_UPLOAD_ROLE = 'COMPLETE_UPLOAD_ROLE',
 }
 
 export const deaApiRouteConfig: ApiGatewayRouteConfig = {
@@ -93,6 +94,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/cases/{caseId}/files/{fileId}/contents',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/complete-case-file-upload-handler.ts',
+      roleName: DeaApiRoleName.COMPLETE_UPLOAD_ROLE,
     },
     {
       eventName: AuditEventType.GET_CASE_FILE_DETAIL,

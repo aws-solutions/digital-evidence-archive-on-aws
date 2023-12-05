@@ -9,7 +9,6 @@ import {
   fileName,
   filePath,
   contentType,
-  sha256Hash,
   s3Identifier,
   caseFileStatus,
   safeReason,
@@ -47,7 +46,7 @@ export const initiateCaseFileUploadResponseSchema = Joi.object({
     secretAccessKey: Joi.string(),
     sessionToken: Joi.string(),
   }),
-  sha256Hash: sha256Hash,
+  sha256Hash: Joi.string(),
   status: caseFileStatus,
   reason: safeReason,
   details: safeDetails,
@@ -61,7 +60,6 @@ export const initiateCaseFileUploadResponseSchema = Joi.object({
 export const completeCaseFileUploadRequestSchema = Joi.object({
   caseUlid: joiUlid,
   ulid: joiUlid,
-  sha256Hash: sha256Hash,
   uploadId: s3Identifier,
 });
 
@@ -78,7 +76,7 @@ export const caseFileResponseSchema = Joi.object({
   chunkSizeBytes: safeChunkSize,
   fileSizeBytes: safeFileSize,
   ttl: Joi.number().greater(0),
-  sha256Hash: sha256Hash,
+  sha256Hash: Joi.string(),
   status: caseFileStatus,
   reason: safeReason,
   details: safeDetails,
