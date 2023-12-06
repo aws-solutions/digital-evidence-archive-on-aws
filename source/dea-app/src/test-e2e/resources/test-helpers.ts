@@ -75,7 +75,8 @@ export async function cleanupCaseAndFiles(
   caseUlid: string,
   caseName: string,
   idToken: Oauth2Token,
-  creds: Credentials
+  creds: Credentials,
+  sleep = 15000
 ): Promise<void> {
   // First iterate over every file in the case to get the s3Objects we will have to delete
   // and to delete the files from the ddb
@@ -120,7 +121,7 @@ export async function cleanupCaseAndFiles(
   // Give S3 batch 2 minutes to do the async job. Increase if necessary (EventBridge SLA is 15min)
   const retries = 8;
   while (updatedCase.filesStatus !== CaseFileStatus.DELETED && retries > 0) {
-    await delay(15_000);
+    await delay(sleep);
     updatedCase = await describeCaseSuccess(baseUrl, caseUlid, idToken, creds);
 
     if (updatedCase.filesStatus === CaseFileStatus.DELETE_FAILED) {

@@ -17,6 +17,7 @@ import {
   deleteCaseAssociationSuccess,
   listDataVaultsSuccess,
   verifyAllExecutionsSucceeded,
+  waitForDataSyncStartupTime,
   waitForTaskExecutionCompletions,
 } from '../resources/support/datavault-support';
 import {
@@ -242,6 +243,7 @@ describe('mass data ingestion e2e tests using dea apis only', () => {
       creds,
       dataVault1.ulid,
       mdiTestHelper.tasksToCleanUp,
+      mdiTestHelper.dataSyncLocationsToCleanUp,
       {
         name: `DEA API Migration SL1 to DV1: ${randSuffix}`,
         sourceLocationArn: sourceLocation1.locationArn,
@@ -257,6 +259,7 @@ describe('mass data ingestion e2e tests using dea apis only', () => {
       creds,
       dataVault1.ulid,
       mdiTestHelper.tasksToCleanUp,
+      mdiTestHelper.dataSyncLocationsToCleanUp,
       {
         name: `DEA API Migration SL2 to DV1: ${randSuffix}`,
         sourceLocationArn: sourceLocation2.locationArn,
@@ -271,6 +274,7 @@ describe('mass data ingestion e2e tests using dea apis only', () => {
       creds,
       dataVault2.ulid,
       mdiTestHelper.tasksToCleanUp,
+      mdiTestHelper.dataSyncLocationsToCleanUp,
       {
         name: `DEA API Migration SL1 to DV2: ${randSuffix}`,
         sourceLocationArn: sourceLocation1.locationArn,
@@ -286,6 +290,7 @@ describe('mass data ingestion e2e tests using dea apis only', () => {
       creds,
       dataVault2.ulid,
       mdiTestHelper.tasksToCleanUp,
+      mdiTestHelper.dataSyncLocationsToCleanUp,
       {
         name: `DEA API Migration SL3 to DV2: ${randSuffix}`,
         sourceLocationArn: sourceLocation3.locationArn,
@@ -315,6 +320,8 @@ describe('mass data ingestion e2e tests using dea apis only', () => {
         taskArn: taskDv2Sl3.taskArn,
       })
     ).executionId;
+
+    await waitForDataSyncStartupTime();
 
     // Wait for executions to complete
     const taskStatuses = await waitForTaskExecutionCompletions([
@@ -682,6 +689,9 @@ describe('mass data ingestion e2e tests using dea apis only', () => {
       downloadVerifications.push(downloadCaseFileAndValidateHash(idToken, creds, caseFile));
     }
     await Promise.all(downloadVerifications);
+
+    // refresh credentials
+    [creds, idToken] = await cognitoHelper.getCredentialsForUser(mdiTestHelper.testUser);
 
     // 6. Delete case association for File sl2-rootfile-${randSuffix} from Case 1 and 2
     const fileToDisassociate = fileUlidsFromDV1AssocToBothCases[0];

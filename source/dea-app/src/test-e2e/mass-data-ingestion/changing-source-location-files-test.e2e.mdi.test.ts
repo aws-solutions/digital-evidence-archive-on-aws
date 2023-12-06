@@ -18,6 +18,7 @@ import {
   describeDataVaultFileDetailsSuccess,
   listDataVaultFilesSuccess,
   verifyAllExecutionsSucceeded,
+  waitForDataSyncStartupTime,
   waitForTaskExecutionCompletions,
 } from '../resources/support/datavault-support';
 import {
@@ -91,6 +92,7 @@ describe('evolves source location structure and re-runs tasks', () => {
       creds,
       dataVaultUlid,
       mdiTestHelper.tasksToCleanUp,
+      mdiTestHelper.dataSyncLocationsToCleanUp,
       {
         name: `Source Size E2ETests ${randSuffix} Task`,
         sourceLocationArn: sourceLocation.locationArn,
@@ -105,6 +107,8 @@ describe('evolves source location structure and re-runs tasks', () => {
           taskArn: task.taskArn,
         })
       ).executionId;
+
+      await waitForDataSyncStartupTime();
 
       const taskStatus = await waitForTaskExecutionCompletions([`${task.taskArn}/execution/${executionId}`]);
       expect(taskStatus.size).toBe(1);

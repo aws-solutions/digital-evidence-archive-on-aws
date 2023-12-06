@@ -28,6 +28,7 @@ import {
 } from '../resources/support/datavault-support';
 import {
   cleanupCaseAndFiles,
+  delay,
   describeCaseSuccess,
   downloadContentFromS3,
   getCaseFileDownloadUrl,
@@ -73,11 +74,11 @@ export class MdiTestHelper {
     this.suffix = suffix;
   }
 
-  public async cleanup(creds: Credentials, idToken: Oauth2Token) {
+  public async cleanup(creds: Credentials, idToken: Oauth2Token, sleep?: number) {
     // Clean up cases and case files
     for (const [caseUlid, caseName] of this.casesToCleanup.entries()) {
       try {
-        await cleanupCaseAndFiles(deaApiUrl, caseUlid, caseName, idToken, creds);
+        await cleanupCaseAndFiles(deaApiUrl, caseUlid, caseName, idToken, creds, sleep);
       } catch (e) {
         console.log(`Failed cleaning up case ${caseUlid} during MDI E2E tests`);
         console.log(e);
@@ -320,7 +321,8 @@ export async function downloadCaseFileAndValidateHash(
   );
   const dataVaultFile = dataVaultFiles.filter((file) => file.fileName === caseFile.fileName);
   expect(dataVaultFile.length).toBe(1);
-  const expectedHash = dataVaultFile[0].sha256Hash;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const dvFileHash = parseHash(dataVaultFile[0].sha256Hash!);
 
   const downloadUrl = await getCaseFileDownloadUrl(
     deaApiUrl,
@@ -331,7 +333,17 @@ export async function downloadCaseFileAndValidateHash(
   );
   const downloadedContent = await downloadContentFromS3(downloadUrl, caseFile.contentType);
 
-  expect(sha256(downloadedContent).toString(enc.Base64)).toEqual(expectedHash);
+  const actualHash = parseHash(sha256(downloadedContent).toString(enc.Base64));
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const caseFileHash = parseHash(caseFile.sha256Hash!);
+
+  expect(actualHash).toStrictEqual(caseFileHash);
+  expect(caseFileHash).toStrictEqual(dvFileHash);
+}
+
+export function parseHash(hash: string): string {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return hash.split('SHA256:').pop()!;
 }
 
 // ------------------ Data Vault File/Folder Helpers ------------------
@@ -363,6 +375,9 @@ export async function verifyDataVaultFolderAndFileStructure(
   expectedNumFiles: number,
   expectedDataVaultFolderFileStructure: Map<string, AssociatedDataVaultFileVerificationObject[]>
 ) {
+  const vaultDescription = await describeDataVaultDetailsSuccess(deaApiUrl, idToken, creds, dataVaultUlid);
+  expect(vaultDescription.objectCount).toBe(expectedNumFiles);
+
   let foundFiles = 0;
   let foldersVisited = 0;
 
@@ -521,6 +536,9 @@ export async function verifyCaseFolderAndFileStructure(
   expectedNumFiles: number,
   expectedCaseFolderFileStructure: Map<string, AssociatedCaseFileVerificationObject[]>
 ): Promise<Map<string, CaseFileDTO[]>> {
+  const caseDescription = await describeCaseSuccess(deaApiUrl, caseUlid, idToken, creds);
+  expect(caseDescription.objectCount).toBe(expectedNumFiles);
+
   const caseFileObjects: Map<string, CaseFileDTO[]> = new Map();
   let foundFiles = 0;
   let foldersVisited = 0;
@@ -644,19 +662,23 @@ export function getCaseFileUlid(
 const deleteSourceObjects = async (bucket: string, files: SourceLocationFile[]) => {
   const objectsToDelete: ObjectIdentifier[] = [];
   files.forEach((files) => objectsToDelete.push({ Key: files.fileS3Key }));
-  try {
-    const response = await s3Client.send(
-      new DeleteObjectsCommand({
-        Bucket: bucket,
-        Delete: {
-          Objects: objectsToDelete,
-        },
-      })
-    );
-    console.log(`Removed ${response.Deleted?.length} objects from bucket ${bucket}`);
-  } catch (e) {
-    console.log(`Error removing objects from bucket ${bucket}`, e);
-  }
+
+  // Split the files if there are too many in one request
+  await batchActions(async (objectsBatch: ObjectIdentifier[]) => {
+    try {
+      await s3Client.send(
+        new DeleteObjectsCommand({
+          Bucket: bucket,
+          Delete: {
+            Objects: objectsBatch,
+          },
+        })
+      );
+    } catch (e) {
+      console.log(`Error removing objects from bucket ${bucket}`, e);
+    }
+    return [];
+  }, objectsToDelete);
 };
 
 const deleteBucket = async (bucketName: string) => {
@@ -667,4 +689,37 @@ const deleteBucket = async (bucketName: string) => {
   );
 
   console.log(`Removed bucket ${bucketName}`);
+};
+
+// ------------------ General Helpers ------------------
+const DEFAULT_BATCH_SIZE = 100;
+const DEFAULT_BATCH_SLEEP = 1000; // 1 second
+
+export async function batchActions<T, V>(
+  func: (arg: T[]) => Promise<V[]>,
+  input: T[],
+  batchSleep = DEFAULT_BATCH_SLEEP,
+  batchSize = DEFAULT_BATCH_SIZE
+): Promise<V[]> {
+  const allResults: V[] = [];
+
+  const batchArgs = partitionArray(input, batchSize);
+  for (const batch of batchArgs) {
+    allResults.push(...(await func(batch)));
+    if (batchSleep > 0) {
+      await delay(batchSleep);
+    }
+  }
+
+  return allResults;
+}
+
+export const partitionArray = <T>(array: T[], batchSize = DEFAULT_BATCH_SIZE): T[][] => {
+  const chunks: T[][] = [];
+
+  for (let i = 0; i < array.length; i += batchSize) {
+    chunks.push(array.slice(i, i + batchSize));
+  }
+
+  return chunks;
 };
