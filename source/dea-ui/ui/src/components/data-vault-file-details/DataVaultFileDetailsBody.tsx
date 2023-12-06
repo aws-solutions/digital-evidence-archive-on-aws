@@ -14,6 +14,7 @@ import {
   Header,
   Modal,
   SpaceBetween,
+  Spinner,
   TextContent,
 } from '@cloudscape-design/components';
 import { useState } from 'react';
@@ -109,6 +110,7 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
                 onClick={disassociateToCaseHandler}
                 disabled={IsSubmitLoading || !checkedState.find((checked) => checked)}
               >
+                {IsSubmitLoading ? <Spinner variant="disabled" /> : null}
                 {commonLabels.disassociateButton}
               </Button>
             </SpaceBetween>

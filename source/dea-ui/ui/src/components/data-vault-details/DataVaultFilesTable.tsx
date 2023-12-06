@@ -18,6 +18,7 @@ import {
   Multiselect,
   Pagination,
   SpaceBetween,
+  Spinner,
   StatusIndicator,
   Table,
   TextContent,
@@ -162,6 +163,7 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
                 onClick={associateToCaseHandler}
                 disabled={IsSubmitLoading || selectedCases.length === 0}
               >
+                {IsSubmitLoading ? <Spinner variant="disabled" /> : null}
                 {commonLabels.confirmButton}
               </Button>
             </SpaceBetween>

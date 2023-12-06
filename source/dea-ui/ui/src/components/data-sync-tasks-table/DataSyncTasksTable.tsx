@@ -16,6 +16,7 @@ import {
   Pagination,
   PropertyFilter,
   SpaceBetween,
+  Spinner,
   StatusIndicator,
   Table,
   TextContent,
@@ -169,6 +170,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
                 onClick={runDataSyncTaskVaultHandler}
                 disabled={IsSubmitLoading}
               >
+                {IsSubmitLoading ? <Spinner variant="disabled" /> : null}
                 {commonLabels.runTask}
               </Button>
             </SpaceBetween>
