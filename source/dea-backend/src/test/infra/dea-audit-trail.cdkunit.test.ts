@@ -12,6 +12,9 @@ import { DeaBackendConstruct } from '../../constructs/dea-backend-stack';
 import { DeaOperationalDashboard } from '../../constructs/dea-ops-dashboard';
 
 const PROTECTED_DEA_RESOURCES: string[] = [];
+const context = {
+  'aws:cdk:bundling-stacks': [],
+};
 
 describe('dea audit trail', () => {
   it('synthesizes with additional bucket policy restrictions in production', () => {
@@ -21,7 +24,7 @@ describe('dea audit trail', () => {
 
     convictConfig.set('testStack', false);
 
-    const app = new App();
+    const app = new App({ context });
     const stack = new Stack(app, 'test-stack');
 
     const key = new Key(stack, 'testKey', {
@@ -55,7 +58,7 @@ describe('dea audit trail', () => {
   it('synthesizes with dynamo dataplane events when enabled', () => {
     convictConfig.set('includeDynamoDataPlaneEventsInTrail', true);
 
-    const app = new App();
+    const app = new App({ context });
     const stack = new Stack(app, 'test-stack');
 
     const key = new Key(stack, 'testKey', {
@@ -98,7 +101,7 @@ describe('dea audit trail', () => {
   it('synthesizes without dynamo dataplane events when disabled', () => {
     convictConfig.set('includeDynamoDataPlaneEventsInTrail', false);
 
-    const app = new App();
+    const app = new App({ context });
     const stack = new Stack(app, 'test-stack');
 
     const key = new Key(stack, 'testKey', {

@@ -11,10 +11,15 @@ import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { convictConfig } from '../../config';
 import { AuditCloudwatchToAthenaInfra } from '../../constructs/create-cloudwatch-to-athena-infra';
 
+const context = {
+  'aws:cdk:bundling-stacks': [],
+};
+
 describe('audit logs to s3 infrastructure', () => {
   it('synthesizes with expected infra', () => {
     convictConfig.set('testStack', true);
-    const app = new App();
+
+    const app = new App({ context });
     const stack = new Stack(app, 'audit-to-s3-test-stack');
 
     const key = new Key(stack, 'testKey', {

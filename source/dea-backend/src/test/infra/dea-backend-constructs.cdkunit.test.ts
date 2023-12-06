@@ -21,6 +21,9 @@ import { addSnapshotSerializers } from './dea-snapshot-serializers';
 import { validateBackendConstruct } from './validate-backend-construct';
 
 const PROTECTED_DEA_RESOURCES: string[] = [];
+const context = {
+  'aws:cdk:bundling-stacks': [],
+};
 
 describe('DeaBackend constructs', () => {
   const expectedLambdaCount = 58;
@@ -40,7 +43,9 @@ describe('DeaBackend constructs', () => {
     const domain: any = 'deatestenv';
     convictConfig.set('cognito.domain', domain);
 
-    const app = new cdk.App();
+    const app = new cdk.App({
+      context,
+    });
     const stack = new Stack(app, 'test-stack');
 
     const key = new Key(stack, 'testKey', {
@@ -143,7 +148,7 @@ describe('DeaBackend constructs', () => {
   it('works without a domain config', () => {
     convictConfig.set('cognito.domain', undefined);
 
-    const app = new cdk.App();
+    const app = new cdk.App({ context });
     const stack = new Stack(app, 'test-stack');
 
     const key = new Key(stack, 'testKey', {
@@ -232,7 +237,7 @@ describe('DeaBackend constructs', () => {
     convictConfig.set('deaAllowedOrigins', '');
     convictConfig.set('testStack', false);
 
-    const app = new cdk.App();
+    const app = new cdk.App({ context });
     const stack = new Stack(app, 'prod-stack');
 
     const key = new Key(stack, 'testKey', {
@@ -345,7 +350,7 @@ describe('DeaBackend constructs', () => {
     convictConfig.set('idpInfo.metadataPath', metaPath);
     convictConfig.set('idpInfo.metadataPathType', metaPathType);
 
-    const app = new cdk.App();
+    const app = new cdk.App({ context });
     const stack = new Stack(app, 'test-stack');
 
     const key = new Key(stack, 'testKey', {

@@ -15,6 +15,10 @@ import 'source-map-support/register';
 import { validateDeaUiConstruct } from '../..';
 import { DeaUiConstruct } from '../../dea-ui-stack';
 
+const context = {
+  'aws:cdk:bundling-stacks': [],
+};
+
 describe('DEA UI Infrastructure stack', () => {
   beforeAll(() => {
     process.env.STAGE = 'devsample';
@@ -26,7 +30,7 @@ describe('DEA UI Infrastructure stack', () => {
   });
 
   it('synthesizes the way we expect', () => {
-    const app = new cdk.App();
+    const app = new cdk.App({ context });
     const stack = new Stack(app, 'test-stack');
 
     const key = new Key(stack, 'testKey', {
@@ -82,7 +86,7 @@ describe('DEA UI Infrastructure stack', () => {
     // set isOneClick to true
     convictConfig.set('isOneClick', true);
 
-    const app = new cdk.App();
+    const app = new cdk.App({ context });
     const stack = new Stack(app, 'test-stack');
 
     const key = new Key(stack, 'testKey', {

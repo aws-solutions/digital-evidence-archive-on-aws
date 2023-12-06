@@ -14,13 +14,17 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import 'source-map-support/register';
 import { DeaMainStack, SOLUTION_VERSION } from '../dea-main-stack';
 
+const context = {
+  'aws:cdk:bundling-stacks': [],
+};
+
 describe('DeaMainStack', () => {
   it('synthesizes the way we expect', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const domain: any = 'deatestenv';
     convictConfig.set('cognito.domain', domain);
 
-    const app = new cdk.App();
+    const app = new cdk.App({ context });
 
     // Create the DeaMainStack
     const props = {
@@ -48,7 +52,7 @@ describe('DeaMainStack', () => {
     convictConfig.set('cognito.domain', domain);
     convictConfig.set('testStack', false);
 
-    const app = new cdk.App();
+    const app = new cdk.App({ context });
 
     // Create the DeaMainStack
     const props = {
@@ -69,7 +73,7 @@ describe('DeaMainStack', () => {
     convictConfig.set('fipsEndpointsEnabled', false);
     convictConfig.set('testStack', false);
 
-    const app = new cdk.App();
+    const app = new cdk.App({ context });
 
     // Create the DeaMainStack
     const props = {
@@ -95,7 +99,7 @@ describe('DeaMainStack', () => {
     convictConfig.set('isMultiRegionTrail', false);
     convictConfig.set('testStack', false);
 
-    const app = new cdk.App();
+    const app = new cdk.App({ context });
 
     // Create the DeaMainStack
     const props = {
