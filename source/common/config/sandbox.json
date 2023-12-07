@@ -4,6 +4,7 @@
   "sourceIpValidation": false,
   "fipsEndpointsEnabled": false,
   "isMultiRegionTrail": false,
+  "uploadFilesTimeoutMinutes": 300,
   "cognito": {
     "domain": "cfisandbox"
   },
