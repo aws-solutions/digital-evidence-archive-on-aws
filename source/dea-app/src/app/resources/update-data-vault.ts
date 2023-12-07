@@ -31,6 +31,7 @@ export const updateDataVault: DEAGatewayProxyHandler = async (
   if (dataVaultId !== deaDataVault.ulid) {
     throw new ValidationError('Requested DataVault Ulid does not match resource');
   }
+  await DataVaultService.getDataVault(dataVaultId, repositoryProvider);
 
   const dataVaultUpdateResult = await DataVaultService.updateDataVaults(deaDataVault, repositoryProvider);
 

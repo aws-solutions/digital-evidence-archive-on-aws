@@ -10,14 +10,27 @@ import { isDefined } from './persistence-helpers';
 import { ModelRepositoryProvider } from './schema/entities';
 
 export const createDataVaultFile = async (
-  deaDataVaultFile: DataVaultFileDTO,
+  deaDataVaultFiles: DataVaultFileDTO[],
   repositoryProvider: ModelRepositoryProvider
-): Promise<DeaDataVaultFile> => {
-  const dataVaultFileEntity = await repositoryProvider.DataVaultFileModel.create({
-    ...deaDataVaultFile,
-  });
+): Promise<DeaDataVaultFile[]> => {
+  const dataVaultFiles = [];
+  const batchSize = 25;
 
-  return dataVaultFileFromEntity(dataVaultFileEntity);
+  for (let i = 0; i < deaDataVaultFiles.length; i += batchSize) {
+    const currentBatch = deaDataVaultFiles.slice(i, i + batchSize);
+
+    const batch = {};
+    for (const deaDataVaultFile of currentBatch) {
+      const dataVaultFileEntity = await repositoryProvider.DataVaultFileModel.create(
+        { ...deaDataVaultFile },
+        { batch, exists: null }
+      );
+      dataVaultFiles.push(dataVaultFileFromEntity(dataVaultFileEntity));
+    }
+
+    await repositoryProvider.table.batchWrite(batch);
+  }
+  return dataVaultFiles;
 };
 
 export const getDataVaultFileByUlid = async (
@@ -25,10 +38,15 @@ export const getDataVaultFileByUlid = async (
   dataVaultUlid: string,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaDataVaultFile | undefined> => {
-  const dataVaultFileEntity = await repositoryProvider.DataVaultFileModel.get({
-    PK: `DATAVAULT#${dataVaultUlid}#`,
-    SK: `FILE#${ulid}#`,
-  });
+  const dataVaultFileEntity = await repositoryProvider.DataVaultFileModel.get(
+    {
+      GSI1PK: `DATAVAULT#${dataVaultUlid}#`,
+      GSI1SK: `FILE#${ulid}#`,
+    },
+    {
+      index: 'GSI1',
+    }
+  );
 
   if (!dataVaultFileEntity) {
     return dataVaultFileEntity;
@@ -45,12 +63,11 @@ export const listDataVaultFilesByFilePath = async (
 ): Promise<Paged<DeaDataVaultFile>> => {
   const dataVaultFileEntities = await repositoryProvider.DataVaultFileModel.find(
     {
-      GSI1PK: `DATAVAULT#${dataVaultUlid}#${filePath}#`,
+      PK: `DATAVAULT#${dataVaultUlid}#${filePath}#`,
     },
     {
       next: nextToken,
       limit,
-      index: 'GSI1',
     }
   );
 

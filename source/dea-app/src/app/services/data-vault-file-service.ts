@@ -6,7 +6,7 @@ import { Paged } from 'dynamodb-onetable';
 import { ScopedDeaCase } from '../../models/case';
 import { DeaCaseFile, DeaCaseFileResult } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
-import { DeaDataVaultFile } from '../../models/data-vault-file';
+import { DataVaultFileDTO, DeaDataVaultFile } from '../../models/data-vault-file';
 import { getCases } from '../../persistence/case';
 import { listCasesByFile } from '../../persistence/case-file';
 import * as DataVaultFilePersistence from '../../persistence/data-vault-file';
@@ -128,6 +128,13 @@ export const associateFilesListToCase = async (
   }
 
   return filesTransferred;
+};
+
+export const createDataVaultFiles = async (
+  filesList: DataVaultFileDTO[],
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  return await DataVaultFilePersistence.createDataVaultFile(filesList, repositoryProvider);
 };
 
 export const hydrateUsersForDataVaultFiles = async (

@@ -60,7 +60,7 @@ describe('test data vault file details', () => {
       executionId: 'exec-00000000000000000',
     };
 
-    const dataVaultFile = await createDataVaultFile(fileInput, repositoryProvider);
+    const dataVaultFile = (await createDataVaultFile([fileInput], repositoryProvider))[0];
 
     const event = getDummyEvent({
       pathParameters: {

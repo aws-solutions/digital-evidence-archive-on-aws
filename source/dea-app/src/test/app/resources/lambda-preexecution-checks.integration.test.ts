@@ -175,22 +175,6 @@ describe('lambda pre-execution checks', () => {
     );
   }, 40000);
 
-  it('should throw if no userARN is not in expected format', async () => {
-    // Create user
-    const user = `InvalidUserArn${suffix}`;
-    await cognitoHelper.createUser(user, 'AuthTestGroup', 'Invalid', 'UserArn');
-    const oauthToken = await cognitoHelper.getIdTokenForUser(user);
-
-    const event = getDummyEvent();
-    event.headers['cookie'] = `idToken=${JSON.stringify(oauthToken)}`;
-    const auditEvent = getDummyAuditEvent();
-
-    // run the pre-checks
-    await expect(runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider)).rejects.toThrow(
-      TypeError
-    );
-  }, 40000);
-
   it('should succeed if session meets requirements', async () => {
     // Create user
     const user = `SuccessSession${suffix}`;

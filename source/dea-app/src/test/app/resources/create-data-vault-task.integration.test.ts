@@ -61,23 +61,6 @@ describe('create data vault tasks resource', () => {
     expect(dataVaultTask.dataVaultUlid).toBeDefined();
   });
 
-  it('should fail when a data vault task name is already in use', async () => {
-    const event = getDummyEvent({
-      pathParameters: {
-        dataVaultId: newDataVault.ulid,
-      },
-      body: JSON.stringify({
-        name: 'testTask',
-        sourceLocationArn: locationArn1,
-        destinationFolder: 'testbucket',
-      }),
-    });
-
-    await expect(createDataVaultTask(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      'Data Vault task name is already in use'
-    );
-  });
-
   it('should fail when a data vault task is missing a name', async () => {
     const event = getDummyEvent({
       pathParameters: {

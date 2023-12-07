@@ -95,12 +95,11 @@ describe('datavault and file audit e2e', () => {
         executionId: 'exec-00000000000000000',
       };
 
-      // TransactWriteItems - vault + file
-      const dataVaultFile = await createDataVaultFile(fileInput, defaultProvider);
+      // BatchWriteItem
+      const dataVaultFile = (await createDataVaultFile([fileInput], defaultProvider))[0];
 
       // AuditEventType.GET_DATA_VAULT_FILE_DETAIL
-      // get vault
-      // db read file
+      // db query file details
       await describeDataVaultFileDetailsSuccess(
         deaApiUrl,
         idToken,
@@ -128,14 +127,14 @@ describe('datavault and file audit e2e', () => {
       await listDataVaultsSuccess(deaApiUrl, idToken, creds);
 
       // AuditEventType.GET_DATA_VAULT_FILES
-      // db read vault
-      // query
+      // db get vault
+      // query files list
       await listDataVaultFilesSuccess(deaApiUrl, idToken, creds, deaDataVault.ulid);
 
       // AuditEventType.CREATE_CASE_ASSOCIATION
       // get vault
-      // get file
-      // get file (could probably reduce this)
+      // query file
+      // get vault
       // TransactWriteItems casefile
       await createCaseAssociationSuccess(deaApiUrl, idToken, creds, deaDataVault.ulid, {
         caseUlids: [caseForAssociation.ulid],
@@ -159,12 +158,12 @@ describe('datavault and file audit e2e', () => {
         ],
         [
           { regex: /dynamodb.amazonaws.com/g, count: 12 },
-          { regex: /TransactWriteItems/g, count: 4 },
-          { regex: /GetItem/g, count: 7 },
-          { regex: /Query/g, count: 1 },
+          { regex: /TransactWriteItems/g, count: 3 },
+          { regex: /BatchWriteItem/g, count: 1 },
+          { regex: /Query/g, count: 3 },
+          { regex: /GetItem/g, count: 5 },
         ]
       );
-
       const dataVaultFileEntries = await getAuditQueryResults(
         `${deaApiUrl}datavaults/${deaDataVault.ulid}/files/${dataVaultFile.ulid}/audit`,
         '',
@@ -173,8 +172,9 @@ describe('datavault and file audit e2e', () => {
         [AuditEventType.GET_DATA_VAULT_FILE_DETAIL, AuditEventType.CREATE_CASE_ASSOCIATION],
         [
           { regex: /dynamodb.amazonaws.com/g, count: 5 },
-          { regex: /TransactWriteItems/g, count: 2 },
-          { regex: /GetItem/g, count: 3 },
+          { regex: /TransactWriteItems/g, count: 1 },
+          { regex: /BatchWriteItem/g, count: 1 },
+          { regex: /Query/g, count: 3 },
         ]
       );
 

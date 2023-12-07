@@ -2,11 +2,11 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-import { GetObjectCommand, HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { Context, Callback, S3Event } from 'aws-lambda';
 import { ValidationError } from '../app/exceptions/validation-exception';
 import { describeDatasyncLocation } from '../app/services/data-sync-service';
-import { getRequiredDataVault } from '../app/services/data-vault-service';
+import { createDataVaultFiles } from '../app/services/data-vault-file-service';
 import { logger } from '../logger';
 import { DataVaultFileDTO } from '../models/data-vault-file';
 import { taskReportJoi } from '../models/validation/joi-common';
@@ -76,7 +76,6 @@ export const dataSyncExecutionEvent = async (
   if (!dataVaultTask) {
     throw new Error(`Could not find DataVaultTask with id ${dataVaultExecution.taskId}`);
   }
-  const dataVault = await getRequiredDataVault(dataVaultTask.dataVaultUlid, repositoryProvider);
 
   const locationDetails = await describeDatasyncLocation(
     dataVaultTask.destinationLocationArn,
@@ -103,6 +102,10 @@ export const dataSyncExecutionEvent = async (
     repositoryProvider
   );
 
+  const filesList = [];
+
+  let totalFileCount = 0;
+  let totalFileSizeInBytes = 0;
   if (response.Body) {
     const responseStr = await response.Body.transformToString();
     const fileData: FileData = JSON.parse(responseStr);
@@ -125,34 +128,20 @@ export const dataSyncExecutionEvent = async (
       );
 
       if (file.DstMetadata.Type == 'Directory') {
-        try {
-          const dataVaultFileDTO: DataVaultFileDTO = {
-            fileName: fileName,
-            filePath: filePath,
-            dataVaultUlid: dataVaultTask.dataVaultUlid,
-            isFile: false,
-            fileSizeBytes: 0,
-            createdBy: dataVaultExecution.createdBy,
-            contentType: file.SrcMetadata.Type,
-            fileS3Key: fileS3Key,
-            executionId: dataVaultExecution.executionId,
-          };
+        const dataVaultFileDTO: DataVaultFileDTO = {
+          fileName: fileName,
+          filePath: filePath,
+          dataVaultUlid: dataVaultTask.dataVaultUlid,
+          isFile: false,
+          fileSizeBytes: 0,
+          createdBy: dataVaultExecution.createdBy,
+          contentType: file.SrcMetadata.Type,
+          fileS3Key: fileS3Key,
+          executionId: dataVaultExecution.executionId,
+        };
 
-          await createDataVaultFile(dataVaultFileDTO, repositoryProvider);
-        } catch (error) {
-          if ('code' in error && error.code === 'UniqueError') {
-            logger.debug(`Path ${filePath}/${fileName} already exists, moving on...`);
-          } else {
-            throw error;
-          }
-        }
+        filesList.push(dataVaultFileDTO);
       } else {
-        const s3Object = await desrcibeS3Object(
-          datasetsProvider.bucketName,
-          fileS3Key,
-          datasetsProvider.s3Client
-        );
-
         const fileExtension = fetchFileExtension(file.SrcMetadata.Type, fileName);
 
         const dataVaultFileDTO: DataVaultFileDTO = {
@@ -164,33 +153,28 @@ export const dataSyncExecutionEvent = async (
           createdBy: dataVaultExecution.createdBy,
           contentType: fileExtension,
           sha256Hash: file.DstChecksum,
-          versionId: s3Object.VersionId,
           fileS3Key: fileS3Key,
           executionId: dataVaultExecution.executionId,
         };
 
-        await createDataVaultFile(dataVaultFileDTO, repositoryProvider);
+        filesList.push(dataVaultFileDTO);
 
-        // Update Data Vault with new file size
-        await updateDataVaultSize(dataVault.ulid, file.SrcMetadata.ContentSize || 0, repositoryProvider);
+        totalFileCount = totalFileCount + 1;
+        totalFileSizeInBytes = totalFileSizeInBytes + (file.SrcMetadata.ContentSize || 0);
       }
     }
+
+    // send files list to batch create
+    await createDataVaultFiles(filesList, repositoryProvider);
+
+    // update with final size and count
+    await updateDataVaultSize(
+      dataVaultTask.dataVaultUlid,
+      totalFileCount,
+      totalFileSizeInBytes,
+      repositoryProvider
+    );
   }
-};
-
-export const desrcibeS3Object = async (bucketName: string, s3Key: string, s3Client: S3Client) => {
-  const params = {
-    Bucket: bucketName,
-    Key: s3Key,
-  };
-  const headObjectResponse = await s3Client.send(
-    new HeadObjectCommand({
-      Bucket: params.Bucket,
-      Key: params.Key,
-    })
-  );
-
-  return headObjectResponse;
 };
 
 export const fetchS3Key = (locationUri: string, dataVaultUlid: string, relativePath: string) => {
@@ -249,17 +233,19 @@ export const generateFolderPrefixEntries = async (
       const folderName = parts[i];
       try {
         await createDataVaultFile(
-          {
-            fileName: folderName,
-            filePath: folderPath,
-            dataVaultUlid: dataVaultUlid,
-            isFile: false,
-            fileSizeBytes: 0,
-            createdBy: userUlid,
-            contentType: 'Directory',
-            fileS3Key: folderPath,
-            executionId: executionId,
-          },
+          [
+            {
+              fileName: folderName,
+              filePath: folderPath,
+              dataVaultUlid: dataVaultUlid,
+              isFile: false,
+              fileSizeBytes: 0,
+              createdBy: userUlid,
+              contentType: 'Directory',
+              fileS3Key: folderPath,
+              executionId: executionId,
+            },
+          ],
           repositoryProvider
         );
       } catch (error) {

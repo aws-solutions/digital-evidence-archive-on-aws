@@ -5,13 +5,7 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { DeaDataVaultInput, DeaDataVault } from '../../models/data-vault';
-import {
-  createDataVault,
-  getDataVault,
-  listDataVaults,
-  updateDataVault,
-  updateDataVaultSize,
-} from '../../persistence/data-vault';
+import { createDataVault, getDataVault, listDataVaults, updateDataVault } from '../../persistence/data-vault';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getTestRepositoryProvider } from './local-db-table';
 
@@ -124,18 +118,5 @@ describe('data vault persistence', () => {
     };
 
     expect(updatedDataVault).toEqual(updateCheck);
-  });
-
-  it('should create a data vault and update the file size', async () => {
-    const currentTestDataVault: DeaDataVaultInput = {
-      name: 'DataVault Wars 3',
-      description: 'Revenge of the Vaults',
-    };
-
-    const createdDataVault = await createDataVault(currentTestDataVault, repositoryProvider);
-    const updatedDataVault = await updateDataVaultSize(createdDataVault.ulid, 100, repositoryProvider);
-    expect(updatedDataVault.totalSizeBytes).toEqual(100);
-    const updatedDataVault2 = await updateDataVaultSize(createdDataVault.ulid, 100, repositoryProvider);
-    expect(updatedDataVault2.totalSizeBytes).toEqual(200);
   });
 });

@@ -266,7 +266,7 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
   const tableHeader = (
     <Header variant="h2" description={tableHeaderDescription()} actions={tableActions()}>
       <SpaceBetween direction="horizontal" size="xs">
-        <span>{`${dataVaultDetailLabels.filesLabel} (0)`}</span>
+        <span>{`${dataVaultDetailLabels.filesLabel} (${items.length})`}</span>
         <BreadcrumbGroup
           data-testid="file-breadcrumb"
           onClick={(event) => {

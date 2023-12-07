@@ -18,6 +18,8 @@ import * as SessionService from '../services/session-service';
 import * as UserService from '../services/user-service';
 import { LambdaContext, LambdaEvent, LambdaRepositoryProvider } from './dea-gateway-proxy-handler';
 
+const stage = getRequiredEnv('STAGE');
+
 export type DEAPreLambdaExecutionChecks = (
   event: LambdaEvent,
   context: LambdaContext,
@@ -54,7 +56,7 @@ export const runPreExecutionChecks = async (
     );
     throw new NotFoundError('Resource Not Found');
   }
-  const deaRole = getDeaRoleFromUserArn(deaRoleString);
+  const deaRole = getDeaRoleFromUserArn(deaRoleString, stage);
   event.headers['deaRole'] = deaRole;
   const tokenSub = idTokenPayload.sub;
   const groupMemberships = idTokenPayload['custom:SAMLGroups']
@@ -164,11 +166,19 @@ export const runPreExecutionChecks = async (
 
 // ------------------- HELPER FUNCTIONS -------------------
 
-const getDeaRoleFromUserArn = (userArn: string): string => {
+const getDeaRoleFromUserArn = (userArn: string, stageName: string): string => {
   // User ARN is in the format of
   // arn:<PARTITION>:sts::<ACCT_NUM>:assumed-role/<STAGE>-<DEARoleName>Role/CognitoIdentityCredentials
   // We want to extract the <DEARoleName>
-  return userArn.split('/')[1].split('-')[1].split('Role')[0];
+  const regExp = new RegExp(`${stageName}-(.+(?=Role(?!.*Role)))`);
+  const regMatch = userArn.match(regExp);
+  let roleName = '';
+
+  if (regMatch && regMatch[1]) {
+    roleName = regMatch[1];
+  }
+
+  return roleName;
 };
 
 // First time Federated User Helper Functions

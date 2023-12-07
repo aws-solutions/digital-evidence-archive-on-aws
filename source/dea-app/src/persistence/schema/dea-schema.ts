@@ -206,7 +206,7 @@ export const DeaSchema = {
       GSI1SK: { type: String, value: 'DATAVAULT#TASK#${taskId}#' },
       taskId: { type: String, required: true },
       dataVaultUlid: { type: String, required: true },
-      name: { type: String, required: true, unique: true, validate: allButDisallowed },
+      name: { type: String, required: true, validate: allButDisallowed },
       description: { type: String, validate: allButDisallowed },
       created: { type: Date },
       updated: { type: Date },
@@ -227,20 +227,17 @@ export const DeaSchema = {
       createdBy: { type: String, validate: ulidRegex, required: true },
     },
     DataVaultFile: {
-      // Get file or folder by ulid
-      PK: { type: String, value: 'DATAVAULT#${dataVaultUlid}#', required: true },
-      SK: { type: String, value: 'FILE#${ulid}#', required: true },
-
       // For UI folder navigation. Get all files and folders in given folder path
-      GSI1PK: { type: String, value: 'DATAVAULT#${dataVaultUlid}#${filePath}#', required: true },
-      GSI1SK: { type: String, value: 'FILE#${fileName}#', required: true },
-
+      PK: { type: String, value: 'DATAVAULT#${dataVaultUlid}#${filePath}#', required: true },
+      SK: { type: String, value: 'FILE#${fileName}#', required: true },
+      // Get file or folder by ulid
+      GSI1PK: { type: String, value: 'DATAVAULT#${dataVaultUlid}#', required: true },
+      GSI1SK: { type: String, value: 'FILE#${ulid}#', required: true },
       // Get specific file or folder by full path
       GSI2PK: {
         type: String,
         value: 'DATAVAULT#${dataVaultUlid}#${filePath}${fileName}#',
         required: true,
-        unique: true,
       },
       GSI2SK: { type: String, value: 'FILE#${isFile}#', required: true },
 

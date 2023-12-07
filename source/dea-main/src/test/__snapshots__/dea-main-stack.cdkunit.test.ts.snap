@@ -21039,7 +21039,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "Handler": "index.handler",
         "MemorySize": 512,
-        "ReservedConcurrentExecutions": 5,
+        "ReservedConcurrentExecutions": 2,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaEventHandlersdatasyncexecutioneventroleFC5B28C9",
@@ -21062,6 +21062,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Action": Array [
                 "dynamodb:GetItem",
                 "dynamodb:PutItem",
+                "dynamodb:BatchWriteItem",
                 "dynamodb:Query",
                 "dynamodb:UpdateItem",
                 "dynamodb:DeleteItem",

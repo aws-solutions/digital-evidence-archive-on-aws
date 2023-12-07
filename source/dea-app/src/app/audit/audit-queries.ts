@@ -79,10 +79,10 @@ export const getCaseFileWhereClauses = (caseFileParameters: CaseFileAuditParamet
 };
 
 export const getDataVaultFileWhereClauses = (dataVaultFileParameters: DataVaultFileAuditParameters) => {
-  const primaryIndexCondition = `requestParameters.key.PK LIKE 'DATAVAULT#${dataVaultFileParameters.dataVaultId}#' and requestParameters.key.SK LIKE 'FILE#${dataVaultFileParameters.fileId}#'`;
-  const requestItemsCondition = `element.key.PK LIKE 'DATAVAULT#${dataVaultFileParameters.dataVaultId}#' and element.key.SK LIKE 'FILE#${dataVaultFileParameters.fileId}#'`;
-  const gsi1Condition = `requestParameters.key.GSI1PK LIKE 'DATAVAULT#${dataVaultFileParameters.dataVaultId}#${dataVaultFileParameters.filePath}#' and requestParameters.key.GSI1SK LIKE 'FILE#${dataVaultFileParameters.fileName}#'`;
-  const gsi2Condition = `requestParameters.key.GSI2PK LIKE 'DATAVAULT#${dataVaultFileParameters.dataVaultId}#${dataVaultFileParameters.filePath}${dataVaultFileParameters.fileName}#'`;
+  const primaryIndexCondition = `requestParameters.key.PK LIKE 'DATAVAULT#${dataVaultFileParameters.dataVaultId}#${dataVaultFileParameters.filePath}#' and requestParameters.key.SK LIKE 'FILE#${dataVaultFileParameters.fileName}#'`;
+  const requestItemsCondition = `element.key.PK LIKE 'DATAVAULT#${dataVaultFileParameters.dataVaultId}#${dataVaultFileParameters.filePath}#' and element.key.SK LIKE 'FILE#${dataVaultFileParameters.fileName}#'`;
+  const gsi1Condition = `requestParameters.key.GSI1PK LIKE 'DATAVAULT#${dataVaultFileParameters.dataVaultId}#' and requestParameters.key.GSI1SK LIKE 'FILE#${dataVaultFileParameters.fileId}#'`;
+  const gsi2Condition = `requestParameters.key.GSI2PK LIKE 'DATAVAULT#${dataVaultFileParameters.dataVaultId}#${dataVaultFileParameters.filePath}${dataVaultFileParameters.fileId}#'`;
 
   // These where clauses are separated into different queries because our schema is inconsistent which can cause Athena queries to break
   return [

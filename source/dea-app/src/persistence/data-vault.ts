@@ -85,7 +85,8 @@ export const updateDataVault = async (
 
 export const updateDataVaultSize = async (
   ulid: string,
-  fileSize: number,
+  fileCount: number,
+  filesSize: number,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaDataVault> => {
   const dataVaultEntity = await repositoryProvider.DataVaultModel.update(
@@ -94,7 +95,7 @@ export const updateDataVaultSize = async (
       SK: `DATAVAULT#`,
     },
     {
-      add: { objectCount: 1, totalSizeBytes: fileSize },
+      add: { objectCount: fileCount, totalSizeBytes: filesSize },
     }
   );
 

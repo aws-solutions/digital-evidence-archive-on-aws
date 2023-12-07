@@ -382,7 +382,7 @@ export const getDataSyncTask = async (
   return {
     taskId: taskArn.split('/')[1],
     dataVaultUlid,
-    name: describeTaskResponse.Name || '',
+    name: describeTaskResponse.Name || taskArn.split('/')[1],
     destinationFolder: getDestinationFolder(describeLocationResponse.LocationUri),
     sourceLocationArn: describeTaskResponse.SourceLocationArn || '',
     destinationLocationArn: destinationLocationArn || '',

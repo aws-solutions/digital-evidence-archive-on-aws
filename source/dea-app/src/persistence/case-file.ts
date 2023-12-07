@@ -89,8 +89,8 @@ export const createCaseFileAssociation = async (
     );
     await repositoryProvider.DataVaultFileModel.update(
       {
-        PK: `DATAVAULT#${deaCaseFile.dataVaultUlid}#`,
-        SK: `FILE#${deaCaseFile.ulid}#`,
+        PK: `DATAVAULT#${deaCaseFile.dataVaultUlid}#${deaCaseFile.filePath}#`,
+        SK: `FILE#${deaCaseFile.fileName}#`,
       },
       {
         add: { caseCount: 1 },
@@ -326,8 +326,8 @@ export const deleteCaseFileAssociation = async (
     );
     await repositoryProvider.DataVaultFileModel.update(
       {
-        PK: `DATAVAULT#${deaCaseFile.dataVaultUlid}#`,
-        SK: `FILE#${deaCaseFile.ulid}#`,
+        PK: `DATAVAULT#${deaCaseFile.dataVaultUlid}#${deaCaseFile.filePath}#`,
+        SK: `FILE#${deaCaseFile.fileName}#`,
       },
       {
         add: { caseCount: -1 },

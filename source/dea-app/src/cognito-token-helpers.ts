@@ -11,7 +11,7 @@ import { PARAM_PREFIX } from './app/services/service-constants';
 import { getCustomUserAgent, getRequiredEnv } from './lambda-http-helpers';
 import { DeaUserInput } from './models/user';
 
-const stage = getRequiredEnv('STAGE', 'devsample');
+const stage = getRequiredEnv('STAGE');
 
 export const getTokenPayload = async (idToken: string, region: string): Promise<CognitoIdTokenPayload> => {
   const ssmClient = new SSMClient({ region, customUserAgent: getCustomUserAgent() });

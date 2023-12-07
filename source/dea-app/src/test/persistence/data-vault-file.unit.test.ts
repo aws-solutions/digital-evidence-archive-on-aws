@@ -62,7 +62,7 @@ describe('data vault file persistence', () => {
       executionId: 'exec-00000000000000000',
     };
 
-    const dataVaultFile = await createDataVaultFile(fileInput, repositoryProvider);
+    const dataVaultFile = await createDataVaultFile([fileInput], repositoryProvider);
 
     expect(dataVaultFile).toBeDefined();
   });
@@ -89,7 +89,7 @@ describe('data vault file persistence', () => {
       executionId: 'exec-00000000000000000',
     };
 
-    const dataVaultFolder = await createDataVaultFile(fileInput, repositoryProvider);
+    const dataVaultFolder = await createDataVaultFile([fileInput], repositoryProvider);
 
     expect(dataVaultFolder).toBeDefined();
   });
@@ -116,7 +116,7 @@ describe('data vault file persistence', () => {
       executionId: 'exec-00000000000000000',
     };
 
-    await createDataVaultFile(fileInput, repositoryProvider);
+    await createDataVaultFile([fileInput], repositoryProvider);
     const fileInput2: DataVaultFileDTO = {
       fileName: 'testFile2',
       filePath: '/dummypath/test/test/',
@@ -131,7 +131,7 @@ describe('data vault file persistence', () => {
       executionId: 'exec-00000000000000000',
     };
 
-    await createDataVaultFile(fileInput2, repositoryProvider);
+    await createDataVaultFile([fileInput2], repositoryProvider);
 
     const dataVaultFiles = await listDataVaultFilesByFilePath(
       createdDataVault.ulid,
@@ -166,7 +166,7 @@ describe('data vault file persistence', () => {
       executionId: 'exec-00000000000000000',
     };
 
-    await createDataVaultFile(fileInput, repositoryProvider);
+    await createDataVaultFile([fileInput], repositoryProvider);
     const fileInput2: DataVaultFileDTO = {
       fileName: 'testFile2',
       filePath: '/dummypath/test/test/',
@@ -181,7 +181,7 @@ describe('data vault file persistence', () => {
       executionId: 'exec-00000000000000000',
     };
 
-    await createDataVaultFile(fileInput2, repositoryProvider);
+    await createDataVaultFile([fileInput2], repositoryProvider);
 
     const dataVaultFiles = await listDataVaultFilesByFilePath(
       createdDataVault.ulid,
@@ -216,14 +216,14 @@ describe('data vault file persistence', () => {
       executionId: 'exec-00000000000000000',
     };
 
-    const fileResponse = await createDataVaultFile(fileInput, repositoryProvider);
+    const fileResponse = await createDataVaultFile([fileInput], repositoryProvider);
 
     const fileDetail = await getDataVaultFileByUlid(
-      fileResponse.ulid,
+      fileResponse[0].ulid,
       createdDataVault.ulid,
       repositoryProvider
     );
 
-    expect(fileDetail).toEqual(fileResponse);
+    expect(fileDetail).toEqual(fileResponse[0]);
   });
 });

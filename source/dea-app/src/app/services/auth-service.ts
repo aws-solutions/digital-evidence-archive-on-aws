@@ -19,8 +19,8 @@ import { ThrottlingException } from '../exceptions/throttling-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import { PARAM_PREFIX } from './service-constants';
 
-const stage = getRequiredEnv('STAGE', 'devsample');
-const region = getRequiredEnv('AWS_REGION', 'us-east-1');
+const stage = getRequiredEnv('STAGE');
+const region = getRequiredEnv('AWS_REGION');
 
 export type AvailableEndpointsSignature = (event: APIGatewayProxyEvent) => Promise<string[]>;
 

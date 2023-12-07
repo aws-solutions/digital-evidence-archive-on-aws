@@ -4,6 +4,7 @@
  */
 
 import { OneTableError, Paged } from 'dynamodb-onetable';
+import { logger } from '../../logger';
 import { DeaDataVault, DeaDataVaultInput, DeaDataVaultUpdateInput } from '../../models/data-vault';
 import { DeaDataVaultExecution } from '../../models/data-vault-execution';
 import { DeaDataVaultTask, DeaDataVaultTaskInput } from '../../models/data-vault-task';
@@ -75,17 +76,12 @@ export const createDataVaultTask = async (
   try {
     return await DataVaultTaskPersistence.createDataVaultTask(deaDataVaultTask, repositoryProvider);
   } catch (error) {
+    logger.error('db error has ocurred', error);
     // Check if OneTableError happened because the task name is already in use.
     if ('code' in error) {
       const oneTableError: OneTableError = error;
-      const conditionalcheckfailed = oneTableError.context?.err?.CancellationReasons.find(
-        (reason: { Code: string }) => reason.Code === 'ConditionalCheckFailed'
-      );
-      if (
-        oneTableError.code === 'UniqueError' ||
-        (oneTableError.code === 'TransactionCanceledException' && conditionalcheckfailed)
-      ) {
-        throw new ValidationError(`Data Vault task name is already in use`);
+      if (oneTableError.code === 'UniqueError' || oneTableError.code === 'ConditionalCheckFailedException') {
+        throw new ValidationError(`Data Vault task id is already in use`);
       }
     }
     throw error;

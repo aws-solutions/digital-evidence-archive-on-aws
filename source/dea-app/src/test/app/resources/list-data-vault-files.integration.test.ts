@@ -55,13 +55,8 @@ describe('data vault file persistence', () => {
     const filesList1 = dataVaultFileGenerate(filesList1Count, testPath1, createdDataVault.ulid, user.ulid);
     const filesList2 = dataVaultFileGenerate(filesList2Count, testPath2, createdDataVault.ulid, user.ulid);
 
-    for (const file of filesList1) {
-      await createDataVaultFile(file, repositoryProvider);
-    }
-
-    for (const file of filesList2) {
-      await createDataVaultFile(file, repositoryProvider);
-    }
+    await createDataVaultFile(filesList1, repositoryProvider);
+    await createDataVaultFile(filesList2, repositoryProvider);
 
     const response1 = await listDataVaultFiles(
       getDummyEvent({

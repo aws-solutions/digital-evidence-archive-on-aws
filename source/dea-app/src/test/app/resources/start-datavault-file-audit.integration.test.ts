@@ -62,7 +62,7 @@ describe('start datavault file audit', () => {
       executionId: 'exec-00000000000000000',
     };
 
-    const dataVaultFile = await createDataVaultFile(fileInput, modelProvider);
+    const dataVaultFile = (await createDataVaultFile([fileInput], modelProvider))[0];
     fileId = dataVaultFile.ulid;
   });
 

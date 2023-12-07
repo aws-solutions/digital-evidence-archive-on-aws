@@ -138,7 +138,7 @@ export class DeaEventHandlers extends Construct {
       this.dataSyncExecutionEventRole,
       DATASYNC_POST_PROCESSING_LAMBDA_EXECUTION_TIME_IN_SECONDS,
       512,
-      5,
+      2,
       dataSyncFileProcessingDLQ
     );
 
@@ -387,6 +387,7 @@ export class DeaEventHandlers extends Construct {
         actions: [
           'dynamodb:GetItem',
           'dynamodb:PutItem',
+          'dynamodb:BatchWriteItem',
           'dynamodb:Query',
           'dynamodb:UpdateItem',
           'dynamodb:DeleteItem',

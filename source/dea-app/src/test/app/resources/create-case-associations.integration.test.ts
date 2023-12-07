@@ -66,11 +66,7 @@ describe('test data vault file details', () => {
     totalFiles.push(dataVaultFolderGenerate('nestedFolder', '/', newDataVault.ulid, user.ulid));
     totalFiles.push(dataVaultFolderGenerate('folder2', '/nestedFolder/', newDataVault.ulid, user.ulid));
 
-    const filesList = [];
-    for (const file of totalFiles) {
-      const response = await createDataVaultFile(file, repositoryProvider);
-      filesList.push(response);
-    }
+    await createDataVaultFile(totalFiles, repositoryProvider);
 
     // Get files from root directory
     const pageOfDataVaultFiles: Paged<DeaDataVaultFile> = await listDataVaultFilesByFilePath(
@@ -194,11 +190,7 @@ describe('test data vault file details', () => {
     totalFiles.push(dataVaultFolderGenerate('nestedFolder', '/', newDataVault.ulid, user.ulid));
     totalFiles.push(dataVaultFolderGenerate('folder2', '/nestedFolder/', newDataVault.ulid, user.ulid));
 
-    const filesList = [];
-    for (const file of totalFiles) {
-      const response = await createDataVaultFile(file, repositoryProvider);
-      filesList.push(response);
-    }
+    await createDataVaultFile(totalFiles, repositoryProvider);
 
     // Get files from root directory
     const pageOfDataVaultFiles: Paged<DeaDataVaultFile> = await listDataVaultFilesByFilePath(
@@ -298,11 +290,8 @@ describe('test data vault file details', () => {
       const generatedFiles = dataVaultFileGenerate(1, path, newDataVault.ulid, user.ulid);
       totalFiles.push(...generatedFiles);
     }
-    const filesList = [];
-    for (const file of totalFiles) {
-      const response = await createDataVaultFile(file, repositoryProvider);
-      filesList.push(response);
-    }
+
+    await createDataVaultFile(totalFiles, repositoryProvider);
 
     // Get files from root directory
     const pageOfDataVaultFiles: Paged<DeaDataVaultFile> = await listDataVaultFilesByFilePath(

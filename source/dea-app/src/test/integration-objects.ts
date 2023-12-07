@@ -13,6 +13,8 @@ import {
   IdentityType,
 } from '../app/services/audit-service';
 
+const stage = process.env.STAGE ?? 'devsample';
+
 const dummyEvent: APIGatewayProxyEvent = {
   resource: '/cases/{caseId}/details',
   path: '/cases/01GSX40H73JQ9Q2T2EERPYWN6C/details',
@@ -158,5 +160,5 @@ export const setCookieToCookie = (response: APIGatewayProxyResult): string => {
 };
 
 export const setUserArnWithRole = (event: APIGatewayProxyEvent, roleName: string) => {
-  event.requestContext.identity.userArn = `arn:aws:sts::123456789012:assumed-role/Stage-${roleName}Role/CognitoIdentityCredentials`;
+  event.requestContext.identity.userArn = `arn:aws:sts::123456789012:assumed-role/${stage}-${roleName}Role/CognitoIdentityCredentials`;
 };

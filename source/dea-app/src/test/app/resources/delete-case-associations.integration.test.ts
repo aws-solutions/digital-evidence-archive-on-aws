@@ -64,11 +64,7 @@ describe('test data vault file disassociation from cases', () => {
     totalFiles.push(dataVaultFolderGenerate('nestedFolder', '/', newDataVault.ulid, user.ulid));
     totalFiles.push(dataVaultFolderGenerate('folder2', '/nestedFolder/', newDataVault.ulid, user.ulid));
 
-    const filesList = [];
-    for (const file of totalFiles) {
-      const response = await createDataVaultFile(file, repositoryProvider);
-      filesList.push(response);
-    }
+    await createDataVaultFile(totalFiles, repositoryProvider);
 
     // Get files from root directory
     const pageOfDataVaultFiles: Paged<DeaDataVaultFile> = await listDataVaultFilesByFilePath(
@@ -318,7 +314,7 @@ describe('test data vault file disassociation from cases', () => {
 
     //Adds a file to the data vault
     const generatedFiles = dataVaultFileGenerate(1, '/', newDataVault.ulid, user.ulid);
-    const dataVaultFile = await createDataVaultFile(generatedFiles[0], repositoryProvider);
+    const dataVaultFile = await createDataVaultFile([generatedFiles[0]], repositoryProvider);
 
     // Create empty case
     const theCase: DeaCaseInput = {
@@ -330,7 +326,7 @@ describe('test data vault file disassociation from cases', () => {
         getDummyEvent({
           pathParameters: {
             dataVaultId: newDataVault.ulid,
-            fileId: dataVaultFile.ulid,
+            fileId: dataVaultFile[0].ulid,
           },
           body: JSON.stringify({
             caseUlids: [createdCase.ulid],
