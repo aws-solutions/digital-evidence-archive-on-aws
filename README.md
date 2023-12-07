@@ -245,13 +245,13 @@ assigning the role name to that attribute for the user. See below for more detai
 
 ##### Integrating with Okta
 
-**Create Attribute**
+*Create Attribute*
 
 If you are using group membership to define access to DEA, you can skip this step.
 
 Otherwise, in Okta create a new custom attribute for users called DEARole, limit the possible values to only the Roles you configured in step 3. (For example: for the prodexample.json, the only possible attribute values would be CaseWorker, EvidenceManager, and WorkingManager). You can follow the instructions for doing that [here](https://help.okta.com/en-us/Content/Topics/users-groups-profiles/usgp-add-custom-user-attributes.htm).
 
-**Create SAML 2.0 Application in Okta**
+*Create SAML 2.0 Application in Okta*
 
 You will need your cognito domain prefix (as you stated in your configuration file) and your user pool Id (listed in the named CDK outputs as DeaAuthConstructuserPoolId).
 
@@ -274,13 +274,13 @@ Use the Following Values:
 
 ##### Integrating with Active Directory
 
-**Create Attribute**
+*Create Attribute*
 
 If you are using group membership to define access to DEA, you can skip this step.
 
 Otherwise, in AD create a new custom attribute for users called DEARole, limit the possible values to only the Roles you configured in step 3. (For example: for the prodexample.json, the only possible attribute values would be CaseWorker, EvidenceManager, and WorkingManager). You can follow the instructions for doing that [here](https://windowstechno.com/how-to-create-custom-attributes-in-active-directory/).
 
-**Create SAML 2.0 Application in AD**
+*Create SAML 2.0 Application in AD*
 
 You will need your cognito domain prefix (as you stated in your configuration file) and your user pool Id (listed in the named CDK outputs as DeaAuthConstructuserPoolId).
 
@@ -299,6 +299,74 @@ Use the Following Values:
   - username
   - If using Custom Attribute: the name of the custom attribute you created, e.g. deaRole
 * If using Groups: add a Group Claim (see here)[https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/how-to-connect-fed-group-claims]
+
+##### Integrating with Identity Center
+
+Identity Center does not allow for sending user groups and/or custom
+attribute over the SAML assertion. To get around this, when you integrate with Identity Center, the DEA solution will create a PreTokenGeneration Cognito Trigger, which will query your identity store for the federated user's group memberships, and add those groups to the identity token, so authorization can happen just like Okta/AD integrations.
+
+*Create SAML 2.0 Application in Identity*
+
+You will need your cognito domain prefix (as you specified in your configuration file) and your user pool Id (listed in the named CDK outputs as DeaAuthConstructuserPoolId).
+
+Complete ONLY step "Configure a SAML application from the IAM Identity Center console" [https://repost.aws/knowledge-center/cognito-user-pool-iam-integration].
+Use the Following Values:
+* Single sign on URL: replace DOMAIN_PREFIX with the cognito domain you defined in your configuration file, and REGION with the region you are deploying in (e.g. us-east-1)
+  - For non-US Cloud regions: (or regions/stacks not using FIPs endpoints)
+   https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse
+  - For US regions: 
+  https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse
+* Audience URL: urn:amazon:cognito:sp:USER_POOL_ID (replace USER_POOL_ID with the id listed in the named CDK outputs called DeaAuthConstructuserPoolId, should look like us-east-1_xxxxxxxxx)
+* Attribute Statements: Set the following Attributes 
+  - Subject --> persistent --> ${user:subject}
+  - firstname --> basic  --> ${user:givenName}
+  - lastname --> basic --> ${user:familyName}
+  - email --> basic --> ${user:email}
+  - username --> basic --> ${user:preferredUsername}
+  - idcenterid --> basic --> ${user:AD_GUID}
+
+Do NOT try to add groups or custom attribute, it will not work. Instead DEA will create a PreTokenGeneration Lambda trigger for the created user pool, which will query the Identity Center instance for the user's group memberships, and add to the id token for authorization.
+
+Take note of your identity store id, which you can find by going to Settings within Identity Center, in the second box under the tab "Identity Source", as Identity Store Id. It should look something like d-01234abcd5.
+
+Next add the Identity Center SAML Application to the configuration file:
+
+Fill in the metadata path and identity store id, and define your group rules.
+For each rule you define the deaRoleName (one of the roles you specified in Step 3, e.g. CaseWorker, EvidenceManager) and the FilterValue (a string you want to search for in groups). For example if the filterValue is Troop and the deaRole is CaseWorker, then if the user's group contains the string "Troop" they will be assigned the CaseWorker role in the system.
+NOTE: You can define up to 25 GroupToDeaRoleRules, and they are evaluated in order.
+
+E.g.: 
+```
+  "idpInfo": {
+    "identityStoreId": "<Identity Store Id>",
+    "metadataPath": "<URL link to IdP metatdata>",
+    "metadataPathType": "URL",
+    "attributeMap": {
+      "idcenterid": "idcenterid",
+      "username": "username",
+      "email": "email",
+      "firstName": "firstname",
+      "lastName": "lastname"
+    },
+    "groupToDeaRoleRules": [
+      {
+        "filterValue": "DEAEvidenceManager",
+        "deaRoleName": "EvidenceManager"
+      },
+      {
+        "filterValue": "SuperUser",
+        "deaRoleName": "WorkingManager"
+      },
+      {
+        "filterValue": "DEA",
+        "deaRoleName": "CaseWorker"
+      }
+    ]
+  },
+ ```
+  
+
+Skip to Step 3, Relaunch Stack to Update with Authentication Information
 
 #### 2: DEA Side Integration
 One you have created the SAML 2.0 integration in your IdP, with the appropriate User Attribute Mapping, you can now start the integration process with DEA.
@@ -355,7 +423,7 @@ NOTE: You can define up to 25 GroupToDeaRoleRules, and they are evaluated in ord
       {
         "filterValue": "DEA",
         "deaRoleName": "CaseWorker"
-      },
+      }
     ],
     "defaultRole": 'CaseWorker'
   },

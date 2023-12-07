@@ -196,6 +196,11 @@ const convictSchema = {
         format: String,
         default: undefined,
       },
+      idcenterid: {
+        doc: 'ONLY used for Identity Center, its the user id to query for users group memberships.',
+        format: String,
+        default: undefined,
+      },
     },
     defaultRole: {
       doc: "Default role to assign to users that don't match the other roles.",
@@ -219,6 +224,12 @@ const convictSchema = {
           default: null,
         },
       },
+    },
+    identityStoreId: {
+      doc: `identity store of your identity center instance, used for querying user's group memberships`,
+      // TODO: add regex
+      format: String,
+      default: undefined,
     },
   },
   testStack: {
@@ -332,6 +343,7 @@ export interface IdPAttributes {
   readonly lastName: string;
   readonly deaRoleName: string | undefined;
   readonly groups: string | undefined;
+  readonly idcenterid: string | undefined;
 }
 
 export interface IdpMetadataInfo {
@@ -340,6 +352,7 @@ export interface IdpMetadataInfo {
   readonly attributeMap: IdPAttributes;
   readonly defaultRole: string | undefined;
   readonly groupToDeaRoleRules: GroupToDEARoleRule[];
+  readonly identityStoreId: string | undefined;
 }
 
 export interface DEAEndpointDefinition {

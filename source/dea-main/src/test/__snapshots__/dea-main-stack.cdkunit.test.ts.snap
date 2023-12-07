@@ -13855,6 +13855,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "Mutable": true,
             "Name": "DEARole",
           },
+          Object {
+            "AttributeDataType": "String",
+            "Mutable": true,
+            "Name": "IdCenterId",
+          },
         ],
         "SmsVerificationMessage": "The verification code to your new account is {####}",
         "VerificationMessageTemplate": Object {
@@ -13960,6 +13965,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
         "WriteAttributes": Array [
           "custom:DEARole",
+          "custom:IdCenterId",
           "custom:SAMLGroups",
           "email",
           "family_name",

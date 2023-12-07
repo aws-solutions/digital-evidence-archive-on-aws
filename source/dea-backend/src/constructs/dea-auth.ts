@@ -5,6 +5,7 @@
 
 import { assert } from 'console';
 import * as fs from 'fs';
+import path from 'path';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
 import {
   Aws,
@@ -31,6 +32,7 @@ import {
   UserPoolDomain,
   UserPoolIdentityProviderSaml,
   UserPoolIdentityProviderSamlMetadata,
+  UserPoolTriggers,
 } from 'aws-cdk-lib/aws-cognito';
 import {
   Effect,
@@ -42,9 +44,12 @@ import {
   Role,
   WebIdentityPrincipal,
 } from 'aws-cdk-lib/aws-iam';
+import { Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
+import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 // Gov Region us-gov-east-1 does NOT have Cognito
 // therefore for that region we will launch the Cognito UserPool and IdPool
@@ -72,6 +77,7 @@ interface DeaAuthProps {
   // We need to create IAM Roles with what APIs the Role can call
   // therefore we need the API endpoint ARNs from the API Gateway construct
   apiEndpointArns: Map<string, string>;
+  opsDashboard?: DeaOperationalDashboard;
 }
 
 export interface DeaAuthInfo {
@@ -132,7 +138,7 @@ export class DeaAuth extends Construct {
     // For production deployments, follow the ImplementationGuide on how to setup
     // and connect your existing CJIS-compatible IdP for SSO and attribute mapping for the UserPool
     // and role mapping rules for the identity pool for authorization
-    this.deaAuthInfo = this.createAuthStack(deaProps.apiEndpointArns, loginUrl);
+    this.deaAuthInfo = this.createAuthStack(deaProps.apiEndpointArns, loginUrl, deaProps.opsDashboard);
   }
 
   private createIamRole(
@@ -264,14 +270,20 @@ export class DeaAuth extends Construct {
     return [deaRolesMap, availableEndpointsPerRole];
   }
 
-  private createAuthStack(apiEndpointArns: Map<string, string>, callbackUrl: string): DeaAuthInfo {
+  private createAuthStack(
+    apiEndpointArns: Map<string, string>,
+    callbackUrl: string,
+    opsDashboard?: DeaOperationalDashboard
+  ): DeaAuthInfo {
     const usGovCondition = new CfnCondition(this, 'isUSGov', {
       expression: Fn.conditionEquals(Aws.PARTITION, 'aws-us-gov'),
     });
     // See Implementation Guide for how to integrate your existing
     // Identity Provider with Cognito User Pool for SSO
-    const [pool, poolClient, cognitoDomainUrl, clientSecret, agencyIdpName] =
-      this.createCognitoIdP(callbackUrl);
+    const [pool, poolClient, cognitoDomainUrl, clientSecret, agencyIdpName] = this.createCognitoIdP(
+      callbackUrl,
+      opsDashboard
+    );
 
     // For gov cloud, Cognito only uses FIPS endpoint, and the only FIPS endpoint
     // is in us-gov-west-1. See https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-cog.html
@@ -405,15 +417,30 @@ export class DeaAuth extends Construct {
   // For production, the Cognito will simply act as a token vendor
   // and ONLY allow federation, no native auth
   // TODO: determine if Cognito is CJIS compatible
-  private createCognitoIdP(callbackUrl: string): [UserPool, UserPoolClient, string, SecretValue, string?] {
+  private createCognitoIdP(
+    callbackUrl: string,
+    opsDashboard?: DeaOperationalDashboard
+  ): [UserPool, UserPoolClient, string, SecretValue, string?] {
     const tempPasswordValidity = Duration.days(1);
     // must re-authenticate in every 12 hours (so we make expiry 11 hours, so they can't refresh at 11:59)
     // Note when inactive for 30+ minutes, you will also have to reauthenticate
     // due to session lock requirements. This is handled by session management code
-    // IdToken validity is max 1 hour for federated users
+    // IdToken validity is 1 hour for federated users no matter what you set it to
     const accessTokenValidity = Duration.hours(1);
     const idTokenValidity = Duration.hours(1);
     const refreshTokenValidity = Duration.hours(11);
+
+    // If the external IdP used in Identity Center, create the PreTokenGeneration Trigger
+    // Lambda and add it to the user pool triggers.
+    // This is a special case since Identity Center can't send groups or a custom attribute
+    // over the SAML assertion, so the trigger queries the users groups and adds it to the token
+    // so authorization can proceed as normal
+    let lambdaTriggers: UserPoolTriggers | undefined;
+    const identityStoreId = deaConfig.idpMetadata()?.identityStoreId;
+    if (identityStoreId) {
+      const preTokenGenerationLambda = this.createPreTokenGenerationLambda(identityStoreId, opsDashboard);
+      lambdaTriggers = { preTokenGeneration: preTokenGenerationLambda };
+    }
 
     // fetch stage
     const stage = deaConfig.stage();
@@ -440,6 +467,7 @@ export class DeaAuth extends Construct {
         // Cognito will throw an error during federation
         SAMLGroups: new StringAttribute({ mutable: true }),
         DEARole: new StringAttribute({ mutable: true }),
+        IdCenterId: new StringAttribute({ mutable: true }),
       },
       standardAttributes: {
         familyName: {
@@ -457,6 +485,7 @@ export class DeaAuth extends Construct {
         smsMessage: 'Hello {username}, your temporary password for our DEA is {####}',
       },
       removalPolicy: deaConfig.retainPolicy(),
+      lambdaTriggers,
     });
 
     let domainPrefix = deaConfig.cognitoDomain();
@@ -496,39 +525,64 @@ export class DeaAuth extends Construct {
     let agencyIdpName: string | undefined;
     let supportedIdentityProviders: UserPoolClientIdentityProvider[] | undefined;
     if (idpInfo && idpInfo.metadataPath) {
-      let custom;
-      // Determine which attributes are being sent via SAML from the IDP
-      // Must be at least 1, can be both.
-      if (idpInfo.attributeMap.deaRoleName && idpInfo.attributeMap.groups) {
-        custom = {
-          'custom:DEARole': ProviderAttribute.other(idpInfo.attributeMap.deaRoleName),
-          'custom:SAMLGroups': ProviderAttribute.other(idpInfo.attributeMap.groups),
-        };
-      } else if (idpInfo.attributeMap.groups) {
-        // Check that the rule mapping rules are assigned
-        if (!idpInfo.groupToDeaRoleRules) {
-          throw new Error('Must define Rule Mappings when using Groups Attribute for authorization');
+      let idp: UserPoolIdentityProviderSaml;
+      // Identity Center has to be treated differently because it cannot send groups
+      // or a custom attribute over the wire
+      if (idpInfo.identityStoreId) {
+        if (!idpInfo.attributeMap.idcenterid) {
+          throw new Error(
+            'When integrating with Identity Center, you must add idcenterid to your attribute mapping'
+          );
         }
-        custom = {
-          'custom:SAMLGroups': ProviderAttribute.other(idpInfo.attributeMap.groups),
-        };
-      } else if (idpInfo.attributeMap.deaRoleName) {
-        custom = {
-          'custom:DEARole': ProviderAttribute.other(idpInfo.attributeMap.deaRoleName),
-        };
+        const idpSamlMetadata = this.createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
+        idp = new UserPoolIdentityProviderSaml(this, 'AgencyIdP', {
+          metadata: idpSamlMetadata,
+          userPool: userPool,
+          attributeMapping: {
+            preferredUsername: ProviderAttribute.other(idpInfo.attributeMap.username),
+            email: ProviderAttribute.other(idpInfo.attributeMap.email),
+            familyName: ProviderAttribute.other(idpInfo.attributeMap.lastName),
+            givenName: ProviderAttribute.other(idpInfo.attributeMap.firstName),
+            custom: {
+              'custom:IdCenterId': ProviderAttribute.other(idpInfo.attributeMap.idcenterid),
+            },
+          },
+        });
+      } else {
+        let custom;
+        // Determine which attributes are being sent via SAML from the IDP
+        // Must be at least 1, can be both.
+        if (idpInfo.attributeMap.deaRoleName && idpInfo.attributeMap.groups) {
+          custom = {
+            'custom:DEARole': ProviderAttribute.other(idpInfo.attributeMap.deaRoleName),
+            'custom:SAMLGroups': ProviderAttribute.other(idpInfo.attributeMap.groups),
+          };
+        } else if (idpInfo.attributeMap.groups) {
+          // Check that the rule mapping rules are assigned
+          if (!idpInfo.groupToDeaRoleRules) {
+            throw new Error('Must define Rule Mappings when using Groups Attribute for authorization');
+          }
+          custom = {
+            'custom:SAMLGroups': ProviderAttribute.other(idpInfo.attributeMap.groups),
+          };
+        } else if (idpInfo.attributeMap.deaRoleName) {
+          custom = {
+            'custom:DEARole': ProviderAttribute.other(idpInfo.attributeMap.deaRoleName),
+          };
+        }
+        const idpSamlMetadata = this.createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
+        idp = new UserPoolIdentityProviderSaml(this, 'AgencyIdP', {
+          metadata: idpSamlMetadata,
+          userPool: userPool,
+          attributeMapping: {
+            preferredUsername: ProviderAttribute.other(idpInfo.attributeMap.username),
+            email: ProviderAttribute.other(idpInfo.attributeMap.email),
+            familyName: ProviderAttribute.other(idpInfo.attributeMap.lastName),
+            givenName: ProviderAttribute.other(idpInfo.attributeMap.firstName),
+            custom,
+          },
+        });
       }
-      const idpSamlMetadata = this.createIdpSAMLMetadata(idpInfo.metadataPath, idpInfo.metadataPathType);
-      const idp = new UserPoolIdentityProviderSaml(this, 'AgencyIdP', {
-        metadata: idpSamlMetadata,
-        userPool: userPool,
-        attributeMapping: {
-          preferredUsername: ProviderAttribute.other(idpInfo.attributeMap.username),
-          email: ProviderAttribute.other(idpInfo.attributeMap.email),
-          familyName: ProviderAttribute.other(idpInfo.attributeMap.lastName),
-          givenName: ProviderAttribute.other(idpInfo.attributeMap.firstName),
-          custom,
-        },
-      });
 
       // Will be placed in SSM so the hosted UI can automaticaly redirect to the IdP Signin page
       agencyIdpName = idp.providerName;
@@ -543,7 +597,7 @@ export class DeaAuth extends Construct {
         preferredUsername: true,
         lastUpdateTime: true,
       })
-      .withCustomAttributes('SAMLGroups', 'DEARole');
+      .withCustomAttributes('SAMLGroups', 'DEARole', 'IdCenterId');
     const poolClient = userPool.addClient('dea-app-client', {
       accessTokenValidity: accessTokenValidity,
       // use Server-side authentication workflow
@@ -575,6 +629,46 @@ export class DeaAuth extends Construct {
         : newDomain.baseUrl({ fips: deaConfig.fipsEndpointsEnabled() });
 
     return [userPool, poolClient, cognitoDomain, poolClient.userPoolClientSecret, agencyIdpName];
+  }
+
+  private createPreTokenGenerationLambda(
+    identityStoreId: string,
+    opsDashboard?: DeaOperationalDashboard
+  ): NodejsFunction {
+    const lambda = new NodejsFunction(this, `${deaConfig.stage()}-PreTokenGenerationTrigger`, {
+      memorySize: 512,
+      tracing: Tracing.ACTIVE,
+      timeout: Duration.seconds(60),
+      runtime: Runtime.NODEJS_18_X,
+      handler: 'handler',
+      entry: path.join(__dirname, '../../src/handlers/add-groups-claim-to-token-handler.ts'),
+      depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
+      environment: {
+        NODE_OPTIONS: '--enable-source-maps',
+        IDENTITY_STORE_ID: identityStoreId,
+      },
+      bundling: {
+        externalModules: ['aws-sdk'],
+        minify: true,
+        sourceMap: true,
+      },
+    });
+
+    lambda.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['identitystore:ListGroupMembershipsForMember', 'identitystore:DescribeGroup'],
+        resources: [
+          `arn:${Aws.PARTITION}:identitystore::${Aws.ACCOUNT_ID}:identitystore/${identityStoreId}`,
+          `arn:${Aws.PARTITION}:identitystore:::membership/*`,
+          `arn:${Aws.PARTITION}:identitystore:::user/*`,
+          `arn:${Aws.PARTITION}:identitystore:::group/*`,
+          `arn:${Aws.PARTITION}:identitystore::${Aws.ACCOUNT_ID}:identitystore/${identityStoreId}`,
+        ],
+      })
+    );
+
+    opsDashboard?.addPreTokenGenerationTriggerLambdaErrorAlarm(lambda, 'PreTokenGenerationTriggerLambda');
+    return lambda;
   }
 
   private createDEARole(

@@ -188,6 +188,7 @@ export class DeaMainStack extends cdk.Stack {
           region: 'us-gov-west-1',
           restApi: deaApi.deaRestApi,
           apiEndpointArns: deaApi.apiEndpointArns,
+          opsDashboard: dashboard,
         },
         props
       );
@@ -210,6 +211,7 @@ export class DeaMainStack extends cdk.Stack {
         region: region,
         restApi: deaApi.deaRestApi,
         apiEndpointArns: deaApi.apiEndpointArns,
+        opsDashboard: dashboard,
       });
 
       // Store relevant parameters for the functioning of DEA

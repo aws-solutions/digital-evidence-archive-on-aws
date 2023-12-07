@@ -4,6 +4,7 @@
  */
 
 import ErrorPrefixes from './app/error-prefixes';
+import { addGroupsClaimToToken } from './app/event-handlers/pretoken-generation-trigger';
 import { putLegalHoldForCreatedS3Object } from './app/event-handlers/put-legal-hold-for-created-s3-object';
 import { FORBIDDEN_ERROR_NAME, ForbiddenError } from './app/exceptions/forbidden-exception';
 import { NOT_FOUND_ERROR_NAME, NotFoundError } from './app/exceptions/not-found-exception';
@@ -138,6 +139,7 @@ export {
   getUsers,
   initiateCaseFileUpload,
   listCaseFiles,
+  addGroupsClaimToToken,
   putLegalHoldForCreatedS3Object,
   refreshToken,
   restoreCaseFile,
