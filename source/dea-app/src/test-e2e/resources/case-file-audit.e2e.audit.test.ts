@@ -88,7 +88,9 @@ describe('case file audit e2e', () => {
         caseUlid,
         'caseFileAuditTest',
         FILE_PATH,
-        FILE_SIZE_MB
+        FILE_SIZE_MB,
+        1,
+        1
       );
       const fileUlid = initiatedCaseFile.ulid ?? fail();
       s3ObjectsToDelete.push({ key: `${caseUlid}/${fileUlid}`, uploadId: initiatedCaseFile.uploadId });
@@ -130,7 +132,9 @@ describe('case file audit e2e', () => {
         caseUlid,
         'caseFileAuditTestOtherFile',
         FILE_PATH,
-        FILE_SIZE_MB
+        FILE_SIZE_MB,
+        1,
+        1
       );
       const otherFileUlid = otherInitiatedCaseFile.ulid ?? fail();
       s3ObjectsToDelete.push({

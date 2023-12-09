@@ -23,7 +23,7 @@ import { AuditEventType, AuditResult } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
-import { DeaCaseFile } from '../../models/case-file';
+import { DeaCaseFile, InitiateCaseFileUploadDTO } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
@@ -268,26 +268,31 @@ export const initiateCaseFileUploadSuccess = async (
   deaApiUrl: string,
   idToken: Oauth2Token,
   creds: Credentials,
-  caseUlid: string | undefined,
+  caseUlid: string,
   fileName: string,
   filePath: string,
   fileSizeBytes: number,
+  partRangeStart: number,
+  partRangeEnd: number,
   contentType: string = CONTENT_TYPE,
   chunkSizeBytes = CHUNK_SIZE_BYTES
 ): Promise<DeaCaseFile> => {
+  const uploadDto: InitiateCaseFileUploadDTO = {
+    caseUlid,
+    fileName,
+    filePath,
+    contentType,
+    fileSizeBytes,
+    chunkSizeBytes,
+    partRangeStart,
+    partRangeEnd,
+  };
   const initiateUploadResponse = await callDeaAPIWithCreds(
     `${deaApiUrl}cases/${caseUlid}/files`,
     'POST',
     idToken,
     creds,
-    {
-      caseUlid,
-      fileName,
-      filePath,
-      contentType,
-      fileSizeBytes,
-      chunkSizeBytes,
-    }
+    uploadDto
   );
 
   expect(initiateUploadResponse.status).toEqual(200);

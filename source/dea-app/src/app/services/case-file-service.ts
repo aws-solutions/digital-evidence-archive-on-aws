@@ -22,7 +22,8 @@ import { getUsers } from '../../persistence/user';
 import {
   completeUploadForCaseFile,
   DatasetsProvider,
-  generatePresignedUrlsForCaseFile,
+  createMultipartUploadForCaseFile,
+  generateUploadPresignedUrls,
 } from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
@@ -39,12 +40,34 @@ export const initiateCaseFileUpload = async (
   retryDepth = 0
 ): Promise<DeaCaseFile> => {
   try {
-    const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
-      uploadDTO,
-      userUlid,
-      repositoryProvider
+    let caseFile: DeaCaseFile | undefined;
+    let uploadId = uploadDTO.uploadId;
+    if (!uploadId) {
+      caseFile = await CaseFilePersistence.initiateCaseFileUpload(uploadDTO, userUlid, repositoryProvider);
+
+      uploadId = await createMultipartUploadForCaseFile(caseFile, datasetsProvider);
+      caseFile.uploadId = uploadId;
+    } else {
+      caseFile = await getCaseFileByFileLocation(
+        uploadDTO.caseUlid,
+        uploadDTO.filePath,
+        uploadDTO.fileName,
+        repositoryProvider
+      );
+      if (!caseFile) {
+        throw new NotFoundError('Case file not found');
+      }
+      caseFile.uploadId = uploadId;
+    }
+    caseFile.presignedUrls = await generateUploadPresignedUrls(
+      uploadDTO.partRangeStart,
+      uploadDTO.partRangeEnd,
+      caseFile.fileS3Key,
+      sourceIp,
+      datasetsProvider,
+      uploadId
     );
-    await generatePresignedUrlsForCaseFile(caseFile, datasetsProvider, uploadDTO.chunkSizeBytes, sourceIp);
+
     return { ...caseFile, chunkSizeBytes: uploadDTO.chunkSizeBytes };
   } catch (error) {
     if ('code' in error && error.code === 'UniqueError' && retryDepth === 0) {
@@ -73,20 +96,22 @@ export const validateInitiateUploadRequirements = async (
 ): Promise<void> => {
   await validateUploadRequirements(initiateUploadDTO, userUlid, repositoryProvider);
 
-  const existingCaseFile = await getCaseFileByFileLocation(
-    initiateUploadDTO.caseUlid,
-    initiateUploadDTO.filePath,
-    initiateUploadDTO.fileName,
-    repositoryProvider
-  );
+  if (!initiateUploadDTO.uploadId) {
+    const existingCaseFile = await getCaseFileByFileLocation(
+      initiateUploadDTO.caseUlid,
+      initiateUploadDTO.filePath,
+      initiateUploadDTO.fileName,
+      repositoryProvider
+    );
 
-  if (existingCaseFile) {
-    // todo: the error experience of this scenario can be improved upon based on UX/customer feedback
-    // todo: add more protection to prevent creation of 2 files with same filePath+fileName
-    if (existingCaseFile.status == CaseFileStatus.PENDING) {
-      throw new ValidationError('File is currently being uploaded. Check again in 60 minutes');
+    if (existingCaseFile) {
+      // todo: the error experience of this scenario can be improved upon based on UX/customer feedback
+      // todo: add more protection to prevent creation of 2 files with same filePath+fileName
+      if (existingCaseFile.status == CaseFileStatus.PENDING) {
+        throw new ValidationError('File is currently being uploaded. Check again in 60 minutes');
+      }
+      throw new ValidationError('File already exists in the DB');
     }
-    throw new ValidationError('File already exists in the DB');
   }
 };
 

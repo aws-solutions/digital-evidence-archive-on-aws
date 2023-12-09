@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
+import { InitiateCaseFileUploadDTO } from '@aws/dea-app/lib/models/case-file';
 import {
   Alert,
   Box,
@@ -23,8 +23,9 @@ import {
 import cryptoJS from 'crypto-js';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { completeUpload, initiateUpload, useGetCaseActions } from '../../api/cases';
+import { completeUpload, initiateUpload } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
+import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import FileUpload from '../common-components/FileUpload';
 import { UploadFilesProps } from './UploadFilesBody';
@@ -42,9 +43,20 @@ enum UploadStatus {
   failed = 'Upload failed',
 }
 
+interface UploadDetails {
+  caseUlid: string;
+  fileName: string;
+  filePath: string;
+  fileSizeBytes: number;
+  chunkSizeBytes: number;
+  contentType: string;
+  reason: string;
+  details: string;
+}
+
 interface ActiveFileUpload {
   file: FileWithPath;
-  initiatedCaseFilePromise: Promise<DeaCaseFile>;
+  caseFileUploadDetails: UploadDetails;
 }
 
 export const ONE_MB = 1024 * 1024;
@@ -58,7 +70,6 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [reason, setReason] = useState('');
   const [uploadInProgress, setUploadInProgress] = useState(false);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
-  const userActions = useGetCaseActions(props.caseId);
   const router = useRouter();
 
   async function onSubmitHandler() {
@@ -90,43 +101,57 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   }
 
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload) {
-    const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
-    let uploadPromises: Promise<Response>[] = [];
+    const chunkSizeBytes = activeFileUpload.caseFileUploadDetails.chunkSizeBytes;
+    const totalChunks = Math.ceil(activeFileUpload.caseFileUploadDetails.fileSizeBytes / chunkSizeBytes);
+    let uploadId: string | undefined = undefined;
     const hash = cryptoJS.algo.SHA256.create();
-    if (initiatedCaseFile && initiatedCaseFile.presignedUrls) {
-      const numberOfUrls = initiatedCaseFile.presignedUrls.length;
-      const chunkSizeBytes = initiatedCaseFile.chunkSizeBytes
-        ? initiatedCaseFile.chunkSizeBytes
-        : 50 * ONE_MB;
+    for (let rangeStart = 1; rangeStart <= totalChunks; rangeStart += MAX_PARALLEL_PART_UPLOADS) {
+      const rangeEnd = rangeStart + (MAX_PARALLEL_PART_UPLOADS - 1);
+      const uploadDto: InitiateCaseFileUploadDTO = {
+        ...activeFileUpload.caseFileUploadDetails,
+        // range is inclusive
+        partRangeStart: rangeStart,
+        partRangeEnd: Math.min(rangeEnd, totalChunks),
+        uploadId,
+      };
+
+      const initiatedCaseFile = await initiateUpload(uploadDto);
+      uploadId = initiatedCaseFile.uploadId;
+
+      if (!initiatedCaseFile.presignedUrls) {
+        throw new Error('No presigned urls provided');
+      }
+
+      const uploadPromises: Promise<Response>[] = [];
+      const chunkBatchOffset = rangeStart - 1; //minus one because the range starts with 1
       for (let index = 0; index < initiatedCaseFile.presignedUrls.length; index += 1) {
         const url = initiatedCaseFile.presignedUrls[index];
-        const start = index * chunkSizeBytes;
-        const end = (index + 1) * chunkSizeBytes;
-        const filePartPointer =
-          index === numberOfUrls - 1
-            ? activeFileUpload.file.slice(start)
-            : activeFileUpload.file.slice(start, end);
+        const start = (chunkBatchOffset + index) * chunkSizeBytes;
+        const end = (chunkBatchOffset + index + 1) * chunkSizeBytes;
+        const totalIndex = rangeStart + index;
+        let filePartPointer: Blob;
+        if (totalIndex === totalChunks) {
+          filePartPointer = activeFileUpload.file.slice(start);
+        } else {
+          filePartPointer = activeFileUpload.file.slice(start, end);
+        }
         const loadedFilePart = await readFileSlice(filePartPointer);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore. WordArray expects number[] which should be satisfied by Uint8Array
         hash.update(cryptoJS.lib.WordArray.create(loadedFilePart));
         uploadPromises.push(fetch(url, { method: 'PUT', body: loadedFilePart }));
-
-        if (index > 0 && index % MAX_PARALLEL_PART_UPLOADS === 0) {
-          // getting user actions from api to reset idle timer while upload is in progress
-          userActions.mutate();
-          await Promise.all(uploadPromises);
-          uploadPromises = [];
-        }
       }
       await Promise.all(uploadPromises);
+      await refreshCredentials();
 
-      await completeUpload({
-        caseUlid: props.caseId,
-        ulid: initiatedCaseFile.ulid,
-        uploadId: initiatedCaseFile.uploadId,
-        sha256Hash: hash.finalize().toString(),
-      });
+      if (rangeEnd >= totalChunks) {
+        await completeUpload({
+          caseUlid: props.caseId,
+          ulid: initiatedCaseFile.ulid,
+          uploadId,
+          sha256Hash: hash.finalize().toString(),
+        });
+      }
     }
     updateFileProgress(activeFileUpload.file, UploadStatus.complete);
   }
@@ -139,19 +164,18 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // per file try/finally state to initiate uploads
     try {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
-      const initiatedCaseFilePromise = initiateUpload({
-        caseUlid: props.caseId,
-        fileName: selectedFile.name,
-        filePath: selectedFile.relativePath,
-        fileSizeBytes,
-        chunkSizeBytes,
-        contentType,
-        reason,
-        details,
-      });
-      const activeFileUpload = {
+      const activeFileUpload: ActiveFileUpload = {
         file: selectedFile,
-        initiatedCaseFilePromise,
+        caseFileUploadDetails: {
+          caseUlid: props.caseId,
+          fileName: selectedFile.name,
+          filePath: selectedFile.relativePath,
+          fileSizeBytes,
+          chunkSizeBytes,
+          contentType,
+          reason,
+          details,
+        },
       };
       await uploadFilePartsAndComplete(activeFileUpload);
     } catch (e) {

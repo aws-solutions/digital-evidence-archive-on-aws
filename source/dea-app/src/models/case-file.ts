@@ -90,6 +90,9 @@ export interface InitiateCaseFileUploadDTO {
   readonly details?: string;
   readonly reason?: string;
   readonly chunkSizeBytes: number;
+  readonly partRangeStart: number;
+  readonly partRangeEnd: number;
+  readonly uploadId?: string;
 }
 
 export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;
