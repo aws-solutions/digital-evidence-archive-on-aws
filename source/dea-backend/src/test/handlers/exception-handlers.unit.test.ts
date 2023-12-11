@@ -3,16 +3,15 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { ForbiddenError } from '@aws/dea-app/lib/app/exceptions/forbidden-exception';
+import { NotFoundError } from '@aws/dea-app/lib/app/exceptions/not-found-exception';
+import { ReauthenticationError } from '@aws/dea-app/lib/app/exceptions/reauthentication-exception';
+import { ValidationError } from '@aws/dea-app/lib/app/exceptions/validation-exception';
+import { dummyContext, getDummyEvent } from '@aws/dea-app/lib/test/integration-objects';
 import {
-  dummyContext,
-  getDummyEvent,
-  ForbiddenError,
+  TestAuditService,
   getTestAuditService,
-  NotFoundError,
-  ReauthenticationError,
-  ValidationError,
-} from '@aws/dea-app';
-import { TestAuditService } from '@aws/dea-app/lib/test/services/test-audit-service-provider';
+} from '@aws/dea-app/lib/test/services/test-audit-service-provider';
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import Joi from 'joi';
 import { createDeaHandler, NO_ACL } from '../../handlers/create-dea-handler';

@@ -42,7 +42,7 @@ describe('API authentication', () => {
 
   afterAll(async () => {
     await cognitoHelper.cleanup();
-  });
+  }, 40000);
 
   it('should have the DEARole field in the id Token', async () => {
     const [_creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);

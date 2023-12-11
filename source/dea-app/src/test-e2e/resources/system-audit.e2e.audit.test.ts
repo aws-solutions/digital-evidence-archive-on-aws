@@ -24,7 +24,9 @@ describe('system audit e2e', () => {
 
   const suffix = randomSuffix(5);
   const testUser = `systemAuditTestUser${suffix}`;
+  const userRole = 'CaseWorker';
   const testManager = `systemAuditTestManager${suffix}`;
+  const managerRole = 'WorkingManager';
   const deaApiUrl = testEnv.apiUrlOutput;
   let creds: Credentials;
   let idToken: Oauth2Token;
@@ -51,11 +53,11 @@ describe('system audit e2e', () => {
       // ensure separation between the start time and when events roll in
       await delay(1000);
       // Create manager
-      await cognitoHelper.createUser(testManager, 'WorkingManager', testManager, 'TestManager');
+      await cognitoHelper.createUser(testManager, managerRole, testManager, 'TestManager');
       [managerCreds, managerIdToken] = await cognitoHelper.getCredentialsForUser(testManager);
 
       // Create worker
-      await cognitoHelper.createUser(testUser, 'CaseWorker', testUser, 'TestUser');
+      await cognitoHelper.createUser(testUser, userRole, testUser, 'TestUser');
       [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
       // initialize the user into the DB
@@ -161,22 +163,40 @@ describe('system audit e2e', () => {
       const createCaseEntry = applicationEntries.find(
         (entry) => entry.Event_Type === AuditEventType.CREATE_CASE && entry.Username === testUser
       );
-      verifyAuditEntry(createCaseEntry, AuditEventType.CREATE_CASE, testUser, expectedDetails);
+      verifyAuditEntry(createCaseEntry, AuditEventType.CREATE_CASE, testUser, userRole, expectedDetails);
 
       const updateCaseDetails = applicationEntries.find(
         (entry) => entry.Event_Type === AuditEventType.UPDATE_CASE_DETAILS && entry.Username === testUser
       );
-      verifyAuditEntry(updateCaseDetails, AuditEventType.UPDATE_CASE_DETAILS, testUser, expectedDetails);
+      verifyAuditEntry(
+        updateCaseDetails,
+        AuditEventType.UPDATE_CASE_DETAILS,
+        testUser,
+        userRole,
+        expectedDetails
+      );
 
       const getCaseDetailsEntry = applicationEntries.find(
         (entry) => entry.Event_Type === AuditEventType.GET_CASE_DETAILS && entry.Username === testUser
       );
-      verifyAuditEntry(getCaseDetailsEntry, AuditEventType.GET_CASE_DETAILS, testUser, expectedDetails);
+      verifyAuditEntry(
+        getCaseDetailsEntry,
+        AuditEventType.GET_CASE_DETAILS,
+        testUser,
+        userRole,
+        expectedDetails
+      );
 
       const getUsersFromCaseEntry = applicationEntries.find(
         (entry) => entry.Event_Type === AuditEventType.GET_USERS_FROM_CASE && entry.Username === testUser
       );
-      verifyAuditEntry(getUsersFromCaseEntry, AuditEventType.GET_USERS_FROM_CASE, testUser, expectedDetails);
+      verifyAuditEntry(
+        getUsersFromCaseEntry,
+        AuditEventType.GET_USERS_FROM_CASE,
+        testUser,
+        userRole,
+        expectedDetails
+      );
 
       const beforeStartTimeEntry = entries.find(
         (entry) => Math.trunc(Date.parse(entry.DateTimeUTC) / 1000) < startTime

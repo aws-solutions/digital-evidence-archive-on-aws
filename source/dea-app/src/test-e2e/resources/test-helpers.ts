@@ -586,6 +586,7 @@ export type AuditEventEntry = {
   File_SHA_256?: string;
   Target_User_ID?: string;
   Case_Actions?: string;
+  Role?: string;
 };
 
 export function csvToObject<T>(csv: string): T[] {
@@ -604,6 +605,7 @@ export function verifyAuditEntry(
   entry: AuditEventEntry | undefined,
   expectedEventType: AuditEventType,
   expectedUsername: string,
+  expectedRole: string,
   expectations: AuditExpectations = {
     expectedResult: 'success',
     expectedCaseUlid: '',
@@ -620,6 +622,7 @@ export function verifyAuditEntry(
   expect(entry.Case_ID).toStrictEqual(expectations.expectedCaseUlid);
   expect(entry.File_ID).toStrictEqual(expectations.expectedFileUlid);
   expect(entry.File_SHA_256).toStrictEqual(expectations.expectedFileHash);
+  expect(entry.Role).toStrictEqual(expectedRole);
 }
 
 export type CloudTrailMatches = {

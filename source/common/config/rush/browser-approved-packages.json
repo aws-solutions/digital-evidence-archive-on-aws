@@ -87,6 +87,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@aws-sdk/client-identitystore",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws-sdk/client-kinesis",
       "allowedCategories": [ "production" ]
     },
@@ -280,6 +284,10 @@
     },
     {
       "name": "@rushstack/ts-command-line",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@smithy/types",
       "allowedCategories": [ "production" ]
     },
     {

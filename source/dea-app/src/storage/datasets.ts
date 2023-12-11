@@ -23,6 +23,7 @@ import {
 } from '@aws-sdk/client-s3';
 import {
   CreateJobCommand,
+  CreateJobCommandInput,
   DescribeJobCommand,
   DescribeJobResult,
   JobReportScope,
@@ -368,7 +369,7 @@ const createDeleteCaseFileBatchJob = async (
   datasetsProvider: DatasetsProvider
 ): Promise<string> => {
   const accountId = datasetsProvider.s3BatchDeleteCaseFileRole.split(':')[4];
-  const input = {
+  const input: CreateJobCommandInput = {
     ConfirmationRequired: false,
     AccountId: accountId,
     RoleArn: datasetsProvider.s3BatchDeleteCaseFileRole,
