@@ -13,6 +13,7 @@ import * as DataVaultFilePersistence from '../../persistence/data-vault-file';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getUsers } from '../../persistence/user';
 import { NotFoundError } from '../exceptions/not-found-exception';
+import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseFileService from '../services/case-file-service';
 import * as DataVaultService from '../services/data-vault-service';
 
@@ -48,6 +49,7 @@ export const fetchNestedFilesInFolders = async (
 ): Promise<string[]> => {
   const fileUlidsStack = [...fileUlids];
   const completeFileUlids = [];
+  let fileCount = fileUlids.length;
 
   while (fileUlidsStack.length > 0) {
     const fileUlid = fileUlidsStack.pop();
@@ -55,7 +57,6 @@ export const fetchNestedFilesInFolders = async (
     if (!fileUlid) {
       break;
     }
-
     const retrievedDataVaultFile = await getRequiredDataVaultFile(dataVaultId, fileUlid, repositoryProvider);
 
     // Handle nested folders
@@ -73,6 +74,7 @@ export const fetchNestedFilesInFolders = async (
         const nestedFiles = pageOfDataVaultFiles.map((file) => file.ulid);
         fileUlidsStack.push(...nestedFiles);
         nextToken = pageOfDataVaultFiles.next;
+        enforceCaseAssociationLimitProtection((fileCount += nestedFiles.length));
       } while (nextToken);
     } else {
       completeFileUlids.push(retrievedDataVaultFile.ulid);
@@ -233,4 +235,12 @@ export const getRequiredDataVaultFile = async (
     throw new NotFoundError(`DataVault File not found.`);
   }
   return dataVaultFile;
+};
+
+export const enforceCaseAssociationLimitProtection = (count: number, threshould = 300) => {
+  if (count > threshould) {
+    throw new ValidationError(
+      `Too many files selected. No more than ${threshould} files can be associated in a single request.`
+    );
+  }
 };

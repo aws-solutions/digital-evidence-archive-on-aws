@@ -359,4 +359,63 @@ describe('test data vault file details', () => {
       'A file with the same name has been previously uploaded or attached to the case.'
     );
   }, 40000);
+
+  it('should fail when the number of files in the request overflows the endpoint limit protection threshold.', async () => {
+    const name = 'LimitProtectionCaseFileTest';
+    const event = getDummyEvent({
+      body: JSON.stringify({
+        name,
+      }),
+    });
+    const threshould = 300;
+    const response = await createDataVault(event, dummyContext, repositoryProvider);
+    const newDataVault = await JSON.parse(response.body);
+
+    // Add files to data vault
+    const pathsToGenerate = ['/'];
+
+    const totalFiles = [];
+
+    for (const path of pathsToGenerate) {
+      const generatedFiles = dataVaultFileGenerate(threshould + 1, path, newDataVault.ulid, user.ulid);
+      totalFiles.push(...generatedFiles);
+    }
+
+    await createDataVaultFile(totalFiles, repositoryProvider);
+
+    // Get files from root directory
+    const pageOfDataVaultFiles: Paged<DeaDataVaultFile> = await listDataVaultFilesByFilePath(
+      newDataVault.ulid,
+      '/',
+      10000,
+      repositoryProvider,
+      undefined
+    );
+
+    const rootFolderUlids = pageOfDataVaultFiles.map((file) => file.ulid);
+
+    // Create the association
+    const theCase: DeaCaseInput = {
+      name: 'LimitProtectionCaseFileTest',
+      description: 'An initial description',
+    };
+    const createdCase = await createCase(theCase, user, repositoryProvider);
+
+    const caseUlids = [createdCase.ulid];
+    const caseAssociateEvent = getDummyEvent({
+      pathParameters: {
+        dataVaultId: newDataVault.ulid,
+      },
+      body: JSON.stringify({
+        caseUlids,
+        fileUlids: rootFolderUlids,
+      }),
+    });
+
+    caseAssociateEvent.headers['userUlid'] = user.ulid;
+
+    await expect(createCaseAssociation(caseAssociateEvent, dummyContext, repositoryProvider)).rejects.toThrow(
+      `Too many files selected. No more than ${threshould} files can be associated in a single request.`
+    );
+  }, 40000);
 });

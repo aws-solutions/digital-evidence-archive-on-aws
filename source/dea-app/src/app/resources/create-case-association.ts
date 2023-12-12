@@ -13,7 +13,11 @@ import { CaseAssociationDTO } from '../../models/case-file';
 import { caseAssociationRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
-import { associateFilesListToCase, fetchNestedFilesInFolders } from '../services/data-vault-file-service';
+import {
+  associateFilesListToCase,
+  enforceCaseAssociationLimitProtection,
+  fetchNestedFilesInFolders,
+} from '../services/data-vault-file-service';
 import { getRequiredDataVault } from '../services/data-vault-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
@@ -37,6 +41,8 @@ export const createCaseAssociation: DEAGatewayProxyHandler = async (
   const paginationParams = getPaginationParameters(event);
 
   const userUlid = getUserUlid(event);
+
+  enforceCaseAssociationLimitProtection(caseAssociationRequest.fileUlids.length);
 
   // Get all file ulids and omit folders
   const allFileUlids = await fetchNestedFilesInFolders(
