@@ -65,10 +65,12 @@ export class ObjectChecksumStack extends NestedStack {
 
     const checksumDLQ = new Queue(scope, 'multipart-checksum-dlq', {
       enforceSSL: true,
+      fifo: true,
     });
 
     const checksumQueue = new Queue(scope, 'multipart-checksum-queue', {
       enforceSSL: true,
+      fifo: true,
       visibilityTimeout: checksumHandler.timeout,
       deadLetterQueue: {
         queue: checksumDLQ,
@@ -117,14 +119,6 @@ export class ObjectChecksumStack extends NestedStack {
       })
     );
 
-    // we will put records to the queue
-    handler.addToRolePolicy(
-      new PolicyStatement({
-        actions: ['sqs:SendMessage'],
-        resources: [queue.queueArn],
-      })
-    );
-
     // we will download from the datasets bucket
     handler.addToRolePolicy(
       new PolicyStatement({
@@ -134,9 +128,10 @@ export class ObjectChecksumStack extends NestedStack {
     );
 
     // we will update the checksum value in DynamoDB
+    // we will get, create, update and delete checksum jobs
     handler.addToRolePolicy(
       new PolicyStatement({
-        actions: ['dynamodb:UpdateItem'],
+        actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:UpdateItem', 'dynamodb:DeleteItem'],
         resources: [deaTable.tableArn],
       })
     );

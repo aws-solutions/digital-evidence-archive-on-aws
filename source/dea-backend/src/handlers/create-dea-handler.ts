@@ -300,15 +300,6 @@ const parseEventForExtendedAuditFields = (
 
   // include file hash if it was included in the body of the response
   auditEvent.fileHash = body.sha256Hash;
-  // Warn if the fileHash was not included on complete upload operation
-  if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD && !auditEvent.fileHash) {
-    logger.error('File hash was not included in auditEvent after complete file upload operation.', {
-      resource: event.resource,
-      httpMethod: event.httpMethod,
-    });
-    auditEvent.fileHash = 'ERROR: hash is absent';
-    auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
-  }
 
   // Include case actions in the audit event
   // Use : instead of , to list actions, since audit is sent

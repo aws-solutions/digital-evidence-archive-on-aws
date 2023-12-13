@@ -40,6 +40,9 @@ export const DataVaultExecutionModel: Model<DataVaultExecutionType> = deaTable.g
 export type DataVaultFileType = Entity<typeof DeaSchema.models.DataVaultFile>;
 export const DataVaultFileModel: Model<DataVaultFileType> = deaTable.getModel('DataVaultFile');
 
+export type ObjectChecksumJobType = Entity<typeof DeaSchema.models.ObjectChecksumJob>;
+export const ObjectChecksumJobModel: Model<ObjectChecksumJobType> = deaTable.getModel('ObjectChecksumJob');
+
 export interface CaseModelRepositoryProvider {
   CaseModel: Model<CaseType>;
 }
@@ -84,6 +87,10 @@ export interface DataVaultFileModelRepositoryProvider {
   DataVaultFileModel: Model<DataVaultFileType>;
 }
 
+export interface ObjectChecksumJobModelRepositoryProvider {
+  ObjectChecksumJobModel: Model<ObjectChecksumJobType>;
+}
+
 export interface ModelRepositoryProvider
   extends CaseModelRepositoryProvider,
     CaseUserModelRepositoryProvider,
@@ -95,7 +102,8 @@ export interface ModelRepositoryProvider
     DataVaultModelRepositoryProvider,
     DataVaultTaskModelRepositoryProvider,
     DataVaultExecutionModelRepositoryProvider,
-    DataVaultFileModelRepositoryProvider {
+    DataVaultFileModelRepositoryProvider,
+    ObjectChecksumJobModelRepositoryProvider {
   table: Table;
 }
 
@@ -112,4 +120,5 @@ export const defaultProvider: ModelRepositoryProvider = {
   DataVaultTaskModel: DataVaultTaskModel,
   DataVaultExecutionModel: DataVaultExecutionModel,
   DataVaultFileModel: DataVaultFileModel,
+  ObjectChecksumJobModel: ObjectChecksumJobModel,
 };

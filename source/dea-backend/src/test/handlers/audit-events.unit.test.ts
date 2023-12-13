@@ -445,43 +445,6 @@ describe('dea lambda audits', () => {
     expect(sentInput.logEvents[0].message).not.toContain(`"targetUserId"`);
   });
 
-  it('should indicate when fileHash is not included for CompleteCaseFileUpload', async () => {
-    const testAuditService = getTestAuditService();
-    const theEvent = getDummyEvent();
-
-    const deaResponse = JSON.stringify({
-      data: ':D',
-    });
-
-    const sut = createDeaHandler(
-      async () => {
-        return {
-          statusCode: 200,
-          body: deaResponse,
-        };
-      },
-      NO_ACL,
-      preExecutionChecks,
-      testAuditService.service
-    );
-
-    theEvent.resource = '/cases/{caseId}/files/{fileId}/contents';
-    theEvent.httpMethod = 'PUT';
-    theEvent.body = deaResponse;
-
-    const response = await sut(theEvent, dummyContext);
-    expect(response).toEqual({ body: deaResponse, statusCode: 200 });
-
-    const sent = capture(testAuditService.client.send).last();
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const sentInput: PutLogEventsCommandInput = sent[0].input as unknown as PutLogEventsCommandInput;
-    if (!sentInput.logEvents) {
-      fail();
-    }
-    expect(sentInput.logEvents[0].message).toContain(`"result":"success with warning"`);
-    expect(sentInput.logEvents[0].message).toContain(`"fileHash":"ERROR: hash is absent"`);
-  });
-
   it('should add the fileHash to the Audit Event', async () => {
     const testAuditService = getTestAuditService();
     const theEvent = getDummyEvent();

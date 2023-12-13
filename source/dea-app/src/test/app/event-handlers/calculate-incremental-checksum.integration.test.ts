@@ -6,11 +6,10 @@
 import { fail } from 'assert';
 import { Readable } from 'stream';
 import { S3Client } from '@aws-sdk/client-s3';
-import { SQSClient, SendMessageCommandInput } from '@aws-sdk/client-sqs';
 import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
 import { SQSEvent } from 'aws-lambda';
 import cryptoJS from 'crypto-js';
-import { anything, capture, instance, mock, verify, when } from 'ts-mockito';
+import { anything, instance, mock, when } from 'ts-mockito';
 import {
   MultipartChecksumBody,
   calculateIncrementalChecksum,
@@ -80,19 +79,23 @@ describe('calculate incremental checksum', () => {
       .thenResolve({ Body: body1, $metadata: {} })
       .thenResolve({ Body: body2, $metadata: {} });
 
-    const sqsClientMock = mock(SQSClient);
-    when(sqsClientMock.send(anything())).thenResolve({ $metadata: {} });
-
     const checksumJob: MultipartChecksumBody = {
       s3Bucket: 'bucket',
       s3Key: 'key',
       currentPart: 1,
       totalParts: 2,
-      serializedHasher: undefined,
       caseFileUlid,
       caseUlid,
-      queueUrl: 'sqsqueue',
     };
+    const checksumJob2: MultipartChecksumBody = {
+      s3Bucket: 'bucket',
+      s3Key: 'key',
+      currentPart: 2,
+      totalParts: 2,
+      caseFileUlid,
+      caseUlid,
+    };
+
     const sqsEvent: SQSEvent = {
       Records: [
         {
@@ -121,21 +124,10 @@ describe('calculate incremental checksum', () => {
         /* do nothing */
       },
       instance(s3ClientMock),
-      instance(sqsClientMock),
       modelProvider
     );
 
     expect(response).toEqual('Successfully processed 1 messages.');
-
-    verify(sqsClientMock.send(anything())).once();
-    const sqsMessage = capture(sqsClientMock.send).last();
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const messagePayload = sqsMessage[0].input as SendMessageCommandInput;
-    if (!messagePayload.MessageBody) {
-      fail('Message body is undefined');
-    }
-    const sentMessage: MultipartChecksumBody = JSON.parse(messagePayload.MessageBody);
-    expect(sentMessage.currentPart).toEqual(2);
 
     // process next message
     const sqsEvent2: SQSEvent = {
@@ -154,7 +146,7 @@ describe('calculate incremental checksum', () => {
           eventSourceARN: '',
           awsRegion: 'us-east-1',
           messageAttributes: {},
-          body: messagePayload.MessageBody,
+          body: JSON.stringify(checksumJob2),
         },
       ],
     };
@@ -165,11 +157,11 @@ describe('calculate incremental checksum', () => {
         /* do nothing */
       },
       instance(s3ClientMock),
-      instance(sqsClientMock),
       modelProvider
     );
 
     expect(response2).toEqual('Successfully processed 1 messages.');
+
     const updatedFile = await getCaseFileByUlid(caseFileUlid, caseUlid, modelProvider);
     if (!updatedFile) {
       fail('file not found');
@@ -189,17 +181,13 @@ describe('calculate incremental checksum', () => {
       // @ts-ignore. just let me break it bro
       .thenResolve({ Body: 1, $metadata: {} });
 
-    const sqsClientMock = mock(SQSClient);
-
     const checksumJob: MultipartChecksumBody = {
       s3Bucket: 'bucket',
       s3Key: 'key',
       currentPart: 1,
       totalParts: 2,
-      serializedHasher: undefined,
       caseFileUlid,
       caseUlid,
-      queueUrl: 'sqsqueue',
     };
     const sqsEvent: SQSEvent = {
       Records: [
@@ -230,7 +218,6 @@ describe('calculate incremental checksum', () => {
           /* do nothing */
         },
         instance(s3ClientMock),
-        instance(sqsClientMock),
         modelProvider
       );
     } catch (e) {

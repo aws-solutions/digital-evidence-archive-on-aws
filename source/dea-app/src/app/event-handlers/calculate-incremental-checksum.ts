@@ -5,10 +5,10 @@
 
 import { Readable } from 'stream';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { Callback, Context, SQSEvent } from 'aws-lambda';
 import cryptoJS from 'crypto-js';
 import { logger } from '../../logger';
+import { getObjectChecksumJob, upsertObjectChecksumJob } from '../../persistence/object-checksum-job';
 import { ModelRepositoryProvider, defaultProvider } from '../../persistence/schema/entities';
 import { updateCaseFileChecksum } from '../services/case-file-service';
 
@@ -17,10 +17,8 @@ export interface MultipartChecksumBody {
   caseFileUlid: string;
   s3Key: string;
   s3Bucket: string;
-  serializedHasher: string | undefined;
   currentPart: number;
   totalParts: number;
-  queueUrl: string;
 }
 
 export type SQSS3ObjectCreatedSignature = (
@@ -28,36 +26,44 @@ export type SQSS3ObjectCreatedSignature = (
   _context: Context,
   _callback: Callback,
   s3Client: S3Client,
-  sqsClient: SQSClient,
   repositoryProvider: ModelRepositoryProvider
 ) => Promise<string>;
-
-const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
 
 export const calculateIncrementalChecksum: SQSS3ObjectCreatedSignature = async (
   event: SQSEvent,
   _context: Context,
   _callback: Callback,
   s3Client = new S3Client({}),
-  sqsClient = new SQSClient({ region }),
   repositoryProvider = defaultProvider
 ) => {
   logger.debug('Event', { Data: JSON.stringify(event, null, 2) });
   logger.debug(`processing ${event.Records.length} records`);
   for (const record of event.Records) {
-    const checksumJob: MultipartChecksumBody = JSON.parse(record.body);
-    logger.debug(JSON.stringify(checksumJob));
-    const finalPart = checksumJob.currentPart === checksumJob.totalParts;
+    const checksumJobMessage: MultipartChecksumBody = JSON.parse(record.body);
+    logger.debug(JSON.stringify(checksumJobMessage));
+    const finalPart = checksumJobMessage.currentPart === checksumJobMessage.totalParts;
+
+    const objectChecksumJob = (await getObjectChecksumJob(
+      checksumJobMessage.caseUlid,
+      checksumJobMessage.caseFileUlid,
+      repositoryProvider
+    )) ?? {
+      parentUlid: checksumJobMessage.caseUlid,
+      fileUlid: checksumJobMessage.caseFileUlid,
+      serializedHasher: '',
+    };
     // fetch the s3 object part
-    logger.debug(`Fetching s3 object part ${checksumJob.currentPart}/${checksumJob.totalParts}`);
+    logger.debug(
+      `Fetching s3 object part ${checksumJobMessage.currentPart}/${checksumJobMessage.totalParts}`
+    );
     const getObjectPartCommand = new GetObjectCommand({
-      PartNumber: checksumJob.currentPart,
-      Key: checksumJob.s3Key,
-      Bucket: checksumJob.s3Bucket,
+      PartNumber: checksumJobMessage.currentPart,
+      Key: checksumJobMessage.s3Key,
+      Bucket: checksumJobMessage.s3Bucket,
     });
     const response = await s3Client.send(getObjectPartCommand);
     // calculate the checksum
-    const hasher = parseHasher(checksumJob.serializedHasher);
+    const hasher = parseHasher(objectChecksumJob.serializedHasher);
 
     const hashOrSerializedHasher: string = await new Promise((resolve, reject) => {
       if (response.Body instanceof Readable) {
@@ -79,46 +85,36 @@ export const calculateIncrementalChecksum: SQSS3ObjectCreatedSignature = async (
       }
     });
 
-    // if this is the final part, update the s3 object with the checksum
+    // if this is the final part, update the file with the checksum
     if (finalPart) {
       logger.debug(`sha256Hash ${hashOrSerializedHasher}`);
 
       logger.debug('Updating s3 object with checksum');
       await updateCaseFileChecksum(
-        checksumJob.caseUlid,
-        checksumJob.caseFileUlid,
+        checksumJobMessage.caseUlid,
+        checksumJobMessage.caseFileUlid,
         hashOrSerializedHasher,
         repositoryProvider
       );
     } else {
-      // else, update and repost the message body
-      logger.debug(`queuing up next part ${checksumJob.currentPart + 1}/${checksumJob.totalParts}`);
-
-      const newMessageBody: MultipartChecksumBody = {
-        caseUlid: checksumJob.caseUlid,
-        caseFileUlid: checksumJob.caseFileUlid,
-        s3Key: checksumJob.s3Key,
-        currentPart: checksumJob.currentPart + 1,
-        totalParts: checksumJob.totalParts,
-        serializedHasher: hashOrSerializedHasher,
-        queueUrl: checksumJob.queueUrl,
-        s3Bucket: checksumJob.s3Bucket,
-      };
-      const sendMessageCommand = new SendMessageCommand({
-        QueueUrl: checksumJob.queueUrl,
-        MessageBody: JSON.stringify(newMessageBody),
-      });
-
-      await sqsClient.send(sendMessageCommand);
+      // else, update the object checksum job
+      await upsertObjectChecksumJob(
+        {
+          parentUlid: checksumJobMessage.caseUlid,
+          fileUlid: checksumJobMessage.caseFileUlid,
+          serializedHasher: hashOrSerializedHasher,
+        },
+        repositoryProvider
+      );
     }
   }
 
   return `Successfully processed ${event.Records.length} messages.`;
 };
 
-function parseHasher(serializedHasher: string | undefined) {
+function parseHasher(serializedHasher: string) {
   const sha = cryptoJS.algo.SHA256.create();
-  if (serializedHasher) {
+  if (serializedHasher !== '') {
     restoreData(JSON.parse(serializedHasher), sha);
   }
   return sha;

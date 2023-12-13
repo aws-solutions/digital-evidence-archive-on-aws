@@ -22352,6 +22352,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     },
     "multipartchecksumdlq4D3A785A": Object {
       "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "FifoQueue": true,
+      },
       "Type": "AWS::SQS::Queue",
       "UpdateReplacePolicy": "Delete",
     },
@@ -22499,16 +22502,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": "sqs:SendMessage",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "multipartchecksumqueueCA9DCDB8",
-                  "Arn",
-                ],
-              },
-            },
-            Object {
               "Action": "s3:GetObject",
               "Effect": "Allow",
               "Resource": Object {
@@ -22527,7 +22520,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": "dynamodb:UpdateItem",
+              "Action": Array [
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+              ],
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
@@ -22566,6 +22564,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     "multipartchecksumqueueCA9DCDB8": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
+        "FifoQueue": true,
         "RedrivePolicy": Object {
           "deadLetterTargetArn": Object {
             "Fn::GetAtt": Array [

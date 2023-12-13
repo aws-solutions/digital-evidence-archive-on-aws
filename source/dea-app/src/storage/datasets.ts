@@ -30,9 +30,10 @@ import {
   JobReportScope,
   S3ControlClient,
 } from '@aws-sdk/client-s3-control';
-import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
+import { SQSClient, SendMessageBatchCommand, SendMessageBatchRequestEntry } from '@aws-sdk/client-sqs';
 import { AssumeRoleCommand, AssumeRoleCommandInput, STSClient } from '@aws-sdk/client-sts';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { ulid } from 'ulid';
 import { v4 as uuidv4 } from 'uuid';
 import { MultipartChecksumBody } from '../app/event-handlers/calculate-incremental-checksum';
 import { getCustomUserAgent, getRequiredEnv } from '../lambda-http-helpers';
@@ -46,6 +47,7 @@ import {
 import { restrictAccountStatement } from './restrict-account-statement';
 
 const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
+const SQS_BATCH_LIMIT = 10;
 
 export interface DatasetsProvider {
   s3Client: S3Client;
@@ -235,22 +237,42 @@ const handleUploadChecksum = async (
   }
 
   // Add messsage to sqs for checksum calculation
-  const messageBody: MultipartChecksumBody = {
-    caseUlid: caseFile.caseUlid,
-    caseFileUlid: caseFile.ulid,
-    s3Key,
-    s3Bucket,
-    currentPart: 1,
-    totalParts: uploadedParts.length,
-    serializedHasher: undefined,
-    queueUrl,
-  };
-  const sendMessageCommand = new SendMessageCommand({
-    QueueUrl: queueUrl,
-    MessageBody: JSON.stringify(messageBody),
-  });
+  const sqsEntries: SendMessageBatchRequestEntry[] = [];
+  for (let currentPart = 1; currentPart <= uploadedParts.length; ++currentPart) {
+    const messageBody: MultipartChecksumBody = {
+      caseUlid: caseFile.caseUlid,
+      caseFileUlid: caseFile.ulid,
+      s3Key,
+      s3Bucket,
+      currentPart,
+      totalParts: uploadedParts.length,
+    };
 
-  await sqsClient.send(sendMessageCommand);
+    const entryId = ulid();
+    sqsEntries.push({
+      Id: entryId,
+      MessageBody: JSON.stringify(messageBody),
+      MessageGroupId: `${caseFile.caseUlid}#${caseFile.ulid}#`,
+      MessageDeduplicationId: entryId,
+    });
+
+    if (sqsEntries.length === SQS_BATCH_LIMIT) {
+      const sendMessageCommand = new SendMessageBatchCommand({
+        QueueUrl: queueUrl,
+        Entries: sqsEntries,
+      });
+      await sqsClient.send(sendMessageCommand);
+      sqsEntries.length = 0;
+    }
+  }
+
+  if (sqsEntries.length > 0) {
+    const sendMessageCommand = new SendMessageBatchCommand({
+      QueueUrl: queueUrl,
+      Entries: sqsEntries,
+    });
+    await sqsClient.send(sendMessageCommand);
+  }
 
   return undefined;
 };

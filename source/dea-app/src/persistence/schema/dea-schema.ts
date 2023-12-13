@@ -259,6 +259,15 @@ export const DeaSchema = {
       created: { type: Date },
       updated: { type: Date },
     },
+    ObjectChecksumJob: {
+      // using "parent" here to be more generic, right now this represents the CaseUlid,
+      //   but if we were to allow uploading to a datavault later, this would represent the DatavaultUlid
+      PK: { type: String, value: 'CHECKSUMJOB#${parentUlid}#${fileUlid}#', required: true },
+      SK: { type: String, value: 'CHECKSUMJOB#', required: true },
+      parentUlid: { type: String, validate: ulidRegex, required: true },
+      fileUlid: { type: String, validate: ulidRegex, required: true },
+      serializedHasher: { type: String, required: true },
+    },
   } as const,
   params: {
     isoDates: true,

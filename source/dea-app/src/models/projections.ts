@@ -16,6 +16,7 @@ import {
   DataVaultTaskType,
   DataVaultExecutionType,
   DataVaultFileType,
+  ObjectChecksumJobType,
 } from '../persistence/schema/entities';
 import { CaseAction } from './case-action';
 import { CaseFileStatus } from './case-file-status';
@@ -26,6 +27,7 @@ import { DeaDataVaultExecution } from './data-vault-execution';
 import { DeaDataVaultFile } from './data-vault-file';
 import { DeaDataVaultTask } from './data-vault-task';
 import { Job } from './job';
+import { ObjectChecksumJob } from './object-checksum-job';
 import { DeaSession } from './session';
 import { DeaUser } from './user';
 
@@ -198,5 +200,13 @@ export const jobFromEntity = (jobEntity: JobType): Job => {
     caseUlid: jobEntity.caseUlid,
     updated: jobEntity.updated,
     created: jobEntity.created,
+  };
+};
+
+export const checksumJobFromEntity = (checksumJobEntity: ObjectChecksumJobType): ObjectChecksumJob => {
+  return {
+    parentUlid: checksumJobEntity.parentUlid,
+    fileUlid: checksumJobEntity.fileUlid,
+    serializedHasher: checksumJobEntity.serializedHasher,
   };
 };

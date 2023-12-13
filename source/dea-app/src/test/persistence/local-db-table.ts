@@ -37,5 +37,6 @@ export const getTestRepositoryProvider = async (tableName: string): Promise<Mode
     DataVaultTaskModel: table.getModel('DataVaultTask'),
     DataVaultExecutionModel: table.getModel('DataVaultExecution'),
     DataVaultFileModel: table.getModel('DataVaultFile'),
+    ObjectChecksumJobModel: table.getModel('ObjectChecksumJob'),
   };
 };
