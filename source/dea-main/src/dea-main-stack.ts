@@ -137,6 +137,7 @@ export class DeaMainStack extends cdk.Stack {
       kmsKey,
       objectBucket: backendConstruct.datasetsBucket,
     });
+    nestedConstructs.push(checksumStack);
 
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', protectedDeaResourceArns, {
       deaTableArn: backendConstruct.deaTable.tableArn,
