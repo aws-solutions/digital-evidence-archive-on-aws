@@ -94,7 +94,7 @@ export const transformAuditEventForS3 = async function (
   records.forEach((rec, idx) => {
     const originalRecord = event.records[idx];
 
-    if (rec.result !== 'Ok') {
+    if (rec.result !== 'Ok' || !rec.data) {
       return;
     }
 
