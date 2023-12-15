@@ -130,6 +130,7 @@
     "ts-mockito": "~2.6.1",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.2",
-    "wait-port": "~1.0.4"
+    "wait-port": "~1.0.4",
+    "@smithy/types": "~2.4.0"
   }
 }

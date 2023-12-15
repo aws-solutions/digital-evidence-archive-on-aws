@@ -331,7 +331,6 @@ describe('case audit e2e', () => {
         testRole,
         expectedSuccessDetails
       );
-
       expect(caseInviteEntry.Target_User_ID).toStrictEqual(failedListCaseFilesEntry.DEA_User_ID);
       expect(caseInviteEntry.Case_Actions).toStrictEqual(firstInvitePermissions.join(':'));
 

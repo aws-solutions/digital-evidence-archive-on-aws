@@ -348,7 +348,7 @@ export const initiateCaseFileUploadSuccess = async (
   deaApiUrl: string,
   idToken: Oauth2Token,
   creds: Credentials,
-  caseUlid: string | undefined,
+  caseUlid: string,
   fileName: string,
   filePath: string,
   fileSizeBytes: number,

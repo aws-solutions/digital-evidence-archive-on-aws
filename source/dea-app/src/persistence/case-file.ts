@@ -17,7 +17,7 @@ import { S3Object } from '../storage/datasets';
 import { isDefined } from './persistence-helpers';
 import { ModelRepositoryProvider } from './schema/entities';
 
-const SECONDS_IN_AN_HOUR = 60 * 60;
+const SECONDS_IN_A_DAY = 60 * 60 * 24;
 
 export const initiateCaseFileUpload = async (
   uploadDTO: InitiateCaseFileUploadDTO,
@@ -29,7 +29,7 @@ export const initiateCaseFileUpload = async (
     isFile: true,
     createdBy: userUlid,
     status: CaseFileStatus.PENDING,
-    ttl: Math.round(Date.now() / 1000) + SECONDS_IN_AN_HOUR,
+    ttl: Math.round(Date.now() / 1000) + SECONDS_IN_A_DAY,
   });
   return caseFileFromEntity(newEntity);
 };
