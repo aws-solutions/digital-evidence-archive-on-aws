@@ -27,6 +27,9 @@ export const initiateCaseFileUploadRequestSchema = Joi.object({
   fileSizeBytes: safeFileSize,
   reason: safeReason,
   details: safeDetails,
+  partRangeStart: Joi.number().greater(0),
+  partRangeEnd: Joi.number(),
+  uploadId: Joi.string().optional(),
 });
 
 export const completeCaseFileUploadRequestSchema = Joi.object({

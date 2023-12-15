@@ -29,6 +29,7 @@ describe('case audit e2e', () => {
 
   const suffix = randomSuffix();
   const testUser = `caseAuditTestUser${suffix}`;
+  const testRole = 'CaseWorker';
   const unauthorizedUser = `caseAuditTestUserUnauth${suffix}`;
   const deaApiUrl = testEnv.apiUrlOutput;
   let creds: Credentials;
@@ -40,7 +41,7 @@ describe('case audit e2e', () => {
 
   beforeAll(async () => {
     // Create user in test group
-    await cognitoHelper.createUser(testUser, 'CaseWorker', 'CaseAudit', 'TestUser');
+    await cognitoHelper.createUser(testUser, testRole, 'CaseAudit', 'TestUser');
     await cognitoHelper.createUser(
       unauthorizedUser,
       'EvidenceManager',
@@ -196,7 +197,7 @@ describe('case audit e2e', () => {
 
       const entries = await getAuditQueryResults(
         `${deaApiUrl}cases/${caseUlid}/audit`,
-        `?from=${startTime}&to=${endTime}`,
+        '',
         idToken,
         creds,
         [
@@ -214,7 +215,12 @@ describe('case audit e2e', () => {
           { regex: /dynamodb.amazonaws.com/g, count: 8 },
           { regex: /TransactWriteItems/g, count: 2 },
           { regex: /GetItem/g, count: 6 },
-        ]
+        ],
+        45000,
+        {
+          from: startTime,
+          to: endTime,
+        }
       );
 
       const cloudtrailEntries = entries.filter((entry) => entry.Event_Type === 'AwsApiCall');
@@ -255,7 +261,13 @@ describe('case audit e2e', () => {
       const createCaseEntry = applicationEntries.find(
         (entry) => entry.Event_Type === AuditEventType.CREATE_CASE
       );
-      verifyAuditEntry(createCaseEntry, AuditEventType.CREATE_CASE, testUser, expectedSuccessDetails);
+      verifyAuditEntry(
+        createCaseEntry,
+        AuditEventType.CREATE_CASE,
+        testUser,
+        testRole,
+        expectedSuccessDetails
+      );
 
       const updateCaseDetails = applicationEntries.find(
         (entry) => entry.Event_Type === AuditEventType.UPDATE_CASE_DETAILS
@@ -264,6 +276,7 @@ describe('case audit e2e', () => {
         updateCaseDetails,
         AuditEventType.UPDATE_CASE_DETAILS,
         testUser,
+        testRole,
         expectedSuccessDetails
       );
 
@@ -274,6 +287,7 @@ describe('case audit e2e', () => {
         getCaseDetailsEntry,
         AuditEventType.GET_CASE_DETAILS,
         testUser,
+        testRole,
         expectedSuccessDetails
       );
 
@@ -284,6 +298,7 @@ describe('case audit e2e', () => {
         getUsersFromCaseEntry,
         AuditEventType.GET_USERS_FROM_CASE,
         testUser,
+        testRole,
         expectedSuccessDetails
       );
 
@@ -293,7 +308,7 @@ describe('case audit e2e', () => {
       if (!failedListCaseFilesEntry) {
         fail();
       }
-      verifyAuditEntry(failedListCaseFilesEntry, AuditEventType.GET_CASE_FILES, failedCaseUser, {
+      verifyAuditEntry(failedListCaseFilesEntry, AuditEventType.GET_CASE_FILES, failedCaseUser, testRole, {
         expectedResult: 'failure',
         expectedFileHash: '',
         expectedFileUlid: '',
@@ -306,8 +321,13 @@ describe('case audit e2e', () => {
       if (!caseInviteEntry) {
         fail();
       }
-      verifyAuditEntry(caseInviteEntry, AuditEventType.INVITE_USER_TO_CASE, testUser, expectedSuccessDetails);
-
+      verifyAuditEntry(
+        caseInviteEntry,
+        AuditEventType.INVITE_USER_TO_CASE,
+        testUser,
+        testRole,
+        expectedSuccessDetails
+      );
       expect(caseInviteEntry.Target_User_ID).toStrictEqual(failedListCaseFilesEntry.DEA_User_ID);
       expect(caseInviteEntry.Case_Actions).toStrictEqual(firstInvitePermissions.join(':'));
 
@@ -322,6 +342,7 @@ describe('case audit e2e', () => {
         modifyInviteEntry,
         AuditEventType.MODIFY_USER_PERMISSIONS_ON_CASE,
         testUser,
+        testRole,
         expectedSuccessDetails
       );
       expect(modifyInviteEntry.Target_User_ID).toStrictEqual(failedListCaseFilesEntry.DEA_User_ID);
@@ -338,6 +359,7 @@ describe('case audit e2e', () => {
         removeInviteEntry,
         AuditEventType.REMOVE_USER_FROM_CASE,
         testUser,
+        testRole,
         expectedSuccessDetails
       );
       expect(removeInviteEntry.Target_User_ID).toStrictEqual(failedListCaseFilesEntry.DEA_User_ID);
@@ -353,6 +375,7 @@ describe('case audit e2e', () => {
         createCaseOwnerEntry,
         AuditEventType.CREATE_CASE_OWNER,
         unauthorizedUser,
+        'EvidenceManager',
         expectedSuccessDetails
       );
       expect(createCaseOwnerEntry.Target_User_ID).toStrictEqual(failedListCaseFilesEntry.DEA_User_ID);

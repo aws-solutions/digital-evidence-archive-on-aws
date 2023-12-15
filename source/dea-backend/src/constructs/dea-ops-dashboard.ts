@@ -434,6 +434,19 @@ export class DeaOperationalDashboard extends NestedStack {
     });
   }
 
+  public addPreTokenGenerationTriggerLambdaErrorAlarm(lambda: NodejsFunction, identifier: string) {
+    new Alarm(this, `${identifier}FailuresAlarm`, {
+      alarmDescription: `${identifier} Failures encountered`,
+      evaluationPeriods: 1,
+      threshold: 0,
+      treatMissingData: TreatMissingData.NOT_BREACHING,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+      metric: lambda.metricErrors({
+        period: Duration.days(1),
+      }),
+    });
+  }
+
   public addDeadLetterQueueOperationalComponents(identifier: string, queue: Queue) {
     new Alarm(this, `${identifier}Alarm`, {
       alarmDescription: `Number of messages visible above ${DEADLETTERQUEUE_MESSAGE_THRESHOLD}`,

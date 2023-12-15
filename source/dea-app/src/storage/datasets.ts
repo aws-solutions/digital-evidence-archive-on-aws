@@ -23,6 +23,7 @@ import {
 } from '@aws-sdk/client-s3';
 import {
   CreateJobCommand,
+  CreateJobCommandInput,
   DescribeJobCommand,
   DescribeJobResult,
   JobReportScope,
@@ -75,12 +76,10 @@ export const defaultDatasetsProvider = {
   awsPartition: getRequiredEnv('AWS_PARTITION', 'AWS_PARTITION is not set in your lambda!'),
 };
 
-export const generatePresignedUrlsForCaseFile = async (
-  caseFile: DeaCaseFile,
-  datasetsProvider: DatasetsProvider,
-  chunkSizeBytes: number,
-  sourceIp: string
-): Promise<void> => {
+export const createMultipartUploadForCaseFile = async (
+  caseFile: Readonly<DeaCaseFile>,
+  datasetsProvider: Readonly<DatasetsProvider>
+): Promise<string> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
   logger.info('Initiating multipart upload.', { s3Key });
   const response = await datasetsProvider.s3Client.send(
@@ -94,28 +93,34 @@ export const generatePresignedUrlsForCaseFile = async (
     })
   );
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const uploadId = response.UploadId as string;
-  const presignedUrlClient = await getUploadPresignedUrlClient(s3Key, sourceIp, datasetsProvider);
-  const fileParts = Math.max(Math.ceil(caseFile.fileSizeBytes / chunkSizeBytes), 1);
+  if (!response.UploadId) {
+    throw new Error('Failed to initiate multipart upload.');
+  }
 
-  logger.info('Generating presigned URLs.', { fileParts, s3Key });
+  return response.UploadId;
+};
+
+export const generateUploadPresignedUrls = async (
+  partsRangeStart: number,
+  partsRangeEnd: number,
+  s3Key: string,
+  sourceIp: string,
+  datasetsProvider: DatasetsProvider,
+  uploadId: string
+) => {
+  const presignedUrlClient = await getUploadPresignedUrlClient(s3Key, sourceIp, datasetsProvider);
+
+  logger.info('Generating presigned URLs.', { parts: partsRangeEnd - partsRangeStart, s3Key });
   const presignedUrlPromises = [];
-  for (let i = 0; i < fileParts; i++) {
-    presignedUrlPromises[i] = getUploadPresignedUrlPromise(
-      s3Key,
-      uploadId,
-      i + 1,
-      presignedUrlClient,
-      datasetsProvider
+  for (let i = partsRangeStart; i <= partsRangeEnd; i++) {
+    presignedUrlPromises.push(
+      getUploadPresignedUrlPromise(s3Key, uploadId, i, presignedUrlClient, datasetsProvider)
     );
   }
-  await Promise.all(presignedUrlPromises).then((presignedUrls) => {
-    caseFile.presignedUrls = presignedUrls;
-  });
+  const presignedUrls = await Promise.all(presignedUrlPromises);
 
   logger.info('Generated presigned URLs.', { s3Key });
-  caseFile.uploadId = uploadId;
+  return presignedUrls;
 };
 
 export const completeUploadForCaseFile = async (
@@ -368,7 +373,7 @@ const createDeleteCaseFileBatchJob = async (
   datasetsProvider: DatasetsProvider
 ): Promise<string> => {
   const accountId = datasetsProvider.s3BatchDeleteCaseFileRole.split(':')[4];
-  const input = {
+  const input: CreateJobCommandInput = {
     ConfirmationRequired: false,
     AccountId: accountId,
     RoleArn: datasetsProvider.s3BatchDeleteCaseFileRole,

@@ -37,7 +37,7 @@ import { addLambdaSuppressions, addResourcePolicySuppressions } from './nag-supp
 
 // DEA AppRegistry Constants
 // TODO - would be ideal to reference process.env.npm_package_version here but rush breaks that env
-export const SOLUTION_VERSION = '1.0.5';
+export const SOLUTION_VERSION = '1.0.6';
 export const SOLUTION_ID = 'SO0224';
 
 export class DeaMainStack extends cdk.Stack {
@@ -162,6 +162,7 @@ export class DeaMainStack extends cdk.Stack {
           region: 'us-gov-west-1',
           restApi: deaApi.deaRestApi,
           apiEndpointArns: deaApi.apiEndpointArns,
+          opsDashboard: dashboard,
         },
         props
       );
@@ -184,6 +185,7 @@ export class DeaMainStack extends cdk.Stack {
         region: region,
         restApi: deaApi.deaRestApi,
         apiEndpointArns: deaApi.apiEndpointArns,
+        opsDashboard: dashboard,
       });
 
       // Store relevant parameters for the functioning of DEA

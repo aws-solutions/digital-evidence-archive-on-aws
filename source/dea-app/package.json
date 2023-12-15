@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-app",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "This package sets up API routes for DEA",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/tree/main/",
   "repository": {
@@ -53,6 +53,7 @@
     "@aws-sdk/client-cognito-identity-provider": "~3.398.0",
     "@aws-sdk/client-dynamodb": "~3.398.0",
     "@aws-sdk/client-firehose": "~3.398.0",
+    "@aws-sdk/client-identitystore": "~3.398.0",
     "@aws-sdk/client-s3": "~3.398.0",
     "@aws-sdk/client-s3-control": "~3.398.0",
     "@aws-sdk/client-secrets-manager": "~3.398.0",
@@ -70,7 +71,7 @@
     "aws-jwt-verify": "^4.0.0",
     "aws-lambda": "^1.0.7",
     "constructs": "10.2.69",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^4.2.0",
     "csv-string": "~4.1.1",
     "dynamodb-onetable": "2.5.1",
     "joi": "~17.9.1",
@@ -98,8 +99,8 @@
     "@typescript-eslint/parser": "~5.60.0",
     "aws-sdk-client-mock": "^2.1.1",
     "aws-sdk-client-mock-jest": "^2.1.1",
-    "aws4-axios": "~2.4.9",
-    "axios": "^0.27.1",
+    "aws4-axios": "~3.3.0",
+    "axios": "^1.6.2",
     "concurrently": "^7.6.0",
     "dynamo-db-local": "~5.0.1",
     "eslint": "^8.47.0",
@@ -119,6 +120,7 @@
     "ts-mockito": "~2.6.1",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.2",
-    "wait-port": "~1.0.4"
+    "wait-port": "~1.0.4",
+    "@smithy/types": "~2.4.0"
   }
 }

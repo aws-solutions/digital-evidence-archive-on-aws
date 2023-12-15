@@ -42,7 +42,7 @@ describe('API authentication', () => {
 
   afterAll(async () => {
     await cognitoHelper.cleanup();
-  });
+  }, 40000);
 
   it('should have the DEARole field in the id Token', async () => {
     const [_creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
@@ -69,13 +69,13 @@ describe('API authentication', () => {
 
   it('should disallow calls without id token in the header', async () => {
     const client = axios.create();
-    const interceptor = aws4Interceptor(
-      {
+    const interceptor = aws4Interceptor({
+      options: {
         service: 'execute-api',
         region: region,
       },
-      creds
-    );
+      credentials: { ...creds },
+    });
     client.interceptors.request.use(interceptor);
 
     const url = `${deaApiUrl}cases/my-cases`;

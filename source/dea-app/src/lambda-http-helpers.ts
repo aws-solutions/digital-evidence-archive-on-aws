@@ -189,3 +189,21 @@ export const removeSensitiveHeaders = (headers: APIGatewayProxyEventHeaders): AP
   } = headers;
   return debugHeaders;
 };
+
+export function getOptionalPayload<T>(
+  event: APIGatewayProxyEvent,
+  typeName: string,
+  validationSchema: Joi.ObjectSchema,
+  defaultValue: T
+): T {
+  if (!event.body) {
+    return defaultValue;
+  }
+  try {
+    const payload = JSON.parse(event.body);
+    Joi.assert(payload, validationSchema);
+    return payload;
+  } catch (error) {
+    throw new ValidationError(`${typeName} payload is malformed. Failed to parse.`);
+  }
+}

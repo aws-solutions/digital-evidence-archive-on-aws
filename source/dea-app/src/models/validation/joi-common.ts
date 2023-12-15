@@ -114,3 +114,5 @@ export const safeChunkSize = Joi.number()
   .positive()
   .greater(5 * ONE_MB)
   .less(500 * ONE_MB); // 5MB is minimum size supported by S3, 500MB is the max necessary to upload a 5TB file
+
+export const unixTimestamp = Joi.date().timestamp('unix').required().messages(customMessages);

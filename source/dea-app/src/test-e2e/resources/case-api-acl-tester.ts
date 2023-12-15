@@ -432,6 +432,8 @@ const setupCaseFile = async (
     caseUlid,
     `${randomSuffix()}`,
     `/`,
+    1,
+    1,
     1
   );
   s3ObjectsToDelete.push({
