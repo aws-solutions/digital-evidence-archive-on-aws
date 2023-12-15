@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-app",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "This package sets up API routes for DEA",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/tree/main/",
   "repository": {
