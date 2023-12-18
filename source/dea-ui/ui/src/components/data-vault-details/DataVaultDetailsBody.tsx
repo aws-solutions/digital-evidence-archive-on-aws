@@ -41,7 +41,12 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
   }
 
   if (isLoading) {
-    return <h1>{commonLabels.loadingLabel}</h1>;
+    return (
+      <SpaceBetween size="l">
+        <div></div>
+        <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>
+      </SpaceBetween>
+    );
   } else {
     if (!data) {
       return <h1>{commonLabels.notFoundLabel}</h1>;

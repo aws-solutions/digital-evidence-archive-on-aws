@@ -15,6 +15,7 @@ import {
   Modal,
   SpaceBetween,
   Spinner,
+  StatusIndicator,
   TextContent,
 } from '@cloudscape-design/components';
 import { useState } from 'react';
@@ -153,7 +154,12 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
   }
 
   if (isLoading) {
-    return <h1>{commonLabels.loadingLabel}</h1>;
+    return (
+      <SpaceBetween size="l">
+        <div></div>
+        <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>
+      </SpaceBetween>
+    );
   } else {
     if (!data) {
       return <h1>{commonLabels.notFoundLabel}</h1>;

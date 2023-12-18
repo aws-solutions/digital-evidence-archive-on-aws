@@ -93,12 +93,12 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
       defaultPage: 0,
       pageSize: 50,
     },
-    sorting: { defaultState: { isDescending: false, sortingColumn: { sortingField: 'updated' } } },
+    sorting: { defaultState: { isDescending: true, sortingColumn: { sortingField: 'updated' } } },
     selection: {},
   });
 
   if (isLoading) {
-    return <h1>{commonLabels.loadingLabel}</h1>;
+    return <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>;
   }
 
   const pathParts = filesTableState.basePath.split('/');
@@ -378,7 +378,7 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
           />
           <Box padding="xxs">
             <Checkbox
-              disabled={true}
+              disabled={false}
               onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
               checked={displayFilesWithoutACase}
             >

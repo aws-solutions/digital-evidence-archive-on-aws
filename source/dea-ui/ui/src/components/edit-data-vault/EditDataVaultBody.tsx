@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { ContentLayout, Header, SpaceBetween } from '@cloudscape-design/components';
+import { ContentLayout, Header, SpaceBetween, StatusIndicator } from '@cloudscape-design/components';
 import { useGetDataVaultById } from '../../api/data-vaults';
 import { commonLabels, createDataVaultLabels } from '../../common/labels';
 import EditDataVaultForm from './EditDataVaultForm';
@@ -16,7 +16,7 @@ function EditDataVaultPage(props: EditDataVaultPageProps) {
   const { data, isLoading } = useGetDataVaultById(props.dataVaultId);
   console.log('EditDataVaultPage', data);
   if (isLoading) {
-    return <h1>{commonLabels.loadingLabel}</h1>;
+    return <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>;
   }
   if (!data) {
     return <h1>{commonLabels.notFoundLabel}</h1>;

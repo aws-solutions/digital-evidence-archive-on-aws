@@ -115,7 +115,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         ),
         noMatch: TableNoMatchDisplay(dataSyncTaskListLabels.noDataSyncTasksMatchLabel),
       },
-      sorting: { defaultState: { isDescending: false, sortingColumn: { sortingField: 'created' } } },
+      sorting: { defaultState: { isDescending: true, sortingColumn: { sortingField: 'created' } } },
       selection: {},
       pagination: {
         pageSize: 15,
