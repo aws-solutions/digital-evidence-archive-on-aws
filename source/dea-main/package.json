@@ -24,7 +24,7 @@
     "build:test": "heft test --verbose --test-path-pattern test && rushx make-badges",
     "cdk": "cdk",
     "cdk:bootstrap": "cdk bootstrap",
-    "cdk:deploy": "cdk deploy --all --require-approval never --outputs-file cdk-outputs.json",
+    "cdk:deploy": "../common/scripts/preDeploy.sh && cdk deploy --all --require-approval never --outputs-file cdk-outputs.json",
     "cdk:destroy": "../common/scripts/preDestroy.sh && cdk destroy --force",
     "cdk:synth": "cdk synth",
     "check-license-header": "license-check-and-add check -f license-add-config.json",

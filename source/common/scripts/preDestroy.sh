@@ -36,4 +36,7 @@ sleep 90
 date
 python3 ../common/scripts/cleanupLockedBuckets.py
 date
+else
+  echo "Aborting..."
+  exit 1
 fi
