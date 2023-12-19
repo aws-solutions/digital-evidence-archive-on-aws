@@ -96,10 +96,8 @@ export const defaultDatasetsProvider = {
 
 export const createCaseFileUpload = async (
   caseFile: Readonly<DeaCaseFile>,
-  datasetsProvider: Readonly<DatasetsProvider>,
-  sourceIp: Readonly<string>,
-  userUlid: Readonly<string>
-): Promise<DeaCaseFileUpload> => {
+  datasetsProvider: Readonly<DatasetsProvider>
+): Promise<string> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
   logger.info('Initiating multipart upload.', { s3Key });
   let response;
@@ -126,7 +124,17 @@ export const createCaseFileUpload = async (
 
   logger.info('Multipart started');
 
-  const uploadId = response.UploadId;
+  return response.UploadId;
+};
+
+export const getTemporaryCredentialsForUpload = async (
+  caseFile: Readonly<DeaCaseFile>,
+  uploadId: string,
+  userUlid: string,
+  sourceIp: string,
+  datasetsProvider: Readonly<DatasetsProvider>
+): Promise<DeaCaseFileUpload> => {
+  const s3Key = getS3KeyForCaseFile(caseFile);
   const input: AssumeRoleCommandInput = {
     RoleSessionName: `USER_${userUlid}`,
     RoleArn: datasetsProvider.endUserUploadRole,
@@ -134,40 +142,35 @@ export const createCaseFileUpload = async (
     DurationSeconds: datasetsProvider.uploadPresignedCommandExpirySeconds,
   };
   const command = new AssumeRoleCommand(input);
-  try {
-    const federationTokenResponse = await stsClient.send(command);
-    if (
-      !federationTokenResponse.Credentials ||
-      !federationTokenResponse.Credentials.AccessKeyId ||
-      !federationTokenResponse.Credentials.SecretAccessKey ||
-      !federationTokenResponse.Credentials.SessionToken
-    ) {
-      await datasetsProvider.s3Client.send(
-        new AbortMultipartUploadCommand({
-          Bucket: datasetsProvider.bucketName,
-          Key: s3Key,
-          UploadId: uploadId,
-        })
-      );
+  const federationTokenResponse = await stsClient.send(command);
+  if (
+    !federationTokenResponse.Credentials ||
+    !federationTokenResponse.Credentials.AccessKeyId ||
+    !federationTokenResponse.Credentials.SecretAccessKey ||
+    !federationTokenResponse.Credentials.SessionToken
+  ) {
+    await datasetsProvider.s3Client.send(
+      new AbortMultipartUploadCommand({
+        Bucket: datasetsProvider.bucketName,
+        Key: s3Key,
+        UploadId: uploadId,
+      })
+    );
 
-      throw new Error('Failed to generate upload credentials');
-    }
-
-    return {
-      ...caseFile,
-      bucket: datasetsProvider.bucketName,
-      region,
-      uploadId,
-      federationCredentials: {
-        accessKeyId: federationTokenResponse.Credentials.AccessKeyId,
-        secretAccessKey: federationTokenResponse.Credentials.SecretAccessKey,
-        sessionToken: federationTokenResponse.Credentials.SessionToken,
-      },
-    };
-  } catch (error) {
-    logger.error(`received ${JSON.stringify(error)}`);
-    throw error;
+    throw new Error('Failed to generate upload credentials');
   }
+
+  return {
+    ...caseFile,
+    bucket: datasetsProvider.bucketName,
+    region,
+    uploadId,
+    federationCredentials: {
+      accessKeyId: federationTokenResponse.Credentials.AccessKeyId,
+      secretAccessKey: federationTokenResponse.Credentials.SecretAccessKey,
+      sessionToken: federationTokenResponse.Credentials.SessionToken,
+    },
+  };
 };
 
 export const completeUploadForCaseFile = async (

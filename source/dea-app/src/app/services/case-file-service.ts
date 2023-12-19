@@ -22,7 +22,12 @@ import * as CaseFilePersistence from '../../persistence/case-file';
 import { getCaseFileByFileLocation, getCaseFileByUlid } from '../../persistence/case-file';
 import { ModelRepositoryProvider } from '../../persistence/schema/entities';
 import { getUsers } from '../../persistence/user';
-import { completeUploadForCaseFile, DatasetsProvider, createCaseFileUpload } from '../../storage/datasets';
+import {
+  completeUploadForCaseFile,
+  DatasetsProvider,
+  createCaseFileUpload,
+  getTemporaryCredentialsForUpload,
+} from '../../storage/datasets';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getRequiredCase } from './case-service';
@@ -38,12 +43,25 @@ export const initiateCaseFileUpload = async (
   retryDepth = 0
 ): Promise<DeaCaseFileUpload> => {
   try {
-    const caseFile: DeaCaseFile = await CaseFilePersistence.initiateCaseFileUpload(
-      uploadDTO,
-      userUlid,
-      repositoryProvider
-    );
-    return await createCaseFileUpload(caseFile, datasetsProvider, sourceIp, userUlid);
+    let caseFile: DeaCaseFile | undefined;
+    let uploadId = uploadDTO.uploadId;
+    if (!uploadId) {
+      caseFile = await CaseFilePersistence.initiateCaseFileUpload(uploadDTO, userUlid, repositoryProvider);
+
+      uploadId = await createCaseFileUpload(caseFile, datasetsProvider);
+    } else {
+      caseFile = await getCaseFileByFileLocation(
+        uploadDTO.caseUlid,
+        uploadDTO.filePath,
+        uploadDTO.fileName,
+        repositoryProvider
+      );
+      if (!caseFile) {
+        throw new NotFoundError('Case file not found');
+      }
+    }
+
+    return getTemporaryCredentialsForUpload(caseFile, uploadId, userUlid, sourceIp, datasetsProvider);
   } catch (error) {
     if ('code' in error && error.code === 'UniqueError' && retryDepth === 0) {
       // potential race-condition when we ran validate earlier. double check to ensure no case-file exists

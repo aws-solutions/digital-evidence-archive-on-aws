@@ -11,7 +11,6 @@ import {
   UploadPartCommandInput,
   UploadPartCommandOutput,
 } from '@aws-sdk/client-s3';
-import { DeaCaseFileUpload } from '@aws/dea-app/lib/models/case-file';
 import {
   Alert,
   Box,
@@ -32,9 +31,13 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
 import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
+import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
+import { InitiateUploadForm } from '../../models/CaseFiles';
 import FileUpload from '../common-components/FileUpload';
 import { UploadFilesProps } from './UploadFilesBody';
+
+const MINUTES_TO_MILLISECONDS = 60 * 1000;
 
 interface FileUploadProgressRow {
   fileName: string;
@@ -51,10 +54,11 @@ enum UploadStatus {
 
 interface ActiveFileUpload {
   file: FileWithPath;
-  initiatedCaseFilePromise: Promise<DeaCaseFileUpload>;
+  upoadDto: InitiateUploadForm;
 }
 
 export const ONE_MB = 1024 * 1024;
+export const ONE_GB = ONE_MB * 1024;
 const MAX_PARALLEL_UPLOADS = 1; // One file concurrently for now. The backend requires a code refactor to deal with the TransactionConflictException thrown ocassionally.
 
 function UploadFilesForm(props: UploadFilesProps): JSX.Element {
@@ -113,37 +117,62 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   }
 
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
-    const initiatedCaseFile = await activeFileUpload.initiatedCaseFilePromise;
+    const initiatedCaseFile = await initiateUpload(activeFileUpload.upoadDto);
 
-    const federationS3Client = new S3Client({
+    let federationS3Client = new S3Client({
       credentials: initiatedCaseFile.federationCredentials,
       region: initiatedCaseFile.region,
     });
 
+    const credentialsInterval = setInterval(async () => {
+      await refreshCredentials();
+      const refreshRequest = await initiateUpload({
+        ...activeFileUpload.upoadDto,
+        uploadId: initiatedCaseFile.uploadId,
+      });
+      federationS3Client = new S3Client({
+        credentials: refreshRequest.federationCredentials,
+        region: initiatedCaseFile.region,
+      });
+    }, 20 * MINUTES_TO_MILLISECONDS);
+
     const uploadPromises: Promise<UploadPartCommandOutput>[] = [];
 
-    const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
-    for (let i = 0; i < totalChunks; i++) {
-      const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
+    try {
+      const totalChunks = Math.ceil(activeFileUpload.file.size / chunkSizeBytes);
+      let promisesSize = 0;
+      for (let i = 0; i < totalChunks; i++) {
+        const chunkBlob = activeFileUpload.file.slice(i * chunkSizeBytes, (i + 1) * chunkSizeBytes);
 
-      const arrayFromBlob = new Uint8Array(await blobToArrayBuffer(chunkBlob));
-      const partHash = crypto.createHash('sha256').update(arrayFromBlob).digest('base64');
+        const arrayFromBlob = new Uint8Array(await blobToArrayBuffer(chunkBlob));
+        const partHash = crypto.createHash('sha256').update(arrayFromBlob).digest('base64');
 
-      const uploadInput: UploadPartCommandInput = {
-        Bucket: initiatedCaseFile.bucket,
-        Key: `${initiatedCaseFile.caseUlid}/${initiatedCaseFile.ulid}`,
-        PartNumber: i + 1,
-        UploadId: initiatedCaseFile.uploadId,
-        Body: arrayFromBlob,
-        ChecksumSHA256: partHash,
-        ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
-      };
-      const uploadCommand = new UploadPartCommand(uploadInput);
+        const uploadInput: UploadPartCommandInput = {
+          Bucket: initiatedCaseFile.bucket,
+          Key: `${initiatedCaseFile.caseUlid}/${initiatedCaseFile.ulid}`,
+          PartNumber: i + 1,
+          UploadId: initiatedCaseFile.uploadId,
+          Body: arrayFromBlob,
+          ChecksumSHA256: partHash,
+          ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
+        };
+        const uploadCommand = new UploadPartCommand(uploadInput);
 
-      uploadPromises.push(federationS3Client.send(uploadCommand));
+        uploadPromises.push(federationS3Client.send(uploadCommand));
+        promisesSize += chunkSizeBytes;
+
+        // flush promises if we've got over 500MB queued
+        if (promisesSize > ONE_MB * 500) {
+          await Promise.all(uploadPromises);
+          promisesSize = 0;
+          uploadPromises.length = 0;
+        }
+      }
+
+      await Promise.all(uploadPromises);
+    } finally {
+      clearInterval(credentialsInterval);
     }
-
-    await Promise.all(uploadPromises);
 
     await completeUpload({
       caseUlid: props.caseId,
@@ -163,19 +192,18 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     // per file try/finally state to initiate uploads
     try {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
-      const initiatedCaseFilePromise = initiateUpload({
-        caseUlid: props.caseId,
-        fileName: selectedFile.name,
-        filePath: selectedFile.relativePath,
-        fileSizeBytes,
-        chunkSizeBytes,
-        contentType,
-        reason,
-        details,
-      });
       const activeFileUpload = {
         file: selectedFile,
-        initiatedCaseFilePromise,
+        upoadDto: {
+          caseUlid: props.caseId,
+          fileName: selectedFile.name,
+          filePath: selectedFile.relativePath,
+          fileSizeBytes,
+          chunkSizeBytes,
+          contentType,
+          reason,
+          details,
+        },
       };
       await uploadFilePartsAndComplete(activeFileUpload, chunkSizeBytes);
     } catch (e) {

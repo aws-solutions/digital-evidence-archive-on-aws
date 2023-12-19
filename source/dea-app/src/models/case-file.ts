@@ -131,6 +131,7 @@ export interface InitiateCaseFileUploadDTO {
   readonly fileSizeBytes: number;
   readonly details?: string;
   readonly reason?: string;
+  readonly uploadId?: string;
 }
 
 export interface CaseAssociationDTO {

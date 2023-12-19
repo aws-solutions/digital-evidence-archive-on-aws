@@ -12,6 +12,7 @@ export interface InitiateUploadForm {
   details: string;
   reason: string;
   chunkSizeBytes: number;
+  uploadId?: string;
 }
 
 export interface CompleteUploadForm {

@@ -35,7 +35,9 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
   }
 
   const userUlid = getUserUlid(event);
-  await validateInitiateUploadRequirements(requestCaseFile, userUlid, repositoryProvider);
+  if (!requestCaseFile.uploadId) {
+    await validateInitiateUploadRequirements(requestCaseFile, userUlid, repositoryProvider);
+  }
 
   const initiateUploadResponse = await CaseFileService.initiateCaseFileUpload(
     requestCaseFile,
