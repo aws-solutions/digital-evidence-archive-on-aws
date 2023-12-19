@@ -160,8 +160,11 @@ describe('DataVaultDetailsPage', () => {
       isLoading: false,
     }));
     const page = render(<DataVaultDetailsPage />);
-    const dataVaultName = await screen.findByText('Some Data Vault');
-    expect(dataVaultName).toBeTruthy();
+    const pageWrapper = wrapper(page.baseElement);
+
+    const headerWrapper = pageWrapper.findHeader();
+    if (!headerWrapper) fail();
+    expect(headerWrapper.findHeadingText().getElement()).toHaveTextContent('Some Data Vault');
 
     const folderEntry = await screen.findByText('joi-17.9.1');
     expect(folderEntry).toBeTruthy();

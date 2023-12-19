@@ -417,7 +417,7 @@ export const dataVaultDetailLabels = {
   associatedLabel: 'Associated',
   disassociateLabel: 'Disassociate file',
   associateToCaseModalTitle: 'Choose case to associate to file(s)',
-  associateToCaseDescription: 'Search for case and select',
+  associateToCaseDescription: 'Search for case and select.',
   associateToCaseSuccessNotificationMessage: 'File(s) successfully associated to the case',
   associateToCaseMultiselectPlaceholder: 'Choose case',
   associateToCaseMultiselectFilteringPlaceholder: 'Search by case name',

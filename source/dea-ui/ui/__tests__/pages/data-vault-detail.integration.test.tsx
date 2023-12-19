@@ -113,14 +113,6 @@ mockedAxios.request.mockImplementation((eventObj) => {
 });
 
 describe('DatavaultDetailPage', () => {
-  it('renders a data vault details page', async () => {
-    const page = render(<DataVaultDetailsPage />);
-    expect(page).toBeTruthy();
-
-    const mockedCaseInfo = await screen.findByText(mockedDatavaultDetails.name);
-    expect(mockedCaseInfo).toBeTruthy();
-  });
-
   it('downloads a datavault audit', async () => {
     const page = render(<DataVaultDetailsPage />);
     expect(page).toBeTruthy();

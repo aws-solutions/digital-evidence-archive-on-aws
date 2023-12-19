@@ -41,9 +41,12 @@ import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
-import { DataVaultDetailsBodyProps } from './DataVaultDetailsBody';
 
-function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
+export interface DataVaultFilesTableProps {
+  readonly dataVaultId: string;
+}
+
+function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
   const router = useRouter();
   const [displayFilesWithoutACase, setDisplayFilesWithoutACase] = useState(false);
   // Property and date filter collections
@@ -78,11 +81,18 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
       groupValuesLabel: 'File Name Values',
     },
   ];
-
   const { items, filterProps, collectionProps, paginationProps } = useCollection(data, {
     filtering: {
       empty: TableEmptyDisplay(dataVaultDetailLabels.noFilesLabel, dataVaultDetailLabels.noFilesDisplayLabel),
       noMatch: TableNoMatchDisplay(dataVaultDetailLabels.noFilesLabel),
+      filteringFunction: (item, filteringText) => {
+        if (displayFilesWithoutACase && item.caseCount) {
+          return false;
+        }
+        const filteringTextLowerCase = filteringText.toLowerCase();
+
+        return item.fileName.toLowerCase().indexOf(filteringTextLowerCase) > -1;
+      },
     },
     propertyFiltering: {
       filteringProperties: filteringProperties,
@@ -378,7 +388,6 @@ function DataVaultFilesTable(props: DataVaultDetailsBodyProps): JSX.Element {
           />
           <Box padding="xxs">
             <Checkbox
-              disabled={false}
               onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
               checked={displayFilesWithoutACase}
             >

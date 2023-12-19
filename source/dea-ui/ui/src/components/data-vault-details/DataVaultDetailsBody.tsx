@@ -29,9 +29,11 @@ export const DATA_VAULTS_AUDIT_ENDPOINT = '/datavaults/{dataVaultId}/auditPOST';
 export const DOWNLOAD_AUDIT_TEST_ID = 'download-datavault-audit-csv-button';
 export interface DataVaultDetailsBodyProps {
   readonly dataVaultId: string;
+  readonly setdataVaultName: (name: string) => void;
 }
 
 function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
+  const { setdataVaultName } = props;
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();
   const { data, isLoading } = useGetDataVaultById(props.dataVaultId);
@@ -51,6 +53,9 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
     if (!data) {
       return <h1>{commonLabels.notFoundLabel}</h1>;
     }
+
+    setdataVaultName(data.name);
+
     return (
       <ContentLayout
         header={
@@ -126,7 +131,7 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
                   <p>{data.description ?? '-'}</p>
                 </div>
               </TextContent>
-              <SpaceBetween size="m">
+              <SpaceBetween size="l">
                 <TextContent>
                   <h5>{dataVaultDetailLabels.objectCounterLabel}</h5>
                   <p>{data.objectCount ?? '-'}</p>

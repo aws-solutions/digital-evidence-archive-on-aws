@@ -183,7 +183,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           </TextContent>
         }
       >
-        <SpaceBetween direction="vertical" size="xs">
+        <SpaceBetween direction="vertical" size="l">
           <TextContent>
             <h5>{commonTableLabels.dataSyncTaskIdHeader}</h5>
             <p>{selectedTasks.length && selectedTasks[0].taskId}</p>
