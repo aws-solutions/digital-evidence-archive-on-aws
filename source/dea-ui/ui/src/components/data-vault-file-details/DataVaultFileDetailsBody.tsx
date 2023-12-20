@@ -37,6 +37,7 @@ import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { AuditDownloadButton } from '../audit/audit-download-button';
+import ActionContainer from '../common-components/ActionContainer';
 
 export interface DataVaultFileDetailsBodyProps {
   readonly dataVaultId: string;
@@ -45,6 +46,8 @@ export interface DataVaultFileDetailsBodyProps {
 
 export const DATA_VAULTS_FILE_AUDIT_ENDPOINT = '/datavaults/{dataVaultId}/files/{fileId}/auditPOST';
 export const DOWNLOAD_VAULT_FILE_AUDIT_TEST_ID = 'download-data-vault-file-audit-button';
+export const DELETE_DATA_VAULT_FILE_CASE_ASSOCIATION_PATH =
+  '/datavaults/{dataVaultId}/files/{fileId}/caseAssociationsDELETE';
 
 function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Element {
   const { data, isLoading, mutate } = useGetDataVaultFileDetailsById(props.dataVaultId, props.fileId);
@@ -180,18 +183,23 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
                 variant="h2"
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
-                    <AuditDownloadButton
-                      label={auditLogLabels.downloadFileAuditLabel}
-                      testId={DOWNLOAD_VAULT_FILE_AUDIT_TEST_ID}
-                      permissionCallback={() =>
-                        availableEndpoints.data?.includes(DATA_VAULTS_FILE_AUDIT_ENDPOINT)
-                      }
-                      downloadCallback={async () =>
-                        await getDataVaultFileAuditCSV(data.dataVaultUlid, data.ulid)
-                      }
-                      type="DataVault"
-                      targetName={data.fileName}
-                    />
+                    <ActionContainer
+                      required={DATA_VAULTS_FILE_AUDIT_ENDPOINT}
+                      actions={availableEndpoints.data}
+                    >
+                      <AuditDownloadButton
+                        label={auditLogLabels.downloadFileAuditLabel}
+                        testId={DOWNLOAD_VAULT_FILE_AUDIT_TEST_ID}
+                        permissionCallback={() =>
+                          availableEndpoints.data?.includes(DATA_VAULTS_FILE_AUDIT_ENDPOINT)
+                        }
+                        downloadCallback={async () =>
+                          await getDataVaultFileAuditCSV(data.dataVaultUlid, data.ulid)
+                        }
+                        type="DataVault"
+                        targetName={data.fileName}
+                      />
+                    </ActionContainer>
                   </SpaceBetween>
                 }
               >
@@ -227,13 +235,18 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
                     {disassociateModal()}
-                    <Button
-                      data-testid="disassociate-data-vault-file-button"
-                      onClick={enableDisassociateToCaseModal}
-                      disabled={!data.caseCount}
+                    <ActionContainer
+                      required={DELETE_DATA_VAULT_FILE_CASE_ASSOCIATION_PATH}
+                      actions={availableEndpoints.data}
                     >
-                      {dataVaultDetailLabels.disassociateLabel}
-                    </Button>
+                      <Button
+                        data-testid="disassociate-data-vault-file-button"
+                        onClick={enableDisassociateToCaseModal}
+                        disabled={!data.caseCount}
+                      >
+                        {dataVaultDetailLabels.disassociateLabel}
+                      </Button>
+                    </ActionContainer>
                   </SpaceBetween>
                 }
               >

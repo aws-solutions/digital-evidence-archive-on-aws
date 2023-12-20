@@ -36,6 +36,7 @@ import {
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString, formatDateTimeFromISOString } from '../../helpers/dateHelper';
 import { DeaDataSyncTaskDTO, TaskStatus } from '../../models/DataSyncTask';
+import ActionContainer from '../common-components/ActionContainer';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
@@ -122,10 +123,6 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
       },
     }
   );
-
-  function canRunDataSyncTaskVaults(endpoints: string[]): boolean {
-    return selectedTasks.length === 1 && endpoints.includes(RUN_DATA_SYNC_TASK_PATH);
-  }
 
   function enableRunTaskModal() {
     setShowRunTaskModal(true);
@@ -299,14 +296,16 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
               {runTaskModal()}
-              <Button
-                disabled={!canRunDataSyncTaskVaults(availableEndpoints.data)}
-                data-testid="data-sync-run-task-button"
-                variant="primary"
-                onClick={enableRunTaskModal}
-              >
-                {dataSyncTaskListLabels.runDataSyncTaskLabel}
-              </Button>
+              <ActionContainer required={RUN_DATA_SYNC_TASK_PATH} actions={availableEndpoints.data}>
+                <Button
+                  disabled={selectedTasks.length === 0}
+                  data-testid="data-sync-run-task-button"
+                  variant="primary"
+                  onClick={enableRunTaskModal}
+                >
+                  {dataSyncTaskListLabels.runDataSyncTaskLabel}
+                </Button>
+              </ActionContainer>
             </SpaceBetween>
           }
           totalItems={data}

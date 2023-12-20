@@ -1,8 +1,10 @@
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useAvailableEndpoints } from '../../src/api/auth';
 import { useGetDataVaultFileDetailsById } from '../../src/api/data-vaults';
 import { commonLabels } from '../../src/common/labels';
+import { DELETE_DATA_VAULT_FILE_CASE_ASSOCIATION_PATH } from '../../src/components/data-vault-file-details/DataVaultFileDetailsBody';
 import DataVaultFileDetailPage from '../../src/pages/data-vault-file-detail';
 
 let query: { dataVaultId: any; fileId: any } = { dataVaultId: '100', fileId: '200' };
@@ -15,6 +17,10 @@ jest.mock('next/router', () => ({
 
 jest.mock('../../src/api/data-vaults', () => ({
   useGetDataVaultFileDetailsById: jest.fn(),
+}));
+
+jest.mock('../../src/api/auth', () => ({
+  useAvailableEndpoints: jest.fn(),
 }));
 
 const dataVaultFile = {
@@ -39,6 +45,10 @@ describe('CaseDetailsPage', () => {
   it('renders a data vault file details page', async () => {
     useGetDataVaultFileDetailsById.mockImplementation(() => ({
       data: dataVaultFile,
+      isLoading: false,
+    }));
+    useAvailableEndpoints.mockImplementation(() => ({
+      data: [DELETE_DATA_VAULT_FILE_CASE_ASSOCIATION_PATH],
       isLoading: false,
     }));
     const page = render(<DataVaultFileDetailPage />);
@@ -89,7 +99,6 @@ describe('CaseDetailsPage', () => {
 
   it('renders a not found warning if no dataVaultId is provided', () => {
     query = { dataVaultId: undefined, fileId: '200' };
-    const page = render(<DataVaultFileDetailPage />);
     render(<DataVaultFileDetailPage />);
     screen.findByText(commonLabels.notFoundLabel);
   });

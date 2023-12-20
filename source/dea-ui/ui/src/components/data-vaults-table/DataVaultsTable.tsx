@@ -25,7 +25,7 @@ import { DeaListResult } from '../../api/models/api-results';
 import { commonLabels, commonTableLabels, dataVaultListLabels, paginationLabels } from '../../common/labels';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
-import { canCreateDataVaults } from '../../helpers/userActionSupport';
+import ActionContainer from '../common-components/ActionContainer';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
@@ -34,6 +34,8 @@ import stepOneImage from './svgs/1_enable-security.svg';
 import stepTwoImage from './svgs/2_car.svg';
 import stepThreeImage from './svgs/3_docs.svg';
 import stepFourImage from './svgs/4_computer.svg';
+
+export const CREATE_DATA_VAULT_PATH = '/datavaultsPOST';
 
 export type DataVaultFetcherSignature = () => DeaListResult<DeaDataVault>;
 export interface DataVaultsTableProps {
@@ -182,14 +184,9 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
       empty={TableEmptyDisplay(
         dataVaultListLabels.noDataVaultsLabel,
         dataVaultListLabels.noDisplayLabel,
-        <>
-          <Button
-            disabled={!canCreateDataVaults(availableEndpoints.data)}
-            onClick={createNewDataVaultHandler}
-          >
-            {dataVaultListLabels.createNewDataVaultLabel}
-          </Button>
-        </>
+        <ActionContainer required={CREATE_DATA_VAULT_PATH} actions={availableEndpoints.data}>
+          <Button onClick={createNewDataVaultHandler}>{dataVaultListLabels.createNewDataVaultLabel}</Button>
+        </ActionContainer>
       )}
       header={
         <TableHeader
@@ -200,14 +197,15 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
               {howItWorksModal()}
-              <Button
-                disabled={!canCreateDataVaults(availableEndpoints.data)}
-                data-testid="create-data-vault-button"
-                variant="primary"
-                onClick={createNewDataVaultHandler}
-              >
-                {dataVaultListLabels.createNewDataVaultLabel}
-              </Button>
+              <ActionContainer required={CREATE_DATA_VAULT_PATH} actions={availableEndpoints.data}>
+                <Button
+                  data-testid="create-data-vault-button"
+                  variant="primary"
+                  onClick={createNewDataVaultHandler}
+                >
+                  {dataVaultListLabels.createNewDataVaultLabel}
+                </Button>
+              </ActionContainer>
             </SpaceBetween>
           }
           totalItems={data}

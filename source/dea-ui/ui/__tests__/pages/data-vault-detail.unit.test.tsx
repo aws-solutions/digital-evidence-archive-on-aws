@@ -9,6 +9,7 @@ import {
   useListDataVaultFiles,
 } from '../../src/api/data-vaults';
 import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
+import { CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH } from '../../src/components/data-vault-details/DataVaultFilesTable';
 import DataVaultDetailsPage from '../../src/pages/data-vault-detail';
 
 let query: { dataVaultId: string | undefined } = { dataVaultId: '100' };
@@ -351,6 +352,10 @@ describe('DataVaultDetailsPage', () => {
           updated: new Date('2023-10-19T01:41:39.515Z'),
         },
       ],
+      isLoading: false,
+    }));
+    useAvailableEndpoints.mockImplementation(() => ({
+      data: [CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH],
       isLoading: false,
     }));
     const page = render(<DataVaultDetailsPage />);

@@ -35,12 +35,16 @@ import {
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
-import { canCreateCases, canDeleteCaseFiles, canUpdateCaseStatus } from '../../helpers/userActionSupport';
+import ActionContainer from '../common-components/ActionContainer';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStrings } from '../common-components/commonDefinitions';
 import { ConfirmModal } from '../common-components/ConfirmModal';
 import { TableHeader } from '../common-components/TableHeader';
 import { filteringOptions, filteringProperties, searchableColumns } from './caseListDefinitions';
+
+export const DELETE_CASE_FILES_PATH = '/cases/{caseId}/filesDELETE';
+export const UPDATE_CASE_STATUS_PATH = '/cases/{caseId}/statusPUT';
+export const CREATE_CASE_PATH = '/casesPOST';
 
 export type CaseFetcherSignature = () => DeaListResult<DeaCaseDTO>;
 export interface CaseTableProps {
@@ -212,11 +216,11 @@ function CaseTable(props: CaseTableProps): JSX.Element {
         }
       >
         {caseListLabels.deactivateCaseModalMessage}
-        {canDeleteCaseFiles(availableEndpoints.data) && (
+        <ActionContainer required={DELETE_CASE_FILES_PATH} actions={availableEndpoints.data}>
           <Toggle onChange={({ detail }) => setDeleteFiles(detail.checked)} checked={deleteFiles}>
             {caseListLabels.deleteFilesLabel}
           </Toggle>
-        )}
+        </ActionContainer>
       </Modal>
     );
   }
@@ -259,7 +263,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
           actionButtons={
             <SpaceBetween direction="horizontal" size="xs">
               {deactivateCaseModal()}
-              {canUpdateCaseStatus(availableEndpoints.data) && (
+              <ActionContainer required={UPDATE_CASE_STATUS_PATH} actions={availableEndpoints.data}>
                 <Button
                   data-testid="deactivate-button"
                   disabled={!canDeactivateCase()}
@@ -268,7 +272,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
                 >
                   {caseListLabels.deactivateCaseLabel}
                 </Button>
-              )}
+              </ActionContainer>
               <ConfirmModal
                 testid="activate-modal"
                 isOpen={showActivateModal && selectedCase.length !== 0}
@@ -283,7 +287,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
                 cancelAction={disableActivateCaseModal}
                 cancelButtonText={commonLabels.cancelButton}
               />
-              {canUpdateCaseStatus(availableEndpoints.data) && (
+              <ActionContainer required={UPDATE_CASE_STATUS_PATH} actions={availableEndpoints.data}>
                 <Button
                   data-testid="activate-button"
                   disabled={!canActivateCase()}
@@ -292,16 +296,14 @@ function CaseTable(props: CaseTableProps): JSX.Element {
                 >
                   {caseListLabels.activateCaseLabel}
                 </Button>
-              )}
+              </ActionContainer>
+
               {props.canCreate && (
-                <Button
-                  disabled={!canCreateCases(availableEndpoints.data)}
-                  data-testid="create-case-button"
-                  variant="primary"
-                  onClick={createNewCaseHandler}
-                >
-                  {caseListLabels.createNewCaseLabel}
-                </Button>
+                <ActionContainer required={CREATE_CASE_PATH} actions={availableEndpoints.data}>
+                  <Button data-testid="create-case-button" variant="primary" onClick={createNewCaseHandler}>
+                    {caseListLabels.createNewCaseLabel}
+                  </Button>
+                </ActionContainer>
               )}
             </SpaceBetween>
           }

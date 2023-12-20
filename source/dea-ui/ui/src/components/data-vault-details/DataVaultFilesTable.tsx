@@ -40,10 +40,14 @@ import {
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
+import ActionContainer from '../common-components/ActionContainer';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
+
+export const CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH = '/datavaults/{dataVaultId}/caseAssociationsPOST';
 
 export interface DataVaultFilesTableProps {
   readonly dataVaultId: string;
+  readonly availableEndpoints: string[];
 }
 
 function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
@@ -248,14 +252,19 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
     return (
       <SpaceBetween direction="horizontal" size="xs">
         {associateToCaseModal()}
-        <Button
-          disabled={selectedFiles.length === 0}
-          data-testid="data-vault-associate-button"
-          variant="primary"
-          onClick={enableAssociateToCaseModal}
+        <ActionContainer
+          required={CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH}
+          actions={props.availableEndpoints}
         >
-          {commonTableLabels.associateButtonLabel}
-        </Button>
+          <Button
+            disabled={selectedFiles.length === 0}
+            data-testid="data-vault-associate-button"
+            variant="primary"
+            onClick={enableAssociateToCaseModal}
+          >
+            {commonTableLabels.associateButtonLabel}
+          </Button>
+        </ActionContainer>
       </SpaceBetween>
     );
   }

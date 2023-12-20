@@ -22,6 +22,7 @@ import { auditLogLabels, commonLabels, dataVaultDetailLabels } from '../../commo
 import { formatDateTimeFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { AuditDownloadButton } from '../audit/audit-download-button';
+import ActionContainer from '../common-components/ActionContainer';
 import DataVaultFilesTable from './DataVaultFilesTable';
 
 export const DATA_VAULTS_PUT_ENDPOINT = '/datavaults/{dataVaultId}/detailsPUT';
@@ -71,20 +72,26 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
                 variant="h2"
                 actions={
                   <SpaceBetween direction="horizontal" size="xs">
-                    <AuditDownloadButton
-                      label={auditLogLabels.dataVaultAuditLogLabel}
-                      testId={DOWNLOAD_AUDIT_TEST_ID}
-                      permissionCallback={() => availableEndpoints.data?.includes(DATA_VAULTS_AUDIT_ENDPOINT)}
-                      downloadCallback={async () => await getDataVaultAuditCSV(data.ulid)}
-                      type="DataVault"
-                      targetName={data.name}
-                    />
-                    <Button
-                      disabled={!availableEndpoints.data?.includes(DATA_VAULTS_PUT_ENDPOINT)}
-                      onClick={editHandler}
-                    >
-                      {commonLabels.editButton}
-                    </Button>
+                    <ActionContainer required={DATA_VAULTS_AUDIT_ENDPOINT} actions={availableEndpoints.data}>
+                      <AuditDownloadButton
+                        label={auditLogLabels.dataVaultAuditLogLabel}
+                        testId={DOWNLOAD_AUDIT_TEST_ID}
+                        permissionCallback={() =>
+                          availableEndpoints.data?.includes(DATA_VAULTS_AUDIT_ENDPOINT)
+                        }
+                        downloadCallback={async () => await getDataVaultAuditCSV(data.ulid)}
+                        type="DataVault"
+                        targetName={data.name}
+                      />
+                    </ActionContainer>
+                    <ActionContainer required={DATA_VAULTS_PUT_ENDPOINT} actions={availableEndpoints.data}>
+                      <Button
+                        disabled={!availableEndpoints.data?.includes(DATA_VAULTS_PUT_ENDPOINT)}
+                        onClick={editHandler}
+                      >
+                        {commonLabels.editButton}
+                      </Button>
+                    </ActionContainer>
                   </SpaceBetween>
                 }
               >
@@ -143,7 +150,10 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
               </SpaceBetween>
             </ColumnLayout>
           </Container>
-          <DataVaultFilesTable dataVaultId={props.dataVaultId}></DataVaultFilesTable>
+          <DataVaultFilesTable
+            dataVaultId={props.dataVaultId}
+            availableEndpoints={availableEndpoints.data}
+          ></DataVaultFilesTable>
         </SpaceBetween>
       </ContentLayout>
     );
