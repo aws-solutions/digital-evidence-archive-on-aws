@@ -4,6 +4,17 @@
  */
 
 import { fail } from 'assert';
+import {
+  AbortMultipartUploadCommand,
+  CreateMultipartUploadCommand,
+  CreateMultipartUploadCommandInput,
+  ListObjectsCommand,
+  ListObjectsCommandInput,
+  S3Client,
+  UploadPartCommand,
+  UploadPartCommandInput,
+} from '@aws-sdk/client-s3';
+import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
 import { Credentials } from 'aws4-axios';
 import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
@@ -214,6 +225,92 @@ describe('Test case file APIs', () => {
     },
     10 * MINUTES_TO_MILLISECONDS
   );
+
+  it('provides a restrictive temporary policy', async () => {
+    const suffix = randomSuffix();
+    const createdCase = await createCase(idToken, creds);
+    const caseUlid = createdCase.ulid ?? fail();
+    caseIdsToDelete.push(caseUlid);
+
+    const initiatedCaseFile = await initiateCaseFileUploadSuccess(
+      DEA_API_URL,
+      idToken,
+      creds,
+      caseUlid,
+      `fileone-${suffix}`,
+      FILE_PATH,
+      FILE_SIZE_BYTES
+    );
+
+    const initiatedCaseFile2 = await initiateCaseFileUploadSuccess(
+      DEA_API_URL,
+      idToken,
+      creds,
+      caseUlid,
+      `filetwo-${suffix}`,
+      FILE_PATH,
+      FILE_SIZE_BYTES
+    );
+
+    const s3client = new S3Client({
+      region: testEnv.awsRegion,
+      credentials: initiatedCaseFile.federationCredentials,
+    });
+
+    const tempStsClient = new STSClient({
+      region: testEnv.awsRegion,
+      credentials: initiatedCaseFile.federationCredentials,
+    });
+
+    // can't create a new multipart upload
+    const createMultipartUpload: CreateMultipartUploadCommandInput = {
+      Bucket: initiatedCaseFile.bucket,
+      Key: `${caseUlid}/boguskey`,
+    };
+    await expect(s3client.send(new CreateMultipartUploadCommand(createMultipartUpload))).rejects.toThrow(
+      /is not authorized to perform/g
+    );
+
+    // can't upload for a different file
+    const uploadPartCommand: UploadPartCommandInput = {
+      Bucket: initiatedCaseFile2.bucket,
+      Key: `${caseUlid}/${initiatedCaseFile2.ulid}`,
+      UploadId: initiatedCaseFile2.uploadId,
+      Body: FILE_CONTENT,
+      PartNumber: 1,
+    };
+    await expect(s3client.send(new UploadPartCommand(uploadPartCommand))).rejects.toThrow('Access Denied');
+
+    // can't list bucket contents
+    const listObjectsCommand: ListObjectsCommandInput = {
+      Bucket: initiatedCaseFile.bucket,
+    };
+    await expect(s3client.send(new ListObjectsCommand(listObjectsCommand))).rejects.toThrow('Access Denied');
+
+    // can't make sts calls
+    await expect(
+      tempStsClient.send(
+        new AssumeRoleCommand({ RoleArn: testEnv.DataSyncRole, RoleSessionName: 'temp-session' })
+      )
+    ).rejects.toThrow(/is not authorized to perform/g);
+
+    // cleanup
+    const admins3Client = new S3Client({ region: testEnv.awsRegion });
+    await admins3Client.send(
+      new AbortMultipartUploadCommand({
+        Bucket: initiatedCaseFile.bucket,
+        Key: initiatedCaseFile.fileS3Key,
+        UploadId: initiatedCaseFile.uploadId,
+      })
+    );
+    await admins3Client.send(
+      new AbortMultipartUploadCommand({
+        Bucket: initiatedCaseFile2.bucket,
+        Key: initiatedCaseFile2.fileS3Key,
+        UploadId: initiatedCaseFile2.uploadId,
+      })
+    );
+  });
 });
 
 async function createCase(idToken: Oauth2Token, creds: Credentials): Promise<DeaCase> {
