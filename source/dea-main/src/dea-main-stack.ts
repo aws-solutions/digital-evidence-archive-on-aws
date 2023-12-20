@@ -167,6 +167,7 @@ export class DeaMainStack extends cdk.Stack {
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
         AWS_USE_FIPS_ENDPOINT: deaConfig.fipsEndpointsEnabled().toString(),
         SOURCE_IP_VALIDATION_ENABLED: deaConfig.sourceIpValidationEnabled().toString(),
+        SOURCE_IP_MASK_CIDR: deaConfig.sourceIpSubnetMaskCIDR(),
         DELETION_ALLOWED: deaConfig.deletionAllowed().toString(),
         UPLOAD_FILES_TIMEOUT_MINUTES: deaConfig.uploadFilesTimeoutMinutes().toString(),
         ATHENA_WORKGROUP: auditTrail.auditCloudwatchToS3Infra.athenaWorkGroupName,

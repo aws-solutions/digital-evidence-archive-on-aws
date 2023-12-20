@@ -19,7 +19,7 @@ import { getQueryResponseWithState, startAudit } from '../audit-test-support';
 import { callCreateCase, callCreateUser } from './case-file-integration-test-helper';
 
 let caseId = '';
-describe('start case audit', () => {
+describe('get case audit', () => {
   const OLD_ENV = process.env;
   let stsMock: AwsClientStub<STSClient>;
 
@@ -48,6 +48,7 @@ describe('start case audit', () => {
     process.env.AWS_PARTITION = 'aws';
     process.env.AWS_REGION = 'eu-west-1';
     process.env.KEY_ARN = 'keyarn';
+    process.env.SOURCE_IP_MASK_CIDR = '32';
   });
 
   afterAll(() => {

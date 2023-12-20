@@ -54,6 +54,7 @@ describe('get user audit', () => {
     process.env.AWS_REGION = 'eu-west-1';
     process.env.AWS_PARTITION = 'aws';
     process.env.KEY_ARN = 'keyarn';
+    process.env.SOURCE_IP_MASK_CIDR = '32';
   });
 
   afterAll(() => {

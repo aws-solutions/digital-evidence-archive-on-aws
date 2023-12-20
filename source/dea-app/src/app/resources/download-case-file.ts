@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getRequiredPathParam } from '../../lambda-http-helpers';
+import { getRequiredEnv, getRequiredPathParam } from '../../lambda-http-helpers';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
@@ -24,6 +24,7 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
+  const subnetCIDR = getRequiredEnv('SOURCE_IP_MASK_CIDR');
 
   const retrievedCaseFile = await getRequiredCaseFile(caseId, fileId, repositoryProvider);
 
@@ -33,7 +34,7 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
 
   const downloadResult = await getPresignedUrlForDownload(
     retrievedCaseFile,
-    `${event.requestContext.identity.sourceIp}/32`,
+    `${event.requestContext.identity.sourceIp}/${subnetCIDR}`,
     datasetsProvider
   );
 

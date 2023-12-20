@@ -38,11 +38,23 @@ const deaRoleTypesFormat: convict.Format = {
   },
 };
 
+const SubnetMaskCIDRFormat: convict.Format = {
+  name: 'subnet-mask-cidr-format',
+  validate: function (val) {
+    if (typeof val !== 'number') {
+      throw new Error('Source IP CIDR must be of type number');
+    }
+    if (val < 0 || val > 32) {
+      throw new Error('Source IP CIDR must be between 0 and 32');
+    }
+  },
+};
+
 const groupDeaRoleRulesFormat: convict.Format = {
   name: 'group-to-dearole-rules',
   validate: function (mappingRules, schema) {
     if (!Array.isArray(mappingRules)) {
-      throw new Error('must be of type Array');
+      throw new Error('groupToDeaRoleRules must be of type Array');
     }
 
     if (mappingRules.length > 25) {
@@ -262,6 +274,11 @@ const convictSchema = {
     format: Boolean,
     default: true,
   },
+  sourceIpSubnetMaskCIDR: {
+    doc: 'Subnet mask for source ip validation',
+    format: SubnetMaskCIDRFormat.name,
+    default: 32,
+  },
   deaRoleTypes: {
     doc: 'DEA Role Types config',
     format: deaRoleTypesFormat.name,
@@ -399,6 +416,7 @@ convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
 convict.addFormat(deaStageFormat);
 convict.addFormat(uploadTimeoutFormat);
+convict.addFormat(SubnetMaskCIDRFormat);
 
 interface DEAConfig {
   stage(): string;
@@ -411,6 +429,7 @@ interface DEAConfig {
   isTestStack(): boolean;
   isOneClick(): boolean;
   sourceIpValidationEnabled(): boolean;
+  sourceIpSubnetMaskCIDR(): string;
   dataSyncLocationBuckets(): string[];
   deaRoleTypes(): DEARoleTypeDefinition[];
   retainPolicy(): RemovalPolicy;
@@ -446,6 +465,7 @@ export const deaConfig: DEAConfig = {
   isTestStack: () => convictConfig.get('testStack'),
   isOneClick: () => convictConfig.get('isOneClick'),
   sourceIpValidationEnabled: () => convictConfig.get('sourceIpValidation') ?? true,
+  sourceIpSubnetMaskCIDR: () => convictConfig.get('sourceIpSubnetMaskCIDR').toString(),
   deaRoleTypes: () => convictConfig.get('deaRoleTypes'),
   retainPolicy: () => (convictConfig.get('testStack') ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN),
   retentionDays: () => (convictConfig.get('testStack') ? RetentionDays.TWO_WEEKS : RetentionDays.INFINITE),

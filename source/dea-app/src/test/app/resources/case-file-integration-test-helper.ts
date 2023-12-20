@@ -84,6 +84,7 @@ export const callInitiateCaseFileUpload = async (
   details = DETAILS,
   chunkSizeBytes = CHUNK_SIZE_BYTES
 ): Promise<DeaCaseFileUpload> => {
+  process.env.SOURCE_IP_MASK_CIDR = '32';
   const event = getDummyEvent({
     headers: {
       userUlid: uploaderId,

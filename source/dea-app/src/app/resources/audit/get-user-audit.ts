@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getRequiredPathParam } from '../../../lambda-http-helpers';
+import { getRequiredEnv, getRequiredPathParam } from '../../../lambda-http-helpers';
 import { joiUlid } from '../../../models/validation/joi-common';
 import { AuditType } from '../../../persistence/schema/dea-schema';
 import { defaultProvider } from '../../../persistence/schema/entities';
@@ -28,13 +28,15 @@ export const getUserAudit: DEAGatewayProxyHandler = async (
   const auditId = getRequiredPathParam(event, 'auditId', joiUlid);
   const userId = getRequiredPathParam(event, 'userId', joiUlid);
   await validateUser(userId, repositoryProvider);
+  const subnetCIDR = getRequiredEnv('SOURCE_IP_MASK_CIDR');
+
   const result = await auditService.getAuditResult(
     auditId,
     userId,
     AuditType.USER,
     athenaClient,
     repositoryProvider,
-    `${event.requestContext.identity.sourceIp}/32`
+    `${event.requestContext.identity.sourceIp}/${subnetCIDR}`
   );
 
   return responseOk(event, result);

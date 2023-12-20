@@ -1014,6 +1014,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1162,6 +1163,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1342,6 +1344,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1506,6 +1509,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1670,6 +1674,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1834,6 +1839,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1998,6 +2004,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2162,6 +2169,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2326,6 +2334,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2490,6 +2499,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2654,6 +2664,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2818,6 +2829,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2982,6 +2994,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3146,6 +3159,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3310,6 +3324,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3474,6 +3489,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3638,6 +3654,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3802,6 +3819,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3966,6 +3984,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4130,6 +4149,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4294,6 +4314,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4458,6 +4479,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4622,6 +4644,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4786,6 +4809,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4950,6 +4974,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -5114,6 +5139,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -5278,6 +5304,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -5442,6 +5469,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -5606,6 +5634,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -5770,6 +5799,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -5934,6 +5964,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -6082,6 +6113,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -6262,6 +6294,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -6426,6 +6459,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -6590,6 +6624,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -6754,6 +6789,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -6918,6 +6954,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -7082,6 +7119,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -7246,6 +7284,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -7410,6 +7449,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -7574,6 +7614,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -7738,6 +7779,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -7902,6 +7944,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -8066,6 +8109,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -8230,6 +8274,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -8394,6 +8439,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -8558,6 +8604,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -8722,6 +8769,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -8886,6 +8934,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -9050,6 +9099,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
             "SOLUTION_VERSION": "1.1.0",
+            "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
