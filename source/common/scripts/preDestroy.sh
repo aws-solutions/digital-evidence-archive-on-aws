@@ -19,8 +19,6 @@ export ARTIFACT_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $
 export OBJECT_LOCK_QUEUE_URL=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-objectLockQueueUrl'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
 export FIREHOSE_STREAM_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-firehoseName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
 
-echo "removing $S3ACCESSLOGS_BUCKET_NAME"
-aws s3 rb s3://$S3ACCESSLOGS_BUCKET_NAME --force --region $REGION $profile_string
 echo "removing $DEATRAIL_BUCKET_NAME"
 aws s3 rb s3://$DEATRAIL_BUCKET_NAME --force --region $REGION $profile_string
 echo "removing $ARTIFACT_BUCKET_NAME"
@@ -36,6 +34,8 @@ sleep 90
 date
 python3 ../common/scripts/cleanupLockedBuckets.py
 date
+echo "removing $S3ACCESSLOGS_BUCKET_NAME"
+aws s3 rb s3://$S3ACCESSLOGS_BUCKET_NAME --force --region $REGION $profile_string
 else
   echo "Aborting..."
   exit 1
