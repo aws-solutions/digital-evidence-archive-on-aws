@@ -101,8 +101,9 @@ describe('FileDetailPage', () => {
     const page = render(<FileDetailPage />);
     expect(page).toBeTruthy();
 
-    const mockedCaseInfo = screen.queryAllByText(mockedFileInfo.fileName);
-    expect(mockedCaseInfo).toBeTruthy();
+    const mockedFileText = await screen.findAllByText(mockedFileInfo.fileName);
+    expect(mockedFileText.length).toEqual(2); // Header and breadcrumb
+    expect(mockedFileText).toBeTruthy();
   });
 
   it('downloads a file audit', async () => {

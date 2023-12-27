@@ -55,7 +55,7 @@ const Home: NextPage = () => {
         canCreate={true}
         headerLabel={caseListLabels.casesLabel}
         headerDescription={caseListLabels.casesPageDescription}
-      ></CaseTable>
+      />
     </BaseLayout>
   );
 };

@@ -40,10 +40,7 @@ function DataVaultDetailsPage() {
 
   return (
     <BaseLayout breadcrumbs={breadcrumbs}>
-      <DataVaultDetailsBody
-        dataVaultId={dataVaultId}
-        setdataVaultName={setdataVaultName}
-      ></DataVaultDetailsBody>
+      <DataVaultDetailsBody dataVaultId={dataVaultId} setdataVaultName={setdataVaultName} />
     </BaseLayout>
   );
 }

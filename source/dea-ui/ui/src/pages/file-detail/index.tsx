@@ -44,7 +44,7 @@ function FileDetailPage() {
 
   return (
     <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
-      <FileDetailsBody caseId={caseId} fileId={fileId} setFileName={setFileName}></FileDetailsBody>
+      <FileDetailsBody caseId={caseId} fileId={fileId} setFileName={setFileName} />
     </BaseLayout>
   );
 }

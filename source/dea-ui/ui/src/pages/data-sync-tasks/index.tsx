@@ -24,7 +24,7 @@ export default function DataSyncTasksPage() {
         useDataSyncTasksFectcher={useListAllDataSyncTasks}
         headerLabel={dataSyncTaskListLabels.dataSyncTasksLabel}
         headerDescription={dataSyncTaskListLabels.dataSyncTasksPageDescription}
-      ></DataSyncTasksTable>
+      />
     </BaseLayout>
   );
 }

@@ -17,6 +17,7 @@ import {
   Modal,
   Multiselect,
   Pagination,
+  Popover,
   SpaceBetween,
   Spinner,
   StatusIndicator,
@@ -281,6 +282,23 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         </Link>
         <br />
         {dataVaultDetailLabels.filesDatasyncSignInLabel}
+        <Popover
+          size="small"
+          position="top"
+          triggerType="custom"
+          dismissButton={false}
+          content={<StatusIndicator type="success">{commonLabels.linkCopiedLabel}</StatusIndicator>}
+        >
+          <Button
+            iconName="copy"
+            variant="inline-icon"
+            data-testid="copy-datasync-link-button"
+            onClick={() => {
+              void navigator.clipboard.writeText('https://aws.amazon.com/datasync/');
+            }}
+          />
+          {commonLabels.copyLinkLabel}
+        </Popover>
       </>
     );
   }

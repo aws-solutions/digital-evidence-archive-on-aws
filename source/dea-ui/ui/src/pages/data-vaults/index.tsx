@@ -23,7 +23,7 @@ export default function DataVaultsPage() {
         useDataVaultFetcher={useListAllDataVaults}
         headerLabel={dataVaultListLabels.dataVaultsLabel}
         headerDescription={dataVaultListLabels.dataVaultsPageDescription}
-      ></DataVaultsTable>
+      />
     </BaseLayout>
   );
 }

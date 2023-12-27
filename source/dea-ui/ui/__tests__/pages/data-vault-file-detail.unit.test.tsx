@@ -60,8 +60,9 @@ describe('CaseDetailsPage', () => {
     const pageWrapper = wrapper(page.baseElement);
     expect(page).toBeTruthy();
 
-    const mockedCaseInfo = screen.queryAllByText(dataVaultFile.fileName);
-    expect(mockedCaseInfo).toBeTruthy();
+    const mockedFileText = await screen.findAllByText(dataVaultFile.fileName);
+    expect(mockedFileText.length).toEqual(2); // Header and breadcrumb
+    expect(mockedFileText).toBeTruthy();
 
     const disassociateButton = screen.queryByTestId('disassociate-data-vault-file-button');
     await waitFor(() => expect(disassociateButton).toBeEnabled());

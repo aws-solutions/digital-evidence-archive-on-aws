@@ -361,6 +361,12 @@ describe('DataVaultDetailsPage', () => {
     const page = render(<DataVaultDetailsPage />);
     const pageWrapper = wrapper(page.baseElement);
 
+    const copyButton = await screen.findByTestId('copy-datasync-link-button');
+    expect(copyButton).toBeTruthy();
+
+    const copyText = await screen.findByText(commonLabels.copyLinkLabel);
+    expect(copyText).toBeTruthy();
+
     const tableWrapper = pageWrapper.findTable();
     if (!tableWrapper) fail();
 

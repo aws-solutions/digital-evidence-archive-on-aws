@@ -24,7 +24,7 @@ export default function AllCasesPage() {
         canCreate={false}
         headerLabel={caseListLabels.systemCasesLabel}
         headerDescription={caseListLabels.systemCasesPageDescription}
-      ></CaseTable>
+      />
     </BaseLayout>
   );
 }

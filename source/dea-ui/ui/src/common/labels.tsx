@@ -42,6 +42,8 @@ export const commonLabels = {
   howItworksLabel: 'How it works',
   closeButton: 'Close',
   disassociateButton: 'Disassociate',
+  copyLinkLabel: 'copy link',
+  linkCopiedLabel: 'Link copied',
 };
 
 export const commonTableLabels = {
@@ -410,7 +412,7 @@ export const dataVaultDetailLabels = {
   noFilesDisplayLabel: 'For file transfer instructions, see the Implementation guide.',
   filesLabel: 'Files',
   filesTableHeaderDescription:
-    'Folders and files uploaded to the data Vault. For file transfer instructions, see the',
+    'Folders and files uploaded to the Data vault. For file transfer instructions, see the',
   filesDatasyncSignInLabel: 'or sign into AWS DataSync with your DEA account.',
   displayFilesCheckboxLabel: 'Display files not associated with a case',
   copyDataVaultUlidAriaLabel: 'Copy data vault ulid',

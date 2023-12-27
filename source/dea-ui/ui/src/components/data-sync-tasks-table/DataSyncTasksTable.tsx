@@ -14,6 +14,7 @@ import {
   Link,
   Modal,
   Pagination,
+  Popover,
   PropertyFilter,
   SpaceBetween,
   Spinner,
@@ -152,6 +153,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
     return (
       <Modal
         data-testid="run-task-modal"
+        size="medium"
         onDismiss={disableRunTaskModal}
         visible={showRunTaskModal && selectedTasks.length !== 0}
         closeAriaLabel={commonLabels.closeModalAriaLabel}
@@ -176,7 +178,27 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         header={
           <TextContent>
             <h2>{dataSyncTaskListLabels.runTaskModalTitle}</h2>
-            <p>{dataSyncTaskListLabels.runTaskModalDescription}</p>
+            <p>
+              {dataSyncTaskListLabels.runTaskModalDescription}
+
+              <Popover
+                size="small"
+                position="top"
+                triggerType="custom"
+                dismissButton={false}
+                content={<StatusIndicator type="success">{commonLabels.linkCopiedLabel}</StatusIndicator>}
+              >
+                <Button
+                  iconName="copy"
+                  variant="inline-icon"
+                  data-testid="copy-datasync-link-button"
+                  onClick={() => {
+                    void navigator.clipboard.writeText('https://aws.amazon.com/datasync/');
+                  }}
+                />
+                {commonLabels.copyLinkLabel}
+              </Popover>
+            </p>
           </TextContent>
         }
       >

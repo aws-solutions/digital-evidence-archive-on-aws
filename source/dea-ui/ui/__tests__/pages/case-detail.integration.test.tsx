@@ -284,7 +284,8 @@ describe('CaseDetailsPage', () => {
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
-    const mockedCaseInfo = screen.queryAllByText('mocked case');
+    const mockedCaseInfo = await screen.findAllByText('mocked case');
+    expect(mockedCaseInfo.length).toEqual(2); // Header and breadcrumb
     expect(mockedCaseInfo).toBeTruthy();
 
     const table = await screen.findByTestId('file-table');

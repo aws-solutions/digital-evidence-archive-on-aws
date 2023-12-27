@@ -44,11 +44,7 @@ function DataVaultFileDetailPage() {
 
   return (
     <BaseLayout breadcrumbs={breadcrumbs}>
-      <DataVaultFileDetailsBody
-        dataVaultId={dataVaultId}
-        fileId={fileId}
-        setFileName={setFileName}
-      ></DataVaultFileDetailsBody>
+      <DataVaultFileDetailsBody dataVaultId={dataVaultId} fileId={fileId} setFileName={setFileName} />
     </BaseLayout>
   );
 }

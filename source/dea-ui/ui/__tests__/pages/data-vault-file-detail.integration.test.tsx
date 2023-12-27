@@ -94,8 +94,9 @@ describe('DatavaultFileDetailPage', () => {
     const page = render(<DataVaultFileDetailPage />);
     expect(page).toBeTruthy();
 
-    const mockedCaseInfo = await screen.queryAllByText(mockedFileInfo.fileName);
-    expect(mockedCaseInfo).toBeTruthy();
+    const mockedFileText = await screen.findAllByText(mockedFileInfo.fileName);
+    expect(mockedFileText.length).toEqual(2); // Header and breadcrumb
+    expect(mockedFileText).toBeTruthy();
   });
 
   it('downloads a file audit', async () => {

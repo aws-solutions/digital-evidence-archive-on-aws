@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { fail } from 'assert';
 import axios from 'axios';
-import { breadcrumbLabels } from '../../src/common/labels';
+import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
 import DataSyncTasksPage from '../../src/pages/data-sync-tasks';
 
 jest.mock('axios');
@@ -140,6 +140,13 @@ describe('DataSyncTasks Dashboard', () => {
 
     await waitFor(() => expect(screen.queryByTestId('run-task-modal')).toBeVisible());
     const runTaskButtonInModal = screen.queryByTestId('submit-run-task');
+
+    const copyButton = await screen.findByTestId('copy-datasync-link-button');
+    expect(copyButton).toBeTruthy();
+
+    const copyText = await screen.findByText(commonLabels.copyLinkLabel);
+    expect(copyText).toBeTruthy();
+
     if (!runTaskButtonInModal) fail();
     fireEvent.click(runTaskButtonInModal);
 

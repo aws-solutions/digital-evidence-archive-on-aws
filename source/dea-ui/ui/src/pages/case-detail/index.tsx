@@ -40,7 +40,7 @@ function CaseDetailsPage() {
 
   return (
     <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
-      <CaseDetailsBody caseId={caseId} setCaseName={setCaseName}></CaseDetailsBody>
+      <CaseDetailsBody caseId={caseId} setCaseName={setCaseName} />
     </BaseLayout>
   );
 }
