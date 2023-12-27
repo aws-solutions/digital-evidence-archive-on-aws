@@ -332,7 +332,7 @@ export const navigationLabels = {
   allSystemCasesLabel: 'All cases',
   systemAuditLogsLabel: 'Download system audit log',
   dataVaultsLabel: 'Data vaults',
-  dataSyncTasksLabel: 'DataSync tasks',
+  dataSyncTasksLabel: 'Task dashboard',
 };
 
 export const fileUploadLabels = {
@@ -410,7 +410,8 @@ export const dataVaultDetailLabels = {
   noFilesDisplayLabel: 'For file transfer instructions, see the Implementation guide.',
   filesLabel: 'Files',
   filesTableHeaderDescription:
-    'Folders and file uploaded to the data Vault. For file transfer instructions, see the',
+    'Folders and files uploaded to the data Vault. For file transfer instructions, see the',
+  filesDatasyncSignInLabel: 'or sign into AWS DataSync with your DEA account.',
   displayFilesCheckboxLabel: 'Display files not associated with a case',
   copyDataVaultUlidAriaLabel: 'Copy data vault ulid',
   noAssociatedLabel: 'Not associated',
@@ -433,12 +434,12 @@ export const dataSyncTaskListLabels = {
   noDisplayLabel: 'Once data sync tasks are created, they will be displayed.',
   runDataSyncTaskLabel: 'Transfer files',
   searchDataSyncTasksLabel: 'Search by task ID',
-  dataSyncTasksLabel: 'DataSync tasks',
+  dataSyncTasksLabel: 'Task dashboard',
   dataSyncTasksPageDescription:
     'Choose a task and start the file transfer. For file transfer instructions, see the',
   dataSyncTaskCreationInstructions: 'Task Creation Instructions.',
   runTaskModalTitle: 'Confirm details are correct',
-  runTaskModalDescription: 'If the details need to be corrected, update task in DataSync',
+  runTaskModalDescription: 'To update task details, sign into AWS DataSync with your DEA account.',
   runTaskLocationsLabel: 'Files will be transferred between these locations',
   runTaskModalAlertText: 'Once the task transfers the files into Data vault, they cannot be deleted.',
   startTaskSuccessNotificationMessage:

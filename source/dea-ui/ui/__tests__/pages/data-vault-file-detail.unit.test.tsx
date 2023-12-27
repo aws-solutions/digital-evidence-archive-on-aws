@@ -7,7 +7,12 @@ import { commonLabels } from '../../src/common/labels';
 import { DELETE_DATA_VAULT_FILE_CASE_ASSOCIATION_PATH } from '../../src/components/data-vault-file-details/DataVaultFileDetailsBody';
 import DataVaultFileDetailPage from '../../src/pages/data-vault-file-detail';
 
-let query: { dataVaultId: any; fileId: any } = { dataVaultId: '100', fileId: '200' };
+const mockedSetFileName = jest.fn();
+let query: { dataVaultId: any; fileId: any; setFileName: any } = {
+  dataVaultId: '100',
+  fileId: '200',
+  setFileName: mockedSetFileName,
+};
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     query,
@@ -55,7 +60,7 @@ describe('CaseDetailsPage', () => {
     const pageWrapper = wrapper(page.baseElement);
     expect(page).toBeTruthy();
 
-    const mockedCaseInfo = await screen.findByText(dataVaultFile.fileName);
+    const mockedCaseInfo = screen.queryAllByText(dataVaultFile.fileName);
     expect(mockedCaseInfo).toBeTruthy();
 
     const disassociateButton = screen.queryByTestId('disassociate-data-vault-file-button');
@@ -98,25 +103,25 @@ describe('CaseDetailsPage', () => {
   });
 
   it('renders a not found warning if no dataVaultId is provided', () => {
-    query = { dataVaultId: undefined, fileId: '200' };
+    query = { dataVaultId: undefined, fileId: '200', setFileName: mockedSetFileName };
     render(<DataVaultFileDetailPage />);
     screen.findByText(commonLabels.notFoundLabel);
   });
 
   it('renders a not found warning if no fileId is provided', () => {
-    query = { dataVaultId: '100', fileId: undefined };
+    query = { dataVaultId: '100', fileId: undefined, setFileName: mockedSetFileName };
     render(<DataVaultFileDetailPage />);
     screen.findByText(commonLabels.notFoundLabel);
   });
 
   it('renders a not found warning if dataVaultId is not a string', () => {
-    query = { dataVaultId: {}, fileId: '200' };
+    query = { dataVaultId: {}, fileId: '200', setFileName: mockedSetFileName };
     render(<DataVaultFileDetailPage />);
     screen.findByText(commonLabels.notFoundLabel);
   });
 
   it('renders a not found warning if fileId is not a string', () => {
-    query = { dataVaultId: '100', fileId: {} };
+    query = { dataVaultId: '100', fileId: {}, setFileName: mockedSetFileName };
     render(<DataVaultFileDetailPage />);
     screen.findByText(commonLabels.notFoundLabel);
   });

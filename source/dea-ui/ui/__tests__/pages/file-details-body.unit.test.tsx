@@ -20,6 +20,8 @@ jest.mock('../../src/api/cases', () => ({
   useGetCaseActions: jest.fn(),
 }));
 
+const mockedSetFileName = jest.fn();
+
 const mockedFileInfo: CaseFileDTO = {
   ulid: '200',
   caseUlid: '100',
@@ -74,6 +76,7 @@ describe('FileDetailsBody', () => {
     const props = {
       caseId: '123',
       fileId: 'abc',
+      setFileName: mockedSetFileName,
     };
 
     render(<FileDetailsBody {...props} />);
@@ -94,6 +97,7 @@ describe('FileDetailsBody', () => {
     const props = {
       caseId: '123',
       fileId: 'abc',
+      setFileName: mockedSetFileName,
     };
 
     render(<FileDetailsBody {...props} />);
@@ -109,6 +113,7 @@ describe('FileDetailsBody', () => {
     const props = {
       caseId: '123',
       fileId: 'abc',
+      setFileName: mockedSetFileName,
     };
 
     render(<FileDetailsBody {...props} />);
@@ -122,6 +127,7 @@ describe('FileDetailsBody', () => {
     const props = {
       caseId: '123',
       fileId: 'abc',
+      setFileName: mockedSetFileName,
     };
 
     render(<FileDetailsBody {...props} />);

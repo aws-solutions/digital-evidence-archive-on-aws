@@ -5,6 +5,7 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
+import * as React from 'react';
 import { breadcrumbLabels, commonLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
@@ -17,6 +18,7 @@ export interface IHomeProps {
 
 function DataVaultFileDetailPage() {
   const router = useRouter();
+  const [fileName, setFileName] = React.useState(breadcrumbLabels.fileDetailsLabel);
   const { settings } = useSettings();
   const { dataVaultId, fileId } = router.query;
   if (!dataVaultId || typeof dataVaultId !== 'string' || !fileId || typeof fileId !== 'string') {
@@ -35,14 +37,18 @@ function DataVaultFileDetailPage() {
       href: `${baseUrl}/data-vault-detail?dataVaultId=${dataVaultId}`,
     },
     {
-      text: breadcrumbLabels.fileDetailsLabel,
+      text: fileName,
       href: `#`,
     },
   ];
 
   return (
     <BaseLayout breadcrumbs={breadcrumbs}>
-      <DataVaultFileDetailsBody dataVaultId={dataVaultId} fileId={fileId}></DataVaultFileDetailsBody>
+      <DataVaultFileDetailsBody
+        dataVaultId={dataVaultId}
+        fileId={fileId}
+        setFileName={setFileName}
+      ></DataVaultFileDetailsBody>
     </BaseLayout>
   );
 }

@@ -5,6 +5,7 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
+import * as React from 'react';
 import { breadcrumbLabels, commonLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
@@ -17,6 +18,7 @@ export interface IHomeProps {
 
 function CaseDetailsPage() {
   const router = useRouter();
+  const [caseName, setCaseName] = React.useState(breadcrumbLabels.caseDetailsLabel);
   const { settings } = useSettings();
   const { caseId } = router.query;
   if (!caseId || typeof caseId !== 'string') {
@@ -31,14 +33,14 @@ function CaseDetailsPage() {
       href,
     },
     {
-      text: breadcrumbLabels.caseDetailsLabel,
+      text: caseName,
       href: '#',
     },
   ];
 
   return (
     <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
-      <CaseDetailsBody caseId={caseId}></CaseDetailsBody>
+      <CaseDetailsBody caseId={caseId} setCaseName={setCaseName}></CaseDetailsBody>
     </BaseLayout>
   );
 }

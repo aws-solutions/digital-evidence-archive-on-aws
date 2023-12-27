@@ -5,6 +5,7 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
+import * as React from 'react';
 import { breadcrumbLabels, commonLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
@@ -17,6 +18,7 @@ export interface IHomeProps {
 
 function FileDetailPage() {
   const router = useRouter();
+  const [fileName, setFileName] = React.useState(breadcrumbLabels.fileDetailsLabel);
   const { settings } = useSettings();
   const { caseId, fileId } = router.query;
   if (!caseId || typeof caseId !== 'string' || !fileId || typeof fileId !== 'string') {
@@ -35,14 +37,14 @@ function FileDetailPage() {
       href: `${href_prefix}/case-detail?caseId=${caseId}`,
     },
     {
-      text: breadcrumbLabels.fileDetailsLabel,
+      text: fileName,
       href: `#`,
     },
   ];
 
   return (
     <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
-      <FileDetailsBody caseId={caseId} fileId={fileId}></FileDetailsBody>
+      <FileDetailsBody caseId={caseId} fileId={fileId} setFileName={setFileName}></FileDetailsBody>
     </BaseLayout>
   );
 }

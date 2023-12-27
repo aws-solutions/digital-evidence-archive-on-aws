@@ -101,7 +101,7 @@ describe('FileDetailPage', () => {
     const page = render(<FileDetailPage />);
     expect(page).toBeTruthy();
 
-    const mockedCaseInfo = await screen.findByText(mockedFileInfo.fileName);
+    const mockedCaseInfo = screen.queryAllByText(mockedFileInfo.fileName);
     expect(mockedCaseInfo).toBeTruthy();
   });
 

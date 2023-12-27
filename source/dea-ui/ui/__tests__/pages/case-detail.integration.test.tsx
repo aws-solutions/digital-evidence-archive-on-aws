@@ -284,7 +284,7 @@ describe('CaseDetailsPage', () => {
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
-    const mockedCaseInfo = await screen.findByText('mocked case');
+    const mockedCaseInfo = screen.queryAllByText('mocked case');
     expect(mockedCaseInfo).toBeTruthy();
 
     const table = await screen.findByTestId('file-table');

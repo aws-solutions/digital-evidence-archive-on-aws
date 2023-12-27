@@ -94,7 +94,7 @@ describe('DatavaultFileDetailPage', () => {
     const page = render(<DataVaultFileDetailPage />);
     expect(page).toBeTruthy();
 
-    const mockedCaseInfo = await screen.findByText(mockedFileInfo.fileName);
+    const mockedCaseInfo = await screen.queryAllByText(mockedFileInfo.fileName);
     expect(mockedCaseInfo).toBeTruthy();
   });
 

@@ -19,6 +19,7 @@ export function Notifications() {
         id: notification.id,
         onDismiss: () => dismissNotification(notification.id),
       }))}
+      stackItems
     />
   );
 }

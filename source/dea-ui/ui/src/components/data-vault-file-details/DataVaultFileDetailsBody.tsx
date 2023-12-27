@@ -42,6 +42,7 @@ import ActionContainer from '../common-components/ActionContainer';
 export interface DataVaultFileDetailsBodyProps {
   readonly dataVaultId: string;
   readonly fileId: string;
+  readonly setFileName: (name: string) => void;
 }
 
 export const DATA_VAULTS_FILE_AUDIT_ENDPOINT = '/datavaults/{dataVaultId}/files/{fileId}/auditPOST';
@@ -168,6 +169,7 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
       return <h1>{commonLabels.notFoundLabel}</h1>;
     }
 
+    props.setFileName(data.fileName);
     return (
       <ContentLayout
         header={

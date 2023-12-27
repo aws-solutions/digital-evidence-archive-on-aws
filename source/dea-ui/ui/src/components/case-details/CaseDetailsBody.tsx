@@ -23,6 +23,7 @@ import CaseDetailsTabs from './CaseDetailsTabs';
 
 export interface CaseDetailsBodyProps {
   readonly caseId: string;
+  readonly setCaseName: (name: string) => void;
 }
 
 function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
@@ -53,6 +54,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
     if (!data) {
       return <h1>{commonLabels.notFoundLabel}</h1>;
     }
+    props.setCaseName(data.name);
     return (
       <ContentLayout
         header={

@@ -279,6 +279,8 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         >
           {commonTableLabels.implementationGuideLabel}
         </Link>
+        <br />
+        {dataVaultDetailLabels.filesDatasyncSignInLabel}
       </>
     );
   }

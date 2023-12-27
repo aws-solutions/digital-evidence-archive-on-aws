@@ -30,6 +30,7 @@ import DataVaultAssociationDetailsBody from './DataVaultAssociationDetailsBody';
 export interface FileDetailsBodyProps {
   readonly caseId: string;
   readonly fileId: string;
+  readonly setFileName: (name: string) => void;
 }
 
 function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
@@ -70,6 +71,9 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
     if (!data) {
       return <h1>{commonLabels.notFoundLabel}</h1>;
     }
+
+    props.setFileName(data.fileName);
+
     return (
       <ContentLayout
         header={
