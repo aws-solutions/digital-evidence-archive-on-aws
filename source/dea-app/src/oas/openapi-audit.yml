@@ -62,16 +62,12 @@ paths:
           required: true
           schema:
             type: string
-        - name: from
-          in: query
-          required: true
-          schema:
-            type: number
-        - name: to
-          in: query
-          required: true
-          schema:
-            type: number
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditPayload'
       responses:
         '200':
           description: Audit Query ID
@@ -95,16 +91,12 @@ paths:
           required: true
           schema:
             type: string
-        - name: from
-          in: query
-          required: true
-          schema:
-            type: number
-        - name: to
-          in: query
-          required: true
-          schema:
-            type: number
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditPayload'
       responses:
         '200':
           description: Audit Query ID
@@ -121,17 +113,12 @@ paths:
       operationId: requestSystemAudit
       tags:
         - elevated
-      parameters:
-        - name: from
-          in: query
-          required: true
-          schema:
-            type: number
-        - name: to
-          in: query
-          required: true
-          schema:
-            type: number
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditPayload'
       responses:
         '200':
           description: Audit Query ID
@@ -187,16 +174,12 @@ paths:
           required: true
           schema:
             type: string
-        - name: from
-          in: query
-          required: true
-          schema:
-            type: number
-        - name: to
-          in: query
-          required: true
-          schema:
-            type: number
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditPayload'
       responses:
         '200':
           description: Audit Query ID
@@ -239,6 +222,128 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuditResult'
+  /datavaults/{dataVaultId}/audit:
+    post:
+      summary: Generates audit log for Data vault ID
+      operationId: requestDataVaultAudit
+      tags:
+        - audit
+      parameters:
+        - name: dataVaultId
+          in: path
+          description: Data vault ID to generate audit log for
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditPayload'
+      responses:
+        '200':
+          description: Audit Query ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditId:
+                    type: string
+  /datavaults/{dataVaultId}/files/{fileId}/audit:
+    post:
+      summary: Generates audit log for file ID at Data vault ID
+      operationId: requestDataVaultFileAudit
+      tags:
+        - audit
+      parameters:
+        - name: dataVaultId
+          in: path
+          description: Data vault ID to generate audit log for
+          required: true
+          schema:
+            type: string
+        - name: fileId
+          in: path
+          description: File ID to generate audit log for
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditPayload'
+      responses:
+        '200':
+          description: Audit Query ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditId:
+                    type: string
+  /datavaults/{dataVaultId}/audit/{auditId}/csv:
+    get:
+      summary: Returns audit log for a specific Data vault ID and audit log ID
+      operationId: getDataVaultAudit
+      tags:
+        - audit
+      parameters:
+        - name: dataVaultId
+          in: path
+          description: Data Vault ID to return audit log entries for
+          required: true
+          schema:
+            type: string
+        - name: auditId
+          in: path
+          description: Audit log ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit log CSV result and status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditResult'
+  /datavaults/{dataVaultId}/files/{fileId}/audit/{auditId}/csv:
+    get:
+      summary: Returns audit log for a specific file by file ID, Data vault ID, and audit log ID
+      operationId: getDataVaultFileAudit
+      tags:
+        - audit
+      parameters:
+        - name: dataVaultId
+          in: path
+          description: DataVault ID to return audit log entries for
+          required: true
+          schema:
+            type: string
+        - name: fileId
+          in: path
+          description: File ID to return audit log entries for
+          required: true
+          schema:
+            type: string
+        - name: auditId
+          in: path
+          description: Audit log ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit log CSV result and status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditResult'
 
 components:
   schemas:
@@ -251,7 +356,13 @@ components:
             $ref: '#/components/schemas/QueryStatus'
         downloadUrl:
           type: string
-
+    AuditPayload:
+      type: object
+      properties:
+        from:
+          type: number
+        to:
+          type: number
     QueryStatus:
       type: string
       enum: [Cancelled, Complete, Failed, Running, Scheduled, Timeout, Unknown]
