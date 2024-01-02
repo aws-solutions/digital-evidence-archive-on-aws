@@ -61,7 +61,7 @@ describe('verifies StartDataVaultTaskExecutions input checks', () => {
       preUpdateName,
       /*descrition=*/ undefined,
       dataVault.created,
-      /*updated=*/ dataVault.created,
+      /*updated=*/ dataVault.updated,
       /*objectCount=*/ 0,
       /*totalSizeBytes=*/ 0
     );

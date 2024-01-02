@@ -18,6 +18,10 @@ then
   export ARTIFACT_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-artifactBucketName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
   export OBJECT_LOCK_QUEUE_URL=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-objectLockQueueUrl'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
   export FIREHOSE_STREAM_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-firehoseName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+  export TRAIL_ARN=$(aws cloudtrail list-trails --region $REGION $profile_string --query 'Trails[?starts_with(Name,`'${STACKPREFIX}'`) == `true`].TrailARN | [0]' | sed -e 's/^"//' -e 's/"$//')
+
+  # turn off the trail so we can clean up
+  aws cloudtrail stop-logging --name $TRAIL_ARN --region $REGION $profile_string
 
   if [ "$DEATRAIL_BUCKET_NAME" != "null" ]; then
     echo "removing $DEATRAIL_BUCKET_NAME"
