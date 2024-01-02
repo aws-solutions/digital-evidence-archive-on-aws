@@ -420,7 +420,7 @@ export class DeaAuth extends Construct {
     callbackUrl: string,
     opsDashboard?: DeaOperationalDashboard
   ): [UserPool, UserPoolClient, string, SecretValue, string?] {
-    const tempPasswordValidity = Duration.days(1);
+    const tempPasswordValidity = Duration.days(3);
     // must re-authenticate in every 12 hours (so we make expiry 11 hours, so they can't refresh at 11:59)
     // Note when inactive for 30+ minutes, you will also have to reauthenticate
     // due to session lock requirements. This is handled by session management code
