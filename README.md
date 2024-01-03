@@ -46,13 +46,14 @@ You will need npm and node installed on your machine:
 *For Windows*
 Follow the instructions [here](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows) and stop before the Install Visual Studio Code section.
 NOTE: During the nvm install, when asked where to place npm, DO NOT place in "C:/Program Files", instead you can put it in "C:\Users\Public\nodejs". 
-Additionally we recommend installing the LTS node version instead of the latest.
+Additionally we currently require Node 18 LTS (lts/hydrogen). You can automatically use our recommended version with the `nvm install` command which will install the version we've defined in our nvmrc file.
 
 *For Mac/Linux*
 ```sh
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 source ~/.bashrc
-nvm install node
+# within the cloned DEA directory
+nvm install
 ```
 
 Next you need to install rush to be able to run commands in the repository, cdk for deployment, and a specific version of pnpm (Note pnpm needs to match the version pnpmVersion in rush.json). 
