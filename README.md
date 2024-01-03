@@ -44,6 +44,7 @@ We recommend using a custom domain, otherwise the URL for the solution will not 
 You will need npm and node installed on your machine:
 
 *For Windows*
+
 Follow the instructions [here](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows) and stop before the Install Visual Studio Code section.
 NOTE: During the nvm install, when asked where to place npm, DO NOT place in "C:/Program Files", instead you can put it in "C:\Users\Public\nodejs". 
 Additionally we currently require Node 18 LTS (lts/hydrogen). You can automatically use our recommended version with the `nvm install` command which will install the version we've defined in our nvmrc file.
@@ -105,8 +106,8 @@ Inside the configuration file, change the following fields
 2. Specify an unique domain prefix for your hosted Cognito login. NOTE: this is separate from your custom domain. It should look like the following:
 
 ```
-“cognito”: {
-  “domain”: “exampleexampleexample”
+"cognito": {
+  "domain": "exampleexampleexample"
 },
 ```
 3. If you completed step 0, then import the domainName and ACM Certificate ARN (and hostedZoneId, hostedZoneName for Route53 domains)
