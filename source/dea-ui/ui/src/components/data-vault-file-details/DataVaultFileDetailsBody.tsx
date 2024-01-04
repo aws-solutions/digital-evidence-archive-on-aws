@@ -5,6 +5,7 @@
 
 import { ScopedDeaCase } from '@aws/dea-app/lib/models/case';
 import {
+  Alert,
   Box,
   Button,
   Checkbox,
@@ -132,7 +133,11 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
             <TextContent>
               <h5>{dataVaultDetailLabels.disassociateFromCaseModalSectionHeader}</h5>
             </TextContent>
-            <TextContent>{associatedCasesOption(data?.cases)}</TextContent>
+            <SpaceBetween size="l">
+              <TextContent>{associatedCasesOption(data?.cases)}</TextContent>
+
+              <Alert statusIconAriaLabel="Info">{dataVaultDetailLabels.disassociateWarning}</Alert>
+            </SpaceBetween>
           </SpaceBetween>
         </Box>
       </Modal>

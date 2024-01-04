@@ -343,6 +343,14 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           sortingField: 'taskId',
         },
         {
+          id: 'dataVaultName',
+          header: commonTableLabels.dataVaultNameHeader,
+          cell: dataVaultNameCell,
+          width: 200,
+          minWidth: 165,
+          sortingField: 'dataVaultName',
+        },
+        {
           id: 'sourceLocationArn',
           header: commonTableLabels.sourceLocationIdHeader,
           cell: (e) => locationIdFromArn(e.sourceLocationArn),
@@ -357,14 +365,6 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           width: 250,
           minWidth: 220,
           sortingField: 'destinationLocationArn',
-        },
-        {
-          id: 'dataVaultName',
-          header: commonTableLabels.dataVaultNameHeader,
-          cell: dataVaultNameCell,
-          width: 200,
-          minWidth: 165,
-          sortingField: 'dataVaultName',
         },
         {
           id: 'created',

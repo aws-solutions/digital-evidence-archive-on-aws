@@ -11,6 +11,7 @@ import {
   FormField,
   Header,
   Input,
+  Link,
   SpaceBetween,
   Textarea,
   TextContent,
@@ -18,7 +19,7 @@ import {
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { createDataVault } from '../../api/data-vaults';
-import { commonLabels, createDataVaultLabels } from '../../common/labels';
+import { commonLabels, commonTableLabels, createDataVaultLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 
 function CreateDataVaultsForm(): JSX.Element {
@@ -31,7 +32,18 @@ function CreateDataVaultsForm(): JSX.Element {
     setIsSubmitLoading(true);
     try {
       const newDataVault = await createDataVault(formData);
-      pushNotification('success', createDataVaultLabels.successNotificationMessage);
+      pushNotification(
+        'success',
+        <>
+          {createDataVaultLabels.successNotificationMessage}{' '}
+          <Link
+            external
+            href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
+          >
+            {commonTableLabels.implementationGuideLabel}
+          </Link>
+        </>
+      );
       return router.push(`/data-vault-detail?dataVaultId=${newDataVault.ulid}`);
     } catch (e) {
       if (e instanceof Error) {

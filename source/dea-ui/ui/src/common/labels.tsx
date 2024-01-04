@@ -70,7 +70,7 @@ export const commonTableLabels = {
   destinationLocationIdHeader: 'Destination location ID',
   dataVaultNameHeader: 'Data vault name',
   fileTransferInstructionsText: 'File transfer instructions',
-  implementationGuideLabel: 'Implementation guide',
+  implementationGuideLabel: 'implementation guide',
   executionIdHeader: 'Execution ID',
   caseAssociationHeader: 'Case association',
   associateButtonLabel: 'Associate to case',
@@ -334,7 +334,7 @@ export const navigationLabels = {
   allSystemCasesLabel: 'All cases',
   systemAuditLogsLabel: 'Download system audit log',
   dataVaultsLabel: 'Data vaults',
-  dataSyncTasksLabel: 'Task dashboard',
+  dataSyncTasksLabel: 'File transfer tasks',
 };
 
 export const fileUploadLabels = {
@@ -389,7 +389,8 @@ export const dataVaultListLabels = {
 
 export const createDataVaultLabels = {
   createNewDataVaultLabel: 'Create data vault',
-  createNewDataVaultDescription: 'All fields are required unless specified.',
+  createNewDataVaultDescription:
+    'Data vaults store all transferred files. All fields are required unless specified.',
   enterDetailsLabel: 'Enter data vault details',
   enterDetailsLabelOnUpdate: 'Details',
   nameLabel: 'Name',
@@ -398,7 +399,7 @@ export const createDataVaultLabels = {
   descriptionLabel: 'Description - ',
   descriptionDescription: 'Enter a brief description for your data vault.',
   descriptionSubtext: 'Descriptions can have up to 250 characters.',
-  successNotificationMessage: 'Data vault created successfully. See the implementation guide.',
+  successNotificationMessage: 'Data vault created successfully. For file transfer instructions, see the',
   viewImplementationGuideText: 'View Implementation Guide for next steps.',
   successNotificationMessageOnUpdate: 'Data vault has been successfully updated.',
 };
@@ -427,6 +428,8 @@ export const dataVaultDetailLabels = {
   disassociateFromCaseSuccessNotificationMessage: 'File successfully disassociated from the case(s)',
   disassociateFromCaseModalTitle: 'Disassociate file',
   disassociateFromCaseModalSectionHeader: 'Select case to diassociate from the file',
+  disassociateWarning:
+    'This file will no longer be available under the cases you select to disassociate. It will only be accessible through the data vault or associated cases.',
 };
 
 export const dataSyncTaskListLabels = {
@@ -436,7 +439,7 @@ export const dataSyncTaskListLabels = {
   noDisplayLabel: 'Once data sync tasks are created, they will be displayed.',
   runDataSyncTaskLabel: 'Transfer files',
   searchDataSyncTasksLabel: 'Search by task ID',
-  dataSyncTasksLabel: 'Task dashboard',
+  dataSyncTasksLabel: 'File transfer tasks',
   dataSyncTasksPageDescription:
     'Choose a task and start the file transfer. For file transfer instructions, see the',
   dataSyncTaskCreationInstructions: 'Task Creation Instructions.',

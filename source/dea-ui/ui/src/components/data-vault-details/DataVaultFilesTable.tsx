@@ -409,21 +409,26 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
       resizableColumns
       empty={emptyConfig}
       filter={
-        <ColumnLayout columns={2}>
-          <TextFilter
-            data-testid="files-text-filter"
-            {...filterProps}
-            filteringPlaceholder={filesListLabels.searchLabel}
-          />
-          <Box padding="xxs">
-            <Checkbox
-              onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
-              checked={displayFilesWithoutACase}
-            >
-              {dataVaultDetailLabels.displayFilesCheckboxLabel}
-            </Checkbox>
-          </Box>
-        </ColumnLayout>
+        <>
+          <SpaceBetween size="l">
+            <ColumnLayout columns={2}>
+              <TextFilter
+                data-testid="files-text-filter"
+                {...filterProps}
+                filteringPlaceholder={filesListLabels.searchLabel}
+              />
+              <Box padding="xxs">
+                <Checkbox
+                  onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
+                  checked={displayFilesWithoutACase}
+                >
+                  {dataVaultDetailLabels.displayFilesCheckboxLabel}
+                </Checkbox>
+              </Box>
+            </ColumnLayout>
+            <div />
+          </SpaceBetween>
+        </>
       }
       header={tableHeader}
       pagination={tablePagination}
