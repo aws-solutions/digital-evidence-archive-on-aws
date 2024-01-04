@@ -213,12 +213,12 @@ cd ./dea-main
 
 Export the following variables (customize as needed)
 
-**Windows**
+**Windows Powershell**
 ```sh
-set STAGE=prod
-set AWS_REGION=us-east-2
-set DEA_CUSTOM_DOMAIN=<true if using custom domain, otherwise do NOT set>
-set AWS_ACCT_NUMBER=<your 12 digit AWS account number>
+$Env:STAGE='prod'
+$Env:AWS_REGION='us-east-2'
+$Env:DEA_CUSTOM_DOMAIN=<'true' if using custom domain, otherwise do NOT set>
+$Env:AWS_ACCT_NUMBER=<'your 12 digit AWS account number'>
 ```
 
 **Linux**
