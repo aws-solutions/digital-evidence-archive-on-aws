@@ -12,11 +12,12 @@ import { S3Client, UploadPartCommand } from '@aws-sdk/client-s3';
 
 const push = jest.fn();
 const CASE_ID = '100';
+const CASE_NAME = 'mocked case';
 
 global.fetch = jest.fn(() => ({}));
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID, filePath: '/huh' },
+    query: { caseId: CASE_ID, filePath: '/huh', caseName: CASE_NAME },
     push,
   })),
 }));
@@ -28,7 +29,7 @@ mockedAxios.create.mockReturnThis();
 mockedAxios.request.mockResolvedValue({
   data: {
     ulid: 'abc',
-    name: 'mocked case',
+    name: CASE_NAME,
     status: 'ACTIVE',
     federationCredentials: [],
   },
@@ -59,7 +60,7 @@ describe('UploadFiles page', () => {
     const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
     expect(breadcrumbLinks.length).toEqual(3);
     expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
-    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.caseDetailsLabel);
+    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(CASE_NAME);
     expect(breadcrumbLinks[2].getElement()).toHaveTextContent(breadcrumbLabels.uploadFilesAndFoldersLabel);
   });
   it('responds to done', () => {

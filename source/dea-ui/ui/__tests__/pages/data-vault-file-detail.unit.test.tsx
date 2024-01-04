@@ -8,10 +8,11 @@ import { DELETE_DATA_VAULT_FILE_CASE_ASSOCIATION_PATH } from '../../src/componen
 import DataVaultFileDetailPage from '../../src/pages/data-vault-file-detail';
 
 const mockedSetFileName = jest.fn();
-let query: { dataVaultId: any; fileId: any; setFileName: any } = {
+let query: { dataVaultId: any; fileId: any; setFileName: any; dataVaultName: any } = {
   dataVaultId: '100',
   fileId: '200',
   setFileName: mockedSetFileName,
+  dataVaultName: 'mocked data vault',
 };
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({

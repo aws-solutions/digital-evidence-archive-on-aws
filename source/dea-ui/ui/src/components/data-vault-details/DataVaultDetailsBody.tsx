@@ -38,9 +38,10 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();
   const { data, isLoading } = useGetDataVaultById(props.dataVaultId);
+  let dataVaultName: string;
 
   function editHandler() {
-    return router.push(`/edit-data-vault?dataVaultId=${props.dataVaultId}`);
+    return router.push(`/edit-data-vault?dataVaultId=${props.dataVaultId}&dataVaultName=${dataVaultName}`);
   }
 
   if (isLoading) {
@@ -56,6 +57,7 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
     }
 
     setdataVaultName(data.name);
+    dataVaultName = data.name;
 
     return (
       <ContentLayout
@@ -153,6 +155,7 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
           <DataVaultFilesTable
             dataVaultId={props.dataVaultId}
             availableEndpoints={availableEndpoints.data}
+            dataVaultName={data.name}
           ></DataVaultFilesTable>
         </SpaceBetween>
       </ContentLayout>

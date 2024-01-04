@@ -38,6 +38,7 @@ function CreateDataVaultsForm(): JSX.Element {
           {createDataVaultLabels.successNotificationMessage}{' '}
           <Link
             external
+            color="inverted"
             href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
           >
             {commonTableLabels.implementationGuideLabel}

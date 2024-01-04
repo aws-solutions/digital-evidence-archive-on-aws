@@ -28,7 +28,6 @@ import {
 } from '../../api/data-vaults';
 import {
   auditLogLabels,
-  breadcrumbLabels,
   commonLabels,
   commonTableLabels,
   dataVaultDetailLabels,
@@ -210,7 +209,7 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
                   </SpaceBetween>
                 }
               >
-                {breadcrumbLabels.fileDetailsLabel}
+                {fileDetailLabels.fileDetailsLabel}
               </Header>
             }
           >
@@ -257,7 +256,7 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
                   </SpaceBetween>
                 }
               >
-                {breadcrumbLabels.dataVaultDetailsLabel}
+                {dataVaultDetailLabels.dataVaultDetailsLabel}
               </Header>
             }
           >

@@ -49,6 +49,7 @@ export const CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH = '/datavaults/{dataVaultId
 export interface DataVaultFilesTableProps {
   readonly dataVaultId: string;
   readonly availableEndpoints: string[];
+  readonly dataVaultName: string;
 }
 
 function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
@@ -230,7 +231,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         onClick={(e: { preventDefault: () => void }) => {
           e.preventDefault();
           return router.push(
-            `/data-vault-file-detail?dataVaultId=${dataVaultFile.dataVaultUlid}&fileId=${dataVaultFile.ulid}`
+            `/data-vault-file-detail?dataVaultId=${dataVaultFile.dataVaultUlid}&fileId=${dataVaultFile.ulid}&dataVaultName=${props.dataVaultName}`
           );
         }}
       >
@@ -409,26 +410,21 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
       resizableColumns
       empty={emptyConfig}
       filter={
-        <>
-          <SpaceBetween size="l">
-            <ColumnLayout columns={2}>
-              <TextFilter
-                data-testid="files-text-filter"
-                {...filterProps}
-                filteringPlaceholder={filesListLabels.searchLabel}
-              />
-              <Box padding="xxs">
-                <Checkbox
-                  onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
-                  checked={displayFilesWithoutACase}
-                >
-                  {dataVaultDetailLabels.displayFilesCheckboxLabel}
-                </Checkbox>
-              </Box>
-            </ColumnLayout>
-            <div />
-          </SpaceBetween>
-        </>
+        <ColumnLayout columns={2}>
+          <TextFilter
+            data-testid="files-text-filter"
+            {...filterProps}
+            filteringPlaceholder={filesListLabels.searchLabel}
+          />
+          <Box padding="xxs">
+            <Checkbox
+              onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
+              checked={displayFilesWithoutACase}
+            >
+              {dataVaultDetailLabels.displayFilesCheckboxLabel}
+            </Checkbox>
+          </Box>
+        </ColumnLayout>
       }
       header={tableHeader}
       pagination={tablePagination}

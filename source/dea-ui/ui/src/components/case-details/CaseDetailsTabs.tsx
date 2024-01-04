@@ -16,6 +16,7 @@ export interface CaseDetailsTabsProps {
   readonly caseId: string;
   readonly caseStatus: CaseStatus;
   readonly fileCount: number;
+  readonly caseName: string;
 }
 
 function CaseDetailsTabs(props: CaseDetailsTabsProps): JSX.Element {
@@ -37,6 +38,7 @@ function CaseDetailsTabs(props: CaseDetailsTabsProps): JSX.Element {
               caseId={props.caseId}
               caseStatus={props.caseStatus}
               fileCount={props.fileCount}
+              caseName={props.caseName}
             ></CaseFilesTable>
           ),
         });

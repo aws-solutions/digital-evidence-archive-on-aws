@@ -15,13 +15,7 @@ import {
   TextContent,
 } from '@cloudscape-design/components';
 import { getCaseFileAuditCSV, useGetCaseActions, useGetFileDetailsById } from '../../api/cases';
-import {
-  auditLogLabels,
-  breadcrumbLabels,
-  caseStatusLabels,
-  commonLabels,
-  fileDetailLabels,
-} from '../../common/labels';
+import { auditLogLabels, caseStatusLabels, commonLabels, fileDetailLabels } from '../../common/labels';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadCaseAudit } from '../../helpers/userActionSupport';
 import { AuditDownloadButton } from '../audit/audit-download-button';
@@ -100,7 +94,7 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
                   </SpaceBetween>
                 }
               >
-                {breadcrumbLabels.fileDetailsLabel}
+                {fileDetailLabels.fileDetailsLabel}
               </Header>
             }
           >

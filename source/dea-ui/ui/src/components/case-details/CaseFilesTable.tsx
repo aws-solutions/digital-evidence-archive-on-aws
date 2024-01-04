@@ -126,7 +126,9 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         variant="link"
         onClick={(e: { preventDefault: () => void }) => {
           e.preventDefault();
-          return router.push(`/file-detail?caseId=${caseFile.caseUlid}&fileId=${caseFile.ulid}`);
+          return router.push(
+            `/file-detail?caseId=${caseFile.caseUlid}&fileId=${caseFile.ulid}&caseName=${props.caseName}`
+          );
         }}
       >
         {caseFile.fileName}
@@ -242,7 +244,9 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const tablePagination = <Pagination {...paginationProps} ariaLabels={paginationLabels} />;
 
   function uploadFilesHandler() {
-    return router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
+    return router.push(
+      `/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}&caseName=${props.caseName}`
+    );
   }
 
   async function downloadFilesHandler() {

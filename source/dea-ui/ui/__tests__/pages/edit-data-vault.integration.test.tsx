@@ -11,9 +11,10 @@ afterEach(cleanup);
 
 const push = jest.fn();
 const DATA_VAULT_ID = '100';
+const DATA_VAULT_NAME = 'mocked data vault';
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
-    query: { dataVaultId: DATA_VAULT_ID },
+    query: { dataVaultId: DATA_VAULT_ID, dataVaultName: DATA_VAULT_NAME },
     push,
   })),
 }));

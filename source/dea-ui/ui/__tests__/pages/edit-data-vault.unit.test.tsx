@@ -5,7 +5,11 @@ import { useGetDataVaultById } from '../../src/api/data-vaults';
 import { commonLabels } from '../../src/common/labels';
 import EditDataVaultPage from '../../src/pages/edit-data-vault';
 
-let query: { dataVaultId: string | undefined } = { dataVaultId: '100' };
+const DATA_VAULT_NAME = 'mocked data vault';
+let query: { dataVaultId: string | undefined; dataVaultName: string | undefined } = {
+  dataVaultId: '100',
+  dataVaultName: DATA_VAULT_NAME,
+};
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     query,
@@ -46,7 +50,7 @@ describe('EditDataVaultPage', () => {
     useGetDataVaultById.mockImplementation(() => ({
       data: {
         ulid: '100',
-        name: 'mocked data vault',
+        name: DATA_VAULT_NAME,
         description: 'some description',
       },
       isLoading: false,
@@ -59,7 +63,7 @@ describe('EditDataVaultPage', () => {
     if (!wrappedName) {
       fail();
     }
-    expect(wrappedName.findNativeInput().getElement().value).toEqual('mocked data vault');
+    expect(wrappedName.findNativeInput().getElement().value).toEqual(DATA_VAULT_NAME);
 
     const descriptionInput = screen.getByTestId('input-description');
     const wrappedDescription = wrapper(descriptionInput).findTextarea();

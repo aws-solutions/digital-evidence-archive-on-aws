@@ -5,7 +5,11 @@ import { useGetCaseById } from '../../src/api/cases';
 import { commonLabels } from '../../src/common/labels';
 import EditCasePage from '../../src/pages/edit-case';
 
-let query: { caseId: string | undefined } = { caseId: '100' };
+const CASE_NAME = 'mocked case';
+let query: { caseId: string | undefined; caseName: string | undefined } = {
+  caseId: '100',
+  caseName: CASE_NAME,
+};
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     query,
@@ -47,7 +51,7 @@ describe('EditCasePage', () => {
     useGetCaseById.mockImplementation(() => ({
       data: {
         ulid: '100',
-        name: 'mocked case',
+        name: CASE_NAME,
         description: 'some description',
         status: 'ACTIVE',
       },
@@ -61,7 +65,7 @@ describe('EditCasePage', () => {
     if (!wrappedName) {
       fail();
     }
-    expect(wrappedName.findNativeInput().getElement().value).toEqual('mocked case');
+    expect(wrappedName.findNativeInput().getElement().value).toEqual(CASE_NAME);
 
     const descriptionInput = screen.getByTestId('input-description');
     const wrappedDescription = wrapper(descriptionInput).findTextarea();

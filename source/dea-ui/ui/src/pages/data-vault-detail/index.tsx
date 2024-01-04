@@ -19,7 +19,7 @@ export interface IHomeProps {
 function DataVaultDetailsPage() {
   const router = useRouter();
   const { settings } = useSettings();
-  const [dataVaultName, setdataVaultName] = useState(breadcrumbLabels.dataVaultDetailsLabel);
+  const [dataVaultName, setdataVaultName] = useState('');
   const { dataVaultId } = router.query;
   if (!dataVaultId || typeof dataVaultId !== 'string') {
     return <h1>{commonLabels.notFoundLabel}</h1>;

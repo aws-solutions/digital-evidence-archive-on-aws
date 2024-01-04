@@ -430,7 +430,9 @@ describe('CaseDetailsPage', () => {
     const uploadButton = await page.findByTestId('upload-file-button');
     fireEvent.click(uploadButton);
 
-    expect(push).toHaveBeenCalledWith(`/upload-files?caseId=${CASE_ID}&filePath=/`);
+    expect(push).toHaveBeenCalledWith(
+      `/upload-files?caseId=${CASE_ID}&filePath=/&caseName=${mockedCaseDetail.name}`
+    );
   });
 
   it('downloads a case audit', async () => {
@@ -455,7 +457,7 @@ describe('CaseDetailsPage', () => {
     fireEvent.click(fileEntry);
 
     expect(push).toHaveBeenCalledWith(
-      `/file-detail?caseId=${mockFilesRoot.files[1].caseUlid}&fileId=${mockFilesRoot.files[1].ulid}`
+      `/file-detail?caseId=${mockFilesRoot.files[1].caseUlid}&fileId=${mockFilesRoot.files[1].ulid}&caseName=${mockedCaseDetail.name}`
     );
   });
 });

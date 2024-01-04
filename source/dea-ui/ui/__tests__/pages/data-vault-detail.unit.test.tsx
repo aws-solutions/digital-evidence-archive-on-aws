@@ -13,6 +13,7 @@ import { CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH } from '../../src/components/da
 import DataVaultDetailsPage from '../../src/pages/data-vault-detail';
 
 let query: { dataVaultId: string | undefined } = { dataVaultId: '100' };
+const DATA_VAULT_NAME = 'Some Data Vault';
 const push = jest.fn();
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
@@ -72,7 +73,7 @@ describe('DataVaultDetailsPage', () => {
     const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
     expect(breadcrumbLinks.length).toEqual(2);
     expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.dataVaultsLabel);
-    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.dataVaultDetailsLabel);
+    expect(breadcrumbLinks[1].getElement()).toHaveTextContent('');
   });
 
   it('renders a loading label during fetch', () => {
@@ -105,7 +106,7 @@ describe('DataVaultDetailsPage', () => {
     useGetDataVaultById.mockImplementation(() => ({
       data: {
         ulid: '01HBF77SAC700F89WTQ7K6Q8QD',
-        name: 'Some Data Vault',
+        name: DATA_VAULT_NAME,
         description: 'Some description',
         created: '2023-09-29T01:00:51.916Z',
       },
@@ -165,7 +166,7 @@ describe('DataVaultDetailsPage', () => {
 
     const headerWrapper = pageWrapper.findHeader();
     if (!headerWrapper) fail();
-    expect(headerWrapper.findHeadingText().getElement()).toHaveTextContent('Some Data Vault');
+    expect(headerWrapper.findHeadingText().getElement()).toHaveTextContent(DATA_VAULT_NAME);
 
     const folderEntry = await screen.findByText('joi-17.9.1');
     expect(folderEntry).toBeTruthy();
@@ -202,7 +203,7 @@ describe('DataVaultDetailsPage', () => {
     useGetDataVaultById.mockImplementation(() => ({
       data: {
         ulid: '01HBF77SAC700F89WTQ7K6Q8QD',
-        name: 'Some Data Vault',
+        name: DATA_VAULT_NAME,
         created: '2023-09-29T01:00:51.916Z',
       },
       isLoading: false,
@@ -220,7 +221,9 @@ describe('DataVaultDetailsPage', () => {
     const editButton = await screen.findByText(commonLabels.editButton);
     await waitFor(() => expect(editButton).toBeEnabled());
     fireEvent.click(editButton);
-    expect(push).toHaveBeenCalledWith('/edit-data-vault?dataVaultId=01HBF77SAC700F89WTQ7K6Q8QD');
+    expect(push).toHaveBeenCalledWith(
+      `/edit-data-vault?dataVaultId=01HBF77SAC700F89WTQ7K6Q8QD&dataVaultName=${DATA_VAULT_NAME}`
+    );
   });
 
   it('navigates to data vault file details page', async () => {
@@ -243,7 +246,7 @@ describe('DataVaultDetailsPage', () => {
     useGetDataVaultById.mockImplementation(() => ({
       data: {
         ulid: '01HBF77SAC700F89WTQ7K6Q8QD',
-        name: 'Some Data Vault',
+        name: DATA_VAULT_NAME,
         description: 'Some description',
         created: '2023-09-29T01:00:51.916Z',
       },
@@ -260,7 +263,7 @@ describe('DataVaultDetailsPage', () => {
     fireEvent.click(fileEntry);
 
     expect(push).toHaveBeenCalledWith(
-      `/data-vault-file-detail?dataVaultId=${mockedFile.dataVaultUlid}&fileId=${mockedFile.ulid}`
+      `/data-vault-file-detail?dataVaultId=${mockedFile.dataVaultUlid}&fileId=${mockedFile.ulid}&dataVaultName=${DATA_VAULT_NAME}`
     );
   });
 
@@ -269,7 +272,7 @@ describe('DataVaultDetailsPage', () => {
     useGetDataVaultById.mockImplementation(() => ({
       data: {
         ulid: '01HBF77SAC700F89WTQ7K6Q8QD',
-        name: 'Some Data Vault',
+        name: DATA_VAULT_NAME,
         description: 'Some description',
         created: '2023-09-29T01:00:51.916Z',
       },

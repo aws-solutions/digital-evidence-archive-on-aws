@@ -19,11 +19,16 @@ export interface EditDataVaultPageProps {
 const EditDataVaultPage: NextPage = () => {
   const router = useRouter();
   const { settings } = useSettings();
-  const { dataVaultId } = router.query;
+  const { dataVaultId, dataVaultName } = router.query;
 
   const baseUrl = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
-  if (!dataVaultId || typeof dataVaultId !== 'string') {
+  if (
+    !dataVaultId ||
+    typeof dataVaultId !== 'string' ||
+    !dataVaultName ||
+    typeof dataVaultName !== 'string'
+  ) {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
 
@@ -31,6 +36,10 @@ const EditDataVaultPage: NextPage = () => {
     {
       text: breadcrumbLabels.dataVaultsLabel,
       href: `${baseUrl}/data-vaults`,
+    },
+    {
+      text: dataVaultName,
+      href: `${baseUrl}/data-vault-detail?dataVaultId=${dataVaultId}`,
     },
     {
       text: breadcrumbLabels.editDataVaultLabel,

@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { Container, Header, ColumnLayout, TextContent, SpaceBetween } from '@cloudscape-design/components';
-import { breadcrumbLabels, fileDetailLabels, commonTableLabels } from '../../common/labels';
+import { fileDetailLabels, commonTableLabels, dataVaultDetailLabels } from '../../common/labels';
 
 export interface dataVaultAssociationDetailsProps {
   readonly dataVaultUlid: string;
@@ -15,7 +15,7 @@ export interface dataVaultAssociationDetailsProps {
 
 function DataVaultAssociationDetailsBody(props: dataVaultAssociationDetailsProps): JSX.Element {
   return (
-    <Container header={<Header variant="h2">{breadcrumbLabels.dataVaultDetailsLabel}</Header>}>
+    <Container header={<Header variant="h2">{dataVaultDetailLabels.dataVaultDetailsLabel}</Header>}>
       <ColumnLayout columns={2} variant="text-grid">
         <TextContent>
           <SpaceBetween size="l">

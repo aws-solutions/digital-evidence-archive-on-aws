@@ -19,11 +19,11 @@ export interface EditCasePageProps {
 const EditCasePage: NextPage = () => {
   const router = useRouter();
   const { settings } = useSettings();
-  const { caseId } = router.query;
+  const { caseId, caseName } = router.query;
 
   const href_prefix = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
-  if (!caseId || typeof caseId !== 'string') {
+  if (!caseId || typeof caseId !== 'string' || !caseName || typeof caseName !== 'string') {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
 
@@ -33,7 +33,7 @@ const EditCasePage: NextPage = () => {
       href: href_prefix,
     },
     {
-      text: breadcrumbLabels.caseDetailsLabel,
+      text: caseName,
       href: `${href_prefix}/case-detail?caseId=${caseId}`,
     },
     {

@@ -316,14 +316,11 @@ export const breadcrumbLabels = {
   homePageLabel: 'Digital Evidence Archive',
   createNewCaseLabel: 'Create case',
   caseLabel: 'Case',
-  caseDetailsLabel: 'Case details',
   manageCaseLabel: 'Manage case',
   uploadFilesAndFoldersLabel: 'Upload folders and files',
   editCaseLabel: 'Edit case',
-  fileDetailsLabel: 'File details',
   dataVaultsLabel: 'Data vaults',
   createNewDataVaultLabel: 'Create data vault',
-  dataVaultDetailsLabel: 'Data vault details',
   dataSyncTasks: 'Tasks',
   editDataVaultLabel: 'Edit data vault',
 };
@@ -352,6 +349,7 @@ export const fileDetailLabels = {
   associatedBy: 'Associated by',
   dataVaultLabel: 'Data vault',
   associationDateLabel: 'Case association date',
+  fileDetailsLabel: 'File details',
 };
 
 export const systemUseNotificationText =

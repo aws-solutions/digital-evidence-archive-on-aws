@@ -18,10 +18,17 @@ export interface IHomeProps {
 
 function DataVaultFileDetailPage() {
   const router = useRouter();
-  const [fileName, setFileName] = React.useState(breadcrumbLabels.fileDetailsLabel);
+  const [fileName, setFileName] = React.useState('');
   const { settings } = useSettings();
-  const { dataVaultId, fileId } = router.query;
-  if (!dataVaultId || typeof dataVaultId !== 'string' || !fileId || typeof fileId !== 'string') {
+  const { dataVaultId, fileId, dataVaultName } = router.query;
+  if (
+    !dataVaultId ||
+    typeof dataVaultId !== 'string' ||
+    !fileId ||
+    typeof fileId !== 'string' ||
+    !dataVaultName ||
+    typeof dataVaultName !== 'string'
+  ) {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
 
@@ -33,7 +40,7 @@ function DataVaultFileDetailPage() {
       href: `${baseUrl}/data-vaults`,
     },
     {
-      text: breadcrumbLabels.dataVaultDetailsLabel,
+      text: dataVaultName,
       href: `${baseUrl}/data-vault-detail?dataVaultId=${dataVaultId}`,
     },
     {

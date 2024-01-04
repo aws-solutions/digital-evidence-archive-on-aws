@@ -18,7 +18,7 @@ export interface IHomeProps {
 
 function CaseDetailsPage() {
   const router = useRouter();
-  const [caseName, setCaseName] = React.useState(breadcrumbLabels.caseDetailsLabel);
+  const [caseName, setCaseName] = React.useState('');
   const { settings } = useSettings();
   const { caseId } = router.query;
   if (!caseId || typeof caseId !== 'string') {

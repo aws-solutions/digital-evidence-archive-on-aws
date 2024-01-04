@@ -18,10 +18,17 @@ export interface IHomeProps {
 
 function FileDetailPage() {
   const router = useRouter();
-  const [fileName, setFileName] = React.useState(breadcrumbLabels.fileDetailsLabel);
+  const [fileName, setFileName] = React.useState('');
   const { settings } = useSettings();
-  const { caseId, fileId } = router.query;
-  if (!caseId || typeof caseId !== 'string' || !fileId || typeof fileId !== 'string') {
+  const { caseId, fileId, caseName } = router.query;
+  if (
+    !caseId ||
+    typeof caseId !== 'string' ||
+    !fileId ||
+    typeof fileId !== 'string' ||
+    !caseName ||
+    typeof caseName !== 'string'
+  ) {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
 
@@ -33,7 +40,7 @@ function FileDetailPage() {
       href: href_prefix,
     },
     {
-      text: breadcrumbLabels.caseDetailsLabel,
+      text: caseName,
       href: `${href_prefix}/case-detail?caseId=${caseId}`,
     },
     {

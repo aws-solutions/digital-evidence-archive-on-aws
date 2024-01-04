@@ -30,6 +30,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
   const router = useRouter();
   const userActions = useGetCaseActions(props.caseId);
   const { data, isLoading } = useGetCaseById(props.caseId);
+  let caseName: string;
 
   function getStatusIcon(status: CaseStatus) {
     if (status == CaseStatus.ACTIVE) {
@@ -40,7 +41,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
   }
 
   function editCaseHandler() {
-    return router.push(`/edit-case?caseId=${props.caseId}`);
+    return router.push(`/edit-case?caseId=${props.caseId}&caseName=${caseName}`);
   }
 
   if (isLoading) {
@@ -55,6 +56,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
       return <h1>{commonLabels.notFoundLabel}</h1>;
     }
     props.setCaseName(data.name);
+    caseName = data.name;
     return (
       <ContentLayout
         header={
@@ -122,6 +124,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
             caseId={props.caseId}
             caseStatus={data.status}
             fileCount={data.objectCount}
+            caseName={data.name}
           ></CaseDetailsTabs>
         </SpaceBetween>
       </ContentLayout>
