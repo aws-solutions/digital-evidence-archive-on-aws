@@ -2915,6 +2915,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
           ],
         },
+        "LoggingConfiguration": Object {
+          "DestinationBucketName": Object {
+            "Ref": "DeaBackendConstructS3AccessLogsBucket2074272F",
+          },
+          "LogFilePrefix": "datasync-reports-access-logs",
+        },
         "OwnershipControls": Object {
           "Rules": Array [
             Object {

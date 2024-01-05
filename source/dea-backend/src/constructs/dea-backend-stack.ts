@@ -17,6 +17,7 @@ import {
   LifecycleRule,
   HttpMethods,
   ObjectOwnership,
+  IBucket,
 } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
@@ -56,7 +57,7 @@ export class DeaBackendConstruct extends Construct {
       datasetsPrefix
     );
     this.datasetsDataSyncRole = this.createDatasetsBucketAccessRole(props.kmsKey);
-    this.dataSyncLogsBucket = this.createDataSyncLogsBucket();
+    this.dataSyncLogsBucket = this.createDataSyncLogsBucket(this.accessLogsBucket);
     this.dataSyncLogsBucketRole = this.createDataSyncLogsBucketRole(this.dataSyncLogsBucket.bucketArn);
 
     props.opsDashboard?.addDynamoTableOperationalComponents(this.deaTable);
@@ -302,10 +303,12 @@ export class DeaBackendConstruct extends Construct {
     return role;
   }
 
-  private createDataSyncLogsBucket() {
+  private createDataSyncLogsBucket(accessLogsBucket: IBucket) {
     const datasyncLogBucket = new Bucket(this, 'deaDataSyncReportsBucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       encryption: BucketEncryption.S3_MANAGED,
+      serverAccessLogsBucket: accessLogsBucket,
+      serverAccessLogsPrefix: 'datasync-reports-access-logs',
       enforceSSL: true,
       publicReadAccess: false,
       removalPolicy: deaConfig.retainPolicy(),
