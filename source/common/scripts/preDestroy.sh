@@ -25,17 +25,24 @@ then
 
   if [ "$DEATRAIL_BUCKET_NAME" != "null" ]; then
     echo "removing $DEATRAIL_BUCKET_NAME"
-    aws s3 rb s3://$DEATRAIL_BUCKET_NAME --force --region $REGION $profile_string
+    aws s3api put-bucket-logging --bucket $DEATRAIL_BUCKET_NAME --bucket-logging-status '{}' $profile_string
+    aws s3 rb s3://$DEATRAIL_BUCKET_NAME --force --region $REGION $profile_string || true
   fi
   if [ "$ARTIFACT_BUCKET_NAME" != "null" ]; then
     echo "removing $ARTIFACT_BUCKET_NAME"
-    aws s3 rb s3://$ARTIFACT_BUCKET_NAME --force --region $REGION $profile_string
+    aws s3api put-bucket-logging --bucket $ARTIFACT_BUCKET_NAME --bucket-logging-status '{}' $profile_string
+    aws s3 rb s3://$ARTIFACT_BUCKET_NAME --force --region $REGION $profile_string || true
   fi
+
+  # turn off logging for buckets we are cleaning up
+  aws s3api put-bucket-logging --bucket $DATASETS_BUCKET_NAME --bucket-logging-status '{}' $profile_string || true
+  aws s3api put-bucket-logging --bucket $AUDIT_BUCKET_NAME --bucket-logging-status '{}' $profile_string || true
+  aws s3api put-bucket-logging --bucket $QUERY_RESULT_BUCKET_NAME --bucket-logging-status '{}' $profile_string || true
 
   # delete the firehose so we don't get new audit objects while we clean up
   if [ "$FIREHOSE_STREAM_NAME" != "null" ]; then
     echo "deleting firehose $FIREHOSE_STREAM_NAME"
-    aws firehose delete-delivery-stream --delivery-stream-name $FIREHOSE_STREAM_NAME --region $REGION $profile_string
+    aws firehose delete-delivery-stream --delivery-stream-name $FIREHOSE_STREAM_NAME --region $REGION $profile_string || true
     date
     # sleep to allow any in-progress audit items to finish
     echo "waiting to allow in-progress audit items to resolve..."
@@ -46,7 +53,7 @@ then
   date
   if [ "$S3ACCESSLOGS_BUCKET_NAME" != "null" ]; then
     echo "removing $S3ACCESSLOGS_BUCKET_NAME"
-    aws s3 rb s3://$S3ACCESSLOGS_BUCKET_NAME --force --region $REGION $profile_string
+    aws s3 rb s3://$S3ACCESSLOGS_BUCKET_NAME --force --region $REGION $profile_string || true
   fi
 else
   echo "Aborting..."
