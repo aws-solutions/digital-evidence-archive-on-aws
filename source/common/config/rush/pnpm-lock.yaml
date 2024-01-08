@@ -60,7 +60,7 @@ importers:
       aws-sdk-client-mock: ^3.0.0
       aws-sdk-client-mock-jest: ^3.0.0
       aws4-axios: ~3.3.0
-      axios: ^1.6.1
+      axios: ^1.6.5
       concurrently: ^7.6.0
       constructs: 10.2.69
       crypto-js: ~4.2.0
@@ -150,8 +150,8 @@ importers:
       '@typescript-eslint/parser': 5.60.1_sjjl3gun7puonkp27uqtyjm5b4
       aws-sdk-client-mock: 3.0.0
       aws-sdk-client-mock-jest: 3.0.0_aws-sdk-client-mock@3.0.0
-      aws4-axios: 3.3.0_axios@1.6.2
-      axios: 1.6.2
+      aws4-axios: 3.3.0_axios@1.6.5
+      axios: 1.6.5
       concurrently: 7.6.0
       dynamo-db-local: 5.0.1
       eslint: 8.55.0
@@ -202,7 +202,7 @@ importers:
       aws-cdk: 2.88.0
       aws-cdk-lib: 2.88.0
       aws-lambda: ^1.0.7
-      axios: ^1.6.1
+      axios: ^1.6.5
       constructs: 10.2.69
       convict: ~6.2.4
       dynamodb-onetable: 2.5.1
@@ -259,7 +259,7 @@ importers:
       '@types/uuid': 9.0.7
       '@typescript-eslint/eslint-plugin': 5.60.1_zxqqdelhspig34xv7ehgqi2kdu
       '@typescript-eslint/parser': 5.60.1_sjjl3gun7puonkp27uqtyjm5b4
-      axios: 1.6.2
+      axios: 1.6.5
       esbuild: 0.17.19
       eslint: 8.55.0
       eslint-plugin-import: 2.29.1_eslint@8.55.0
@@ -293,7 +293,7 @@ importers:
       aws-cdk: 2.88.0
       aws-cdk-lib: 2.88.0
       aws-lambda: ^1.0.7
-      axios: ^1.6.1
+      axios: ^1.6.5
       constructs: 10.2.69
       dynamodb-onetable: 2.5.1
       esbuild: ^0.17.13
@@ -335,7 +335,7 @@ importers:
       '@types/node': 18.19.3
       '@typescript-eslint/eslint-plugin': 5.60.1_zxqqdelhspig34xv7ehgqi2kdu
       '@typescript-eslint/parser': 5.60.1_sjjl3gun7puonkp27uqtyjm5b4
-      axios: 1.6.2
+      axios: 1.6.5
       esbuild: 0.17.19
       eslint: 8.55.0
       eslint-plugin-import: 2.29.1_eslint@8.55.0
@@ -451,7 +451,7 @@ importers:
       aws-cdk: 2.88.0
       aws-cdk-lib: 2.88.0
       aws4-axios: ~3.3.0
-      axios: ^1.6.1
+      axios: ^1.6.5
       babel-jest: 27.5.1
       concurrently: ^7.6.0
       constructs: 10.2.69
@@ -504,8 +504,8 @@ importers:
       '@cloudscape-design/global-styles': 1.0.19
       '@cloudscape-design/jest-preset': 2.0.21_tnxmgaouxgn5zxhwznxdn6cboa
       '@types/crypto-js': 4.2.1
-      aws4-axios: 3.3.0_axios@1.6.2
-      axios: 1.6.2
+      aws4-axios: 3.3.0_axios@1.6.5
+      axios: 1.6.5
       crypto-js: 4.2.0
       date-fns: 2.30.0
       i18next: 21.10.0
@@ -6450,7 +6450,7 @@ packages:
     resolution: {integrity: sha512-08kcGqnYf/YmjoRhfxyu+CLxBjUtHLXLXX/vUfx9l2LYzG3c1m61nrpyFUZI6zeS+Li/wWMMidD9KgrqtGq3mA==}
     dev: true
 
-  /aws4-axios/3.3.0_axios@1.6.2:
+  /aws4-axios/3.3.0_axios@1.6.5:
     resolution: {integrity: sha512-TjSzFKKMyQN/fiphQ0OUff8srWmUcfiM0mZqrtT75BBYrUTJVw7fG85Et2Npps3no8THEy1j/y82YGP2JSMMNg==}
     engines: {node: '>=16'}
     peerDependencies:
@@ -6458,7 +6458,7 @@ packages:
     dependencies:
       '@aws-sdk/client-sts': 3.474.0
       aws4: 1.12.0
-      axios: 1.6.2
+      axios: 1.6.5
     transitivePeerDependencies:
       - aws-crt
 
@@ -6470,19 +6470,19 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /axios/1.6.2:
-    resolution: {integrity: sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==}
+  /axios/1.6.5:
+    resolution: {integrity: sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==}
     dependencies:
-      follow-redirects: 1.15.3
+      follow-redirects: 1.15.4
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
 
-  /axios/1.6.2_debug@4.3.4:
-    resolution: {integrity: sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==}
+  /axios/1.6.5_debug@4.3.4:
+    resolution: {integrity: sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==}
     dependencies:
-      follow-redirects: 1.15.3_debug@4.3.4
+      follow-redirects: 1.15.4_debug@4.3.4
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -6689,7 +6689,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001570
+      caniuse-lite: 1.0.30001576
       electron-to-chromium: 1.4.614
       node-releases: 2.0.14
       update-browserslist-db: 1.0.13_browserslist@4.22.2
@@ -6764,8 +6764,8 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  /caniuse-lite/1.0.30001570:
-    resolution: {integrity: sha512-+3e0ASu4sw1SWaoCtvPeyXp+5PsjigkSt8OXZbF9StH5pQWbxEjLAZE3n8Aup5udop1uRiKA7a4utUk/uoSpUw==}
+  /caniuse-lite/1.0.30001576:
+    resolution: {integrity: sha512-ff5BdakGe2P3SQsMsiqmt1Lc8221NR1VzHj5jXN5vBny9A6fpze94HiVV/n7XRosOlsShJcvMv5mdnpjOGCEgg==}
 
   /case/1.6.3:
     resolution: {integrity: sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==}
@@ -8431,8 +8431,8 @@ packages:
     resolution: {integrity: sha512-GRnmB5gPyJpAhTQdSZTSp9uaPSvl09KoYcMQtsB9rQoOmzs9dH6ffeccH+Z+cv6P68Hu5bC6JjRh4Ah/mHSNRw==}
     dev: false
 
-  /follow-redirects/1.15.3:
-    resolution: {integrity: sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==}
+  /follow-redirects/1.15.4:
+    resolution: {integrity: sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -8440,8 +8440,8 @@ packages:
       debug:
         optional: true
 
-  /follow-redirects/1.15.3_debug@4.3.4:
-    resolution: {integrity: sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==}
+  /follow-redirects/1.15.4_debug@4.3.4:
+    resolution: {integrity: sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -8891,7 +8891,7 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.15.3
+      follow-redirects: 1.15.4
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug
@@ -10740,7 +10740,7 @@ packages:
     dependencies:
       '@next/env': 12.3.4
       '@swc/helpers': 0.4.11
-      caniuse-lite: 1.0.30001570
+      caniuse-lite: 1.0.30001576
       postcss: 8.4.31
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
@@ -12682,7 +12682,7 @@ packages:
     engines: {node: '>=12.0.0'}
     hasBin: true
     dependencies:
-      axios: 1.6.2_debug@4.3.4
+      axios: 1.6.5_debug@4.3.4
       joi: 17.11.0
       lodash: 4.17.21
       minimist: 1.2.8

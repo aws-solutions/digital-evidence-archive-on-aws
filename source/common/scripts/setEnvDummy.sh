@@ -14,4 +14,6 @@ export DATASYNC_REPORTS_BUCKET_NAME=dummySyncBucket
 export DATASYNC_ROLE=dummyDatasyncRole
 export DATASYNC_REPORTS_ROLE=dummyDatasyncReportsRole
 export TABLE_NAME=dummyTable
+export IDENTITY_STORE_ID=dummyId
+export IDENTITY_STORE_REGION=us-east-1
 unset ADMIN_ROLE_ARN

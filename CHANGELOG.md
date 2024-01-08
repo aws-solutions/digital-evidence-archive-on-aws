@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2024-02-15
 
 ### Added
-- something exciting
+- integration with DataSync for ingestion of large volumes of data
+- when using identityStoreId, identityStoreRegion is also required
 
 ## [1.0.6] - 2023-12-15
 

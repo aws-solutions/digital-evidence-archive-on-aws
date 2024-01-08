@@ -110,7 +110,7 @@
     "aws-sdk-client-mock": "^3.0.0",
     "aws-sdk-client-mock-jest": "^3.0.0",
     "aws4-axios": "~3.3.0",
-    "axios": "^1.6.1",
+    "axios": "^1.6.5",
     "concurrently": "^7.6.0",
     "dynamo-db-local": "~5.0.1",
     "eslint": "^8.47.0",
