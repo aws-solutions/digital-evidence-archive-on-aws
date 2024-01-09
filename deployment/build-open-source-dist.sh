@@ -92,6 +92,9 @@ cp $source_template_dir/../CHANGELOG.md $dist_dir
 echo "cp $source_template_dir/../.gitignore $dist_dir"
 cp $source_template_dir/../.gitignore $dist_dir
 
+echo "cp $source_template_dir/../solution-manifest.yaml $dist_dir"
+cp $source_template_dir/../solution-manifest.yaml $dist_dir
+
 echo "------------------------------------------------------------------------------"
 echo "[Packing] Clean up the open-source distributable"
 echo "------------------------------------------------------------------------------"

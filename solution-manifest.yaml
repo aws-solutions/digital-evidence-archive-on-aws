@@ -1,0 +1,6 @@
+id: SO0224 # Solution Id
+name: digital-evidence-archive-on-aws # trademarked name
+version: v1.0.6 # current version of the solution. Used to verify template headers
+cloudformation_templates: # This list should match with AWS CloudFormation templates section of IG
+  - template: dea-one-click-DeaMainStack.template
+    main_template: true

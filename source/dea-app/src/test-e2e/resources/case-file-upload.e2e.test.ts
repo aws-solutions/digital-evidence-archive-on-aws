@@ -82,7 +82,9 @@ describe('Test case file APIs', () => {
       caseUlid,
       'positiveTest',
       FILE_PATH,
-      FILE_SIZE_BYTES
+      FILE_SIZE_BYTES,
+      1,
+      1
     );
 
     const initiatedCaseFile2: DeaCaseFile = await initiateCaseFileUploadSuccess(
@@ -92,7 +94,9 @@ describe('Test case file APIs', () => {
       caseUlid,
       'colocatedPositiveTest',
       FILE_PATH,
-      FILE_SIZE_BYTES
+      FILE_SIZE_BYTES,
+      1,
+      1
     );
 
     const fileUlid = initiatedCaseFile.ulid ?? fail();

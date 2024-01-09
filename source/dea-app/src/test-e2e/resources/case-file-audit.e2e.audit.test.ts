@@ -41,6 +41,7 @@ describe('case file audit e2e', () => {
   const cognitoHelper = new CognitoHelper();
 
   const testUser = `caseFileAuditTestUser${randomSuffix()}`;
+  const testRole = 'CaseWorker';
   const deaApiUrl = testEnv.apiUrlOutput;
   let creds: Credentials;
   let idToken: Oauth2Token;
@@ -50,7 +51,7 @@ describe('case file audit e2e', () => {
 
   beforeAll(async () => {
     // Create user in test group
-    await cognitoHelper.createUser(testUser, 'CaseWorker', 'CaseFileAudit', 'TestUser');
+    await cognitoHelper.createUser(testUser, testRole, 'CaseFileAudit', 'TestUser');
     [creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
   }, 10000);
 
@@ -87,7 +88,9 @@ describe('case file audit e2e', () => {
         caseUlid,
         'caseFileAuditTest',
         FILE_PATH,
-        FILE_SIZE_MB
+        FILE_SIZE_MB,
+        1,
+        1
       );
       const fileUlid = initiatedCaseFile.ulid ?? fail();
       s3ObjectsToDelete.push({ key: `${caseUlid}/${fileUlid}`, uploadId: initiatedCaseFile.uploadId });
@@ -129,7 +132,9 @@ describe('case file audit e2e', () => {
         caseUlid,
         'caseFileAuditTestOtherFile',
         FILE_PATH,
-        FILE_SIZE_MB
+        FILE_SIZE_MB,
+        1,
+        1
       );
       const otherFileUlid = otherInitiatedCaseFile.ulid ?? fail();
       s3ObjectsToDelete.push({
@@ -221,7 +226,7 @@ describe('case file audit e2e', () => {
       if (!initiateUploadEntry) {
         fail('Initiate Upload Entry does not exist');
       }
-      verifyAuditEntry(initiateUploadEntry, AuditEventType.INITIATE_CASE_FILE_UPLOAD, testUser, {
+      verifyAuditEntry(initiateUploadEntry, AuditEventType.INITIATE_CASE_FILE_UPLOAD, testUser, testRole, {
         expectedResult: 'success',
         expectedFileHash: '',
         expectedCaseUlid: caseUlid,
@@ -231,7 +236,7 @@ describe('case file audit e2e', () => {
       const completeUploadEntry = applicationEntries.find(
         (entry) => entry.Event_Type === AuditEventType.COMPLETE_CASE_FILE_UPLOAD
       );
-      verifyAuditEntry(completeUploadEntry, AuditEventType.COMPLETE_CASE_FILE_UPLOAD, testUser, {
+      verifyAuditEntry(completeUploadEntry, AuditEventType.COMPLETE_CASE_FILE_UPLOAD, testUser, testRole, {
         expectedCaseUlid: caseUlid,
         expectedFileUlid: fileUlid,
         expectedResult: 'success',
@@ -241,7 +246,7 @@ describe('case file audit e2e', () => {
       const getFileDetailsEntry = applicationEntries.find(
         (entry) => entry.Event_Type === AuditEventType.GET_CASE_FILE_DETAIL
       );
-      verifyAuditEntry(getFileDetailsEntry, AuditEventType.GET_CASE_FILE_DETAIL, testUser, {
+      verifyAuditEntry(getFileDetailsEntry, AuditEventType.GET_CASE_FILE_DETAIL, testUser, testRole, {
         expectedCaseUlid: caseUlid,
         expectedFileUlid: fileUlid,
         expectedResult: 'success',
@@ -251,7 +256,7 @@ describe('case file audit e2e', () => {
       const downloadEntry = applicationEntries.find(
         (entry) => entry.Event_Type === AuditEventType.DOWNLOAD_CASE_FILE && entry.Username === testUser
       );
-      verifyAuditEntry(downloadEntry, AuditEventType.DOWNLOAD_CASE_FILE, testUser, {
+      verifyAuditEntry(downloadEntry, AuditEventType.DOWNLOAD_CASE_FILE, testUser, testRole, {
         expectedCaseUlid: caseUlid,
         expectedFileUlid: fileUlid,
         expectedResult: 'success',
@@ -262,12 +267,18 @@ describe('case file audit e2e', () => {
         (entry) =>
           entry.Event_Type === AuditEventType.DOWNLOAD_CASE_FILE && entry.Username === failedDownloadTestUser
       );
-      verifyAuditEntry(failedDownloadEntry, AuditEventType.DOWNLOAD_CASE_FILE, failedDownloadTestUser, {
-        expectedCaseUlid: caseUlid,
-        expectedFileUlid: fileUlid,
-        expectedResult: 'failure',
-        expectedFileHash: '',
-      });
+      verifyAuditEntry(
+        failedDownloadEntry,
+        AuditEventType.DOWNLOAD_CASE_FILE,
+        failedDownloadTestUser,
+        testRole,
+        {
+          expectedCaseUlid: caseUlid,
+          expectedFileUlid: fileUlid,
+          expectedResult: 'failure',
+          expectedFileHash: '',
+        }
+      );
 
       // Verify Cloudtrail audit trail events
       const dbGetItems = cloudtrailEntries.filter((entry) => entry.Request_Path === 'GetItem');

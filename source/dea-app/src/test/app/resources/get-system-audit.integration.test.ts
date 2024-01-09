@@ -4,12 +4,8 @@
  */
 
 import { AthenaClient, GetQueryExecutionCommand, QueryExecutionState } from '@aws-sdk/client-athena';
-import {
-  STSClient,
-  ServiceInputTypes as STSInputs,
-  ServiceOutputTypes as STSOutputs,
-} from '@aws-sdk/client-sts';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { STSClient } from '@aws-sdk/client-sts';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { anyOfClass, anything, instance, mock, when } from 'ts-mockito';
 import { getSystemAudit } from '../../../app/resources/get-system-audit';
 import { AuditType } from '../../../persistence/schema/dea-schema';
@@ -20,7 +16,7 @@ import { getQueryResponseWithState, startAudit } from '../audit-test-support';
 
 describe('get system audit', () => {
   const OLD_ENV = process.env;
-  let stsMock: AwsStub<STSInputs, STSOutputs>;
+  let stsMock: AwsClientStub<STSClient>;
 
   let modelProvider: ModelRepositoryProvider;
   beforeAll(async () => {

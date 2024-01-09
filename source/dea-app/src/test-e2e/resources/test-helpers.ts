@@ -23,7 +23,7 @@ import { AuditEventType, AuditResult } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
-import { DeaCaseFile } from '../../models/case-file';
+import { DeaCaseFile, InitiateCaseFileUploadDTO } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
@@ -159,7 +159,7 @@ export async function callDeaAPIWithCreds(
   url: string,
   method: DeaHttpMethod,
   cookie: Oauth2Token,
-  creds: Credentials,
+  credentials: Credentials,
   data?: unknown
 ) {
   const client = axios.create({
@@ -168,13 +168,13 @@ export async function callDeaAPIWithCreds(
     },
   });
 
-  const interceptor = aws4Interceptor(
-    {
+  const interceptor = aws4Interceptor({
+    options: {
       service: 'execute-api',
       region: testEnv.awsRegion,
     },
-    creds
-  );
+    credentials,
+  });
 
   client.interceptors.request.use(interceptor);
 
@@ -268,26 +268,31 @@ export const initiateCaseFileUploadSuccess = async (
   deaApiUrl: string,
   idToken: Oauth2Token,
   creds: Credentials,
-  caseUlid: string | undefined,
+  caseUlid: string,
   fileName: string,
   filePath: string,
   fileSizeBytes: number,
+  partRangeStart: number,
+  partRangeEnd: number,
   contentType: string = CONTENT_TYPE,
   chunkSizeBytes = CHUNK_SIZE_BYTES
 ): Promise<DeaCaseFile> => {
+  const uploadDto: InitiateCaseFileUploadDTO = {
+    caseUlid,
+    fileName,
+    filePath,
+    contentType,
+    fileSizeBytes,
+    chunkSizeBytes,
+    partRangeStart,
+    partRangeEnd,
+  };
   const initiateUploadResponse = await callDeaAPIWithCreds(
     `${deaApiUrl}cases/${caseUlid}/files`,
     'POST',
     idToken,
     creds,
-    {
-      caseUlid,
-      fileName,
-      filePath,
-      contentType,
-      fileSizeBytes,
-      chunkSizeBytes,
-    }
+    uploadDto
   );
 
   expect(initiateUploadResponse.status).toEqual(200);
@@ -586,6 +591,7 @@ export type AuditEventEntry = {
   File_SHA_256?: string;
   Target_User_ID?: string;
   Case_Actions?: string;
+  Role?: string;
 };
 
 export function csvToObject<T>(csv: string): T[] {
@@ -604,6 +610,7 @@ export function verifyAuditEntry(
   entry: AuditEventEntry | undefined,
   expectedEventType: AuditEventType,
   expectedUsername: string,
+  expectedRole: string,
   expectations: AuditExpectations = {
     expectedResult: 'success',
     expectedCaseUlid: '',
@@ -620,6 +627,7 @@ export function verifyAuditEntry(
   expect(entry.Case_ID).toStrictEqual(expectations.expectedCaseUlid);
   expect(entry.File_ID).toStrictEqual(expectations.expectedFileUlid);
   expect(entry.File_SHA_256).toStrictEqual(expectations.expectedFileHash);
+  expect(entry.Role).toStrictEqual(expectedRole);
 }
 
 export type CloudTrailMatches = {
@@ -634,7 +642,8 @@ export async function getAuditQueryResults(
   creds: Credentials,
   expectedDeaEvents: AuditEventType[],
   expectedCloudtrailMatches: CloudTrailMatches[],
-  delayMillisBetweenAttempts = 45000
+  delayMillisBetweenAttempts = 45000,
+  data?: unknown
 ) {
   let csvData: string | undefined;
   let queryRetries = 15;
@@ -643,7 +652,8 @@ export async function getAuditQueryResults(
       `${requestUrl}${queryParams}`,
       'POST',
       idToken,
-      creds
+      creds,
+      data
     );
 
     expect(startAuditQueryResponse.status).toEqual(200);

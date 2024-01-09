@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-ui",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "NextJS frontend UI for Digital Evidence Archive",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/blob/main/source/dea-ui/ui/",
   "repository": {
@@ -59,9 +59,9 @@
     "@cloudscape-design/global-styles": "~1.0.8",
     "@cloudscape-design/jest-preset": "~2.0.8",
     "@types/crypto-js": "^4.1.1",
-    "aws4-axios": "~2.4.9",
-    "axios": "^0.27.1",
-    "crypto-js": "^4.1.1",
+    "aws4-axios": "~3.3.0",
+    "axios": "^1.6.2",
+    "crypto-js": "^4.2.0",
     "date-fns": "^2.28.0",
     "i18next": "~21.10.0",
     "jest-environment-jsdom": "~29.6.3",
@@ -88,7 +88,7 @@
     "@rushstack/heft-jest-plugin": "^0.5.5",
     "@rushstack/heft-node-rig": "^1.12.5",
     "@testing-library/dom": "^8.13.0",
-    "@testing-library/jest-dom": "6.1.2",
+    "@testing-library/jest-dom": "6.1.5",
     "@testing-library/react": "12.1.2",
     "@testing-library/user-event": "~14.4.3",
     "@types/heft-jest": "1.0.3",
@@ -121,7 +121,7 @@
     "npm-package-json-lint-config-default": "^5.0.0",
     "sass": "^1.60.0",
     "sort-package-json": "^2.4.1",
-    "start-server-and-test": "~1.15.3",
+    "start-server-and-test": "2.0.3",
     "ts-mockito": "~2.6.1",
     "typescript": "^4.5.2"
   }

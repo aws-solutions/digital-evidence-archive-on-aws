@@ -25,7 +25,7 @@ const handleErrors = async (error: Error) => {
   let endpointUrl;
   if (error instanceof AxiosError) {
     statusCode = error.response && error.response.status ? error.response.status : 0;
-    endpointUrl = error.response && error.config.url ? error.config.url : '';
+    endpointUrl = error.response && error?.config?.url ? error.config.url : '';
 
     // Logout if refresh failed (refresh token expired)
     // Logout if 412 (session lock)
@@ -71,13 +71,13 @@ const fetchData = async <T>(options: AxiosRequestConfig): Promise<T> => {
       secretAccessKey,
       sessionToken,
     };
-    const interceptor = aws4Interceptor(
-      {
+    const interceptor = aws4Interceptor({
+      options: {
         service: 'execute-api',
         region,
       },
-      credentials
-    );
+      credentials,
+    });
 
     client.interceptors.request.use(interceptor);
   }

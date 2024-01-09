@@ -26,7 +26,12 @@ import { getUserByTokenId, listUsers } from '../../../persistence/user';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { testEnv } from '../../../test-e2e/helpers/settings';
 import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyAuditEvent, getDummyEvent } from '../../integration-objects';
+import {
+  dummyContext,
+  getDummyAuditEvent,
+  getDummyEvent,
+  setUserArnWithRole,
+} from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -54,6 +59,7 @@ describe('lambda pre-execution checks', () => {
     const oauthToken = await cognitoHelper.getIdTokenForUser(testUser);
 
     const event = getDummyEvent();
+    setUserArnWithRole(event, /*roleName=*/ 'CaseWorker');
     event.headers['cookie'] = `extraCookie=someval; idToken=${JSON.stringify(oauthToken)}`;
     const tokenPayload = await getTokenPayload(oauthToken.id_token, region);
     const tokenId = tokenPayload.sub;
@@ -76,6 +82,9 @@ describe('lambda pre-execution checks', () => {
     expect(user?.idPoolId).toStrictEqual(idPoolId);
     expect(user?.firstName).toStrictEqual(firstName);
     expect(user?.lastName).toStrictEqual(lastName);
+    // Expect that the DEA Role was parsed from the userArn of the Identity Pool credentials
+    expect(event.headers['deaRole']).toBeDefined();
+    expect(event.headers['deaRole']).toStrictEqual('CaseWorker');
     // check that the event contains the ulid from the new user
     expect(event.headers['userUlid']).toBeDefined();
     expect(event.headers['userUlid']).toStrictEqual(user?.ulid);
@@ -120,10 +129,15 @@ describe('lambda pre-execution checks', () => {
     expect(tokenId2).toStrictEqual(tokenId);
 
     const event2 = getDummyEvent();
+    setUserArnWithRole(event2, /*roleName=*/ 'WorkingManager');
     event2.headers['cookie'] = `idToken=${JSON.stringify(result)}`;
 
     const auditEvent2 = getDummyAuditEvent();
     await runPreExecutionChecks(event2, dummyContext, auditEvent2, repositoryProvider);
+
+    // Expect that the DEA Role was parsed from the userArn of the Identity Pool credentials
+    expect(event2.headers['deaRole']).toBeDefined();
+    expect(event2.headers['deaRole']).toStrictEqual('WorkingManager');
 
     const user2 = await getUserByTokenId(tokenId2, repositoryProvider);
     expect(user2).toBeDefined();
@@ -149,6 +163,7 @@ describe('lambda pre-execution checks', () => {
 
   it('should throw if no cognitoId is included in the request', async () => {
     const event = getDummyEvent();
+    setUserArnWithRole(event, /*roleName=*/ 'WorkingManager');
 
     event.requestContext.identity.cognitoIdentityId = null;
 
@@ -367,6 +382,7 @@ describe('lambda pre-execution checks', () => {
 
 const callPreChecks = async (oauthToken: Oauth2Token, idPoolId?: string): Promise<string> => {
   const event = getDummyEvent();
+  setUserArnWithRole(event, /*roleName=*/ 'CaseWorker');
   event.headers['cookie'] = `idToken=${JSON.stringify(oauthToken)}`;
   if (idPoolId) {
     event.requestContext.identity.cognitoIdentityId = idPoolId;
