@@ -135,6 +135,11 @@ const convictSchema = {
     },
   },
   idpInfo: {
+    identityStoreAccountId: {
+      doc: 'The account Id where Identity Center exists',
+      format: String,
+      default: undefined,
+    },
     metadataPath: {
       doc: 'Either the URL or file path to the IDP metadata',
       format: String,
@@ -321,6 +326,7 @@ export interface IdpMetadataInfo {
   readonly defaultRole: string | undefined;
   readonly groupToDeaRoleRules: GroupToDEARoleRule[];
   readonly identityStoreId: string | undefined;
+  readonly identityStoreAccountId: string | undefined;
 }
 
 export interface DEAEndpointDefinition {
