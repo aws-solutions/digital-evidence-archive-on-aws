@@ -326,6 +326,6 @@ export const fileDetailLabels = {
 };
 
 export const systemUseNotificationText =
-  'OFFICIAL SENSITIVE - Any Processing or viewing of sensitive data shall be strictly necessary and shall meet the conditions under Schedule 8 Part 3 of the Data Protection Act 2018.'
-  'It is an offence to continue without proper authority. Users must read and conform to the Security Work Instructions for this system.'
-  'User interactions are monitored and any unauthorised access or attempts to alter, destroy or damage data, programs or equipment could result in criminal prosecution under the Computer Misuse Act (1990).'
+  'OFFICIAL SENSITIVE - Any Processing or viewing of sensitive data shall be strictly necessary and shall meet the conditions under Schedule 8 Part 3 of the Data Protection Act 2018. ' +
+  'It is an offence to continue without proper authority. Users must read and conform to the Security Work Instructions for this system. ' +
+  'User interactions are monitored and any unauthorised access or attempts to alter, destroy or damage data, programs or equipment could result in criminal prosecution under the Computer Misuse Act (1990).';
