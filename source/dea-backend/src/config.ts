@@ -263,6 +263,16 @@ const convictSchema = {
       format: String,
       default: undefined,
     },
+    identityStoreAccount: {
+      doc: `account number of your identity center's identity store, used for querying user's group memberships`,
+      format: String,
+      default: undefined,
+    },
+    hasAwsManagedActiveDirectory: {
+      doc: `whether your identity center's identity store is AWS Managed Microsoft AD`,
+      format: Boolean,
+      default: false,
+    },
   },
   testStack: {
     doc: 'Boolean to indicate if this is a test stack',
@@ -391,6 +401,8 @@ export interface IdpMetadataInfo {
   readonly groupToDeaRoleRules: GroupToDEARoleRule[];
   readonly identityStoreId: string | undefined;
   readonly identityStoreRegion: string | undefined;
+  readonly identityStoreAccount: string | undefined;
+  readonly hasAwsManagedActiveDirectory: boolean;
 }
 
 export interface DEAEndpointDefinition {

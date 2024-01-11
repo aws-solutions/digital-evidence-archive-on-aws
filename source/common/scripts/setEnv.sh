@@ -26,4 +26,6 @@ export TABLE_NAME=$(aws cloudformation list-exports --region $REGION $profile_st
 # Test-required ENV
 export IDENTITY_STORE_ID=dummyId
 export IDENTITY_STORE_REGION=us-east-1
+export IDENTITY_STORE_ACCOUNT="555555555555"
+export HAS_AWS_MANAGED_ACTIVE_DIRECTORY=false
 unset ADMIN_ROLE_ARN

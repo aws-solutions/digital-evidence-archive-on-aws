@@ -5,6 +5,7 @@
 
 import { assert } from 'console';
 import * as fs from 'fs';
+
 import path from 'path';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
 import {
@@ -45,6 +46,7 @@ import {
   WebIdentityPrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
+
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
@@ -439,14 +441,22 @@ export class DeaAuth extends Construct {
     const idpMetadata = deaConfig.idpMetadata();
     const identityStoreId = idpMetadata?.identityStoreId;
     const identityStoreRegion = idpMetadata?.identityStoreRegion;
+    const identityStoreAccount = idpMetadata?.identityStoreAccount;
+    const hasAwsManagedActiveDirectory = idpMetadata?.hasAwsManagedActiveDirectory ?? false;
     if (identityStoreId) {
       if (!identityStoreRegion) {
         throw new Error('Config identityStoreRegion is required when using Identity Store');
       }
 
+      if (!identityStoreAccount) {
+        throw new Error('Config identityStoreAccount is required when using Identity Store');
+      }
+
       const preTokenGenerationLambda = this.createPreTokenGenerationLambda(
         identityStoreId,
         identityStoreRegion,
+        identityStoreAccount,
+        hasAwsManagedActiveDirectory,
         opsDashboard
       );
       lambdaTriggers = { preTokenGeneration: preTokenGenerationLambda };
@@ -644,6 +654,8 @@ export class DeaAuth extends Construct {
   private createPreTokenGenerationLambda(
     identityStoreId: string,
     identityStoreRegion: string,
+    identityStoreAccount: string,
+    hasAwsManagedActiveDirectory: boolean,
     opsDashboard?: DeaOperationalDashboard
   ): NodejsFunction {
     const lambda = new NodejsFunction(this, `${deaConfig.stage()}-PreTokenGenerationTrigger`, {
@@ -658,6 +670,8 @@ export class DeaAuth extends Construct {
         NODE_OPTIONS: '--enable-source-maps',
         IDENTITY_STORE_ID: identityStoreId,
         IDENTITY_STORE_REGION: identityStoreRegion,
+        IDENTITY_STORE_ACCOUNT: identityStoreAccount,
+        HAS_AWS_MANAGED_ACTIVE_DIRECTORY: hasAwsManagedActiveDirectory.toString(),
       },
       bundling: {
         externalModules: ['aws-sdk'],
@@ -668,13 +682,17 @@ export class DeaAuth extends Construct {
 
     lambda.addToRolePolicy(
       new PolicyStatement({
-        actions: ['identitystore:ListGroupMembershipsForMember', 'identitystore:DescribeGroup'],
+        actions: [
+          'identitystore:ListGroupMembershipsForMember', 
+          'identitystore:DescribeGroup', 
+          'identitystore:GetUserId'
+        ],
         resources: [
           `arn:${Aws.PARTITION}:identitystore::${Aws.ACCOUNT_ID}:identitystore/${identityStoreId}`,
           `arn:${Aws.PARTITION}:identitystore:::membership/*`,
           `arn:${Aws.PARTITION}:identitystore:::user/*`,
           `arn:${Aws.PARTITION}:identitystore:::group/*`,
-          `arn:${Aws.PARTITION}:identitystore::${Aws.ACCOUNT_ID}:identitystore/${identityStoreId}`,
+          `arn:${Aws.PARTITION}:ds:*:*:directory/${identityStoreId}`,
         ],
       })
     );

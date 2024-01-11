@@ -5,11 +5,13 @@
 
 import {
   DescribeGroupCommand,
+  GetUserIdCommand,
   IdentitystoreClient,
   ListGroupMembershipsForMemberCommand,
 } from '@aws-sdk/client-identitystore';
 import { Callback, Context } from 'aws-lambda';
 import { getCustomUserAgent, getRequiredEnv } from '../../lambda-http-helpers';
+
 import { logger } from '../../logger';
 import { ValidationError } from '../exceptions/validation-exception';
 
@@ -23,6 +25,7 @@ import { ValidationError } from '../exceptions/validation-exception';
 
 const identityStoreId = getRequiredEnv('IDENTITY_STORE_ID');
 const identityStoreRegion = getRequiredEnv('IDENTITY_STORE_REGION');
+const identityStoreAccount = getRequiredEnv('IDENTITY_STORE_ACCOUNT');
 const idCenterClient = new IdentitystoreClient({
   region: identityStoreRegion,
   customUserAgent: getCustomUserAgent(),
@@ -67,10 +70,51 @@ export const addGroupsClaimToToken: PreTokenGenerationSignature = async (
 ) => {
   logger.debug('Event', { Data: JSON.stringify(event, null, 2) });
 
-  const userId = event.request.userAttributes['custom:IdCenterId'];
+  let userId = event.request.userAttributes['custom:IdCenterId'];
 
-  if (!userId) {
-    throw new ValidationError(`Identity center id is not set for user.`);
+  // optional environment variables should be initialized within Lambda function to be validated during unit test
+  const hasAwsManagedActiveDirectory = getRequiredEnv('HAS_AWS_MANAGED_ACTIVE_DIRECTORY').toLowerCase() === 'true';
+  if (hasAwsManagedActiveDirectory) {
+    /*
+      When using Microsoft Active Directory as the identity store inside Identity Center, IdCenterId maps to ${dir:guid} 
+      (aka. objectGUID), which is considered an "External Id" in ID Center and is a distinct value from UserId.
+      Therefore, a reverse user lookup is needed to translate this external ID to the UserId Identity Center uses.
+      https://docs.aws.amazon.com/singlesignon/latest/userguide/attributemappingsconcept.html#defaultattributemappings
+    */
+    const externalUserId = userId;
+    if (!externalUserId) {
+      throw new ValidationError(`External Active Directory ID is not set for user.`);
+    }
+
+    // Parse context for variables not in environment, can assume Lambda, Directory Service (AD), and ID Center share partition 
+    // since new partition requires new account. Although AD and ID Center must be in same region, this executing Lambda does not. 
+    const partition = _context.invokedFunctionArn.split(":")[1];
+
+    const getUserIdResponse = await idCenterClient.send(
+      new GetUserIdCommand({
+        IdentityStoreId: identityStoreId,
+        AlternateIdentifier: {
+          ExternalId: {
+            Issuer: `arn:${partition}:ds:${identityStoreRegion}:${identityStoreAccount}:directory/${identityStoreId}`,
+            Id: externalUserId,
+          }
+        },
+      })
+    )
+
+    if (!getUserIdResponse.UserId) {
+      throw new ValidationError(`Unable to obtain user ID for user ${externalUserId}`);
+    }
+    userId = getUserIdResponse.UserId
+  } else {
+    /*
+      The user attribute "custom:IdCenterId" maps to AD_GUID in IAM Identity Center. When using Identity Center 
+      as the identity store, IdCenterId maps directly to UsreId in Identity Center APIs and requires no translation.
+      https://docs.aws.amazon.com/singlesignon/latest/userguide/attributemappingsconcept.html#defaultattributemappings
+    */ 
+    if (!userId) {
+      throw new ValidationError(`Identity center id is not set for user.`);
+    }
   }
 
   const groups = (await getGroupNamesForUser(userId)).join(',');

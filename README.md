@@ -8,36 +8,37 @@ Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest 
 | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | ![Statements](https://img.shields.io/badge/statements-92.3%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-76.54%25-red.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-92.16%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-92.2%25-brightgreen.svg?style=flat) |
 
-
 # Getting Started
 
 ## Production Deployment
+
 Follow these steps to deploy your production environment. If developing/testing, follow the Simple Deployment Section.
 
 You can deploy using your local computer via the terminal (for Mac/Linux users) or Command Prompt for Windows Users. The commands in the following steps may use different commands depending on which OS your computer is running, so make sure to follow the directions carefully.
 
 ### Step 0: Setup a Custom Domain (Recommended)
+
 We recommend using a custom domain, otherwise the URL for the solution will not be human readable. You will need to register a domain using AWS Route53 or other provider, and import a certificate for the domain using AWS Certificate Manager.
 
 #### Option 1: Using a Route53 Domain
 
-1. Register a Domain with Route53 by following https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-register.html#register_new_console
+1. Register a Domain with Route53 by following [this guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/domain-register.html#register_new_console).
 2. Wait for confirmation email
-3. Keep Note of the domain name: e.g. digitalevidencearchive.com
+3. Keep Note of the domain name (e.g. <digitalevidencearchive.com>)
 4. Route53 automatically creates a hosted zone for your domain. Go to Route 53, click HostedZones on the left tab. Go to the hosted zone that matches your domain name, and copy and paste the Hosted Zone ID somewhere safe
-5. Next go to AWS Certificate Manager to request a certificate for your domain: (MAKE SURE TO DO IT IN THE REGION YOU WANT TO DEPLOY) https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html
+5. Next go to AWS Certificate Manager to [request a certificate](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html) for your domain. MAKE SURE TO DO IT IN THE REGION YOU WANT TO DEPLOY.
 6. Navigate to the certificate table. The request should be pending. Click on the Certificate ID link, scroll to the Domains section, and on the upper right hand side of that section, click Create Records in Route53. Wait about 10 minutes
 7. Once the Certificate is issued, click the Certificate ID link and copy the ARN in the first section. Save this somewhere safe.
 
 #### Option 2: Using a non-Route53 Domain
 
-1. Get a certificate for your domain by following: https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html.
+1. Get a certificate for your domain by following [this guide](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html).
  -- NOTE: make sure you create the certificate in the same region as the solution deployment
- -- Alternatively, you can import a certificate from a third party: https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html
+ -- Alternatively, you can [import a certificate from a third party.](https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html).
 2. After the certificate is created, copy the ARN of the certificate and save it somewhere, you will need it for step 2.
 3. After the deployment is complete in step 3, you will have to add a CNAME record to point the domain at the solution. Follow the last instruction in Step 3.
 
-### Pre-requisites:
+### Pre-requisites
 
 **NOTE** If you are using Windows to deploy, make sure that for each of your installation steps the download path DOES NOT contain spaces. Many of the default paths go to "C:\Program Files\", but certain commands cannot run when the path has a space in it
 
@@ -46,10 +47,11 @@ You will need npm and node installed on your machine:
 *For Windows*
 
 Follow the instructions [here](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows) and stop before the Install Visual Studio Code section.
-NOTE: During the nvm install, when asked where to place npm, DO NOT place in "C:/Program Files", instead you can put it in "C:\Users\Public\nodejs". 
+NOTE: During the nvm install, when asked where to place npm, DO NOT place in "C:/Program Files", instead you can put it in "C:\Users\Public\nodejs".
 Additionally we currently require Node 18 LTS (lts/hydrogen). You can automatically use our recommended version with the `nvm install` command which will install the version we've defined in our nvmrc file.
 
 *For Mac/Linux*
+
 ```sh
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 source ~/.bashrc
@@ -57,7 +59,8 @@ source ~/.bashrc
 nvm install
 ```
 
-Next you need to install rush to be able to run commands in the repository, cdk for deployment, and a specific version of pnpm (Note pnpm needs to match the version pnpmVersion in rush.json). 
+Next you need to install rush to be able to run commands in the repository, cdk for deployment, and a specific version of pnpm (Note pnpm needs to match the version pnpmVersion in rush.json).
+
 ```sh
 npm install -g @microsoft/rush
 npm install -g pnpm@7.16.0
@@ -69,11 +72,12 @@ NOTE: Make sure you change the download location to ensure the path DOES NOT hav
 
 You'll need to pull the repository to your local machine, therefore you also need git installed. If you do not already have it on your machine you can follow the instructions for your OS [here](https://github.com/git-guides/install-git).
 
-For Windows you will need to install Cygwin so certains scripts can run during the build process. See [here](https://www.cygwin.com/) for installation details. 
+For Windows you will need to install Cygwin so certains scripts can run during the build process. See [here](https://www.cygwin.com/) for installation details.
 
 If you are using Windows, you may need to restart your command prompt to see the installation changes take place.
 
 ### Step 1: Clone the repository
+
 Use the command line to run the following commands:
 
 ```sh
@@ -88,6 +92,7 @@ rush build
 Next you'll need to copy and rename the default configuration file, and open the copy in a text editor.
 
 **Windows**
+
 ```sh
 cd ./common/config
 copy prodexample.json prod.json
@@ -96,12 +101,14 @@ notepad ./common/config/prod.json
 ```
 
 **Linux**
+
 ```sh
 cp ./common/config/prodexample.json ./common/config/prod.json
 nano ./common/config/prod.json
 ```
 
 Inside the configuration file, change the following fields
+
 1. Specify your region by including a line in the following format ```"region": "us-east-2"```
 2. Specify an unique domain prefix for your hosted Cognito login. NOTE: this is separate from your custom domain. It should look like the following:
 
@@ -110,9 +117,11 @@ Inside the configuration file, change the following fields
   "domain": "exampleexampleexample"
 },
 ```
+
 3. If you completed step 0, then import the domainName and ACM Certificate ARN (and hostedZoneId, hostedZoneName for Route53 domains)
 
 Route 53 Domains:
+
 ```
 "customDomain": {
   "domainName": "example.com",
@@ -123,6 +132,7 @@ Route 53 Domains:
 ```
 
 Non Route53 Domains:
+
 ```
 "customDomain": {
   "domainName": "example.com",
@@ -135,7 +145,6 @@ You can see examples of role types already in the file. Feel free to modify thes
 For each role, specify the name, description, and an array of endpoints defined by path and endpoint method. You can refer to API Reference section of the Implementation Guide for a list of available endpoints. Alternatively, you can view the file called dea-route-config.ts under the dea-backend folder for the most up to date list of API endpoints.  
 
 > :warning: Note about elevated endpoints: The following API endpoints, which can be configured on Roles within deaRoleTypes configuration, are considered elevated. These endpoints grant applicable users access to resources without any case-owner granted membership and are intended for "admin-type" roles.
-
 
 > - Fetch a list of all cases within the system.  
 {
@@ -179,7 +188,6 @@ For each role, specify the name, description, and an array of endpoints defined 
   "method": "GET"
 }  
 
-
 > :warning: To compile a comprehensive Audit Log of application events Digital Evidence Archive utilizes both Application-Generated events as well as events from CloudTrail. CloudTrail events have been known to be delayed up to 20 minutes before becoming present in CloudWatch Logs. Consequently, be aware that a generated Audit report may be missing events that have occurred recently.
 
 5. If your local laws and regulations allows for or mandates the deletion of case evidence, set deletionAllowed field to true, otherwise set it to false.
@@ -193,11 +201,13 @@ Additionally the message shall provide appropriate privacy and security notices 
 To input your System Use Notification Message, open the following file in a text editor:
 
 **Windows**
+
 ```sh
 notepad ./dea-ui/ui/src/common/labels.tsx
 ```
 
 **Linux**
+
 ```sh
 nano  ~/digital-evidence-archive-on-aws/source/dea-ui/ui/src/common/labels.tsx
 ```
@@ -207,6 +217,7 @@ Scroll to the systemUseNotificationText definition, and change the text starting
 ### Step 3: Launch the Stack
 
 Navigate to the dea-main folder
+
 ```sh
 cd ./dea-main
 ```
@@ -214,6 +225,7 @@ cd ./dea-main
 Export the following variables (customize as needed)
 
 **Windows Powershell**
+
 ```sh
 $Env:STAGE='prod'
 $Env:AWS_REGION='us-east-2'
@@ -222,6 +234,7 @@ $Env:AWS_ACCT_NUMBER=<'your 12 digit AWS account number'>
 ```
 
 **Linux**
+
 ```sh
 export STAGE=prod
 export AWS_REGION="us-east-2"
@@ -238,6 +251,7 @@ rushx validate:config
 Now run the following commands to launch the stack
 
 **Windows**
+
 ```sh
 rush rebuild
 rushx cdk bootstrap aws://%AWS_ACCT_NUMBER%/%AWS_REGION%
@@ -245,6 +259,7 @@ rushx cdk deploy
 ```
 
 **Linux**
+
 ```sh
 rush rebuild
 rushx cdk bootstrap aws://${AWS_ACCT_NUMBER}/${AWS_REGION}
@@ -252,6 +267,7 @@ rushx cdk deploy
 ```
 
 NOTE: if you are running cdk deploy in us-gov-east-1 region, run the command with the --all flag since you are deploying more than one stack. E.g.
+
 ```sh
 rushx cdk deploy --all
 ```
@@ -263,110 +279,135 @@ NOTE: If you used a non-Route53 domain, then after the deployment is complete, y
 NOTE: For custom domains, you can access the solution using your domain; to view the ui, append the url with '/ui': e.g. dea.digitalevidencearchive.com/ui
 
 ### Step 4: Integrate your CJIS Compliant Identity Provider
+
 Cognito is not CJIS compliant, therefore you need to use your CJIS Compliant IdP to federate with Cognito for use in DEA. This will require you to create an App Integration in your IdP, relaunch the stack, create a custom attribute for users called DEARole, and assign users to DEA via the App Integration.
 
-#### 1: IdP Side Integration
+#### 4.1: IdP Side Integration
+
 The solution can integrate with either Okta or Active Directory. You can also choose how to determine what access the user has to the solution either by defining rules based on
 user group membership or by defining a custom attribute on your IdP, and for each dea user
 assigning the role name to that attribute for the user. See below for more details.
 
 ##### Integrating with Okta
 
-*Create Attribute*
+###### Create Attribute in Okta
 
 If you are using group membership to define access to DEA, you can skip this step.
 
 Otherwise, in Okta create a new custom attribute for users called DEARole, limit the possible values to only the Roles you configured in step 3. (For example: for the prodexample.json, the only possible attribute values would be CaseWorker, EvidenceManager, and WorkingManager). You can follow the instructions for doing that [here](https://help.okta.com/en-us/Content/Topics/users-groups-profiles/usgp-add-custom-user-attributes.htm).
 
-*Create SAML 2.0 Application in Okta*
+###### Create SAML 2.0 Application in Okta
 
 You will need your cognito domain prefix (as you stated in your configuration file) and your user pool Id (listed in the named CDK outputs as DeaAuthConstructuserPoolId).
 
-Complete ONLY the steps "Create a SAML app in Okta" and "Configure SAML integration for your Okta App" in this (aws article)[https://repost.aws/knowledge-center/cognito-okta-saml-identity-provider].
+Complete ONLY the steps "Create a SAML app in Okta" and "Configure SAML integration for your Okta App" in this [aws article](https://repost.aws/knowledge-center/cognito-okta-saml-identity-provider).
 Use the Following Values:
-* Single sign on URL: replace DOMAIN_PREFIX with the cognito domain you defined in your configuration file, and REGION with the region you are deploying in (e.g. us-east-1)
-  - For non-US Cloud regions: (or regions/stacks not using FIPs endpoints)
-   https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse
-  - For US regions: 
-  https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse
-* Audience URL: urn:amazon:cognito:sp:USER_POOL_ID (replace USER_POOL_ID with the id listed in the named CDK outputs called DeaAuthConstructuserPoolId, should look like us-east-1_xxxxxxxxx)
-* Attribute Statements: Set the following Attributes 
+
+- Single sign on URL: replace DOMAIN_PREFIX with the cognito domain you defined in your configuration file, and REGION with the region you are deploying in (e.g. us-east-1)
+  - For non-US GovCloud regions or regions/stacks not using [FIPS endpoints](https://aws.amazon.com/compliance/fips/):
+   <https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse>
+  - For US regions:
+  <https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse>
+- Audience URL: urn:amazon:cognito:sp:USER_POOL_ID (replace USER_POOL_ID with the id listed in the named CDK outputs called DeaAuthConstructuserPoolId, should look like us-east-1_xxxxxxxxx)
+- Attribute Statements: Set the following Attributes
   - firstName
   - lastName
   - email
   - username
   - If using Custom Attribute: the name of the custom attribute you created, e.g. deaRole
-* If using Groups: add a Group Claim
+- If using Groups: add a Group Claim
   - E.g. send all groups: Name=groups, NameFormat=Unspecified, Filter: Select Matches regex Value=.*
 
-##### Integrating with Active Directory
+##### Integrating with Azure Active Directory
 
-*Create Attribute*
+###### Create Attribute in Active Directory
 
 If you are using group membership to define access to DEA, you can skip this step.
 
 Otherwise, in AD create a new custom attribute for users called DEARole, limit the possible values to only the Roles you configured in step 3. (For example: for the prodexample.json, the only possible attribute values would be CaseWorker, EvidenceManager, and WorkingManager). You can follow the instructions for doing that [here](https://windowstechno.com/how-to-create-custom-attributes-in-active-directory/).
 
-*Create SAML 2.0 Application in AD*
+###### Create SAML 2.0 Application in Azure AD
 
 You will need your cognito domain prefix (as you stated in your configuration file) and your user pool Id (listed in the named CDK outputs as DeaAuthConstructuserPoolId).
 
-Complete ONLY Step 2: Add Amazon Cognito as an entrpise application in Azure AD in the  (following article)[https://aws.amazon.com/blogs/security/how-to-set-up-amazon-cognito-for-federated-authentication-using-azure-ad/].
+Complete ONLY Step 2: Add Amazon Cognito as an enterprise application in Azure AD in the [following article](https://aws.amazon.com/blogs/security/how-to-set-up-amazon-cognito-for-federated-authentication-using-azure-ad/).
+
 Use the Following Values:
-* Single sign on URL: replace DOMAIN_PREFIX with the cognito domain you defined in your configuration file, and REGION with the region you are deploying in (e.g. us-east-1)
+
+- Single sign on URL: replace DOMAIN_PREFIX with the cognito domain you defined in your configuration file, and REGION with the region you are deploying in (e.g. us-east-1)
   - For non-US Cloud regions: (or regions/stacks not using FIPs endpoints)
-   https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse
-  - For US regions: 
-  https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse
-* Audience URL: urn:amazon:cognito:sp:USER_POOL_ID (replace USER_POOL_ID with the id listed in the named CDK outputs called DeaAuthConstructuserPoolId, should look like us-east-1_xxxxxxxxx)
-* User Attributes and Claims: Set the following Attributes
+   <https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse>
+  - For US regions:
+  <https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse>
+- Audience URL: `urn:amazon:cognito:sp:USER_POOL_ID` (replace USER_POOL_ID with the id listed in the named CDK/CloudFormation stack Outputs called DeaAuthConstructuserPoolId, should look like `us-east-1_xxxxxxxxx`)
+- User Attributes and Claims: Set the following Attributes
   - firstName
   - lastName
   - email
   - username
   - If using Custom Attribute: the name of the custom attribute you created, e.g. deaRole
-* If using Groups: add a Group Claim (see here)[https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/how-to-connect-fed-group-claims]
+- If using Groups: add a Group Claim [see here](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/how-to-connect-fed-group-claims)
 
 ##### Integrating with Identity Center
 
-Identity Center does not allow for sending user groups and/or custom
-attribute over the SAML assertion. To get around this, when you integrate with Identity Center, the DEA solution will create a PreTokenGeneration Cognito Trigger, which will query your identity store for the federated user's group memberships, and add those groups to the identity token, so authorization can happen just like Okta/AD integrations.
+###### Enable IAM Identity Center
 
-*Create SAML 2.0 Application in Identity*
+When first enabling Identity Center in a region, you will need to select "Enable with AWS Organizations", not "Enable in only this AWS account".
+
+###### Sync Active Directory or external Identity Provider to Identity Center
+
+You will need to connect an Active Directory or Identity Provider (IdP) with IAM Identity Center.
+
+For a self-managed directory or an AWS Managed Microsoft AD, see [this guide](https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-ad.html). You may also choose to first import an existing Microsoft Active Directory into [AWS Managed Microsoft AD](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/ms_ad_getting_started.html). Ensure that your AD users are synced in Identity Center by following [this guide](https://docs.aws.amazon.com/singlesignon/latest/userguide/provision-users-from-ad-configurable-ADsync.html?icmpid=docs_sso_console#manage-sync-add-users-groups-configurable-ADsync).
+
+For an external identity provider, see [this guide](https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-idp.html?icmpid=docs_sso_console).
+
+###### Create SAML 2.0 Application in Identity Center
 
 You will need your cognito domain prefix (as you specified in your configuration file) and your user pool Id (listed in the named CDK outputs as DeaAuthConstructuserPoolId).
 
-Complete ONLY step "Configure a SAML application from the IAM Identity Center console" [https://repost.aws/knowledge-center/cognito-user-pool-iam-integration].
-Use the Following Values:
-* Single sign on URL: replace DOMAIN_PREFIX with the cognito domain you defined in your configuration file, and REGION with the region you are deploying in (e.g. us-east-1)
-  - For non-US Cloud regions: (or regions/stacks not using FIPs endpoints)
-   https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse
-  - For US regions: 
-  https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse
-* Audience URL: urn:amazon:cognito:sp:USER_POOL_ID (replace USER_POOL_ID with the id listed in the named CDK outputs called DeaAuthConstructuserPoolId, should look like us-east-1_xxxxxxxxx)
-* Attribute Statements: Set the following Attributes 
-  - Subject --> persistent --> ${user:subject}
-  - firstname --> basic  --> ${user:givenName}
-  - lastname --> basic --> ${user:familyName}
-  - email --> basic --> ${user:email}
-  - username --> basic --> ${user:preferredUsername}
-  - idcenterid --> basic --> ${user:AD_GUID}
+Complete ONLY the step titled ["Configure a SAML application from the IAM Identity Center console"](https://repost.aws/knowledge-center/cognito-user-pool-iam-integration).
 
-Do NOT try to add groups or custom attribute, it will not work. Instead DEA will create a PreTokenGeneration Lambda trigger for the created user pool, which will query the Identity Center instance for the user's group memberships, and add to the id token for authorization.
+Use the following values in your newly created "Customer managed application".
 
-Take note of your identity store id, which you can find by going to Settings within Identity Center, in the second box under the tab "Identity Source", as Identity Store Id. It should look something like d-01234abcd5.
+- Single sign on URL: replace DOMAIN_PREFIX with the cognito domain you defined in your configuration file, and REGION with the region you are deploying in (e.g. us-east-1)
+  - For non-US Cloud regions or regions/stacks not using FIPS endpoints: `https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse`
+  - For US regions: `https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse`
+- Audience URL: `urn:amazon:cognito:sp:USER_POOL_ID`
+  - Replace USER_POOL_ID with the id listed in the named CDK outputs called DeaAuthConstructuserPoolId, should look like us-east-1_xxxxxxxxx
+- Attribute Statements: Set the following attribute mappings:
+  - Subject --> ${user:subject} --> persistent
+  - firstname  --> ${user:givenName} --> basic  
+  - lastname --> ${user:familyName} --> basic
+  - email --> ${user:email} --> basic
+  - username --> ${user:preferredUsername} --> basic
+  - idcenterid --> ${user:AD_GUID} --> basic
+- Note: Do NOT try to add groups or another custom attribute here as it will not work. Identity Center does not allow for sending user groups and/or custom attribute over the SAML assertion. To get around this, when you integrate with Identity Center, the DEA solution will create a PreTokenGeneration Cognito Trigger, which will query your identity store for the federated user's group memberships, and add those groups to the identity token, so authorization can happen just like Okta/AD integrations.
 
-Next add the Identity Center SAML Application to the configuration file:
+###### Sync Users & Groups (Active Directory only)
 
-Fill in the metadata path and identity store id, and define your group rules.
-For each rule you define the deaRoleName (one of the roles you specified in Step 3, e.g. CaseWorker, EvidenceManager) and the FilterValue (a string you want to search for in groups). For example if the filterValue is Troop and the deaRole is CaseWorker, then if the user's group contains the string "Troop" they will be assigned the CaseWorker role in the system.
-NOTE: You can define up to 25 GroupToDeaRoleRules, and they are evaluated in order.
+Finally, under "Assigned users and groups", ensure your users and groups are added. For example, if you created an `IAMIdentityCenterAllUsersAndGroups` group in your Microsoft AD and synced it, ensure that group is added for all of your users to be able to login to the DEA application itself.
 
-E.g.: 
-```
+In the next step, we will configure what users and groups are allowed to do once logged into DEA.
+
+###### Configuring DEA to connect with IdP
+
+- Take note of your identity store id, which you can find by going to Settings within Identity Center, in the second box under the tab "Identity Source", as Identity Store Id. It should look something like d-01234abcd5.
+  - If your identity store is a [Microsoft Active Directory](https://aws.amazon.com/directoryservice/active-directory/), ensure `hasAwsManagedActiveDirectory` is set to `true`. We recommend managing all users and groups in [AWS Managed Microsoft Active Directory](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_microsoft_ad.html). Ensure the Managed Active Directory is in the same region as set by your "AWS_REGION" environment variable and in the same account as set by your "identityStoreAccount" variable.
+  - DEA does not support [AD Connector](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_ad_connector.html) or [Simple AD](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_simple_ad.html).
+- Next add the Identity Center SAML Application URL to the configuration file. You can find this URL in your Identity Center's customer managed application (the app you just made) -> Edit configuration -> IAM Identity Center metadata -> "IAM Identity Center SAML metadata file".
+- Fill in the metadata path and identity store id, and define your group rules.
+  - For each rule you define the deaRoleName (one of the roles you specified in Step 3, e.g. CaseWorker, EvidenceManager) and the FilterValue (a string you want to search for in groups). For example if the filterValue is Troop and the deaRole is CaseWorker, then if the user's group contains the string "Troop" they will be assigned the CaseWorker role in the system.
+  - NOTE: You can define up to 25 GroupToDeaRoleRules, and they are evaluated in order.
+
+An example is given below. Please append this to your configuration file.
+
+```prod.json
   "idpInfo": {
     "identityStoreId": "<Identity Store Id>",
     "identityStoreRegion": "<Identity Store Region>",
+    "identityStoreAccount": "<Identity Store Account ID number>",
+    "hasAwsManagedActiveDirectory": <true if using AWS Managed Microsoft AD as identity store, defaulted to false>,
     "metadataPath": "<URL link to IdP metatdata>",
     "metadataPathType": "URL",
     "attributeMap": {
@@ -392,22 +433,23 @@ E.g.:
     ]
   },
  ```
-  
 
-Skip to Step 3, Relaunch Stack to Update with Authentication Information
+Skip to Step 4.3, Relaunch Stack to Update with Authentication Information
 
-#### 2: DEA Side Integration
+#### 4.2: DEA Side Integration
+
 One you have created the SAML 2.0 integration in your IdP, with the appropriate User Attribute Mapping, you can now start the integration process with DEA.
 
 Open your configuration file from step 3 and add the following (with your specific values for each of the fields) to the configuration file.
-* metadataPath : the URL link to the IdP App Integration Metadata (recommended) or the path to the metadata file locally
-* metadataPathType: either URL or FILE
-* attributeMap: mapping from what Cognito fields are named to what you named them in your App Integration (App Integration names are on right hand side, do not modify left hand side)
-* Optional: you can set the default role, so if no rule mapping matches during federation, the user gets defined the default role. If not set, the default role is NO access to DEA
 
-E.g. Using Custom Attribute
+- metadataPath : the URL link to the IdP App Integration Metadata (recommended) or the path to the metadata file locally
+- metadataPathType: either URL or FILE
+- attributeMap: mapping from what Cognito fields are named to what you named them in your App Integration (App Integration names are on right hand side, do not modify left hand side)
+- Optional: you can set the default role, so if no rule mapping matches during federation, the user gets defined the default role. If not set, the default role is NO access to DEA
 
-```
+e.g. Using Custom Attribute
+
+```prod.json
 "idpInfo": {
   "metadataPath": "<URL link to IdP metatdata>",
   "metadataPathType": "URL",
@@ -422,13 +464,13 @@ E.g. Using Custom Attribute
 }
 ```
 
-E.g. Using Group Membership
+e.g. Using Group Membership
 
 For each rule your define the deaRoleName (one ofthe roles you defined in Step 3, e.g. CaseWorker, EvidenceManager) and the FilterValue (a string you want to search for in groups). For example if my filterValue is Troop and the deaRole is CaseWorker, then if the user's group contains the string Troop they will be assigned the CaseWorker role in the system.
 
 NOTE: You can define up to 25 GroupToDeaRoleRules, and they are evaluated in order.
 
-```
+```prod.json
   "idpInfo": {
     "metadataPath": "<URL link to IdP metatdata>",
     "metadataPathType": "URL",
@@ -457,7 +499,8 @@ NOTE: You can define up to 25 GroupToDeaRoleRules, and they are evaluated in ord
   },
 ```
 
-#### 3: Relaunch Stack to Update with Authentication Information
+#### 4.3: Relaunch Stack to Update with Authentication Information
+
 Update the stack to use the information you provided in the configuration file to integrate your IdP with the DEA stack. Run the following commands:
 
 ```sh
@@ -466,6 +509,7 @@ rushx cdk deploy
 ```
 
 NOTE: if you are running cdk deploy in us-gov-east-1 region, run the command with the --all flag since you are deploying more than one stack. E.g.
+
 ```sh
 rushx cdk deploy --all
 ```
@@ -474,13 +518,14 @@ rushx cdk deploy --all
 
 Save your configuration file somewhere safe, like s3, so you can reuse it when you want to update your stack.
 
-### Step 6:  Post Deployment Steps:
+### Step 6:  Post Deployment Steps
 
 **DEA Permissions Boundary**
 
 The CDK stack for DEA also creates a permissions boundary that blocks all access to protected DEA resources. Cloudtrail is enabled for DEA resources, so all access outside of DEA will be logged. However, for extra security you can attach the Permissions Boundary to all Console IAM Roles to block access to DEA resources.
 
 Log in as Admin in your AWS account.
+
 1. Go to IAM.
 2. Go to Users. (Alternately, go to Roles to set permissions boundaries around a role.)
 3. Choose a user.
@@ -493,8 +538,8 @@ Repeat steps 3-6 for each User (or Role that users have access to).
 **Enable AWS WAF**
 
 Digital Evidence Archive on AWS allows configuration of AWS Web Application Firewall (WAF) to protect the DEA-created Amazon API Gateway. Please see this documentation for more information on how you can protect your deployment:
-*https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html
-*https://repost.aws/knowledge-center/waf-apply-rate-limit
+*<https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html>
+*<https://repost.aws/knowledge-center/waf-apply-rate-limit>
 
 Please note that default DEA limits are conservative, but you can increase the numbers alongside the lambda service limit increases. Fine-grain throttle limits using WAF.
 
@@ -531,7 +576,9 @@ Go to the branch in GitHub, and Press Submit Pull Request
 Assign a reviewer, and ensure Checks Pass
 
 ---
+
 # Additional Documentation
+
 ## [Local Development](/docs/LOCALDEV.md)
 
 ## [Operating your Digital Evidence Archive Instance](/docs/OPERATIONS.md)
@@ -542,6 +589,6 @@ Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
 Licensed under the Apache License Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
 
-http://www.apache.org/licenses/
+<http://www.apache.org/licenses/>
 
 or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions and limitations under the License.

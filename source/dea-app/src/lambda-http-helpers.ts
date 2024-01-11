@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+
 import { UserAgent } from '@aws-sdk/types';
 import { APIGatewayProxyEvent, APIGatewayProxyEventHeaders } from 'aws-lambda';
 import Joi from 'joi';
