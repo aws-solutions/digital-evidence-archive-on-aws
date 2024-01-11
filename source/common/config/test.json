@@ -7,33 +7,6 @@
     "cognito": {
       "domain": "cfitestforensics"
     },
-    "idpInfo": {
-    "identityStoreAccountId": "374806002771",
-    "identityStoreId": "d-9c67749d24",
-    "metadataPath": "https://portal.sso.eu-west-2.amazonaws.com/saml/metadata/Mzc0ODA2MDAyNzcxX2lucy02NzI0M2QwMzczY2ZiOWI5",
-    "metadataPathType": "URL",
-    "attributeMap": {
-      "idcenterid": "idcenterid",
-      "username": "username",
-      "email": "email",
-      "firstName": "firstname",
-      "lastName": "lastname"
-    },
-    "groupToDeaRoleRules": [
-      {
-        "filterValue": "TestDeaEvidenceManagers",
-        "deaRoleName": "EvidenceManager"
-      },
-      {
-        "filterValue": "TestDeaWorkingManagers",
-        "deaRoleName": "WorkingManager"
-      },
-      {
-        "filterValue": "TestDeaCaseWorkers",
-        "deaRoleName": "CaseWorker"
-      }
-    ]
-  },
     "deaRoleTypes": [
       {
         "name": "CaseWorker",

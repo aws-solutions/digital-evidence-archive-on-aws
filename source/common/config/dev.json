@@ -1,358 +1,332 @@
 {
-  "deletionAllowed": true,
-  "isOneClick": false,
-  "sourceIpValidation": false,
-  "fipsEndpointsEnabled": false,
-  "isMultiRegionTrail": false,
-  "uploadFilesTimeoutMinutes": 300,
-  "cognito": {
-    "domain": "cfidevforensics"
-  },
-  "idpInfo": {
-    "identityStoreAccountId": "374806002771",
-    "identityStoreId": "d-9c67749d24",
-    "metadataPath": "https://portal.sso.eu-west-2.amazonaws.com/saml/metadata/Mzc0ODA2MDAyNzcxX2lucy0zN2MxN2VmODE0YzY0NDUw",
-    "metadataPathType": "URL",
-    "attributeMap": {
-      "idcenterid": "idcenterid",
-      "username": "username",
-      "email": "email",
-      "firstName": "firstname",
-      "lastName": "lastname"
+    "deletionAllowed": true,
+    "isOneClick": false,  
+    "sourceIpValidation": false,
+    "fipsEndpointsEnabled": false,
+    "isMultiRegionTrail": false,
+    "cognito": {
+      "domain": "cfidevforensics"
     },
-    "groupToDeaRoleRules": [
+    "deaRoleTypes": [
       {
-        "filterValue": "DevDeaEvidenceManagers",
-        "deaRoleName": "EvidenceManager"
+        "name": "CaseWorker",
+        "description": "users who need access to case APIs",
+        "endpoints": [
+          {
+            "path": "/cases",
+            "method": "POST"
+          },
+          {
+            "path": "/cases/{caseId}/details",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/details",
+            "method": "PUT"
+          },
+          {
+            "path": "/cases/{caseId}/actions",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/status",
+            "method": "PUT"
+          },
+          {
+            "path": "/cases/{caseId}/userMemberships",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/userMemberships",
+            "method": "POST"
+          },
+          {
+            "path": "/cases/{caseId}/users/{userId}/memberships",
+            "method": "PUT"
+          },
+          {
+            "path": "/cases/{caseId}/users/{userId}/memberships",
+            "method": "DELETE"
+          },
+          {
+            "path": "/auth/{authCode}/token",
+            "method": "POST"
+          },
+          {
+            "path": "/auth/loginUrl",
+            "method": "GET"
+          },
+          {
+            "path": "/auth/logoutUrl",
+            "method": "GET"
+          },
+          {
+            "path": "/auth/refreshToken",
+            "method": "POST"
+          },
+          {
+            "path": "/auth/revokeToken",
+            "method": "POST"
+          },
+          {
+            "path": "/auth/credentials/{idToken}/exchange",
+            "method": "GET"
+          },
+          {
+            "path": "/users",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/files",
+            "method": "POST"
+          },
+          {
+            "path": "/cases/{caseId}/files",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/files/{fileId}/contents",
+            "method": "PUT"
+          },
+          {
+            "path": "/cases/{caseId}/files/{fileId}/info",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/files/{fileId}/contents",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/files/{fileId}/restore",
+            "method": "PUT"
+          },
+          {
+            "path": "/cases/my-cases",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/audit/{auditId}/csv",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/audit",
+            "method": "POST"
+          },
+          {
+            "path": "/availableEndpoints",
+            "method": "GET"
+          }
+        ]
       },
       {
-        "filterValue": "DevDeaWorkingManagers",
-        "deaRoleName": "WorkingManager"
+        "name": "WorkingManager",
+        "description": "users who act as both case workers and managers",
+        "endpoints": [
+          {
+            "path": "/cases",
+            "method": "POST"
+          },
+          {
+            "path": "/cases/{caseId}/details",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/details",
+            "method": "PUT"
+          },
+          {
+            "path": "/cases/{caseId}/actions",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/userMemberships",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/userMemberships",
+            "method": "POST"
+          },
+          {
+            "path": "/cases/{caseId}/users/{userId}/memberships",
+            "method": "PUT"
+          },
+          {
+            "path": "/cases/{caseId}/users/{userId}/memberships",
+            "method": "DELETE"
+          },
+          {
+            "path": "/auth/{authCode}/token",
+            "method": "POST"
+          },
+          {
+            "path": "/auth/loginUrl",
+            "method": "GET"
+          },
+          {
+            "path": "/auth/logoutUrl",
+            "method": "GET"
+          },
+          {
+            "path": "/auth/refreshToken",
+            "method": "POST"
+          },
+          {
+            "path": "/auth/revokeToken",
+            "method": "POST"
+          },
+          {
+            "path": "/auth/credentials/{idToken}/exchange",
+            "method": "GET"
+          },
+          {
+            "path": "/users",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/files",
+            "method": "POST"
+          },
+          {
+            "path": "/cases/{caseId}/files",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/files/{fileId}/contents",
+            "method": "PUT"
+          },
+          {
+            "path": "/cases/{caseId}/files/{fileId}/restore",
+            "method": "PUT"
+          },
+          {
+            "path": "/cases/{caseId}/files/{fileId}/info",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/files/{fileId}/contents",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/my-cases",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/all-cases",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/audit/{auditId}/csv",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/audit",
+            "method": "POST"
+          },
+          {
+            "path": "/availableEndpoints",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/scopedInformation",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/owner",
+            "method": "POST"
+          },
+          {
+            "path": "/users/{userId}/audit",
+            "method": "POST"
+          },
+          {
+            "path": "/users/{userId}/audit/{auditId}/csv",
+            "method": "GET"
+          },
+          {
+            "path": "/system/audit",
+            "method": "POST"
+          },
+          {
+            "path": "/system/audit/{auditId}/csv",
+            "method": "GET"
+          }
+        ]
       },
       {
-        "filterValue": "DevDeaCaseWorkers",
-        "deaRoleName": "CaseWorker"
+        "name": "EvidenceManager",
+        "description": "Users with access to privileged endpoints",
+        "endpoints": [
+          {
+            "path": "/cases/{caseId}/actions",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/userMemberships",
+            "method": "GET"
+          },
+          {
+            "path": "/auth/{authCode}/token",
+            "method": "POST"
+          },
+          {
+            "path": "/auth/loginUrl",
+            "method": "GET"
+          },
+          {
+            "path": "/auth/logoutUrl",
+            "method": "GET"
+          },
+          {
+            "path": "/auth/refreshToken",
+            "method": "POST"
+          },
+          {
+            "path": "/auth/revokeToken",
+            "method": "POST"
+          },
+          {
+            "path": "/auth/credentials/{idToken}/exchange",
+            "method": "GET"
+          },
+          {
+            "path": "/users",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/all-cases",
+            "method": "GET"
+          },
+          {
+            "path": "/availableEndpoints",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/scopedInformation",
+            "method": "GET"
+          },
+          {
+            "path": "/cases/{caseId}/owner",
+            "method": "POST"
+          },
+          {
+            "path": "/users/{userId}/audit",
+            "method": "POST"
+          },
+          {
+            "path": "/users/{userId}/audit/{auditId}/csv",
+            "method": "GET"
+          },
+          {
+            "path": "/system/audit",
+            "method": "POST"
+          },
+          {
+            "path": "/system/audit/{auditId}/csv",
+            "method": "GET"
+          }
+        ]
       }
     ]
-  },
-  "deaRoleTypes": [
-    {
-      "name": "CaseWorker",
-      "description": "users who need access to case APIs",
-      "endpoints": [
-        {
-          "path": "/cases",
-          "method": "POST"
-        },
-        {
-          "path": "/cases/{caseId}/details",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/details",
-          "method": "PUT"
-        },
-        {
-          "path": "/cases/{caseId}/actions",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/status",
-          "method": "PUT"
-        },
-        {
-          "path": "/cases/{caseId}/userMemberships",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/userMemberships",
-          "method": "POST"
-        },
-        {
-          "path": "/cases/{caseId}/users/{userId}/memberships",
-          "method": "PUT"
-        },
-        {
-          "path": "/cases/{caseId}/users/{userId}/memberships",
-          "method": "DELETE"
-        },
-        {
-          "path": "/auth/{authCode}/token",
-          "method": "POST"
-        },
-        {
-          "path": "/auth/loginUrl",
-          "method": "GET"
-        },
-        {
-          "path": "/auth/logoutUrl",
-          "method": "GET"
-        },
-        {
-          "path": "/auth/refreshToken",
-          "method": "POST"
-        },
-        {
-          "path": "/auth/revokeToken",
-          "method": "POST"
-        },
-        {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
-        },
-        {
-          "path": "/users",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/files",
-          "method": "POST"
-        },
-        {
-          "path": "/cases/{caseId}/files",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/files/{fileId}/contents",
-          "method": "PUT"
-        },
-        {
-          "path": "/cases/{caseId}/files/{fileId}/info",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/files/{fileId}/contents",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/files/{fileId}/restore",
-          "method": "PUT"
-        },
-        {
-          "path": "/cases/my-cases",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/audit/{auditId}/csv",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/audit",
-          "method": "POST"
-        },
-        {
-          "path": "/availableEndpoints",
-          "method": "GET"
-        }
-      ]
-    },
-    {
-      "name": "WorkingManager",
-      "description": "users who act as both case workers and managers",
-      "endpoints": [
-        {
-          "path": "/cases",
-          "method": "POST"
-        },
-        {
-          "path": "/cases/{caseId}/details",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/details",
-          "method": "PUT"
-        },
-        {
-          "path": "/cases/{caseId}/actions",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/userMemberships",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/userMemberships",
-          "method": "POST"
-        },
-        {
-          "path": "/cases/{caseId}/users/{userId}/memberships",
-          "method": "PUT"
-        },
-        {
-          "path": "/cases/{caseId}/users/{userId}/memberships",
-          "method": "DELETE"
-        },
-        {
-          "path": "/auth/{authCode}/token",
-          "method": "POST"
-        },
-        {
-          "path": "/auth/loginUrl",
-          "method": "GET"
-        },
-        {
-          "path": "/auth/logoutUrl",
-          "method": "GET"
-        },
-        {
-          "path": "/auth/refreshToken",
-          "method": "POST"
-        },
-        {
-          "path": "/auth/revokeToken",
-          "method": "POST"
-        },
-        {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
-        },
-        {
-          "path": "/users",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/files",
-          "method": "POST"
-        },
-        {
-          "path": "/cases/{caseId}/files",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/files/{fileId}/contents",
-          "method": "PUT"
-        },
-        {
-          "path": "/cases/{caseId}/files/{fileId}/restore",
-          "method": "PUT"
-        },
-        {
-          "path": "/cases/{caseId}/files/{fileId}/info",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/files/{fileId}/contents",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/my-cases",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/all-cases",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/audit/{auditId}/csv",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/audit",
-          "method": "POST"
-        },
-        {
-          "path": "/availableEndpoints",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/scopedInformation",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/owner",
-          "method": "POST"
-        },
-        {
-          "path": "/users/{userId}/audit",
-          "method": "POST"
-        },
-        {
-          "path": "/users/{userId}/audit/{auditId}/csv",
-          "method": "GET"
-        },
-        {
-          "path": "/system/audit",
-          "method": "POST"
-        },
-        {
-          "path": "/system/audit/{auditId}/csv",
-          "method": "GET"
-        }
-      ]
-    },
-    {
-      "name": "EvidenceManager",
-      "description": "Users with access to privileged endpoints",
-      "endpoints": [
-        {
-          "path": "/cases/{caseId}/actions",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/userMemberships",
-          "method": "GET"
-        },
-        {
-          "path": "/auth/{authCode}/token",
-          "method": "POST"
-        },
-        {
-          "path": "/auth/loginUrl",
-          "method": "GET"
-        },
-        {
-          "path": "/auth/logoutUrl",
-          "method": "GET"
-        },
-        {
-          "path": "/auth/refreshToken",
-          "method": "POST"
-        },
-        {
-          "path": "/auth/revokeToken",
-          "method": "POST"
-        },
-        {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
-        },
-        {
-          "path": "/users",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/all-cases",
-          "method": "GET"
-        },
-        {
-          "path": "/availableEndpoints",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/scopedInformation",
-          "method": "GET"
-        },
-        {
-          "path": "/cases/{caseId}/owner",
-          "method": "POST"
-        },
-        {
-          "path": "/users/{userId}/audit",
-          "method": "POST"
-        },
-        {
-          "path": "/users/{userId}/audit/{auditId}/csv",
-          "method": "GET"
-        },
-        {
-          "path": "/system/audit",
-          "method": "POST"
-        },
-        {
-          "path": "/system/audit/{auditId}/csv",
-          "method": "GET"
-        }
-      ]
-    }
-  ]
-}
+  }
+  
+  
