@@ -66,7 +66,7 @@ describe('get-token', () => {
     const response = await getToken(event, dummyContext);
     expect(response.statusCode).toEqual(200);
 
-    if (!response.headers) {
+    if (!response.multiValueHeaders) {
       fail();
     }
   }, 20000);

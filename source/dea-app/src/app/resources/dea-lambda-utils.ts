@@ -231,9 +231,17 @@ export const okSetIdTokenCookie = (
   return withAllowedOrigin(event, {
     statusCode: 200,
     body,
-    headers: {
-      'Set-Cookie': `idToken=${JSON.stringify(idToken)}; Path=/; SameSite=${sameSiteValue}; Secure; HttpOnly`,
-      'Access-Control-Allow-Credential': 'true',
+    multiValueHeaders: {
+      'Set-Cookie': [
+        `idToken=${JSON.stringify({
+          id_token: idToken.id_token,
+          expires_in: idToken.expires_in,
+        })}; Path=/; SameSite=${sameSiteValue}; Secure; HttpOnly`,
+        `refreshToken=${JSON.stringify({
+          refresh_token: idToken.refresh_token,
+        })}; Path=/; SameSite=${sameSiteValue}; Secure; HttpOnly`,
+      ],
+      'Access-Control-Allow-Credential': ['true'],
     },
   });
 };

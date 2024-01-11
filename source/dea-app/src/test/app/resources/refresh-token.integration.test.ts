@@ -2,12 +2,14 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+import { fail } from 'assert';
 import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { runPreExecutionChecks } from '../../../app/resources/dea-lambda-utils';
 import { getToken } from '../../../app/resources/get-token';
 import { refreshToken } from '../../../app/resources/refresh-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
 import { getSessionsForUser } from '../../../app/services/session-service';
+import { isolateCookieValue } from '../../../lambda-http-helpers';
 import { Oauth2Token } from '../../../models/auth';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { getSession } from '../../../persistence/session';
@@ -55,6 +57,21 @@ describe('refresh-token', () => {
     process.env.SAMESITE = 'Strict';
   });
 
+  const cookieToOauth = (cookie: string): Oauth2Token => {
+    const idTokenVal = isolateCookieValue(cookie, 'idToken');
+    const refreshTokenVal = isolateCookieValue(cookie, 'refreshToken');
+    if (!idTokenVal || !refreshTokenVal) {
+      fail();
+    }
+
+    const authToken: Oauth2Token = {
+      ...JSON.parse(idTokenVal),
+      ...JSON.parse(refreshTokenVal),
+    };
+
+    return authToken;
+  };
+
   it('successfully obtain an identity token for immediate use in the APIs', async () => {
     const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
 
@@ -86,7 +103,9 @@ describe('refresh-token', () => {
     }
 
     const cookie = setCookieToCookie(response);
-    const authToken: Oauth2Token = JSON.parse(cookie.replace('idToken=', ''));
+
+    const authToken = cookieToOauth(cookie);
+
     const dummyEvent = getDummyEvent({
       headers: {
         cookie,
@@ -112,7 +131,7 @@ describe('refresh-token', () => {
     const refreshResponse = await refreshToken(dummyEvent, dummyContext, repositoryProvider);
     expect(refreshResponse.statusCode).toEqual(200);
     const newCookie = setCookieToCookie(refreshResponse);
-    const newAuthToken: Oauth2Token = JSON.parse(newCookie.replace('idToken=', ''));
+    const newAuthToken = cookieToOauth(newCookie);
     expect(newAuthToken.id_token).not.toStrictEqual(authToken.id_token);
 
     // call API with the new id token, it should pass session checks
@@ -175,7 +194,10 @@ describe('refresh-token', () => {
       refresh_token: jsonBody.idToken,
       expires_in: jsonBody.expiresIn,
     };
-    const cookie = `idToken=${JSON.stringify(idToken)}`;
+    const cookie = `idToken=${JSON.stringify({
+      id_token: idToken.id_token,
+      expires_in: idToken.expires_in,
+    })};refreshToken=${JSON.stringify({ refresh_token: idToken.refresh_token })}`;
 
     const dummyEvent = getDummyEvent({
       headers: {

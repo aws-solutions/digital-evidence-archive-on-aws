@@ -60,7 +60,10 @@ describe('lambda pre-execution checks', () => {
 
     const event = getDummyEvent();
     setUserArnWithRole(event, /*roleName=*/ 'CaseWorker');
-    event.headers['cookie'] = `extraCookie=someval; idToken=${JSON.stringify(oauthToken)}`;
+    event.headers['cookie'] = `extraCookie=someval; idToken=${JSON.stringify({
+      id_token: oauthToken.id_token,
+      expires_in: oauthToken.expires_in,
+    })}; refreshToken=${JSON.stringify({ refresh_token: oauthToken.refresh_token })}`;
     const tokenPayload = await getTokenPayload(oauthToken.id_token, region);
     const tokenId = tokenPayload.sub;
     const idPoolId = event.requestContext.identity.cognitoIdentityId ?? 'us-east-1:1-2-3-a-b-c';
@@ -130,7 +133,10 @@ describe('lambda pre-execution checks', () => {
 
     const event2 = getDummyEvent();
     setUserArnWithRole(event2, /*roleName=*/ 'WorkingManager');
-    event2.headers['cookie'] = `idToken=${JSON.stringify(result)}`;
+    event2.headers['cookie'] = `idToken=${JSON.stringify({
+      id_token: result.id_token,
+      expires_in: result.expires_in,
+    })};refreshToken=${JSON.stringify({ refresh_token: result.refresh_token })}`;
 
     const auditEvent2 = getDummyAuditEvent();
     await runPreExecutionChecks(event2, dummyContext, auditEvent2, repositoryProvider);
@@ -383,7 +389,10 @@ describe('lambda pre-execution checks', () => {
 const callPreChecks = async (oauthToken: Oauth2Token, idPoolId?: string): Promise<string> => {
   const event = getDummyEvent();
   setUserArnWithRole(event, /*roleName=*/ 'CaseWorker');
-  event.headers['cookie'] = `idToken=${JSON.stringify(oauthToken)}`;
+  event.headers['cookie'] = `idToken=${JSON.stringify({
+    id_token: oauthToken.id_token,
+    expires_in: oauthToken.expires_in,
+  })}; refreshToken=${JSON.stringify({ refresh_token: oauthToken.refresh_token })}`;
   if (idPoolId) {
     event.requestContext.identity.cognitoIdentityId = idPoolId;
   }

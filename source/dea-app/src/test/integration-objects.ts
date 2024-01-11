@@ -149,14 +149,14 @@ export const getDummyAuditEvent = (): CJISAuditEventBody => {
 };
 
 export const setCookieToCookie = (response: APIGatewayProxyResult): string => {
-  if (!response.headers) {
+  if (!response.multiValueHeaders) {
     throw new Error('headers not present when attempting to create cookie');
   }
-  if (typeof response.headers['Set-Cookie'] !== 'string') {
+  if (!Array.isArray(response.multiValueHeaders['Set-Cookie'])) {
     throw new Error('set-cookie header is of unexpected type');
   }
-  const setCookie = response.headers['Set-Cookie'];
-  return setCookie.substring(0, setCookie.indexOf(';'));
+  const setCookie = response.multiValueHeaders['Set-Cookie'];
+  return setCookie.join('; ');
 };
 
 export const setUserArnWithRole = (event: APIGatewayProxyEvent, roleName: string) => {
