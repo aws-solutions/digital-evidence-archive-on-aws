@@ -8,32 +8,6 @@
   "cognito": {
     "domain": "cfidevforensics"
   },
-  "idpInfo": {
-    "identityStoreId": "d-9c67749d24",
-    "metadataPath": "https://portal.sso.eu-west-2.amazonaws.com/saml/metadata/Mzc0ODA2MDAyNzcxX2lucy1hMDljZjcyODdlYjMxM2Jl",
-    "metadataPathType": "URL",
-    "attributeMap": {
-      "idcenterid": "idcenterid",
-      "username": "username",
-      "email": "email",
-      "firstName": "firstname",
-      "lastName": "lastname"
-    },
-    "groupToDeaRoleRules": [
-      {
-        "filterValue": "DevDeaEvidenceManagers",
-        "deaRoleName": "EvidenceManager"
-      },
-      {
-        "filterValue": "DevDeaWorkingManagers",
-        "deaRoleName": "WorkingManager"
-      },
-      {
-        "filterValue": "DevDeaCaseWorkers",
-        "deaRoleName": "CaseWorker"
-      }
-    ]
-  },
   "deaRoleTypes": [
     {
       "name": "CaseWorker",
