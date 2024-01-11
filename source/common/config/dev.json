@@ -10,7 +10,7 @@
   },
   "idpInfo": {
     "identityStoreId": "d-9c67749d24",
-    "metadataPath": "https://portal.sso.eu-west-2.amazonaws.com/saml/metadata/Mzc0ODA2MDAyNzcxX2lucy0zN2MxN2VmODE0YzY0NDUw",
+    "metadataPath": "https://portal.sso.eu-west-2.amazonaws.com/saml/metadata/Mzc0ODA2MDAyNzcxX2lucy1hMDljZjcyODdlYjMxM2Jl",
     "metadataPathType": "URL",
     "attributeMap": {
       "idcenterid": "idcenterid",
