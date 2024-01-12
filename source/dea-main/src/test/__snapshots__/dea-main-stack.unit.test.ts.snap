@@ -12,7 +12,7 @@ Object {
       ],
     },
   },
-  "Description": "(SO0224) Digital Evidence Archive v1.0.6 - This solution helps investigative units manage and store digital evidence on AWS.",
+  "Description": "(SO0224) Digital Evidence Archive v1.0.7 - This solution helps investigative units manage and store digital evidence on AWS.",
   "Mappings": Object {
     "Solution": Object {
       "Data": Object {
@@ -20,7 +20,7 @@ Object {
         "ApplicationType": "AWS-Solutions",
         "ID": "SO0224",
         "SolutionName": "Digital Evidence Archive",
-        "SolutionVersion": "1.0.6",
+        "SolutionVersion": "1.0.7",
       },
     },
   },
@@ -1130,7 +1130,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1267,7 +1267,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1404,7 +1404,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1541,7 +1541,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1678,7 +1678,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1815,7 +1815,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -1952,7 +1952,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2089,7 +2089,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2226,7 +2226,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2363,7 +2363,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2500,7 +2500,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2637,7 +2637,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2774,7 +2774,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -2911,7 +2911,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3048,7 +3048,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3185,7 +3185,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3322,7 +3322,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3459,7 +3459,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3596,7 +3596,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3733,7 +3733,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -3870,7 +3870,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4007,7 +4007,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4144,7 +4144,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4281,7 +4281,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4418,7 +4418,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4555,7 +4555,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4692,7 +4692,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4829,7 +4829,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -4966,7 +4966,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -5103,7 +5103,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -5240,7 +5240,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -5377,7 +5377,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -5514,7 +5514,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -5651,7 +5651,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -5788,7 +5788,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
@@ -21862,7 +21862,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -22220,7 +22220,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.0.6",
+            "SOLUTION_VERSION": "1.0.7",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
