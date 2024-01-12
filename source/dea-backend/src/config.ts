@@ -216,6 +216,11 @@ const convictSchema = {
       format: String,
       default: undefined,
     },
+    identityStoreAccountId: {
+      doc: 'The AWS account Id where your identity center instance is deployed',
+      format: String,
+      default: undefined,
+    },
   },
   testStack: {
     doc: 'Boolean to indicate if this is a test stack',
@@ -327,6 +332,7 @@ export interface IdpMetadataInfo {
   readonly groupToDeaRoleRules: GroupToDEARoleRule[];
   readonly identityStoreId: string | undefined;
   readonly identityStoreRegion: string | undefined;
+  readonly identityStoreAccountId: string | undefined;
 }
 
 export interface DEAEndpointDefinition {

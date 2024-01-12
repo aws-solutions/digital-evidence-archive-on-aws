@@ -666,15 +666,16 @@ export class DeaAuth extends Construct {
       },
     });
 
+    const identityStoreAccountId = deaConfig.idpMetadata()?.identityStoreAccountId ?? Aws.ACCOUNT_ID;
+    const identityStoreArn = `arn:${Aws.PARTITION}:identitystore::${identityStoreAccountId}:identitystore/${identityStoreId}`;
     lambda.addToRolePolicy(
       new PolicyStatement({
         actions: ['identitystore:ListGroupMembershipsForMember', 'identitystore:DescribeGroup'],
         resources: [
-          `arn:${Aws.PARTITION}:identitystore::${Aws.ACCOUNT_ID}:identitystore/${identityStoreId}`,
+          identityStoreArn,
           `arn:${Aws.PARTITION}:identitystore:::membership/*`,
           `arn:${Aws.PARTITION}:identitystore:::user/*`,
           `arn:${Aws.PARTITION}:identitystore:::group/*`,
-          `arn:${Aws.PARTITION}:identitystore::${Aws.ACCOUNT_ID}:identitystore/${identityStoreId}`,
         ],
       })
     );
