@@ -10,3 +10,6 @@ export GLUE_DB=dummyDb
 export FIREHOSE_STREAM_NAME=dummyStream
 export AUDIT_LOG_GROUP=deaAuditLogsDummy
 export TRAIL_LOG_GROUP=deaTrailLogsDummy
+export IDENTITY_STORE_ID=dummyId
+export IDENTITY_STORE_REGION=us-east-1
+unset ADMIN_ROLE_ARN

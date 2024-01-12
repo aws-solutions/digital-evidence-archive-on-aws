@@ -358,6 +358,7 @@ E.g.:
 ```
   "idpInfo": {
     "identityStoreId": "<Identity Store Id>",
+    "identityStoreRegion": "<Identity Store Region>",
     "metadataPath": "<URL link to IdP metatdata>",
     "metadataPathType": "URL",
     "attributeMap": {
