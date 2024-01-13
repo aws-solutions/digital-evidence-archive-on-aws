@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-ui",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "NextJS frontend UI for Digital Evidence Archive",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/blob/main/source/dea-ui/ui/",
   "repository": {
@@ -60,7 +60,7 @@
     "@cloudscape-design/jest-preset": "~2.0.8",
     "@types/crypto-js": "^4.1.1",
     "aws4-axios": "~3.3.0",
-    "axios": "^1.6.2",
+    "axios": "^1.6.5",
     "crypto-js": "^4.2.0",
     "date-fns": "^2.28.0",
     "i18next": "~21.10.0",

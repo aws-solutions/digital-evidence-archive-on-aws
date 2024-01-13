@@ -122,20 +122,25 @@ export const getRequiredHeader = (event: APIGatewayProxyEvent, headerName: strin
 };
 
 export const getCookieValue = (event: APIGatewayProxyEvent, cookieName: string): string | null => {
-  const cookie = event.headers['cookie'] ? event.headers['cookie'] : event.headers['Cookie'];
-  return (
-    cookie
-      ?.split(';')
-      .map((value) => value.trim())
-      .filter((cookie) => cookie.startsWith(`${cookieName}=`))
-      .map((cookie) => decodeURIComponent(cookie.substring(cookieName.length + 1)))[0] || null
-  );
+  const cookie = event.headers['cookie'] ?? event.headers['Cookie'];
+  return isolateCookieValue(cookie, cookieName);
 };
+
+export const isolateCookieValue = (cookie: string | undefined, cookieName: string) =>
+  cookie
+    ?.split(';')
+    .map((value) => value.trim())
+    .filter((cookie) => cookie.startsWith(`${cookieName}=`))
+    .map((cookie) => decodeURIComponent(cookie.substring(cookieName.length + 1)))[0] || null;
 
 export const getOauthToken = (event: APIGatewayProxyEvent): Oauth2Token => {
   const tokenVal = getCookieValue(event, 'idToken');
-  if (tokenVal) {
-    const token: Oauth2Token = JSON.parse(tokenVal);
+  const refreshVal = getCookieValue(event, 'refreshToken');
+  if (tokenVal && refreshVal) {
+    const token: Oauth2Token = {
+      ...JSON.parse(tokenVal),
+      ...JSON.parse(refreshVal),
+    };
     Joi.assert(token, Oauth2TokenSchema);
     return token;
   }

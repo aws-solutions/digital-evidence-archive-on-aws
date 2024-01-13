@@ -177,7 +177,7 @@ const convictSchema = {
         default: undefined,
       },
       idcenterid: {
-        doc: 'ONLY used for Identity Center, its the user id to query for users group memberships.',
+        doc: 'ONLY used for Identity Center, this is the user id to query for users group memberships.',
         format: String,
         default: undefined,
       },
@@ -208,6 +208,16 @@ const convictSchema = {
     identityStoreId: {
       doc: `identity store of your identity center instance, used for querying user's group memberships`,
       // TODO: add regex
+      format: String,
+      default: undefined,
+    },
+    identityStoreRegion: {
+      doc: `region of your identity center instance, used for querying user's group memberships`,
+      format: String,
+      default: undefined,
+    },
+    identityStoreAccountId: {
+      doc: 'The AWS account Id where your identity center instance is deployed',
       format: String,
       default: undefined,
     },
@@ -321,6 +331,8 @@ export interface IdpMetadataInfo {
   readonly defaultRole: string | undefined;
   readonly groupToDeaRoleRules: GroupToDEARoleRule[];
   readonly identityStoreId: string | undefined;
+  readonly identityStoreRegion: string | undefined;
+  readonly identityStoreAccountId: string | undefined;
 }
 
 export interface DEAEndpointDefinition {

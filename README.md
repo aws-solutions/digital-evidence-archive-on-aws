@@ -358,6 +358,8 @@ E.g.:
 ```
   "idpInfo": {
     "identityStoreId": "<Identity Store Id>",
+    "identityStoreRegion": "<Identity Store Region>",
+    "identityStoreAccountId": "<Identity Store AWS Account Id>",
     "metadataPath": "<URL link to IdP metatdata>",
     "metadataPathType": "URL",
     "attributeMap": {

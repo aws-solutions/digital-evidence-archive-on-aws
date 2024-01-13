@@ -435,9 +435,19 @@ export class DeaAuth extends Construct {
     // over the SAML assertion, so the trigger queries the users groups and adds it to the token
     // so authorization can proceed as normal
     let lambdaTriggers: UserPoolTriggers | undefined;
-    const identityStoreId = deaConfig.idpMetadata()?.identityStoreId;
+    const idpMetadata = deaConfig.idpMetadata();
+    const identityStoreId = idpMetadata?.identityStoreId;
+    const identityStoreRegion = idpMetadata?.identityStoreRegion;
     if (identityStoreId) {
-      const preTokenGenerationLambda = this.createPreTokenGenerationLambda(identityStoreId, opsDashboard);
+      if (!identityStoreRegion) {
+        throw new Error('Config identityStoreRegion is required when using Identity Store');
+      }
+
+      const preTokenGenerationLambda = this.createPreTokenGenerationLambda(
+        identityStoreId,
+        identityStoreRegion,
+        opsDashboard
+      );
       lambdaTriggers = { preTokenGeneration: preTokenGenerationLambda };
     }
 
@@ -633,6 +643,7 @@ export class DeaAuth extends Construct {
 
   private createPreTokenGenerationLambda(
     identityStoreId: string,
+    identityStoreRegion: string,
     opsDashboard?: DeaOperationalDashboard
   ): NodejsFunction {
     const lambda = new NodejsFunction(this, `${deaConfig.stage()}-PreTokenGenerationTrigger`, {
@@ -646,6 +657,7 @@ export class DeaAuth extends Construct {
       environment: {
         NODE_OPTIONS: '--enable-source-maps',
         IDENTITY_STORE_ID: identityStoreId,
+        IDENTITY_STORE_REGION: identityStoreRegion,
       },
       bundling: {
         externalModules: ['aws-sdk'],
@@ -654,15 +666,16 @@ export class DeaAuth extends Construct {
       },
     });
 
+    const identityStoreAccountId = deaConfig.idpMetadata()?.identityStoreAccountId ?? Aws.ACCOUNT_ID;
+    const identityStoreArn = `arn:${Aws.PARTITION}:identitystore::${identityStoreAccountId}:identitystore/${identityStoreId}`;
     lambda.addToRolePolicy(
       new PolicyStatement({
         actions: ['identitystore:ListGroupMembershipsForMember', 'identitystore:DescribeGroup'],
         resources: [
-          `arn:${Aws.PARTITION}:identitystore::${Aws.ACCOUNT_ID}:identitystore/${identityStoreId}`,
+          identityStoreArn,
           `arn:${Aws.PARTITION}:identitystore:::membership/*`,
           `arn:${Aws.PARTITION}:identitystore:::user/*`,
           `arn:${Aws.PARTITION}:identitystore:::group/*`,
-          `arn:${Aws.PARTITION}:identitystore::${Aws.ACCOUNT_ID}:identitystore/${identityStoreId}`,
         ],
       })
     );

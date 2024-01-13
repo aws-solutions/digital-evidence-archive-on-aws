@@ -22,8 +22,11 @@ import { ValidationError } from '../exceptions/validation-exception';
   */
 
 const identityStoreId = getRequiredEnv('IDENTITY_STORE_ID');
-const region = getRequiredEnv('AWS_REGION');
-const idCenterClient = new IdentitystoreClient({ region, customUserAgent: getCustomUserAgent() });
+const identityStoreRegion = getRequiredEnv('IDENTITY_STORE_REGION');
+const idCenterClient = new IdentitystoreClient({
+  region: identityStoreRegion,
+  customUserAgent: getCustomUserAgent(),
+});
 
 export interface PreTokenGenerationEvent {
   triggerSource?: string;
