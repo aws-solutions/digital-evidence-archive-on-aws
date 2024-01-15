@@ -71,7 +71,7 @@ export const defaultDatasetsProvider = {
   sourceIpValidationEnabled: getRequiredEnv('SOURCE_IP_VALIDATION_ENABLED', 'true') === 'true',
   deletionAllowed: getRequiredEnv('DELETION_ALLOWED', 'false') === 'true',
   datasetsRole: getRequiredEnv('DATASETS_ROLE', 'DATASETS_ROLE is not set in your lambda!'),
-  uploadPresignedCommandExpirySeconds: Number(getRequiredEnv('UPLOAD_FILES_TIMEOUT_MINUTES', '60')) * 60,
+  uploadPresignedCommandExpirySeconds: 3600,
   downloadPresignedCommandExpirySeconds: 15 * 60,
   awsPartition: getRequiredEnv('AWS_PARTITION', 'AWS_PARTITION is not set in your lambda!'),
 };
