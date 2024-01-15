@@ -8,11 +8,11 @@ import AppLayout, { AppLayoutProps } from '@cloudscape-design/components/app-lay
 import BreadcrumbGroup from '@cloudscape-design/components/breadcrumb-group';
 import Head from 'next/head';
 import * as React from 'react';
+import packageJson from '../../package.json';
 import { layoutLabels } from '../common/labels';
 import Navigation from '../components/Navigation';
 import { useSettings } from '../context/SettingsContext';
 import { Notifications } from './common-components/Notifications';
-import packageJson from '../../package.json';
 
 export interface LayoutProps {
   navigationHide?: boolean;
