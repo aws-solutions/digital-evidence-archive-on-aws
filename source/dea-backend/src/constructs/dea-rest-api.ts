@@ -643,7 +643,6 @@ export class DeaRestApiConstruct extends Construct {
   private createDatasetsRole(kmsKeyArn: string, datasetsBucketArn: string): Role {
     const role = new Role(this, 'dea-datasets-role', {
       assumedBy: this.lambdaBaseRole,
-      maxSessionDuration: Duration.minutes(deaConfig.uploadFilesTimeoutMinutes()),
     });
 
     role.addToPolicy(
