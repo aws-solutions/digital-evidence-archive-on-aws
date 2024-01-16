@@ -484,10 +484,10 @@ export class DeaAuth extends Construct {
         Hello {username},<br><br>
         You have been invited to use DEA! (${deaConfig.configName()?.replace('.json', '')})<br><br>
         Your temporary password is <strong>{####}</strong><br><br>
-        To log in, please visit <a href="https://${callbackUrl.replace(
+        To log in, please visit <a href="${callbackUrl.replace('/login', '')}}">${callbackUrl.replace(
           '/login',
           ''
-        )}}">https://${callbackUrl.replace('/login', '')}</a>
+        )}</a>
         `,
         smsMessage: 'Hello {username}, your temporary password for our DEA is {####}',
       },
