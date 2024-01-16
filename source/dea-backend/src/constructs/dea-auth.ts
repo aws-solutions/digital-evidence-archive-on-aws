@@ -50,7 +50,6 @@ import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
-import {} from './dea-rest-api';
 
 // Gov Region us-gov-east-1 does NOT have Cognito
 // therefore for that region we will launch the Cognito UserPool and IdPool
