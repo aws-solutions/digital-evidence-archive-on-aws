@@ -480,7 +480,16 @@ export class DeaAuth extends Construct {
       },
       userInvitation: {
         emailSubject: 'Digital Evidence Archive Signup Invitation',
-        emailBody: 'Hello {username}, you have been invited to use DEA! Your temporary password is {####}',
+        emailBody: `
+        Hello {username},<br><br>
+        You have been invited to use DEA! (${deaConfig.configName()?.replace('.json', '')})<br><br>
+        Your temporary password is <strong>{####}</strong><br><br>
+        To log in, please visit <a href="https://${
+          deaConfig.customDomainInfo().domainName
+        }/${deaConfig.stage()}/ui}">https://${
+          deaConfig.customDomainInfo().domainName
+        }/${deaConfig.stage()}/ui</a>
+        `,
         smsMessage: 'Hello {username}, your temporary password for our DEA is {####}',
       },
       removalPolicy: deaConfig.retainPolicy(),
