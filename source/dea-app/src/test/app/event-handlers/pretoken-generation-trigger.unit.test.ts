@@ -89,7 +89,7 @@ describe('pretoken generation trigger', () => {
       .on(GetUserIdCommand)
       .resolvesOnce({
         UserId: 'userId',
-        IdentityStoreId: 'd-1234567890'
+        IdentityStoreId: 'd-1234567890',
       })
       .on(ListGroupMembershipsForMemberCommand)
       .resolvesOnce({

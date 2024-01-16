@@ -406,7 +406,7 @@ An example is given below. Please append this to your configuration file.
   "idpInfo": {
     "identityStoreId": "<Identity Store Id>",
     "identityStoreRegion": "<Identity Store Region>",
-    "identityStoreAccount": "<Identity Store Account ID number>",
+    "identityStoreAccountId": "<Identity Store AWS Account Id>",
     "hasAwsManagedActiveDirectory": <true if using AWS Managed Microsoft AD as identity store, defaulted to false>,
     "metadataPath": "<URL link to IdP metatdata>",
     "metadataPathType": "URL",

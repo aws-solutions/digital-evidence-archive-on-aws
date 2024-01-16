@@ -125,7 +125,10 @@ describe('revoke-token', () => {
       refresh_token: jsonBody.idToken,
       expires_in: jsonBody.expiresIn,
     };
-    const cookie = `idToken=${JSON.stringify(idToken)}`;
+    const cookie = `idToken=${JSON.stringify({
+      id_token: idToken.id_token,
+      expires_in: idToken.expires_in,
+    })};refreshToken=${JSON.stringify({ refresh_token: idToken.refresh_token })}`;
 
     const dummyEvent = getDummyEvent({
       headers: { cookie },

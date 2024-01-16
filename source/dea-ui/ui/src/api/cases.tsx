@@ -73,7 +73,7 @@ export const createCase = async (createCaseForm: CreateCaseForm): Promise<DeaCas
 };
 
 export const updateCase = async (editCaseForm: EditCaseForm): Promise<void> => {
-  await httpApiPut(`/cases/${editCaseForm.ulid}/details`, { ...editCaseForm });
+  await httpApiPut(`cases/${editCaseForm.ulid}/details`, { ...editCaseForm });
 };
 
 export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DeaCaseFile> => {

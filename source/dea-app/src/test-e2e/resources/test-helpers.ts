@@ -235,7 +235,10 @@ export async function callDeaAPIWithCreds(
 ) {
   const client = axios.create({
     headers: {
-      cookie: `idToken=${JSON.stringify(cookie)}`,
+      cookie: `idToken=${JSON.stringify({
+        id_token: cookie.id_token,
+        expires_in: cookie.expires_in,
+      })}; refreshToken=${JSON.stringify({ refresh_token: cookie.refresh_token })}`,
     },
   });
 
@@ -249,7 +252,10 @@ export async function callDeaAPIWithCreds(
 
   client.interceptors.request.use(interceptor);
 
-  client.defaults.headers.common['cookie'] = `idToken=${JSON.stringify(cookie)}`;
+  client.defaults.headers.common['cookie'] = `idToken=${JSON.stringify({
+    id_token: cookie.id_token,
+    expires_in: cookie.expires_in,
+  })}; refreshToken=${JSON.stringify({ refresh_token: cookie.refresh_token })}`;
 
   switch (method) {
     case 'GET':
@@ -581,12 +587,17 @@ export const s3Cleanup = async (s3ObjectsToDelete: s3Object[]): Promise<void> =>
 };
 
 export const callAuthAPIWithOauthToken = async (url: string, oauthToken: Oauth2Token, isGetReq = false) => {
+  const cookieVal = `idToken=${JSON.stringify({
+    id_token: oauthToken.id_token,
+    expires_in: oauthToken.expires_in,
+  })};refreshToken=${JSON.stringify({ refresh_token: oauthToken.refresh_token })}`;
+
   const client = axios.create({
     headers: {
-      cookie: `idToken=${JSON.stringify(oauthToken)}`,
+      cookie: cookieVal,
     },
   });
-  client.defaults.headers.common['cookie'] = `idToken=${JSON.stringify(oauthToken)}`;
+  client.defaults.headers.common['cookie'] = cookieVal;
 
   if (isGetReq) {
     return await client.get(url, { withCredentials: true, validateStatus });

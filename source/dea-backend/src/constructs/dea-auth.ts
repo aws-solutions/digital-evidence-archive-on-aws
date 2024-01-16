@@ -441,7 +441,7 @@ export class DeaAuth extends Construct {
     const idpMetadata = deaConfig.idpMetadata();
     const identityStoreId = idpMetadata?.identityStoreId;
     const identityStoreRegion = idpMetadata?.identityStoreRegion;
-    const identityStoreAccount = idpMetadata?.identityStoreAccount;
+    const identityStoreAccount = idpMetadata?.identityStoreAccountId;
     const hasAwsManagedActiveDirectory = idpMetadata?.hasAwsManagedActiveDirectory ?? false;
     if (identityStoreId) {
       if (!identityStoreRegion) {
@@ -680,19 +680,21 @@ export class DeaAuth extends Construct {
       },
     });
 
+    const identityStoreAccountId = deaConfig.idpMetadata()?.identityStoreAccountId ?? Aws.ACCOUNT_ID;
+    const identityStoreArn = `arn:${Aws.PARTITION}:identitystore::${identityStoreAccountId}:identitystore/${identityStoreId}`;
     lambda.addToRolePolicy(
       new PolicyStatement({
         actions: [
-          'identitystore:ListGroupMembershipsForMember', 
-          'identitystore:DescribeGroup', 
-          'identitystore:GetUserId'
+          'identitystore:ListGroupMembershipsForMember',
+          'identitystore:DescribeGroup',
+          'identitystore:GetUserId',
         ],
         resources: [
-          `arn:${Aws.PARTITION}:identitystore::${Aws.ACCOUNT_ID}:identitystore/${identityStoreId}`,
+          identityStoreArn,
           `arn:${Aws.PARTITION}:identitystore:::membership/*`,
           `arn:${Aws.PARTITION}:identitystore:::user/*`,
           `arn:${Aws.PARTITION}:identitystore:::group/*`,
-          `arn:${Aws.PARTITION}:ds:*:*:directory/${identityStoreId}`,
+          `arn:${Aws.PARTITION}:ds:*:${identityStoreAccountId}:directory/${identityStoreId}`,
         ],
       })
     );

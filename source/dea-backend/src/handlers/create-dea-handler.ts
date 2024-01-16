@@ -16,8 +16,8 @@ import {
   IdentityType,
   auditService,
 } from '@aws/dea-app/lib/app/services/audit-service';
-import { removeSensitiveHeaders } from '@aws/dea-app/lib/lambda-http-helpers';
 import { Oauth2Token } from '@aws/dea-app/lib/models/auth';
+import { getCookieValue, removeSensitiveHeaders } from '@aws/dea-app/lib/lambda-http-helpers';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { CaseAssociationDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseOwnerDTO, CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
@@ -164,12 +164,12 @@ const getInitialIdentity = (event: APIGatewayProxyEvent): ActorIdentity => {
     }
   }
 
-  if (event.headers['cookie']) {
-    const token: Oauth2Token = JSON.parse(event.headers['cookie'].replace('idToken=', ''));
+  const tokenVal = getCookieValue(event, 'idToken');
+  if (tokenVal) {
     return {
       idType: IdentityType.ID_TOKEN_REQUESTOR,
       sourceIp: event.requestContext.identity.sourceIp,
-      idToken: token.id_token,
+      idToken: tokenVal,
     };
   }
 
