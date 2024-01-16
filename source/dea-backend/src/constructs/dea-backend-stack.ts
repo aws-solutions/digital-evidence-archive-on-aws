@@ -189,8 +189,8 @@ export class DeaBackendConstruct extends Construct {
       intelligentTieringConfigurations: [
         {
           name: 'DeaIntelligentTieringConfig',
-          archiveAccessTierTime: Duration.days(90),
-          deepArchiveAccessTierTime: Duration.days(180),
+          archiveAccessTierTime: Duration.days(180),
+          deepArchiveAccessTierTime: Duration.days(365),
         },
       ],
     });
