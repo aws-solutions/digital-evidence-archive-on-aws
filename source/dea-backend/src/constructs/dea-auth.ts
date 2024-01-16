@@ -449,7 +449,7 @@ export class DeaAuth extends Construct {
       }
 
       if (!identityStoreAccount) {
-        throw new Error('Config identityStoreAccount is required when using Identity Store');
+        throw new Error('Config identityStoreAccountId is required when using Identity Store');
       }
 
       const preTokenGenerationLambda = this.createPreTokenGenerationLambda(

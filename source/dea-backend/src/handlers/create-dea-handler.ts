@@ -16,7 +16,6 @@ import {
   IdentityType,
   auditService,
 } from '@aws/dea-app/lib/app/services/audit-service';
-import { Oauth2Token } from '@aws/dea-app/lib/models/auth';
 import { getCookieValue, removeSensitiveHeaders } from '@aws/dea-app/lib/lambda-http-helpers';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { CaseAssociationDTO } from '@aws/dea-app/lib/models/case-file';
