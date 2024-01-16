@@ -104,8 +104,8 @@ describe('datasync event handler', () => {
       throw new Error('Could not find datavault details');
     }
 
-    expect(retreivedDataVault.objectCount).toEqual(2);
-    expect(retreivedDataVault.totalSizeBytes).toEqual(15364 + 15364);
+    expect(retreivedDataVault.objectCount).toEqual(4);
+    expect(retreivedDataVault.totalSizeBytes).toEqual(15364 * 4);
 
     // Check for files in data vault
     const dataVaultFiles = await listDataVaultFilesByFilePath(
@@ -114,9 +114,17 @@ describe('datasync event handler', () => {
       10000,
       repositoryProvider
     );
+    // Check for files in data vault
+    const dataVaultFiles2 = await listDataVaultFilesByFilePath(
+      deaDataVault.ulid,
+      '/testbucket/folder1/',
+      10000,
+      repositoryProvider
+    );
 
     expect(dataVaultFiles).toBeDefined();
-    expect(dataVaultFiles.length).toEqual(2);
+    expect(dataVaultFiles.length).toEqual(3); // 2 files and 1 folder
+    expect(dataVaultFiles2.length).toEqual(2); // 1 file and 1 folder
   }, 40000);
 
   it('should fail when executionId and taskId are not valid', async () => {
@@ -274,6 +282,58 @@ describe('datasync event handler', () => {
         },
         {
           RelativePath: '/exectest.json',
+          SrcMetadata: {
+            Type: 'Regular',
+            ContentSize: 15364,
+            Mtime: '2023-10-16T21:41:34.000000000Z',
+          },
+          SrcChecksum: 'SHA256:d10d148d9839d2b4cd1219992d4a31b1eb456a64e5e7ce8dd3ac1fbade8a5852',
+          DstMetadata: {
+            Type: 'Regular',
+            ContentSize: 15364,
+            Mtime: '2023-10-16T21:41:34.000000000Z',
+          },
+          DstChecksum: 'SHA256:d10d148d9839d2b4cd1219992d4a31b1eb456a64e5e7ce8dd3ac1fbade8a5852',
+          VerifyTimestamp: '2023-10-16T21:48:23.213451576Z',
+          VerifyStatus: 'SUCCESS',
+        },
+        {
+          // This should be ignored. Directories in the task report are not processed as a dataVaultFile
+          RelativePath: '/testfolder',
+          SrcMetadata: {
+            Type: 'Regular',
+            ContentSize: 15364,
+            Mtime: '2023-10-16T21:41:34.000000000Z',
+          },
+          SrcChecksum: 'SHA256:d10d148d9839d2b4cd1219992d4a31b1eb456a64e5e7ce8dd3ac1fbade8a5852',
+          DstMetadata: {
+            Type: 'Directory',
+            ContentSize: 0,
+            Mtime: '2023-10-16T21:41:34.000000000Z',
+          },
+          DstChecksum: 'SHA256:d10d148d9839d2b4cd1219992d4a31b1eb456a64e5e7ce8dd3ac1fbade8a5852',
+          VerifyTimestamp: '2023-10-16T21:48:23.213451576Z',
+          VerifyStatus: 'SUCCESS',
+        },
+        {
+          RelativePath: '/folder1/exectest2.json',
+          SrcMetadata: {
+            Type: 'Regular',
+            ContentSize: 15364,
+            Mtime: '2023-10-16T21:41:34.000000000Z',
+          },
+          SrcChecksum: 'SHA256:d10d148d9839d2b4cd1219992d4a31b1eb456a64e5e7ce8dd3ac1fbade8a5852',
+          DstMetadata: {
+            Type: 'Regular',
+            ContentSize: 15364,
+            Mtime: '2023-10-16T21:41:34.000000000Z',
+          },
+          DstChecksum: 'SHA256:d10d148d9839d2b4cd1219992d4a31b1eb456a64e5e7ce8dd3ac1fbade8a5852',
+          VerifyTimestamp: '2023-10-16T21:48:23.213451576Z',
+          VerifyStatus: 'SUCCESS',
+        },
+        {
+          RelativePath: '/folder1/folder2/exectest3.jpg',
           SrcMetadata: {
             Type: 'Regular',
             ContentSize: 15364,
