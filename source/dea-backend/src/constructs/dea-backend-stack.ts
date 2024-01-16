@@ -236,6 +236,12 @@ export class DeaBackendConstruct extends Construct {
           storageClass: StorageClass.INTELLIGENT_TIERING,
         },
       ],
+      noncurrentVersionTransitions: [
+        {
+          transitionAfter: Duration.days(0),
+          storageClass: StorageClass.INTELLIGENT_TIERING,
+        },
+      ],
     };
 
     return [moveToIntelligentTiering, deleteIncompleteUploadsRule];
