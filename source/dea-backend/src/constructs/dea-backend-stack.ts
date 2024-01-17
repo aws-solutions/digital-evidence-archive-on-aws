@@ -16,7 +16,6 @@ import {
   LifecycleRule,
   HttpMethods,
   ObjectOwnership,
-  StorageClass,
 } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
@@ -227,23 +226,6 @@ export class DeaBackendConstruct extends Construct {
       id: 'DeaDatasetsDeleteIncompleteUploadsLifecyclePolicy',
     };
 
-    const moveToIntelligentTiering: LifecycleRule = {
-      id: 'DeaDatasetIntelligentTieringPolicy',
-      enabled: true,
-      transitions: [
-        {
-          transitionAfter: Duration.days(0),
-          storageClass: StorageClass.INTELLIGENT_TIERING,
-        },
-      ],
-      noncurrentVersionTransitions: [
-        {
-          transitionAfter: Duration.days(0),
-          storageClass: StorageClass.INTELLIGENT_TIERING,
-        },
-      ],
-    };
-
-    return [moveToIntelligentTiering, deleteIncompleteUploadsRule];
+    return [deleteIncompleteUploadsRule];
   }
 }
