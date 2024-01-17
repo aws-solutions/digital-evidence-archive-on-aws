@@ -11,7 +11,7 @@ import { DeaDataVaultFile } from '@aws/dea-app/lib/models/data-vault-file';
 import { DataVaultTaskDTO, DeaDataVaultTask } from '@aws/dea-app/lib/models/data-vault-task';
 import useSWR from 'swr';
 import { httpApiDelete, httpApiGet, httpApiPost, httpApiPut } from '../helpers/apiHelper';
-import { useListDeaFiles } from './base';
+import { useDeaListResponse, useListDeaFiles } from './base';
 import { AuditResult, DeaAuditStartResponse, delay, progressStatus } from './cases';
 import { DeaListResult, DeaSingleResult } from './models/api-results';
 
@@ -21,6 +21,7 @@ interface DataVaultListReponse {
 
 interface DataSyncTaskListReponse {
   dataSyncTasks: DeaDataSyncTask[];
+  next: string;
 }
 
 export const useListAllDataVaults = (): DeaListResult<DeaDataVault> => {
@@ -44,9 +45,10 @@ export const updateDataVault = async (updateDataVault: DeaDataVault): Promise<De
 };
 
 export const useListAllDataSyncTasks = (): DeaListResult<DeaDataSyncTask> => {
-  const { data, error } = useSWR(() => `datasync/tasks?limit=10000`, httpApiGet<DataSyncTaskListReponse>);
-  const dataSyncTasks: DeaDataSyncTask[] = data?.dataSyncTasks ?? [];
-  return { data: dataSyncTasks, isLoading: !data && !error };
+  return useDeaListResponse<DataSyncTaskListReponse, DeaDataSyncTask, 'dataSyncTasks'>(
+    `datasync/tasks`,
+    'dataSyncTasks'
+  );
 };
 
 export const createDataVaultExecution = async (
@@ -109,18 +111,21 @@ export const getDataVaultAuditCSV = async (dataVaultId: string): Promise<string>
     throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
   }
   return auditResponse.downloadUrl;
-}
+};
 
 export const startDataVaultAuditQuery = async (dataVaultId: string): Promise<string> => {
   const data: DeaAuditStartResponse = await httpApiPost(`datavaults/${dataVaultId}/audit`, undefined);
   return data.auditId;
-}
+};
 
-export const retrieveDataVaultAuditResult = async (dataVaultId: string, auditId: string): Promise<AuditResult> => {
+export const retrieveDataVaultAuditResult = async (
+  dataVaultId: string,
+  auditId: string
+): Promise<AuditResult> => {
   return await httpApiGet(`datavaults/${dataVaultId}/audit/${auditId}/csv`, undefined);
-}
+};
 
-export const getDataVaultFileAuditCSV = async (dataVaultId: string, fileId: string,): Promise<string> => {
+export const getDataVaultFileAuditCSV = async (dataVaultId: string, fileId: string): Promise<string> => {
   const auditId = await startDataVaultFileAuditQuery(dataVaultId, fileId);
   let auditResponse = await retrieveDataVaultFileAuditResult(dataVaultId, fileId, auditId);
   let maxRetries = 60;
@@ -134,13 +139,20 @@ export const getDataVaultFileAuditCSV = async (dataVaultId: string, fileId: stri
     throw new Error(`Audit request was empty or experienced a failure. Status: ${auditResponse.status}`);
   }
   return auditResponse.downloadUrl;
-}
+};
 
-export const startDataVaultFileAuditQuery = async (dataVaultId: string, fileId: string,): Promise<string> => {
-  const data: DeaAuditStartResponse = await httpApiPost(`datavaults/${dataVaultId}/files/${fileId}/audit`, undefined);
+export const startDataVaultFileAuditQuery = async (dataVaultId: string, fileId: string): Promise<string> => {
+  const data: DeaAuditStartResponse = await httpApiPost(
+    `datavaults/${dataVaultId}/files/${fileId}/audit`,
+    undefined
+  );
   return data.auditId;
-}
+};
 
-export const retrieveDataVaultFileAuditResult = async (dataVaultId: string, fileId: string, auditId: string): Promise<AuditResult> => {
+export const retrieveDataVaultFileAuditResult = async (
+  dataVaultId: string,
+  fileId: string,
+  auditId: string
+): Promise<AuditResult> => {
   return await httpApiGet(`datavaults/${dataVaultId}/files/${fileId}/audit/${auditId}/csv`, undefined);
-}
+};

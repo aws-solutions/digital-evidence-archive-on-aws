@@ -91,7 +91,8 @@ describe('data-sync-service integration tests', () => {
     const deaDataSyncTasks: DeaDataSyncTask[] = [];
 
     // Loop through the tasks and fetch details for each
-    for (const task of dataSyncTasks) {
+    const tasks = dataSyncTasks.Tasks ?? [];
+    for (const task of tasks) {
       if (task.TaskArn) {
         const deaDataSyncTask = await describeTask(task.TaskArn, dataSyncProvider);
         deaDataSyncTasks.push(deaDataSyncTask);
@@ -99,6 +100,24 @@ describe('data-sync-service integration tests', () => {
     }
 
     expect(deaDataSyncTasks.length).toBeGreaterThan(0);
+  }, 480000);
+
+  it('should successfully paginate a list of datasync tasks', async () => {
+    const limit = 1;
+    // Get response with pagination
+    const listTasksResponsePage1 = await listDatasyncTasks(dataSyncProvider, limit);
+    expect(listTasksResponsePage1.Tasks).toBeDefined();
+    expect(listTasksResponsePage1.Tasks?.length).toEqual(limit);
+    expect(listTasksResponsePage1.NextToken).toBeDefined();
+
+    // Get next page
+    const listTasksResponsePage2 = await listDatasyncTasks(
+      dataSyncProvider,
+      limit,
+      listTasksResponsePage1.NextToken
+    );
+    expect(listTasksResponsePage2.Tasks).toBeDefined();
+    expect(listTasksResponsePage2.Tasks?.length).toEqual(limit);
   }, 480000);
 
   it('should successfully delete location and tasks', async () => {

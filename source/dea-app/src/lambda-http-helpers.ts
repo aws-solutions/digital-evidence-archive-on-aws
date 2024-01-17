@@ -12,6 +12,10 @@ import { Oauth2Token } from './models/auth';
 import { Oauth2TokenSchema } from './models/validation/auth';
 import { base64String, paginationLimit } from './models/validation/joi-common';
 
+export interface StringPaginationParams {
+  limit: number | undefined;
+  next: string | undefined;
+}
 export interface PaginationParams {
   limit: number | undefined;
   nextToken: object | undefined;
@@ -23,21 +27,35 @@ export const getCustomUserAgent = (): UserAgent => {
   return [[solutionId, solutionVersion]];
 };
 
-export const getPaginationParameters = (event: APIGatewayProxyEvent): PaginationParams => {
+export const getStringPaginationParameters = (
+  event: APIGatewayProxyEvent,
+  limitSchema = paginationLimit
+): StringPaginationParams => {
   let limit: number | undefined;
-  let next: string | undefined;
-  let nextToken: object | undefined = undefined;
+  let next: string | undefined = undefined;
   if (event.queryStringParameters) {
     if (event.queryStringParameters['limit']) {
       limit = parseInt(event.queryStringParameters['limit']);
-      Joi.assert(limit, paginationLimit);
+      Joi.assert(limit, limitSchema);
     }
     if (event.queryStringParameters['next']) {
       next = event.queryStringParameters['next'];
-      Joi.assert(next, base64String);
-      nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
     }
   }
+  return { limit, next };
+};
+
+export const getPaginationParameters = (
+  event: APIGatewayProxyEvent,
+  limitSchema = paginationLimit
+): PaginationParams => {
+  const { limit, next } = getStringPaginationParameters(event, limitSchema);
+  let nextToken: object | undefined = undefined;
+  if (next) {
+    Joi.assert(next, base64String);
+    nextToken = JSON.parse(Buffer.from(next, 'base64').toString('utf8'));
+  }
+
   return { limit, nextToken };
 };
 

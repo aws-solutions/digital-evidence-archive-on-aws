@@ -11,6 +11,7 @@ import { dataSyncTaskSchema } from '../../../models/validation/data-vault';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
+import { callGetDataSyncTasks } from './data-sync-tasks-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
 
@@ -40,5 +41,30 @@ describe('get data sync tasks', () => {
 
     expect(response.statusCode).toEqual(200);
     expect(tasks).toBeDefined();
+  }, 40000);
+
+  it('should paginate a list of data sync tasks', async () => {
+    const limit = 1;
+    let next: string | undefined = undefined;
+    const responseWithPagination = await callGetDataSyncTasks(repositoryProvider, limit, next);
+    if (!responseWithPagination) {
+      throw new Error('No response returned');
+    }
+    expect(responseWithPagination.statusCode).toEqual(200);
+
+    const responseBodyWithPagination = JSON.parse(responseWithPagination.body);
+    expect(responseBodyWithPagination.dataSyncTasks.length).toEqual(limit);
+    expect(responseBodyWithPagination.next).toBeDefined();
+
+    // Get next page
+    next = responseBodyWithPagination.next;
+    const responseNextPage = await callGetDataSyncTasks(repositoryProvider, limit, next);
+    if (!responseNextPage) {
+      throw new Error('No response returned');
+    }
+    expect(responseNextPage.statusCode).toEqual(200);
+
+    const responseBody = JSON.parse(responseNextPage.body);
+    expect(responseBody.dataSyncTasks.length).toEqual(limit);
   }, 40000);
 });
