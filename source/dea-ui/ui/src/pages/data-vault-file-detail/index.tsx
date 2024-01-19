@@ -50,7 +50,7 @@ function DataVaultFileDetailPage() {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-vaults">
       <DataVaultFileDetailsBody dataVaultId={dataVaultId} fileId={fileId} setFileName={setFileName} />
     </BaseLayout>
   );

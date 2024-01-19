@@ -48,7 +48,7 @@ const Home: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/">
       <CaseTable
         detailPage="case-detail"
         useCaseFetcher={useListMyCases}
