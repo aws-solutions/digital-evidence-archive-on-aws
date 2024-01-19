@@ -117,9 +117,7 @@ describe('refresh-token', () => {
     // call runLambdaPrechecks to add session to database
     await runPreExecutionChecks(dummyEvent, dummyContext, auditEvent, repositoryProvider);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const userUlid = dummyEvent.headers['userUlid']!;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const tokenId = dummyEvent.headers['tokenId']!;
 
     // assert session exists
@@ -143,7 +141,6 @@ describe('refresh-token', () => {
     // Check only one session for the user
     // since the new and old id token share an origin_jti
     // the new id token should continue the old session
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const newTokenId = dummyEvent1.headers['tokenId']!;
     expect(newTokenId).toStrictEqual(tokenId); // they share a jti
     const sessions = await getSessionsForUser(userUlid, repositoryProvider);
@@ -153,7 +150,6 @@ describe('refresh-token', () => {
     expect(session2?.created).toBeDefined();
     expect(session2?.created).toStrictEqual(session?.created);
     expect(session2?.updated).toBeDefined();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(session2?.updated?.getTime()).toBeGreaterThan(session2!.created!.getTime());
   }, 40000);
 
@@ -210,9 +206,7 @@ describe('refresh-token', () => {
     // call runLambdaPrechecks to add session to database
     await runPreExecutionChecks(dummyEvent, dummyContext, auditEvent, repositoryProvider);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const userUlid = dummyEvent.headers['userUlid']!;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const tokenId = dummyEvent.headers['tokenId']!;
 
     // assert session exists

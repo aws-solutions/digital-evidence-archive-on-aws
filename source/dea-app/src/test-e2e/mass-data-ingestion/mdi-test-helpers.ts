@@ -162,7 +162,6 @@ export class MdiTestHelper {
     folderName: string,
     expectedNumFiles: number
   ): SourceLocationFile[] {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const files = sourceLocation.files.filter((file) => file.filePath === folderName);
     expect(files.length).toBe(expectedNumFiles);
     return files;
@@ -244,7 +243,6 @@ export function verifyDataVaultFile(
   }
 
   if (cases) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const dvCases = dataVaultFile!.cases!;
     expect(dvCases.length).toBe(cases.length);
     cases.forEach((expectedCase) => {
@@ -292,7 +290,6 @@ export async function verifyDataVaultFileCaseAssociationsUpdated(
   expect(updatedDataVaultFileInfo.cases?.length).toBe(cases.length);
 
   for (const expectedCase of cases) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const actualCase = updatedDataVaultFileInfo.cases!.filter(
       (scopedCase) => scopedCase.ulid === expectedCase.ulid
     );
@@ -314,7 +311,6 @@ export async function downloadCaseFileAndValidateHash(
     deaApiUrl,
     idToken,
     creds,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     caseFile.dataVaultUlid!,
     dataVaultFilePath
   );
@@ -370,7 +366,6 @@ export async function verifyDataVaultFolderAndFileStructure(
   const dvFoldersQueue: string[] = ['/']; // start at the root
   while (dvFoldersQueue.length > 0) {
     // Grab the file path from the queue
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const filePath = foldersVisited == 0 ? `${dvFoldersQueue.shift()!}` : `${dvFoldersQueue.shift()!}/`;
 
     // Get case contents for the queue
@@ -529,7 +524,6 @@ export async function verifyCaseFolderAndFileStructure(
   const caseFoldersQueue: string[] = ['/']; // start at the root
   while (caseFoldersQueue.length > 0) {
     // Grab the file path from the queue
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const filePath = foldersVisited == 0 ? `${caseFoldersQueue.shift()!}` : `${caseFoldersQueue.shift()!}/`;
 
     // Get case contents for the queue

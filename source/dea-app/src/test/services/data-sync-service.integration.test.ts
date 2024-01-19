@@ -416,7 +416,6 @@ describe('data-sync-service integration tests', () => {
           })
         );
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         if (!response.TaskArn) {
           throw new Error('Failed creating task');
         }

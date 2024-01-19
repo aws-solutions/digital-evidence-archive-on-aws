@@ -328,7 +328,6 @@ export const inviteUserToCase = async (
   await callDeaAPIWithCreds(`${deaApiUrl}cases/my-cases`, 'GET', inviteeToken, inviteeCreds);
 
   // get invitee ulid
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const inviteeUlid = (await getSpecificUserByFirstName(deaApiUrl, testInvitee, ownerToken, ownerCreds))
     .ulid!;
 
@@ -630,7 +629,6 @@ export const useRefreshToken = async (deaApiUrl: string, oauthToken: Oauth2Token
 };
 
 export const parseOauthTokenFromCookies = (response: AxiosResponse): Oauth2Token => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const cookie = response.headers['set-cookie']![0]!.replace('idToken=', '').split(';')[0];
 
   // Access token unused, remove

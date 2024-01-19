@@ -68,10 +68,8 @@ describe('session persistence', () => {
     expect(session.isRevoked).toBeFalsy();
     expect(session.created).toBeDefined();
     expect(session.updated).toBeDefined();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(session.created!.getTime()).toBeLessThan(new Date().getTime());
     // Check that the TTL was set to an hour from now
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(session.ttl).toBe(Math.floor(session.created!.getTime() / 1000) + 43200);
     expect(session).toStrictEqual(result);
   });
@@ -157,7 +155,6 @@ describe('session persistence', () => {
     expect(updatedSession.created).toEqual(session.created);
     expect(updatedSession.isRevoked).toBeTruthy();
     expect(updatedSession.updated).toBeDefined();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(updatedSession.updated!.getTime()).toBeGreaterThan(session.updated!.getTime());
   });
 
@@ -250,7 +247,6 @@ describe('session persistence', () => {
     expect(updatedSession.created).toBeDefined();
     expect(updatedSession.created).toEqual(session.created);
     expect(updatedSession.updated).toBeDefined();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(updatedSession.updated!.getTime()).toBeGreaterThan(session.updated!.getTime());
   });
 });

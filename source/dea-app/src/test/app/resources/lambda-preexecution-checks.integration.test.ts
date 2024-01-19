@@ -111,7 +111,6 @@ describe('lambda pre-execution checks', () => {
 
     // Mark session revoked (mimic logout)
     // so we can test same user different idtoken
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const sessions = await listSessionsForUser(user!.ulid, repositoryProvider);
     expect(sessions.length).toEqual(1);
     const session = sessions[0];
@@ -201,7 +200,6 @@ describe('lambda pre-execution checks', () => {
     expect(sessions2.length).toEqual(1);
     const session2 = sessions2[0];
     expect(session2.updated).toBeDefined();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(session2.updated!.getTime()).toBeGreaterThan(session1.updated!.getTime());
     expect(session2.created).toBeDefined();
     expect(session2.created).toStrictEqual(session1.created);
@@ -400,6 +398,6 @@ const callPreChecks = async (oauthToken: Oauth2Token, idPoolId?: string): Promis
 
   // Call API expect success
   await runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
   return event.headers['userUlid']!;
 };
