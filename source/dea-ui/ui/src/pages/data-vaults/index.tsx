@@ -17,7 +17,7 @@ export default function DataVaultsPage() {
     },
   ];
   return (
-    <BaseLayout breadcrumbs={breadcrumbs}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-vaults">
       <DataVaultsTable
         detailPage="data-vault-detail"
         useDataVaultFetcher={useListAllDataVaults}

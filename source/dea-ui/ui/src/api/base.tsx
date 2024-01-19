@@ -7,8 +7,22 @@ import useSWRInfinite from 'swr/infinite';
 import { httpApiGet } from '../helpers/apiHelper';
 import { DeaListResult, DeaFilesResponse } from './models/api-results';
 
-export function useListDeaFiles<T>(url: string, pageSize = 5000): DeaListResult<T> {
-  const { data, error } = useSWRInfinite<DeaFilesResponse<T>>(
+export type KeysOfType<T, KT> = {
+  [K in keyof T]: T[K] extends KT ? K : never;
+}[keyof T];
+
+export function useListDeaFiles<T>(url: string, pageSize = 5000, initialSize = 100000): DeaListResult<T> {
+  return useDeaListResponse<DeaFilesResponse<T>, T, 'files'>(url, 'files', pageSize, initialSize);
+}
+
+export function useDeaListResponse<R, T, K extends KeysOfType<R, T[]>>(
+  url: string,
+  key: K,
+  pageSize = 100,
+  initialSize = 500
+): DeaListResult<T> {
+  const queryStringSeparator = url.includes('?') ? '&' : '?';
+  const { data, error } = useSWRInfinite<R>(
     (pageIndex, previousPageData) => {
       // reached the end
       if (previousPageData && !previousPageData.next) {
@@ -17,16 +31,17 @@ export function useListDeaFiles<T>(url: string, pageSize = 5000): DeaListResult<
 
       // first page, we don't have `previousPageData`
       if (pageIndex === 0 || !previousPageData) {
-        return `${url}&limit=${pageSize}`;
+        return `${url}${queryStringSeparator}limit=${pageSize}`;
       }
 
       // add the cursor to the API endpoint
       const encodedNext = encodeURIComponent(previousPageData.next);
-      return `${url}&limit=${pageSize}&next=${encodedNext}`;
+      return `${url}${queryStringSeparator}limit=${pageSize}&next=${encodedNext}`;
     },
-    httpApiGet<DeaFilesResponse<T>>,
-    { initialSize: 100000 }
+    httpApiGet<R>,
+    { initialSize }
   );
-  const files: T[] = data?.flatMap((page) => page.files) ?? [];
-  return { data: files, isLoading: !error && !data };
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  const items = data?.flatMap((page) => page[key] as T[]) ?? [];
+  return { data: items, isLoading: !error && !data };
 }

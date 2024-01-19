@@ -18,6 +18,7 @@ import {
   listDataVaultsSuccess,
   verifyAllExecutionsSucceeded,
   waitForTaskExecutionCompletions,
+  waitForDataSyncStartupTime,
 } from '../resources/support/datavault-support';
 import {
   callDeaAPIWithCreds,
@@ -304,6 +305,8 @@ describe('mass data ingestion e2e tests mimicking the data sync console process'
         taskArn: taskDv2Sl3Arn,
       })
     ).executionId;
+
+    await waitForDataSyncStartupTime();
 
     // Wait for executions to complete
     const taskStatuses = await waitForTaskExecutionCompletions([

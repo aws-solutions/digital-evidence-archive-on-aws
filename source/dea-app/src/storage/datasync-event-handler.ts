@@ -103,6 +103,7 @@ export const dataSyncExecutionEvent = async (
   );
 
   const filesList = [];
+  const foldersMap = new Map<string, DataVaultFileDTO>();
 
   let totalFileCount = 0;
   let totalFileSizeInBytes = 0;
@@ -113,8 +114,8 @@ export const dataSyncExecutionEvent = async (
     for (const file of fileData.Verified) {
       logger.debug('Processing File', { Data: JSON.stringify(file, null, 2) });
 
-      // Skip root directory
-      if (file.RelativePath == '/' && file.DstMetadata.Type == 'Directory') {
+      // Skip Directories
+      if (file.DstMetadata.Type == 'Directory') {
         continue;
       }
 
@@ -127,54 +128,50 @@ export const dataSyncExecutionEvent = async (
         file.RelativePath
       );
 
-      if (file.DstMetadata.Type == 'Directory') {
-        const dataVaultFileDTO: DataVaultFileDTO = {
-          fileName: fileName,
-          filePath: filePath,
-          dataVaultUlid: dataVaultTask.dataVaultUlid,
-          isFile: false,
-          fileSizeBytes: 0,
-          createdBy: dataVaultExecution.createdBy,
-          contentType: file.SrcMetadata.Type,
-          fileS3Key: fileS3Key,
-          executionId: dataVaultExecution.executionId,
-        };
+      const fileExtension = fetchFileExtension(file.SrcMetadata.Type, fileName);
 
-        filesList.push(dataVaultFileDTO);
-      } else {
-        const fileExtension = fetchFileExtension(file.SrcMetadata.Type, fileName);
+      const dataVaultFileDTO: DataVaultFileDTO = {
+        fileName: fileName,
+        filePath: filePath,
+        dataVaultUlid: dataVaultTask.dataVaultUlid,
+        isFile: true,
+        fileSizeBytes: file.SrcMetadata.ContentSize || 0,
+        createdBy: dataVaultExecution.createdBy,
+        contentType: fileExtension,
+        sha256Hash: Buffer.from(file.DstChecksum.split(':')[1], 'hex').toString('base64'),
+        fileS3Key: fileS3Key,
+        executionId: dataVaultExecution.executionId,
+      };
 
-        const dataVaultFileDTO: DataVaultFileDTO = {
-          fileName: fileName,
-          filePath: filePath,
-          dataVaultUlid: dataVaultTask.dataVaultUlid,
-          isFile: true,
-          fileSizeBytes: file.SrcMetadata.ContentSize || 0,
-          createdBy: dataVaultExecution.createdBy,
-          contentType: fileExtension,
-          sha256Hash: Buffer.from(file.DstChecksum.split(':')[1], 'hex').toString('base64'),
-          fileS3Key: fileS3Key,
-          executionId: dataVaultExecution.executionId,
-        };
+      filesList.push(dataVaultFileDTO);
 
-        filesList.push(dataVaultFileDTO);
+      totalFileCount = totalFileCount + 1;
+      totalFileSizeInBytes = totalFileSizeInBytes + (file.SrcMetadata.ContentSize || 0);
 
-        totalFileCount = totalFileCount + 1;
-        totalFileSizeInBytes = totalFileSizeInBytes + (file.SrcMetadata.ContentSize || 0);
-      }
+      // list of folders to create based on file paths
+      createFilePathFolders(
+        filePath,
+        dataVaultTask.dataVaultUlid,
+        dataVaultExecution.createdBy,
+        dataVaultExecution.executionId,
+        foldersMap
+      );
     }
-
-    // send files list to batch create
-    await createDataVaultFiles(filesList, repositoryProvider);
-
-    // update with final size and count
-    await updateDataVaultSize(
-      dataVaultTask.dataVaultUlid,
-      totalFileCount,
-      totalFileSizeInBytes,
-      repositoryProvider
-    );
   }
+
+  // Add folders to the fileList before creating files
+  filesList.push(...foldersMap.values());
+
+  // send files list to batch create
+  await createDataVaultFiles(filesList, repositoryProvider);
+
+  // update with final size and count
+  await updateDataVaultSize(
+    dataVaultTask.dataVaultUlid,
+    totalFileCount,
+    totalFileSizeInBytes,
+    repositoryProvider
+  );
 };
 
 export const fetchS3Key = (locationUri: string, dataVaultUlid: string, relativePath: string) => {
@@ -261,4 +258,36 @@ export const generateFolderPrefixEntries = async (
   }
 
   return prefixString.substring(0, prefixString.length - 1);
+};
+
+export const createFilePathFolders = (
+  filePath: string,
+  dataVaultUlid: string,
+  createdBy: string,
+  executionId: string,
+  foldersMap: Map<string, DataVaultFileDTO>
+) => {
+  const parts = filePath.split('/').filter((part) => part !== '');
+
+  let currentPath = '/';
+
+  for (let i = 0; i < parts.length; i++) {
+    const folderName = parts[i];
+    const folderPath = currentPath;
+
+    const dataVaultFileDTO: DataVaultFileDTO = {
+      fileName: folderName,
+      filePath: folderPath,
+      dataVaultUlid: dataVaultUlid,
+      isFile: false,
+      fileSizeBytes: 0,
+      createdBy: createdBy,
+      contentType: 'Directory',
+      fileS3Key: `DATAVAULT${dataVaultUlid}${folderPath}${folderName}`,
+      executionId: executionId,
+    };
+
+    foldersMap.set(`${folderPath}${folderName}`, dataVaultFileDTO);
+    currentPath += `${folderName}/`;
+  }
 };

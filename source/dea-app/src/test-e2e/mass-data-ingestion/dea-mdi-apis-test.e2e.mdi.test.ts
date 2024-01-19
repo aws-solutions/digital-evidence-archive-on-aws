@@ -95,21 +95,14 @@ describe('verifies StartDataVaultTaskExecutions input checks', () => {
     );
   });
 
-  // TODO: Implement this test
-  //    it('creates 10,000 files and moves them with mass ingestion', async() => {
-  // DOWNLOAD AND TEST HASH AFTER ASSIGNED TO CASE?
-
-  //    }, 3000000);
-
   // TODO: When Delete Data Vault is Complete, write this test
   //    it('deletes a data vault', async() => {
   // 1. Create Data Vault
   // 2. Get Data Vault Details for Data Vault
-  // 3. Delete Data Vault
-  // 4. Try to get Data Vault Details, verify that it fails
-  // 5. List Data Vaults, verify its not present
+  // 3. Create Case
+  // 4. Create File Associations
+  // 5. Delete Data Vault
+  // 6. Try to get Data Vault Details, verify that it fails
+  // 7. See files removed from case
   //    });
-
-  // TODO: Should we move the audit tests here?
-  // Perform Ingestion and Case Association, then Audit Case, Audit User, Audit Data Vault
 });

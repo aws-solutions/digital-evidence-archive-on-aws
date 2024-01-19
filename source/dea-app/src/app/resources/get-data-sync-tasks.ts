@@ -3,7 +3,9 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { getStringPaginationParameters } from '../../lambda-http-helpers';
 import { DeaDataSyncTask } from '../../models/data-sync-task';
+import { dataSyncPaginationLimit } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
 import { defaultDataSyncProvider } from '../../storage/dataSync';
@@ -25,13 +27,15 @@ export const getDataSyncTasks: DEAGatewayProxyHandler = async (
   /* istanbul ignore next */
   dataSyncProvider = defaultDataSyncProvider
 ) => {
-  const dataSyncTasks = await dataSyncService.listDatasyncTasks(dataSyncProvider);
+  const { limit, next } = getStringPaginationParameters(event, dataSyncPaginationLimit);
+
+  const listTasksResponse = await dataSyncService.listDatasyncTasks(dataSyncProvider, limit, next);
 
   // Create an array to store DeaDataSyncTask objects
   const deaDataSyncTasks: DeaDataSyncTask[] = [];
 
   // Loop through the tasks and fetch details for each
-  for (const task of dataSyncTasks) {
+  for (const task of listTasksResponse.Tasks ?? []) {
     if (task.TaskArn) {
       const deaDataSyncTask = await dataSyncService.describeTask(task.TaskArn, dataSyncProvider);
       deaDataSyncTasks.push(deaDataSyncTask);
@@ -40,5 +44,6 @@ export const getDataSyncTasks: DEAGatewayProxyHandler = async (
 
   return responseOk(event, {
     dataSyncTasks: deaDataSyncTasks,
+    next: listTasksResponse.NextToken,
   });
 };

@@ -17,7 +17,7 @@ export default function DataSyncTasksPage() {
     },
   ];
   return (
-    <BaseLayout breadcrumbs={breadcrumbs}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-sync-tasks">
       <DataSyncTasksTable
         detailPage="data-vault-detail"
         useDataVaultFetcher={useListAllDataVaults}

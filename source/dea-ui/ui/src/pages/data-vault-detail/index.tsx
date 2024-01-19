@@ -39,7 +39,7 @@ function DataVaultDetailsPage() {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-vaults">
       <DataVaultDetailsBody dataVaultId={dataVaultId} setdataVaultName={setdataVaultName} />
     </BaseLayout>
   );

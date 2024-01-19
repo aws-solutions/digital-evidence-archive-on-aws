@@ -96,9 +96,13 @@ export const createDatasyncTask = async (
   }
 };
 
-export const listDatasyncTasks = async (dataSyncProvider: DataSyncProvider) => {
+export const listDatasyncTasks = async (
+  dataSyncProvider: DataSyncProvider,
+  limit = 100,
+  nextToken?: string
+) => {
   // List all tasks
-  const listTasksCommand = new ListTasksCommand({});
+  const listTasksCommand = new ListTasksCommand({ MaxResults: limit, NextToken: nextToken });
 
   const listTasksResponse = await retry(async () => {
     const listTasksResponse = await dataSyncProvider.dataSyncClient.send(listTasksCommand);
@@ -107,8 +111,8 @@ export const listDatasyncTasks = async (dataSyncProvider: DataSyncProvider) => {
   if (!listTasksResponse) {
     throw new Error('Task listing failed');
   }
-  const tasks = listTasksResponse.Tasks || [];
-  return tasks;
+
+  return listTasksResponse;
 };
 
 export const describeTask = async (

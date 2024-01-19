@@ -198,12 +198,16 @@ paths:
           schema:
             type: string
           required: true
-        - in: query
-          name: caseUlids
-          schema:
-            type: array
-            items:
-              type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                caseUlids:
+                  type: array
+                  items:
+                    type: string
       responses:
         200:
           description: Success

@@ -44,8 +44,11 @@ export const dataSyncClient = new DataSyncClient({ region: testEnv.awsRegion });
 
 export const DATA_SYNC_THROTTLE_RETRIES = 50;
 export const DATA_SYNC_THROTTLE_WAIT_INTERVAL_IN_MS = 5000;
-const EXECUTION_STATUS_WAIT_TIME = 3 * MINUTES_TO_MILLISECONDS;
+export const DATA_SYNC_STARTUP_WAIT_TIME = 5 * MINUTES_TO_MILLISECONDS;
+const EXECUTION_STATUS_WAIT_TIME = 1 * MINUTES_TO_MILLISECONDS;
 const EXECUTION_STATUS_RETRIES = 20;
+// TODO: Current limit for the system is 10000, write a helper function
+// to get the entire list as one array, by using multiple calls
 const LIST_QUERY_LIMIT = 1000;
 
 export async function cleanupDataSyncTestResources(
@@ -147,6 +150,7 @@ export const createDataVaultTaskSuccess = async (
   creds: Credentials,
   dataVaultId: string,
   tasksToCleanUp: string[],
+  dataSyncLocationsToCleanUp: string[],
   deaDataVaultTask: DataVaultTaskDTO
 ): Promise<DeaDataVaultTask> => {
   const response = await callDeaAPIWithCreds(
@@ -164,6 +168,7 @@ export const createDataVaultTaskSuccess = async (
   expect(createdTask.name).toEqual(deaDataVaultTask.name);
 
   tasksToCleanUp.push(createdTask.taskArn);
+  dataSyncLocationsToCleanUp.push(createdTask.destinationLocationArn);
 
   return createdTask;
 };
@@ -214,11 +219,12 @@ export const listDataVaultFilesSuccess = async (
   idToken: Oauth2Token,
   creds: Credentials,
   dataVaultId: string,
-  filePath?: string
+  filePath?: string,
+  limit = LIST_QUERY_LIMIT
 ): Promise<DeaDataVaultFile[]> => {
   const url = filePath
-    ? `${baseUrl}datavaults/${dataVaultId}/files?filePath=${filePath}`
-    : `${baseUrl}datavaults/${dataVaultId}/files`;
+    ? `${baseUrl}datavaults/${dataVaultId}/files?filePath=${filePath}&limit=${limit}`
+    : `${baseUrl}datavaults/${dataVaultId}/files?limit=${limit}`;
   const response = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
 
   verifyDeaRequestSuccess(response);
@@ -407,7 +413,7 @@ export const waitForTaskExecutionCompletions = async (
     attempt++;
 
     if (uncompletedTasks.size > 0) {
-      console.log(`${uncompletedTasks.size} tasks did not complete, Sleeping for 3 minutes... `);
+      console.log(`${uncompletedTasks.size} tasks did not complete, Sleeping for 1 minute... `);
       await delay(waitTime ?? EXECUTION_STATUS_WAIT_TIME);
     }
   }
@@ -421,7 +427,7 @@ export const verifyAllExecutionsSucceeded = (taskStatuses: Map<string, TaskExecu
   );
 };
 
-// TODO: Create Data Sync Task Using the SDK to mimic the console experience of
+// Create Data Sync Task Using the SDK to mimic the console experience of
 // the user who uses Data Sync directly for mass ingestion
 export const createDataSyncTaskWithSDKSuccess = async (
   name: string,
@@ -467,4 +473,9 @@ export const createDataSyncTaskWithSDKSuccess = async (
   tasksToCleanUp.push(maybeTaskArn);
 
   return maybeTaskArn;
+};
+
+export const waitForDataSyncStartupTime = async () => {
+  console.log(`Data sync takes about 5 minutes to start up, sleeping...`);
+  await delay(DATA_SYNC_STARTUP_WAIT_TIME);
 };
