@@ -957,7 +957,7 @@ resources:
     parentId: fld_6c4198840c55480da17692ea0f5aa2ac
     modified: 1702540566853
     created: 1702540539555
-    url: "{{ _.deaApiUrl }}/datavaults/{{ _.dataVaultUlid }}/files/{{
+    url: "{{ _.deaApiUrl }}datavaults/{{ _.dataVaultUlid }}/files/{{
       _.dataVaultFileId }}/audit"
     name: POST request data vault file audit
     description: ""
@@ -977,7 +977,14 @@ resources:
         name: idToken
         value: "{{ _.idToken }}"
         description: ""
-    authentication: {}
+    authentication:
+      type: iam
+      disabled: false
+      accessKeyId: "{{ _.accessKeyId }}"
+      secretAccessKey: "{{ _.secretAccessKey }}"
+      sessionToken: "{{ _.sessionToken }}"
+      region: "{{ _.region }}"
+      service: execute-api
     metaSortKey: -1688964722763.039
     isPrivate: false
     settingStoreCookies: true
@@ -1003,7 +1010,14 @@ resources:
         name: idToken
         value: "{{ _.idToken }}"
         description: ""
-    authentication: {}
+    authentication:
+      type: iam
+      disabled: false
+      accessKeyId: "{{ _.accessKeyId }}"
+      secretAccessKey: "{{ _.secretAccessKey }}"
+      sessionToken: "{{ _.sessionToken }}"
+      region: "{{ _.region }}"
+      service: execute-api
     metaSortKey: -1687691590274.9668
     isPrivate: false
     settingStoreCookies: true
@@ -1017,7 +1031,7 @@ resources:
     parentId: fld_6c4198840c55480da17692ea0f5aa2ac
     modified: 1702540641040
     created: 1702540582206
-    url: "{{ _.deaApiUrl }}/datavaults/{{ _.dataVaultUlid }}/audit"
+    url: "{{ _.deaApiUrl }}datavaults/{{ _.dataVaultUlid }}/audit"
     name: POST request data vault audit
     description: ""
     method: POST
@@ -1036,7 +1050,14 @@ resources:
         name: idToken
         value: "{{ _.idToken }}"
         description: ""
-    authentication: {}
+    authentication:
+      type: iam
+      disabled: false
+      accessKeyId: "{{ _.accessKeyId }}"
+      secretAccessKey: "{{ _.secretAccessKey }}"
+      sessionToken: "{{ _.sessionToken }}"
+      region: "{{ _.region }}"
+      service: execute-api
     metaSortKey: -1687532448713.9578
     isPrivate: false
     settingStoreCookies: true
@@ -1062,7 +1083,14 @@ resources:
         name: idToken
         value: "{{ _.idToken }}"
         description: ""
-    authentication: {}
+    authentication:
+      type: iam
+      disabled: false
+      accessKeyId: "{{ _.accessKeyId }}"
+      secretAccessKey: "{{ _.secretAccessKey }}"
+      sessionToken: "{{ _.sessionToken }}"
+      region: "{{ _.region }}"
+      service: execute-api
     metaSortKey: -1687373307152.9487
     isPrivate: false
     settingStoreCookies: true

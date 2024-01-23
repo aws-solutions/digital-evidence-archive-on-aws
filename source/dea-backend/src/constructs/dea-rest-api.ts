@@ -245,6 +245,21 @@ export class DeaRestApiConstruct extends Construct {
             throttlingRateLimit: 30,
             metricsEnabled: true,
           },
+          '/datasync/tasks/GET': {
+            throttlingBurstLimit: 20,
+            throttlingRateLimit: 20,
+            metricsEnabled: true,
+          },
+          '/datavaults/{dataVaultId}/tasks/POST': {
+            throttlingBurstLimit: 20,
+            throttlingRateLimit: 20,
+            metricsEnabled: true,
+          },
+          '/datavaults/tasks/{taskId}/executions/POST': {
+            throttlingBurstLimit: 20,
+            throttlingRateLimit: 20,
+            metricsEnabled: true,
+          },
         },
         accessLogDestination: new LogGroupLogDestination(this.accessLogGroup),
         accessLogFormat: AccessLogFormat.custom(

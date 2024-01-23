@@ -20,6 +20,8 @@ const AWS_LIMITED_EXCEEDED_ERROR_NAME = 'LimitExceededException';
 // DynamoDB https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html
 // Exception thrown during concurrent item-level requests(i.e Throttling from DynamoDB)
 const AWS_DYNAMODB_TRANSACTION_CANCELED_ERROR_NAME = 'TransactionCanceledException';
+const AWS_DATASYNC_INVALID_REQUEST_ERROR_NAME = 'InvalidRequestException';
+const AWS_ATHENA_TOO_MANY_REQUEST_ERROR_NAME = 'TooManyRequestsException';
 
 // If you have a new error case that you want to support, create a new Class that extends Error
 // and add a handler here that responds with an appropriate status code.
@@ -83,6 +85,14 @@ const throttlingErrorHandler: ExceptionHandler = async (error, event) => {
   });
 };
 
+const badRequestErrorHandler: ExceptionHandler = async (error, event) => {
+  logger.error('BadRequestError', error);
+  return withAllowedOrigin(event, {
+    statusCode: 400,
+    body: 'Bad Request',
+  });
+};
+
 const joiInstance = new Joi.ValidationError('', [], undefined);
 const errorInstance = new Error('');
 
@@ -98,3 +108,5 @@ exceptionHandlers.set(AWS_THROTTLING_ERROR_NAME, throttlingErrorHandler);
 exceptionHandlers.set(THROTTLING_ERROR_NAME, throttlingErrorHandler);
 exceptionHandlers.set(AWS_LIMITED_EXCEEDED_ERROR_NAME, throttlingErrorHandler);
 exceptionHandlers.set(AWS_DYNAMODB_TRANSACTION_CANCELED_ERROR_NAME, throttlingErrorHandler);
+exceptionHandlers.set(AWS_DATASYNC_INVALID_REQUEST_ERROR_NAME, badRequestErrorHandler);
+exceptionHandlers.set(AWS_ATHENA_TOO_MANY_REQUEST_ERROR_NAME, throttlingErrorHandler);
