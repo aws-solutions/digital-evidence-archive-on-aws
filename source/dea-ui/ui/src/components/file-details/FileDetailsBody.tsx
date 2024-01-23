@@ -3,22 +3,31 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { CaseFileDTO } from '@aws/dea-app/lib/models/case-file';
+import { CaseFileDTO, DownloadDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
 import {
+  Box,
   ColumnLayout,
   Container,
   ContentLayout,
+  Grid,
   Header,
   SpaceBetween,
   StatusIndicator,
   TextContent,
 } from '@cloudscape-design/components';
-import { getCaseFileAuditCSV, useGetCaseActions, useGetFileDetailsById } from '../../api/cases';
+import * as React from 'react';
+import {
+  getCaseFileAuditCSV,
+  useGetCaseActions,
+  useGetCaseById,
+  useGetFileDetailsById,
+} from '../../api/cases';
 import { auditLogLabels, caseStatusLabels, commonLabels, fileDetailLabels } from '../../common/labels';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadCaseAudit } from '../../helpers/userActionSupport';
 import { AuditDownloadButton } from '../audit/audit-download-button';
+import DownloadButton from '../buttons/DownloadButton';
 import DataVaultAssociationDetailsBody from './DataVaultAssociationDetailsBody';
 
 export interface FileDetailsBodyProps {
@@ -28,8 +37,12 @@ export interface FileDetailsBodyProps {
 }
 
 function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
-  const { data, isLoading } = useGetFileDetailsById(props.caseId, props.fileId);
+  const { setFileName } = props;
+  const { data: fileData, isLoading: fileIsLoading } = useGetFileDetailsById(props.caseId, props.fileId);
+  const { data: caseData, isLoading: caseIsLoading } = useGetCaseById(props.caseId);
   const userActions = useGetCaseActions(props.caseId);
+  const [downloadInProgress, setDownloadInProgress] = React.useState(false);
+  const [filesToRestore, setFilesToRestore] = React.useState<DownloadDTO[]>([]);
 
   function getStatusIcon(status: string) {
     if (status == CaseFileStatus.ACTIVE) {
@@ -54,7 +67,13 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
     }
   }
 
-  if (isLoading) {
+  React.useEffect(() => {
+    if (fileData) {
+      setFileName(fileData.fileName);
+    }
+  }, [setFileName, fileData, fileData?.fileName]);
+
+  if (fileIsLoading || caseIsLoading) {
     return (
       <SpaceBetween size="l">
         <div></div>
@@ -62,18 +81,30 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
       </SpaceBetween>
     );
   } else {
-    if (!data) {
+    if (!fileData || !caseData) {
       return <h1>{commonLabels.notFoundLabel}</h1>;
     }
-
-    props.setFileName(data.fileName);
 
     return (
       <ContentLayout
         header={
-          <SpaceBetween size="m">
-            <Header variant="h1">{data.fileName}</Header>
-          </SpaceBetween>
+          <Grid gridDefinition={[{ colspan: { default: 9, xxs: 3 } }, { colspan: { default: 3, xxs: 9 } }]}>
+            <Header variant="h1">{fileData.fileName}</Header>
+            <Box float="right">
+              <SpaceBetween size="m" direction="horizontal">
+                <DownloadButton
+                  caseId={props.caseId}
+                  caseStatus={caseData.status}
+                  selectedFiles={[{ ...fileData }]}
+                  selectedFilesCallback={() => void 0}
+                  downloadInProgress={downloadInProgress}
+                  downloadInProgressCallback={setDownloadInProgress}
+                  filesToRestore={filesToRestore}
+                  filesToRestoreCallback={setFilesToRestore}
+                />
+              </SpaceBetween>
+            </Box>
+          </Grid>
         }
       >
         <SpaceBetween size="xxl">
@@ -89,7 +120,7 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
                       permissionCallback={() => canDownloadCaseAudit(userActions.data?.actions)}
                       downloadCallback={async () => await getCaseFileAuditCSV(props.caseId, props.fileId)}
                       type="CaseFileAudit"
-                      targetName={data?.fileName}
+                      targetName={fileData?.fileName}
                     />
                   </SpaceBetween>
                 }
@@ -105,14 +136,14 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
                   <h5>{fileDetailLabels.uploadDateLabel}</h5>
                   <SpaceBetween size="l">
                     <p>
-                      {data.dataVaultUploadDate
-                        ? new Date(data.dataVaultUploadDate).toLocaleString([], {
+                      {fileData.dataVaultUploadDate
+                        ? new Date(fileData.dataVaultUploadDate).toLocaleString([], {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
                           })
-                        : data.created
-                        ? new Date(data.created).toLocaleString([], {
+                        : fileData.created
+                        ? new Date(fileData.created).toLocaleString([], {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
@@ -122,29 +153,29 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
 
                     <h5>{fileDetailLabels.fileSizeLabel}</h5>
                   </SpaceBetween>
-                  <p>{formatFileSize(data.fileSizeBytes)}</p>
+                  <p>{formatFileSize(fileData.fileSizeBytes)}</p>
                 </div>
               </TextContent>
               <TextContent>
                 <div>
                   <h5>{commonLabels.description}</h5>
-                  <p>{data.details}</p>
+                  <p>{fileData.details}</p>
                 </div>
               </TextContent>
               <TextContent>
                 <div>
                   <h5>{commonLabels.statusLabel}</h5>
                   <SpaceBetween size="l">
-                    <p>{getStatusIcon(data.status)}</p>
+                    <p>{getStatusIcon(fileData.status)}</p>
 
                     <h5>{fileDetailLabels.shaHashLabel}</h5>
                   </SpaceBetween>
-                  <p>{data.sha256Hash}</p>
+                  <p>{fileData.sha256Hash}</p>
                 </div>
               </TextContent>
             </ColumnLayout>
           </Container>
-          {getDataVaultSection(data)}
+          {getDataVaultSection(fileData)}
         </SpaceBetween>
       </ContentLayout>
     );

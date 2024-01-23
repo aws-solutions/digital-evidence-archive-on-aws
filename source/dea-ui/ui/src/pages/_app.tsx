@@ -5,6 +5,7 @@
 
 import '@cloudscape-design/global-styles/index.css';
 import type { AppProps } from 'next/app';
+import dynamic from 'next/dynamic';
 import Header from '../components/Header';
 import { AuthenticationProvider } from '../context/AuthenticationContext';
 import { NotificationsProvider } from '../context/NotificationsContext';
@@ -25,4 +26,6 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
   );
 }
 
-export default App;
+export default dynamic(() => Promise.resolve(App), {
+  ssr: false,
+});

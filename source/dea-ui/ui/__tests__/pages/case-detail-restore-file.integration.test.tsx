@@ -47,7 +47,7 @@ const mockFilesRoot = {
 };
 
 const mockedCaseDetail = {
-  ulid: 'abc',
+  ulid: CASE_ID,
   name: 'mocked case',
   status: 'ACTIVE',
 };
@@ -76,7 +76,7 @@ describe('case detail file restore', () => {
   it('restores selected files', async () => {
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url?.endsWith('100/details')) {
+      if (eventObj.url?.endsWith(`${CASE_ID}/details`)) {
         return Promise.resolve({
           data: mockedCaseDetail,
           status: 200,
@@ -84,7 +84,7 @@ describe('case detail file restore', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url?.endsWith('100/actions')) {
+      } else if (eventObj.url?.endsWith(`${CASE_ID}/actions`)) {
         return Promise.resolve({
           data: mockedCaseActions,
           status: 200,

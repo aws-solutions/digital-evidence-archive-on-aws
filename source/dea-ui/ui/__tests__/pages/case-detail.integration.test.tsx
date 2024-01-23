@@ -107,7 +107,7 @@ const mockFilesFood = {
 };
 
 const mockedCaseDetail = {
-  ulid: 'abc',
+  ulid: CASE_ID,
   name: 'mocked case',
   status: 'ACTIVE',
 };
@@ -192,7 +192,7 @@ mockedAxios.request.mockImplementation((eventObj) => {
       headers: {},
       config: {},
     });
-  } else if (eventObj.url?.endsWith('100/actions')) {
+  } else if (eventObj.url?.endsWith(`${CASE_ID}/actions`)) {
     return Promise.resolve({
       data: mockedCaseActions,
       status: 200,
