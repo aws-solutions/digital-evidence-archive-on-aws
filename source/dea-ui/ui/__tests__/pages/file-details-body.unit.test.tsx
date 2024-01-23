@@ -1,9 +1,10 @@
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
+import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { CaseFileDTO } from '@aws/dea-app/lib/models/case-file';
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import { useGetCaseActions, useGetFileDetailsById } from '../../src/api/cases';
+import { useGetCaseActions, useGetFileDetailsById, useGetCaseById } from '../../src/api/cases';
 import FileDetailsBody from '../../src/components/file-details/FileDetailsBody';
 import { commonLabels } from '../../src/common/labels';
 
@@ -18,6 +19,7 @@ jest.mock('next/router', () => ({
 jest.mock('../../src/api/cases', () => ({
   useGetFileDetailsById: jest.fn(),
   useGetCaseActions: jest.fn(),
+  useGetCaseById: jest.fn(),
 }));
 
 const mockedSetFileName = jest.fn();
@@ -72,7 +74,12 @@ describe('FileDetailsBody', () => {
       },
       isLoading: false,
     }));
-
+    useGetCaseById.mockImplementation(() => ({
+      data: {
+        status: CaseStatus.ACTIVE,
+      },
+      isLoading: false,
+    }));
     const props = {
       caseId: '123',
       fileId: 'abc',
@@ -91,6 +98,12 @@ describe('FileDetailsBody', () => {
     useGetCaseActions.mockImplementation(() => ({
       data: {
         actions: CaseAction.VIEW_CASE_DETAILS,
+      },
+      isLoading: false,
+    }));
+    useGetCaseById.mockImplementation(() => ({
+      data: {
+        status: CaseStatus.ACTIVE,
       },
       isLoading: false,
     }));
@@ -122,6 +135,12 @@ describe('FileDetailsBody', () => {
   it('renders a blank page with no data vault data', async () => {
     useGetFileDetailsById.mockImplementation(() => ({
       data: undefined,
+      isLoading: false,
+    }));
+    useGetCaseById.mockImplementation(() => ({
+      data: {
+        status: CaseStatus.ACTIVE,
+      },
       isLoading: false,
     }));
     const props = {

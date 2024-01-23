@@ -5,7 +5,7 @@
 
 import { QueryExecutionState } from '@aws-sdk/client-athena';
 import { DeaCase } from '@aws/dea-app/lib/models/case';
-import { CaseFileDTO, DeaCaseFile, DeaCaseFileUpload } from '@aws/dea-app/lib/models/case-file';
+import { CaseFileDTO, DeaCaseFile, DeaCaseFileUpload, DownloadDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseUser } from '@aws/dea-app/lib/models/case-user';
 import { DeaUser } from '@aws/dea-app/lib/models/user';
 import useSWR from 'swr';
@@ -50,7 +50,10 @@ export const useListMyCases = (): DeaListResult<DeaCaseDTO> => {
   return { data: cases, isLoading: !data && !error, mutate };
 };
 
-export const useGetCaseById = (id: string): DeaSingleResult<DeaCaseDTO | undefined> => {
+export const useGetCaseById = (id: string | string[] | undefined): DeaSingleResult<DeaCaseDTO | undefined> => {
+  if (!id || typeof id !== 'string') {
+    id = undefined;
+  }
   const { data, error } = useSWR(() => `cases/${id}/details`, httpApiGet<DeaCaseDTO>);
   return { data, isLoading: !data && !error };
 };
@@ -76,8 +79,8 @@ export const updateCase = async (editCaseForm: EditCaseForm): Promise<void> => {
   await httpApiPut(`cases/${editCaseForm.ulid}/details`, { ...editCaseForm });
 };
 
-export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DeaCaseFile> => {
-  return useListDeaFiles<DeaCaseFile>(`cases/${id}/files?filePath=${filePath}`);
+export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DownloadDTO> => {
+  return useListDeaFiles<DownloadDTO>(`cases/${id}/files?filePath=${filePath}`);
 };
 
 export const initiateUpload = async (apiInput: InitiateUploadForm): Promise<DeaCaseFileUpload> => {

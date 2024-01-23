@@ -4,7 +4,7 @@ import { act, cleanup, fireEvent, getByRole, render, screen, waitFor } from '@te
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import Axios from 'axios';
-import { auditLogLabels, breadcrumbLabels, caseDetailLabels } from '../../src/common/labels';
+import { auditLogLabels, breadcrumbLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import { CaseFileDTO } from '../../src/api/models/case';
 import FileDetailPage from '../../src/pages/file-detail';
@@ -35,14 +35,14 @@ const mockedCaseActions = {
   userFirstName: 'John',
   userLastName: 'Doe',
   caseName: 'Investigation One',
-  actions: ['VIEW_FILES', 'CASE_AUDIT'],
+  actions: ['VIEW_FILES', 'CASE_AUDIT', 'DOWNLOAD'],
   created: '2023-03-23T15:38:26.955Z',
   updated: '2023-03-23T15:38:26.955Z',
 };
 
 const mockedFileInfo: CaseFileDTO = {
-  ulid: '200',
-  caseUlid: '100',
+  ulid: FILE_ID,
+  caseUlid: CASE_ID,
   fileName: 'afile.png',
   contentType: 'image/png',
   createdBy: 'XXXXXXXXXXXXXXXXXXXXXXXXXX',
@@ -57,12 +57,18 @@ const mockedFileInfo: CaseFileDTO = {
   details: 'details',
 };
 
+const mockedCaseDetail = {
+  ulid: CASE_ID,
+  name: 'mocked case',
+  status: 'ACTIVE',
+};
+
 let csvCall = -1;
 const csvResult = [{ status: 'Running' }, { status: 'Running' }, 'csvresults'];
 
 mockedAxios.create.mockReturnThis();
 mockedAxios.request.mockImplementation((eventObj) => {
-  if (eventObj.url?.endsWith('100/files/200/info')) {
+  if (eventObj.url?.endsWith(`${CASE_ID}/files/200/info`)) {
     return Promise.resolve({
       data: mockedFileInfo,
       status: 200,
@@ -70,7 +76,7 @@ mockedAxios.request.mockImplementation((eventObj) => {
       headers: {},
       config: {},
     });
-  } else if (eventObj.url?.endsWith('100/actions')) {
+  } else if (eventObj.url?.endsWith(`${CASE_ID}/actions`)) {
     return Promise.resolve({
       data: mockedCaseActions,
       status: 200,
@@ -81,6 +87,14 @@ mockedAxios.request.mockImplementation((eventObj) => {
   } else if (eventObj.url?.endsWith('audit')) {
     return Promise.resolve({
       data: { auditId: '11111111-1111-1111-1111-111111111111' },
+      status: 200,
+      statusText: 'Ok',
+      headers: {},
+      config: {},
+    });
+  } else if (eventObj.url?.endsWith('details')) {
+    return Promise.resolve({
+      data: mockedCaseDetail,
       status: 200,
       statusText: 'Ok',
       headers: {},
@@ -117,6 +131,20 @@ describe('FileDetailPage', () => {
     // upload button will be disabled while in progress and then re-enabled when done
     await waitFor(() => expect(screen.queryByTestId('download-case-file-audit-button')).toBeDisabled());
     await waitFor(() => expect(screen.queryByTestId('download-case-file-audit-button')).toBeEnabled(), {
+      timeout: 4000,
+    });
+  });
+
+  it('downloads a file-detail file', async () => {
+    const page = render(<FileDetailPage />);
+    expect(page).toBeTruthy();
+
+    const downloadFileButton = await screen.findByText(commonLabels.downloadButton);
+    fireEvent.click(downloadFileButton);
+
+    // upload button will be disabled while in progress and then re-enabled when done
+    await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeDisabled());
+    await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeEnabled(), {
       timeout: 4000,
     });
   });

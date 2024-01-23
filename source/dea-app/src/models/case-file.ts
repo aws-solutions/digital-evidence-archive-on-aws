@@ -81,7 +81,7 @@ export interface CaseFileDTO {
   readonly filePath: string;
   readonly fileSizeBytes: number;
   readonly sha256Hash?: string;
-  readonly status: string;
+  readonly status: CaseFileStatus;
   readonly created?: Date;
   readonly updated?: Date;
   readonly isFile: boolean;
@@ -144,3 +144,4 @@ export interface RemoveCaseAssociationDTO {
 }
 
 export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;
+export type DownloadDTO = DeaCaseFileResult | CaseFileDTO;
