@@ -8,7 +8,7 @@ import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
 import { retry } from '../../app/services/service-helpers';
 import { Oauth2Token } from '../../models/auth';
-import { CaseFileDTO, DeaCaseFileResult } from '../../models/case-file';
+import { CaseFileDTO, DeaCaseFileResult, DownloadCaseFileRequest } from '../../models/case-file';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
@@ -257,11 +257,18 @@ describe('ingests files from a source with a lot of files', () => {
   async function getFileDownloadUrl(caseUlid: string, fileUlid: string): Promise<string> {
     const resp = await retry(
       async () => {
+        const downloadReason = 'e2e testing for ingest-large-num-files-test';
+        const body :DownloadCaseFileRequest = {
+          caseUlid,
+          ulid: fileUlid,
+          downloadReason,
+        };
         const response = await callDeaAPIWithCreds(
           `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}/contents`,
-          'GET',
+          'POST',
           idToken,
-          creds
+          creds,
+          body,
         );
 
         if (response.status == 200) {

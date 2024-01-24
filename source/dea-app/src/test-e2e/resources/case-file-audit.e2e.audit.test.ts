@@ -108,7 +108,7 @@ describe('case file audit e2e', () => {
 
       // Owners by default have all permissions so have the owner download the file
       // will show up in audit log as success
-      const downloadUrl = await getCaseFileDownloadUrl(deaApiUrl, idToken, creds, caseUlid, fileUlid);
+      const downloadUrl = await getCaseFileDownloadUrl(deaApiUrl, idToken, creds, caseUlid, fileUlid, "e2e test needs to download file");
       const downloadedContent = await downloadContentFromS3(downloadUrl, describedCaseFile.contentType);
       expect(downloadedContent).toEqual(FILE_CONTENT);
       expect(sha256(downloadedContent).toString(enc.Base64)).toEqual(fileHash);
@@ -155,7 +155,7 @@ describe('case file audit e2e', () => {
       );
       const [inviteeCreds, inviteeToken] = await cognitoHelper.getCredentialsForUser(failedDownloadTestUser);
       await expect(
-        getCaseFileDownloadUrl(deaApiUrl, inviteeToken, inviteeCreds, caseUlid, fileUlid)
+        getCaseFileDownloadUrl(deaApiUrl, inviteeToken, inviteeCreds, caseUlid, fileUlid, "test e2e download file")
       ).rejects.toThrow();
 
       // wait for data plane events

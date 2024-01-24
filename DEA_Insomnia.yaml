@@ -1627,10 +1627,17 @@ resources:
     modified: 1683904429379
     created: 1683865436252
     url: "{{deaApiUrl}}cases/{{caseUlid}}/files/{{fileUlid}}/contents"
-    name: GET case-file download
+    name: POST case-file download
     description: ""
-    method: GET
+    method: POST
     body: {}
+      mimeType: application/json
+      text: |-
+        {
+        	"caseUlid": "{{caseUlid}}",
+        	"ulid": "{{fileUlid}}",
+        	"downloadReason": "test reason to request evidence download"
+        }
     parameters: []
     headers:
       - id: pair_7e05d836487844049fefbcaf3e24db5c

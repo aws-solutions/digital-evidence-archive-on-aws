@@ -25,6 +25,7 @@ export interface CompleteUploadForm {
 export interface DownloadFileForm {
   caseUlid: string;
   ulid?: string;
+  downloadReason?: string;
 }
 
 export interface RestoreFileForm {

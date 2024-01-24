@@ -137,6 +137,9 @@ export const fileOperationsLabels = {
   uploadFileDescription: 'All fields are required unless otherwise indicated.',
   uploadStatusDescription: 'Uploaded files associated with this case.',
   uploadDetailsLabel: 'Upload details',
+  downloadFileReasonLabel: 'Downloading files',
+  downloadFileReasonInputHeader: 'Reason for downloading folders and files', 
+  downloadFileReasonInputDetails: "Specify why you're downloading the case files. This will be displayed in the case audit log.",
   selectFileDescription: 'Choose files',
   restoreFilesModalLabel: (count: number) =>
     `${count} of the files you tried to download was archived due to inactivity.`,
@@ -160,7 +163,7 @@ export const fileOperationsLabels = {
   archivedFileNoPermissionError: (fileName: string) =>
     `${fileName} is archived. Please contact case owner to restore file for access.`,
   downloadFailed: (fileName: string) => `Failed to download ${fileName}`,
-  cancelRestoringLabel: 'Cancel',
+  downloadSucceeds: (numFiles: number) => `All ${numFiles} files successfully downloaded`,
 };
 
 export const caseDetailLabels = {
@@ -200,7 +203,7 @@ export const manageCaseAccessLabels = {
   manageAccessSearchInfoHeader: "Can't find someone?",
   manageAccessSearchInfoLabel: 'Request access from admin',
   manageAccessSearchInfoDescription:
-    'reach out to your administrator and request a new user to be invited to the system.',
+    'Reach out to your administrator and request a new user to be invited to the system.',
   searchPlaceholder: 'Search by name or email',
   searchAutosuggestNoMatches: 'No matches found',
   searchAutosuggestEnteredText: (value: string) => `Use: "${value}"`,

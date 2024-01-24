@@ -3,8 +3,10 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getRequiredEnv, getRequiredPathParam } from '../../lambda-http-helpers';
+import { getRequiredEnv, getRequiredPathParam, getRequiredPayload } from '../../lambda-http-helpers';
+import { DownloadCaseFileRequest } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
+import { downloadFileRequestBodySchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider, getPresignedUrlForDownload } from '../../storage/datasets';
@@ -26,6 +28,9 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
   const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
   const subnetCIDR = getRequiredEnv('SOURCE_IP_MASK_CIDR');
 
+  const body = getRequiredPayload<DownloadCaseFileRequest>(event, 'downloadCaseFile request body', downloadFileRequestBodySchema);
+  const downloadReason :string | undefined = body.downloadReason; 
+
   const retrievedCaseFile = await getRequiredCaseFile(caseId, fileId, repositoryProvider);
 
   if (retrievedCaseFile.status !== CaseFileStatus.ACTIVE) {
@@ -35,7 +40,8 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
   const downloadResult = await getPresignedUrlForDownload(
     retrievedCaseFile,
     `${event.requestContext.identity.sourceIp}/${subnetCIDR}`,
-    datasetsProvider
+    datasetsProvider,
+    downloadReason
   );
 
   return responseOk(event, downloadResult);

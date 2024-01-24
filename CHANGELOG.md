@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - integration with DataSync for ingestion of large volumes of data
 - the ability to use AWS Directory Service's Managed Microsoft Active Directory as an identity store in AWS Identity Center
+- ability to track an auditing reason when case evidence is requested for download
 
 ## [1.0.7] - 2024-01-15
 

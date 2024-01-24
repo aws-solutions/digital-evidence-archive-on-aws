@@ -558,9 +558,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "referencetoteststackDeaRestApiConstructDELETERemoveUserFromCase737A1C3DRef": Object {
             "Ref": "DeaRestApiConstructDELETERemoveUserFromCase315FE1CE",
           },
-          "referencetoteststackDeaRestApiConstructGETDownloadCaseFileF41985DARef": Object {
-            "Ref": "DeaRestApiConstructGETDownloadCaseFile04DF0D0C",
-          },
           "referencetoteststackDeaRestApiConstructGETGetAllCases1779FDB9Ref": Object {
             "Ref": "DeaRestApiConstructGETGetAllCasesD64E9594",
           },
@@ -647,6 +644,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
           "referencetoteststackDeaRestApiConstructPOSTCreateDataVaultTask39464A82Ref": Object {
             "Ref": "DeaRestApiConstructPOSTCreateDataVaultTask04BD9449",
+          },
+          "referencetoteststackDeaRestApiConstructPOSTDownloadCaseFile7E898A3CRef": Object {
+            "Ref": "DeaRestApiConstructPOSTDownloadCaseFile04F3E63F",
           },
           "referencetoteststackDeaRestApiConstructPOSTGetAuthenticationTokenCD411A22Ref": Object {
             "Ref": "DeaRestApiConstructPOSTGetAuthenticationToken7831CF5E",
@@ -1474,6 +1474,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
               Object {
                 "Name": "targetUserId",
+                "Type": "string",
+              },
+              Object {
+                "Name": "downloadReason",
                 "Type": "string",
               },
               Object {
@@ -4205,134 +4209,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "FunctionName": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructDELETERemoveUserFromCase315FE1CE",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceAccount": Object {
-          "Ref": "AWS::AccountId",
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DeaRestApiConstructGETDownloadCaseFile04DF0D0C": Object {
-      "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-      ],
-      "Metadata": Object {
-        "cfn_nag": Object {
-          "rules_to_suppress": Array [
-            Object {
-              "id": "W58",
-              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
-            },
-            Object {
-              "id": "W92",
-              "reason": "Reserved concurrency is currently not required. Revisit in the future",
-            },
-            Object {
-              "id": "W89",
-              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC",
-            },
-          ],
-        },
-      },
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "[HASH REMOVED].zip",
-        },
-        "Environment": Object {
-          "Variables": Object {
-            "ALLOWED_ORIGINS": "https://localhost:3001",
-            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
-              "Fn::GetAtt": Array [
-                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
-                "Arn",
-              ],
-            },
-            "AUDIT_LOG_GROUP_NAME": Object {
-              "Ref": "deaAuditLogs7B75D3F1",
-            },
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "AWS_PARTITION": Object {
-              "Ref": "AWS::Partition",
-            },
-            "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
-            },
-            "DATASETS_BUCKET_NAME": Object {
-              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-            },
-            "DATASETS_ROLE": Object {
-              "Fn::GetAtt": Array [
-                "DeaRestApiConstructdeadatasetsrole293FB411",
-                "Arn",
-              ],
-            },
-            "DATASYNC_REPORTS_BUCKET_NAME": Object {
-              "Ref": "DeaBackendConstructdeaDataSyncReportsBucket18D80514",
-            },
-            "DATASYNC_REPORTS_ROLE": Object {
-              "Fn::GetAtt": Array [
-                "DeaBackendConstructdeaDataSyncLogsBucketRole07FBFDAA",
-                "Arn",
-              ],
-            },
-            "DATASYNC_ROLE": Object {
-              "Fn::GetAtt": Array [
-                "DeaBackendConstructDataSyncPermissionsRoleA297BC9E",
-                "Arn",
-              ],
-            },
-            "KEY_ARN": Object {
-              "Fn::GetAtt": Array [
-                "testKey1CDDDD5E",
-                "Arn",
-              ],
-            },
-            "NODE_OPTIONS": "--enable-source-maps",
-            "SAMESITE": "None",
-            "STAGE": "[STAGE-REMOVED]",
-            "TABLE_NAME": Object {
-              "Ref": "DeaBackendConstructDeaTableB48721A0",
-            },
-            "TRAIL_LOG_GROUP_NAME": Object {
-              "Ref": "deaTrailLogs0A0531F5",
-            },
-            "UPLOAD_ROLE": Object {
-              "Fn::GetAtt": Array [
-                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
-                "Arn",
-              ],
-            },
-          },
-        },
-        "Handler": "index.handler",
-        "MemorySize": 2048,
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs18.x",
-        "Timeout": 20,
-        "TracingConfig": Object {
-          "Mode": "PassThrough",
-        },
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "DeaRestApiConstructGETDownloadCaseFileInvokeLambdaPermission6549CA6F": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETDownloadCaseFile04DF0D0C",
             "Arn",
           ],
         },
@@ -8055,6 +7931,134 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::Lambda::Permission",
     },
+    "DeaRestApiConstructPOSTDownloadCaseFile04F3E63F": Object {
+      "DependsOn": Array [
+        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
+        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+      ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)               indicates lambdas should not be deployed in private VPCs unless they require access to resources also within a VPC",
+            },
+          ],
+        },
+      },
+      "Properties": Object {
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "[HASH REMOVED].zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "ALLOWED_ORIGINS": "https://localhost:3001",
+            "AUDIT_DOWNLOAD_ROLE_ARN": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaauditdownloadrole41E0E771",
+                "Arn",
+              ],
+            },
+            "AUDIT_LOG_GROUP_NAME": Object {
+              "Ref": "deaAuditLogs7B75D3F1",
+            },
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "AWS_PARTITION": Object {
+              "Ref": "AWS::Partition",
+            },
+            "CHECKSUM_QUEUE_URL": Object {
+              "Ref": "multipartchecksumqueueCA9DCDB8",
+            },
+            "DATASETS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
+            },
+            "DATASETS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeadatasetsrole293FB411",
+                "Arn",
+              ],
+            },
+            "DATASYNC_REPORTS_BUCKET_NAME": Object {
+              "Ref": "DeaBackendConstructdeaDataSyncReportsBucket18D80514",
+            },
+            "DATASYNC_REPORTS_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaBackendConstructdeaDataSyncLogsBucketRole07FBFDAA",
+                "Arn",
+              ],
+            },
+            "DATASYNC_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaBackendConstructDataSyncPermissionsRoleA297BC9E",
+                "Arn",
+              ],
+            },
+            "KEY_ARN": Object {
+              "Fn::GetAtt": Array [
+                "testKey1CDDDD5E",
+                "Arn",
+              ],
+            },
+            "NODE_OPTIONS": "--enable-source-maps",
+            "SAMESITE": "None",
+            "STAGE": "[STAGE-REMOVED]",
+            "TABLE_NAME": Object {
+              "Ref": "DeaBackendConstructDeaTableB48721A0",
+            },
+            "TRAIL_LOG_GROUP_NAME": Object {
+              "Ref": "deaTrailLogs0A0531F5",
+            },
+            "UPLOAD_ROLE": Object {
+              "Fn::GetAtt": Array [
+                "DeaRestApiConstructdeaenduseruploadrole9A688CB2",
+                "Arn",
+              ],
+            },
+          },
+        },
+        "Handler": "index.handler",
+        "MemorySize": 2048,
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 20,
+        "TracingConfig": Object {
+          "Mode": "PassThrough",
+        },
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DeaRestApiConstructPOSTDownloadCaseFileInvokeLambdaPermission2EF1331A": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructPOSTDownloadCaseFile04F3E63F",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceAccount": Object {
+          "Ref": "AWS::AccountId",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "DeaRestApiConstructPOSTGetAuthenticationToken7831CF5E": Object {
       "DependsOn": Array [
         "DeaRestApiConstructdeaauthlambdaroleDefaultPolicy15F6BB8F",
@@ -10293,9 +10297,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdauditF20DF571",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOST3CAF58FE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdaudit231DCFA8",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents28CE2C11",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdcontentsCAEE1B62",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPOST568B10B0",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
@@ -10640,9 +10644,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdauditF20DF571",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOST3CAF58FE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdaudit231DCFA8",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents28CE2C11",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdcontentsCAEE1B62",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPOST568B10B0",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
@@ -10872,9 +10876,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdauditF20DF571",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOST3CAF58FE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdaudit231DCFA8",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents28CE2C11",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdcontentsCAEE1B62",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPOST568B10B0",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
@@ -11105,9 +11109,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdauditF20DF571",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOST3CAF58FE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdaudit231DCFA8",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents28CE2C11",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdcontentsCAEE1B62",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPOST568B10B0",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
@@ -11535,8 +11539,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditOPTIONS08DD3796",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdauditPOST3CAF58FE",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdaudit231DCFA8",
-        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50",
+        "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPOST568B10B0",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTF371EF84",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
         "DeaRestApiConstructdeaapicasescaseIdfilesfileIdinfoGETBCDCA5B2",
@@ -14127,87 +14131,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGET4172E867": Object {
-      "Properties": Object {
-        "AuthorizationType": "AWS_IAM",
-        "HttpMethod": "GET",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaRestApiConstructGETDownloadCaseFile04DF0D0C",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdfilesfileIdcontents28CE2C11": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "DeaRestApiConstructGETDownloadCaseFile04DF0D0C",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": Object {
-          "Fn::Join": Array [
-            "",
-            Array [
-              "arn:",
-              Object {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              Object {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              Object {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-              },
-              "/",
-              Object {
-                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
-              },
-              "/GET/cases/*/files/*/contents",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsOPTIONSC1A05A50": Object {
       "Properties": Object {
         "ApiKeyRequired": false,
@@ -14251,6 +14174,87 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         },
       },
       "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPOST568B10B0": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "POST",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructPOSTDownloadCaseFile04F3E63F",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsDFF6E865",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdfilesfileIdcontentsCAEE1B62": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "DeaRestApiConstructPOSTDownloadCaseFile04F3E63F",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+              },
+              "/",
+              Object {
+                "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
+              },
+              "/POST/cases/*/files/*/contents",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "DeaRestApiConstructdeaapicasescaseIdfilesfileIdcontentsPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdfilesfileIdcontentsC77F4949": Object {
       "Properties": Object {

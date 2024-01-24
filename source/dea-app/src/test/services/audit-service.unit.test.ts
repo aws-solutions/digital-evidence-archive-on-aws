@@ -50,6 +50,7 @@ describe('audit service', () => {
       eventType: AuditEventType.CREATE_CASE,
       actorIdentity: { idType: IdentityType.COGNITO_ID, idPoolUserId: 'identifier', sourceIp: '123' },
       result: AuditEventResult.SUCCESS,
+      downloadReason: 'me cop, need see evidence;\\',
       eventID: '11111111-1111-1111-1111-111111111111',
     });
     verify(clientMock.send(anyOfClass(CreateLogStreamCommand)));
@@ -77,6 +78,7 @@ describe('audit service', () => {
         eventType: AuditEventType.CREATE_CASE,
         actorIdentity: { idType: IdentityType.COGNITO_ID, idPoolUserId: 'identifier', sourceIp: '123' },
         result: AuditEventResult.SUCCESS,
+        downloadReason: 'me cop, need see evidence;\\',
         eventID: '11111111-1111-1111-1111-111111111111',
       })
     ).rejects.toThrow(Error);
@@ -102,6 +104,7 @@ describe('audit service', () => {
         eventType: AuditEventType.CREATE_CASE,
         actorIdentity: { idType: IdentityType.COGNITO_ID, idPoolUserId: 'identifier', sourceIp: '123' },
         result: AuditEventResult.SUCCESS,
+        downloadReason: 'me cop, need see evidence;\\',
         eventID: '11111111-1111-1111-1111-111111111111',
       })
     ).rejects.toThrow(Error);

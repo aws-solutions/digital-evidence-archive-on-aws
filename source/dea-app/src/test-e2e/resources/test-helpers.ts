@@ -28,7 +28,7 @@ import { AuditEventType, AuditResult } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
-import { DeaCaseFile, DeaCaseFileResult, DeaCaseFileUpload } from '../../models/case-file';
+import { DeaCaseFile, DeaCaseFileResult, DeaCaseFileUpload, DownloadCaseFileRequest } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
@@ -419,14 +419,21 @@ export const getCaseFileDownloadUrl = async (
   deaApiUrl: string,
   idToken: Oauth2Token,
   creds: Credentials,
-  caseUlid: string | undefined,
-  fileUlid: string | undefined
+  caseUlid = "undefined case Ulid",
+  fileUlid = "undefined file Ulid",
+  downloadReason: string,
 ): Promise<string> => {
+  const body :DownloadCaseFileRequest = {
+    caseUlid,
+    ulid: fileUlid,
+    downloadReason,
+  };
   const response = await callDeaAPIWithCreds(
     `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}/contents`,
-    'GET',
+    'POST',
     idToken,
-    creds
+    creds,
+    body
   );
 
   expect(response.status).toEqual(200);

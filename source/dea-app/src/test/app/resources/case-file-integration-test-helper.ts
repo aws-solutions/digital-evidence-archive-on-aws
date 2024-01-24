@@ -137,7 +137,8 @@ export const callDownloadCaseFile = async (
   requesterUlid: string | undefined,
   repositoryProvider: ModelRepositoryProvider,
   fileId: string,
-  caseId: string
+  caseId: string,
+  reason = 'no test reason specified',
 ): Promise<DownloadCaseFileResult> => {
   const event = getDummyEvent({
     headers: {
@@ -147,6 +148,11 @@ export const callDownloadCaseFile = async (
       caseId,
       fileId,
     },
+    body: JSON.stringify({
+      caseUlid: caseId,
+      ulid: fileId,
+      downloadReason: reason,
+    })
   });
   const response = await downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
   checkApiSucceeded(response);
