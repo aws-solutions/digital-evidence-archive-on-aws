@@ -1630,7 +1630,7 @@ resources:
     name: POST case-file download
     description: ""
     method: POST
-    body: {}
+    body:
       mimeType: application/json
       text: |-
         {
