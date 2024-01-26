@@ -58,7 +58,7 @@ paths:
       parameters:
         - name: caseId
           in: path
-          description: Case ID to generate audit log for
+          description: Case ID for which to generate audit log
           required: true
           schema:
             type: string

@@ -76,6 +76,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   loginUrl:
                     type: string
@@ -98,6 +99,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   logoutUrl:
                     type: string

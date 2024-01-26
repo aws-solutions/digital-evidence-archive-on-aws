@@ -67,6 +67,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   userId:
                     type: string
@@ -90,6 +91,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 $ref: '#/components/schemas/ScopedCase'
   /cases:
     post:
@@ -129,6 +131,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   userId:
                     type: string
