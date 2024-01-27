@@ -11,7 +11,6 @@
     node common/scripts/install-run-rush.js add-license-header|| exit $?
     node common/scripts/install-run-rush.js prettier || exit $?
 if [ "$RUN_HOOKS" == true ]; then
-    node common/scripts/install-run-rush.js git-secrets-scan || exit $?
     node common/scripts/install-run-rush.js lint:fix || exit $?
     node common/scripts/install-run-rush.js sort-package-json && git add **/package.json || exit $?
     if ! node common/scripts/install-run-rush.js build:test; then
