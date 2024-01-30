@@ -92,7 +92,7 @@ export const completeUpload = async (apiInput: CompleteUploadForm): Promise<DeaC
 };
 
 export const getPresignedUrl = async (apiInput: DownloadFileForm): Promise<DownloadFileResult> => {
-  return httpApiGet(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}/contents`, undefined);
+  return httpApiPost(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}/contents`, { ...apiInput});
 };
 
 export const restoreFile = async (apiInput: RestoreFileForm): Promise<void> => {

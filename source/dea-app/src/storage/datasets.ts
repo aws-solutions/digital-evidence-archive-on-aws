@@ -283,7 +283,8 @@ const handleUploadChecksum = async (
 export const getPresignedUrlForDownload = async (
   caseFile: DeaCaseFile,
   sourceIp: string,
-  datasetsProvider: DatasetsProvider
+  datasetsProvider: DatasetsProvider,
+  downloadReason = ''
 ): Promise<DownloadCaseFileResult> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
 
@@ -332,9 +333,11 @@ export const getPresignedUrlForDownload = async (
     ResponseContentType: caseFile.contentType,
     ResponseContentDisposition: `attachment; filename*=UTF-8''${encodeURIComponent(caseFile.fileName)}`,
   });
+
   result.downloadUrl = await getSignedUrl(presignedUrlS3Client, getObjectCommand, {
     expiresIn: datasetsProvider.downloadPresignedCommandExpirySeconds,
   });
+  result.downloadReason = downloadReason;
   return result;
 };
 

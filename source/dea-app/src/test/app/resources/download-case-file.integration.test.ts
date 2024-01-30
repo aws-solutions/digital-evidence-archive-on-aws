@@ -48,6 +48,7 @@ let caseToDownloadFrom = '';
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
 const UPLOAD_ID = '123456';
 const VERSION_ID = '543210';
+const DOWNLOAD_REASON = 'testing download';
 
 const region = testEnv.awsRegion;
 
@@ -290,15 +291,26 @@ describe('Test case file download', () => {
 
     const fileId = caseFile.ulid ?? fail();
     await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
-    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
+    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom, DOWNLOAD_REASON);
     expect(downloadResult.downloadUrl).toBeTruthy();
+    expect(downloadResult.downloadReason).toBeTruthy();
     expect(downloadResult.isRestoring).toBeFalsy();
     expect(downloadResult.isArchived).toBeTruthy();
   });
 });
 
-async function downloadCaseFileAndValidate(fileId: string, caseId: string): Promise<DownloadCaseFileResult> {
-  const result = await callDownloadCaseFile(fileUploader.ulid, repositoryProvider, fileId, caseId);
+async function downloadCaseFileAndValidate(
+  fileId: string,
+  caseId: string,
+  downloadReason?: string
+): Promise<DownloadCaseFileResult> {
+  const result = await callDownloadCaseFile(
+    fileUploader.ulid,
+    repositoryProvider,
+    fileId,
+    caseId,
+    downloadReason
+  );
   if (result.downloadUrl) {
     expect(result.downloadUrl).toContain(
       `https://s3.${region}.amazonaws.com/${DATASETS_PROVIDER.bucketName}`

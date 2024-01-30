@@ -418,4 +418,55 @@ describe('test data vault file details', () => {
       `Too many files selected. No more than ${threshould} files can be associated in a single request.`
     );
   }, 40000);
+
+  it('should fail for a case id that does not exist', async () => {
+    const name = 'NonValidCaseIdCreateAssociationTest';
+    const event = getDummyEvent({
+      body: JSON.stringify({
+        name,
+      }),
+    });
+    const response = await createDataVault(event, dummyContext, repositoryProvider);
+    const newDataVault = await JSON.parse(response.body);
+
+    // Add files to data vault
+    const pathsToGenerate = ['/'];
+
+    const totalFiles = [];
+
+    for (const path of pathsToGenerate) {
+      const generatedFiles = dataVaultFileGenerate(1, path, newDataVault.ulid, user.ulid);
+      totalFiles.push(...generatedFiles);
+    }
+
+    await createDataVaultFile(totalFiles, repositoryProvider);
+
+    // Get files from root directory
+    const pageOfDataVaultFiles: Paged<DeaDataVaultFile> = await listDataVaultFilesByFilePath(
+      newDataVault.ulid,
+      '/',
+      10000,
+      repositoryProvider,
+      undefined
+    );
+
+    const rootFolderUlids = pageOfDataVaultFiles.map((file) => file.ulid);
+
+    const caseUlids = ['AAAAAAAAAAAAAAAAAAAAAAAAAA'];
+    const caseAssociateEvent = getDummyEvent({
+      pathParameters: {
+        dataVaultId: newDataVault.ulid,
+      },
+      body: JSON.stringify({
+        caseUlids,
+        fileUlids: rootFolderUlids,
+      }),
+    });
+
+    caseAssociateEvent.headers['userUlid'] = user.ulid;
+
+    await expect(createCaseAssociation(caseAssociateEvent, dummyContext, repositoryProvider)).rejects.toThrow(
+      `Could not find case`
+    );
+  }, 40000);
 });

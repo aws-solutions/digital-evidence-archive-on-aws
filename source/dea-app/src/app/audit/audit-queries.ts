@@ -33,6 +33,7 @@ const queryFields =
   "COALESCE(fileHash, '') AS File_SHA_256," +
   "COALESCE(targetUserId, '') AS Target_User_ID," +
   "COALESCE(caseActions, '') AS Case_Actions," +
+  "COALESCE(downloadReason, '') AS Download_Reason," +
   "COALESCE(eventID, '') AS eventID";
 
 // sort by DateTimeUTC, the time when the event actually occurred, rather than timestamp, the moment when it appeared in logs

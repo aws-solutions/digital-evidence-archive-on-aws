@@ -139,13 +139,37 @@ describe('FileDetailPage', () => {
     const page = render(<FileDetailPage />);
     expect(page).toBeTruthy();
 
-    const downloadFileButton = await screen.findByText(commonLabels.downloadButton);
-    fireEvent.click(downloadFileButton);
+    await waitFor(() =>
+      expect(
+        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
+      ).toBe(false)
+    );
+    await wrapper(screen.getByTestId('download-file-button')).click();
 
-    // upload button will be disabled while in progress and then re-enabled when done
+    await waitFor(() =>
+      expect(
+        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
+      ).toBe(true)
+    );
+    const wrappedReason = wrapper(document.body).findInput(
+      '[data-testid="download-file-reason-modal-input"]'
+    );
+    if (!wrappedReason) {
+      fail();
+    }
+    wrappedReason.setInputValue('Reason for download,;,.');
+
+    wrapper(screen.getByTestId('download-file-reason-modal-primary-button')).click();
+
+    // download button will be disabled while in progress and then re-enabled when done
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeDisabled());
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeEnabled(), {
       timeout: 4000,
     });
+    await waitFor(() =>
+      expect(
+        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
+      ).toBe(false)
+    );
   });
 });

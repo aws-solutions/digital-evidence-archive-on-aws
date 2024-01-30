@@ -17,6 +17,7 @@
   "scripts": {
     "acl:only": ". ../common/scripts/setEnv.sh && heft test --no-build --disable-code-coverage --test-path-pattern '.*/*e2e.acl.test.*'",
     "add-license-header": "license-check-and-add add -f license-add-config.json",
+    "mass-case:only": ". ../common/scripts/setEnv.sh && npx ts-node src/app/migrations/examples/mass-case-association.ts",
     "audit:only": ". ../common/scripts/setEnv.sh && heft test --no-build --disable-code-coverage --test-path-pattern '.*/*e2e.audit.test.*'",
     "build": "heft build",
     "build:clean": "heft build --clean",
@@ -87,7 +88,8 @@
     "lodash": "^4.17.21",
     "pkce-challenge": "^3.0.0",
     "ulid": "~2.3.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "csv-parse": "~5.5.3"
   },
   "devDependencies": {
     "@aws-sdk/client-iam": "~3.474.0",

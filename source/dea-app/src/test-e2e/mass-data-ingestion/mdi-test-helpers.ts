@@ -325,7 +325,8 @@ export async function downloadCaseFileAndValidateHash(
     idToken,
     creds,
     caseFile.caseUlid,
-    caseFile.ulid
+    caseFile.ulid,
+    'e2e test needs to download file'
   );
   const downloadedContent = await downloadContentFromS3(downloadUrl, caseFile.contentType);
 

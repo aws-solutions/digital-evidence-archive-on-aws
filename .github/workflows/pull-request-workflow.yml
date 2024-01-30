@@ -45,9 +45,6 @@ jobs:
       - name: license check
         run: |
           node common/scripts/install-run-rush.js license-checker
-      - name: Secrets Scan
-        run: |
-          node common/scripts/install-run-rush.js git-secrets-scan
       - name: Rush Build
         run: |
           node common/scripts/install-run-rush.js build

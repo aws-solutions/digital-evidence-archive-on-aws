@@ -187,6 +187,10 @@ export const auditGlueTableColumns = [
     type: glue.Schema.STRING,
   },
   {
+    name: 'downloadReason',
+    type: glue.Schema.STRING,
+  },
+  {
     name: 'eventID',
     type: glue.Schema.STRING,
   },

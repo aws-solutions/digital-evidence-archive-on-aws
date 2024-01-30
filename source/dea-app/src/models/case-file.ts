@@ -66,8 +66,15 @@ export interface DeaCaseFileResult {
   dataVaultUploadDate?: Date;
 }
 
+export interface DownloadCaseFileRequest {
+  caseUlid: string;
+  ulid: string;
+  downloadReason?: string;
+}
+
 export interface DownloadCaseFileResult {
   downloadUrl?: string;
+  downloadReason?: string;
   isArchived?: boolean;
   isRestoring?: boolean;
 }

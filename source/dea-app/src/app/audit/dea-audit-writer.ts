@@ -55,6 +55,7 @@ export default class DeaAuditWriter implements Writer {
     auditEntry.dataVaultId = entry.dataVaultId;
     auditEntry.targetUserId = entry.targetUserId;
     auditEntry.caseActions = entry.caseActions;
+    auditEntry.downloadReason = entry.downloadReason;
     auditEntry.eventID = entry.eventID;
   }
 

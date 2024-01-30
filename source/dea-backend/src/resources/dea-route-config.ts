@@ -105,7 +105,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     {
       eventName: AuditEventType.DOWNLOAD_CASE_FILE,
       path: '/cases/{caseId}/files/{fileId}/contents',
-      httpMethod: ApiGatewayMethod.GET,
+      httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/download-case-file-handler.ts',
     },
     {

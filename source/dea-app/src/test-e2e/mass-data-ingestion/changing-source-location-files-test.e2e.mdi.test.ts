@@ -225,7 +225,8 @@ describe('evolves source location structure and re-runs tasks', () => {
       idToken,
       creds,
       deaCase.ulid,
-      caseFile[0].ulid
+      caseFile[0].ulid,
+      'e2e test needs to download file'
     );
     const downloadedContent = await downloadContentFromS3(downloadUrl, caseFile[0].contentType);
     expect(sha256(downloadedContent).toString(enc.Base64)).toEqual(originalFile.sha256Hash);

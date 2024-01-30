@@ -197,6 +197,7 @@ export type ActorIdentity =
   5. Outcome (success or failure) of the event.
  */
 // If you are adding a new field here, make sure you also handle it in dea-audit-writer.ts prepare() and below in the query fields
+// Also, ensure a corresponding column is added to audit-glue-table-columns.ts auditGlueTableColumns[]
 export type CJISAuditEventBody = {
   dateTime: string;
   requestPath: string;
@@ -210,6 +211,7 @@ export type CJISAuditEventBody = {
   dataVaultId?: string;
   targetUserId?: string;
   caseActions?: string; // since we return audit results as a csv, this should be string where actions are joined by ":"
+  downloadReason?: string;
   eventID: string; // guid to identify the event
 };
 

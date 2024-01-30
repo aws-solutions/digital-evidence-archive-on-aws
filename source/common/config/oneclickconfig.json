@@ -92,7 +92,7 @@
         },
         {
           "path": "/cases/{caseId}/files/{fileId}/contents",
-          "method": "GET"
+          "method": "POST"
         },
         {
           "path": "/cases/{caseId}/files/{fileId}/restore",
@@ -246,7 +246,7 @@
         },
         {
           "path": "/cases/{caseId}/files/{fileId}/contents",
-          "method": "GET"
+          "method": "POST"
         },
         {
           "path": "/cases/my-cases",

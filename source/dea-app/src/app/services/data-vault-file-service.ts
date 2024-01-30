@@ -16,6 +16,7 @@ import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseFileService from '../services/case-file-service';
 import * as DataVaultService from '../services/data-vault-service';
+import { getRequiredCase } from './case-service';
 
 export const listDataVaultFilesByFilePath = async (
   dataVaultId: string,
@@ -92,6 +93,8 @@ export const associateFilesListToCase = async (
 ) => {
   const filesTransferred = [];
   for (const caseUlid of caseUlids) {
+    const deaCase = await getRequiredCase(caseUlid, repositoryProvider);
+
     for (const fileUlid of fileUlids) {
       const retrievedDataVaultFile = await getRequiredDataVaultFile(
         dataVaultId,
@@ -101,7 +104,7 @@ export const associateFilesListToCase = async (
 
       const caseFileEntry: DeaCaseFile = {
         ulid: retrievedDataVaultFile.ulid,
-        caseUlid: caseUlid,
+        caseUlid: deaCase.ulid,
         fileName: retrievedDataVaultFile.fileName,
         contentType: retrievedDataVaultFile.contentType,
         createdBy: retrievedDataVaultFile.createdBy,

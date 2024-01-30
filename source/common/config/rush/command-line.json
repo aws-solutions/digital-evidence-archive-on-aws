@@ -363,13 +363,6 @@
       "shellCommand": "commitlint"
     },
     {
-      "name": "git-secrets-scan",
-      "commandKind": "global",
-      "summary": "Used to perform a git-secrets scan on the packages",
-      "safeForSimultaneousRushProcesses": true,
-      "shellCommand": "bash ../.github/workflows/scripts/git-secrets-scan.sh"
-    },
-    {
       "name": "prettier",
       "commandKind": "global",
       "summary": "Used by the pre-commit Git hook. This command invokes Prettier to reformat staged changes.",
@@ -439,12 +432,6 @@
       "longName": "--edit",
       "description": "read last commit message from the specified file or fallbacks to ./.git/COMMIT_EDITMSG",
       "associatedCommands": ["commitlint"]
-    },
-    {
-      "parameterKind": "flag",
-      "longName": "--ci",
-      "description": "Option to run make install in ci jobs",
-      "associatedCommands": ["git-secrets-scan"]
     },
     {
       "parameterKind": "flag",

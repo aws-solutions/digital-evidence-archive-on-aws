@@ -94,3 +94,9 @@ export const caseAssociationRequestSchema = Joi.object({
 export const removeCaseAssociationRequestSchema = Joi.object({
   caseUlids: Joi.array().items(joiUlid).required(),
 });
+
+export const downloadFileRequestBodySchema = Joi.object({
+  caseUlid: joiUlid,
+  ulid: joiUlid,
+  downloadReason: safeReason,
+});

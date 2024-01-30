@@ -241,6 +241,7 @@ const parseEventForExtendedAuditFields = (
     eventType !== AuditEventType.COMPLETE_CASE_FILE_UPLOAD &&
     eventType !== AuditEventType.CREATE_DATA_VAULT &&
     eventType !== AuditEventType.CREATE_CASE_ASSOCIATION &&
+    eventType !== AuditEventType.DOWNLOAD_CASE_FILE &&
     !isCaseInviteAPI
   ) {
     return;
@@ -295,6 +296,10 @@ const parseEventForExtendedAuditFields = (
     const associationBody: CaseAssociationDTO = JSON.parse(event.body);
     auditEvent.caseId = associationBody.caseUlids.join(', ');
     auditEvent.fileId = associationBody.fileUlids.join(', ');
+  }
+
+  if (eventType === AuditEventType.DOWNLOAD_CASE_FILE) {
+    auditEvent.downloadReason = body.downloadReason;
   }
 
   // include file hash if it was included in the body of the response

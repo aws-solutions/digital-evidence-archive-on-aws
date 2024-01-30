@@ -30,7 +30,7 @@ export interface CaseDetailsBodyProps {
 function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
   const router = useRouter();
   const userActions = useGetCaseActions(props.caseId);
-  let caseName: string;
+  const caseName = props.data.name;
 
   function getStatusIcon(status: CaseStatus) {
     if (status == CaseStatus.ACTIVE) {
@@ -47,7 +47,9 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
   if (!props.data) {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
+
   const data = props.data;
+
   return (
     <ContentLayout
       header={

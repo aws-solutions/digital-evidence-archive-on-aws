@@ -208,13 +208,27 @@ describe('Test case file APIs', () => {
       expect(s3ObjectHasLegalHold(file2Object)).toBeTruthy();
 
       // verify download-case-file works as expected
-      const downloadUrl = await getCaseFileDownloadUrl(DEA_API_URL, idToken, creds, caseUlid, fileUlid);
+      const downloadUrl = await getCaseFileDownloadUrl(
+        DEA_API_URL,
+        idToken,
+        creds,
+        caseUlid,
+        fileUlid,
+        'e2e test needs to download file'
+      );
       const downloadedContent = await downloadContentFromS3(downloadUrl, describedCaseFile.contentType);
       expect(downloadedContent).toEqual(FILE_CONTENT);
       expect(sha256(downloadedContent).toString(enc.Base64)).toEqual(describedCaseFile.sha256Hash);
 
       // verify the multipart-uploaded file
-      const downloadUrl2 = await getCaseFileDownloadUrl(DEA_API_URL, idToken, creds, caseUlid, fileUlid2);
+      const downloadUrl2 = await getCaseFileDownloadUrl(
+        DEA_API_URL,
+        idToken,
+        creds,
+        caseUlid,
+        fileUlid2,
+        'e2e test needs to download file'
+      );
       const downloadedContent2 = await downloadContentFromS3(downloadUrl2, describedCaseFile2.contentType);
       expect(downloadedContent2).toEqual(LARGE_FILE_CONTENT.toString());
       console.log(`checking hash ${new Date()}`);

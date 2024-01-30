@@ -153,10 +153,6 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     }
   }
 
-  function cancelRestore() {
-    setFilesToRestore([]);
-  }
-
   function tableActions() {
     if (props.caseStatus === CaseStatus.ACTIVE) {
       return (
@@ -171,8 +167,10 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
             message={fileOperationsLabels.restoreFilesModalDescription}
             confirmAction={restoreFiles}
             confirmButtonText={commonLabels.restoreButton}
-            cancelAction={cancelRestore}
-            cancelButtonText={fileOperationsLabels.cancelRestoringLabel}
+            cancelAction={() => {
+              setFilesToRestore([]);
+            }}
+            cancelButtonText={commonLabels.cancelButton}
           />
           <Button
             data-testid="upload-file-button"

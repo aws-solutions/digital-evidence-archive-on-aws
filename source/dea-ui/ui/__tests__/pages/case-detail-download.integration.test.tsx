@@ -4,7 +4,6 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import userEvent from '@testing-library/user-event';
 import { fail } from 'assert';
 import Axios from 'axios';
-import { auditLogLabels, commonLabels } from '../../src/common/labels';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
 afterEach(cleanup);
@@ -148,11 +147,38 @@ describe('case detail file download', () => {
       fileSelector.click();
     });
 
-    const downloadButton = await screen.findByText(commonLabels.downloadButton);
-    fireEvent.click(downloadButton);
-
-    // upload button will be disabled while in progress and then re-enabled when done
-    await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeDisabled());
+    /**
+     * Click the download button, then a modal with a second download button and input field should appear
+     * User enters some download reason, then click download, and the modal should close
+     */
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeEnabled());
+    await waitFor(() =>
+      expect(
+        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
+      ).toBe(false)
+    );
+    await wrapper(screen.getByTestId('download-file-button')).click();
+
+    await waitFor(() =>
+      expect(
+        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
+      ).toBe(true)
+    );
+    const wrappedReason = wrapper(document.body).findInput(
+      '[data-testid="download-file-reason-modal-input"]'
+    );
+    if (!wrappedReason) {
+      fail();
+    }
+    wrappedReason.setInputValue('Reason for download,;,.');
+
+    // download button will be disabled while in progress
+    wrapper(screen.getByTestId('download-file-reason-modal-primary-button')).click();
+    await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeDisabled());
+    await waitFor(() =>
+      expect(
+        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
+      ).toBe(false)
+    );
   });
 });
