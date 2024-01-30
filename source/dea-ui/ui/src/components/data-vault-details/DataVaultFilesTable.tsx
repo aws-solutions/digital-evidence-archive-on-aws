@@ -43,6 +43,7 @@ import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import ActionContainer from '../common-components/ActionContainer';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
+import { i18nStrings } from '../common-components/commonDefinitions';
 
 export const CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH = '/datavaults/{dataVaultId}/caseAssociationsPOST';
 
@@ -201,6 +202,9 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
             keepOpen={false}
             placeholder={dataVaultDetailLabels.associateToCaseMultiselectPlaceholder}
             filteringPlaceholder={dataVaultDetailLabels.associateToCaseMultiselectFilteringPlaceholder}
+            ariaLabel={dataVaultDetailLabels.associateToCaseMultiselectPlaceholder}
+            filteringAriaLabel={dataVaultDetailLabels.associateToCaseMultiselectFilteringPlaceholder}
+            filteringClearAriaLabel={i18nStrings.clearAriaLabel}
           />
         </Box>
       </Modal>
@@ -277,6 +281,8 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         {dataVaultDetailLabels.filesTableHeaderDescription}{' '}
         <Link
           external
+          externalIconAriaLabel="Implementation Guide, opens in a new tab"
+          ariaLabel="Implementation Guide, opens in a new tab"
           href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
         >
           {commonTableLabels.implementationGuideLabel}
@@ -338,7 +344,10 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
           )
         }
       >
-        {commonTableLabels.implementationGuideLabel} <Icon name="external" variant="inverted" />
+        {commonTableLabels.implementationGuideLabel}
+        <span role="img" aria-label="Implementation Guide, opens in a new tab">
+          <Icon name="external" variant="inverted" />
+        </span>
       </Button>
     </>
   );
@@ -355,6 +364,12 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         setSelectedFiles(detail.selectedItems);
       }}
       selectedItems={selectedFiles}
+      ariaLabels={{
+        selectionGroupLabel: 'File/folder selection:',
+        allItemsSelectionLabel: ({ selectedItems }) =>
+          `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
+        itemSelectionLabel: (_, item) => item.fileName,
+      }}
       columnDefinitions={[
         {
           id: 'fileName',
@@ -414,12 +429,15 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
           <TextFilter
             data-testid="files-text-filter"
             {...filterProps}
+            filteringClearAriaLabel={i18nStrings.clearAriaLabel}
+            filteringAriaLabel={filesListLabels.searchLabel}
             filteringPlaceholder={filesListLabels.searchLabel}
           />
           <Box padding="xxs">
             <Checkbox
               onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
               checked={displayFilesWithoutACase}
+              ariaLabel=""
             >
               {dataVaultDetailLabels.displayFilesCheckboxLabel}
             </Checkbox>

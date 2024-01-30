@@ -13,7 +13,7 @@ import {
 } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { addCaseOwner, useGetScopedCaseInfoById } from '../../api/cases';
-import { breadcrumbLabels, manageCaseAccessLabels } from '../../common/labels';
+import { breadcrumbLabels, manageCaseAccessLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import ManageAccessSearchUserForm from '../../components/case-details/ManageAccessSearchUserForm';
@@ -43,6 +43,8 @@ export default function ManageCasePage() {
 
   const href = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
+  const pageName = navigationLabels.manageCaseLabel;
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: breadcrumbLabels.homePageLabel,
@@ -53,8 +55,9 @@ export default function ManageCasePage() {
       href: '#',
     },
   ];
+
   return (
-    <BaseLayout breadcrumbs={breadcrumbs}>
+    <BaseLayout breadcrumbs={breadcrumbs} pageName={pageName}>
       <ContentLayout
         header={
           <SpaceBetween size="m">

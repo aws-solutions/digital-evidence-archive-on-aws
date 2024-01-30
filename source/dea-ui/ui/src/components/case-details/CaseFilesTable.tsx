@@ -34,9 +34,10 @@ import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadFiles, canRestoreFiles, canUploadFiles } from '../../helpers/userActionSupport';
-import DownloadButton from '../buttons/DownloadButton';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
+import { i18nStrings } from '../common-components/commonDefinitions';
 import { ConfirmModal } from '../common-components/ConfirmModal';
+import DownloadButton from '../common-components/DownloadButton';
 import { CaseDetailsTabsProps } from './CaseDetailsTabs';
 
 function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
@@ -266,6 +267,12 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         setSelectedFiles(detail.selectedItems);
       }}
       selectedItems={selectedFiles}
+      ariaLabels={{
+        selectionGroupLabel: 'File/folder selection:',
+        allItemsSelectionLabel: ({ selectedItems }) =>
+          `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
+        itemSelectionLabel: (_, item) => item.fileName,
+      }}
       isItemDisabled={(item) => item.status !== CaseFileStatus.ACTIVE || !item.isFile}
       columnDefinitions={[
         {
@@ -328,7 +335,9 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         <TextFilter
           data-testid="files-text-filter"
           {...filterProps}
+          filteringClearAriaLabel={i18nStrings.clearAriaLabel}
           filteringPlaceholder={filesListLabels.searchLabel}
+          filteringAriaLabel={filesListLabels.searchLabel}
         />
       }
       header={tableHeader}

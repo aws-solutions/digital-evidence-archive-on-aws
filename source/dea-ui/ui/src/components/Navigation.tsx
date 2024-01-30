@@ -84,6 +84,7 @@ export default function Navigation({ initialHref }: NavigationProps): JSX.Elemen
     {
       type: 'link',
       text: navigationLabels.documentationLabel,
+      externalIconAriaLabel: 'Implementation Guide, opens in a new tab',
       href: 'https://aws.amazon.com/solutions/implementations/digital-evidence-archive-on-aws',
       external: true,
     }

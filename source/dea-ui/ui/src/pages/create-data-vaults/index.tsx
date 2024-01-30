@@ -5,7 +5,7 @@
 
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
-import { breadcrumbLabels } from '../../common/labels';
+import { breadcrumbLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import CreateDataVaultBody from '../../components/create-data-vault/CreateDataVaultBody';
@@ -20,6 +20,8 @@ const Home: NextPage = () => {
 
   const baseUrl = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
+  const pageName = navigationLabels.createDataVaultLabel;
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: breadcrumbLabels.dataVaultsLabel,
@@ -32,7 +34,7 @@ const Home: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs}>
+    <BaseLayout breadcrumbs={breadcrumbs} pageName={pageName}>
       <Box margin={{ bottom: 'l' }}>
         <CreateDataVaultBody />
       </Box>

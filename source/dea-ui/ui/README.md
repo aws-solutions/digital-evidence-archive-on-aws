@@ -4,7 +4,7 @@
 
 | Statements                                                                                   | Branches                                                                                 | Functions                                                                                  | Lines                                                                              |
 | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| ![Statements](https://img.shields.io/badge/statements-91.85%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-81.02%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-90.19%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-92.48%25-brightgreen.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-91.99%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-81.23%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-90.31%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-92.61%25-brightgreen.svg?style=flat) |
 
 ## [Local Development](/docs/LOCALDEV.md)
 

@@ -6,7 +6,7 @@
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
-import { breadcrumbLabels, commonLabels } from '../../common/labels';
+import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import DataVaultFileDetailsBody from '../../components/data-vault-file-details/DataVaultFileDetailsBody';
@@ -34,6 +34,8 @@ function DataVaultFileDetailPage() {
 
   const baseUrl = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
+  const pageName = navigationLabels.dataVaultFileDetailLabel;
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: breadcrumbLabels.dataVaultsLabel,
@@ -50,7 +52,7 @@ function DataVaultFileDetailPage() {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-vaults">
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-vaults" pageName={pageName}>
       <DataVaultFileDetailsBody dataVaultId={dataVaultId} fileId={fileId} setFileName={setFileName} />
     </BaseLayout>
   );

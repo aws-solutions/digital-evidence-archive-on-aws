@@ -283,6 +283,8 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         {props.headerDescription}{' '}
         <Link
           external
+          externalIconAriaLabel="Implementation Guide, opens in a new tab"
+          ariaLabel="Implementation Guide, opens in a new tab"
           href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
         >
           {commonTableLabels.implementationGuideLabel}

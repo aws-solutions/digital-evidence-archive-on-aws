@@ -4,18 +4,23 @@
  */
 
 import { Box, StatusIndicator } from '@cloudscape-design/components';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { getToken } from '../../api/auth';
-import { commonLabels, systemUseNotificationText } from '../../common/labels';
+import { commonLabels, navigationLabels, systemUseNotificationText } from '../../common/labels';
 import { useAuthentication } from '../../context/AuthenticationContext';
 import { useNotifications } from '../../context/NotificationsContext';
+import { useSettings } from '../../context/SettingsContext';
 import { calculateExpirationDate, getCredentialsByToken } from '../../helpers/authService';
 
 export default function LoginPage() {
   const router = useRouter();
   const { signIn } = useAuthentication();
   const { pushNotification } = useNotifications();
+  const { settings } = useSettings();
+
+  const pageName = navigationLabels.loginLabel;
 
   useEffect(() => {
     const login = async () => {
@@ -59,17 +64,24 @@ export default function LoginPage() {
   }, [router, signIn, pushNotification]);
 
   return (
-    <Box textAlign="center" color="inherit" margin="xxl" padding="xxl">
-      <div>
-        <p>
-          <span aria-live="polite" aria-label={commonLabels.loginLabel}></span>{' '}
-          <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>
-        </p>
-      </div>
+    <>
+      <Head>
+        <title>
+          {settings.name} - {pageName}
+        </title>
+      </Head>
+      <Box textAlign="center" color="inherit" margin="xxl" padding="xxl">
+        <div>
+          <p>
+            <span aria-live="polite" aria-label={commonLabels.loginLabel}></span>{' '}
+            <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>
+          </p>
+        </div>
 
-      <div>
-        <h3>{commonLabels.loginLabel}</h3>
-      </div>
-    </Box>
+        <div>
+          <h3>{commonLabels.loginLabel}</h3>
+        </div>
+      </Box>
+    </>
   );
 }

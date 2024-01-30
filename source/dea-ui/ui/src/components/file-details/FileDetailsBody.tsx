@@ -27,7 +27,7 @@ import { auditLogLabels, caseStatusLabels, commonLabels, fileDetailLabels } from
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadCaseAudit } from '../../helpers/userActionSupport';
 import { AuditDownloadButton } from '../audit/audit-download-button';
-import DownloadButton from '../buttons/DownloadButton';
+import DownloadButton from '../common-components/DownloadButton';
 import DataVaultAssociationDetailsBody from './DataVaultAssociationDetailsBody';
 
 export interface FileDetailsBodyProps {

@@ -100,7 +100,7 @@ describe('Dashboard', () => {
 
   it('test for table property filter ii8nStrings', () => {
     expect(i18nStrings).toEqual({
-      filteringAriaLabel: 'your choice',
+      filteringAriaLabel: 'Search',
       dismissAriaLabel: 'Dismiss',
       filteringPlaceholder: 'Search',
       groupValuesText: 'Values',
@@ -126,6 +126,7 @@ describe('Dashboard', () => {
       tokenLimitShowMore: 'Show more',
       tokenLimitShowFewer: 'Show fewer',
       clearFiltersText: 'Clear filters',
+      clearAriaLabel: 'Clear field',
       removeTokenButtonAriaLabel: expect.any(Function),
       enteredTextLabel: expect.any(Function),
     });

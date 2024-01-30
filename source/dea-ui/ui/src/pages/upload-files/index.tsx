@@ -6,7 +6,7 @@
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { breadcrumbLabels, commonLabels } from '../../common/labels';
+import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import UploadFileBody from '../../components/upload-files/UploadFilesBody';
@@ -22,6 +22,8 @@ const Home: NextPage = () => {
   const { caseId, filePath, caseName } = router.query;
 
   const href_prefix = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
+
+  const pageName = navigationLabels.uploadFilesLabel;
 
   if (
     !caseId ||
@@ -50,7 +52,7 @@ const Home: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
+    <BaseLayout breadcrumbs={breadcrumbs} navigationHide pageName={pageName}>
       <Box margin={{ bottom: 'l' }}>
         <UploadFileBody caseId={caseId} filePath={filePath} />
       </Box>

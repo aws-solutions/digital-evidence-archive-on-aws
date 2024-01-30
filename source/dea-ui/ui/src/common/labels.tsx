@@ -336,6 +336,17 @@ export const navigationLabels = {
   systemAuditLogsLabel: 'Download system audit log',
   dataVaultsLabel: 'Data vaults',
   dataSyncTasksLabel: 'File transfer tasks',
+  caseDetailLabel: 'Case details',
+  createCaseLabel: 'Create case',
+  createDataVaultLabel: 'Create data vault',
+  dataVaultDetailLabel: 'Data vault details',
+  dataVaultFileDetailLabel: 'Data vault file details',
+  editCaseLabel: 'Edit case',
+  editDataVaultLabel: 'Edit data vault',
+  fileDetailLabel: 'File detail',
+  loginLabel: 'Login',
+  manageCaseLabel: 'Manage case',
+  uploadFilesLabel: 'Upload files',
 };
 
 export const fileUploadLabels = {

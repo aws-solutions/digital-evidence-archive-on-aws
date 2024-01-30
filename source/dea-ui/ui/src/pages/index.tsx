@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useAvailableEndpoints } from '../api/auth';
 import { useListMyCases } from '../api/cases';
-import { breadcrumbLabels, caseListLabels } from '../common/labels';
+import { breadcrumbLabels, caseListLabels, navigationLabels } from '../common/labels';
 import BaseLayout from '../components/BaseLayout';
 import CaseTable from '../components/case-list-table/CaseTable';
 
@@ -23,6 +23,8 @@ const ALL_CASES_ENDPOINT = '/cases/all-casesGET';
 const Home: NextPage = () => {
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();
+
+  const pageName = navigationLabels.myCasesLabel;
 
   useEffect(() => {
     const checkCaseUsage = async () => {
@@ -48,7 +50,7 @@ const Home: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/">
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/" pageName={pageName}>
       <CaseTable
         detailPage="case-detail"
         useCaseFetcher={useListMyCases}

@@ -6,7 +6,7 @@
 import { PropertyFilterProps } from '@cloudscape-design/components';
 
 export const i18nStrings: PropertyFilterProps.I18nStrings = {
-  filteringAriaLabel: 'your choice',
+  filteringAriaLabel: 'Search',
   dismissAriaLabel: 'Dismiss',
   filteringPlaceholder: 'Search',
   groupValuesText: 'Values',
@@ -32,6 +32,7 @@ export const i18nStrings: PropertyFilterProps.I18nStrings = {
   tokenLimitShowMore: 'Show more',
   tokenLimitShowFewer: 'Show fewer',
   clearFiltersText: 'Clear filters',
+  clearAriaLabel: 'Clear field',
   removeTokenButtonAriaLabel: () => 'Remove token',
   enteredTextLabel: (text: string) => `Use: "${text}"`,
 };

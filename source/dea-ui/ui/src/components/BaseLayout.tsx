@@ -18,6 +18,7 @@ export interface LayoutProps {
   children: React.ReactNode;
   breadcrumbs: BreadcrumbGroupProps.Item[];
   activeHref?: string;
+  pageName?: string;
 }
 
 export default function BaseLayout({
@@ -25,6 +26,7 @@ export default function BaseLayout({
   children,
   breadcrumbs,
   activeHref = '#/',
+  pageName,
 }: LayoutProps): JSX.Element {
   const [navigationOpen, setNavigationOpen] = React.useState(false);
   const { settings } = useSettings();
@@ -33,7 +35,9 @@ export default function BaseLayout({
   return (
     <>
       <Head>
-        <title>{settings.name}</title>
+        <title>
+          {settings.name} - {pageName}
+        </title>
         <meta name="description" content={settings.description} />
       </Head>
       <AppLayout

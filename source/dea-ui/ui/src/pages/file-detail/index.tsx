@@ -6,7 +6,7 @@
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import * as React from 'react';
-import { breadcrumbLabels, commonLabels } from '../../common/labels';
+import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import FileDetailsBody from '../../components/file-details/FileDetailsBody';
@@ -34,6 +34,8 @@ function FileDetailPage() {
 
   const href_prefix = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
+  const pageName = navigationLabels.fileDetailLabel;
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: breadcrumbLabels.homePageLabel,
@@ -50,7 +52,7 @@ function FileDetailPage() {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
+    <BaseLayout breadcrumbs={breadcrumbs} navigationHide pageName={pageName}>
       <FileDetailsBody caseId={caseId} fileId={fileId} setFileName={setFileName} />
     </BaseLayout>
   );

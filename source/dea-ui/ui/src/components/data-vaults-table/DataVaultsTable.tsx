@@ -117,6 +117,8 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
             {dataVaultListLabels.howItWorksDescription}{' '}
             <Link
               external
+              externalIconAriaLabel="Implementation Guide, opens in a new tab"
+              ariaLabel="Implementation Guide, opens in a new tab"
               href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
             >
               {commonTableLabels.implementationGuideLabel}
@@ -250,7 +252,11 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
           <PropertyFilter
             {...propertyFilterProps}
             countText={getFilterCounterText(filteredItemsCount)}
-            i18nStrings={{ ...i18nStrings, filteringPlaceholder: dataVaultListLabels.filteringPlaceholder }}
+            i18nStrings={{
+              ...i18nStrings,
+              filteringPlaceholder: dataVaultListLabels.filteringPlaceholder,
+              filteringAriaLabel: dataVaultListLabels.filteringPlaceholder,
+            }}
             filteringOptions={filteringOptions}
             expandToViewport={true}
           />

@@ -6,7 +6,7 @@
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { breadcrumbLabels, commonLabels } from '../../common/labels';
+import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import DataVaultDetailsBody from '../../components/data-vault-details/DataVaultDetailsBody';
@@ -27,6 +27,8 @@ function DataVaultDetailsPage() {
 
   const baseUrl = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
+  const pageName = navigationLabels.dataVaultDetailLabel;
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: breadcrumbLabels.dataVaultsLabel,
@@ -39,7 +41,7 @@ function DataVaultDetailsPage() {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-vaults">
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-vaults" pageName={pageName}>
       <DataVaultDetailsBody dataVaultId={dataVaultId} setdataVaultName={setdataVaultName} />
     </BaseLayout>
   );

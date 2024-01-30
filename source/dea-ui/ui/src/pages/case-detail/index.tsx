@@ -7,7 +7,7 @@ import { BreadcrumbGroupProps, StatusIndicator } from '@cloudscape-design/compon
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useGetCaseById } from '../../api/cases';
-import { breadcrumbLabels, commonLabels } from '../../common/labels';
+import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import CaseDetailsBody from '../../components/case-details/CaseDetailsBody';
@@ -30,6 +30,7 @@ function CaseDetailsPage() {
   }
 
   const href = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
+  const pageName = navigationLabels.caseDetailLabel;
 
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
@@ -43,7 +44,7 @@ function CaseDetailsPage() {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
+    <BaseLayout breadcrumbs={breadcrumbs} navigationHide pageName={pageName}>
       <CaseDetailsBody caseId={data.ulid} data={data} />
     </BaseLayout>
   );

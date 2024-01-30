@@ -5,7 +5,7 @@
 
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
-import { breadcrumbLabels } from '../../common/labels';
+import { breadcrumbLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import CreateCaseBody from '../../components/create-case/CreateCaseBody';
@@ -20,6 +20,8 @@ const Home: NextPage = () => {
 
   const href = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
+  const pageName = navigationLabels.createCaseLabel;
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: breadcrumbLabels.homePageLabel,
@@ -32,7 +34,7 @@ const Home: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
+    <BaseLayout breadcrumbs={breadcrumbs} navigationHide pageName={pageName}>
       <Box margin={{ bottom: 'l' }}>
         <CreateCaseBody />
       </Box>
