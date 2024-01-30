@@ -8,9 +8,8 @@
   },
   "pnpm": {
     "overrides": {
-      "minimatch@<3.0.2": ">=3.0.2",
-      "minimist@>=1.0.0 <1.2.6": ">=1.2.6",
-      "minimatch@<3.0.5": ">=3.0.5"
+      "minimist": ">=1.2.6",
+      "minimatch": ">=3.0.5"
     }
   }
 }

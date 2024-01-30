@@ -1,9 +1,8 @@
 lockfileVersion: 5.4
 
 overrides:
-  minimatch@<3.0.2: '>=3.0.2'
-  minimist@>=1.0.0 <1.2.6: '>=1.2.6'
-  minimatch@<3.0.5: '>=3.0.5'
+  minimist: '>=1.2.6'
+  minimatch: '>=3.0.5'
 
 specifiers:
   istanbul-badges-readme: 1.8.1
@@ -121,7 +120,7 @@ packages:
     engines: {node: '>=0.4.7'}
     hasBin: true
     dependencies:
-      minimist: 1.2.5
+      minimist: 1.2.8
       neo-async: 2.6.2
       source-map: 0.6.1
       wordwrap: 1.0.0
@@ -160,7 +159,7 @@ packages:
     dependencies:
       glob: 5.0.15
       istanbul: 0.3.22
-      minimist: 1.2.5
+      minimist: 1.2.8
       q: 1.5.1
     dev: false
 
@@ -210,15 +209,15 @@ packages:
       brace-expansion: 1.1.11
     dev: false
 
-  /minimist/1.2.5:
-    resolution: {integrity: sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==}
+  /minimist/1.2.8:
+    resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
     dev: false
 
   /mkdirp/0.5.5:
     resolution: {integrity: sha512-NKmAlESf6jMGym1++R0Ra7wvhV+wFW63FaSOFPwRahvea0gMUcGUhVeAg/0BC0wiv9ih5NYPB1Wn1UEI1/L+xQ==}
     hasBin: true
     dependencies:
-      minimist: 1.2.5
+      minimist: 1.2.8
     dev: false
 
   /neo-async/2.6.2:
