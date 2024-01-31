@@ -22,7 +22,13 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { DeaListResult } from '../../api/models/api-results';
-import { commonLabels, commonTableLabels, dataVaultListLabels, paginationLabels } from '../../common/labels';
+import {
+  accessiblityLabels,
+  commonLabels,
+  commonTableLabels,
+  dataVaultListLabels,
+  paginationLabels,
+} from '../../common/labels';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import ActionContainer from '../common-components/ActionContainer';
@@ -117,8 +123,8 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
             {dataVaultListLabels.howItWorksDescription}{' '}
             <Link
               external
-              externalIconAriaLabel="Implementation Guide, opens in a new tab"
-              ariaLabel="Implementation Guide, opens in a new tab"
+              externalIconAriaLabel={accessiblityLabels.implementationGuideLinkLabel}
+              ariaLabel={accessiblityLabels.implementationGuideLinkLabel}
               href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
             >
               {commonTableLabels.implementationGuideLabel}

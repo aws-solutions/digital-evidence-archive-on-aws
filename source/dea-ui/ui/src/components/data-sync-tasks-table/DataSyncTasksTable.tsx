@@ -33,6 +33,7 @@ import {
   paginationLabels,
   dataSyncTasksStatusLabels,
   commonLabels,
+  accessiblityLabels,
 } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString, formatDateTimeFromISOString } from '../../helpers/dateHelper';
@@ -283,8 +284,8 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         {props.headerDescription}{' '}
         <Link
           external
-          externalIconAriaLabel="Implementation Guide, opens in a new tab"
-          ariaLabel="Implementation Guide, opens in a new tab"
+          externalIconAriaLabel={accessiblityLabels.implementationGuideLinkLabel}
+          ariaLabel={accessiblityLabels.implementationGuideLinkLabel}
           href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
         >
           {commonTableLabels.implementationGuideLabel}

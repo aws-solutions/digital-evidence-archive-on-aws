@@ -6,6 +6,12 @@
 import { CaseAction, OWNER_ACTIONS } from '@aws/dea-app/lib/models/case-action';
 import { AppLayoutProps, SelectProps } from '@cloudscape-design/components';
 
+export const systemUseNotificationText =
+  'CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT according ' +
+  'to your local laws and regulations. This is needed to fulfill CJIS Policy 5.5.4. (Use Notification). ' +
+  'Refer to the Implementation Guide for instructions on how to customize this text, and review ' +
+  'CJIS Policy 5.5.4 for latest requirement details.';
+
 export const commonLabels = {
   cancelButton: 'Cancel',
   doneButton: 'Done',
@@ -367,12 +373,6 @@ export const fileDetailLabels = {
   fileDetailsLabel: 'File details',
 };
 
-export const systemUseNotificationText =
-  'CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT according ' +
-  'to your local laws and regulations. This is needed to fulfill CJIS Policy 5.5.4. (Use Notification). ' +
-  'Refer to the Implementation Guide for instructions on how to customize this text, and review ' +
-  'CJIS Policy 5.5.4 for latest requirement details.';
-
 export const dataVaultListLabels = {
   loading: 'Loading data vaults',
   noDataVaultsLabel: 'No data vaults to display',
@@ -471,4 +471,9 @@ export const dataSyncTasksStatusLabels = {
   running: 'Running',
   queued: 'Queued',
   unavailable: 'Unavailable',
+};
+
+export const accessiblityLabels = {
+  implementationGuideLinkLabel: 'Implementation Guide, opens in a new tab',
+  tableCheckboxSelectionGroupLabel: 'File/folder selection:',
 };

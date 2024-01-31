@@ -77,7 +77,6 @@ export default function LoginPage() {
             <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>
           </p>
         </div>
-
         <div>
           <h3>{commonLabels.loginLabel}</h3>
         </div>

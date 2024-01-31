@@ -32,6 +32,7 @@ import { useListAllCases } from '../../api/cases';
 import { createDataVaultFileAssociation, useListDataVaultFiles } from '../../api/data-vaults';
 import { ScopedDeaCaseDTO } from '../../api/models/case';
 import {
+  accessiblityLabels,
   commonLabels,
   commonTableLabels,
   dataVaultDetailLabels,
@@ -281,8 +282,8 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         {dataVaultDetailLabels.filesTableHeaderDescription}{' '}
         <Link
           external
-          externalIconAriaLabel="Implementation Guide, opens in a new tab"
-          ariaLabel="Implementation Guide, opens in a new tab"
+          externalIconAriaLabel={accessiblityLabels.implementationGuideLinkLabel}
+          ariaLabel={accessiblityLabels.implementationGuideLinkLabel}
           href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
         >
           {commonTableLabels.implementationGuideLabel}
@@ -345,7 +346,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         }
       >
         {commonTableLabels.implementationGuideLabel}
-        <span role="img" aria-label="Implementation Guide, opens in a new tab">
+        <span role="img" aria-label={accessiblityLabels.implementationGuideLinkLabel}>
           <Icon name="external" variant="inverted" />
         </span>
       </Button>
@@ -365,7 +366,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
       }}
       selectedItems={selectedFiles}
       ariaLabels={{
-        selectionGroupLabel: 'File/folder selection:',
+        selectionGroupLabel: accessiblityLabels.tableCheckboxSelectionGroupLabel,
         allItemsSelectionLabel: ({ selectedItems }) =>
           `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
         itemSelectionLabel: (_, item) => item.fileName,
@@ -437,7 +438,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
             <Checkbox
               onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
               checked={displayFilesWithoutACase}
-              ariaLabel=""
+              ariaLabel={dataVaultDetailLabels.displayFilesCheckboxLabel}
             >
               {dataVaultDetailLabels.displayFilesCheckboxLabel}
             </Checkbox>

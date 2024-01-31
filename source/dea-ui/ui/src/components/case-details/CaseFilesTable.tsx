@@ -23,6 +23,7 @@ import * as React from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { restoreFile, useGetCaseActions, useListCaseFiles } from '../../api/cases';
 import {
+  accessiblityLabels,
   caseStatusLabels,
   commonLabels,
   commonTableLabels,
@@ -268,7 +269,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       }}
       selectedItems={selectedFiles}
       ariaLabels={{
-        selectionGroupLabel: 'File/folder selection:',
+        selectionGroupLabel: accessiblityLabels.tableCheckboxSelectionGroupLabel,
         allItemsSelectionLabel: ({ selectedItems }) =>
           `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
         itemSelectionLabel: (_, item) => item.fileName,
