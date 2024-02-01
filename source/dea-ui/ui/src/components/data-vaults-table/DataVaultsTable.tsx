@@ -33,7 +33,7 @@ import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import ActionContainer from '../common-components/ActionContainer';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
-import { i18nStrings } from '../common-components/commonDefinitions';
+import { i18nStringsForPropertyFilter } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
 import { filteringOptions, filteringProperties, searchableColumns } from './dataVaultListDefinitions';
 import stepOneImage from './svgs/1_enable-security.svg';
@@ -259,7 +259,7 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
             {...propertyFilterProps}
             countText={getFilterCounterText(filteredItemsCount)}
             i18nStrings={{
-              ...i18nStrings,
+              ...i18nStringsForPropertyFilter,
               filteringPlaceholder: dataVaultListLabels.filteringPlaceholder,
               filteringAriaLabel: dataVaultListLabels.filteringPlaceholder,
             }}

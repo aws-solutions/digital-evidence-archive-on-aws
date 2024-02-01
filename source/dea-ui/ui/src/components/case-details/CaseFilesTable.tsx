@@ -36,7 +36,7 @@ import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadFiles, canRestoreFiles, canUploadFiles } from '../../helpers/userActionSupport';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
-import { i18nStrings } from '../common-components/commonDefinitions';
+import { i18nStringsForPropertyFilter } from '../common-components/commonDefinitions';
 import { ConfirmModal } from '../common-components/ConfirmModal';
 import DownloadButton from '../common-components/DownloadButton';
 import { CaseDetailsTabsProps } from './CaseDetailsTabs';
@@ -336,7 +336,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         <TextFilter
           data-testid="files-text-filter"
           {...filterProps}
-          filteringClearAriaLabel={i18nStrings.clearAriaLabel}
+          filteringClearAriaLabel={i18nStringsForPropertyFilter.clearAriaLabel}
           filteringPlaceholder={filesListLabels.searchLabel}
           filteringAriaLabel={filesListLabels.searchLabel}
         />

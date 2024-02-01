@@ -4,8 +4,16 @@
  */
 
 import { PropertyFilterProps } from '@cloudscape-design/components';
+import { FlashbarProps } from '@cloudscape-design/components';
 
-export const i18nStrings: PropertyFilterProps.I18nStrings = {
+export const i18nStringsForFlashbar: FlashbarProps.I18nStrings = {
+  errorIconAriaLabel: 'Error',
+  infoIconAriaLabel: 'Info',
+  successIconAriaLabel: 'Success',
+  warningIconAriaLabel: 'Warning',
+};
+
+export const i18nStringsForPropertyFilter: PropertyFilterProps.I18nStrings = {
   filteringAriaLabel: 'Search',
   dismissAriaLabel: 'Dismiss',
   filteringPlaceholder: 'Search',

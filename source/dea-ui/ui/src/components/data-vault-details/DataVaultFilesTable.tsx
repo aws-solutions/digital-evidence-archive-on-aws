@@ -44,7 +44,7 @@ import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import ActionContainer from '../common-components/ActionContainer';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
-import { i18nStrings } from '../common-components/commonDefinitions';
+import { i18nStringsForPropertyFilter } from '../common-components/commonDefinitions';
 
 export const CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH = '/datavaults/{dataVaultId}/caseAssociationsPOST';
 
@@ -205,7 +205,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
             filteringPlaceholder={dataVaultDetailLabels.associateToCaseMultiselectFilteringPlaceholder}
             ariaLabel={dataVaultDetailLabels.associateToCaseMultiselectPlaceholder}
             filteringAriaLabel={dataVaultDetailLabels.associateToCaseMultiselectFilteringPlaceholder}
-            filteringClearAriaLabel={i18nStrings.clearAriaLabel}
+            filteringClearAriaLabel={i18nStringsForPropertyFilter.clearAriaLabel}
           />
         </Box>
       </Modal>
@@ -430,7 +430,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
           <TextFilter
             data-testid="files-text-filter"
             {...filterProps}
-            filteringClearAriaLabel={i18nStrings.clearAriaLabel}
+            filteringClearAriaLabel={i18nStringsForPropertyFilter.clearAriaLabel}
             filteringAriaLabel={filesListLabels.searchLabel}
             filteringPlaceholder={filesListLabels.searchLabel}
           />

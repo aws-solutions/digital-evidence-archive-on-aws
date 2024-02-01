@@ -6,11 +6,13 @@
 import { Flashbar } from '@cloudscape-design/components';
 import { commonLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
+import { i18nStringsForFlashbar } from './commonDefinitions';
 
 export function Notifications() {
   const { notifications, dismissNotification } = useNotifications();
   return (
     <Flashbar
+      i18nStrings={i18nStringsForFlashbar}
       items={notifications.map((notification) => ({
         type: notification.type,
         dismissible: true,

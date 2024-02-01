@@ -40,7 +40,7 @@ import { formatDateFromISOString, formatDateTimeFromISOString } from '../../help
 import { DeaDataSyncTaskDTO, TaskStatus } from '../../models/DataSyncTask';
 import ActionContainer from '../common-components/ActionContainer';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
-import { i18nStrings } from '../common-components/commonDefinitions';
+import { i18nStringsForPropertyFilter } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
 import { filteringOptions, filteringProperties, searchableColumns } from './dataSyncTaskListDefinitions';
 
@@ -399,7 +399,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           <PropertyFilter
             {...propertyFilterProps}
             countText={getFilterCounterText(filteredItemsCount)}
-            i18nStrings={i18nStrings}
+            i18nStrings={i18nStringsForPropertyFilter}
             filteringOptions={filteringOptions}
             expandToViewport={true}
           />

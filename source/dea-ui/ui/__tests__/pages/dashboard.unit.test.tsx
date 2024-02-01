@@ -5,7 +5,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { fail } from 'assert';
 import axios from 'axios';
 import { breadcrumbLabels, caseListLabels, commonLabels } from '../../src/common/labels';
-import { i18nStrings } from '../../src/components/common-components/commonDefinitions';
+import { i18nStringsForPropertyFilter } from '../../src/components/common-components/commonDefinitions';
 import Home from '../../src/pages';
 
 jest.mock('axios');
@@ -99,7 +99,7 @@ describe('Dashboard', () => {
   });
 
   it('test for table property filter ii8nStrings', () => {
-    expect(i18nStrings).toEqual({
+    expect(i18nStringsForPropertyFilter).toEqual({
       filteringAriaLabel: 'Search',
       dismissAriaLabel: 'Dismiss',
       filteringPlaceholder: 'Search',
@@ -133,7 +133,7 @@ describe('Dashboard', () => {
   });
 
   it('removeTokenButtonAriaLabel returns the expected string', () => {
-    const result = i18nStrings.removeTokenButtonAriaLabel();
+    const result = i18nStringsForPropertyFilter.removeTokenButtonAriaLabel();
     expect(result).toEqual('Remove token');
   });
 
