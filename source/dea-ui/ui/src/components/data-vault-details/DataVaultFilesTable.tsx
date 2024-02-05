@@ -187,13 +187,13 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
             </SpaceBetween>
           </Box>
         }
-        header={
-          <TextContent>
-            <h2>{dataVaultDetailLabels.associateToCaseModalTitle}</h2>
-            <p>{dataVaultDetailLabels.associateToCaseDescription}</p>
-          </TextContent>
-        }
+        header={dataVaultDetailLabels.associateToCaseModalTitle}
       >
+        <TextContent>
+          <span>
+            <strong>{dataVaultDetailLabels.associateToCaseDescription}</strong>
+          </span>
+        </TextContent>
         <Box padding={{ bottom: 'xxl' }}>
           <Multiselect
             selectedOptions={selectedCases}

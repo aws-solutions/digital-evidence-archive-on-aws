@@ -305,6 +305,9 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
       trackBy="taskId"
       loading={isLoading}
       variant="full-page"
+      ariaLabels={{
+        tableLabel: dataSyncTaskListLabels.dataSyncTasksLabel,
+      }}
       items={items}
       loadingText={dataSyncTaskListLabels.loading}
       resizableColumns={true}

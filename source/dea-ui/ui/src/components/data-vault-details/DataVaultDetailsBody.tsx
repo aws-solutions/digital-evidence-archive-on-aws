@@ -104,11 +104,15 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
             <ColumnLayout columns={3} variant="text-grid">
               <SpaceBetween size="m">
                 <TextContent>
-                  <h5>{commonLabels.creationDate}</h5>
+                  <span>
+                    <strong>{commonLabels.creationDate}</strong>
+                  </span>
                   <p>{formatDateTimeFromISOString(data.created?.toString())}</p>
                 </TextContent>
                 <TextContent>
-                  <h5>{dataVaultDetailLabels.ulidLabel}</h5>
+                  <span>
+                    <strong>{dataVaultDetailLabels.ulidLabel}</strong>
+                  </span>
                   <span>
                     <Box margin={{ right: 'xxs' }} display="inline-block">
                       <Popover
@@ -136,17 +140,23 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
               </SpaceBetween>
               <TextContent>
                 <div>
-                  <h5>{commonLabels.description}</h5>
+                  <span>
+                    <strong>{commonLabels.description}</strong>
+                  </span>
                   <p>{data.description ?? '-'}</p>
                 </div>
               </TextContent>
               <SpaceBetween size="l">
                 <TextContent>
-                  <h5>{dataVaultDetailLabels.objectCounterLabel}</h5>
+                  <span>
+                    <strong>{dataVaultDetailLabels.objectCounterLabel}</strong>
+                  </span>
                   <p>{data.objectCount ?? '-'}</p>
                 </TextContent>
                 <TextContent>
-                  <h5>{dataVaultDetailLabels.totalSizeLabel}</h5>
+                  <span>
+                    <strong>{dataVaultDetailLabels.totalSizeLabel}</strong>
+                  </span>
                   <p>{formatFileSize(data.totalSizeBytes)}</p>
                 </TextContent>
               </SpaceBetween>

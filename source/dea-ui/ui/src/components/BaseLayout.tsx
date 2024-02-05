@@ -47,9 +47,7 @@ export default function BaseLayout({
         navigationOpen={navigationOpen}
         navigationHide={navigationHide}
         navigation={<Navigation initialHref={activeHref} />}
-        breadcrumbs={
-          <BreadcrumbGroup items={breadcrumbs} expandAriaLabel="Show path" ariaLabel="Breadcrumbs" />
-        }
+        breadcrumbs={<BreadcrumbGroup items={breadcrumbs} expandAriaLabel="Show path" ariaLabel="Files" />}
         content={children}
         onNavigationChange={({ detail }) => {
           // eslint-disable-next-line security/detect-non-literal-fs-filename
