@@ -55,7 +55,7 @@ export const createDataVaultExecution = async (
   taskId: string,
   dataVaultExecutionDTO: DataVaultExecutionDTO
 ): Promise<DeaDataVaultExecution> => {
-  return httpApiPost(`/datavaults/tasks/${taskId}/executions`, { ...dataVaultExecutionDTO });
+  return httpApiPost(`datavaults/tasks/${taskId}/executions`, { ...dataVaultExecutionDTO });
 };
 
 export const createDataVaultTask = async (
@@ -92,7 +92,7 @@ export const removeDataVaultFileCaseAssociation = async (
   fileId: string,
   removeCaseAssociationDTO: RemoveCaseAssociationDTO
 ): Promise<void> => {
-  await httpApiDelete(`/datavaults/${dataVaultId}/files/${fileId}/caseAssociations`, {
+  await httpApiDelete(`datavaults/${dataVaultId}/files/${fileId}/caseAssociations`, {
     ...removeCaseAssociationDTO,
   });
 };
