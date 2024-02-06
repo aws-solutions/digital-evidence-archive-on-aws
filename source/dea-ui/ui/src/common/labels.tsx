@@ -42,7 +42,7 @@ export const commonLabels = {
   howItworksLabel: 'How it works',
   closeButton: 'Close',
   disassociateButton: 'Disassociate',
-  copyLinkLabel: 'copy link',
+  copyLinkLabel: 'Copy AWS DataSync link',
   linkCopiedLabel: 'Link copied',
 };
 
@@ -138,8 +138,9 @@ export const fileOperationsLabels = {
   uploadStatusDescription: 'Uploaded files associated with this case.',
   uploadDetailsLabel: 'Upload details',
   downloadFileReasonLabel: 'Downloading files',
-  downloadFileReasonInputHeader: 'Reason for downloading folders and files', 
-  downloadFileReasonInputDetails: "Specify why you're downloading the case files. This will be displayed in the case audit log.",
+  downloadFileReasonInputHeader: 'Reason for downloading folders and files',
+  downloadFileReasonInputDetails:
+    "Specify why you're downloading the case files. This will be displayed in the case audit log.",
   selectFileDescription: 'Choose files',
   restoreFilesModalLabel: (count: number) =>
     `${count} of the files you tried to download was archived due to inactivity.`,
@@ -240,7 +241,8 @@ export const createCaseLabels = {
   createNewCaseDescription: 'All fields are required unless specified.',
   enterCaseDetailsLabel: 'Enter case details',
   caseNameLabel: 'Case name',
-  caseNameSubtext: 'Alphanumeric characters only. No special charcaters.',
+  caseNameSubtext:
+    'The name can have up to 100 characters. Characters not allowed < (greater than), > (less than), / (forward slash).',
   caseDescription: 'Description - ',
   caseNameDescription: ' Create a Unique name that you can easily reference.',
   caseDescriptionSubtext: 'Enter a brief description for your case.',
@@ -396,7 +398,8 @@ export const createDataVaultLabels = {
   enterDetailsLabelOnUpdate: 'Details',
   nameLabel: 'Name',
   nameDescription: 'Create a unique name that you can easily reference and find in data vaults.',
-  nameSubtext: 'The name can have up to 100 characters. Valid characters: A-Z, a-z, 0-9, and spaces.',
+  nameSubtext:
+    'The name can have up to 100 characters. Characters not allowed < (greater than), > (less than), / (forward slash).',
   descriptionLabel: 'Description - ',
   descriptionDescription: 'Enter a brief description for your data vault.',
   descriptionSubtext: 'Descriptions can have up to 250 characters.',
