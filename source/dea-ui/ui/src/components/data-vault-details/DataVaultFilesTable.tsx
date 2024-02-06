@@ -26,7 +26,7 @@ import {
   TextFilter,
 } from '@cloudscape-design/components';
 import { OptionDefinition } from '@cloudscape-design/components/internal/components/option/interfaces';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useListAllCases } from '../../api/cases';
 import { createDataVaultFileAssociation, useListDataVaultFiles } from '../../api/data-vaults';

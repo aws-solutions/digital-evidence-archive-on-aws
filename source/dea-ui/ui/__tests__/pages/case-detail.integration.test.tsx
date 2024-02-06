@@ -9,13 +9,27 @@ import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
 const push = jest.fn();
-const CASE_ID = '100';
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID },
-    push,
-  })),
-}));
+
+const CASE_ID = '01GV15BH762P6MW1QH8EQDGBFQ';
+const CASE_NAME = 'fakecase';
+interface Query {
+  caseId: string | object; 
+  caseName: string | object; 
+  fileId?: string | object; 
+  fileName?: string | object;
+}
+let query: Query = {
+  caseId: CASE_ID,
+  caseName: CASE_NAME,
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
+    push
+  })
+})); 
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
 global.window.URL.createObjectURL = jest.fn(() => {});
@@ -108,7 +122,7 @@ const mockFilesFood = {
 
 const mockedCaseDetail = {
   ulid: CASE_ID,
-  name: 'mocked case',
+  name: CASE_NAME,
   status: 'ACTIVE',
 };
 
@@ -284,7 +298,7 @@ describe('CaseDetailsPage', () => {
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
-    const mockedCaseInfo = await screen.findAllByText('mocked case');
+    const mockedCaseInfo = await screen.findAllByText(CASE_NAME);
     expect(mockedCaseInfo.length).toEqual(2); // Header and breadcrumb
     expect(mockedCaseInfo).toBeTruthy();
 
@@ -416,7 +430,7 @@ describe('CaseDetailsPage', () => {
     //assert notifications
     const notificationsWrapper = wrapper(page.container).findFlashbar()!;
     expect(notificationsWrapper).toBeTruthy();
-    waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(3));
+    waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(1));
     const item = notificationsWrapper.findItems()[0];
     await act(async () => {
       item.findDismissButton()!.click();
@@ -424,6 +438,11 @@ describe('CaseDetailsPage', () => {
   }, 30000);
 
   it('navigates to upload files page', async () => {
+    query = {
+      caseId: CASE_ID,
+      caseName: mockedCaseDetail.name
+    }
+
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
@@ -450,6 +469,13 @@ describe('CaseDetailsPage', () => {
   });
 
   it('navigates to file details page', async () => {
+    query = {
+      caseId: CASE_ID,
+      fileId: mockFilesRoot.files[1].ulid,
+      caseName: mockedCaseDetail.name,
+      fileName: mockFilesRoot.files[1].fileName,
+    }
+
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 

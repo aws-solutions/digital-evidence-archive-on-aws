@@ -7,28 +7,6 @@ import { commonLabels } from '../../src/common/labels';
 import { DELETE_DATA_VAULT_FILE_CASE_ASSOCIATION_PATH } from '../../src/components/data-vault-file-details/DataVaultFileDetailsBody';
 import DataVaultFileDetailPage from '../../src/pages/data-vault-file-detail';
 
-const mockedSetFileName = jest.fn();
-let query: { dataVaultId: any; fileId: any; setFileName: any; dataVaultName: any } = {
-  dataVaultId: '100',
-  fileId: '200',
-  setFileName: mockedSetFileName,
-  dataVaultName: 'mocked data vault',
-};
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query,
-    push: jest.fn(),
-  })),
-}));
-
-jest.mock('../../src/api/data-vaults', () => ({
-  useGetDataVaultFileDetailsById: jest.fn(),
-}));
-
-jest.mock('../../src/api/auth', () => ({
-  useAvailableEndpoints: jest.fn(),
-}));
-
 const dataVaultFile = {
   ulid: '01HD2SGVHV8DEAZQP5ZEEZ6F81',
   fileName: 'README.md',
@@ -47,6 +25,33 @@ const dataVaultFile = {
   cases: [{ ulid: '01HD2SGVHV8DEAZQP5ZEEZ6F81', name: 'Boodycam footage' }],
 };
 
+jest.mock('../../src/api/data-vaults', () => ({
+  useGetDataVaultFileDetailsById: jest.fn(),
+}));
+
+jest.mock('../../src/api/auth', () => ({
+  useAvailableEndpoints: jest.fn(),
+}));
+
+interface Query {
+  dataVaultId: string; 
+  fileId: string; 
+  dataVaultName: string;
+}
+let query: Query = {
+  dataVaultId: '100',
+  fileId: '200',
+  dataVaultName: 'mocked data vault',
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
+    push: jest.fn(),
+  })
+})); 
+
 describe('CaseDetailsPage', () => {
   it('renders a data vault file details page', async () => {
     useGetDataVaultFileDetailsById.mockImplementation(() => ({
@@ -57,6 +62,7 @@ describe('CaseDetailsPage', () => {
       data: [DELETE_DATA_VAULT_FILE_CASE_ASSOCIATION_PATH],
       isLoading: false,
     }));
+
     const page = render(<DataVaultFileDetailPage />);
     const pageWrapper = wrapper(page.baseElement);
     expect(page).toBeTruthy();
@@ -91,6 +97,7 @@ describe('CaseDetailsPage', () => {
       data: undefined,
       isLoading: false,
     }));
+
     render(<DataVaultFileDetailPage />);
     await screen.findByText(commonLabels.notFoundLabel);
   });
@@ -100,30 +107,31 @@ describe('CaseDetailsPage', () => {
       data: undefined,
       isLoading: true,
     }));
+
     render(<DataVaultFileDetailPage />);
     screen.findByText(commonLabels.loadingLabel);
   });
 
   it('renders a not found warning if no dataVaultId is provided', () => {
-    query = { dataVaultId: undefined, fileId: '200', setFileName: mockedSetFileName };
+    query = { dataVaultId: undefined, fileId: '200', dataVaultName: 'test' };
     render(<DataVaultFileDetailPage />);
     screen.findByText(commonLabels.notFoundLabel);
   });
 
   it('renders a not found warning if no fileId is provided', () => {
-    query = { dataVaultId: '100', fileId: undefined, setFileName: mockedSetFileName };
+    query = { dataVaultId: '100', fileId: undefined, dataVaultName: 'test' };
     render(<DataVaultFileDetailPage />);
     screen.findByText(commonLabels.notFoundLabel);
   });
 
   it('renders a not found warning if dataVaultId is not a string', () => {
-    query = { dataVaultId: {}, fileId: '200', setFileName: mockedSetFileName };
+    query = { dataVaultId: {}, fileId: '200', dataVaultName: 'test' };
     render(<DataVaultFileDetailPage />);
     screen.findByText(commonLabels.notFoundLabel);
   });
 
   it('renders a not found warning if fileId is not a string', () => {
-    query = { dataVaultId: '100', fileId: {}, setFileName: mockedSetFileName };
+    query = { dataVaultId: '100', fileId: {}, dataVaultName: 'test' };
     render(<DataVaultFileDetailPage />);
     screen.findByText(commonLabels.notFoundLabel);
   });

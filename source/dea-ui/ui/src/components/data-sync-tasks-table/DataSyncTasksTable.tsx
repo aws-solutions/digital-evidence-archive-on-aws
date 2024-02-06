@@ -22,7 +22,7 @@ import {
   Table,
   TextContent,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { createDataVaultExecution } from '../../api/data-vaults';

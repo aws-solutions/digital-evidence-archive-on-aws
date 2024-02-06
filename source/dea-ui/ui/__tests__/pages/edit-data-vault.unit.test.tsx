@@ -5,17 +5,24 @@ import { useGetDataVaultById } from '../../src/api/data-vaults';
 import { commonLabels } from '../../src/common/labels';
 import EditDataVaultPage from '../../src/pages/edit-data-vault';
 
+const DATA_VAULT_ID = '100';
 const DATA_VAULT_NAME = 'mocked data vault';
-let query: { dataVaultId: string | undefined; dataVaultName: string | undefined } = {
-  dataVaultId: '100',
+interface Query {
+  dataVaultId: string | object; 
+  dataVaultName: string | object; 
+}
+let query: Query = {
+  dataVaultId: DATA_VAULT_ID,
   dataVaultName: DATA_VAULT_NAME,
-};
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query,
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
     push: jest.fn(),
-  })),
-}));
+  })
+})); 
 
 jest.mock('../../src/api/data-vaults', () => ({
   useGetDataVaultById: jest.fn(),

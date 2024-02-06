@@ -19,7 +19,7 @@ import {
 } from '@cloudscape-design/components';
 import Box from '@cloudscape-design/components/box';
 import Modal from '@cloudscape-design/components/modal';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { updateCaseStatus } from '../../api/cases';

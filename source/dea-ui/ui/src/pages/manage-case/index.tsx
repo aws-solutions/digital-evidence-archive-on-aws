@@ -11,7 +11,7 @@ import {
   Header,
   SpaceBetween,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import { addCaseOwner, useGetScopedCaseInfoById } from '../../api/cases';
 import { breadcrumbLabels, manageCaseAccessLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
@@ -22,10 +22,9 @@ import { useSettings } from '../../context/SettingsContext';
 
 export default function ManageCasePage() {
   const { settings } = useSettings();
-  const router = useRouter();
-  const query = router.query;
+  const searchParams = useSearchParams();
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const caseId = query.caseId as string;
+  const caseId = searchParams.get('caseId') as string;
   const { pushNotification } = useNotifications();
   const { data } = useGetScopedCaseInfoById(caseId);
 

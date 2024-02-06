@@ -12,12 +12,22 @@ afterEach(cleanup);
 const push = jest.fn();
 const CASE_ID = '100';
 const CASE_NAME = 'mocked case';
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID, caseName: CASE_NAME },
+interface Query {
+  caseId: string | object; 
+  caseName: string | object;
+}
+let query: Query = {
+  caseId: CASE_ID,
+  caseName: CASE_NAME
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
     push,
-  })),
-}));
+  })
+})); 
 
 jest.mock('axios');
 const mockedAxios = Axios as jest.Mocked<typeof Axios>;

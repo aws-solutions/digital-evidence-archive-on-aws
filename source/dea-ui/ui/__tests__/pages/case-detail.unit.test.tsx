@@ -5,13 +5,21 @@ import { useGetCaseById, useGetCaseActions } from '../../src/api/cases';
 import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
-let query: { caseId: string | undefined } = { caseId: '100' };
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query,
+const CASE_ID = '100';
+interface Query {
+  caseId: string | object; 
+}
+let query: Query = {
+  caseId: CASE_ID,
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
     push: jest.fn(),
-  })),
-}));
+  })
+})); 
 
 jest.mock('../../src/api/cases', () => ({
   useGetCaseById: jest.fn(),

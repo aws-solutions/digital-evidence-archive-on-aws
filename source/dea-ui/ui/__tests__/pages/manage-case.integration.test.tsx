@@ -10,11 +10,20 @@ import ManageCasePage from '../../src/pages/manage-case';
 afterEach(cleanup);
 
 const CASE_ID = '100';
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID },
-  })),
-}));
+interface Query {
+  caseId: string | object; 
+}
+let query: Query = {
+  caseId: CASE_ID,
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
+    push: jest.fn(),
+  })
+})); 
 
 jest.mock('axios');
 const mockedAxios = Axios as jest.Mocked<typeof Axios>;

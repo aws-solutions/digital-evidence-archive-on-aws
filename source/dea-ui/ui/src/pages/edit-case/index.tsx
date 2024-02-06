@@ -5,7 +5,7 @@
 
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
@@ -17,9 +17,10 @@ export interface EditCasePageProps {
 }
 
 const EditCasePage: NextPage = () => {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const caseId = searchParams.get('caseId');
+  const caseName = searchParams.get('caseName');
   const { settings } = useSettings();
-  const { caseId, caseName } = router.query;
 
   const href_prefix = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 

@@ -5,7 +5,7 @@
 
 import { Icon, Spinner } from '@cloudscape-design/components';
 import SideNavigation, { SideNavigationProps } from '@cloudscape-design/components/side-navigation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useAvailableEndpoints } from '../api/auth';
 import { getSystemAuditCSV } from '../api/cases';

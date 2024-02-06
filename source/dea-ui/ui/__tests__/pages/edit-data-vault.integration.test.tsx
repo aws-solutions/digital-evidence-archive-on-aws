@@ -10,14 +10,25 @@ import EditDataVaultPage from '../../src/pages/edit-data-vault';
 afterEach(cleanup);
 
 const push = jest.fn();
+
 const DATA_VAULT_ID = '100';
 const DATA_VAULT_NAME = 'mocked data vault';
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: { dataVaultId: DATA_VAULT_ID, dataVaultName: DATA_VAULT_NAME },
+interface Query {
+  dataVaultId: string | object; 
+  dataVaultName: string | object;
+}
+let query: Query = {
+  dataVaultId: DATA_VAULT_ID,
+  dataVaultName: DATA_VAULT_NAME,
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
     push,
-  })),
-}));
+  })
+})); 
 
 jest.mock('axios');
 const mockedAxios = Axios as jest.Mocked<typeof Axios>;

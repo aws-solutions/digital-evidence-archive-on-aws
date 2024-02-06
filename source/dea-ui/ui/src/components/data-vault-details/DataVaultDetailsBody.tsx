@@ -15,7 +15,7 @@ import {
   StatusIndicator,
   TextContent,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useAvailableEndpoints } from '../../api/auth';
 import { getDataVaultAuditCSV, useGetDataVaultById } from '../../api/data-vaults';
 import { auditLogLabels, commonLabels, dataVaultDetailLabels } from '../../common/labels';

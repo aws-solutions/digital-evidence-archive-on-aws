@@ -12,7 +12,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 const push = jest.fn();
 
-jest.mock('next/router', () => ({
+jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     query: {},
     push,

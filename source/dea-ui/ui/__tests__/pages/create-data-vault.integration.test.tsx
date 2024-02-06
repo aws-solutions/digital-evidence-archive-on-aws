@@ -9,7 +9,7 @@ import Home from '../../src/pages/create-data-vaults';
 
 const push = jest.fn();
 
-jest.mock('next/router', () => ({
+jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     query: {},
     push,

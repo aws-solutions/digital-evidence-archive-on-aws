@@ -10,11 +10,11 @@ afterEach(cleanup);
 jest.mock('axios');
 const mockedAxios = Axios as jest.Mocked<typeof Axios>;
 
-const useRouter = jest.spyOn(require('next/router'), 'useRouter');
-const router = {
-  push: jest.fn(),
-};
-useRouter.mockReturnValue(router);
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+  })
+})); 
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
 global.window.URL.createObjectURL = jest.fn(() => {});

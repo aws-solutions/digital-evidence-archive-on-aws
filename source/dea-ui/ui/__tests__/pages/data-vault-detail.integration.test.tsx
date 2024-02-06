@@ -16,15 +16,24 @@ import { DeaCaseDTO } from '../../src/api/models/case';
 
 afterEach(cleanup);
 
-const push = jest.fn();
 const DATAVAULT_ID = '100';
 const FILE_ID = '200';
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: { dataVaultId: DATAVAULT_ID, fileId: FILE_ID },
-    push,
-  })),
-}));
+interface Query {
+  dataVaultId: string | object; 
+  fileId: string | object; 
+}
+let query: Query = {
+  dataVaultId: DATAVAULT_ID,
+  fileId: FILE_ID,
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
+    push: jest.fn(),
+  })
+})); 
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
 global.window.URL.createObjectURL = jest.fn(() => {});

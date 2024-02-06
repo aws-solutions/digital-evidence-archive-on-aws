@@ -5,13 +5,22 @@ import { useGetFileDetailsById, useGetCaseActions } from '../../src/api/cases';
 import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
 import FileDetailPage from '../../src/pages/file-detail';
 
-let query: { caseId: any; fileId: any } = { caseId: '100', fileId: '200' };
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query,
+interface Query {
+  caseId: string | object; 
+  fileId: string | object; 
+}
+let query: Query = {
+  caseId: '100',
+  fileId: '200',
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
     push: jest.fn(),
-  })),
-}));
+  })
+})); 
 
 jest.mock('../../src/api/cases', () => ({
   useGetFileDetailsById: jest.fn(),

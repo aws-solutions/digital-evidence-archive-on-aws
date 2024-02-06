@@ -12,15 +12,25 @@ import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
 import { CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH } from '../../src/components/data-vault-details/DataVaultFilesTable';
 import DataVaultDetailsPage from '../../src/pages/data-vault-detail';
 
-let query: { dataVaultId: string | undefined } = { dataVaultId: '100' };
+const DATA_VAULT_ID = '100';
 const DATA_VAULT_NAME = 'Some Data Vault';
 const push = jest.fn();
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query,
-    push,
-  })),
-}));
+interface Query {
+  dataVaultId: string | object; 
+  dataVaultName: string | object; 
+}
+let query: Query = {
+  dataVaultId: DATA_VAULT_ID,
+  dataVaultName: DATA_VAULT_NAME,
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
+    push
+  })
+})); 
 
 jest.mock('../../src/api/auth', () => ({
   useAvailableEndpoints: jest.fn(),

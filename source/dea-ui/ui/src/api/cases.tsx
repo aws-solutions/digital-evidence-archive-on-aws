@@ -50,7 +50,7 @@ export const useListMyCases = (): DeaListResult<DeaCaseDTO> => {
   return { data: cases, isLoading: !data && !error, mutate };
 };
 
-export const useGetCaseById = (id: string | string[] | undefined): DeaSingleResult<DeaCaseDTO | undefined> => {
+export const useGetCaseById = (id: string | string[] | undefined | null): DeaSingleResult<DeaCaseDTO | undefined> => {
   if (!id || typeof id !== 'string') {
     id = undefined;
   }

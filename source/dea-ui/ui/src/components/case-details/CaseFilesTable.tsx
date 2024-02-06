@@ -18,7 +18,7 @@ import {
   Table,
   TextFilter,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { restoreFile, useGetCaseActions, useListCaseFiles } from '../../api/cases';

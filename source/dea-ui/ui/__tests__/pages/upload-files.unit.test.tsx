@@ -13,14 +13,26 @@ import { S3Client, UploadPartCommand } from '@aws-sdk/client-s3';
 const push = jest.fn();
 const CASE_ID = '100';
 const CASE_NAME = 'mocked case';
+const FILE_PATH = '/huh';
 
-global.fetch = jest.fn(() => ({}));
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID, filePath: '/huh', caseName: CASE_NAME },
-    push,
-  })),
-}));
+interface Query {
+  caseId: string | object; 
+  caseName: string | object;
+  filePath: string | object;
+}
+let query: Query = {
+  caseId: CASE_ID,
+  caseName: CASE_NAME,
+  filePath: FILE_PATH,
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
+    push
+  })
+})); 
 
 jest.mock('axios');
 

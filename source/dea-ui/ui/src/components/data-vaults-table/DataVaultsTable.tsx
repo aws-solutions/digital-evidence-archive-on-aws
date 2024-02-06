@@ -18,7 +18,7 @@ import {
   TextContent,
 } from '@cloudscape-design/components';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { DeaListResult } from '../../api/models/api-results';

@@ -12,15 +12,28 @@ import FileDetailPage from '../../src/pages/file-detail';
 afterEach(cleanup);
 
 const push = jest.fn();
+
 const CASE_ID = '100';
 const FILE_ID = '200';
 const CASE_NAME = 'mocked case';
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID, fileId: FILE_ID, caseName: CASE_NAME },
-    push,
-  })),
-}));
+interface Query {
+  caseId: string | object; 
+  fileId: string | object;
+  caseName: string | object;
+}
+let query: Query = {
+  caseId: CASE_ID,
+  fileId: FILE_ID,
+  caseName: CASE_NAME
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
+    push: jest.fn(),
+  })
+})); 
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
 global.window.URL.createObjectURL = jest.fn(() => {});
@@ -117,7 +130,7 @@ describe('FileDetailPage', () => {
     expect(page).toBeTruthy();
 
     const mockedFileText = await screen.findAllByText(mockedFileInfo.fileName);
-    expect(mockedFileText.length).toEqual(2); // Header and breadcrumb
+    expect(mockedFileText.length).toEqual(1); // Header
     expect(mockedFileText).toBeTruthy();
   });
 

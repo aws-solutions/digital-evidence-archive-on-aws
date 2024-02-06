@@ -4,10 +4,14 @@ import axios from 'axios';
 import { commonLabels } from '../../src/common/labels';
 import LoginPage from '../../src/pages/login';
 
-jest.mock('next/router', () => ({
+jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
-    query: { code: 'abcdefg' },
     push: jest.fn(),
+  })),
+  useSearchParams: jest.fn().mockImplementation(() => ({
+    get: jest.fn().mockReturnValue({
+      code: null
+    })
   })),
 }));
 
@@ -49,11 +53,18 @@ describe('LoginPage', () => {
 
   it('Should not attempt to get creds if authCode not available', async () => {
     const mockRouter = {
-      query: {},
       push: jest.fn(),
     };
-    const useRouterSpy = jest.spyOn(require('next/router'), 'useRouter');
+    const useRouterSpy = jest.spyOn(require('next/navigation'), 'useRouter');
     useRouterSpy.mockReturnValue(mockRouter);
+
+    const mockSearchParams = {
+      get: jest.fn().mockReturnValue({
+        code: null
+      })
+    }
+    const useSearchParamsSpy = jest.spyOn(require('next/navigation'), 'useSearchParams');
+    useSearchParamsSpy.mockReturnValue(mockSearchParams);
 
     const page = render(<LoginPage />);
     expect(page).toBeTruthy();

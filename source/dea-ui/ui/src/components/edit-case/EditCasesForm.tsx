@@ -14,7 +14,7 @@ import {
   Textarea,
   TextContent,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { updateCase } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';

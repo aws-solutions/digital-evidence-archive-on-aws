@@ -5,7 +5,7 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useAvailableEndpoints } from '../api/auth';
 import { useListMyCases } from '../api/cases';
@@ -35,7 +35,7 @@ const Home: NextPage = () => {
         !availableEndpoints.data?.includes(MY_CASES_ENDPOINT) &&
         availableEndpoints.data?.includes(ALL_CASES_ENDPOINT)
       ) {
-        await router.push('/all-cases');
+        void router.push('/all-cases');
       }
     };
 

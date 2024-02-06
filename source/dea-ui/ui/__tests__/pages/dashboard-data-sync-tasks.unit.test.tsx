@@ -19,7 +19,7 @@ const someDataSynctTask = {
   created: '2023-10-05T01:08:50.890Z',
 };
 
-jest.mock('next/router', () => ({
+jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     query: {},
     push,

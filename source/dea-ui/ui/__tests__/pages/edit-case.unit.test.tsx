@@ -5,17 +5,24 @@ import { useGetCaseById } from '../../src/api/cases';
 import { commonLabels } from '../../src/common/labels';
 import EditCasePage from '../../src/pages/edit-case';
 
+const CASE_ID = '100';
 const CASE_NAME = 'mocked case';
-let query: { caseId: string | undefined; caseName: string | undefined } = {
-  caseId: '100',
+interface Query {
+  caseId: string | object; 
+  caseName: string | object;
+}
+let query: Query = {
+  caseId: CASE_ID,
   caseName: CASE_NAME,
-};
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query,
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
     push: jest.fn(),
-  })),
-}));
+  })
+})); 
 
 jest.mock('../../src/api/cases', () => ({
   useGetCaseById: jest.fn(),

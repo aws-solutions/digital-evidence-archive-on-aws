@@ -17,7 +17,7 @@ const someDataVault = {
   created: '2023-09-29T01:00:51.916Z',
 };
 
-jest.mock('next/router', () => ({
+jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     query: {},
     push,

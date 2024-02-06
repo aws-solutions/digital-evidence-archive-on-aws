@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import axios from 'axios';
 import { AuthenticationProvider, useAuthentication } from '../../src/context/AuthenticationContext';
+import * as NextNav from 'next/navigation';
 
 const username = 'my-username';
 const jwtPayload = {
@@ -25,7 +26,16 @@ jest.mock('../../src/api/auth', () => ({
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-const useRouter = jest.spyOn(require('next/router'), 'useRouter');
+// https://stackoverflow.com/questions/67872622/jest-spyon-not-working-on-index-file-cannot-redefine-property
+jest.mock('next/navigation', () => {
+  return {
+    __esModule: true,
+    ...jest.requireActual('next/navigation'),
+  }
+});
+
+const useRouter = jest.spyOn(NextNav, 'useRouter');
+const usePathname = jest.spyOn(NextNav, 'usePathname');
 
 describe('AuthenticationProvider', () => {
   beforeEach(() => {
@@ -35,9 +45,12 @@ describe('AuthenticationProvider', () => {
   it('redirects to login page if not logged in', async () => {
     const router = {
       push: jest.fn(),
-      pathname: '/dummy-path',
     };
+    const pathname = '/dummy-path';
+
     useRouter.mockReturnValue(router);
+    usePathname.mockReturnValue(pathname);
+
     // Clear local storage to simulate not being logged in
     sessionStorage.clear();
     render(<AuthenticationProvider children={false} />);
@@ -58,9 +71,12 @@ describe('AuthenticationProvider', () => {
 
     const router = {
       push: jest.fn(),
-      pathname: '/dummy-path',
     };
+    const pathname = '/dummy-path';
+
     useRouter.mockReturnValue(router);
+    usePathname.mockReturnValue(pathname);
+
     render(<AuthenticationProvider children={false} />);
 
     // Expect this not to be called
@@ -73,9 +89,12 @@ describe('AuthenticationProvider', () => {
   it('returns if its /login or /auth-test', async () => {
     const router = {
       push: jest.fn(),
-      pathname: '/login',
     };
+    const pathname = '/login';
+
     useRouter.mockReturnValue(router);
+    usePathname.mockReturnValue(pathname);
+
     // Clear local storage to simulate not being logged in
     sessionStorage.clear();
     render(<AuthenticationProvider children={false} />);

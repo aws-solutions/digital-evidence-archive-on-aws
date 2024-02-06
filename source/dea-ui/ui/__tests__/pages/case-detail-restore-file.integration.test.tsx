@@ -6,14 +6,21 @@ import Axios from 'axios';
 import { commonLabels } from '../../src/common/labels';
 import CaseDetailsPage from '../../src/pages/case-detail';
 
-const push = jest.fn();
 const CASE_ID = '100';
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID },
-    push,
-  })),
-}));
+interface Query {
+  caseId: string | object; 
+}
+let query: Query = {
+  caseId: CASE_ID,
+}
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
+  useRouter: () => ({
+    push: jest.fn(),
+  })
+})); 
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
 global.window.URL.createObjectURL = jest.fn(() => {});

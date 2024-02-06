@@ -14,14 +14,30 @@ import DataVaultFileDetailPage from '../../src/pages/data-vault-file-detail';
 afterEach(cleanup);
 
 const push = jest.fn();
-const DATAVAULT_ID = '100';
-const FILE_ID = '200';
+const DATAVAULT_ID = 'DATAVAULT_ULID';
+const FILE_ID = 'FILE_ULID';
 const DATA_VAULT_NAME = 'mocked data vault';
-jest.mock('next/router', () => ({
+const FILE_NAME = 'FILE_NAME';
+
+interface Query {
+  dataVaultId: string; 
+  fileId: string; 
+  dataVaultName: string;
+  fileName?: string | object;
+}
+let query: Query = {
+  dataVaultId: DATAVAULT_ID,
+  fileId: FILE_ID,
+  dataVaultName: DATA_VAULT_NAME,
+  fileName: FILE_NAME,
+}
+jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
-    query: { dataVaultId: DATAVAULT_ID, fileId: FILE_ID, dataVaultName: DATA_VAULT_NAME },
     push,
   })),
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+  }),
 }));
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
@@ -32,10 +48,10 @@ jest.mock('axios');
 const mockedAxios = Axios as jest.Mocked<typeof Axios>;
 
 const mockedFileInfo: DeaDataVaultFile = {
-  ulid: 'FILE_ULID',
-  dataVaultUlid: 'DATAVAULT_ULID',
+  ulid: FILE_ID,
+  dataVaultUlid: DATAVAULT_ID,
   filePath: 'FILE_PATH',
-  fileName: 'FILE_NAME',
+  fileName: FILE_NAME,
   isFile: true,
   fileS3Key: 'FILE_S3_KEY',
   fileSizeBytes: 1,
@@ -96,7 +112,7 @@ describe('DatavaultFileDetailPage', () => {
     expect(page).toBeTruthy();
 
     const mockedFileText = await screen.findAllByText(mockedFileInfo.fileName);
-    expect(mockedFileText.length).toEqual(2); // Header and breadcrumb
+    expect(mockedFileText.length).toEqual(1); // Header
     expect(mockedFileText).toBeTruthy();
   });
 

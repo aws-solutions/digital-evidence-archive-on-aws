@@ -4,7 +4,7 @@
  */
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
@@ -17,10 +17,10 @@ export interface IHomeProps {
 }
 
 function DataVaultDetailsPage() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const dataVaultId = searchParams.get('dataVaultId');
   const { settings } = useSettings();
   const [dataVaultName, setdataVaultName] = useState('');
-  const { dataVaultId } = router.query;
   if (!dataVaultId || typeof dataVaultId !== 'string') {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }

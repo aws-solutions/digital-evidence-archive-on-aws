@@ -4,7 +4,7 @@
  */
 
 import { BreadcrumbGroupProps, StatusIndicator } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { useGetCaseById } from '../../api/cases';
 import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
@@ -18,9 +18,9 @@ export interface IHomeProps {
 }
 
 function CaseDetailsPage() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const caseId = searchParams.get('caseId');
   const { settings } = useSettings();
-  const { caseId } = router.query;
   const { data, isLoading } = useGetCaseById(caseId);
   if (isLoading) {
     return <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>;

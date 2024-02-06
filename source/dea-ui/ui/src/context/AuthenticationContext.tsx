@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import pkceChallenge from 'pkce-challenge';
 import { Context, createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { getLoginUrl } from '../api/auth';
@@ -31,11 +31,12 @@ const AuthenticationContext: Context<IAuthenticationProps> = createContext<IAuth
 export function AuthenticationProvider({ children }: { children: React.ReactNode }): JSX.Element {
   const [user, setUser] = useState<IUser>(unknownUser);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const checkLogin = async () => {
       // Check if the current route is `/login`
-      if (router.pathname === '/login' || router.pathname === '/auth-test') {
+      if (pathname === '/login' || pathname === '/auth-test') {
         return;
       }
 
@@ -53,7 +54,7 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
     };
     checkLogin().catch((e) => console.log(e));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  }, [pathname]);
 
   const signIn = async (): Promise<void> => {
     try {
@@ -64,7 +65,7 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
       const challenge = pkceChallenge(128);
       sessionStorage.setItem('pkceVerifier', challenge.code_verifier);
       loginUrl += `&code_challenge=${challenge.code_challenge}&code_challenge_method=S256`;
-      await router.push(loginUrl);
+      void router.push(loginUrl);
     } catch (e) {
       console.log(e);
     }
@@ -72,7 +73,7 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
   const signOut = async (): Promise<void> => {
     const logoutUrl = await signOutProcess();
     setUser(unknownUser);
-    await router.push(logoutUrl);
+    void router.push(logoutUrl);
   };
 
   const isLoggedIn = user !== unknownUser;

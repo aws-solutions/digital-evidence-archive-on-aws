@@ -4,7 +4,7 @@
  */
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
@@ -17,10 +17,14 @@ export interface IHomeProps {
 }
 
 function DataVaultFileDetailPage() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const dataVaultId  = searchParams.get('dataVaultId');
+  const fileId  = searchParams.get('fileId');
+  const dataVaultName  = searchParams.get('dataVaultName');
+
   const [fileName, setFileName] = React.useState('');
   const { settings } = useSettings();
-  const { dataVaultId, fileId, dataVaultName } = router.query;
+
   if (
     !dataVaultId ||
     typeof dataVaultId !== 'string' ||

@@ -4,7 +4,7 @@
  */
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
@@ -17,10 +17,14 @@ export interface IHomeProps {
 }
 
 function FileDetailPage() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const caseId = searchParams.get('caseId');
+  const fileId = searchParams.get('fileId');
+  const caseName = searchParams.get('caseName');
+
   const [fileName, setFileName] = React.useState('');
   const { settings } = useSettings();
-  const { caseId, fileId, caseName } = router.query;
+
   if (
     !caseId ||
     typeof caseId !== 'string' ||

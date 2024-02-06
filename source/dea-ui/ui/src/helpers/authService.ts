@@ -103,6 +103,6 @@ export const getCredentialsByToken = async (idToken: string, identityPoolId: str
 
 export const calculateExpirationDate = (expirationTime: number) => {
   // expiration time is in seconds, we add time by milliseconds so multiply by 1000
-  const timestamp = new Date().getTime() + expirationTime * 1000;
+  const timestamp = Date.now() + expirationTime * 1000;
   return timestamp;
 };

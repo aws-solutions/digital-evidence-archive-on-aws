@@ -5,7 +5,7 @@
 
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
@@ -17,9 +17,11 @@ export interface IHomeProps {
 }
 
 const Home: NextPage = () => {
-  const router = useRouter();
+  const searchParams = useSearchParams();
   const { settings } = useSettings();
-  const { caseId, filePath, caseName } = router.query;
+  const caseId = searchParams.get('caseId');
+  const filePath = searchParams.get('filePath');
+  const caseName = searchParams.get('caseName');
 
   const href_prefix = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
