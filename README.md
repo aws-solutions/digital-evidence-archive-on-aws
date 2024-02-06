@@ -244,6 +244,22 @@ export AWS_ACCT_NUMBER=<your 12 digit AWS account number>
 
 Validate your configuration file and address any errors that appear
 
+**Optional**
+
+If you plan on using the Mass Data Ingestion feature to import data into DEA, then set your admin role ARN to the account that DEA will be hosted on
+
+# Windows
+
+```sh
+$Env:ADMIN_ROLE_ARN=<'Your DEA AWS Account admin role arn. Example: arn:aws:iam::<aws account number>:role/Admin'>
+```
+
+# Linux
+
+```sh
+export ADMIN_ROLE_ARN=<'Your DEA AWS Account admin role arn. Example: arn:aws:iam::<aws account number>:role/Admin'>
+```
+
 ```sh
 rushx validate:config
 ```
@@ -576,6 +592,17 @@ Go to the branch in GitHub, and Press Submit Pull Request
 Assign a reviewer, and ensure Checks Pass
 
 ---
+
+# Step 7 : Data Vaults - Mass Data Ingestion
+
+To enable mass data ingestion, ensure you have deployed DEA with the ADMIN_ROLE_ARN. This will enable your account to see the DEA Datasets S3 bucket in DataSync to create a location for task transfers.
+
+For more details on performing a DataSync transfer into DEA, please refer to the [implementation guide.](https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html)
+
+**Mass Case Creation**
+To create cases based on folders imported to a Data Vault via DataSync. We have provided an example script that you may use as reference. [case association script](/source/dea-app/src/app/migrations/examples/mass-case-association.ts)
+
+The example script is using cognito for authentication. If your DEA is configured with IDP, modifications will be required to allow the script to authenticate with DEA.
 
 # Additional Documentation
 
