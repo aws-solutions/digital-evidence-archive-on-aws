@@ -334,6 +334,7 @@ export const breadcrumbLabels = {
   createNewDataVaultLabel: 'Create data vault',
   dataSyncTasks: 'Tasks',
   editDataVaultLabel: 'Edit data vault',
+  breadcrumbLabel: 'Breadcrumbs',
 };
 
 export const navigationLabels = {

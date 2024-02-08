@@ -19,6 +19,7 @@ export function Notifications() {
         dismissLabel: commonLabels.dismissMessageLabel,
         content: notification.content,
         id: notification.id,
+        ariaRole: notification.type === 'error' ? 'alert' : 'status',
         onDismiss: () => dismissNotification(notification.id),
       }))}
       stackItems

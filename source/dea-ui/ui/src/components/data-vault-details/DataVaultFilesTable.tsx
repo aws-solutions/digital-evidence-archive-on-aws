@@ -33,6 +33,7 @@ import { createDataVaultFileAssociation, useListDataVaultFiles } from '../../api
 import { ScopedDeaCaseDTO } from '../../api/models/case';
 import {
   accessiblityLabels,
+  breadcrumbLabels,
   commonLabels,
   commonTableLabels,
   dataVaultDetailLabels,
@@ -326,7 +327,8 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
             }));
           }}
           items={breadcrumbItems}
-          ariaLabel="Breadcrumbs"
+          ariaLabel={breadcrumbLabels.breadcrumbLabel}
+          expandAriaLabel={breadcrumbLabels.breadcrumbLabel}
         />
       </SpaceBetween>
     </Header>
