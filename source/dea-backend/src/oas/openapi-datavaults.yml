@@ -1,8 +1,10 @@
 openapi: '3.0.0'
 info:
   version: 1.1.1
-  title: DEA Mass Data Ingestion API
+  title: DEA Data Vault API
 paths:
+  # root resource path entity must match the file name or the documentation will not get attached to the right API Gateweay resource
+  # (e.g. openapi-auth.yml must only contain '/auth' and all child APIs)
   /datavaults:
     post:
       tags:
@@ -88,24 +90,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DataVault'
-  /datasync/tasks:
-    get:
-      summary: Get datasync tasks on AWS account
-      description: returns list of datasync tasks
-      responses:
-        200:
-          description: Success Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  DataSyncTasks:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/DataSyncTasks'
-                  next:
-                    type: string
   /datavaults/{dataVaultId}/files:
     get:
       summary: list files by directory
@@ -287,8 +271,147 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DataVaultExecution'
+  /datavaults/{dataVaultId}/audit:
+    post:
+      summary: Generates audit log for Data vault ID
+      operationId: requestDataVaultAudit
+      tags:
+        - audit
+      parameters:
+        - name: dataVaultId
+          in: path
+          description: Data vault ID to generate audit log for
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditPayload'
+      responses:
+        '200':
+          description: Audit Query ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditId:
+                    type: string
+  /datavaults/{dataVaultId}/files/{fileId}/audit:
+    post:
+      summary: Generates audit log for file ID at Data vault ID
+      operationId: requestDataVaultFileAudit
+      tags:
+        - audit
+      parameters:
+        - name: dataVaultId
+          in: path
+          description: Data vault ID to generate audit log for
+          required: true
+          schema:
+            type: string
+        - name: fileId
+          in: path
+          description: File ID to generate audit log for
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditPayload'
+      responses:
+        '200':
+          description: Audit Query ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditId:
+                    type: string
+  /datavaults/{dataVaultId}/audit/{auditId}/csv:
+    get:
+      summary: Returns audit log for a specific Data vault ID and audit log ID
+      operationId: getDataVaultAudit
+      tags:
+        - audit
+      parameters:
+        - name: dataVaultId
+          in: path
+          description: Data Vault ID to return audit log entries for
+          required: true
+          schema:
+            type: string
+        - name: auditId
+          in: path
+          description: Audit log ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit log CSV result and status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditResult'
+  /datavaults/{dataVaultId}/files/{fileId}/audit/{auditId}/csv:
+    get:
+      summary: Returns audit log for a specific file by file ID, Data vault ID, and audit log ID
+      operationId: getDataVaultFileAudit
+      tags:
+        - audit
+      parameters:
+        - name: dataVaultId
+          in: path
+          description: DataVault ID to return audit log entries for
+          required: true
+          schema:
+            type: string
+        - name: fileId
+          in: path
+          description: File ID to return audit log entries for
+          required: true
+          schema:
+            type: string
+        - name: auditId
+          in: path
+          description: Audit log ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit log CSV result and status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditResult'
+
 components:
   schemas:
+    AuditResult:
+      type: object
+      properties:
+        status:
+          type: string
+          items:
+            $ref: '#/components/schemas/QueryStatus'
+        downloadUrl:
+          type: string
+    AuditPayload:
+      type: object
+      properties:
+        from:
+          type: number
+        to:
+          type: number
     DataVault:
       type: object
       properties:
@@ -310,29 +433,6 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/DataVault'
-    DataSyncTask:
-      type: object
-      properties:
-        taskArn:
-          type: string
-        taskId:
-          type: string
-        sourceLocationArn:
-          type: string
-        destinationLocationArn:
-          type: string
-        dataVaultUlid:
-          type: string
-        status:
-          type: string
-        created:
-          type: string
-        lastExecutionCompleted:
-          type: string
-    DataSyncTasks:
-      type: array
-      items:
-        $ref: '#/components/schemas/DataSyncTask'
     DataVaultUpdateRequest:
       type: object
       properties:
@@ -449,3 +549,6 @@ components:
           type: string
         created:
           type: string
+    QueryStatus:
+      type: string
+      enum: [Cancelled, Complete, Failed, Running, Scheduled, Timeout, Unknown]

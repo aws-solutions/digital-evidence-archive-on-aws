@@ -1,0 +1,112 @@
+openapi: '3.0.0'
+info:
+  version: 1.1.1
+  title: DEA User API
+paths:
+  # root resource path entity must match the file name or the documentation will not get attached to the right API Gateweay resource
+  # (e.g. openapi-auth.yml must only contain '/auth' and all child APIs)
+  /users:
+    get:
+      summary: Get all users
+      tags:
+        - cases
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: next
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Users'
+                  next:
+                    type: string
+  /users/{userId}/audit:
+    post:
+      summary: Generates audit log for User
+      operationId: requestUserAudit
+      tags:
+        - elevated
+      parameters:
+        - name: userId
+          in: path
+          description: User ID to generate audit log for
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditPayload'
+      responses:
+        '200':
+          description: Audit Query ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditId:
+                    type: string
+  /users/{userId}/audit/{auditId}/csv:
+    get:
+      summary: Returns audit log for a User
+      operationId: getUserAudit
+      tags:
+        - elevated
+      parameters:
+        - name: userId
+          in: path
+          description: User ID to return audit log entries for
+          required: true
+          schema:
+            type: string
+        - name: auditId
+          in: path
+          description: Audit log ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit log CSV result and status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditResult'
+
+components:
+  schemas:
+    AuditResult:
+      type: object
+      properties:
+        status:
+          type: string
+          items:
+            $ref: '#/components/schemas/QueryStatus'
+        downloadUrl:
+          type: string
+    AuditPayload:
+      type: object
+      properties:
+        from:
+          type: number
+        to:
+          type: number
+    QueryStatus:
+      type: string
+      enum: [Cancelled, Complete, Failed, Running, Scheduled, Timeout, Unknown]

@@ -3,6 +3,53 @@ info:
   version: 1.1.1
   title: DEA Case API
 paths:
+  # root resource path entity must match the file name or the documentation will not get attached to the right API Gateweay resource
+  # (e.g. openapi-auth.yml must only contain '/auth' and all child APIs)
+  /cases:
+    post:
+      tags:
+        - cases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCaseObject'
+      responses:
+        200:
+          description: Case successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Case'
+  /cases/my-cases:
+    get:
+      summary: get user's cases
+      description: returns array of cases on which the user has membership
+      tags:
+        - cases
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: next
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cases:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cases'
+                  next:
+                    type: string
   /cases/all-cases:
     get:
       summary: Get all cases
@@ -93,22 +140,6 @@ paths:
               schema:
                 type: object
                 $ref: '#/components/schemas/ScopedCase'
-  /cases:
-    post:
-      tags:
-        - cases
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateCaseObject'
-      responses:
-        200:
-          description: Case successfully created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Case'
   /cases/{caseId}/userMemberships:
     post:
       summary: Add a user as a collaborator to a case
@@ -218,36 +249,6 @@ paths:
       responses:
         204:
           description: No content, delete successful
-  /cases/my-cases:
-    get:
-      summary: get user's cases
-      description: returns array of cases on which the user has membership
-      tags:
-        - cases
-      parameters:
-        - in: query
-          name: limit
-          schema:
-            type: integer
-        - in: query
-          name: next
-          schema:
-            type: string
-      responses:
-        200:
-          description: Success Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  cases:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Cases'
-                  next:
-                    type: string
-
   /cases/{caseId}/actions:
     get:
       summary: Return case actions available to user by case Id
@@ -535,52 +536,129 @@ paths:
       responses:
         204:
           description: No content, restore successful
-  /users:
-    get:
-      summary: Get all users
+  /cases/{caseId}/files/{fileId}/audit:
+    post:
+      summary: Generates audit log for a file
+      operationId: requestCaseFileAudit
       tags:
-        - cases
+        - audit
       parameters:
-        - in: query
-          name: limit
+        - name: caseId
+          in: path
+          description: Case ID to generate audit log for
+          required: true
           schema:
-            type: integer
-        - in: query
-          name: next
+            type: string
+        - name: fileId
+          in: path
+          description: File ID to generate audit log for
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditPayload'
+      responses:
+        '200':
+          description: Audit Query ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditId:
+                    type: string
+  /cases/{caseId}/files/{fileId}/audit/{auditId}/csv:
+    get:
+      summary: Returns audit log for a specific file by file ID, case ID, and audit log ID
+      operationId: getCaseFileAudit
+      tags:
+        - audit
+      parameters:
+        - name: caseId
+          in: path
+          description: Case ID to return audit log entries for
+          required: true
+          schema:
+            type: string
+        - name: fileId
+          in: path
+          description: File ID to return audit log entries for
+          required: true
+          schema:
+            type: string
+        - name: auditId
+          in: path
+          description: Audit log ID
+          required: true
           schema:
             type: string
       responses:
-        200:
-          description: Success Response
+        '200':
+          description: Audit log CSV result and status
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  users:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Users'
-                  next:
-                    type: string
-
-  /availableEndpoints:
-    get:
-      summary: Get available endpoints for a user
+                $ref: '#/components/schemas/AuditResult'
+  /cases/{caseId}/audit:
+    post:
+      summary: Generates audit log for case ID
+      operationId: requestCaseAudit
       tags:
-        - cases
+        - audit
+      parameters:
+        - name: caseId
+          in: path
+          description: Case ID for which to generate audit log
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditPayload'
       responses:
-        200:
-          description: Success Response
+        '200':
+          description: Audit Query ID
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  actions:
-                    type: array
-                    items:
-                      type: string
+                  auditId:
+                    type: string
+  /cases/{caseId}/audit/{auditId}/csv:
+    get:
+      summary: Returns audit log by audit log ID and case ID
+      operationId: getCaseAudit
+      tags:
+        - audit
+      parameters:
+        - name: caseId
+          in: path
+          description: Case ID to return audit log for
+          required: true
+          schema:
+            type: string
+        - name: auditId
+          in: path
+          description: Audit log ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit log CSV result and status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditResult'
+
 components:
   schemas:
     Case:
@@ -709,6 +787,26 @@ components:
           items:
             type: string
             format: uri
+    AuditResult:
+      type: object
+      properties:
+        status:
+          type: string
+          items:
+            $ref: '#/components/schemas/QueryStatus'
+        downloadUrl:
+          type: string
+    AuditPayload:
+      type: object
+      properties:
+        from:
+          type: number
+        to:
+          type: number
+    QueryStatus:
+      type: string
+      enum: [Cancelled, Complete, Failed, Running, Scheduled, Timeout, Unknown]
+
     User:
       type: object
       properties:
