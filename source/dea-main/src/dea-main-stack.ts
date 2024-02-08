@@ -75,6 +75,10 @@ export class DeaMainStack extends cdk.Stack {
     const kmsKey = this.createEncryptionKey();
 
     const uiAccessLogPrefix = 'dea-ui-access-log';
+    const queryResultAccessLogsPrefix = 'dea-query-result-access-log';
+    const auditBucketAccessLogsPrefix = 'dea-audit-bucket-access-log';
+    const trailBucketAccessLogsPrefix = 'dea-trail-bucket-access-log';
+
     // DEA Backend Construct
     const backendConstruct = new DeaBackendConstruct(this, 'DeaBackendStack', protectedDeaResourceArns, {
       kmsKey: kmsKey,
@@ -90,6 +94,10 @@ export class DeaMainStack extends cdk.Stack {
       deaDatasetsBucket: backendConstruct.datasetsBucket,
       deaTableArn: backendConstruct.deaTable.tableArn,
       opsDashboard: dashboard,
+      accessLogsBucket: backendConstruct.accessLogsBucket,
+      queryResultAccessLogsPrefix: queryResultAccessLogsPrefix,
+      auditBucketAccessLogsPrefix: auditBucketAccessLogsPrefix,
+      trailBucketAccessLogsPrefix: trailBucketAccessLogsPrefix,
     });
 
     const deaEventHandlers = new DeaEventHandlers(this, 'DeaEventHandlers', {
