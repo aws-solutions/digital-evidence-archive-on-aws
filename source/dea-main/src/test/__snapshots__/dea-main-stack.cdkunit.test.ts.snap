@@ -9994,10 +9994,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "PolicyDocument": Object {
           "Statement": Array [
             Object {
-              "Action": Array [
-                "ssm:GetParameters",
-                "ssm:GetParameter",
-              ],
+              "Action": "ssm:GetParameters",
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::Join": Array [
@@ -10251,24 +10248,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             Object {
-              "Action": "logs:StartQuery",
-              "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "deaAuditLogs7B75D3F1",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::GetAtt": Array [
-                    "deaTrailLogs0A0531F5",
-                    "Arn",
-                  ],
-                },
-              ],
-            },
-            Object {
               "Action": Array [
                 "logs:GetQueryResults",
                 "s3:CreateJob",
@@ -10302,7 +10281,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
-                "kms:Encrypt",
                 "kms:Decrypt",
                 "kms:GenerateDataKey",
               ],
@@ -10315,10 +10293,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": Array [
-                "ssm:GetParameters",
-                "ssm:GetParameter",
-              ],
+              "Action": "ssm:GetParameters",
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::Join": Array [
@@ -10377,40 +10352,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
-                "athena:GetQueryResults",
                 "athena:GetQueryExecution",
                 "athena:StartQueryExecution",
               ],
               "Effect": "Allow",
               "Resource": "*",
-            },
-            Object {
-              "Action": "athena:GetWorkgroup",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":athena:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":workgroup/",
-                    Object {
-                      "Ref": "AWS::StackName",
-                    },
-                    "-dea-athena-workgroup",
-                  ],
-                ],
-              },
             },
             Object {
               "Action": Array [
@@ -10657,10 +10603,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": Array [
-                "ssm:GetParameters",
-                "ssm:GetParameter",
-              ],
+              "Action": "ssm:GetParameters",
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::Join": Array [
@@ -11027,10 +10970,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": Array [
-                "ssm:GetParameters",
-                "ssm:GetParameter",
-              ],
+              "Action": "ssm:GetParameters",
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::Join": Array [

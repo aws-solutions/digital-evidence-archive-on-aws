@@ -238,7 +238,7 @@ export class DeaRestApiConstruct extends Construct {
             metricsEnabled: true,
           },
           // /availableEndpoints reads data from the Parameter Store.
-          // Default throughput: 40 (Shared by the following API actions: GetParameter, GetParameters, GetParametersByPath)
+          // Default throughput: 40 (Shared by the following API actions: GetParameters)
           // 30TPS is the safe value to avoid getting 502's Http errors for this endpoint.
           '/availableEndpoints/GET': {
             throttlingBurstLimit: 30,
@@ -675,13 +675,6 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['logs:StartQuery'],
-        resources: [auditLogArn, trailLogArn],
-      })
-    );
-
-    role.addToPolicy(
-      new PolicyStatement({
         actions: ['logs:GetQueryResults', 's3:CreateJob'],
         resources: ['*'],
       })
@@ -700,14 +693,14 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
         resources: [kmsKeyArn],
       })
     );
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
+        actions: ['ssm:GetParameters'],
         resources: [
           `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
         ],
@@ -735,17 +728,8 @@ export class DeaRestApiConstruct extends Construct {
     // Athena Query permissions
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['athena:GetQueryResults', 'athena:GetQueryExecution', 'athena:StartQueryExecution'],
+        actions: ['athena:GetQueryExecution', 'athena:StartQueryExecution'],
         resources: ['*'],
-      })
-    );
-
-    role.addToPolicy(
-      new PolicyStatement({
-        actions: ['athena:GetWorkgroup'],
-        resources: [
-          `arn:${Aws.PARTITION}:athena:${Aws.REGION}:${Aws.ACCOUNT_ID}:workgroup/${athenaConfig.athenaWorkGroupName}`,
-        ],
       })
     );
 
@@ -863,7 +847,7 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
+        actions: ['ssm:GetParameters'],
         resources: [
           `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${
             ServiceConstants.PARAM_PREFIX
@@ -922,7 +906,7 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
+        actions: ['ssm:GetParameters'],
         resources: [
           `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${
             ServiceConstants.PARAM_PREFIX
@@ -968,7 +952,7 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
+        actions: ['ssm:GetParameters'],
         resources: [
           `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
         ],
