@@ -39,6 +39,9 @@ interface AuditCloudwatchToAthenaProps extends StackProps {
   readonly auditLogGroup: LogGroup;
   readonly trailLogGroup: LogGroup;
   readonly opsDashboard?: DeaOperationalDashboard;
+  readonly accessLogsBucket?: Bucket;
+  readonly queryResultAccessLogsPrefix?: string;
+  readonly auditBucketAccessLogsPrefix?: string;
 }
 
 export class AuditCloudwatchToAthenaInfra extends Construct {
@@ -64,6 +67,8 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       versioned: true,
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
       objectLockEnabled: true,
+      serverAccessLogsBucket: props.accessLogsBucket,
+      serverAccessLogsPrefix: props.auditBucketAccessLogsPrefix,
     });
 
     createCfnOutput(this, 'auditBucketName', {
@@ -92,6 +97,8 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
         },
       ],
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+      serverAccessLogsBucket: props.accessLogsBucket,
+      serverAccessLogsPrefix: props.queryResultAccessLogsPrefix,
     });
     this.athenaOutputBucket = queryResultBucket;
 

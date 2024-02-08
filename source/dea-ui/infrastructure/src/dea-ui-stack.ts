@@ -45,6 +45,7 @@ export class DeaUiConstruct extends Construct {
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+      versioned: true,
     });
 
     createCfnOutput(this, 'artifactBucketName', {
