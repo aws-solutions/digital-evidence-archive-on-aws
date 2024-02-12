@@ -39,7 +39,10 @@ export class DeaUiConstruct extends Construct {
     const bucket = new Bucket(this, 'artifact-bucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       websiteIndexDocument: 'index.html',
-      encryption: BucketEncryption.S3_MANAGED,
+      bucketKeyEnabled: true,
+      encryption: BucketEncryption.KMS,
+      encryptionKey: props.kmsKey,
+      enforceSSL: true,
       serverAccessLogsBucket: props.accessLogsBucket,
       serverAccessLogsPrefix: props.accessLogPrefix,
       removalPolicy: deaConfig.retainPolicy(),
