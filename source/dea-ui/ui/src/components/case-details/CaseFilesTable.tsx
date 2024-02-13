@@ -199,21 +199,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   // table header Element
   const tableHeader = (
     <Header variant="h2" description={filesListLabels.filterDescription} actions={tableActions()}>
-      <SpaceBetween direction="horizontal" size="xs">
-        <span>{`${filesListLabels.caseFilesLabel} (${props.fileCount})`}</span>
-        <BreadcrumbGroup
-          data-testid="file-breadcrumb"
-          onClick={(event) => {
-            event.preventDefault();
-            setFilesTableState((state) => ({
-              ...state,
-              basePath: event.detail.href.replaceAll('#', '/'),
-            }));
-          }}
-          items={breadcrumbItems}
-          ariaLabel="Breadcrumbs"
-        />
-      </SpaceBetween>
+      <span>{`${filesListLabels.caseFilesLabel} (${props.fileCount})`}</span>
     </Header>
   );
 
@@ -333,13 +319,27 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       resizableColumns
       empty={emptyConfig}
       filter={
-        <TextFilter
-          data-testid="files-text-filter"
-          {...filterProps}
-          filteringClearAriaLabel={i18nStringsForPropertyFilter.clearAriaLabel}
-          filteringPlaceholder={filesListLabels.searchLabel}
-          filteringAriaLabel={filesListLabels.searchLabel}
-        />
+        <SpaceBetween direction="vertical" size="m">
+          <TextFilter
+            data-testid="files-text-filter"
+            {...filterProps}
+            filteringClearAriaLabel={i18nStringsForPropertyFilter.clearAriaLabel}
+            filteringPlaceholder={filesListLabels.searchLabel}
+            filteringAriaLabel={filesListLabels.searchLabel}
+          />
+          <BreadcrumbGroup
+            data-testid="file-breadcrumb"
+            onClick={(event) => {
+              event.preventDefault();
+              setFilesTableState((state) => ({
+                ...state,
+                basePath: event.detail.href.replaceAll('#', '/'),
+              }));
+            }}
+            items={breadcrumbItems}
+            ariaLabel="Breadcrumbs"
+          />
+        </SpaceBetween>
       }
       header={tableHeader}
       pagination={tablePagination}
