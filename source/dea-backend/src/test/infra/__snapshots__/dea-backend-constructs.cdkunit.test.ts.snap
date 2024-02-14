@@ -7661,8 +7661,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     },
     "DeaRestApiConstructPOSTCreateDataVaultExecution645B3913": Object {
       "DependsOn": Array [
-        "DeaRestApiConstructdeabaselambdaroleDefaultPolicy8449FBB9",
-        "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+        "DeaRestApiConstructdeaexecutionlambdaroleDefaultPolicy7AA86BBF",
+        "DeaRestApiConstructdeaexecutionlambdarole5E07FC29",
       ],
       "Metadata": Object {
         "cfn_nag": Object {
@@ -7759,7 +7759,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "MemorySize": 2048,
         "Role": Object {
           "Fn::GetAtt": Array [
-            "DeaRestApiConstructdeabaselambdarole9EA2B06B",
+            "DeaRestApiConstructdeaexecutionlambdarole5E07FC29",
             "Arn",
           ],
         },
@@ -19448,6 +19448,197 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::IAM::Policy",
     },
+    "DeaRestApiConstructdeaexecutionlambdarole5E07FC29": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DeaRestApiConstructdeaexecutionlambdaroleDefaultPolicy7AA86BBF": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "dynamodb:GetItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaBackendConstructDeaTableB48721A0",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructDeaTableB48721A0",
+                          "Arn",
+                        ],
+                      },
+                      "/index/GSI1",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructDeaTableB48721A0",
+                          "Arn",
+                        ],
+                      },
+                      "/index/GSI2",
+                    ],
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "DeaBackendConstructDeaTableB48721A0",
+                          "Arn",
+                        ],
+                      },
+                      "/index/GSI3",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": Array [
+                "datasync:StartTaskExecution",
+                "datasync:UpdateTask",
+                "datasync:UpdateTaskExecution",
+                "datasync:ListTasks",
+                "datasync:DescribeTask",
+                "datasync:DescribeLocationS3",
+                "datasync:ListTaskExecutions",
+                "datasync:DescribeTaskExecution",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":datasync:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "ssm:GetParameters",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/dea/1/[STAGE-REMOVED]*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "s3:PutObject",
+                "s3:GetObject",
+              ],
+              "Condition": Object {
+                "StringEquals": Object {
+                  "s3:ResourceAccount": Array [
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                  ],
+                },
+              },
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DeaRestApiConstructdeaexecutionlambdaroleDefaultPolicy7AA86BBF",
+        "Roles": Array [
+          Object {
+            "Ref": "DeaRestApiConstructdeaexecutionlambdarole5E07FC29",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "DeaRestApiConstructdeainitiateuploadrole47691B14": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
@@ -20356,6 +20547,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   Object {
                     "Fn::GetAtt": Array [
                       "DeaRestApiConstructdeacompleteuploadrole5698638D",
+                      "Arn",
+                    ],
+                  },
+                  Object {
+                    "Fn::GetAtt": Array [
+                      "DeaRestApiConstructdeaexecutionlambdarole5E07FC29",
                       "Arn",
                     ],
                   },

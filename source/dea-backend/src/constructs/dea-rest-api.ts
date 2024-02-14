@@ -152,6 +152,9 @@ export class DeaRestApiConstruct extends Construct {
       props.athenaConfig.athenaOutputBucket.bucketArn
     );
 
+    const datasyncExecutionRole = this.createExecutionRole(props.deaTableArn);
+    this.roleMap.set(DeaApiRoleName.DATASYNC_EXECUTION_ROLE, datasyncExecutionRole);
+
     props.lambdaEnv['UPLOAD_ROLE'] = this.endUserUploadRole.roleArn;
     props.lambdaEnv['DATASETS_ROLE'] = this.datasetsRole.roleArn;
     props.lambdaEnv['AUDIT_DOWNLOAD_ROLE_ARN'] = this.auditDownloadRole.roleArn;
@@ -983,6 +986,74 @@ export class DeaRestApiConstruct extends Construct {
         ],
       })
     );
+
+    return role;
+  }
+
+  private createExecutionRole(tableArn: string): Role {
+    const STAGE = deaConfig.stage();
+
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+
+    const role = new Role(this, 'dea-execution-lambda-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [basicExecutionPolicy],
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          'dynamodb:GetItem',
+          'dynamodb:DeleteItem',
+          'dynamodb:BatchGetItem',
+          'dynamodb:BatchWriteItem',
+          'dynamodb:PutItem',
+          'dynamodb:Query',
+          'dynamodb:UpdateItem',
+        ],
+        resources: [tableArn, `${tableArn}/index/GSI1`, `${tableArn}/index/GSI2`, `${tableArn}/index/GSI3`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          'datasync:StartTaskExecution',
+          'datasync:UpdateTask',
+          'datasync:UpdateTaskExecution',
+          'datasync:ListTasks',
+          'datasync:DescribeTask',
+          'datasync:DescribeLocationS3',
+          'datasync:ListTaskExecutions',
+          'datasync:DescribeTaskExecution',
+        ],
+        resources: [`arn:${Aws.PARTITION}:datasync:${Aws.REGION}:${Aws.ACCOUNT_ID}:*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['ssm:GetParameters'],
+        resources: [
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
+        ],
+      })
+    );
+
+    // add list of optional external source type policies for execution to work
+    const listBucketResources = [...deaConfig.dataSyncSourcePermissions()];
+    if (listBucketResources.length > 0) {
+      role.addToPolicy(
+        new PolicyStatement({
+          actions: listBucketResources,
+          resources: ['*'],
+        })
+      );
+    }
+
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
 
     return role;
   }
