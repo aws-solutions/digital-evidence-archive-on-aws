@@ -4,6 +4,7 @@
  */
 
 import { DownloadDTO } from '@aws/dea-app/lib/models/case-file';
+import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
 import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { Button, SpaceBetween, Spinner } from '@cloudscape-design/components';
 import { useState } from 'react';
@@ -114,7 +115,11 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
         disabled={
           props.selectedFiles.length === 0 ||
           props.downloadInProgress ||
-          !(canDownloadFiles(userActions?.data?.actions) && props.caseStatus === CaseStatus.ACTIVE)
+          !canDownloadFiles(userActions?.data?.actions) ||
+          // inactive case can't download evidence, even if evidence are all active/not destroyed
+          props.caseStatus !== CaseStatus.ACTIVE ||
+          // individual evidence download page needs special disallow case since the page requires a selectedFiles entry to load metadata
+          (props.selectedFiles.length === 1 && props.selectedFiles[0].status !== CaseFileStatus.ACTIVE) 
         }
       >
         {commonLabels.downloadButton}
