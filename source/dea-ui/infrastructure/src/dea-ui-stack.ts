@@ -39,16 +39,12 @@ export class DeaUiConstruct extends Construct {
     const bucket = new Bucket(this, 'artifact-bucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       websiteIndexDocument: 'index.html',
-      bucketKeyEnabled: true,
-      encryption: BucketEncryption.KMS,
-      encryptionKey: props.kmsKey,
-      enforceSSL: true,
+      encryption: BucketEncryption.S3_MANAGED,
       serverAccessLogsBucket: props.accessLogsBucket,
       serverAccessLogsPrefix: props.accessLogPrefix,
       removalPolicy: deaConfig.retainPolicy(),
       autoDeleteObjects: deaConfig.isTestStack(),
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
-      versioned: false,
     });
 
     createCfnOutput(this, 'artifactBucketName', {
