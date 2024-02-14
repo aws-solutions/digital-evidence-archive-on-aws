@@ -175,5 +175,15 @@ export const restrictResourcePolicies = (
         sid: 'accesslogs-bucket-policy',
       })
     );
+    resources.accessLogsBucket.addToResourcePolicy(
+      new PolicyStatement({
+        effect: Effect.DENY,
+        actions: ['s3:Delete*'],
+        resources: [`${resources.accessLogsBucket.bucketArn}/*`, resources.accessLogsBucket.bucketArn],
+        principals: [new AnyPrincipal()],
+        conditions: notApplicationCondition,
+        sid: 'accesslogs-deny-delete-policy',
+      })
+    );
   }
 };
