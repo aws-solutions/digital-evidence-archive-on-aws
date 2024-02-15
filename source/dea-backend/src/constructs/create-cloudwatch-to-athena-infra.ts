@@ -14,7 +14,7 @@ import { IKey, Key } from 'aws-cdk-lib/aws-kms';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { FilterPattern, LogGroup, QueryDefinition, SubscriptionFilter } from 'aws-cdk-lib/aws-logs';
+import { FilterPattern, LogGroup, SubscriptionFilter } from 'aws-cdk-lib/aws-logs';
 import {
   BlockPublicAccess,
   Bucket,
@@ -351,6 +351,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
     const objectLockDLQ = new Queue(this, 'audit-object-lock-dlq', {
       encryption: QueueEncryption.KMS,
       encryptionMasterKey: kmsKey,
+      enforceSSL: true,
     });
 
     const objectLockQueue = new Queue(this, 'audit-object-lock-queue', {
@@ -361,6 +362,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       },
       encryption: QueueEncryption.KMS,
       encryptionMasterKey: kmsKey,
+      enforceSSL: true,
     });
 
     opsDashboard?.addDeadLetterQueueOperationalComponents('AuditLegalHoldDLQ', objectLockDLQ);
