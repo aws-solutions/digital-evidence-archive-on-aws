@@ -370,6 +370,11 @@ const convictSchema = {
     format: Array,
     default: [],
   },
+  dataSyncSourcePermissions: {
+    doc: 'list of datasync source permissions we need for listing source locations',
+    format: Array,
+    default: [],
+  },
   adminRoleArn: {
     doc: 'Optional ARN to grant KMS and Bucket permissions, useful for pipeline testing',
     format: String,
@@ -449,6 +454,7 @@ interface DEAConfig {
   sourceIpValidationEnabled(): boolean;
   sourceIpSubnetMaskCIDR(): string;
   dataSyncLocationBuckets(): string[];
+  dataSyncSourcePermissions(): string[];
   deaRoleTypes(): DEARoleTypeDefinition[];
   retainPolicy(): RemovalPolicy;
   retentionDays(): RetentionDays;
@@ -555,6 +561,7 @@ export const deaConfig: DEAConfig = {
   includeDynamoDataPlaneEventsInTrail: () => convictConfig.get('includeDynamoDataPlaneEventsInTrail'),
   auditDownloadTimeoutMinutes: () => convictConfig.get('auditDownloadTimeoutMinutes'),
   dataSyncLocationBuckets: () => convictConfig.get('dataSyncLocationBuckets'),
+  dataSyncSourcePermissions: () => convictConfig.get('dataSyncSourcePermissions'),
   adminRoleArn: () => convictConfig.get('adminRoleArn'),
 };
 

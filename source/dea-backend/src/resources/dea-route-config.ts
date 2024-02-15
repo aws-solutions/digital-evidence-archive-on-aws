@@ -11,6 +11,7 @@ export enum DeaApiRoleName {
   AUTH_ROLE = 'AUTH_ROLE',
   INITIATE_UPLOAD_ROLE = 'INITIATE_UPLOAD_ROLE',
   COMPLETE_UPLOAD_ROLE = 'COMPLETE_UPLOAD_ROLE',
+  DATASYNC_EXECUTION_ROLE = 'CREATE_EXECUTION_ROLE',
 }
 
 export const deaApiRouteConfig: ApiGatewayRouteConfig = {
@@ -264,6 +265,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/datavaults/tasks/{taskId}/executions',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/create-data-vault-execution-handler.ts',
+      roleName: DeaApiRoleName.DATASYNC_EXECUTION_ROLE,
     },
     // PRIVILEGED ENDPOINTS
     {

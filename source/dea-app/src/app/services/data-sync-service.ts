@@ -136,55 +136,70 @@ export const describeTask = async (
   const describeLocationCommand = new DescribeLocationS3Command({
     LocationArn: destinationLocationArn,
   });
-  const describeLocationResponse = await retry(async () => {
-    const describeLocationResponse = await dataSyncProvider.dataSyncClient.send(describeLocationCommand);
-    return describeLocationResponse;
-  });
-  if (!describeLocationResponse) {
-    throw new Error('Location description failed');
-  }
 
-  const dataVaultUlid = getDataVaultUlid(describeLocationResponse.LocationUri);
+  try {
+    const describeLocationResponse = await retry(async () => {
+      const describeLocationResponse = await dataSyncProvider.dataSyncClient.send(describeLocationCommand);
+      return describeLocationResponse;
+    });
+    if (!describeLocationResponse) {
+      throw new Error('Location description failed');
+    }
 
-  //Get the last execution completed if the Task is Available and has a dataVaultUlid
-  let lastExecutionCompleted = undefined;
-  if (describeTaskResponse.Status === 'AVAILABLE' && dataVaultUlid) {
-    let nextToken = undefined;
-    do {
-      const listTaskExecutionsResponse: ListTaskExecutionsResponse | undefined =
-        await listDatasyncTaskExecutions(taskArn, nextToken, dataSyncProvider);
-      if (listTaskExecutionsResponse?.TaskExecutions) {
-        const taskExecutionCompletedArn = listTaskExecutionsResponse.TaskExecutions.slice()
-          .reverse()
-          .find((e: TaskExecutionListEntry) => e.Status === 'SUCCESS')?.TaskExecutionArn;
-        if (taskExecutionCompletedArn) {
-          const describeTaskExecutionResponse = await describeDatasyncTaskExecution(
-            taskExecutionCompletedArn,
-            dataSyncProvider
-          );
-          lastExecutionCompleted = describeTaskExecutionResponse?.StartTime;
-          const totalDurationMilliseconds = describeTaskExecutionResponse?.Result?.TotalDuration ?? 0;
-          lastExecutionCompleted?.setMilliseconds(
-            lastExecutionCompleted?.getMilliseconds() + totalDurationMilliseconds
-          );
+    const dataVaultUlid = getDataVaultUlid(describeLocationResponse.LocationUri);
+
+    //Get the last execution completed if the Task is Available and has a dataVaultUlid
+    let lastExecutionCompleted = undefined;
+    if (describeTaskResponse.Status === 'AVAILABLE' && dataVaultUlid) {
+      let nextToken = undefined;
+      do {
+        const listTaskExecutionsResponse: ListTaskExecutionsResponse | undefined =
+          await listDatasyncTaskExecutions(taskArn, nextToken, dataSyncProvider);
+        if (listTaskExecutionsResponse?.TaskExecutions) {
+          const taskExecutionCompletedArn = listTaskExecutionsResponse.TaskExecutions.slice()
+            .reverse()
+            .find((e: TaskExecutionListEntry) => e.Status === 'SUCCESS')?.TaskExecutionArn;
+          if (taskExecutionCompletedArn) {
+            const describeTaskExecutionResponse = await describeDatasyncTaskExecution(
+              taskExecutionCompletedArn,
+              dataSyncProvider
+            );
+            lastExecutionCompleted = describeTaskExecutionResponse?.StartTime;
+            const totalDurationMilliseconds = describeTaskExecutionResponse?.Result?.TotalDuration ?? 0;
+            lastExecutionCompleted?.setMilliseconds(
+              lastExecutionCompleted?.getMilliseconds() + totalDurationMilliseconds
+            );
+          }
         }
-      }
-      nextToken = listTaskExecutionsResponse?.NextToken;
-    } while (nextToken);
+        nextToken = listTaskExecutionsResponse?.NextToken;
+      } while (nextToken);
+    }
+
+    const DataSyncTask: DeaDataSyncTask = {
+      taskArn: taskArn,
+      taskId: taskArn.split('/')[1],
+      sourceLocationArn: describeTaskResponse.SourceLocationArn,
+      destinationLocationArn: describeTaskResponse.DestinationLocationArn,
+      dataVaultUlid,
+      status: describeTaskResponse.Status,
+      created: describeTaskResponse.CreationTime,
+      lastExecutionCompleted,
+    };
+
+    return DataSyncTask;
+  } catch (e) {
+    // non-s3 or invalid datasync location
+    const DataSyncTask: DeaDataSyncTask = {
+      taskArn: taskArn,
+      taskId: taskArn.split('/')[1],
+      sourceLocationArn: describeTaskResponse.SourceLocationArn,
+      destinationLocationArn: describeTaskResponse.DestinationLocationArn,
+      status: describeTaskResponse.Status,
+      created: describeTaskResponse.CreationTime,
+    };
+
+    return DataSyncTask;
   }
-
-  const DataSyncTask: DeaDataSyncTask = {
-    taskArn: taskArn,
-    taskId: taskArn.split('/')[1],
-    sourceLocationArn: describeTaskResponse.SourceLocationArn,
-    destinationLocationArn: describeTaskResponse.DestinationLocationArn,
-    dataVaultUlid,
-    status: describeTaskResponse.Status,
-    created: describeTaskResponse.CreationTime,
-    lastExecutionCompleted,
-  };
-
-  return DataSyncTask;
 };
 
 export const describeDatasyncLocation = async (locationArn: string, dataSyncProvider: DataSyncProvider) => {
