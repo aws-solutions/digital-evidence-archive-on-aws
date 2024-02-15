@@ -10,11 +10,11 @@ import { Aws, Duration, Fn, StackProps, aws_kinesisfirehose } from 'aws-cdk-lib'
 import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import { ArnPrincipal, Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Key } from 'aws-cdk-lib/aws-kms';
+import { IKey, Key } from 'aws-cdk-lib/aws-kms';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { FilterPattern, LogGroup, SubscriptionFilter } from 'aws-cdk-lib/aws-logs';
+import { FilterPattern, LogGroup, QueryDefinition, SubscriptionFilter } from 'aws-cdk-lib/aws-logs';
 import {
   BlockPublicAccess,
   Bucket,
@@ -24,7 +24,7 @@ import {
   ObjectOwnership,
 } from 'aws-cdk-lib/aws-s3';
 import { SqsDestination } from 'aws-cdk-lib/aws-s3-notifications';
-import { Queue } from 'aws-cdk-lib/aws-sqs';
+import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { auditGlueTableColumns } from './audit-glue-table-columns';
@@ -77,7 +77,7 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
 
     const auditPrefix = 'audit/';
 
-    this.addLegalHoldInfrastructure(this.athenaAuditBucket, auditPrefix, props.opsDashboard);
+    this.addLegalHoldInfrastructure(this.athenaAuditBucket, auditPrefix, props.opsDashboard, props.kmsKey);
 
     const queryResultBucket = new Bucket(this, 'queryResultBucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
@@ -319,7 +319,8 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
   private addLegalHoldInfrastructure(
     auditBucket: Bucket,
     auditPrefix: string,
-    opsDashboard?: DeaOperationalDashboard
+    opsDashboard?: DeaOperationalDashboard,
+    kmsKey?: IKey
   ) {
     const objectLockHandler = new NodejsFunction(this, 'audit-object-locker', {
       memorySize: 512,
@@ -347,7 +348,10 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
       })
     );
 
-    const objectLockDLQ = new Queue(this, 'audit-object-lock-dlq', {});
+    const objectLockDLQ = new Queue(this, 'audit-object-lock-dlq', {
+      encryption: QueueEncryption.KMS,
+      encryptionMasterKey: kmsKey,
+    });
 
     const objectLockQueue = new Queue(this, 'audit-object-lock-queue', {
       visibilityTimeout: objectLockHandler.timeout,
@@ -355,6 +359,8 @@ export class AuditCloudwatchToAthenaInfra extends Construct {
         queue: objectLockDLQ,
         maxReceiveCount: 5,
       },
+      encryption: QueueEncryption.KMS,
+      encryptionMasterKey: kmsKey,
     });
 
     opsDashboard?.addDeadLetterQueueOperationalComponents('AuditLegalHoldDLQ', objectLockDLQ);
