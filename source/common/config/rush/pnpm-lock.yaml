@@ -429,7 +429,7 @@ importers:
       '@babel/preset-typescript': ~7.23.2
       '@cloudscape-design/collection-hooks': ^1.0.20
       '@cloudscape-design/component-toolkit': ~1.0.0-beta.25
-      '@cloudscape-design/components': ~3.0.405
+      '@cloudscape-design/components': ~3.0.532
       '@cloudscape-design/design-tokens': ~3.0.11
       '@cloudscape-design/global-styles': ~1.0.13
       '@cloudscape-design/jest-preset': ~2.0.8
@@ -500,7 +500,7 @@ importers:
       '@aws/dea-app': link:../../dea-app
       '@cloudscape-design/collection-hooks': 1.0.31_react@18.2.0
       '@cloudscape-design/component-toolkit': 1.0.0-beta.30
-      '@cloudscape-design/components': 3.0.463_biqbaboplfbrettd7655fr4n2y
+      '@cloudscape-design/components': 3.0.532_biqbaboplfbrettd7655fr4n2y
       '@cloudscape-design/design-tokens': 3.0.30
       '@cloudscape-design/global-styles': 1.0.19
       '@cloudscape-design/jest-preset': 2.0.21_tnxmgaouxgn5zxhwznxdn6cboa
@@ -3369,8 +3369,8 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@cloudscape-design/components/3.0.463_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-a99RC9KRy31f0SlI3c7nJnd4N7zK1tEiGIVkR5hb53yvfuMDAVPDV9Ud502wV8mgCFlX5x5hF1VmKWjWWWs3pw==}
+  /@cloudscape-design/components/3.0.532_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-8W/M/wLaG9oBQhkIKE7y3Cz5REEfW/f81SpbJqyaW+IQt8ThLJwX9DmoaeRi1Oe6ypdK/hfFgFPKk9tNQx5+lQ==}
     peerDependencies:
       react: ^16.8 || ^17 || ^18
       react-dom: ^16.8 || ^17 || ^18
@@ -6667,7 +6667,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001581
+      caniuse-lite: 1.0.30001587
       electron-to-chromium: 1.4.614
       node-releases: 2.0.14
       update-browserslist-db: 1.0.13_browserslist@4.22.2
@@ -6748,11 +6748,8 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  /caniuse-lite/1.0.30001581:
-    resolution: {integrity: sha512-whlTkwhqV2tUmP3oYhtNfaWGYHDdS3JYFQBKXxcUR9qqPWsRhFHhoISO2Xnl/g0xyKzht9mI1LZpiNWfMzHixQ==}
-
-  /caniuse-lite/1.0.30001584:
-    resolution: {integrity: sha512-LOz7CCQ9M1G7OjJOF9/mzmqmj3jE/7VOmrfw6Mgs0E8cjOsbRXQJHsPBfmBOXDskXKrHLyyW3n7kpDW/4BsfpQ==}
+  /caniuse-lite/1.0.30001587:
+    resolution: {integrity: sha512-HMFNotUmLXn71BQxg8cijvqxnIAofforZOwGsxyXJ0qugTdspUF4sPSJ2vhgprHCB996tIDzEq1ubumPDV8ULA==}
 
   /case/1.6.3:
     resolution: {integrity: sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==}
@@ -10721,7 +10718,7 @@ packages:
       '@next/env': 14.1.0
       '@swc/helpers': 0.5.2
       busboy: 1.6.0
-      caniuse-lite: 1.0.30001584
+      caniuse-lite: 1.0.30001587
       graceful-fs: 4.2.11
       postcss: 8.4.31
       react: 18.2.0
