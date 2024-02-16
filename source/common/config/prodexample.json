@@ -165,6 +165,22 @@
           "method": "POST"
         },
         {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
           "path": "/cases/{caseId}/details",
           "method": "GET"
         },
@@ -341,6 +357,22 @@
         {
           "path": "/datavaults/tasks/{taskId}/executions",
           "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/audit/{auditId}/csv",
+          "method": "GET"
         },
         {
           "path": "/cases/{caseId}/userMemberships",
