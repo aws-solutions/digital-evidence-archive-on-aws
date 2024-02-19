@@ -50,6 +50,7 @@ export const commonLabels = {
   disassociateButton: 'Disassociate',
   copyLinkLabel: 'Copy AWS DataSync link',
   linkCopiedLabel: 'Link copied',
+  selectedLabel: 'selected',
 };
 
 export const commonTableLabels = {

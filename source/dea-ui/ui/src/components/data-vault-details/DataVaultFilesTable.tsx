@@ -207,6 +207,8 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
             ariaLabel={dataVaultDetailLabels.associateToCaseMultiselectPlaceholder}
             filteringAriaLabel={dataVaultDetailLabels.associateToCaseMultiselectFilteringPlaceholder}
             filteringClearAriaLabel={i18nStringsForPropertyFilter.clearAriaLabel}
+            selectedAriaLabel={commonLabels.selectedLabel}
+            ariaDescribedby={allOptions.map((option) => option.label).join(' ')}
           />
         </Box>
       </Modal>
@@ -317,19 +319,6 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
     <Header variant="h2" description={tableHeaderDescription()} actions={tableActions()}>
       <SpaceBetween direction="horizontal" size="xs">
         <span>{`${dataVaultDetailLabels.filesLabel} (${items.length})`}</span>
-        <BreadcrumbGroup
-          data-testid="file-breadcrumb"
-          onClick={(event) => {
-            event.preventDefault();
-            setFilesTableState((state) => ({
-              ...state,
-              basePath: event.detail.href.replaceAll('#', '/'),
-            }));
-          }}
-          items={breadcrumbItems}
-          ariaLabel={breadcrumbLabels.breadcrumbLabel}
-          expandAriaLabel={breadcrumbLabels.breadcrumbLabel}
-        />
       </SpaceBetween>
     </Header>
   );
@@ -428,24 +417,39 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
       resizableColumns
       empty={emptyConfig}
       filter={
-        <ColumnLayout columns={2}>
-          <TextFilter
-            data-testid="files-text-filter"
-            {...filterProps}
-            filteringClearAriaLabel={i18nStringsForPropertyFilter.clearAriaLabel}
-            filteringAriaLabel={filesListLabels.searchLabel}
-            filteringPlaceholder={filesListLabels.searchLabel}
+        <SpaceBetween direction="vertical" size="m">
+          <ColumnLayout columns={2}>
+            <TextFilter
+              data-testid="files-text-filter"
+              {...filterProps}
+              filteringClearAriaLabel={i18nStringsForPropertyFilter.clearAriaLabel}
+              filteringAriaLabel={filesListLabels.searchLabel}
+              filteringPlaceholder={filesListLabels.searchLabel}
+            />
+            <Box padding="xxs">
+              <Checkbox
+                onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
+                checked={displayFilesWithoutACase}
+                ariaLabel={dataVaultDetailLabels.displayFilesCheckboxLabel}
+              >
+                {dataVaultDetailLabels.displayFilesCheckboxLabel}
+              </Checkbox>
+            </Box>
+          </ColumnLayout>
+          <BreadcrumbGroup
+            data-testid="file-breadcrumb"
+            onClick={(event) => {
+              event.preventDefault();
+              setFilesTableState((state) => ({
+                ...state,
+                basePath: event.detail.href.replaceAll('#', '/'),
+              }));
+            }}
+            items={breadcrumbItems}
+            ariaLabel={breadcrumbLabels.breadcrumbLabel}
+            expandAriaLabel={breadcrumbLabels.breadcrumbLabel}
           />
-          <Box padding="xxs">
-            <Checkbox
-              onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
-              checked={displayFilesWithoutACase}
-              ariaLabel={dataVaultDetailLabels.displayFilesCheckboxLabel}
-            >
-              {dataVaultDetailLabels.displayFilesCheckboxLabel}
-            </Checkbox>
-          </Box>
-        </ColumnLayout>
+        </SpaceBetween>
       }
       header={tableHeader}
       pagination={tablePagination}

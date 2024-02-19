@@ -7,6 +7,7 @@ import { PropertyFilterProps } from '@cloudscape-design/components';
 import { FlashbarProps } from '@cloudscape-design/components';
 
 export const i18nStringsForFlashbar: FlashbarProps.I18nStrings = {
+  ariaLabel: 'Notifications bar',
   errorIconAriaLabel: 'Error',
   infoIconAriaLabel: 'Info',
   successIconAriaLabel: 'Success',
