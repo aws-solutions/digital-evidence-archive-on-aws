@@ -193,7 +193,7 @@ export class DeaUiConstruct extends NestedStack {
                 `font-src 'self' data:;` +
                 `base-uri 'self';` +
                 `object-src 'none';` +
-                `block-all-mixed-content;'`,
+                `upgrade-insecure-requests;'`,
               'method.response.header.Strict-Transport-Security': "'max-age=31540000; includeSubdomains'",
               'method.response.header.X-Content-Type-Options': "'nosniff'",
               'method.response.header.X-Frame-Options': "'DENY'",
