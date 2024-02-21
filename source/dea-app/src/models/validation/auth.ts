@@ -7,8 +7,8 @@ import Joi from 'joi';
 import { idToken, refreshToken } from './joi-common';
 
 export const Oauth2TokenSchema = Joi.object({
-  id_token: idToken,
-  refresh_token: refreshToken,
+  id_token: idToken.required(),
+  refresh_token: refreshToken.required(),
   expires_in: Joi.number(),
 });
 

@@ -144,26 +144,39 @@ export const getCookieValue = (event: APIGatewayProxyEvent, cookieName: string):
   return isolateCookieValue(cookie, cookieName);
 };
 
-export const isolateCookieValue = (cookie: string | undefined, cookieName: string) =>
-  cookie
-    ?.split(';')
-    .map((value) => value.trim())
-    .filter((cookie) => cookie.startsWith(`${cookieName}=`))
-    .map((cookie) => decodeURIComponent(cookie.substring(cookieName.length + 1)))[0] || null;
+export const isolateCookieValue = (cookie: string | undefined, cookieName: string) => {
+  try {
+    return cookie?.split(';')
+                  .map((value) => value.trim())
+                  .filter((cookie) => cookie.startsWith(`${cookieName}=`))
+                  .map((cookie) => decodeURIComponent(cookie.substring(cookieName.length + 1)))[0] || null;
+  } catch {
+    throw new ValidationError('Invalid cookie format');
+  }
+}
 
 export const getOauthToken = (event: APIGatewayProxyEvent): Oauth2Token => {
-  const tokenVal = getCookieValue(event, 'idToken');
-  const refreshVal = getCookieValue(event, 'refreshToken');
-  if (tokenVal && refreshVal) {
+  try {
+    const tokenVal = getCookieValue(event, 'idToken');
+    const refreshVal = getCookieValue(event, 'refreshToken');
+
+    if (!tokenVal) {
+      throw new ValidationError('ID Token cookie is not set');
+    }
+ 
+    if (!refreshVal) {
+      throw new ValidationError('Refresh Token cookie is not set');
+    }
+
     const token: Oauth2Token = {
       ...JSON.parse(tokenVal),
       ...JSON.parse(refreshVal),
     };
     Joi.assert(token, Oauth2TokenSchema);
     return token;
+  } catch {
+    throw new ValidationError(`Invalid OAuth token validation`);
   }
-
-  throw new ValidationError(`invalid oauth`);
 };
 
 export const getAllowedOrigins = (): string[] => {
