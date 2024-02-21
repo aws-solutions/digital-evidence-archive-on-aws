@@ -20,11 +20,15 @@ function DataVaultAssociationDetailsBody(props: dataVaultAssociationDetailsProps
         <TextContent>
           <SpaceBetween size="l">
             <div>
-              <h5>{fileDetailLabels.dataVaultLabel}</h5>
+              <span>
+                <strong>{fileDetailLabels.dataVaultLabel}</strong>
+              </span>
               <p>{props.dataVaultName}</p>
             </div>
             <div>
-              <h5>{commonTableLabels.executionIdHeader}</h5>
+              <span>
+                <strong>{commonTableLabels.executionIdHeader}</strong>
+              </span>
               <p>{props.executionId}</p>
             </div>
           </SpaceBetween>
@@ -32,18 +36,24 @@ function DataVaultAssociationDetailsBody(props: dataVaultAssociationDetailsProps
         <TextContent>
           <SpaceBetween size="l">
             <div>
-              <h5>{fileDetailLabels.associatedBy}</h5>
-              {props.associationCreatedBy}
+              <span>
+                <strong>{fileDetailLabels.associatedBy}</strong>
+              </span>
+              <p>{props.associationCreatedBy}</p>
             </div>
             <div>
-              <h5>{fileDetailLabels.associationDateLabel}</h5>
-              {props.associationDate
-                ? new Date(props.associationDate).toLocaleString([], {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })
-                : '-'}
+              <span>
+                <strong>{fileDetailLabels.associationDateLabel}</strong>
+              </span>
+              <p>
+                {props.associationDate
+                  ? new Date(props.associationDate).toLocaleString([], {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })
+                  : '-'}
+              </p>
             </div>
           </SpaceBetween>
         </TextContent>

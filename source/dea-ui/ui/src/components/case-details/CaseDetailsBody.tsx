@@ -89,7 +89,9 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
           <ColumnLayout columns={3} variant="text-grid">
             <TextContent>
               <div>
-                <h5>{commonLabels.creationDate}</h5>
+                <span>
+                  <strong>{commonLabels.creationDate}</strong>
+                </span>
                 <p>
                   {new Date(data.created).toLocaleString([], {
                     year: 'numeric',
@@ -101,13 +103,17 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
             </TextContent>
             <TextContent>
               <div>
-                <h5>{commonLabels.description}</h5>
+                <span>
+                  <strong>{commonLabels.description}</strong>
+                </span>
                 <p>{data.description ?? '-'}</p>
               </div>
             </TextContent>
             <TextContent>
               <div>
-                <h5>{commonLabels.statusLabel}</h5>
+                <span>
+                  <strong>{commonLabels.statusLabel}</strong>
+                </span>
                 <p>{getStatusIcon(data.status)}</p>
               </div>
             </TextContent>

@@ -6,7 +6,14 @@
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
 import { CaseUser } from '@aws/dea-app/lib/models/case-user';
 import { DeaUser } from '@aws/dea-app/lib/models/user';
-import { Button, Container, Form, Header, SpaceBetween } from '@cloudscape-design/components';
+import {
+  Button,
+  Container,
+  Form,
+  Header,
+  SpaceBetween,
+  StatusIndicator,
+} from '@cloudscape-design/components';
 import { useState } from 'react';
 import { addCaseMember, removeCaseMember, updateCaseMember, useGetCaseMembers } from '../../api/cases';
 import { commonLabels, manageCaseAccessLabels } from '../../common/labels';
@@ -20,7 +27,7 @@ export interface ManageAccessFormProps {
 }
 
 function ManageAccessForm(props: ManageAccessFormProps): JSX.Element {
-  const { data: caseMembers, mutate } = useGetCaseMembers(props.caseId);
+  const { data: caseMembers, mutate, isLoading } = useGetCaseMembers(props.caseId);
   const { pushNotification } = useNotifications();
   const [isSaving, setIsSaving] = useState(false);
   const [modifiedMembers, setModifiedMembers] = useState<CaseUser[]>([]);
@@ -80,6 +87,10 @@ function ManageAccessForm(props: ManageAccessFormProps): JSX.Element {
       setIsSaving(false);
       mutate();
     }
+  }
+
+  if (isLoading) {
+    return <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>;
   }
 
   return (

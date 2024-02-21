@@ -133,7 +133,9 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
               <TextContent>
                 <div>
                   {' '}
-                  <h5>{fileDetailLabels.uploadDateLabel}</h5>
+                  <span>
+                    <strong>{fileDetailLabels.uploadDateLabel}</strong>
+                  </span>
                   <SpaceBetween size="l">
                     <p>
                       {fileData.dataVaultUploadDate
@@ -151,24 +153,31 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
                         : '-'}
                     </p>
 
-                    <h5>{fileDetailLabels.fileSizeLabel}</h5>
+                    <span>
+                      <strong>{fileDetailLabels.fileSizeLabel}</strong>
+                    </span>
                   </SpaceBetween>
                   <p>{formatFileSize(fileData.fileSizeBytes)}</p>
                 </div>
               </TextContent>
               <TextContent>
                 <div>
-                  <h5>{commonLabels.description}</h5>
+                  <span>
+                    <strong>{commonLabels.description}</strong>
+                  </span>
                   <p>{fileData.details}</p>
                 </div>
               </TextContent>
               <TextContent>
                 <div>
-                  <h5>{commonLabels.statusLabel}</h5>
+                  <span>
+                    <strong>{commonLabels.statusLabel}</strong>
+                  </span>
                   <SpaceBetween size="l">
                     <p>{getStatusIcon(fileData.status)}</p>
-
-                    <h5>{fileDetailLabels.shaHashLabel}</h5>
+                    <span>
+                      <strong>{fileDetailLabels.shaHashLabel}</strong>
+                    </span>
                   </SpaceBetween>
                   <p>{fileData.sha256Hash}</p>
                 </div>
