@@ -28,7 +28,12 @@ import { AuditEventType, AuditResult } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
-import { DeaCaseFile, DeaCaseFileResult, DeaCaseFileUpload, DownloadCaseFileRequest } from '../../models/case-file';
+import {
+  DeaCaseFile,
+  DeaCaseFileResult,
+  DeaCaseFileUpload,
+  DownloadCaseFileRequest,
+} from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
@@ -419,11 +424,11 @@ export const getCaseFileDownloadUrl = async (
   deaApiUrl: string,
   idToken: Oauth2Token,
   creds: Credentials,
-  caseUlid = "undefined case Ulid",
-  fileUlid = "undefined file Ulid",
-  downloadReason: string,
+  caseUlid = 'undefined case Ulid',
+  fileUlid = 'undefined file Ulid',
+  downloadReason: string
 ): Promise<string> => {
-  const body :DownloadCaseFileRequest = {
+  const body: DownloadCaseFileRequest = {
     caseUlid,
     ulid: fileUlid,
     downloadReason,
@@ -634,7 +639,11 @@ export const useRefreshToken = async (deaApiUrl: string, oauthToken: Oauth2Token
     throw new Error('Refresh failed');
   }
 
-  return parseOauthTokenFromCookies(refreshResponse);
+  const partialOauth = parseOauthTokenFromCookies(refreshResponse);
+  return {
+    ...partialOauth,
+    refresh_token: oauthToken.refresh_token,
+  };
 };
 
 export const parseOauthTokenFromCookies = (response: AxiosResponse): Oauth2Token => {
