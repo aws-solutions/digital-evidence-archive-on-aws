@@ -10,7 +10,6 @@ import {
   Form,
   FormField,
   Grid,
-  Icon,
   Popover,
   TextContent,
 } from '@cloudscape-design/components';
@@ -53,6 +52,7 @@ function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX
         stretch={true}
         description={manageCaseAccessLabels.manageAccessDescription}
         label={manageCaseAccessLabels.manageAccessSearchLabel}
+        data-testid="manage-access-search-user-form-combobox"
         info={
           <Popover
             position="bottom"
@@ -64,8 +64,9 @@ function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX
                 <p>{manageCaseAccessLabels.manageAccessSearchInfoDescription}</p>
               </TextContent>
             }
+            dismissAriaLabel={manageCaseAccessLabels.closePopoverMessage}
           >
-            <Icon name="status-info" variant="link" />
+            <Button ariaLabel="Info" iconName="status-info" variant="inline-icon" />
           </Popover>
         }
       >
@@ -87,6 +88,7 @@ function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX
             onChange={({ detail }) => setValue(detail.value)}
             onLoadItems={handleLoadItems}
             onSelect={({ detail }) => setSelected(detail.value)}
+            ariaDescribedby={data.map((user: DeaUser) => `${user.firstName}-${user.lastName}`).join(' ')}
           />
           <Button onClick={onSubmitHandler} disabled={!selected || selected !== value}>
             {commonLabels.addButton}

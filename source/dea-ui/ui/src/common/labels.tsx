@@ -236,6 +236,7 @@ export const manageCaseAccessLabels = {
     'There access will be instantly removed and they will be notified by email.',
   saveSuccessMessage: 'Changes have been saved successfully.',
   saveFailMessage: 'Changes have not been saved.',
+  closePopoverMessage: 'Close information about what to do if user cannot be found',
 };
 
 export const caseStatusLabels = {
@@ -364,6 +365,7 @@ export const fileUploadLabels = {
   chooseFilesLabel: 'Choose files',
   errorIconAriaLabel: 'Error',
   removeFileAriaLabel: (e: number) => `Remove file ${e + 1}`,
+  dismissFileAriaLabel: (f: string) => `Remove ${f}`,
 };
 
 export const fileDetailLabels = {

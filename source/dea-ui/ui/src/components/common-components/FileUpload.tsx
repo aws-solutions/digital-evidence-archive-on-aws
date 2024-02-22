@@ -171,6 +171,7 @@ function FileUpload(props: FileUploadProps) {
         items={value.map((file) => ({
           label: file.relativePath + file.name,
           tags: [formatFileSize(file.size)],
+          dismissLabel: fileUploadLabels.dismissFileAriaLabel(file.relativePath + file.name),
         }))}
         alignment="vertical"
         limit={3}

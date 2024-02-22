@@ -13,23 +13,23 @@ const push = jest.fn();
 const CASE_ID = '01GV15BH762P6MW1QH8EQDGBFQ';
 const CASE_NAME = 'fakecase';
 interface Query {
-  caseId: string | object; 
-  caseName: string | object; 
-  fileId?: string | object; 
+  caseId: string | object;
+  caseName: string | object;
+  fileId?: string | object;
   fileName?: string | object;
 }
 let query: Query = {
   caseId: CASE_ID,
   caseName: CASE_NAME,
-}
+};
 jest.mock('next/navigation', () => ({
   useSearchParams: () => ({
-    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key]),
   }),
   useRouter: () => ({
-    push
-  })
-})); 
+    push,
+  }),
+}));
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
 global.window.URL.createObjectURL = jest.fn(() => {});
@@ -372,10 +372,8 @@ describe('CaseDetailsPage', () => {
     }
 
     const textToInput = 'Carlos Salazar';
-    const searchInput = await screen.findByRole('combobox', {
-      description:
-        'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
-    });
+    const searchInput = await screen.findByTestId('manage-access-search-user-form-combobox');
+
     await act(async () => {
       await userEvent.type(searchInput, textToInput);
       searchUserInputWrapper.selectSuggestionByValue(textToInput);
@@ -440,8 +438,8 @@ describe('CaseDetailsPage', () => {
   it('navigates to upload files page', async () => {
     query = {
       caseId: CASE_ID,
-      caseName: mockedCaseDetail.name
-    }
+      caseName: mockedCaseDetail.name,
+    };
 
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
@@ -474,7 +472,7 @@ describe('CaseDetailsPage', () => {
       fileId: mockFilesRoot.files[1].ulid,
       caseName: mockedCaseDetail.name,
       fileName: mockFilesRoot.files[1].fileName,
-    }
+    };
 
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();

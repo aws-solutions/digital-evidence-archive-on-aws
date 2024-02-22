@@ -87,6 +87,7 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
               tokenLimitShowMore: commonTableLabels.limitShowMoreLabel,
               tokenLimitShowFewer: commonTableLabels.limitShowFewerLabel,
             }}
+            selectedAriaLabel={commonLabels.selectedLabel}
           />
         </FormField>
       </ColumnLayout>

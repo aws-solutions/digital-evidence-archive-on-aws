@@ -95,7 +95,13 @@ export default function Navigation({ initialHref }: NavigationProps): JSX.Elemen
       type: 'link',
       text: navigationLabels.systemAuditLogsLabel,
       href: '#',
-      info: downloadInProgress ? <Spinner /> : <Icon name="download" />,
+      info: downloadInProgress ? (
+        <Spinner />
+      ) : (
+        <span role="img" aria-label="Download">
+          <Icon name="download" />
+        </span>
+      ),
     });
   }
 
