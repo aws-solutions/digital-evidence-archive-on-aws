@@ -30,7 +30,7 @@ export class ObjectChecksumStack extends NestedStack {
   constructor(scope: Construct, id: string, props: ObjectChecksumStackProps) {
     super(scope, id);
 
-    const members = this.createHashQueue(scope, props);
+    const members = this.createHashQueue(this, props);
     this.checksumHandlerRole = members.handlerRole;
     this.checksumQueue = members.checksumQueue;
   }
@@ -44,7 +44,7 @@ export class ObjectChecksumStack extends NestedStack {
     // < 10s to compute hash
     // < 5s to write to SQS/DynamoDB write
     const runtimeWithPadding = Duration.seconds(30);
-    const checksumHandler = new NodejsFunction(scope, 'multipart-checksum-handler', {
+    const checksumHandler = new NodejsFunction(scope, 'incremental-checksum-handler', {
       memorySize: 1024,
       tracing: Tracing.ACTIVE,
       timeout: runtimeWithPadding,
@@ -63,12 +63,12 @@ export class ObjectChecksumStack extends NestedStack {
       },
     });
 
-    const checksumDLQ = new Queue(scope, 'multipart-checksum-dlq', {
+    const checksumDLQ = new Queue(scope, 'incremental-checksum-dlq', {
       enforceSSL: true,
       fifo: true,
     });
 
-    const checksumQueue = new Queue(scope, 'multipart-checksum-queue', {
+    const checksumQueue = new Queue(scope, 'incremental-checksum-queue', {
       enforceSSL: true,
       fifo: true,
       visibilityTimeout: checksumHandler.timeout,

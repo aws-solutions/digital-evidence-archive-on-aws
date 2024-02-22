@@ -965,7 +965,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -1114,7 +1117,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -1295,7 +1301,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -1460,7 +1469,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -1625,7 +1637,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -1790,7 +1805,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -1955,7 +1973,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -2120,7 +2141,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -2285,7 +2309,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -2450,7 +2477,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -2615,7 +2645,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -2780,7 +2813,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -2945,7 +2981,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -3110,7 +3149,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -3275,7 +3317,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -3440,7 +3485,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -3605,7 +3653,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -3770,7 +3821,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -3935,7 +3989,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -4100,7 +4157,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -4265,7 +4325,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -4430,7 +4493,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -4595,7 +4661,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -4760,7 +4829,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -4925,7 +4997,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -5090,7 +5165,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -5255,7 +5333,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -5420,7 +5501,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -5585,7 +5669,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -5750,7 +5837,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -5899,7 +5989,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -6080,7 +6173,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -6245,7 +6341,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -6410,7 +6509,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -6575,7 +6677,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -6740,7 +6845,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -6905,7 +7013,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -7070,7 +7181,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -7235,7 +7349,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -7400,7 +7517,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -7565,7 +7685,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -7730,7 +7853,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -7895,7 +8021,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -8060,7 +8189,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -8225,7 +8357,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -8390,7 +8525,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -8555,7 +8693,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -8720,7 +8861,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -8885,7 +9029,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -9050,7 +9197,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             "AWS_USE_FIPS_ENDPOINT": "true",
             "CHECKSUM_QUEUE_URL": Object {
-              "Ref": "multipartchecksumqueueCA9DCDB8",
+              "Fn::GetAtt": Array [
+                "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Ref",
+              ],
             },
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
@@ -10597,8 +10747,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "multipartchecksumqueueCA9DCDB8",
-                  "Arn",
+                  "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                  "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumqueue69093B89Arn",
                 ],
               },
             },
@@ -20014,8 +20164,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     },
                     Object {
                       "Fn::GetAtt": Array [
-                        "multipartchecksumhandlerServiceRoleB1CB1518",
-                        "Arn",
+                        "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                        "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumhandlerServiceRoleCC69348DArn",
                       ],
                     },
                   ],
@@ -20121,8 +20271,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     },
                     Object {
                       "Fn::GetAtt": Array [
-                        "multipartchecksumhandlerServiceRoleB1CB1518",
-                        "Arn",
+                        "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                        "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumhandlerServiceRoleCC69348DArn",
                       ],
                     },
                   ],
@@ -20236,8 +20386,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     },
                     Object {
                       "Fn::GetAtt": Array [
-                        "multipartchecksumhandlerServiceRoleB1CB1518",
-                        "Arn",
+                        "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                        "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumhandlerServiceRoleCC69348DArn",
                       ],
                     },
                     Object {
@@ -20532,8 +20682,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     },
                     Object {
                       "Fn::GetAtt": Array [
-                        "multipartchecksumhandlerServiceRoleB1CB1518",
-                        "Arn",
+                        "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                        "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumhandlerServiceRoleCC69348DArn",
                       ],
                     },
                   ],
@@ -20701,8 +20851,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     },
                     Object {
                       "Fn::GetAtt": Array [
-                        "multipartchecksumhandlerServiceRoleB1CB1518",
-                        "Arn",
+                        "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                        "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumhandlerServiceRoleCC69348DArn",
                       ],
                     },
                   ],
@@ -20844,8 +20994,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                     },
                     Object {
                       "Fn::GetAtt": Array [
-                        "multipartchecksumhandlerServiceRoleB1CB1518",
-                        "Arn",
+                        "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                        "Outputs.DeaMainStackObjectChecksumStackincrementalchecksumhandlerServiceRoleCC69348DArn",
                       ],
                     },
                     Object {
@@ -22246,6 +22396,29 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
+        "Parameters": Object {
+          "referencetoDeaMainStackDeaBackendStackDeaTable4237BA42Arn": Object {
+            "Fn::GetAtt": Array [
+              "DeaBackendStackDeaTableE9FE4A05",
+              "Arn",
+            ],
+          },
+          "referencetoDeaMainStackDeaBackendStackDeaTable4237BA42Ref": Object {
+            "Ref": "DeaBackendStackDeaTableE9FE4A05",
+          },
+          "referencetoDeaMainStackDeaBackendStackS3DatasetsBucket73C9F486Arn": Object {
+            "Fn::GetAtt": Array [
+              "DeaBackendStackS3DatasetsBucket408FF954",
+              "Arn",
+            ],
+          },
+          "referencetoDeaMainStackprimaryCustomerKeyBB618A60Arn": Object {
+            "Fn::GetAtt": Array [
+              "primaryCustomerKey87EC2263",
+              "Arn",
+            ],
+          },
+        },
         "TemplateURL": Object {
           "Fn::Join": Array [
             "",
@@ -22576,268 +22749,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "multipartchecksumdlq4D3A785A": Object {
-      "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "FifoQueue": true,
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "multipartchecksumdlqPolicy47861464": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sqs:*",
-              "Condition": Object {
-                "Bool": Object {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": Object {
-                "AWS": "*",
-              },
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "multipartchecksumdlq4D3A785A",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Queues": Array [
-          Object {
-            "Ref": "multipartchecksumdlq4D3A785A",
-          },
-        ],
-      },
-      "Type": "AWS::SQS::QueuePolicy",
-    },
-    "multipartchecksumhandlerF99349F8": Object {
-      "DependsOn": Array [
-        "multipartchecksumhandlerServiceRoleDefaultPolicyE37D90EA",
-        "multipartchecksumhandlerServiceRoleB1CB1518",
-      ],
-      "Properties": Object {
-        "Code": Object {
-          "S3Bucket": Object {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-us-east-1",
-          },
-          "S3Key": "[HASH REMOVED].zip",
-        },
-        "Environment": Object {
-          "Variables": Object {
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "NODE_OPTIONS": "--enable-source-maps",
-            "TABLE_NAME": Object {
-              "Ref": "DeaBackendStackDeaTableE9FE4A05",
-            },
-          },
-        },
-        "Handler": "index.handler",
-        "MemorySize": 1024,
-        "Role": Object {
-          "Fn::GetAtt": Array [
-            "multipartchecksumhandlerServiceRoleB1CB1518",
-            "Arn",
-          ],
-        },
-        "Runtime": "nodejs18.x",
-        "Timeout": 30,
-        "TracingConfig": Object {
-          "Mode": "Active",
-        },
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "multipartchecksumhandlerServiceRoleB1CB1518": Object {
-      "Properties": Object {
-        "AssumeRolePolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": Object {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": Array [
-          Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "multipartchecksumhandlerServiceRoleDefaultPolicyE37D90EA": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": Array [
-                "xray:PutTraceSegments",
-                "xray:PutTelemetryRecords",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "sqs:ReceiveMessage",
-                "sqs:ChangeMessageVisibility",
-                "sqs:GetQueueUrl",
-                "sqs:DeleteMessage",
-                "sqs:GetQueueAttributes",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "multipartchecksumqueueCA9DCDB8",
-                  "Arn",
-                ],
-              },
-            },
-            Object {
-              "Action": Array [
-                "kms:Encrypt",
-                "kms:Decrypt",
-                "kms:GenerateDataKey",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "primaryCustomerKey87EC2263",
-                  "Arn",
-                ],
-              },
-            },
-            Object {
-              "Action": "s3:GetObject",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
-                        "DeaBackendStackS3DatasetsBucket408FF954",
-                        "Arn",
-                      ],
-                    },
-                    "/*",
-                  ],
-                ],
-              },
-            },
-            Object {
-              "Action": Array [
-                "dynamodb:GetItem",
-                "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "DeaBackendStackDeaTableE9FE4A05",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "multipartchecksumhandlerServiceRoleDefaultPolicyE37D90EA",
-        "Roles": Array [
-          Object {
-            "Ref": "multipartchecksumhandlerServiceRoleB1CB1518",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "multipartchecksumhandlerSqsEventSourceDeaMainStackmultipartchecksumqueue32996AEA16B6D979": Object {
-      "Properties": Object {
-        "BatchSize": 1,
-        "EventSourceArn": Object {
-          "Fn::GetAtt": Array [
-            "multipartchecksumqueueCA9DCDB8",
-            "Arn",
-          ],
-        },
-        "FunctionName": Object {
-          "Ref": "multipartchecksumhandlerF99349F8",
-        },
-      },
-      "Type": "AWS::Lambda::EventSourceMapping",
-    },
-    "multipartchecksumqueueCA9DCDB8": Object {
-      "DeletionPolicy": "Delete",
-      "Properties": Object {
-        "FifoQueue": true,
-        "RedrivePolicy": Object {
-          "deadLetterTargetArn": Object {
-            "Fn::GetAtt": Array [
-              "multipartchecksumdlq4D3A785A",
-              "Arn",
-            ],
-          },
-          "maxReceiveCount": 5,
-        },
-        "VisibilityTimeout": 30,
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "multipartchecksumqueuePolicy5565D7FB": Object {
-      "Properties": Object {
-        "PolicyDocument": Object {
-          "Statement": Array [
-            Object {
-              "Action": "sqs:*",
-              "Condition": Object {
-                "Bool": Object {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": Object {
-                "AWS": "*",
-              },
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "multipartchecksumqueueCA9DCDB8",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Queues": Array [
-          Object {
-            "Ref": "multipartchecksumqueueCA9DCDB8",
-          },
-        ],
-      },
-      "Type": "AWS::SQS::QueuePolicy",
     },
     "primaryCustomerKey87EC2263": Object {
       "DeletionPolicy": "Delete",
