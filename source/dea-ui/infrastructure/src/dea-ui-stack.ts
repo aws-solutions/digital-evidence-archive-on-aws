@@ -188,7 +188,7 @@ export class DeaUiConstruct extends NestedStack {
                 `'default-src 'self';` +
                 `img-src 'self' blob: data:;` +
                 `style-src 'unsafe-inline' 'self';` +
-                `connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;` +
+                `connect-src 'self' https://${deaConfig.cognitoDomain()}.${this.authSubdomain()}.${this.cognitoRegion()}.amazoncognito.com https://cognito-identity.${this.cognitoRegion()}.amazonaws.com https://cognito-idp.${this.cognitoRegion()}.amazonaws.com;` +
                 `script-src 'strict-dynamic' '${this.sriString}';` +
                 `font-src 'self' data:;` +
                 `base-uri 'self';` +
@@ -205,6 +205,22 @@ export class DeaUiConstruct extends NestedStack {
         contentHandling: ContentHandling.CONVERT_TO_TEXT,
       },
     });
+  }
+
+  private cognitoRegion() {
+    if (deaConfig.partition() === 'aws-us-gov') {
+      return 'us-gov-west-1';
+    }
+
+    return Aws.REGION;
+  }
+
+  private authSubdomain() {
+    if (deaConfig.fipsEndpointsEnabled()) {
+      return 'auth-fips';
+    }
+
+    return 'auth';
   }
 
   private getMethodOptions(): MethodOptions {

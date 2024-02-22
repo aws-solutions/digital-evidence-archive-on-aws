@@ -638,7 +638,11 @@ export const useRefreshToken = async (deaApiUrl: string, oauthToken: Oauth2Token
     throw new Error('Refresh failed');
   }
 
-  return parseOauthTokenFromCookies(refreshResponse);
+  const partialOauth = parseOauthTokenFromCookies(refreshResponse);
+  return {
+    ...partialOauth,
+    refresh_token: oauthToken.refresh_token,
+  };
 };
 
 export const parseOauthTokenFromCookies = (response: AxiosResponse): Oauth2Token => {

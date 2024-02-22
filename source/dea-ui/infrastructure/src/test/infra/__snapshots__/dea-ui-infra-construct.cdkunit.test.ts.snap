@@ -209,7 +209,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -309,7 +328,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -409,7 +447,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -509,7 +566,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -609,7 +685,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -709,7 +804,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -809,7 +923,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -909,7 +1042,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -1009,7 +1161,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -1109,7 +1280,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -1209,7 +1399,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -1309,7 +1518,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
@@ -1409,7 +1637,26 @@ Object {
           "IntegrationResponses": Array [
             Object {
               "ResponseParameters": Object {
-                "method.response.header.Content-Security-Policy": "[HASH REMOVED]",
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
                 "method.response.header.Content-Type": "integration.response.header.Content-Type",
                 "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
                 "method.response.header.X-Content-Type-Options": "'nosniff'",
