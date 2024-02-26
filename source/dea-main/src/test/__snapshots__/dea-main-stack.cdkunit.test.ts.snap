@@ -19806,6 +19806,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         ],
         "BillingMode": "PAY_PER_REQUEST",
+        "DeletionProtectionEnabled": true,
         "GlobalSecondaryIndexes": Array [
           Object {
             "IndexName": "GSI1",
