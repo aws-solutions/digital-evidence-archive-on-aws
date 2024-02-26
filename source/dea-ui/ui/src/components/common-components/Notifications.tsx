@@ -21,7 +21,7 @@ export function Notifications() {
         id: notification.id,
         ariaRole: notification.type === 'error' ? 'alert' : 'status',
         onDismiss: () => dismissNotification(notification.id),
-        statusIconAriaLabel: notification.type === 'error' ? 'ErrorIcon' : 'SuccessIcon',
+        statusIconAriaLabel: notification.type === 'error' ? 'Error' : 'Success',
       }))}
       stackItems
     />

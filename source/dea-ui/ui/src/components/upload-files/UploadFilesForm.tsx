@@ -332,7 +332,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               data-testid="input-details"
               label={fileOperationsLabels.evidenceDetailsLabel}
               description={fileOperationsLabels.evidenceDetailsDescription}
-              errorText={details.length > 1 ? '' : commonLabels.requiredLength}
+              errorText={details.length > 1 ? '' : commonLabels.requiredLength('Description')}
             >
               <Textarea
                 value={details}
@@ -345,7 +345,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               data-testid="input-reason"
               label={fileOperationsLabels.uploadReasonLabel}
               description={fileOperationsLabels.uploadReasonDescription}
-              errorText={reason.length > 1 ? '' : commonLabels.requiredLength}
+              errorText={
+                reason.length > 1 ? '' : commonLabels.requiredLength('Reason for uploading evidence')
+              }
             >
               <Input
                 value={reason}
