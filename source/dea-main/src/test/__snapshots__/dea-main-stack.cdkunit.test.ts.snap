@@ -282,6 +282,14 @@ Object {
         "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
       },
     },
+    "DeaBackendStackDeaTableName709BC262": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-DeaTableName",
+      },
+      "Value": Object {
+        "Ref": "DeaBackendStackDeaTableE9FE4A05",
+      },
+    },
     "DeaBackendStackS3AccessLogsBucketName84ED5230": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-S3AccessLogsBucketName",

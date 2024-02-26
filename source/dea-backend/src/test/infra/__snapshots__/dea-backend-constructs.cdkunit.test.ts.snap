@@ -129,6 +129,14 @@ Object {
         "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
       },
     },
+    "DeaBackendConstructDeaTableName18A03194": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-DeaTableName",
+      },
+      "Value": Object {
+        "Ref": "DeaBackendConstructDeaTableB48721A0",
+      },
+    },
     "DeaBackendConstructS3AccessLogsBucketNameBE0DE775": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-S3AccessLogsBucketName",

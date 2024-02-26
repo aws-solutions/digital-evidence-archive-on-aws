@@ -13,6 +13,7 @@ then
 
   profile_string=$(if [ -n "$AWS_PROFILE" ]; then echo "--profile $AWS_PROFILE"; fi)
 
+  export APPLICATION_DATABSE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaTableName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
   export DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
   export DATASYNC_REPORT_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaDataSyncReportsBucketName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
   export S3ACCESSLOGS_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-S3AccessLogsBucketName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
@@ -63,6 +64,8 @@ then
     echo "removing $S3ACCESSLOGS_BUCKET_NAME"
     aws s3 rb s3://$S3ACCESSLOGS_BUCKET_NAME --force --region $REGION $profile_string || true
   fi
+  # turn off deletion protection for the table we are cleaning up
+  aws dynamodb update-table --table-name $APPLICATION_DATABSE --no-deletion-protection-enabled
 else
   echo "Aborting..."
   exit 1

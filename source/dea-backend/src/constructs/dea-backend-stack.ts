@@ -62,6 +62,8 @@ export class DeaBackendConstruct extends Construct {
 
     props.opsDashboard?.addDynamoTableOperationalComponents(this.deaTable);
 
+    createCfnOutput(this, 'DeaTableName', { value: this.deaTable.tableName });
+
     protectedDeaResourceArns.push(this.deaTable.tableArn);
     protectedDeaResourceArns.push(this.datasetsBucket.bucketArn);
     protectedDeaResourceArns.push(this.datasetsBucket.arnForObjects('*'));
