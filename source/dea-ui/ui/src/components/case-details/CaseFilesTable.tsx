@@ -66,7 +66,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     },
   ];
 
-  const { items, filterProps, collectionProps, paginationProps } = useCollection(data, {
+  const { items, filterProps, collectionProps, paginationProps, actions } = useCollection(data, {
     filtering: {
       empty: TableEmptyDisplay(filesListLabels.noFilesLabel, filesListLabels.noDisplayLabel),
       noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
@@ -331,6 +331,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
             data-testid="file-breadcrumb"
             onClick={(event) => {
               event.preventDefault();
+              actions.setFiltering('');
               setFilesTableState((state) => ({
                 ...state,
                 basePath: event.detail.href.replaceAll('#', '/'),

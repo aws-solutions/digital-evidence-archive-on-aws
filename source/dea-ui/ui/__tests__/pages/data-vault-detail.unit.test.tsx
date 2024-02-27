@@ -16,21 +16,21 @@ const DATA_VAULT_ID = '100';
 const DATA_VAULT_NAME = 'Some Data Vault';
 const push = jest.fn();
 interface Query {
-  dataVaultId: string | object; 
-  dataVaultName: string | object; 
+  dataVaultId: string | object;
+  dataVaultName: string | object;
 }
 let query: Query = {
   dataVaultId: DATA_VAULT_ID,
   dataVaultName: DATA_VAULT_NAME,
-}
+};
 jest.mock('next/navigation', () => ({
   useSearchParams: () => ({
-    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key]),
   }),
   useRouter: () => ({
-    push
-  })
-})); 
+    push,
+  }),
+}));
 
 jest.mock('../../src/api/auth', () => ({
   useAvailableEndpoints: jest.fn(),
@@ -414,5 +414,99 @@ describe('DataVaultDetailsPage', () => {
     expect(notificationsWrapper).toBeTruthy();
 
     expect(page).toBeTruthy();
+  });
+
+  it('resets the filter on folder navigation', async () => {
+    query = { dataVaultId: '01HBF77SAC700F89WTQ7K6Q8QD' };
+    useGetDataVaultById.mockImplementation(() => ({
+      data: {
+        ulid: '01HBF77SAC700F89WTQ7K6Q8QD',
+        name: DATA_VAULT_NAME,
+        description: 'Some description',
+        created: '2023-09-29T01:00:51.916Z',
+      },
+      isLoading: false,
+    }));
+    useListDataVaultFiles.mockImplementation(() => ({
+      data: [
+        {
+          ulid: '01HD2SGVA662N6TMREH510BWZW',
+          fileName: 'joi-17.9.1',
+          filePath: '/',
+          dataVaultUlid: '01HD2S8KR23WJNNFGSBZEEGGA5',
+          isFile: false,
+          fileSizeBytes: 0,
+          createdBy: 'John Doe',
+          contentType: 'Directory',
+          fileS3Key: 'DATAVAULT01HD2S8KR23WJNNFGSBZEEGGA5/destination/joi-17.9.1',
+          executionId: 'exec-07a3f261f2f985d5f',
+          updated: new Date('2023-10-19T01:41:39.270Z'),
+        },
+        {
+          ulid: '01HD2SGVHV8DEAZQP5ZEEZ6F81',
+          fileName: 'README.md',
+          filePath: '/joi-17.9.1/',
+          dataVaultUlid: '01HD2S8KR23WJNNFGSBZEEGGA5',
+          isFile: true,
+          fileSizeBytes: 458,
+          createdBy: 'John Doe',
+          contentType: 'md',
+          sha256Hash: 'SHA256:52773d75ca79b81253ad1409880ab061d66f0e5bbcc1e820b008e7617c78d745',
+          versionId: 'ss6KHy3J4ErNEGgFn0kTEq5caL11bYqU',
+          fileS3Key: 'DATAVAULT01HD2S8KR23WJNNFGSBZEEGGA5/destination/joi-17.9.1/README.md',
+          executionId: 'exec-07a3f261f2f985d5f',
+          updated: new Date('2023-10-19T01:41:39.515Z'),
+        },
+        {
+          ulid: '01HD2SGVHV8DEAZQP5ZEEZ6F81',
+          fileName: 'API.md',
+          filePath: '/joi-17.9.1/',
+          dataVaultUlid: '01HD2S8KR23WJNNFGSBZEEGGA5',
+          isFile: true,
+          fileSizeBytes: 458,
+          createdBy: 'John Doe',
+          contentType: 'md',
+          sha256Hash: 'SHA256:52773d75ca79b81253ad1409880ab061d66f0e5bbcc1e820b008e7617c78d745',
+          versionId: 'ss6KHy3J4ErNEGgFn0kTEq5caL11bYqU',
+          fileS3Key: 'DATAVAULT01HD2S8KR23WJNNFGSBZEEGGA5/destination/joi-17.9.1/API.md',
+          executionId: 'exec-07a3f261f2f985d5f',
+          updated: new Date('2023-10-19T01:41:39.515Z'),
+          caseCount: 1,
+        },
+      ],
+      isLoading: false,
+    }));
+    const page = render(<DataVaultDetailsPage />);
+    const pageWrapper = wrapper(page.baseElement);
+
+    const headerWrapper = pageWrapper.findHeader();
+    if (!headerWrapper) fail();
+    expect(headerWrapper.findHeadingText().getElement()).toHaveTextContent(DATA_VAULT_NAME);
+
+    // navigates inside the folder
+    const folderEntry = await screen.findByText('joi-17.9.1');
+    expect(folderEntry).toBeTruthy();
+    fireEvent.click(folderEntry);
+
+    // filters by text
+    const table = await screen.findByTestId('file-table');
+    const tableWrapper = wrapper(table);
+    const textFilter = tableWrapper.findTextFilter();
+    if (!textFilter) {
+      fail();
+    }
+    const textFilterInput = textFilter.findInput();
+    textFilterInput.setInputValue('README.md');
+
+    // after filtering, README.md should be visible but API.md should not.
+    await waitFor(() => expect(screen.queryByTestId('README.md-file-button')).toBeTruthy());
+    await waitFor(() => expect(screen.queryByTestId('API.md-file-button')).toBeFalsy());
+
+    // click the breadcrumb to return to the root
+    const rootLink = await screen.findByText('/');
+    fireEvent.click(rootLink);
+
+    // upon clicking the link in the breadcrumb the filter text should be reset.
+    await waitFor(() => expect(textFilterInput.getInputValue()).toBeFalsy());
   });
 });

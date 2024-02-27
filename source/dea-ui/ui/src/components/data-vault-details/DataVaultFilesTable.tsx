@@ -90,7 +90,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
       groupValuesLabel: 'File Name Values',
     },
   ];
-  const { items, filterProps, collectionProps, paginationProps } = useCollection(data, {
+  const { items, filterProps, collectionProps, paginationProps, actions } = useCollection(data, {
     filtering: {
       empty: TableEmptyDisplay(dataVaultDetailLabels.noFilesLabel, dataVaultDetailLabels.noFilesDisplayLabel),
       noMatch: TableNoMatchDisplay(dataVaultDetailLabels.noFilesLabel),
@@ -440,6 +440,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
             data-testid="file-breadcrumb"
             onClick={(event) => {
               event.preventDefault();
+              actions.setFiltering('');
               setFilesTableState((state) => ({
                 ...state,
                 basePath: event.detail.href.replaceAll('#', '/'),
