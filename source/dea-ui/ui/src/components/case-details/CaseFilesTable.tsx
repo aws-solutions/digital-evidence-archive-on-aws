@@ -9,7 +9,6 @@ import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { PropertyFilterProperty, useCollection } from '@cloudscape-design/collection-hooks';
 import {
   Box,
-  BreadcrumbGroup,
   Button,
   Header,
   Pagination,
@@ -24,6 +23,7 @@ import { useAvailableEndpoints } from '../../api/auth';
 import { restoreFile, useGetCaseActions, useListCaseFiles } from '../../api/cases';
 import {
   accessiblityLabels,
+  breadcrumbLabels,
   caseStatusLabels,
   commonLabels,
   commonTableLabels,
@@ -35,6 +35,7 @@ import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadFiles, canRestoreFiles, canUploadFiles } from '../../helpers/userActionSupport';
+import Breadcrumb, { BreadcrumbItem } from '../common-components/Breadcrumb';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStringsForPropertyFilter } from '../common-components/commonDefinitions';
 import { ConfirmModal } from '../common-components/ConfirmModal';
@@ -49,6 +50,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const [filesTableState, setFilesTableState] = React.useState({
     textFilter: '',
     basePath: '/',
+    label: 'Case files',
   });
   const { data, isLoading } = useListCaseFiles(props.caseId, filesTableState.basePath);
   const [selectedFiles, setSelectedFiles] = React.useState<DownloadDTO[]>([]);
@@ -95,13 +97,15 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   }
 
   const pathParts = filesTableState.basePath.split('/');
-  const breadcrumbItems = [{ text: '/', href: '#' }];
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: breadcrumbLabels.rootLabel, value: '#', iconName: 'folder' },
+  ];
 
   let hrefString = '#';
   pathParts.forEach((part) => {
     if (part !== '') {
       hrefString += part + '#';
-      breadcrumbItems.push({ text: part, href: hrefString });
+      breadcrumbItems.push({ label: part, value: hrefString, iconName: 'folder' });
     }
   });
 
@@ -115,6 +119,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           e.preventDefault();
           setFilesTableState((state) => ({
             ...state,
+            label: caseFile.fileName,
             basePath: filesTableState.basePath + caseFile.fileName + '/',
           }));
         }}
@@ -327,18 +332,23 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
             filteringPlaceholder={filesListLabels.searchLabel}
             filteringAriaLabel={filesListLabels.searchLabel}
           />
-          <BreadcrumbGroup
-            data-testid="file-breadcrumb"
+          <Breadcrumb
+            data-testid="files-breadcrumb"
+            breadcrumbItems={breadcrumbItems}
+            filesTableState={filesTableState}
             onClick={(event) => {
               event.preventDefault();
               actions.setFiltering('');
               setFilesTableState((state) => ({
                 ...state,
-                basePath: event.detail.href.replaceAll('#', '/'),
+                label: event.detail.selectedOption
+                  ? event.detail.selectedOption.label
+                  : event.detail.href.replaceAll('#', '/'),
+                basePath: event.detail.selectedOption
+                  ? event.detail.selectedOption.value.replaceAll('#', '/')
+                  : event.detail.href.replaceAll('#', '/'),
               }));
             }}
-            items={breadcrumbItems}
-            ariaLabel="Breadcrumbs"
           />
         </SpaceBetween>
       }

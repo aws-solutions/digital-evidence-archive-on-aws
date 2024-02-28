@@ -7,7 +7,6 @@ import { DeaDataVaultFile } from '@aws/dea-app/lib/models/data-vault-file';
 import { PropertyFilterProperty, useCollection } from '@cloudscape-design/collection-hooks';
 import {
   Box,
-  BreadcrumbGroup,
   Button,
   Checkbox,
   ColumnLayout,
@@ -44,6 +43,7 @@ import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import ActionContainer from '../common-components/ActionContainer';
+import Breadcrumb, { BreadcrumbItem } from '../common-components/Breadcrumb';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStringsForPropertyFilter } from '../common-components/commonDefinitions';
 
@@ -62,6 +62,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
   const [filesTableState, setFilesTableState] = useState({
     textFilter: '',
     basePath: '/',
+    label: 'Case files',
   });
   const { data, isLoading } = useListDataVaultFiles(props.dataVaultId, filesTableState.basePath);
   const [selectedFiles, setSelectedFiles] = useState<DeaDataVaultFile[]>([]);
@@ -121,13 +122,15 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
   }
 
   const pathParts = filesTableState.basePath.split('/');
-  const breadcrumbItems = [{ text: '/', href: '#' }];
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: breadcrumbLabels.rootLabel, value: '#', iconName: 'folder' },
+  ];
 
   let hrefString = '#';
   pathParts.forEach((part) => {
     if (part !== '') {
       hrefString += part + '#';
-      breadcrumbItems.push({ text: part, href: hrefString });
+      breadcrumbItems.push({ label: part, value: hrefString, iconName: 'folder' });
     }
   });
 
@@ -225,6 +228,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
           e.preventDefault();
           setFilesTableState((state) => ({
             ...state,
+            label: dataVaultFile.fileName,
             basePath: filesTableState.basePath + dataVaultFile.fileName + '/',
           }));
         }}
@@ -317,9 +321,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
   // table header Element
   const tableHeader = (
     <Header variant="h2" description={tableHeaderDescription()} actions={tableActions()}>
-      <SpaceBetween direction="horizontal" size="xs">
-        <span>{`${dataVaultDetailLabels.filesLabel} (${items.length})`}</span>
-      </SpaceBetween>
+      <span>{`${dataVaultDetailLabels.filesLabel} (${items.length})`}</span>
     </Header>
   );
 
@@ -436,19 +438,23 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
               </Checkbox>
             </Box>
           </ColumnLayout>
-          <BreadcrumbGroup
-            data-testid="file-breadcrumb"
+          <Breadcrumb
+            data-testid="files-breadcrumb"
+            breadcrumbItems={breadcrumbItems}
+            filesTableState={filesTableState}
             onClick={(event) => {
               event.preventDefault();
               actions.setFiltering('');
               setFilesTableState((state) => ({
                 ...state,
-                basePath: event.detail.href.replaceAll('#', '/'),
+                label: event.detail.selectedOption
+                  ? event.detail.selectedOption.label
+                  : event.detail.href.replaceAll('#', '/'),
+                basePath: event.detail.selectedOption
+                  ? event.detail.selectedOption.value.replaceAll('#', '/')
+                  : event.detail.href.replaceAll('#', '/'),
               }));
             }}
-            items={breadcrumbItems}
-            ariaLabel={breadcrumbLabels.breadcrumbLabel}
-            expandAriaLabel={breadcrumbLabels.breadcrumbLabel}
           />
         </SpaceBetween>
       }

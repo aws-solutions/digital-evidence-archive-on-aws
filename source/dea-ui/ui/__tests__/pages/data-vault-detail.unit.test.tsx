@@ -186,7 +186,7 @@ describe('DataVaultDetailsPage', () => {
     expect(fileEntry).toBeTruthy();
 
     // click the breadcrumb to return to the root
-    const rootLink = await screen.findByText('/');
+    const rootLink = await screen.findByTestId('files-breadcrumb');
     fireEvent.click(rootLink);
 
     const table = await screen.findByTestId('file-table');

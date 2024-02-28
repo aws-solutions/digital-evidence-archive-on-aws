@@ -7,12 +7,16 @@ import Axios from 'axios';
 import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
+import Breadcrumb from '../../src/components/common-components/Breadcrumb';
 
 const push = jest.fn();
 
 const CASE_ID = '01GV15BH762P6MW1QH8EQDGBFQ';
 const CASE_NAME = 'fakecase';
 interface Query {
+  caseId: string | object;
+  caseName: string | object;
+  fileId?: string | object;
   caseId: string | object;
   caseName: string | object;
   fileId?: string | object;
@@ -375,12 +379,12 @@ describe('CaseDetailsPage', () => {
     // we should now see the new file "sushi.png"
     await waitFor(() => expect(screen.getByTestId('sushi.png-file-button')).toBeDefined());
 
-    const breadcrumb = wrapper(page.container).findBreadcrumbGroup();
+    const breadcrumb = screen.getByTestId('files-breadcrumb');
 
-    await waitFor(() => expect(breadcrumb?.findBreadcrumbLinks().length).toEqual(2));
+    expect(breadcrumb).toBeDefined();
 
     // click the breadcrumb to return to the root
-    const rootLink = await screen.findByText('/');
+    const rootLink = await screen.findByTestId('files-breadcrumb');
     fireEvent.click(rootLink);
 
     // should find the original rows again

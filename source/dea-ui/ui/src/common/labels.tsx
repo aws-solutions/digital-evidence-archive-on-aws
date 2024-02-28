@@ -337,6 +337,12 @@ export const breadcrumbLabels = {
   dataSyncTasks: 'Tasks',
   editDataVaultLabel: 'Edit data vault',
   breadcrumbLabel: 'Breadcrumbs',
+  breadcrumbIconLabel: 'Breadcrumb icon',
+  nextLevelIconLabel: 'Next level icon',
+  rootDescriptiveLabel: 'Case files root',
+  rootLabel: 'Case files',
+  selectFileLevelDropdownLabel: 'Select folder',
+  formFieldLabel: 'Select folder level',
 };
 
 export const navigationLabels = {
