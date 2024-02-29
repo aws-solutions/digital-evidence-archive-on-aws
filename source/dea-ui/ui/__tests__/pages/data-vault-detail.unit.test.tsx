@@ -503,7 +503,7 @@ describe('DataVaultDetailsPage', () => {
     await waitFor(() => expect(screen.queryByTestId('API.md-file-button')).toBeFalsy());
 
     // click the breadcrumb to return to the root
-    const rootLink = await screen.findByText('/');
+    const rootLink = await screen.findByTestId('files-breadcrumb');
     fireEvent.click(rootLink);
 
     // upon clicking the link in the breadcrumb the filter text should be reset.

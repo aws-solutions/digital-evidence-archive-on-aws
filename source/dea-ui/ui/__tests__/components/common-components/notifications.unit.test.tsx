@@ -20,7 +20,7 @@ jest.mock('../../../src/context/NotificationsContext');
 const mockUseNotifications = jest.mocked(useNotifications);
 
 describe('notifications', () => {
-  it('should render with a counter', async () => {
+  it('should render', async () => {
     mockUseNotifications.mockImplementation(() => {
       return {
         notifications: [error, success],

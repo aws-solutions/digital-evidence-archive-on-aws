@@ -17,9 +17,6 @@ interface Query {
   caseId: string | object;
   caseName: string | object;
   fileId?: string | object;
-  caseId: string | object;
-  caseName: string | object;
-  fileId?: string | object;
   fileName?: string | object;
 }
 let query: Query = {
@@ -379,7 +376,7 @@ describe('CaseDetailsPage', () => {
     // we should now see the new file "sushi.png"
     await waitFor(() => expect(screen.getByTestId('sushi.png-file-button')).toBeDefined());
 
-    const breadcrumb = screen.getByTestId('files-breadcrumb');
+    const breadcrumb = screen.getByTestId('breadcrumb-length-2');
 
     expect(breadcrumb).toBeDefined();
 
@@ -558,7 +555,7 @@ describe('CaseDetailsPage', () => {
     await waitFor(() => expect(screen.queryByTestId('API.md-file-button')).toBeFalsy());
 
     // click the breadcrumb to return to the root
-    const rootLink = await screen.findByText('/');
+    const rootLink = await screen.findByTestId('files-breadcrumb');
     fireEvent.click(rootLink);
 
     // upon clicking the link in the breadcrumb the filter text should be reset.

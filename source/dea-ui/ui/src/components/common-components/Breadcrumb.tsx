@@ -31,7 +31,11 @@ export default function Breadcrumb({
 
   if (breadcrumbItems.length === 1) {
     return (
-      <SpaceBetween direction="horizontal" size="xxs">
+      <SpaceBetween
+        data-testid={`breadcrumb-length-${breadcrumbItems.length}`}
+        direction="horizontal"
+        size="xxs"
+      >
         <span role="img" aria-label={breadcrumbLabels.breadcrumbIconLabel}>
           <Icon name="calendar" variant="disabled" />
         </span>
@@ -42,7 +46,11 @@ export default function Breadcrumb({
     );
   } else if (breadcrumbItems.length === 2) {
     return (
-      <SpaceBetween direction="horizontal" size="xxs">
+      <SpaceBetween
+        data-testid={`breadcrumb-length-${breadcrumbItems.length}`}
+        direction="horizontal"
+        size="xxs"
+      >
         <span role="img" aria-label={breadcrumbLabels.breadcrumbIconLabel}>
           <Icon name="calendar" variant="link" />
         </span>
@@ -64,7 +72,11 @@ export default function Breadcrumb({
     );
   } else if (breadcrumbItems.length === 3) {
     return (
-      <SpaceBetween direction="horizontal" size="xxs">
+      <SpaceBetween
+        data-testid={`breadcrumb-length-${breadcrumbItems.length}`}
+        direction="horizontal"
+        size="xxs"
+      >
         <span role="img" aria-label={breadcrumbLabels.breadcrumbIconLabel}>
           <Icon name="calendar" variant="link" />
         </span>
@@ -92,7 +104,12 @@ export default function Breadcrumb({
     );
   } else {
     return (
-      <SpaceBetween direction="horizontal" size="xxs" alignItems="center">
+      <SpaceBetween
+        data-testid={`breadcrumb-length-${breadcrumbItems.length}`}
+        direction="horizontal"
+        size="xxs"
+        alignItems="center"
+      >
         <span role="img" aria-label={breadcrumbLabels.breadcrumbIconLabel}>
           <Icon name="calendar" variant="link" />
         </span>
