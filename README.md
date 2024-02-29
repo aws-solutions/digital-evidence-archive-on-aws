@@ -619,3 +619,7 @@ Licensed under the Apache License Version 2.0 (the "License"). You may not use t
 <http://www.apache.org/licenses/>
 
 or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+## Collection of Anonymous Operational Metrics
+This solution collects anonymous operational metrics to help AWS improve the quality of features of the solution. For more information, including how to disable
+this capability, please see the [implementation guide](https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html).
