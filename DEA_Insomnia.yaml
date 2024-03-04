@@ -1433,7 +1433,7 @@ resources:
     parentId: wrk_01f26046da65445daff05b4377c4dfdf
     modified: 1683871625859
     created: 1683871620937
-    url: "{{deaApiUrl}}cases/{{caseUlid}}/userMemberships"
+    url: "{{ _.deaApiUrl }}cases/{{caseUlid}}/users/{{userUlid}}/memberships"
     name: PUT case membership update
     description: ""
     method: PUT
