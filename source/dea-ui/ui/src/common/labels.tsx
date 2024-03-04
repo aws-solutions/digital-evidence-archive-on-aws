@@ -465,8 +465,13 @@ export const dataSyncTaskListLabels = {
   runDataSyncTaskLabel: 'Transfer files',
   searchDataSyncTasksLabel: 'Search by task ID',
   dataSyncTasksLabel: 'File transfer tasks',
-  dataSyncTasksPageDescription:
-    'Choose a task and start the file transfer. For file transfer instructions, see the',
+  dataSyncTasksPageDescription: (
+    <>
+      All DataSync tasks are displayed with associated task details. Choose a task and start the file
+      transfer. <br />
+      For file transfer instructions, see the
+    </>
+  ),
   dataSyncTaskCreationInstructions: 'Task Creation Instructions.',
   runTaskModalTitle: 'Confirm details are correct',
   runTaskModalDescription: 'To update task details, sign into AWS DataSync with your DEA account.',

@@ -53,7 +53,7 @@ export interface DataVaultsTableProps {
   useDataSyncTasksFectcher: DataSyncTaskFetcherSignature;
   detailPage: string;
   headerLabel: string;
-  headerDescription: string;
+  headerDescription: string | JSX.Element;
 }
 
 function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
@@ -66,7 +66,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const { pushNotification } = useNotifications();
 
-  function fecthDataSyncTasks(
+  function fetchDataSyncTasks(
     dataSyncTasks: DeaDataSyncTask[],
     dataSyncTasksLoading: boolean,
     dataVaults: DeaDataVault[],
@@ -82,7 +82,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
   }
 
   const { data, isLoading } = useMemo(
-    () => fecthDataSyncTasks(dataSyncTasks, dataSyncTasksLoading, dataVaults, dataVaultsLoading),
+    () => fetchDataSyncTasks(dataSyncTasks, dataSyncTasksLoading, dataVaults, dataVaultsLoading),
     [dataSyncTasks, dataSyncTasksLoading, dataVaults, dataVaultsLoading]
   );
   // Property and date filter collections
@@ -290,6 +290,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         >
           {commonTableLabels.implementationGuideLabel}
         </Link>
+        .
       </>
     );
   }

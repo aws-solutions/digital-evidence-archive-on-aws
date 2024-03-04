@@ -1,17 +1,8 @@
 import '@testing-library/jest-dom';
-import {
-  findAllByText,
-  fireEvent,
-  getAllByLabelText,
-  getByAltText,
-  getByLabelText,
-  getByText,
-  render,
-  screen,
-} from '@testing-library/react';
-import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
-import Breadcrumb, { BreadcrumbItem } from '../../src/components/common-components/Breadcrumb';
-import { Icon, IconProps } from '@cloudscape-design/components';
+import { render, screen } from '@testing-library/react';
+import { breadcrumbLabels } from '../../../src/common/labels';
+import Breadcrumb, { BreadcrumbItem } from '../../../src/components/common-components/Breadcrumb';
+import { IconProps } from '@cloudscape-design/components';
 
 let breadcrumbItems: BreadcrumbItem[] = [
   { label: 'Case Files', value: '#', iconName: 'icon' as IconProps.Name },
