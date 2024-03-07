@@ -134,7 +134,7 @@ function DataVaultDetailsBody(props: DataVaultDetailsBodyProps): JSX.Element {
                         />
                       </Popover>
                     </Box>
-                    {data.ulid}
+                    <p>{data.ulid}</p>
                   </span>
                 </TextContent>
               </SpaceBetween>
