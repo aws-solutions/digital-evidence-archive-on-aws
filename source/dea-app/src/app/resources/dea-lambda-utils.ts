@@ -47,7 +47,7 @@ export const runPreExecutionChecks = async (
   // since it is not encoded from the id pool
   // Additionally we get the first and last name of the user from the id token
   const idToken = getOauthToken(event).id_token;
-  const idTokenPayload = await getTokenPayload(idToken, process.env.AWS_REGION ?? 'us-east-1');
+  const idTokenPayload = await getTokenPayload(idToken);
   const deaRoleString = event.requestContext.identity.userArn;
   if (!deaRoleString) {
     logger.error(

@@ -24,7 +24,6 @@ import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { listSessionsForUser, updateSession } from '../../../persistence/session';
 import { getUserByTokenId, listUsers } from '../../../persistence/user';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
-import { testEnv } from '../../../test-e2e/helpers/settings';
 import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
 import {
   dummyContext,
@@ -43,7 +42,6 @@ describe('lambda pre-execution checks', () => {
   const testUser = `lambdaPreExecutionChecksTestUser${suffix}`;
   const firstName = 'PreExecCheck';
   const lastName = 'TestUser';
-  const region = testEnv.awsRegion;
 
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
@@ -64,7 +62,7 @@ describe('lambda pre-execution checks', () => {
       id_token: oauthToken.id_token,
       expires_in: oauthToken.expires_in,
     })}; refreshToken=${JSON.stringify({ refresh_token: oauthToken.refresh_token })}`;
-    const tokenPayload = await getTokenPayload(oauthToken.id_token, region);
+    const tokenPayload = await getTokenPayload(oauthToken.id_token);
     const tokenId = tokenPayload.sub;
     const idPoolId = event.requestContext.identity.cognitoIdentityId ?? 'us-east-1:1-2-3-a-b-c';
 
@@ -127,7 +125,7 @@ describe('lambda pre-execution checks', () => {
 
     const result = await cognitoHelper.getIdTokenForUser(testUser);
     const idToken2 = result.id_token;
-    const tokenId2 = (await getTokenPayload(idToken2, region)).sub;
+    const tokenId2 = (await getTokenPayload(idToken2)).sub;
     expect(tokenId2).toStrictEqual(tokenId);
 
     const event2 = getDummyEvent();
@@ -359,7 +357,7 @@ describe('lambda pre-execution checks', () => {
     const user = `NoIdentityPoolId${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'NoIdentityPool', 'PoolId');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
-    const tokenPayload = await getTokenPayload(oauthToken.id_token, region);
+    const tokenPayload = await getTokenPayload(oauthToken.id_token);
     const tokenId = tokenPayload.sub;
     const endIdPoolId = `oldusernowupdatesidpoolid${suffix}`;
 

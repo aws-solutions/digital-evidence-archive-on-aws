@@ -13,10 +13,7 @@ export const refreshToken: DEAGatewayProxyHandler = async (event) => {
   const oauthToken = getOauthToken(event);
   const [refreshTokenResult, identityPoolId, userPoolId] = await useRefreshToken(oauthToken.refresh_token);
 
-  const idTokenPayload = await getTokenPayload(
-    refreshTokenResult.id_token,
-    process.env.AWS_REGION ?? 'us-east-1'
-  );
+  const idTokenPayload = await getTokenPayload(refreshTokenResult.id_token);
 
   const expirationTime = getExpirationTimeFromToken(idTokenPayload);
 

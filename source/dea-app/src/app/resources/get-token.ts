@@ -22,10 +22,7 @@ export const getToken: DEAGatewayProxyHandler = async (event) => {
     event.headers['callback-override']
   );
 
-  const idTokenPayload = await getTokenPayload(
-    getTokenResult.id_token,
-    process.env.AWS_REGION ?? 'us-east-1'
-  );
+  const idTokenPayload = await getTokenPayload(getTokenResult.id_token);
   let username = idTokenPayload['cognito:username'];
   if (idTokenPayload['given_name'] && idTokenPayload['family_name']) {
     username = `${idTokenPayload['given_name']} ${idTokenPayload['family_name']}`;

@@ -12,8 +12,68 @@ import { getCustomUserAgent, getRequiredEnv } from './lambda-http-helpers';
 import { DeaUserInput } from './models/user';
 
 const stage = getRequiredEnv('STAGE');
+const region = getRequiredEnv('AWS_REGION');
 
-export const getTokenPayload = async (idToken: string, region: string): Promise<CognitoIdTokenPayload> => {
+export const getTokenPayload = async (idToken: string): Promise<CognitoIdTokenPayload> => {
+  const userPoolInfo = await getUserPoolInfo();
+
+  const verifier = CognitoJwtVerifier.create({
+    userPoolId: userPoolInfo.userPoolId,
+    tokenUse: 'id',
+    clientId: userPoolInfo.clientId,
+  });
+
+  try {
+    return await verifier.verify(idToken);
+  } catch (error) {
+    throw new ValidationError('Unable to verify id token: ' + error);
+  }
+};
+
+export const getDeaUserFromToken = async (
+  idTokenPayload: CognitoIdTokenPayload,
+  idPoolId: string
+): Promise<DeaUserInput> => {
+  if (!idTokenPayload['given_name'] || !idTokenPayload['family_name']) {
+    throw new ValidationError('First and/or last name not given in id token.');
+  }
+  const deaUser: DeaUserInput = {
+    tokenId: idTokenPayload.sub,
+    idPoolId,
+    firstName: String(idTokenPayload['given_name']),
+    lastName: String(idTokenPayload['family_name']),
+  };
+
+  return deaUser;
+};
+
+export const getExpirationTimeFromToken = (idTokenPayload: CognitoIdTokenPayload): number => {
+  if (!idTokenPayload['iat'] || !idTokenPayload['exp']) {
+    throw new ValidationError('Missing expiration and auth time');
+  }
+  const expirationTime = idTokenPayload['exp'] - idTokenPayload['iat'];
+
+  return expirationTime;
+};
+
+type CognitoUserPoolInfo = {
+  readonly userPoolId: string;
+  readonly clientId: string;
+};
+
+// Cache the User Pool Info so we do not have to call SSM everytime we want
+// to verify an id token
+let USER_POOL_INFO: CognitoUserPoolInfo | undefined;
+
+const getUserPoolInfo = async (): Promise<CognitoUserPoolInfo> => {
+  if (!USER_POOL_INFO) {
+    USER_POOL_INFO = await loadUserPoolInfoFromSSM();
+  }
+
+  return USER_POOL_INFO;
+};
+
+const loadUserPoolInfoFromSSM = async (): Promise<CognitoUserPoolInfo> => {
   const ssmClient = new SSMClient({ region, customUserAgent: getCustomUserAgent() });
   const userPoolIdPath = `${PARAM_PREFIX}${stage}-userpool-id-param`;
   const clientIdPath = `${PARAM_PREFIX}${stage}-userpool-client-id-param`;
@@ -40,41 +100,9 @@ export const getTokenPayload = async (idToken: string, region: string): Promise<
     response.Parameters[0].Name === clientIdPath
       ? response.Parameters[0].Value
       : response.Parameters[1].Value;
-  const verifier = CognitoJwtVerifier.create({
-    userPoolId: userPoolId,
-    tokenUse: 'id',
-    clientId: clientId,
-  });
 
-  try {
-    return await verifier.verify(idToken);
-  } catch (error) {
-    throw new ValidationError('Unable to verify id token: ' + error);
-  }
-};
-
-export const getDeaUserFromToken = async (
-  idTokenPayload: CognitoIdTokenPayload,
-  idPoolId: string
-): Promise<DeaUserInput> => {
-  if (!idTokenPayload['given_name'] || !idTokenPayload['family_name']) {
-    throw new ValidationError('First and/or last name not given in id token.');
-  }
-  const deaUser: DeaUserInput = {
-    tokenId: idTokenPayload.sub,
-    idPoolId,
-    firstName: idTokenPayload['given_name'] + '',
-    lastName: idTokenPayload['family_name'] + '',
+  return {
+    userPoolId,
+    clientId,
   };
-
-  return deaUser;
-};
-
-export const getExpirationTimeFromToken = (idTokenPayload: CognitoIdTokenPayload): number => {
-  if (!idTokenPayload['iat'] || !idTokenPayload['exp']) {
-    throw new ValidationError('Missing expiration and auth time');
-  }
-  const expirationTime = idTokenPayload['exp'] - idTokenPayload['iat'];
-
-  return expirationTime;
 };

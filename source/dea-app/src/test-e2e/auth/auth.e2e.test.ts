@@ -50,7 +50,7 @@ describe('API authentication', () => {
   it('should have the DEARole field in the id Token', async () => {
     const [_creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
-    const payload = await getTokenPayload(idToken.id_token, region);
+    const payload = await getTokenPayload(idToken.id_token);
     expect(payload['custom:DEARole']).toStrictEqual('AuthTestGroup');
   }, 40000);
 
@@ -473,7 +473,7 @@ describe('API authentication', () => {
     const idToken = retrievedTokens.id_token;
 
     // Confirm IdToken has the correct fields
-    const payload = await getTokenPayload(idToken, region);
+    const payload = await getTokenPayload(idToken);
     expect(payload['custom:DEARole']).toStrictEqual('CaseWorker');
     expect(payload['family_name']).toBeDefined();
     expect(payload['given_name']).toBeDefined();

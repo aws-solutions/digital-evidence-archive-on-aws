@@ -237,7 +237,7 @@ export default class CognitoHelper {
 
   public async getUserDbId(username: string, repositoryProvider: UserModelRepositoryProvider) {
     const { id_token } = await this.getIdTokenForUser(username);
-    const tokenId = (await getTokenPayload(id_token, this.region)).sub;
+    const tokenId = (await getTokenPayload(id_token)).sub;
     const dbUser = await getUserByTokenId(tokenId, repositoryProvider);
     if (!dbUser) {
       throw new Error('Failed to get user from db');
@@ -253,7 +253,7 @@ export default class CognitoHelper {
         // NOTE: it won't be there unless you called
         // lambda using creds from the the user
         const { id_token } = await this.getIdTokenForUser(username);
-        const tokenId = (await getTokenPayload(id_token, this.region)).sub;
+        const tokenId = (await getTokenPayload(id_token)).sub;
         if (repositoryProvider) {
           const dbUser = await getUserByTokenId(tokenId, repositoryProvider);
           if (dbUser) {
