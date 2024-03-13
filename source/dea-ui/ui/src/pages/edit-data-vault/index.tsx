@@ -51,7 +51,7 @@ const EditDataVaultPage: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} pageName={pageName}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-vaults" pageName={pageName}>
       <Box margin={{ bottom: 'l' }}>
         <EditDataVaultBody dataVaultId={dataVaultId} />
       </Box>

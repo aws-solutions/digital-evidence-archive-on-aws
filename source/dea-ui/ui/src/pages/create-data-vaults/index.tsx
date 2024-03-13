@@ -34,7 +34,7 @@ const Home: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} pageName={pageName}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-vaults" pageName={pageName}>
       <Box margin={{ bottom: 'l' }}>
         <CreateDataVaultBody />
       </Box>

@@ -34,7 +34,7 @@ const Home: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} navigationHide pageName={pageName}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/" pageName={pageName}>
       <Box margin={{ bottom: 'l' }}>
         <CreateCaseBody />
       </Box>

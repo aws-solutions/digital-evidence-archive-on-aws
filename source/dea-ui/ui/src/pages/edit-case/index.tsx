@@ -46,7 +46,7 @@ const EditCasePage: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} navigationHide pageName={pageName}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/" pageName={pageName}>
       <Box margin={{ bottom: 'l' }}>
         <EditCaseBody caseId={caseId} />
       </Box>
