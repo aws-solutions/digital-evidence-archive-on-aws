@@ -124,6 +124,7 @@ describe('Dashboard', () => {
       applyActionText: 'Apply',
       allPropertiesLabel: 'All properties',
       tokenLimitShowMore: 'Show more',
+      tokenOperatorAriaLabel: 'Boolean operator',
       tokenLimitShowFewer: 'Show fewer',
       clearFiltersText: 'Clear filters',
       clearAriaLabel: 'Clear field',
@@ -133,8 +134,9 @@ describe('Dashboard', () => {
   });
 
   it('removeTokenButtonAriaLabel returns the expected string', () => {
-    const result = i18nStringsForPropertyFilter.removeTokenButtonAriaLabel();
-    expect(result).toEqual('Remove token');
+    const token = { propertyKey: 'name' };
+    const result = i18nStringsForPropertyFilter.removeTokenButtonAriaLabel(token);
+    expect(result).toEqual('Remove token name');
   });
 
   it('can deactivate a case', async () => {

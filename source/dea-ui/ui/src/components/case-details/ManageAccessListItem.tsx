@@ -67,52 +67,54 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
   }
 
   return (
-    <Grid
-      key={caseMember.userUlid}
-      gridDefinition={[{ colspan: { default: 12, xs: 10 } }, { colspan: { default: 12, xs: 2 } }]}
-    >
-      <ColumnLayout columns={2}>
-        <FormField label={`${caseMember.userFirstName} ${caseMember.userLastName}`} />
-        <FormField label={manageCaseAccessLabels.manageMemberPermissionsLabel}>
-          <Multiselect
-            data-testid={`${caseMember.userUlid}-multiselect`}
-            selectedOptions={selectedOptions}
-            onChange={onPermissionsChangeHandler}
-            deselectAriaLabel={(e) => `Remove ${e.label}`}
-            options={caseActionOptions.selectableOptions()}
-            placeholder={manageCaseAccessLabels.manageMemberPermissionsPlaceholder}
-            tokenLimit={1}
-            disabled={isDisabled}
-            i18nStrings={{
-              tokenLimitShowMore: commonTableLabels.limitShowMoreLabel,
-              tokenLimitShowFewer: commonTableLabels.limitShowFewerLabel,
-            }}
-            selectedAriaLabel={commonLabels.selectedLabel}
+    <FormField stretch={true}>
+      <Grid
+        key={caseMember.userUlid}
+        gridDefinition={[{ colspan: { default: 12, xs: 10 } }, { colspan: { default: 12, xs: 2 } }]}
+      >
+        <ColumnLayout columns={2}>
+          <FormField label={`${caseMember.userFirstName} ${caseMember.userLastName}`} />
+          <FormField label={manageCaseAccessLabels.manageMemberPermissionsLabel}>
+            <Multiselect
+              data-testid={`${caseMember.userUlid}-multiselect`}
+              selectedOptions={selectedOptions}
+              onChange={onPermissionsChangeHandler}
+              deselectAriaLabel={(e) => `Remove ${e.label}`}
+              options={caseActionOptions.selectableOptions()}
+              placeholder={manageCaseAccessLabels.manageMemberPermissionsPlaceholder}
+              tokenLimit={1}
+              disabled={isDisabled}
+              i18nStrings={{
+                tokenLimitShowMore: commonTableLabels.limitShowMoreLabel,
+                tokenLimitShowFewer: commonTableLabels.limitShowFewerLabel,
+              }}
+              selectedAriaLabel={commonLabels.selectedLabel}
+            />
+          </FormField>
+        </ColumnLayout>
+        <div className={styles['button-container']}>
+          <ConfirmModal
+            testid="access-confirm-modal"
+            isOpen={isOpenRemoveModal}
+            title={manageCaseAccessLabels.removeCaseMemberRequestTitle(
+              `${caseMember.userFirstName} ${caseMember.userLastName}`
+            )}
+            message={manageCaseAccessLabels.removeCaseMemberRequestMessage}
+            confirmButtonText={commonLabels.removeButton}
+            confirmAction={removeCaseMemberHandler}
+            cancelAction={() => setIsOpenRemoveModal(false)}
           />
-        </FormField>
-      </ColumnLayout>
-      <div className={styles['button-container']}>
-        <ConfirmModal
-          testid="access-confirm-modal"
-          isOpen={isOpenRemoveModal}
-          title={manageCaseAccessLabels.removeCaseMemberRequestTitle(
-            `${caseMember.userFirstName} ${caseMember.userLastName}`
-          )}
-          message={manageCaseAccessLabels.removeCaseMemberRequestMessage}
-          confirmButtonText={commonLabels.removeButton}
-          confirmAction={removeCaseMemberHandler}
-          cancelAction={() => setIsOpenRemoveModal(false)}
-        />
-        <Button
-          data-testid={`${caseMember.userUlid}-remove-button`}
-          onClick={() => setIsOpenRemoveModal(true)}
-          disabled={isDisabled}
-        >
-          {commonLabels.removeButton}
-        </Button>
-      </div>
-      <SpaceBetween size="xs"></SpaceBetween>
-    </Grid>
+          <Button
+            data-testid={`${caseMember.userUlid}-remove-button`}
+            onClick={() => setIsOpenRemoveModal(true)}
+            disabled={isDisabled}
+          >
+            {commonLabels.removeButton}
+          </Button>
+        </div>
+        <SpaceBetween size="xs"></SpaceBetween>
+      </Grid>
+    </FormField>
   );
 }
 

@@ -4,7 +4,7 @@
  */
 
 import { CaseAction, OWNER_ACTIONS } from '@aws/dea-app/lib/models/case-action';
-import { AppLayoutProps, SelectProps } from '@cloudscape-design/components';
+import { AppLayoutProps, SelectProps, TableProps } from '@cloudscape-design/components';
 
 export const systemUseNotificationText =
   'CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT according ' +
@@ -51,6 +51,7 @@ export const commonLabels = {
   copyLinkLabel: 'Copy AWS DataSync link',
   linkCopiedLabel: 'Link copied',
   selectedLabel: 'selected',
+  clearLabel: 'Clear field',
 };
 
 export const commonTableLabels = {
@@ -126,6 +127,8 @@ export const caseListLabels = {
   casesPageDescription: 'Search for cases, view case details, or create new cases to store digital evidence.',
   systemCasesPageDescription:
     'All cases within the system are listed, including ones that haven’t been shared with you. You can search for cases and give member access.',
+  renderAriaLiveLabel: (data: TableProps.LiveAnnouncement) =>
+    `Display items ${data.firstIndex} to ${data.lastIndex} of ${data.totalItemsCount}`,
 };
 
 export const filesListLabels = {

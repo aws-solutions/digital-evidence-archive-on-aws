@@ -89,6 +89,7 @@ function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX
             onLoadItems={handleLoadItems}
             onSelect={({ detail }) => setSelected(detail.value)}
             ariaDescribedby={data.map((user: DeaUser) => `${user.firstName}-${user.lastName}`).join(' ')}
+            clearAriaLabel={commonLabels.clearLabel}
           />
           <Button onClick={onSubmitHandler} disabled={!selected || selected !== value}>
             {commonLabels.addButton}
