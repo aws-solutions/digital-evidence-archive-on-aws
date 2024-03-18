@@ -31,7 +31,7 @@ import { useListAllCases } from '../../api/cases';
 import { createDataVaultFileAssociation, useListDataVaultFiles } from '../../api/data-vaults';
 import { ScopedDeaCaseDTO } from '../../api/models/case';
 import {
-  accessiblityLabels,
+  accessibilityLabels,
   breadcrumbLabels,
   commonLabels,
   commonTableLabels,
@@ -289,8 +289,8 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         {dataVaultDetailLabels.filesTableHeaderDescription}{' '}
         <Link
           external
-          externalIconAriaLabel={accessiblityLabels.implementationGuideLinkLabel}
-          ariaLabel={accessiblityLabels.implementationGuideLinkLabel}
+          externalIconAriaLabel={accessibilityLabels.implementationGuideLinkLabel}
+          ariaLabel={accessibilityLabels.implementationGuideLinkLabel}
           href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
         >
           {commonTableLabels.implementationGuideLabel}
@@ -339,7 +339,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         }
       >
         {commonTableLabels.implementationGuideLabel}
-        <span role="img" aria-label={accessiblityLabels.implementationGuideLinkLabel}>
+        <span role="img" aria-label={accessibilityLabels.implementationGuideLinkLabel}>
           <Icon name="external" variant="inverted" />
         </span>
       </Button>
@@ -359,10 +359,14 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
       }}
       selectedItems={selectedFiles}
       ariaLabels={{
-        selectionGroupLabel: accessiblityLabels.tableCheckboxSelectionGroupLabel,
+        selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
         allItemsSelectionLabel: ({ selectedItems }) =>
           `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
-        itemSelectionLabel: (_, item) => item.fileName,
+        itemSelectionLabel: ({ selectedItems }, item) => {
+          console.log(item);
+          const isItemSelected = selectedItems.filter((i) => i.fileName === item.fileName).length;
+          return `${item} is${isItemSelected ? ' ' : ' not'} selected`;
+        },
       }}
       columnDefinitions={[
         {

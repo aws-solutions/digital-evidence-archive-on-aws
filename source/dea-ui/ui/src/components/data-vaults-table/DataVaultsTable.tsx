@@ -23,7 +23,7 @@ import { useState } from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { DeaListResult } from '../../api/models/api-results';
 import {
-  accessiblityLabels,
+  accessibilityLabels,
   commonLabels,
   commonTableLabels,
   dataVaultListLabels,
@@ -123,8 +123,8 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
             {dataVaultListLabels.howItWorksDescription}{' '}
             <Link
               external
-              externalIconAriaLabel={accessiblityLabels.implementationGuideLinkLabel}
-              ariaLabel={accessiblityLabels.implementationGuideLinkLabel}
+              externalIconAriaLabel={accessibilityLabels.implementationGuideLinkLabel}
+              ariaLabel={accessibilityLabels.implementationGuideLinkLabel}
               href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
             >
               {commonTableLabels.implementationGuideLabel}

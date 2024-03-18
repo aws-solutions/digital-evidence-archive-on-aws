@@ -6,6 +6,7 @@
 import { Html, Head, Main, NextScript } from 'next/document';
 
 const Document = () => {
+  // can remove this file when doing localization
   return (
     <Html lang="en-US">
       <Head />

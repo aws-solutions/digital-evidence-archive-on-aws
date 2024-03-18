@@ -7,8 +7,9 @@ import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { Tabs, TabsProps } from '@cloudscape-design/components';
 import { useMemo, useState } from 'react';
 import { useGetCaseActions } from '../../api/cases';
-import { caseDetailLabels } from '../../common/labels';
+import { accessibilityLabels, caseDetailLabels } from '../../common/labels';
 import { canInvite, canViewFiles } from '../../helpers/userActionSupport';
+import { i18nStringForTabs } from '../common-components/commonDefinitions';
 import CaseFilesTable from './CaseFilesTable';
 import ManageAccessForm from './ManageAccessForm';
 
@@ -55,7 +56,14 @@ function CaseDetailsTabs(props: CaseDetailsTabsProps): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [data]
   );
-  return <Tabs data-testid="case-details-tabs" tabs={tabs} />;
+  return (
+    <Tabs
+      data-testid="case-details-tabs"
+      ariaLabel={accessibilityLabels.tabsLabel}
+      i18nStrings={i18nStringForTabs}
+      tabs={tabs}
+    />
+  );
 }
 
 export default CaseDetailsTabs;

@@ -83,6 +83,7 @@ export const commonTableLabels = {
   caseAssociationHeader: 'Case association',
   associateButtonLabel: 'Associate to case',
   lastExecutionCompletedHeader: 'Last execution completed',
+  tableCheckboxSelectionGroupLabel: 'File/folder selection:',
 };
 
 export const layoutLabels: AppLayoutProps.Labels = {
@@ -129,6 +130,7 @@ export const caseListLabels = {
     'All cases within the system are listed, including ones that haven’t been shared with you. You can search for cases and give member access.',
   renderAriaLiveLabel: (data: TableProps.LiveAnnouncement) =>
     `Display items ${data.firstIndex} to ${data.lastIndex} of ${data.totalItemsCount}`,
+  tableRadioGroupSelectionLabel: 'Case selection:',
 };
 
 export const filesListLabels = {
@@ -493,7 +495,7 @@ export const dataSyncTasksStatusLabels = {
   unavailable: 'Unavailable',
 };
 
-export const accessiblityLabels = {
+export const accessibilityLabels = {
   implementationGuideLinkLabel: 'Implementation Guide, opens in a new tab',
-  tableCheckboxSelectionGroupLabel: 'File/folder selection:',
+  tabsLabel: 'Tabs',
 };
