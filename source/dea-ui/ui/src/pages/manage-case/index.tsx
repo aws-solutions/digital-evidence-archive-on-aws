@@ -56,7 +56,7 @@ export default function ManageCasePage() {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} pageName={pageName}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/all-cases" pageName={pageName}>
       <ContentLayout
         header={
           <SpaceBetween size="m">

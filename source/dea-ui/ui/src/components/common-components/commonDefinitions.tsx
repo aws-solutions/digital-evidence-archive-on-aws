@@ -31,6 +31,7 @@ export const i18nStringsForPropertyFilter: PropertyFilterProps.I18nStrings = {
   operatorDoesNotContainText: 'Does not contain',
   operatorEqualsText: 'Equals',
   operatorDoesNotEqualText: 'Does not equal',
+  tokenOperatorAriaLabel: 'Boolean operator',
   editTokenHeader: 'Edit filter',
   propertyText: 'Property',
   operatorText: 'Operator',
@@ -42,6 +43,6 @@ export const i18nStringsForPropertyFilter: PropertyFilterProps.I18nStrings = {
   tokenLimitShowFewer: 'Show fewer',
   clearFiltersText: 'Clear filters',
   clearAriaLabel: 'Clear field',
-  removeTokenButtonAriaLabel: () => 'Remove token',
+  removeTokenButtonAriaLabel: (token: PropertyFilterProps.Token) => `Remove token ${token.propertyKey}`,
   enteredTextLabel: (text: string) => `Use: "${text}"`,
 };

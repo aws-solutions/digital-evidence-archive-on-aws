@@ -56,7 +56,7 @@ function FileDetailPage() {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} navigationHide pageName={pageName}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/" pageName={pageName}>
       <FileDetailsBody caseId={caseId} fileId={fileId} setFileName={setFileName} />
     </BaseLayout>
   );

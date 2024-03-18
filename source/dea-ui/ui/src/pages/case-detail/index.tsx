@@ -44,7 +44,7 @@ function CaseDetailsPage() {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} navigationHide pageName={pageName}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/" pageName={pageName}>
       <CaseDetailsBody caseId={data.ulid} data={data} />
     </BaseLayout>
   );

@@ -243,6 +243,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
       trackBy="ulid"
       loading={isLoading}
       variant="full-page"
+      renderAriaLive={caseListLabels.renderAriaLiveLabel}
       items={items}
       loadingText={caseListLabels.loading}
       resizableColumns={true}
