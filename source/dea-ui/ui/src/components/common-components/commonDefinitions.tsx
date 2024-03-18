@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { PropertyFilterProps } from '@cloudscape-design/components';
+import { PropertyFilterProps, TabsProps } from '@cloudscape-design/components';
 import { FlashbarProps } from '@cloudscape-design/components';
 
 export const i18nStringsForFlashbar: FlashbarProps.I18nStrings = {
@@ -45,4 +45,9 @@ export const i18nStringsForPropertyFilter: PropertyFilterProps.I18nStrings = {
   clearAriaLabel: 'Clear field',
   removeTokenButtonAriaLabel: (token: PropertyFilterProps.Token) => `Remove token ${token.propertyKey}`,
   enteredTextLabel: (text: string) => `Use: "${text}"`,
+};
+
+export const i18nStringForTabs: TabsProps.I18nStrings = {
+  scrollLeftAriaLabel: 'Previous tabs',
+  scrollRightAriaLabel: 'Next tabs',
 };

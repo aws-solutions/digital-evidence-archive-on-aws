@@ -22,7 +22,6 @@ import * as React from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { restoreFile, useGetCaseActions, useListCaseFiles } from '../../api/cases';
 import {
-  accessiblityLabels,
   breadcrumbLabels,
   caseStatusLabels,
   commonLabels,
@@ -260,10 +259,14 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       }}
       selectedItems={selectedFiles}
       ariaLabels={{
-        selectionGroupLabel: accessiblityLabels.tableCheckboxSelectionGroupLabel,
+        tableLabel: filesListLabels.caseFilesLabel,
+        selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
         allItemsSelectionLabel: ({ selectedItems }) =>
           `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
-        itemSelectionLabel: (_, item) => item.fileName,
+        itemSelectionLabel: ({ selectedItems }, item) => {
+          const isItemSelected = selectedItems.filter((i) => i.fileName === item.fileName).length;
+          return `${item.fileName} is${isItemSelected ? '' : ' not'} selected`;
+        },
       }}
       isItemDisabled={(item) => item.status !== CaseFileStatus.ACTIVE || !item.isFile}
       columnDefinitions={[

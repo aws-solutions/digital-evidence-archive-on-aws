@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useAvailableEndpoints } from '../api/auth';
 import { getSystemAuditCSV } from '../api/cases';
-import { accessiblityLabels, auditLogLabels, navigationLabels } from '../common/labels';
+import { accessibilityLabels, auditLogLabels, navigationLabels } from '../common/labels';
 import { useNotifications } from '../context/NotificationsContext';
 
 export interface NavigationProps {
@@ -84,7 +84,7 @@ export default function Navigation({ initialHref }: NavigationProps): JSX.Elemen
     {
       type: 'link',
       text: navigationLabels.documentationLabel,
-      externalIconAriaLabel: accessiblityLabels.implementationGuideLinkLabel,
+      externalIconAriaLabel: accessibilityLabels.implementationGuideLinkLabel,
       href: 'https://aws.amazon.com/solutions/implementations/digital-evidence-archive-on-aws',
       external: true,
     }

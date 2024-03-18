@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { createDataVault } from '../../api/data-vaults';
 import {
-  accessiblityLabels,
+  accessibilityLabels,
   commonLabels,
   commonTableLabels,
   createDataVaultLabels,
@@ -44,8 +44,8 @@ function CreateDataVaultsForm(): JSX.Element {
           <Link
             external
             color="inverted"
-            externalIconAriaLabel={accessiblityLabels.implementationGuideLinkLabel}
-            ariaLabel={accessiblityLabels.implementationGuideLinkLabel}
+            externalIconAriaLabel={accessibilityLabels.implementationGuideLinkLabel}
+            ariaLabel={accessibilityLabels.implementationGuideLinkLabel}
             href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
           >
             {commonTableLabels.implementationGuideLabel}
