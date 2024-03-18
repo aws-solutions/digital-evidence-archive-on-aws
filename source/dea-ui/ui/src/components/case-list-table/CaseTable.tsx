@@ -15,7 +15,6 @@ import {
   SpaceBetween,
   StatusIndicator,
   Table,
-  Toggle,
 } from '@cloudscape-design/components';
 import Box from '@cloudscape-design/components/box';
 import Modal from '@cloudscape-design/components/modal';
@@ -42,7 +41,6 @@ import { ConfirmModal } from '../common-components/ConfirmModal';
 import { TableHeader } from '../common-components/TableHeader';
 import { filteringOptions, filteringProperties, searchableColumns } from './caseListDefinitions';
 
-export const DELETE_CASE_FILES_PATH = '/cases/{caseId}/filesDELETE';
 export const UPDATE_CASE_STATUS_PATH = '/cases/{caseId}/statusPUT';
 export const CREATE_CASE_PATH = '/casesPOST';
 
@@ -62,7 +60,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
   const [selectedCase, setSelectedCase] = React.useState<DeaCaseDTO[]>([]);
   const [showActivateModal, setShowActivateModal] = React.useState(false);
   const [showDeactivateModal, setShowDeactivateModal] = React.useState(false);
-  const [deleteFiles, setDeleteFiles] = React.useState(false);
+  const [deleteFiles] = React.useState(false);
   const { pushNotification } = useNotifications();
 
   // Property and date filter collections
@@ -216,11 +214,6 @@ function CaseTable(props: CaseTableProps): JSX.Element {
         }
       >
         {caseListLabels.deactivateCaseModalMessage}
-        <ActionContainer required={DELETE_CASE_FILES_PATH} actions={availableEndpoints.data}>
-          <Toggle onChange={({ detail }) => setDeleteFiles(detail.checked)} checked={deleteFiles}>
-            {caseListLabels.deleteFilesLabel}
-          </Toggle>
-        </ActionContainer>
       </Modal>
     );
   }
