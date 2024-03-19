@@ -71,6 +71,7 @@ export default function Navigation({ initialHref }: NavigationProps): JSX.Elemen
       alink.download = `SystemAudit_${downloadDate.getFullYear()}_${
         downloadDate.getMonth() + 1
       }_${downloadDate.getDate()}_H${downloadDate.getHours()}.csv`;
+      pushNotification('success', auditLogLabels.successLabel);
       alink.click();
     } catch (e) {
       pushNotification('error', auditLogLabels.errorLabel);

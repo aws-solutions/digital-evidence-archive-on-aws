@@ -189,6 +189,16 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
       items={items}
       loadingText={dataVaultListLabels.loading}
       resizableColumns={true}
+      ariaLabels={{
+        tableLabel: dataVaultListLabels.dataVaultsLabel,
+        selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
+        allItemsSelectionLabel: ({ selectedItems }) =>
+          `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
+        itemSelectionLabel: ({ selectedItems }, item) => {
+          const isItemSelected = selectedItems.filter((i) => i.fileName === item.fileName).length;
+          return `${item.fileName} is${isItemSelected ? '' : ' not'} selected`;
+        },
+      }}
       empty={TableEmptyDisplay(
         dataVaultListLabels.noDataVaultsLabel,
         dataVaultListLabels.noDisplayLabel,

@@ -308,6 +308,13 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
       variant="full-page"
       ariaLabels={{
         tableLabel: dataSyncTaskListLabels.dataSyncTasksLabel,
+        selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
+        allItemsSelectionLabel: ({ selectedItems }) =>
+          `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
+        itemSelectionLabel: ({ selectedItems }, item) => {
+          const isItemSelected = selectedItems.filter((i) => i.fileName === item.fileName).length;
+          return `${item.fileName} is${isItemSelected ? '' : ' not'} selected`;
+        },
       }}
       items={items}
       loadingText={dataSyncTaskListLabels.loading}

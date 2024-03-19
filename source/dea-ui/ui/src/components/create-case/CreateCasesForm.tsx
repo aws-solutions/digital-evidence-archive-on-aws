@@ -30,6 +30,7 @@ function CreateCasesForm(): JSX.Element {
     setIsSubmitLoading(true);
     try {
       const newCase = await createCase(formData);
+      pushNotification('success', createCaseLabels.createCaseSuccessLabel(newCase.name));
       return router.push(`/case-detail?caseId=${newCase.ulid}`);
     } catch (e) {
       if (e instanceof Error) {

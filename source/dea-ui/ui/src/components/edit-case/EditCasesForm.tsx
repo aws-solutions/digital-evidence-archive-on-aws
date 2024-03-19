@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { updateCase } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
-import { commonLabels, createCaseLabels } from '../../common/labels';
+import { caseDetailLabels, commonLabels, createCaseLabels } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { EditCaseForm } from '../../models/Cases';
 
@@ -36,7 +36,8 @@ function EditCasesForm(props: EditCasesFormProps): JSX.Element {
   async function onSubmitHandler() {
     setIsSubmitLoading(true);
     try {
-      await updateCase(formData);
+      const updated = await updateCase(formData);
+      pushNotification('success', caseDetailLabels.editCaseSuccessLabel(updated.name));
       return router.push(caseDetailsRoute);
     } catch (e) {
       if (e instanceof Error) {

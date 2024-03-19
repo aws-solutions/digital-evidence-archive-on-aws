@@ -75,8 +75,8 @@ export const createCase = async (createCaseForm: CreateCaseForm): Promise<DeaCas
   return httpApiPost(`cases`, { ...createCaseForm });
 };
 
-export const updateCase = async (editCaseForm: EditCaseForm): Promise<void> => {
-  await httpApiPut(`cases/${editCaseForm.ulid}/details`, { ...editCaseForm });
+export const updateCase = async (editCaseForm: EditCaseForm): Promise<DeaCase> => {
+  return httpApiPut(`cases/${editCaseForm.ulid}/details`, { ...editCaseForm });
 };
 
 export const useListCaseFiles = (id: string, filePath = '/'): DeaListResult<DownloadDTO> => {
@@ -92,7 +92,7 @@ export const completeUpload = async (apiInput: CompleteUploadForm): Promise<DeaC
 };
 
 export const getPresignedUrl = async (apiInput: DownloadFileForm): Promise<DownloadFileResult> => {
-  return httpApiPost(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}/contents`, { ...apiInput});
+  return httpApiPost(`cases/${apiInput.caseUlid}/files/${apiInput.ulid}/contents`, { ...apiInput });
 };
 
 export const restoreFile = async (apiInput: RestoreFileForm): Promise<void> => {

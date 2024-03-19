@@ -183,6 +183,7 @@ export const caseDetailLabels = {
   auditLogLabel: 'Audit log',
   manageAccessLabel: 'Assign case permissions',
   caseDetailsLabel: 'Case details',
+  editCaseSuccessLabel: (name: string) => `Updates to Case ${name} have been saved.`,
 };
 
 export const auditLogLabels = {
@@ -196,8 +197,11 @@ export const auditLogLabels = {
   emptyAuditLabel: 'No audit',
   noDisplayAuditLabel: 'No audit to display.',
   loadingLabel: 'loading audit log',
-  errorLabel: 'Error downloading audit logs. Audit query is empty or encountered an error or cancellation.',
+  errorLabel:
+    'Error downloading system audit logs. Audit query is empty or encountered an error or cancellation.',
+  successLabel: 'System audit logs have been downloaded.',
   downloadAuditFail: (targetName: string) => `Failed to download audit report for ${targetName}`,
+  downloadAuditSuccess: (targetName: string) => `Audit report for ${targetName} has been downloaded`,
 };
 
 export const paginationLabels = {
@@ -271,6 +275,7 @@ export const createCaseLabels = {
   searchPeopleDescription:
     'Members added or removed will be notified by email. Their access to the case details will be based on permissions set.',
   searchPlaceholder: 'Search by name or email',
+  createCaseSuccessLabel: (name: string) => `Case ${name} has been created. You can now upload files.`,
 };
 
 export const caseActionOptions = {

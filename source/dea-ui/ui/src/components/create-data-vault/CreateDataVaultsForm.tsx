@@ -52,6 +52,7 @@ function CreateDataVaultsForm(): JSX.Element {
           </Link>
         </>
       );
+      // notification is already sent on success, in EditDataVaultForm.tsx
       return router.push(`/data-vault-detail?dataVaultId=${newDataVault.ulid}`);
     } catch (e) {
       if (e instanceof Error) {

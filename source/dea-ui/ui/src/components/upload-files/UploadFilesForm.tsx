@@ -390,6 +390,16 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         <Table
           items={uploadedFiles}
           variant="embedded"
+          ariaLabels={{
+            tableLabel: fileOperationsLabels.caseFilesLabel,
+            selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
+            allItemsSelectionLabel: ({ selectedItems }) =>
+              `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
+            itemSelectionLabel: ({ selectedItems }, item) => {
+              const isItemSelected = selectedItems.filter((i) => i.fileName === item.fileName).length;
+              return `${item.fileName} is${isItemSelected ? '' : ' not'} selected`;
+            },
+          }}
           columnDefinitions={[
             {
               id: 'fileName',
