@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - the ability to use AWS Directory Service's Managed Microsoft Active Directory as an identity store in AWS Identity Center
 - ability to track an auditing reason when case evidence is requested for download
 
+### Upgrade Notes
+- This version refactors our cdk stack into several nested stacks. If you are trying to upgrade from a previous version and use a custom domain you may run into issues during the deployment saying the domain already exists. As a workaround, deploy without the custom domain, then re-deploy with the custom domain.
+
 ## [1.0.7] - 2024-01-15
 
 ### Fixed
