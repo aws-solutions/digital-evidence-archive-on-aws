@@ -416,6 +416,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
           width: 100,
           minWidth: 100,
           sortingField: 'caseAssociation',
+          sortingComparator: (a, b) => a.caseCount - b.caseCount
         },
       ]}
       items={items}
