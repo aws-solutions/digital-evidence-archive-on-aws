@@ -71,8 +71,8 @@ echo "--------------------------------------------------------------------------
 echo "[Packing] Files from the root level of the project"
 echo "------------------------------------------------------------------------------"
 
-echo "cp $source_template_dir/../LICENSE.txt $dist_dir"
-cp $source_template_dir/../LICENSE.txt $dist_dir
+echo "cp $source_template_dir/../LICENSE $dist_dir"
+cp $source_template_dir/../LICENSE $dist_dir
 
 echo "cp $source_template_dir/../NOTICE.txt $dist_dir"
 cp $source_template_dir/../NOTICE.txt $dist_dir
@@ -102,6 +102,12 @@ echo $dist_dir
 # General cleanup of node_modules and package-lock.json files
 echo "find $dist_dir -iname "node_modules" -type d -exec rm -rf "{}" \; 2> /dev/null"
 find $dist_dir -iname "node_modules" -type d -exec rm -rf "{}" \; 2> /dev/null
+echo "find $dist_dir -iname ".next" -type d -exec rm -rf "{}" \; 2> /dev/null"
+find $dist_dir -iname ".next" -type d -exec rm -rf "{}" \; 2> /dev/null
+echo "find $dist_dir -iname ".rush" -type d -exec rm -rf "{}" \; 2> /dev/null"
+find $dist_dir -iname ".rush" -type d -exec rm -rf "{}" \; 2> /dev/null
+echo "find $dist_dir -iname "temp" -type d -exec rm -rf "{}" \; 2> /dev/null"
+find $dist_dir -iname "temp" -type d -exec rm -rf "{}" \; 2> /dev/null
 echo "find $dist_dir -iname ".venv" -type d -exec rm -rf "{}" \; 2> /dev/null"
 find $dist_dir -iname ".venv" -type d -exec rm -rf "{}" \; 2> /dev/null
 echo "find $dist_dir -iname "pytest_cache" -type d -exec rm -rf "{}" \; 2> /dev/null"

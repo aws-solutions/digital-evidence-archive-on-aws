@@ -1,5 +1,7 @@
 {
   "name": "rush-prettier",
+  "license": "Apache-2.0",
+  "description": "prettier autoinstaller",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
