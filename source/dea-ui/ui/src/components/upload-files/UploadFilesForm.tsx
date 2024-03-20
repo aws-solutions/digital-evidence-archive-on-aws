@@ -274,7 +274,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   }
 
   function onDoneHandler() {
-    void router.push(`/case-detail?caseId=${props.caseId}`);
+    return router.push(`/case-detail?caseId=${props.caseId}`);
   }
 
   function validateFields(): boolean {

@@ -334,7 +334,9 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         variant="primary"
         onClick={() =>
           window.open(
-            'https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html'
+            'https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html',
+            '_blank',
+            'noopener'
           )
         }
       >
