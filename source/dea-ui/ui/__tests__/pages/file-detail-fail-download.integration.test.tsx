@@ -14,9 +14,10 @@ afterEach(cleanup);
 const push = jest.fn();
 const CASE_ID = '100';
 const FILE_ID = '200';
+const CASE_NAME = 'mocked case';
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID, fileId: FILE_ID },
+    query: { caseId: CASE_ID, fileId: FILE_ID, setFileName: jest.fn(), caseName: CASE_NAME },
     push,
   })),
 }));
@@ -101,8 +102,9 @@ describe('FileDetailPage', () => {
     const page = render(<FileDetailPage />);
     expect(page).toBeTruthy();
 
-    const mockedCaseInfo = await screen.findByText(mockedFileInfo.fileName);
-    expect(mockedCaseInfo).toBeTruthy();
+    const mockedFileText = await screen.findAllByText(mockedFileInfo.fileName);
+    expect(mockedFileText.length).toEqual(2); // Header and breadcrumb
+    expect(mockedFileText).toBeTruthy();
   });
 
   it('downloads a file audit', async () => {

@@ -11,9 +11,10 @@ afterEach(cleanup);
 
 const push = jest.fn();
 const CASE_ID = '100';
+const CASE_NAME = 'mocked case';
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID },
+    query: { caseId: CASE_ID, caseName: CASE_NAME },
     push,
   })),
 }));
@@ -27,7 +28,7 @@ describe('EditCase page', () => {
     mockedAxios.request.mockResolvedValue({
       data: {
         ulid: CASE_ID,
-        name: 'mocked case',
+        name: CASE_NAME,
         status: 'ACTIVE',
       },
       status: 200,
@@ -49,7 +50,7 @@ describe('EditCase page', () => {
     mockedAxios.request.mockResolvedValue({
       data: {
         ulid: CASE_ID,
-        name: 'mocked case',
+        name: CASE_NAME,
         status: 'ACTIVE',
       },
       status: 200,
@@ -96,7 +97,7 @@ describe('EditCase page', () => {
       return Promise.resolve({
         data: {
           ulid: CASE_ID,
-          name: 'mocked case',
+          name: CASE_NAME,
           status: 'ACTIVE',
         },
         status: 200,

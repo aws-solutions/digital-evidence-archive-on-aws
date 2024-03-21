@@ -3,41 +3,46 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { CaseFileDTO, DownloadDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
 import {
-  Button,
+  Box,
   ColumnLayout,
   Container,
   ContentLayout,
+  Grid,
   Header,
   SpaceBetween,
-  Spinner,
   StatusIndicator,
   TextContent,
 } from '@cloudscape-design/components';
-import { useState } from 'react';
-import { getCaseFileAuditCSV, useGetCaseActions, useGetFileDetailsById } from '../../api/cases';
+import * as React from 'react';
 import {
-  auditLogLabels,
-  breadcrumbLabels,
-  caseStatusLabels,
-  commonLabels,
-  fileDetailLabels,
-} from '../../common/labels';
-import { useNotifications } from '../../context/NotificationsContext';
+  getCaseFileAuditCSV,
+  useGetCaseActions,
+  useGetCaseById,
+  useGetFileDetailsById,
+} from '../../api/cases';
+import { auditLogLabels, caseStatusLabels, commonLabels, fileDetailLabels } from '../../common/labels';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadCaseAudit } from '../../helpers/userActionSupport';
+import { AuditDownloadButton } from '../audit/audit-download-button';
+import DownloadButton from '../buttons/DownloadButton';
+import DataVaultAssociationDetailsBody from './DataVaultAssociationDetailsBody';
 
 export interface FileDetailsBodyProps {
   readonly caseId: string;
   readonly fileId: string;
+  readonly setFileName: (name: string) => void;
 }
 
 function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
-  const [auditDownloadInProgress, setAuditDownloadInProgress] = useState(false);
-  const { data, isLoading } = useGetFileDetailsById(props.caseId, props.fileId);
+  const { setFileName } = props;
+  const { data: fileData, isLoading: fileIsLoading } = useGetFileDetailsById(props.caseId, props.fileId);
+  const { data: caseData, isLoading: caseIsLoading } = useGetCaseById(props.caseId);
   const userActions = useGetCaseActions(props.caseId);
-  const { pushNotification } = useNotifications();
+  const [downloadInProgress, setDownloadInProgress] = React.useState(false);
+  const [filesToRestore, setFilesToRestore] = React.useState<DownloadDTO[]>([]);
 
   function getStatusIcon(status: string) {
     if (status == CaseFileStatus.ACTIVE) {
@@ -47,103 +52,133 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
     }
   }
 
-  async function downloadCaseFileAuditHandler() {
-    try {
-      setAuditDownloadInProgress(true);
-      try {
-        const csvDownloadUrl = await getCaseFileAuditCSV(props.caseId, props.fileId);
-        const downloadDate = new Date();
-        const alink = document.createElement('a');
-        alink.href = csvDownloadUrl;
-        alink.download = `CaseFileAudit_${data?.fileName}_${downloadDate.getFullYear()}_${
-          downloadDate.getMonth() + 1
-        }_${downloadDate.getDate()}_H${downloadDate.getHours()}.csv`;
-        alink.click();
-      } catch (e) {
-        pushNotification('error', auditLogLabels.downloadCaseAuditFail(data?.fileName ?? 'file'));
-        console.log(`failed to download case file audit for ${data?.fileName ?? 'unknown file'}`, e);
-      }
-    } finally {
-      setAuditDownloadInProgress(false);
+  function getDataVaultSection(data: CaseFileDTO | undefined) {
+    if (!data?.dataVaultUlid) {
+      return;
+    } else {
+      const dataVaultData = {
+        dataVaultUlid: data.dataVaultUlid,
+        dataVaultName: data.dataVaultName ? data.dataVaultName : data.dataVaultUlid,
+        executionId: data.executionId ? data.executionId : '-',
+        associationCreatedBy: data.associationCreatedBy ? data.associationCreatedBy : '-',
+        associationDate: data.associationDate,
+      };
+      return <DataVaultAssociationDetailsBody {...dataVaultData} />;
     }
   }
 
-  if (isLoading) {
-    return <h1>{commonLabels.loadingLabel}</h1>;
+  React.useEffect(() => {
+    if (fileData) {
+      setFileName(fileData.fileName);
+    }
+  }, [setFileName, fileData, fileData?.fileName]);
+
+  if (fileIsLoading || caseIsLoading) {
+    return (
+      <SpaceBetween size="l">
+        <div></div>
+        <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>
+      </SpaceBetween>
+    );
   } else {
-    if (!data) {
+    if (!fileData || !caseData) {
       return <h1>{commonLabels.notFoundLabel}</h1>;
     }
+
+    let uploadDate = null;
+
+    if (fileData.dataVaultUploadDate) {
+      uploadDate = new Date(fileData.dataVaultUploadDate);
+    } else if (fileData.created) {
+      uploadDate = new Date(fileData.created);
+    }
+
+    uploadDate = uploadDate
+      ? uploadDate.toLocaleString([], {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+      : '-';
+
     return (
       <ContentLayout
         header={
-          <SpaceBetween size="m">
-            <Header variant="h1">{data.fileName}</Header>
-          </SpaceBetween>
+          <Grid gridDefinition={[{ colspan: { default: 9, xxs: 3 } }, { colspan: { default: 3, xxs: 9 } }]}>
+            <Header variant="h1">{fileData.fileName}</Header>
+            <Box float="right">
+              <SpaceBetween size="m" direction="horizontal">
+                <DownloadButton
+                  caseId={props.caseId}
+                  caseStatus={caseData.status}
+                  selectedFiles={[{ ...fileData }]}
+                  selectedFilesCallback={() => void 0}
+                  downloadInProgress={downloadInProgress}
+                  downloadInProgressCallback={setDownloadInProgress}
+                  filesToRestore={filesToRestore}
+                  filesToRestoreCallback={setFilesToRestore}
+                />
+              </SpaceBetween>
+            </Box>
+          </Grid>
         }
       >
-        <Container
-          header={
-            <Header
-              variant="h2"
-              actions={
-                <SpaceBetween direction="horizontal" size="xs">
-                  <Button
-                    data-testid="download-case-file-audit-button"
-                    onClick={downloadCaseFileAuditHandler}
-                    disabled={auditDownloadInProgress || !canDownloadCaseAudit(userActions.data?.actions)}
-                  >
-                    {auditLogLabels.caseFileAuditLogLabel}
-                    {auditDownloadInProgress ? <Spinner size="big" /> : null}
-                  </Button>
-                </SpaceBetween>
-              }
-            >
-              {breadcrumbLabels.fileDetailsLabel}
-              {auditDownloadInProgress ? <Spinner size="big" /> : null}
-            </Header>
-          }
-        >
-          <ColumnLayout columns={3} variant="text-grid">
-            <TextContent>
-              <div>
-                {' '}
-                <h5>{fileDetailLabels.uploadDateLabel}</h5>
-                <SpaceBetween size="l">
-                  <p>
-                    {data.created
-                      ? new Date(data.created).toLocaleString([], {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })
-                      : '-'}
-                  </p>
+        <SpaceBetween size="xxl">
+          <Container
+            header={
+              <Header
+                variant="h2"
+                actions={
+                  <SpaceBetween direction="horizontal" size="xs">
+                    <AuditDownloadButton
+                      label={auditLogLabels.caseFileAuditLogLabel}
+                      testId="download-case-file-audit-button"
+                      permissionCallback={() => canDownloadCaseAudit(userActions.data?.actions)}
+                      downloadCallback={async () => await getCaseFileAuditCSV(props.caseId, props.fileId)}
+                      type="CaseFileAudit"
+                      targetName={fileData?.fileName}
+                    />
+                  </SpaceBetween>
+                }
+              >
+                {fileDetailLabels.fileDetailsLabel}
+              </Header>
+            }
+          >
+            <ColumnLayout columns={3} variant="text-grid">
+              <TextContent>
+                <div>
+                  {' '}
+                  <h5>{fileDetailLabels.uploadDateLabel}</h5>
+                  <SpaceBetween size="l">
+                    <p>{uploadDate}</p>
 
-                  <h5>{fileDetailLabels.fileSizeLabel}</h5>
-                </SpaceBetween>
-                <p>{formatFileSize(data.fileSizeBytes)}</p>
-              </div>
-            </TextContent>
-            <TextContent>
-              <div>
-                <h5>{commonLabels.description}</h5>
-                <p>{data.details}</p>
-              </div>
-            </TextContent>
-            <TextContent>
-              <div>
-                <h5>{commonLabels.statusLabel}</h5>
-                <SpaceBetween size="l">
-                  <p>{getStatusIcon(data.status)}</p>
+                    <h5>{fileDetailLabels.fileSizeLabel}</h5>
+                  </SpaceBetween>
+                  <p>{formatFileSize(fileData.fileSizeBytes)}</p>
+                </div>
+              </TextContent>
+              <TextContent>
+                <div>
+                  <h5>{commonLabels.description}</h5>
+                  <p>{fileData.details}</p>
+                </div>
+              </TextContent>
+              <TextContent>
+                <div>
+                  <h5>{commonLabels.statusLabel}</h5>
+                  <SpaceBetween size="l">
+                    <p>{getStatusIcon(fileData.status)}</p>
 
-                  <h5>{fileDetailLabels.shaHashLabel}</h5>
-                </SpaceBetween>
-                <p>{data.sha256Hash}</p>
-              </div>
-            </TextContent>
-          </ColumnLayout>
-        </Container>
+                    <h5>{fileDetailLabels.shaHashLabel}</h5>
+                  </SpaceBetween>
+                  <p>{fileData.sha256Hash}</p>
+                </div>
+              </TextContent>
+            </ColumnLayout>
+          </Container>
+          {getDataVaultSection(fileData)}
+        </SpaceBetween>
       </ContentLayout>
     );
   }

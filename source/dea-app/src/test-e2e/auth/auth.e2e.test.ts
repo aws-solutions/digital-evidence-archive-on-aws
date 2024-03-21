@@ -3,14 +3,15 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { AdminGetUserResponse } from '@aws-sdk/client-cognito-identity-provider';
-import { SSMClient, GetParametersCommand } from '@aws-sdk/client-ssm';
-import { aws4Interceptor, Credentials } from 'aws4-axios';
+import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
+import { Credentials, aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import _ from 'lodash';
 import { getCognitoSsmParams } from '../../app/services/auth-service';
+import { PARAM_PREFIX } from '../../app/services/service-constants';
 import { getTokenPayload } from '../../cognito-token-helpers';
 import { Oauth2Token } from '../../models/auth';
-import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../helpers/auth-helper';
+import { PkceStrings, getAuthorizationCode, getPkceStrings } from '../helpers/auth-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
@@ -24,10 +25,12 @@ import {
 
 let pkceStrings: PkceStrings;
 
+const suffix = randomSuffix();
+
 describe('API authentication', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
 
-  const testUser = `authE2ETestUser-${randomSuffix()}`;
+  const testUser = `authE2ETestUser-${suffix}`;
   const deaApiUrl = testEnv.apiUrlOutput;
   const region = testEnv.awsRegion;
   const stage = testEnv.stage;
@@ -100,7 +103,7 @@ describe('API authentication', () => {
     expect(response.status).toBe(200);
 
     // Now try to use someone else's credentials, should fail
-    const otherUser = 'StolenCredentialsUser';
+    const otherUser = `StolenCredentialsUser${suffix}`;
     await cognitoHelper.createUser(otherUser, 'AuthTestGroup', 'StolenCredentials', 'TestUser');
     const [otherCreds] = await cognitoHelper.getCredentialsForUser(otherUser);
     const [_creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
@@ -119,7 +122,7 @@ describe('API authentication', () => {
 
     // Make another user, try to use first user's credentials to call API for
     // the first time. Should fail since another user is assigned that identity id
-    const otherUser = 'DuplicateCredentialsUser';
+    const otherUser = `DuplicateCredentialsUser${suffix}`;
     await cognitoHelper.createUser(otherUser, 'AuthTestGroup', 'DuplicateCredentials', 'TestUser');
     const [_otherCreds, otherIdToken] = await cognitoHelper.getCredentialsForUser(otherUser);
 
@@ -129,7 +132,7 @@ describe('API authentication', () => {
 
   it('should add first time federated user to DDB', async () => {
     // 1. create user
-    const firstTimeFederatedUser = 'CheckFirstTimeFederatedUserTestUser';
+    const firstTimeFederatedUser = `CheckFirstTimeFederatedUserTestUser${suffix}`;
     const firstName = 'CheckFirstTimeFederatedUser';
     const lastName = 'TestUser';
     await cognitoHelper.createUser(firstTimeFederatedUser, 'AuthTestGroup', firstName, lastName);
@@ -225,7 +228,7 @@ describe('API authentication', () => {
 
   it('should successfully revoke refresh token', async () => {
     // Create user
-    const user = 'RevokeTokenE2ETest';
+    const user = `RevokeTokenE2ETest${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'RevokeTokenE2E', 'AuthTester');
 
     // Get credentials
@@ -250,7 +253,7 @@ describe('API authentication', () => {
 
   it('should successfully use refresh token for a new idtoken', async () => {
     // Create user
-    const user = 'RefreshTokenE2ETest';
+    const user = `RefreshTokenE2ETest${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'RefreshTokenE2E', 'AuthTester');
 
     // Get credentials
@@ -271,7 +274,7 @@ describe('API authentication', () => {
 
   it('should disallow concurrent active session', async () => {
     // Create user
-    const user = 'ConcurrentUserE2ETest';
+    const user = `ConcurrentUserE2ETest${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'ConcurrentE2E', 'AuthTester');
 
     // Get credentials
@@ -348,9 +351,9 @@ describe('API authentication', () => {
   it('should authenticate and authorize a federated user from the configured IdP', async () => {
     // Check that SSM Parameters are all present, if not skip the test
     const ssmClient = new SSMClient({ region });
-    const agencyIdpNamePath = `/dea/${stage}-agency-idp-name`;
-    const testUserLogonPath = `/dea/${stage}-test/idp/idp-test-user-logon`;
-    const testUserPasswordPath = `/dea/${stage}-test/idp/idp-test-user-password`;
+    const agencyIdpNamePath = `${PARAM_PREFIX}${stage}-agency-idp-name`;
+    const testUserLogonPath = `${PARAM_PREFIX}${stage}-test/idp/idp-test-user-logon`;
+    const testUserPasswordPath = `${PARAM_PREFIX}${stage}-test/idp/idp-test-user-password`;
     const ssmResponse = await ssmClient.send(
       new GetParametersCommand({
         Names: [agencyIdpNamePath, testUserLogonPath, testUserPasswordPath],

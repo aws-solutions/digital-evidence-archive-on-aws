@@ -7,7 +7,7 @@
 
 /* eslint-disable no-new */
 import 'source-map-support/register';
-import { deaConfig } from '@aws/dea-backend';
+import { deaConfig } from '@aws/dea-backend/lib/config';
 import * as cdk from 'aws-cdk-lib';
 import { DefaultStackSynthesizer } from 'aws-cdk-lib';
 import { DeaMainStack } from './dea-main-stack';

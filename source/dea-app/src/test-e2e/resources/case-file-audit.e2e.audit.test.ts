@@ -5,11 +5,11 @@
 
 import { fail } from 'assert';
 import { Credentials } from 'aws4-axios';
+import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
 import { AuditEventType } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
 import { CaseAction } from '../../models/case-action';
-import { DeaCaseFile } from '../../models/case-file';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
@@ -34,7 +34,6 @@ import {
 
 const FILE_PATH = '/important/investigation/';
 const FILE_CONTENT = 'I like turtles';
-const OTHER_FILE_CONTENT = 'I DO NOT like turtles';
 const FILE_SIZE_MB = 1;
 
 describe('case file audit e2e', () => {
@@ -81,32 +80,23 @@ describe('case file audit e2e', () => {
       caseIdsToDelete.push(caseUlid);
 
       // Create file
-      const initiatedCaseFile: DeaCaseFile = await initiateCaseFileUploadSuccess(
+      const initiatedCaseFile = await initiateCaseFileUploadSuccess(
         deaApiUrl,
         idToken,
         creds,
         caseUlid,
         'caseFileAuditTest',
         FILE_PATH,
-        FILE_SIZE_MB,
-        1,
-        1
+        FILE_SIZE_MB
       );
       const fileUlid = initiatedCaseFile.ulid ?? fail();
-      s3ObjectsToDelete.push({ key: `${caseUlid}/${fileUlid}`, uploadId: initiatedCaseFile.uploadId });
+      const key = `${caseUlid}/${fileUlid}`;
+      s3ObjectsToDelete.push({ key, uploadId: initiatedCaseFile.uploadId });
       const uploadId = initiatedCaseFile.uploadId ?? fail();
-      const presignedUrls = initiatedCaseFile.presignedUrls ?? fail();
-      const fileHash = sha256(FILE_CONTENT).toString();
-      await uploadContentToS3(presignedUrls, FILE_CONTENT);
-      await completeCaseFileUploadSuccess(
-        deaApiUrl,
-        idToken,
-        creds,
-        caseUlid,
-        fileUlid,
-        uploadId,
-        FILE_CONTENT
-      );
+      const federationCredentials = initiatedCaseFile.federationCredentials ?? fail();
+      const fileHash = sha256(FILE_CONTENT).toString(enc.Base64);
+      await uploadContentToS3(federationCredentials, uploadId, [FILE_CONTENT], initiatedCaseFile.bucket, key);
+      await completeCaseFileUploadSuccess(deaApiUrl, idToken, creds, caseUlid, fileUlid, uploadId);
 
       const describedCaseFile = await describeCaseFileDetailsSuccess(
         deaApiUrl,
@@ -118,41 +108,37 @@ describe('case file audit e2e', () => {
 
       // Owners by default have all permissions so have the owner download the file
       // will show up in audit log as success
-      const downloadUrl = await getCaseFileDownloadUrl(deaApiUrl, idToken, creds, caseUlid, fileUlid);
+      const downloadUrl = await getCaseFileDownloadUrl(deaApiUrl, idToken, creds, caseUlid, fileUlid, "e2e test needs to download file");
       const downloadedContent = await downloadContentFromS3(downloadUrl, describedCaseFile.contentType);
       expect(downloadedContent).toEqual(FILE_CONTENT);
-      expect(sha256(downloadedContent).toString()).toEqual(fileHash);
-      expect(sha256(downloadedContent).toString()).toEqual(describedCaseFile.sha256Hash);
+      expect(sha256(downloadedContent).toString(enc.Base64)).toEqual(fileHash);
+      expect(sha256(downloadedContent).toString(enc.Base64)).toEqual(describedCaseFile.sha256Hash);
 
       // Create another file on the case, to later ensure it does not show up on the audit log
-      const otherInitiatedCaseFile: DeaCaseFile = await initiateCaseFileUploadSuccess(
+      const otherInitiatedCaseFile = await initiateCaseFileUploadSuccess(
         deaApiUrl,
         idToken,
         creds,
         caseUlid,
         'caseFileAuditTestOtherFile',
         FILE_PATH,
-        FILE_SIZE_MB,
-        1,
-        1
+        FILE_SIZE_MB
       );
       const otherFileUlid = otherInitiatedCaseFile.ulid ?? fail();
+      const otherKey = `${caseUlid}/${otherFileUlid}`;
       s3ObjectsToDelete.push({
-        key: `${caseUlid}/${otherFileUlid}`,
+        key,
         uploadId: otherInitiatedCaseFile.uploadId,
       });
       const otherUploadId = otherInitiatedCaseFile.uploadId ?? fail();
-      const otherPresignedUrls = otherInitiatedCaseFile.presignedUrls ?? fail();
-      await uploadContentToS3(otherPresignedUrls, FILE_CONTENT);
-      await completeCaseFileUploadSuccess(
-        deaApiUrl,
-        idToken,
-        creds,
-        caseUlid,
-        otherFileUlid,
-        otherUploadId,
-        OTHER_FILE_CONTENT
+      await uploadContentToS3(
+        otherInitiatedCaseFile.federationCredentials,
+        otherInitiatedCaseFile.uploadId,
+        [FILE_CONTENT],
+        otherInitiatedCaseFile.bucket,
+        otherKey
       );
+      await completeCaseFileUploadSuccess(deaApiUrl, idToken, creds, caseUlid, otherFileUlid, otherUploadId);
 
       // Create a case user who DOES not have permission to download the file
       // and have them try to download, will show up in audit log as failure
@@ -169,7 +155,7 @@ describe('case file audit e2e', () => {
       );
       const [inviteeCreds, inviteeToken] = await cognitoHelper.getCredentialsForUser(failedDownloadTestUser);
       await expect(
-        getCaseFileDownloadUrl(deaApiUrl, inviteeToken, inviteeCreds, caseUlid, fileUlid)
+        getCaseFileDownloadUrl(deaApiUrl, inviteeToken, inviteeCreds, caseUlid, fileUlid, "test e2e download file")
       ).rejects.toThrow();
 
       // wait for data plane events
@@ -231,6 +217,7 @@ describe('case file audit e2e', () => {
         expectedFileHash: '',
         expectedCaseUlid: caseUlid,
         expectedFileUlid: fileUlid,
+        expectedDataVaultId: '',
       });
 
       const completeUploadEntry = applicationEntries.find(
@@ -241,6 +228,7 @@ describe('case file audit e2e', () => {
         expectedFileUlid: fileUlid,
         expectedResult: 'success',
         expectedFileHash: fileHash,
+        expectedDataVaultId: '',
       });
 
       const getFileDetailsEntry = applicationEntries.find(
@@ -251,6 +239,7 @@ describe('case file audit e2e', () => {
         expectedFileUlid: fileUlid,
         expectedResult: 'success',
         expectedFileHash: '',
+        expectedDataVaultId: '',
       });
 
       const downloadEntry = applicationEntries.find(
@@ -261,6 +250,7 @@ describe('case file audit e2e', () => {
         expectedFileUlid: fileUlid,
         expectedResult: 'success',
         expectedFileHash: '',
+        expectedDataVaultId: '',
       });
 
       const failedDownloadEntry = applicationEntries.find(
@@ -277,6 +267,7 @@ describe('case file audit e2e', () => {
           expectedFileUlid: fileUlid,
           expectedResult: 'failure',
           expectedFileHash: '',
+          expectedDataVaultId: '',
         }
       );
 

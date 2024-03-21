@@ -5,8 +5,9 @@
 /* eslint-disable no-new */
 import assert from 'assert';
 import * as path from 'path';
-import { createCfnOutput, deaConfig } from '@aws/dea-backend';
-import { Aws, StackProps } from 'aws-cdk-lib';
+import { deaConfig } from '@aws/dea-backend/lib/config';
+import { addLambdaSuppressions } from '@aws/dea-backend/lib/helpers/nag-suppressions';
+import { Aws, CfnResource, NestedStack, RemovalPolicy, StackProps } from 'aws-cdk-lib';
 import {
   AuthorizationType,
   AwsIntegration,
@@ -30,28 +31,27 @@ interface IUiStackProps extends StackProps {
   readonly accessLogPrefix: string;
 }
 
-export class DeaUiConstruct extends Construct {
+export class DeaUiConstruct extends NestedStack {
   private uiArtifactPath: string;
   private sriString: string;
+  public bucket: Bucket;
+
   public constructor(scope: Construct, id: string, props: IUiStackProps) {
     super(scope, 'DeaUiStack');
 
-    const bucket = new Bucket(this, 'artifact-bucket', {
+    this.bucket = new Bucket(this, 'ui-artifact-bucket', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       websiteIndexDocument: 'index.html',
       encryption: BucketEncryption.S3_MANAGED,
       serverAccessLogsBucket: props.accessLogsBucket,
       serverAccessLogsPrefix: props.accessLogPrefix,
       removalPolicy: deaConfig.retainPolicy(),
-      autoDeleteObjects: deaConfig.isTestStack(),
+      autoDeleteObjects: deaConfig.retainPolicy() === RemovalPolicy.DESTROY,
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+      enforceSSL: true,
     });
 
-    createCfnOutput(this, 'artifactBucketName', {
-      value: bucket.bucketName,
-    });
-
-    this.addS3TLSSigV4BucketPolicy(bucket);
+    this.addS3TLSSigV4BucketPolicy(this.bucket);
 
     this.uiArtifactPath = path.resolve(__dirname, '../../ui/out');
 
@@ -70,7 +70,7 @@ export class DeaUiConstruct extends Construct {
     }
     // eslint-disable-next-line no-new
     new BucketDeployment(this, 'artifact-deployment-bucket', {
-      destinationBucket: bucket,
+      destinationBucket: this.bucket,
       sources,
     });
 
@@ -78,9 +78,16 @@ export class DeaUiConstruct extends Construct {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
     });
 
-    bucket.grantReadWrite(executeRole);
+    this.bucket.grantReadWrite(executeRole);
 
-    this.routeHandler(props, bucket, executeRole);
+    this.routeHandler(props, this.bucket, executeRole);
+
+    const lambdaToSuppress = this.node.findChild(
+      'Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C'
+    ).node.defaultChild;
+    if (lambdaToSuppress instanceof CfnResource) {
+      addLambdaSuppressions(lambdaToSuppress);
+    }
   }
 
   private routeHandler(props: IUiStackProps, bucket: Bucket, executeRole: Role) {
@@ -120,6 +127,44 @@ export class DeaUiConstruct extends Construct {
     const proxy = uiResource.addProxy({ anyMethod: false });
     const proxyS3Integration = this.getS3Integration('{proxy}', bucket, executeRole);
     proxy.addMethod('GET', proxyS3Integration, this.getMethodOptions());
+
+    // /data-vaults page
+    const dataVaultsResource = uiResource.addResource('data-vaults');
+    const dataVaultsS3Integration = this.getS3Integration('data-vaults.html', bucket, executeRole);
+    dataVaultsResource.addMethod('GET', dataVaultsS3Integration, this.getMethodOptions());
+
+    // /data-vault-detail page
+    const dataVaultDetailResource = uiResource.addResource('data-vault-detail');
+    const dataVaultDetailS3Integration = this.getS3Integration('data-vault-detail.html', bucket, executeRole);
+    dataVaultDetailResource.addMethod('GET', dataVaultDetailS3Integration, this.getMethodOptions());
+
+    // /create-data-vaults page
+    const createDataVaultsResource = uiResource.addResource('create-data-vaults');
+    const createDataVaultsS3Integration = this.getS3Integration(
+      'create-data-vaults.html',
+      bucket,
+      executeRole
+    );
+    createDataVaultsResource.addMethod('GET', createDataVaultsS3Integration, this.getMethodOptions());
+
+    // /edit-data-vault page
+    const editDataVaultResource = uiResource.addResource('edit-data-vault');
+    const editDataVaultS3Integration = this.getS3Integration('edit-data-vault.html', bucket, executeRole);
+    editDataVaultResource.addMethod('GET', editDataVaultS3Integration, this.getMethodOptions());
+
+    // /data-sync-tasks page
+    const dataSyncTasksResource = uiResource.addResource('data-sync-tasks');
+    const dataSyncTasksS3Integration = this.getS3Integration('data-sync-tasks.html', bucket, executeRole);
+    dataSyncTasksResource.addMethod('GET', dataSyncTasksS3Integration, this.getMethodOptions());
+
+    // /data-vault-file-detail page
+    const dataVaultFileDetailResource = uiResource.addResource('data-vault-file-detail');
+    const dataVaultFileDetailS3Integration = this.getS3Integration(
+      'data-vault-file-detail.html',
+      bucket,
+      executeRole
+    );
+    dataVaultFileDetailResource.addMethod('GET', dataVaultFileDetailS3Integration, this.getMethodOptions());
   }
 
   private getS3Integration(path: string, bucket: Bucket, executeRole: Role): AwsIntegration {
@@ -141,14 +186,16 @@ export class DeaUiConstruct extends Construct {
               'method.response.header.Content-Type': 'integration.response.header.Content-Type',
               'method.response.header.Content-Security-Policy':
                 `'default-src 'self';` +
-                `img-src 'self' blob:;` +
+                `img-src 'self' blob: data:;` +
                 `style-src 'unsafe-inline' 'self';` +
-                `connect-src 'self' https://*.amazoncognito.com https://*.amazonaws.com;` +
+                `connect-src 'self' https://${deaConfig.cognitoDomain()}.${this.authSubdomain()}.${this.cognitoRegion()}.amazoncognito.com https://*.s3.${
+                  Aws.REGION
+                }.amazonaws.com https://cognito-identity.${this.cognitoRegion()}.amazonaws.com https://cognito-idp.${this.cognitoRegion()}.amazonaws.com;` +
                 `script-src 'strict-dynamic' '${this.sriString}';` +
                 `font-src 'self' data:;` +
                 `base-uri 'self';` +
                 `object-src 'none';` +
-                `block-all-mixed-content;'`,
+                `upgrade-insecure-requests;'`,
               'method.response.header.Strict-Transport-Security': "'max-age=31540000; includeSubdomains'",
               'method.response.header.X-Content-Type-Options': "'nosniff'",
               'method.response.header.X-Frame-Options': "'DENY'",
@@ -160,6 +207,22 @@ export class DeaUiConstruct extends Construct {
         contentHandling: ContentHandling.CONVERT_TO_TEXT,
       },
     });
+  }
+
+  private cognitoRegion() {
+    if (deaConfig.partition() === 'aws-us-gov') {
+      return 'us-gov-west-1';
+    }
+
+    return Aws.REGION;
+  }
+
+  private authSubdomain() {
+    if (deaConfig.fipsEndpointsEnabled()) {
+      return 'auth-fips';
+    }
+
+    return 'auth';
   }
 
   private getMethodOptions(): MethodOptions {

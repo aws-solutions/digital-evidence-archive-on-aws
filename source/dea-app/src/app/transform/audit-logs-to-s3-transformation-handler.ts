@@ -13,6 +13,7 @@ import {
   FirehoseTransformationResult,
   FirehoseTransformationResultRecord,
 } from 'aws-lambda';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import ErrorPrefixes from '../error-prefixes';
 
@@ -94,7 +95,7 @@ export const transformAuditEventForS3 = async function (
   records.forEach((rec, idx) => {
     const originalRecord = event.records[idx];
 
-    if (rec.result !== 'Ok') {
+    if (rec.result !== 'Ok' || !rec.data) {
       return;
     }
 
@@ -135,7 +136,7 @@ export const transformAuditEventForS3 = async function (
   // call putRecordBatch/putRecords for each group of up to 500 records to be re-ingested
   if (recordListsToReingest.length > 0) {
     let recordsReingestedSoFar = 0;
-    const clientArgs = { region: region };
+    const clientArgs = { region: region, customUserAgent: getCustomUserAgent() };
     const client = new Firehose(clientArgs);
     const maxBatchSize = 500;
     const flattenedList = recordListsToReingest.flat();

@@ -6,14 +6,15 @@
 import { SSMClient } from '@aws-sdk/client-ssm';
 import { mockClient } from 'aws-sdk-client-mock';
 import { getLoginHostedUiUrl, getCognitoLogoutUrl } from '../../app/services/auth-service';
+import { PARAM_PREFIX } from '../../app/services/service-constants';
 
 const stage = process.env.STAGE ?? 'devsample';
-const cognitoDomainPath = `/dea/${stage}-userpool-cognito-domain-param`;
-const clientIdPath = `/dea/${stage}-userpool-client-id-param`;
-const callbackUrlPath = `/dea/${stage}-client-callback-url-param`;
-const identityPoolIdPath = `/dea/${stage}-identity-pool-id-param`;
-const userPoolIdPath = `/dea/${stage}-userpool-id-param`;
-const agencyIdpNamePath = `/dea/${stage}-agency-idp-name`;
+const cognitoDomainPath = `${PARAM_PREFIX}${stage}-userpool-cognito-domain-param`;
+const clientIdPath = `${PARAM_PREFIX}${stage}-userpool-client-id-param`;
+const callbackUrlPath = `${PARAM_PREFIX}${stage}-client-callback-url-param`;
+const identityPoolIdPath = `${PARAM_PREFIX}${stage}-identity-pool-id-param`;
+const userPoolIdPath = `${PARAM_PREFIX}${stage}-userpool-id-param`;
+const agencyIdpNamePath = `${PARAM_PREFIX}${stage}-agency-idp-name`;
 
 describe('auth service unit', () => {
   const oldEnv = process.env;

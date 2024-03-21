@@ -7,7 +7,7 @@ import { fail } from 'assert';
 import { AthenaClient, StartQueryExecutionCommand } from '@aws-sdk/client-athena';
 import Joi from 'joi';
 import { anyOfClass, instance, mock, when } from 'ts-mockito';
-import { startCaseAudit } from '../../../app/resources/start-case-audit';
+import { startCaseAudit } from '../../../app/resources/audit/start-case-audit';
 import { joiUlid } from '../../../models/validation/joi-common';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';

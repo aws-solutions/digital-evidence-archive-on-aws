@@ -1,15 +1,19 @@
 {
   "name": "commitlint",
   "version": "1.0.0",
+  "license": "Apache-2.0",
+  "description": "commitlint autoinstaller",
   "private": true,
   "dependencies": {
-    "@commitlint/cli": "^17.6.5",
-    "@commitlint/config-conventional": "^17.6.5"
+    "@commitlint/cli": "^18.6.0",
+    "@commitlint/config-conventional": "^18.6.0"
   },
-  "pnpm": {
-    "overrides": {
-      "semver@<5.7.2": ">=5.7.2",
-      "semver@>=7.0.0 <7.5.2": ">=7.5.2"
-    }
+  "devDependencies": {
+    "@types/node": "^18.15.7",
+    "typescript": "^4.9.5"
+  },
+  "peerDependencies": {
+    "@types/node": "^18.15.7",
+    "typescript": "^4.9.5"
   }
 }

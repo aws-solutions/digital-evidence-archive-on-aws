@@ -10,6 +10,7 @@ import { Oauth2Token } from '../../models/auth';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
+  AuditExpectations,
   callDeaAPIWithCreds,
   createCaseSuccess,
   deleteCase,
@@ -160,11 +161,12 @@ describe('user audit e2e', () => {
       (entry) => entry.Event_Type === AuditEventType.GET_CASE_DETAILS && entry.Case_ID === managerCase.ulid
     );
 
-    const expectedDetails = {
+    const expectedDetails: AuditExpectations = {
       expectedResult: 'success',
       expectedFileHash: '',
       expectedCaseUlid: createdCase.ulid,
       expectedFileUlid: '',
+      expectedDataVaultId: '',
     };
     verifyAuditEntry(getMyCases, AuditEventType.GET_MY_CASES, testUser, userRole);
     verifyAuditEntry(createCaseEvent, AuditEventType.CREATE_CASE, testUser, userRole, expectedDetails);
@@ -188,6 +190,7 @@ describe('user audit e2e', () => {
       expectedFileHash: '',
       expectedCaseUlid: managerCaseUlid,
       expectedFileUlid: '',
+      expectedDataVaultId: '',
     });
 
     expect(entries).toHaveLength(6);

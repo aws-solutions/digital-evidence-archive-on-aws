@@ -8,14 +8,19 @@ import { randomBytes } from 'crypto';
 import { QueryExecutionState } from '@aws-sdk/client-athena';
 import {
   AbortMultipartUploadCommand,
+  ChecksumAlgorithm,
   DeleteObjectCommand,
   GetObjectLegalHoldCommand,
   ObjectLockLegalHoldStatus,
   PutObjectLegalHoldCommand,
   S3Client,
+  UploadPartCommand,
+  UploadPartCommandInput,
+  UploadPartCommandOutput,
 } from '@aws-sdk/client-s3';
-import { aws4Interceptor, Credentials } from 'aws4-axios';
+import { Credentials, aws4Interceptor } from 'aws4-axios';
 import axios, { AxiosResponse } from 'axios';
+import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
 import * as CSV from 'csv-string';
 import Joi from 'joi';
@@ -23,18 +28,23 @@ import { AuditEventType, AuditResult } from '../../app/services/audit-service';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
-import { DeaCaseFile, InitiateCaseFileUploadDTO } from '../../models/case-file';
+import {
+  DeaCaseFile,
+  DeaCaseFileResult,
+  DeaCaseFileUpload,
+  DownloadCaseFileRequest,
+} from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { DeaUser } from '../../models/user';
 import { caseResponseSchema } from '../../models/validation/case';
-import { caseFileResponseSchema } from '../../models/validation/case-file';
-import { joiUlid } from '../../models/validation/joi-common';
 import {
-  CHUNK_SIZE_BYTES,
-  ResponseCaseFilePage,
-} from '../../test/app/resources/case-file-integration-test-helper';
+  caseFileResponseSchema,
+  initiateCaseFileUploadResponseSchema,
+} from '../../models/validation/case-file';
+import { joiUlid } from '../../models/validation/joi-common';
+import { ResponseCaseFilePage } from '../../test/app/resources/case-file-integration-test-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 
@@ -63,6 +73,71 @@ export const randomSuffix = (length = 10) => {
 export interface s3Object {
   key: string;
   uploadId?: string;
+}
+
+export async function cleanupCaseAndFiles(
+  baseUrl: string,
+  caseUlid: string,
+  caseName: string,
+  idToken: Oauth2Token,
+  creds: Credentials,
+  sleep = 15000
+): Promise<void> {
+  // First iterate over every file in the case to get the s3Objects we will have to delete
+  // and to delete the files from the ddb
+  const s3ObjectsToDelete: s3Object[] = [];
+  const files: Set<string> = new Set();
+  const folders: Set<string> = new Set();
+  folders.add('/');
+  while (folders.size > 0) {
+    const filePath: string = folders.values().next().value;
+    folders.delete(filePath);
+    // List files
+    const listCaseFilesResponse = await listCaseFilesSuccess(baseUrl, idToken, creds, caseUlid, filePath);
+    listCaseFilesResponse.files.forEach((file) => {
+      if (!file.isFile) {
+        // If folder, add to folders for further recursion
+        folders.add(`${file.filePath}${file.fileName}/`);
+      } else {
+        // If  (non datavault) file, add to files set, and add to the S3Objects to delete
+        if (!file.dataVaultUlid) {
+          files.add(`${file.ulid}`);
+          s3ObjectsToDelete.push({ key: file.fileS3Key });
+        }
+      }
+    });
+  }
+
+  // Mark case as deleted
+  let updatedCase = await updateCaseStatus(
+    baseUrl,
+    idToken,
+    creds,
+    caseUlid,
+    caseName,
+    CaseStatus.INACTIVE,
+    true
+  );
+
+  expect(updatedCase.status).toEqual(CaseStatus.INACTIVE);
+  expect(updatedCase.filesStatus).toEqual(CaseFileStatus.DELETING);
+  expect(updatedCase.s3BatchJobId).toBeTruthy();
+
+  // Give S3 batch 2 minutes to do the async job. Increase if necessary (EventBridge SLA is 15min)
+  const retries = 8;
+  while (updatedCase.filesStatus !== CaseFileStatus.DELETED && retries > 0) {
+    await delay(sleep);
+    updatedCase = await describeCaseSuccess(baseUrl, caseUlid, idToken, creds);
+
+    if (updatedCase.filesStatus === CaseFileStatus.DELETE_FAILED) {
+      break;
+    }
+  }
+
+  // delete case
+  await deleteCase(baseUrl, caseUlid, idToken, creds);
+
+  await s3Cleanup(s3ObjectsToDelete);
 }
 
 export async function deleteCase(
@@ -102,7 +177,7 @@ export async function deleteCaseFiles(
   const retries = 8;
   while (updatedCase.filesStatus !== CaseFileStatus.DELETED && retries > 0) {
     await delay(15_000);
-    updatedCase = await getCase(baseUrl, caseUlid, idToken, creds);
+    updatedCase = await describeCaseSuccess(baseUrl, caseUlid, idToken, creds);
 
     if (updatedCase.filesStatus === CaseFileStatus.DELETE_FAILED) {
       break;
@@ -126,10 +201,7 @@ export async function createCaseSuccess(
 ): Promise<DeaCase> {
   const response = await callDeaAPIWithCreds(`${baseUrl}cases`, 'POST', idToken, creds, deaCase);
 
-  if (response.status !== 200) {
-    console.log(response.data);
-  }
-  expect(response.status).toEqual(200);
+  verifyDeaRequestSuccess(response);
 
   const createdCase: DeaCase = response.data;
   Joi.assert(createdCase, caseResponseSchema);
@@ -137,7 +209,12 @@ export async function createCaseSuccess(
   return createdCase;
 }
 
-async function getCase(baseUrl: string, caseId: string, idToken: Oauth2Token, creds: Credentials) {
+export async function describeCaseSuccess(
+  baseUrl: string,
+  caseId: string,
+  idToken: Oauth2Token,
+  creds: Credentials
+): Promise<DeaCase> {
   const getResponse = await callDeaAPIWithCreds(`${baseUrl}cases/${caseId}/details`, 'GET', idToken, creds);
 
   expect(getResponse.status).toEqual(200);
@@ -201,9 +278,18 @@ export async function callDeaAPIWithCreds(
       });
     case 'DELETE':
       return await client.delete(url, {
+        data,
         validateStatus,
       });
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function verifyDeaRequestSuccess(response: AxiosResponse<any, any>) {
+  if (response.status !== 200) {
+    console.log(response.data);
+  }
+  expect(response.status).toEqual(200);
 }
 
 export const getSpecificUserByFirstName = async (
@@ -278,32 +364,25 @@ export const initiateCaseFileUploadSuccess = async (
   fileName: string,
   filePath: string,
   fileSizeBytes: number,
-  partRangeStart: number,
-  partRangeEnd: number,
-  contentType: string = CONTENT_TYPE,
-  chunkSizeBytes = CHUNK_SIZE_BYTES
-): Promise<DeaCaseFile> => {
-  const uploadDto: InitiateCaseFileUploadDTO = {
-    caseUlid,
-    fileName,
-    filePath,
-    contentType,
-    fileSizeBytes,
-    chunkSizeBytes,
-    partRangeStart,
-    partRangeEnd,
-  };
+  contentType: string = CONTENT_TYPE
+): Promise<DeaCaseFileUpload> => {
   const initiateUploadResponse = await callDeaAPIWithCreds(
     `${deaApiUrl}cases/${caseUlid}/files`,
     'POST',
     idToken,
     creds,
-    uploadDto
+    {
+      caseUlid,
+      fileName,
+      filePath,
+      contentType,
+      fileSizeBytes,
+    }
   );
 
   expect(initiateUploadResponse.status).toEqual(200);
-  const initiatedCaseFile: DeaCaseFile = await initiateUploadResponse.data;
-  Joi.assert(initiatedCaseFile, caseFileResponseSchema);
+  const initiatedCaseFile: DeaCaseFileUpload = await initiateUploadResponse.data;
+  Joi.assert(initiatedCaseFile, initiateCaseFileUploadResponseSchema);
   return initiatedCaseFile;
 };
 
@@ -312,14 +391,12 @@ export const listCaseFilesSuccess = async (
   idToken: Oauth2Token,
   creds: Credentials,
   caseUlid: string | undefined,
-  filePath: string
+  filePath?: string
 ): Promise<ResponseCaseFilePage> => {
-  const response = await callDeaAPIWithCreds(
-    `${deaApiUrl}cases/${caseUlid}/files?filePath=${filePath}`,
-    'GET',
-    idToken,
-    creds
-  );
+  const url = filePath
+    ? `${deaApiUrl}cases/${caseUlid}/files?filePath=${filePath}`
+    : `${deaApiUrl}cases/${caseUlid}/files`;
+  const response = await callDeaAPIWithCreds(url, 'GET', idToken, creds);
 
   expect(response.status).toEqual(200);
   return response.data;
@@ -347,14 +424,21 @@ export const getCaseFileDownloadUrl = async (
   deaApiUrl: string,
   idToken: Oauth2Token,
   creds: Credentials,
-  caseUlid: string | undefined,
-  fileUlid: string | undefined
+  caseUlid = 'undefined case Ulid',
+  fileUlid = 'undefined file Ulid',
+  downloadReason: string
 ): Promise<string> => {
+  const body: DownloadCaseFileRequest = {
+    caseUlid,
+    ulid: fileUlid,
+    downloadReason,
+  };
   const response = await callDeaAPIWithCreds(
     `${deaApiUrl}cases/${caseUlid}/files/${fileUlid}/contents`,
-    'GET',
+    'POST',
     idToken,
-    creds
+    creds,
+    body
   );
 
   expect(response.status).toEqual(200);
@@ -387,26 +471,34 @@ export const delay = async (ms: number) => {
 };
 
 export const uploadContentToS3 = async (
-  presignedUrls: readonly string[],
-  fileContent: string
+  federationCredentials: Credentials,
+  uploadId: string,
+  fileContents: string[],
+  bucket: string,
+  key: string
 ): Promise<void> => {
-  const uploadResponses: Promise<Response>[] = [];
-
-  const httpClient = axios.create({
-    headers: {
-      'Content-Type': CONTENT_TYPE,
-    },
+  const federationS3Client = new S3Client({
+    region: testEnv.awsRegion,
+    credentials: federationCredentials,
   });
 
-  presignedUrls.forEach((url, index) => {
-    uploadResponses[index] = httpClient.put(url, fileContent, { validateStatus });
-  });
-
-  await Promise.all(uploadResponses).then((responses) => {
-    responses.forEach((response) => {
-      expect(response.status).toEqual(200);
-    });
-  });
+  let PartNumber = 1;
+  const commands: Promise<UploadPartCommandOutput>[] = [];
+  for (const fileContent of fileContents) {
+    const uploadInput: UploadPartCommandInput = {
+      Bucket: bucket,
+      Key: key,
+      PartNumber,
+      UploadId: uploadId,
+      Body: fileContent,
+      ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
+      ChecksumSHA256: sha256(fileContent).toString(enc.Base64),
+    };
+    const uploadCommand = new UploadPartCommand(uploadInput);
+    commands.push(federationS3Client.send(uploadCommand));
+    ++PartNumber;
+  }
+  await Promise.all(commands);
 };
 
 export const downloadContentFromS3 = async (
@@ -430,9 +522,8 @@ export const completeCaseFileUploadSuccess = async (
   creds: Credentials,
   caseUlid: string | undefined,
   ulid: string | undefined,
-  uploadId: string | undefined,
-  fileContent: string
-): Promise<DeaCaseFile> => {
+  uploadId: string | undefined
+): Promise<DeaCaseFileResult> => {
   const completeUploadResponse = await callDeaAPIWithCreds(
     `${deaApiUrl}cases/${caseUlid}/files/${ulid}/contents`,
     'PUT',
@@ -441,16 +532,15 @@ export const completeCaseFileUploadSuccess = async (
     {
       caseUlid,
       ulid,
-      sha256Hash: sha256(fileContent).toString(),
       uploadId,
     }
   );
 
   if (completeUploadResponse.status !== 200) {
-    console.log(completeUploadResponse);
+    console.log(completeUploadResponse.data);
   }
   expect(completeUploadResponse.status).toEqual(200);
-  const uploadedCaseFile: DeaCaseFile = await completeUploadResponse.data;
+  const uploadedCaseFile: DeaCaseFileResult = await completeUploadResponse.data;
   Joi.assert(uploadedCaseFile, caseFileResponseSchema);
   return uploadedCaseFile;
 };
@@ -493,16 +583,18 @@ export const s3Cleanup = async (s3ObjectsToDelete: s3Object[]): Promise<void> =>
     } catch (e) {
       console.log('[INFO] Could not delete object. Perhaps it does not exist', e);
     }
-    try {
-      await s3Client.send(
-        new AbortMultipartUploadCommand({
-          Key: object.key,
-          Bucket: testEnv.datasetsBucketName,
-          UploadId: object.uploadId,
-        })
-      );
-    } catch (e) {
-      console.log('[INFO] Could not delete multipart upload. Perhaps the upload completed', e);
+    if (object.uploadId) {
+      try {
+        await s3Client.send(
+          new AbortMultipartUploadCommand({
+            Key: object.key,
+            Bucket: testEnv.datasetsBucketName,
+            UploadId: object.uploadId,
+          })
+        );
+      } catch (e) {
+        console.log('[INFO] Could not delete multipart upload. Perhaps the upload completed', e);
+      }
     }
   }
 };
@@ -547,7 +639,11 @@ export const useRefreshToken = async (deaApiUrl: string, oauthToken: Oauth2Token
     throw new Error('Refresh failed');
   }
 
-  return parseOauthTokenFromCookies(refreshResponse);
+  const partialOauth = parseOauthTokenFromCookies(refreshResponse);
+  return {
+    ...partialOauth,
+    refresh_token: oauthToken.refresh_token,
+  };
 };
 
 export const parseOauthTokenFromCookies = (response: AxiosResponse): Oauth2Token => {
@@ -569,6 +665,8 @@ export type CloudTrailEventEntry = {
   caseId?: string;
   fileId?: string;
 };
+
+// ------------------- Audit Helpers ------------------- //
 
 export const parseTrailEventsFromAuditQuery = (csvData: string): CloudTrailEventEntry[] => {
   function parseFn(event: string): CloudTrailEventEntry {
@@ -599,6 +697,7 @@ export type AuditEventEntry = {
   DEA_User_ID?: string;
   Case_ID?: string;
   File_ID?: string;
+  DataVault_ID?: string;
   File_SHA_256?: string;
   Target_User_ID?: string;
   Case_Actions?: string;
@@ -615,6 +714,7 @@ export type AuditExpectations = {
   expectedCaseUlid: string;
   expectedFileUlid: string;
   expectedFileHash: string;
+  expectedDataVaultId: string;
 };
 
 export function verifyAuditEntry(
@@ -627,6 +727,7 @@ export function verifyAuditEntry(
     expectedCaseUlid: '',
     expectedFileUlid: '',
     expectedFileHash: '',
+    expectedDataVaultId: '',
   }
 ) {
   if (!entry) {
@@ -638,6 +739,7 @@ export function verifyAuditEntry(
   expect(entry.Case_ID).toStrictEqual(expectations.expectedCaseUlid);
   expect(entry.File_ID).toStrictEqual(expectations.expectedFileUlid);
   expect(entry.File_SHA_256).toStrictEqual(expectations.expectedFileHash);
+  expect(entry.DataVault_ID).toStrictEqual(expectations.expectedDataVaultId);
   expect(entry.Role).toStrictEqual(expectedRole);
 }
 

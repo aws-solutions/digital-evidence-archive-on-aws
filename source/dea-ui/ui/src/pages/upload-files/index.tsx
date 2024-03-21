@@ -19,11 +19,18 @@ export interface IHomeProps {
 const Home: NextPage = () => {
   const router = useRouter();
   const { settings } = useSettings();
-  const { caseId, filePath } = router.query;
+  const { caseId, filePath, caseName } = router.query;
 
   const href_prefix = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
-  if (!caseId || typeof caseId !== 'string' || !filePath || typeof filePath !== 'string') {
+  if (
+    !caseId ||
+    typeof caseId !== 'string' ||
+    !filePath ||
+    typeof filePath !== 'string' ||
+    !caseName ||
+    typeof caseName !== 'string'
+  ) {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
 
@@ -33,7 +40,7 @@ const Home: NextPage = () => {
       href: href_prefix,
     },
     {
-      text: breadcrumbLabels.caseDetailsLabel,
+      text: caseName,
       href: `${href_prefix}/case-detail?caseId=${caseId}`,
     },
     {

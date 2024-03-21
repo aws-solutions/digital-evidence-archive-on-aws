@@ -167,6 +167,10 @@ export const auditGlueTableColumns = [
     type: glue.Schema.STRING,
   },
   {
+    name: 'dataVaultId',
+    type: glue.Schema.STRING,
+  },
+  {
     name: 'fileId',
     type: glue.Schema.STRING,
   },
@@ -180,6 +184,10 @@ export const auditGlueTableColumns = [
   },
   {
     name: 'targetUserId',
+    type: glue.Schema.STRING,
+  },
+  {
+    name: 'downloadReason',
     type: glue.Schema.STRING,
   },
   {

@@ -41,3 +41,4 @@ swr under the MIT License
 uuid under the MIT License
 convict under the Apace License Version 2.0
 js-yaml under the MIT License
+csv-string under the MIT License

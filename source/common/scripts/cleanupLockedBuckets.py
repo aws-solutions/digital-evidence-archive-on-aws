@@ -1,9 +1,10 @@
 import boto3
 import os
- 
-AUDIT_BUCKET = os.getenv('AUDIT_BUCKET_NAME')
-DATASETS_BUCKET = os.getenv('DATASETS_BUCKET_NAME')
-QUERY_RESULT_BUCKET = os.getenv('QUERY_RESULT_BUCKET_NAME')
+
+ADMIN_ROLE_ARN = os.getenv('ADMIN_ROLE_ARN', 'null') 
+AUDIT_BUCKET = os.getenv('AUDIT_BUCKET_NAME', 'null')
+DATASETS_BUCKET = os.getenv('DATASETS_BUCKET_NAME', 'null')
+QUERY_RESULT_BUCKET = os.getenv('QUERY_RESULT_BUCKET_NAME', 'null')
 BUCKETS = [
 AUDIT_BUCKET,
 DATASETS_BUCKET,
@@ -12,6 +13,9 @@ QUERY_RESULT_BUCKET
 s3 = boto3.resource('s3')
 client = boto3.client('s3')
 for BUCKET in BUCKETS:
+    if BUCKET == 'null' or (BUCKET == DATASETS_BUCKET and ADMIN_ROLE_ARN == 'null'):
+        print('Skipping bucket: {}'.format(BUCKET))
+        continue
     print('Cleaning up verioned/locked bucket: {}'.format(BUCKET))
     bucket = s3.Bucket(BUCKET)
     try:

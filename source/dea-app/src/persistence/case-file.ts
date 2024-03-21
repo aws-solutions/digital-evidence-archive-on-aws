@@ -5,7 +5,12 @@
 
 import { Paged } from 'dynamodb-onetable';
 import { logger } from '../logger';
-import { DeaCaseFile, DeaCaseFileResult, InitiateCaseFileUploadDTO } from '../models/case-file';
+import {
+  CompleteCaseFileUploadObject,
+  DeaCaseFile,
+  DeaCaseFileResult,
+  InitiateCaseFileUploadDTO,
+} from '../models/case-file';
 import { CaseFileStatus } from '../models/case-file-status';
 import { caseFileFromEntity } from '../models/projections';
 import { S3Object } from '../storage/datasets';
@@ -19,10 +24,8 @@ export const initiateCaseFileUpload = async (
   userUlid: string,
   repositoryProvider: ModelRepositoryProvider
 ): Promise<DeaCaseFileResult> => {
-  // strip out chunkSizeBytes before saving in dynamo-db
-  const { chunkSizeBytes: _, ...deaCaseFile } = uploadDTO;
   const newEntity = await repositoryProvider.CaseFileModel.create({
-    ...deaCaseFile,
+    ...uploadDTO,
     isFile: true,
     createdBy: userUlid,
     status: CaseFileStatus.PENDING,
@@ -32,13 +35,15 @@ export const initiateCaseFileUpload = async (
 };
 
 export const completeCaseFileUpload = async (
-  deaCaseFile: DeaCaseFile,
-  repositoryProvider: ModelRepositoryProvider
+  deaCaseFile: CompleteCaseFileUploadObject,
+  repositoryProvider: ModelRepositoryProvider,
+  checksum: string | undefined
 ): Promise<DeaCaseFileResult> => {
   const transaction = {};
   const newEntity = await repositoryProvider.CaseFileModel.update(
     {
       ...deaCaseFile,
+      sha256Hash: checksum,
       status: CaseFileStatus.ACTIVE,
       ttl: null,
     },
@@ -55,6 +60,46 @@ export const completeCaseFileUpload = async (
       transaction,
     }
   );
+
+  await repositoryProvider.table.transact('write', transaction);
+  await createCaseFilePaths(deaCaseFile, repositoryProvider);
+  return caseFileFromEntity(newEntity);
+};
+
+export const createCaseFileAssociation = async (
+  deaCaseFile: DeaCaseFile,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<DeaCaseFileResult> => {
+  const transaction = {};
+  const newEntity = await repositoryProvider.CaseFileModel.create(
+    {
+      ...deaCaseFile,
+    },
+    { transaction }
+  );
+
+  if (deaCaseFile.isFile) {
+    await repositoryProvider.CaseModel.update(
+      {
+        PK: `CASE#${deaCaseFile.caseUlid}#`,
+        SK: 'CASE#',
+      },
+      {
+        add: { objectCount: 1, totalSizeBytes: deaCaseFile.fileSizeBytes },
+        transaction,
+      }
+    );
+    await repositoryProvider.DataVaultFileModel.update(
+      {
+        PK: `DATAVAULT#${deaCaseFile.dataVaultUlid}#${deaCaseFile.filePath}#`,
+        SK: `FILE#${deaCaseFile.fileName}#`,
+      },
+      {
+        add: { caseCount: 1 },
+        transaction,
+      }
+    );
+  }
 
   await repositoryProvider.table.transact('write', transaction);
   await createCaseFilePaths(deaCaseFile, repositoryProvider);
@@ -227,4 +272,123 @@ export const listCaseFilesByFilePath = async (
   caseFiles.count = caseFileEntities.length;
   caseFiles.next = caseFileEntities.next;
   return caseFiles;
+};
+
+export const listCasesByFile = async (
+  ulid: string,
+  repositoryProvider: ModelRepositoryProvider,
+  nextToken: object | undefined,
+  limit = 30
+): Promise<Paged<DeaCaseFileResult>> => {
+  const caseFileEntities = await repositoryProvider.CaseFileModel.find(
+    {
+      GSI3PK: `FILE#${ulid}#`,
+      GSI3SK: {
+        begins_with: 'CASE#',
+      },
+    },
+    {
+      next: nextToken,
+      limit,
+      index: 'GSI3',
+    }
+  );
+
+  const caseFiles: Paged<DeaCaseFileResult> = caseFileEntities
+    .map((entity) => caseFileFromEntity(entity))
+    .filter(isDefined);
+  caseFiles.count = caseFileEntities.count;
+  caseFiles.next = caseFileEntities.next;
+
+  return caseFiles;
+};
+
+export const deleteCaseFileAssociation = async (
+  deaCaseFile: DeaCaseFile,
+  repositoryProvider: ModelRepositoryProvider
+): Promise<void> => {
+  const transaction = {};
+  await repositoryProvider.CaseFileModel.remove(
+    {
+      PK: `CASE#${deaCaseFile.caseUlid}#`,
+      SK: `FILE#${deaCaseFile.ulid}#`,
+    },
+    { transaction }
+  );
+  if (deaCaseFile.isFile) {
+    await repositoryProvider.CaseModel.update(
+      {
+        PK: `CASE#${deaCaseFile.caseUlid}#`,
+        SK: 'CASE#',
+      },
+      {
+        add: { objectCount: -1, totalSizeBytes: -deaCaseFile.fileSizeBytes },
+        transaction,
+      }
+    );
+    await repositoryProvider.DataVaultFileModel.update(
+      {
+        PK: `DATAVAULT#${deaCaseFile.dataVaultUlid}#${deaCaseFile.filePath}#`,
+        SK: `FILE#${deaCaseFile.fileName}#`,
+      },
+      {
+        add: { caseCount: -1 },
+        transaction,
+      }
+    );
+  }
+
+  await repositoryProvider.table.transact('write', transaction);
+  // Remove case file paths if empty.
+  await removeCaseFilePaths(deaCaseFile.caseUlid, deaCaseFile.filePath, repositoryProvider);
+};
+
+const removeCaseFilePaths = async (
+  caseUlid: string,
+  filePath: string,
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  const noTrailingSlashPath = filePath.substring(0, filePath.length - 1);
+  if (noTrailingSlashPath.length > 0) {
+    const caseFiles = await listCaseFilesByFilePath(caseUlid, filePath, 1, repositoryProvider);
+    if (caseFiles.length > 0) {
+      // file path non empty.
+      logger.info('file path non empty', { caseUlid, filePath, count: caseFiles.length });
+      return;
+    }
+
+    // Get's the case file entry by location.
+    const caseFileEntity = await repositoryProvider.CaseFileModel.get(
+      {
+        GSI2PK: `CASE#${caseUlid}#${noTrailingSlashPath}#`,
+      },
+      {
+        index: 'GSI2',
+      }
+    );
+
+    if (!caseFileEntity) {
+      // file path has been deleted.
+      logger.info('file path has been deleted', { caseUlid, noTrailingSlashPath });
+      return;
+    }
+    await repositoryProvider.CaseFileModel.remove({
+      PK: `CASE#${caseFileEntity.caseUlid}#`,
+      SK: `FILE#${caseFileEntity.ulid}#`,
+    });
+    await removeCaseFilePaths(caseUlid, caseFileEntity.filePath, repositoryProvider);
+  }
+};
+
+export const updateCaseFileChecksum = async (
+  caseUlid: string,
+  fileUlid: string,
+  checksum: string,
+  repositoryProvider: ModelRepositoryProvider
+) => {
+  await repositoryProvider.CaseFileModel.update({
+    PK: `CASE#${caseUlid}#`,
+    SK: `FILE#${fileUlid}#`,
+    sha256Hash: checksum,
+  });
 };

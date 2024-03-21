@@ -15,6 +15,8 @@ export enum AuditType {
   CASEFILE = 'CASEFILE',
   SYSTEM = 'SYSTEM',
   USER = 'USER',
+  DATAVAULT = 'DATAVAULT',
+  DATAVAULTFILE = 'DATAVAULTFILE',
 }
 
 export const DeaSchema = {
@@ -24,6 +26,7 @@ export const DeaSchema = {
     primary: { hash: 'PK', sort: 'SK' },
     GSI1: { hash: 'GSI1PK', sort: 'GSI1SK', follow: false },
     GSI2: { hash: 'GSI2PK', sort: 'GSI2SK', follow: false },
+    GSI3: { hash: 'GSI3PK', sort: 'GSI3SK', follow: false },
   },
   models: {
     Case: {
@@ -84,6 +87,10 @@ export const DeaSchema = {
       },
       GSI2SK: { type: String, value: 'FILE#${isFile}#', required: true },
 
+      // Get all cases associated to the file.
+      GSI3PK: { type: String, value: 'FILE#${ulid}#', required: true },
+      GSI3SK: { type: String, value: 'CASE#${caseUlid}#', required: true },
+
       ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
       fileName: { type: String, required: true, validate: allButDisallowed },
       filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // relative path at upload time.
@@ -104,6 +111,13 @@ export const DeaSchema = {
       //managed by onetable - but included for entity generation
       created: { type: Date },
       updated: { type: Date },
+
+      // Data vault params
+      dataVaultUlid: { type: String, validate: ulidRegex },
+      executionId: { type: String },
+      associationCreatedBy: { type: String, validate: ulidRegex },
+      associationDate: { type: Date },
+      dataVaultUploadDate: { type: Date },
     },
     Session: {
       PK: { type: String, value: 'USER#${userUlid}#', required: true },
@@ -169,6 +183,90 @@ export const DeaSchema = {
       queryId: { type: String, required: true },
       resourceId: { type: String, required: true },
       auditType: { type: String, required: true, enum: Object.keys(AuditType) },
+    },
+    // Data Vault Schemas
+    DataVault: {
+      PK: { type: String, value: 'DATAVAULT#${ulid}#', required: true },
+      SK: { type: String, value: 'DATAVAULT#', required: true },
+      GSI1PK: { type: String, value: 'DATAVAULT#' },
+      GSI1SK: { type: String, value: 'DATAVAULT#${ulid}#' },
+      name: { type: String, required: true, unique: true, validate: allButDisallowed },
+      description: { type: String, validate: allButDisallowed },
+      ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
+      objectCount: { type: Number, required: true, default: 0 },
+      totalSizeBytes: { type: Number, required: true, default: 0 },
+      //managed by onetable - but included for entity generation
+      created: { type: Date },
+      updated: { type: Date },
+    },
+    DataVaultTask: {
+      PK: { type: String, value: 'TASK#${taskId}#', required: true },
+      SK: { type: String, value: 'TASK#', required: true },
+      GSI1PK: { type: String, value: 'DATAVAULT#${dataVaultUlid}#' },
+      GSI1SK: { type: String, value: 'DATAVAULT#TASK#${taskId}#' },
+      taskId: { type: String, required: true },
+      dataVaultUlid: { type: String, required: true },
+      name: { type: String, required: true, validate: allButDisallowed },
+      description: { type: String, validate: allButDisallowed },
+      created: { type: Date },
+      updated: { type: Date },
+      schedule: { type: String },
+      sourceLocationArn: { type: String, required: true },
+      destinationLocationArn: { type: String, required: true },
+      taskArn: { type: String, required: true },
+      deleted: { type: Boolean, required: true, default: false },
+    },
+    DataVaultExecution: {
+      PK: { type: String, value: 'EXECUTION#${executionId}#', required: true },
+      SK: { type: String, value: 'EXECUTION#', required: true },
+      GSI1PK: { type: String, value: 'TASK#${taskId}#' },
+      GSI1SK: { type: String, value: 'TASK#EXECUTION#${executionId}#' },
+      executionId: { type: String, required: true },
+      taskId: { type: String, required: true },
+      created: { type: Date },
+      createdBy: { type: String, validate: ulidRegex, required: true },
+    },
+    DataVaultFile: {
+      // For UI folder navigation. Get all files and folders in given folder path
+      PK: { type: String, value: 'DATAVAULT#${dataVaultUlid}#${filePath}#', required: true },
+      SK: { type: String, value: 'FILE#${fileName}#', required: true },
+      // Get file or folder by ulid
+      GSI1PK: { type: String, value: 'DATAVAULT#${dataVaultUlid}#', required: true },
+      GSI1SK: { type: String, value: 'FILE#${ulid}#', required: true },
+      // Get specific file or folder by full path
+      GSI2PK: {
+        type: String,
+        value: 'DATAVAULT#${dataVaultUlid}#${filePath}${fileName}#',
+        required: true,
+      },
+      GSI2SK: { type: String, value: 'FILE#${isFile}#', required: true },
+
+      ulid: { type: String, generate: 'ulid', validate: ulidRegex, required: true },
+      fileName: { type: String, required: true, validate: allButDisallowed },
+      filePath: { type: String, required: true, validate: filePathSafeCharsRegex }, // relative path at upload time.
+      dataVaultUlid: { type: String, validate: ulidRegex, required: true },
+      createdBy: { type: String, validate: ulidRegex, required: true },
+      isFile: { type: Boolean, required: true },
+      fileSizeBytes: { type: Number, required: true },
+      versionId: { type: String },
+      sha256Hash: { type: String },
+      contentType: { type: String },
+      fileS3Key: { type: String, required: true },
+      executionId: { type: String, required: true },
+      caseCount: { type: Number, required: true, default: 0 },
+
+      //managed by onetable - but included for entity generation
+      created: { type: Date },
+      updated: { type: Date },
+    },
+    ObjectChecksumJob: {
+      // using "parent" here to be more generic, right now this represents the CaseUlid,
+      //   but if we were to allow uploading to a datavault later, this would represent the DatavaultUlid
+      PK: { type: String, value: 'CHECKSUMJOB#${parentUlid}#${fileUlid}#', required: true },
+      SK: { type: String, value: 'CHECKSUMJOB#', required: true },
+      parentUlid: { type: String, validate: ulidRegex, required: true },
+      fileUlid: { type: String, validate: ulidRegex, required: true },
+      serializedHasher: { type: String, required: true },
     },
   } as const,
   params: {

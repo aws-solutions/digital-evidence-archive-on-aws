@@ -12,6 +12,10 @@ import convict from 'convict';
 
 const UNDEFINED_STRING = 'undefined';
 
+const FG_RED = '\x1b[31m';
+const FG_RESET = '\x1b[0m';
+const FG_GREEN = '\x1b[32m';
+
 function getSourcePath(): string {
   const pathParts = __dirname.split(path.sep);
   let backTrack = '';
@@ -34,11 +38,23 @@ const deaRoleTypesFormat: convict.Format = {
   },
 };
 
+const SubnetMaskCIDRFormat: convict.Format = {
+  name: 'subnet-mask-cidr-format',
+  validate: function (val) {
+    if (typeof val !== 'number') {
+      throw new Error('Source IP CIDR must be of type number');
+    }
+    if (val < 0 || val > 32) {
+      throw new Error('Source IP CIDR must be between 0 and 32');
+    }
+  },
+};
+
 const groupDeaRoleRulesFormat: convict.Format = {
   name: 'group-to-dearole-rules',
   validate: function (mappingRules, schema) {
     if (!Array.isArray(mappingRules)) {
-      throw new Error('must be of type Array');
+      throw new Error('groupToDeaRoleRules must be of type Array');
     }
 
     if (mappingRules.length > 25) {
@@ -73,10 +89,41 @@ const cognitoDomainFormat: convict.Format = {
   },
 };
 
+const STAGE_MAX_LENGTH = 21;
+const deaStageFormat: convict.Format = {
+  name: 'dea-stage',
+  validate: function (val) {
+    if (typeof val !== 'string') {
+      throw new Error('The Stage value must be a string');
+    }
+    if (val.length > STAGE_MAX_LENGTH) {
+      throw new Error('The Stage name must not exceed 21 characters');
+    }
+    if (!/^[a-zA-Z0-9-]+$/.test(val)) {
+      throw new Error('The Stage name may only contain alphanumerics and hyphens.');
+    }
+  },
+};
+
+const uploadTimeoutFormat: convict.Format = {
+  name: 'upload-timeout',
+  validate: function (val) {
+    if (typeof val !== 'number') {
+      throw new Error('The Upload Timeout value must be a number');
+    }
+    if (val < 0) {
+      throw new Error('The Upload Timeout value must be a positive number');
+    }
+    if (val > 60) {
+      throw new Error('The Upload Timeout value must be less than 60 minutes');
+    }
+  },
+};
+
 const convictSchema = {
   stage: {
     doc: 'The deployment stage.',
-    format: String,
+    format: deaStageFormat.name,
     default: 'devsample',
     env: 'STAGE',
   },
@@ -221,6 +268,11 @@ const convictSchema = {
       format: String,
       default: undefined,
     },
+    hasAwsManagedActiveDirectory: {
+      doc: `whether your identity center's identity store is AWS Managed Microsoft AD`,
+      format: Boolean,
+      default: false,
+    },
   },
   testStack: {
     doc: 'Boolean to indicate if this is a test stack',
@@ -236,6 +288,11 @@ const convictSchema = {
     doc: 'Boolean to indicate if pre-signed url access should be ip-restricted',
     format: Boolean,
     default: true,
+  },
+  sourceIpSubnetMaskCIDR: {
+    doc: 'Subnet mask for source ip validation',
+    format: SubnetMaskCIDRFormat.name,
+    default: 32,
   },
   deaRoleTypes: {
     doc: 'DEA Role Types config',
@@ -295,7 +352,7 @@ const convictSchema = {
   },
   uploadFilesTimeoutMinutes: {
     doc: 'Timeout in minutes for S3 pre-signed URLs generated for file upload',
-    format: Number,
+    format: uploadTimeoutFormat.name,
     default: 60,
   },
   includeDynamoDataPlaneEventsInTrail: {
@@ -308,12 +365,29 @@ const convictSchema = {
     format: Number,
     default: 60,
   },
+  dataSyncLocationBuckets: {
+    doc: 'Bucket ARN list for any buckets you are using as source locations for Data Vault transfers',
+    format: Array,
+    default: [],
+  },
+  dataSyncSourcePermissions: {
+    doc: 'list of datasync source permissions we need for listing source locations',
+    format: Array,
+    default: [],
+  },
+  adminRoleArn: {
+    doc: 'Optional ARN to grant KMS and Bucket permissions, useful for pipeline testing',
+    format: String,
+    default: undefined,
+    env: 'ADMIN_ROLE_ARN',
+  },
 };
 
 export interface GroupToDEARoleRule {
   readonly filterValue: string;
   readonly deaRoleName: string;
 }
+
 export interface IdPAttributes {
   readonly username: string;
   readonly email: string;
@@ -333,6 +407,7 @@ export interface IdpMetadataInfo {
   readonly identityStoreId: string | undefined;
   readonly identityStoreRegion: string | undefined;
   readonly identityStoreAccountId: string | undefined;
+  readonly hasAwsManagedActiveDirectory: boolean;
 }
 
 export interface DEAEndpointDefinition {
@@ -362,6 +437,9 @@ convict.addFormat(groupDeaRoleRulesFormat);
 convict.addFormat(deaRoleTypesFormat);
 convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
+convict.addFormat(deaStageFormat);
+convict.addFormat(uploadTimeoutFormat);
+convict.addFormat(SubnetMaskCIDRFormat);
 
 interface DEAConfig {
   stage(): string;
@@ -374,6 +452,9 @@ interface DEAConfig {
   isTestStack(): boolean;
   isOneClick(): boolean;
   sourceIpValidationEnabled(): boolean;
+  sourceIpSubnetMaskCIDR(): string;
+  dataSyncLocationBuckets(): string[];
+  dataSyncSourcePermissions(): string[];
   deaRoleTypes(): DEARoleTypeDefinition[];
   retainPolicy(): RemovalPolicy;
   retentionDays(): RetentionDays;
@@ -389,6 +470,7 @@ interface DEAConfig {
   uploadFilesTimeoutMinutes(): number;
   includeDynamoDataPlaneEventsInTrail(): boolean;
   auditDownloadTimeoutMinutes(): number;
+  adminRoleArn(): string | undefined;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -407,6 +489,7 @@ export const deaConfig: DEAConfig = {
   isTestStack: () => convictConfig.get('testStack'),
   isOneClick: () => convictConfig.get('isOneClick'),
   sourceIpValidationEnabled: () => convictConfig.get('sourceIpValidation') ?? true,
+  sourceIpSubnetMaskCIDR: () => convictConfig.get('sourceIpSubnetMaskCIDR').toString(),
   deaRoleTypes: () => convictConfig.get('deaRoleTypes'),
   retainPolicy: () => (convictConfig.get('testStack') ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN),
   retentionDays: () => (convictConfig.get('testStack') ? RetentionDays.TWO_WEEKS : RetentionDays.INFINITE),
@@ -416,25 +499,22 @@ export const deaConfig: DEAConfig = {
     const value = convictConfig.get('deaAllowedOrigins');
     return value === '' ? [] : value.split(',');
   },
-  kmsAccountActions: () =>
-    convictConfig.get('testStack')
-      ? ['kms:*']
-      : [
-          'kms:Create*',
-          'kms:Describe*',
-          'kms:Enable*',
-          'kms:List*',
-          'kms:Put*',
-          'kms:Update*',
-          'kms:Revoke*',
-          'kms:Disable*',
-          'kms:Get*',
-          'kms:Delete*',
-          'kms:TagResource',
-          'kms:UntagResource',
-          'kms:ScheduleKeyDeletion',
-          'kms:CancelKeyDeletion',
-        ],
+  kmsAccountActions: () => [
+    'kms:Create*',
+    'kms:Describe*',
+    'kms:Enable*',
+    'kms:List*',
+    'kms:Put*',
+    'kms:Update*',
+    'kms:Revoke*',
+    'kms:Disable*',
+    'kms:Get*',
+    'kms:Delete*',
+    'kms:TagResource',
+    'kms:UntagResource',
+    'kms:ScheduleKeyDeletion',
+    'kms:CancelKeyDeletion',
+  ],
   deletionAllowed: () => convictConfig.get('deletionAllowed'),
   sameSiteValue: () => (convictConfig.get('testStack') ? 'None' : 'Strict'),
   preflightOptions: () => {
@@ -443,24 +523,26 @@ export const deaConfig: DEAConfig = {
       allowOrigins.push(`https://${deaConfig.customDomainInfo().domainName}`);
     }
 
-    return convictConfig.get('testStack')
-      ? {
-          allowHeaders: [
-            'Content-Type',
-            'X-Amz-Date',
-            'Authorization',
-            'X-Api-Key',
-            'CSRF-Token',
-            'x-amz-security-token',
-            'set-cookie',
-            'Host',
-            'Content-Length',
-          ],
-          allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-          allowCredentials: true,
-          allowOrigins,
-        }
-      : undefined;
+    if (allowOrigins.length > 0) {
+      return {
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+          'CSRF-Token',
+          'x-amz-security-token',
+          'set-cookie',
+          'Host',
+          'Content-Length',
+        ],
+        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowCredentials: true,
+        allowOrigins,
+      };
+    }
+
+    return undefined;
   },
   vpcEndpointInfo: () => {
     const vpcEndpoint = convictConfig.get('vpcEndpoint');
@@ -478,12 +560,34 @@ export const deaConfig: DEAConfig = {
   uploadFilesTimeoutMinutes: () => convictConfig.get('uploadFilesTimeoutMinutes'),
   includeDynamoDataPlaneEventsInTrail: () => convictConfig.get('includeDynamoDataPlaneEventsInTrail'),
   auditDownloadTimeoutMinutes: () => convictConfig.get('auditDownloadTimeoutMinutes'),
+  dataSyncLocationBuckets: () => convictConfig.get('dataSyncLocationBuckets'),
+  dataSyncSourcePermissions: () => convictConfig.get('dataSyncSourcePermissions'),
+  adminRoleArn: () => convictConfig.get('adminRoleArn'),
 };
 
 export const loadConfig = (stage: string): void => {
   const sourceDir = getSourcePath();
   convictConfig.loadFile(`${sourceDir}/common/config/${stage}.json`);
-  convictConfig.validate({ allowed: 'strict' });
+  try {
+    convictConfig.validate({ allowed: 'strict' });
+  } catch (e) {
+    console.error(
+      [
+        `${FG_RED}--------------------------------------------------------------------------------------`,
+        `Configuration ${configFilename}.json Failed Schema Validation:`,
+        `${e.message}`,
+        `--------------------------------------------------------------------------------------${FG_RESET}`,
+      ].join('\n')
+    );
+    throw e;
+  }
+  console.info(
+    [
+      `${FG_GREEN}--------------------------------------------------------------------------------------`,
+      `Configuration ${configFilename}.json Passed Schema Validation`,
+      `--------------------------------------------------------------------------------------${FG_RESET}`,
+    ].join('\n')
+  );
 };
 const configFilename = deaConfig.configName() ?? deaConfig.stage();
 loadConfig(configFilename);

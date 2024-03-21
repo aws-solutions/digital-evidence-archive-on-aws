@@ -22,6 +22,7 @@
         "cloudformation:DescribeStacks",
         "glue:Create*",
         "glue:Delete*",
+        "glue:Update*",
         "firehose:Create*",
         "firehose:Delete*",
         "firehose:DescribeDeliveryStream",

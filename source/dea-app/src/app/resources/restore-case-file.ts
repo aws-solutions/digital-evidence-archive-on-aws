@@ -8,9 +8,8 @@ import { CaseFileStatus } from '../../models/case-file-status';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider, restoreObject } from '../../storage/datasets';
-import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
-import { getCaseFile } from '../services/case-file-service';
+import { getRequiredCaseFile } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseNoContent } from './dea-lambda-utils';
 
@@ -26,10 +25,7 @@ export const restoreCaseFile: DEAGatewayProxyHandler = async (
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
 
-  const retrievedCaseFile = await getCaseFile(caseId, fileId, repositoryProvider);
-  if (!retrievedCaseFile) {
-    throw new NotFoundError(`Could not find file: ${fileId} in the DB`);
-  }
+  const retrievedCaseFile = await getRequiredCaseFile(caseId, fileId, repositoryProvider);
   if (retrievedCaseFile.status !== CaseFileStatus.ACTIVE) {
     throw new ValidationError(`Can't restore a file in ${retrievedCaseFile.status} state`);
   }

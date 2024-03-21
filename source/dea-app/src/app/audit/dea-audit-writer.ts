@@ -52,8 +52,10 @@ export default class DeaAuditWriter implements Writer {
     auditEntry.fileHash = entry.fileHash;
     auditEntry.caseId = entry.caseId;
     auditEntry.fileId = entry.fileId;
+    auditEntry.dataVaultId = entry.dataVaultId;
     auditEntry.targetUserId = entry.targetUserId;
     auditEntry.caseActions = entry.caseActions;
+    auditEntry.downloadReason = entry.downloadReason;
     auditEntry.eventID = entry.eventID;
   }
 

@@ -18,6 +18,7 @@ import {
 } from '@aws/dea-app/lib/app/services/audit-service';
 import { getCookieValue, removeSensitiveHeaders } from '@aws/dea-app/lib/lambda-http-helpers';
 import { CaseAction } from '@aws/dea-app/lib/models/case-action';
+import { CaseAssociationDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseOwnerDTO, CaseUserDTO } from '@aws/dea-app/lib/models/dtos/case-user-dto';
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { v4 as uuidv4 } from 'uuid';
@@ -122,6 +123,7 @@ const initialAuditEvent = (event: APIGatewayProxyEvent): CJISAuditEventBody => {
     result: AuditEventResult.FAILURE,
     caseId: event.pathParameters?.caseId,
     fileId: event.pathParameters?.fileId,
+    dataVaultId: event.pathParameters?.dataVaultId,
     targetUserId: getTargetUserId(event),
     eventID: uuidv4(),
   };
@@ -237,6 +239,9 @@ const parseEventForExtendedAuditFields = (
     eventType !== AuditEventType.CREATE_CASE &&
     eventType !== AuditEventType.INITIATE_CASE_FILE_UPLOAD &&
     eventType !== AuditEventType.COMPLETE_CASE_FILE_UPLOAD &&
+    eventType !== AuditEventType.CREATE_DATA_VAULT &&
+    eventType !== AuditEventType.CREATE_CASE_ASSOCIATION &&
+    eventType !== AuditEventType.DOWNLOAD_CASE_FILE &&
     !isCaseInviteAPI
   ) {
     return;
@@ -245,7 +250,7 @@ const parseEventForExtendedAuditFields = (
   const body = JSON.parse(result.body);
 
   //Warn if caseId was not included on the CreateCase Operation
-  if (eventType == AuditEventType.CREATE_CASE) {
+  if (eventType === AuditEventType.CREATE_CASE) {
     // Include case id if it was populated
     auditEvent.caseId = body.ulid;
     if (!auditEvent.caseId) {
@@ -259,7 +264,7 @@ const parseEventForExtendedAuditFields = (
   }
 
   // Warn if fileId was not included on the InitiateFileUpload Operation
-  if (eventType == AuditEventType.INITIATE_CASE_FILE_UPLOAD) {
+  if (eventType === AuditEventType.INITIATE_CASE_FILE_UPLOAD) {
     // Include file id if it was populated
     auditEvent.fileId = body.ulid;
     if (!auditEvent.fileId) {
@@ -272,17 +277,33 @@ const parseEventForExtendedAuditFields = (
     }
   }
 
+  if (eventType === AuditEventType.CREATE_DATA_VAULT) {
+    auditEvent.dataVaultId = body.ulid;
+    if (!auditEvent.dataVaultId) {
+      logger.error(
+        'DataVaultId was not included in auditEvent after complete data vault creation operation.',
+        {
+          resource: event.resource,
+          httpMethod: event.httpMethod,
+        }
+      );
+      auditEvent.dataVaultId = 'ERROR: data vault id is absent';
+      auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
+    }
+  }
+
+  if (event.body && eventType === AuditEventType.CREATE_CASE_ASSOCIATION) {
+    const associationBody: CaseAssociationDTO = JSON.parse(event.body);
+    auditEvent.caseId = associationBody.caseUlids.join(', ');
+    auditEvent.fileId = associationBody.fileUlids.join(', ');
+  }
+
+  if (eventType === AuditEventType.DOWNLOAD_CASE_FILE) {
+    auditEvent.downloadReason = body.downloadReason;
+  }
+
   // include file hash if it was included in the body of the response
   auditEvent.fileHash = body.sha256Hash;
-  // Warn if the fileHash was not included on complete upload operation
-  if (eventType == AuditEventType.COMPLETE_CASE_FILE_UPLOAD && !auditEvent.fileHash) {
-    logger.error('File hash was not included in auditEvent after complete file upload operation.', {
-      resource: event.resource,
-      httpMethod: event.httpMethod,
-    });
-    auditEvent.fileHash = 'ERROR: hash is absent';
-    auditEvent.result = AuditEventResult.SUCCESS_WITH_WARNINGS;
-  }
 
   // Include case actions in the audit event
   // Use : instead of , to list actions, since audit is sent

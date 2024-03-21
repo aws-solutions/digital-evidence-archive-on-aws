@@ -30,6 +30,9 @@ export const validateBackendConstruct = (template: Template): void => {
       Match.objectLike({
         IndexName: 'GSI2',
       }),
+      Match.objectLike({
+        IndexName: 'GSI3',
+      }),
     ]),
   });
 

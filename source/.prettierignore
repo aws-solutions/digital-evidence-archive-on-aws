@@ -103,3 +103,5 @@ lib
 # Prettier is failing when typing a generic method (e.g. someMethod<type>)
 **/cases.tsx
 **/auth.tsx
+**/data-vaults.tsx
+**/base.tsx

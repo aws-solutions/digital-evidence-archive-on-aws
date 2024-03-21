@@ -20,23 +20,6 @@ export interface DeaCaseDTO {
   readonly updated: string;
 }
 
-export interface CaseFileDTO {
-  readonly ulid: string;
-  readonly caseUlid: string;
-  readonly fileName: string;
-  readonly contentType?: string;
-  readonly createdBy: string;
-  readonly filePath: string;
-  readonly fileSizeBytes: number;
-  readonly sha256Hash?: string;
-  readonly status: string;
-  readonly created?: Date;
-  readonly updated?: Date;
-  readonly isFile: boolean;
-  readonly reason?: string;
-  readonly details?: string;
-}
-
 export interface ScopedDeaCaseDTO {
   readonly ulid: string;
   readonly name: string;

@@ -3,7 +3,12 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getRequiredPathParam, getRequiredPayload, getUserUlid } from '../../lambda-http-helpers';
+import {
+  getRequiredEnv,
+  getRequiredPathParam,
+  getRequiredPayload,
+  getUserUlid,
+} from '../../lambda-http-helpers';
 import { InitiateCaseFileUploadDTO } from '../../models/case-file';
 import { initiateCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
@@ -35,12 +40,15 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
   }
 
   const userUlid = getUserUlid(event);
-  await validateInitiateUploadRequirements(requestCaseFile, userUlid, repositoryProvider);
+  if (!requestCaseFile.uploadId) {
+    await validateInitiateUploadRequirements(requestCaseFile, userUlid, repositoryProvider);
+  }
+  const subnetCIDR = getRequiredEnv('SOURCE_IP_MASK_CIDR');
 
   const initiateUploadResponse = await CaseFileService.initiateCaseFileUpload(
     requestCaseFile,
     userUlid,
-    `${event.requestContext.identity.sourceIp}/32`,
+    `${event.requestContext.identity.sourceIp}/${subnetCIDR}`,
     repositoryProvider,
     datasetsProvider
   );

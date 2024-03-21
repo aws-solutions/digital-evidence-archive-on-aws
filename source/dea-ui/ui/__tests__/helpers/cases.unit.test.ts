@@ -78,16 +78,25 @@ describe('useListAllCases', () => {
   });
 
   it('should return a list of my files', () => {
-    const mockFiles = {
-      files: [
-        { id: 12345, name: 'Who killed Anakin' },
-        { id: 23456, name: 'How is Palpatine Alive' },
-      ],
-    };
+    const mockFiles = [
+      {
+        files: [
+          { id: 1, name: 'Case One' },
+          { id: 2, name: 'Case Two' },
+        ],
+        next: 'page2',
+      },
+      {
+        files: [
+          { id: 3, name: 'Case Three' },
+          { id: 4, name: 'Case Four' },
+        ],
+      },
+    ];
     useSWR.mockReturnValue({ data: mockFiles, isValidating: false });
 
     const { data, isLoading } = useListCaseFiles('dummyId', '/');
-    expect(data).toEqual(mockFiles.files);
+    expect(data.length).toEqual(4);
     expect(isLoading).toEqual(false);
   });
 });

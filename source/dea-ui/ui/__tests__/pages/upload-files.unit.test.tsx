@@ -1,3 +1,4 @@
+import 'aws-sdk-client-mock-jest';
 import wrapper from '@cloudscape-design/components/test-utils/dom';
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
@@ -6,14 +7,17 @@ import { fail } from 'assert';
 import axios from 'axios';
 import { breadcrumbLabels, commonLabels } from '../../src/common/labels';
 import Home from '../../src/pages/upload-files';
+import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
+import { S3Client, UploadPartCommand } from '@aws-sdk/client-s3';
 
 const push = jest.fn();
 const CASE_ID = '100';
+const CASE_NAME = 'mocked case';
 
 global.fetch = jest.fn(() => ({}));
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID, filePath: '/' },
+    query: { caseId: CASE_ID, filePath: '/huh', caseName: CASE_NAME },
     push,
   })),
 }));
@@ -25,9 +29,9 @@ mockedAxios.create.mockReturnThis();
 mockedAxios.request.mockResolvedValue({
   data: {
     ulid: 'abc',
-    name: 'mocked case',
+    name: CASE_NAME,
     status: 'ACTIVE',
-    presignedUrls: ['hello', 'world'],
+    federationCredentials: [],
   },
   status: 200,
   statusText: 'Ok',
@@ -35,7 +39,18 @@ mockedAxios.request.mockResolvedValue({
   config: {},
 });
 
+let s3Mock: AwsClientStub<S3Client>;
+
 describe('UploadFiles page', () => {
+  beforeAll(() => {
+    s3Mock = mockClient(S3Client);
+  });
+
+  beforeEach(() => {
+    s3Mock.reset();
+    s3Mock.on(UploadPartCommand).resolves({});
+  });
+
   it('renders the component', () => {
     const page = render(<Home />);
 
@@ -45,7 +60,7 @@ describe('UploadFiles page', () => {
     const breadcrumbLinks = breadcrumbWrapper?.findBreadcrumbLinks()!;
     expect(breadcrumbLinks.length).toEqual(3);
     expect(breadcrumbLinks[0].getElement()).toHaveTextContent(breadcrumbLabels.homePageLabel);
-    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(breadcrumbLabels.caseDetailsLabel);
+    expect(breadcrumbLinks[1].getElement()).toHaveTextContent(CASE_NAME);
     expect(breadcrumbLinks[2].getElement()).toHaveTextContent(breadcrumbLabels.uploadFilesAndFoldersLabel);
   });
   it('responds to done', () => {
@@ -64,7 +79,6 @@ describe('UploadFiles page', () => {
     const selectFileInput = screen.getByTestId('file-select');
     expect(selectFileInput).toBeTruthy();
     const testFile = new File(['hello'], 'hello.world', { type: 'text/plain' });
-    File.prototype.text = jest.fn().mockResolvedValueOnce('hello');
     await userEvent.upload(selectFileInput, [testFile]);
 
     const detailsInput = screen.getByTestId('input-details');

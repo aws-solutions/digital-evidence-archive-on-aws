@@ -5,16 +5,17 @@
 
 import { fail } from 'assert';
 import { AthenaClient, StartQueryExecutionCommand } from '@aws-sdk/client-athena';
-import { S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
+import { S3Client, S3ClientResolvedConfig, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import {
   STSClient,
+  STSClientResolvedConfig,
   ServiceInputTypes as STSInputs,
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import Joi from 'joi';
 import { anyOfClass, instance, mock, when } from 'ts-mockito';
-import { startCaseFileAudit } from '../../../app/resources/start-case-file-audit';
+import { startCaseFileAudit } from '../../../app/resources/audit/start-case-file-audit';
 import { joiUlid } from '../../../models/validation/joi-common';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
@@ -28,8 +29,8 @@ import {
 
 let caseId = '';
 let fileId = '';
-let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
-let stsMock: AwsStub<STSInputs, STSOutputs>;
+let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
+let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 
 describe('start case file audit', () => {
   const OLD_ENV = process.env;

@@ -8,5 +8,5 @@ import { FlashbarProps } from '@cloudscape-design/components';
 export interface IAppNotification {
   id: string;
   type: FlashbarProps.Type;
-  content: string;
+  content: React.ReactNode;
 }

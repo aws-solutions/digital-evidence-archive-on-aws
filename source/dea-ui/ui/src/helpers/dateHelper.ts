@@ -11,7 +11,10 @@ function formatDateFromISOString(isoString: string | undefined, locale = 'en-us'
   return formatDate(new Date(isoString), locale);
 }
 
-function formatDate(date: Date, locale = 'en-us'): string {
+function formatDate(date: Date | undefined, locale = 'en-us'): string {
+  if (!date) {
+    return '-';
+  }
   return date.toLocaleString(locale, {
     year: 'numeric',
     month: 'long',
@@ -19,4 +22,28 @@ function formatDate(date: Date, locale = 'en-us'): string {
   });
 }
 
-export { formatDateFromISOString, formatDate };
+function formatDateTimeFromISOString(isoString: string | undefined, locale = 'en-us'): string {
+  if (!isoString) {
+    return '-';
+  }
+
+  return formatDateTime(new Date(isoString), locale);
+}
+
+function formatDateTime(date: Date | undefined, locale = 'en-us'): string {
+  if (!date) {
+    return '-';
+  }
+  return date.toLocaleString(locale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+    timeZoneName: 'short',
+    formatMatcher: 'basic',
+  });
+}
+
+export { formatDateFromISOString, formatDate, formatDateTimeFromISOString, formatDateTime };

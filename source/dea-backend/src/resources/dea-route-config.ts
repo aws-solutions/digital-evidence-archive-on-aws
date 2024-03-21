@@ -7,6 +7,13 @@ import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
 import { AuthorizationType } from 'aws-cdk-lib/aws-apigateway';
 import { ApiGatewayMethod, ApiGatewayRouteConfig } from './api-gateway-route-config';
 
+export enum DeaApiRoleName {
+  AUTH_ROLE = 'AUTH_ROLE',
+  INITIATE_UPLOAD_ROLE = 'INITIATE_UPLOAD_ROLE',
+  COMPLETE_UPLOAD_ROLE = 'COMPLETE_UPLOAD_ROLE',
+  DATASYNC_EXECUTION_ROLE = 'CREATE_EXECUTION_ROLE',
+}
+
 export const deaApiRouteConfig: ApiGatewayRouteConfig = {
   routes: [
     {
@@ -75,6 +82,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/cases/{caseId}/files',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/initiate-case-file-upload-handler.ts',
+      roleName: DeaApiRoleName.INITIATE_UPLOAD_ROLE,
     },
     {
       eventName: AuditEventType.GET_CASE_FILES,
@@ -87,6 +95,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/cases/{caseId}/files/{fileId}/contents',
       httpMethod: ApiGatewayMethod.PUT,
       pathToSource: '../../src/handlers/complete-case-file-upload-handler.ts',
+      roleName: DeaApiRoleName.COMPLETE_UPLOAD_ROLE,
     },
     {
       eventName: AuditEventType.GET_CASE_FILE_DETAIL,
@@ -97,7 +106,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     {
       eventName: AuditEventType.DOWNLOAD_CASE_FILE,
       path: '/cases/{caseId}/files/{fileId}/contents',
-      httpMethod: ApiGatewayMethod.GET,
+      httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/download-case-file-handler.ts',
     },
     {
@@ -115,6 +124,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       // None for now, since this is the first endpoint we hit after logging in before
       // we have the id_token
       authMethod: AuthorizationType.NONE,
+      roleName: DeaApiRoleName.AUTH_ROLE,
     },
     {
       eventName: AuditEventType.REFRESH_AUTH_TOKEN,
@@ -123,6 +133,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/refresh-token-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
       authMethod: AuthorizationType.NONE,
+      roleName: DeaApiRoleName.AUTH_ROLE,
     },
     {
       eventName: AuditEventType.REVOKE_AUTH_TOKEN,
@@ -131,6 +142,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/revoke-token-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
       authMethod: AuthorizationType.NONE,
+      roleName: DeaApiRoleName.AUTH_ROLE,
     },
     {
       eventName: AuditEventType.GET_LOGIN_URL,
@@ -139,6 +151,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/get-login-url-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
       authMethod: AuthorizationType.NONE,
+      roleName: DeaApiRoleName.AUTH_ROLE,
     },
     {
       eventName: AuditEventType.GET_LOGOUT_URL,
@@ -147,6 +160,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       pathToSource: '../../src/handlers/get-logout-url-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
       authMethod: AuthorizationType.NONE,
+      roleName: DeaApiRoleName.AUTH_ROLE,
     },
     {
       eventName: AuditEventType.GET_ALL_USERS,
@@ -184,6 +198,74 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/availableEndpoints',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-available-endpoints-handler.ts',
+    },
+    {
+      eventName: AuditEventType.CREATE_DATA_VAULT,
+      path: '/datavaults',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/create-data-vault-handler.ts',
+    },
+    {
+      eventName: AuditEventType.GET_DATA_VAULTS,
+      path: '/datavaults',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-data-vaults-handler.ts',
+      pagination: true,
+    },
+    {
+      eventName: AuditEventType.GET_DATA_VAULT_DETAILS,
+      path: '/datavaults/{dataVaultId}/details',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-data-vault-details-handler.ts',
+    },
+    {
+      eventName: AuditEventType.UPDATE_DATA_VAULT_DETAILS,
+      path: '/datavaults/{dataVaultId}/details',
+      httpMethod: ApiGatewayMethod.PUT,
+      pathToSource: '../../src/handlers/update-data-vault-handler.ts',
+    },
+    {
+      eventName: AuditEventType.GET_DATA_VAULT_FILES,
+      path: '/datavaults/{dataVaultId}/files',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/list-data-vault-files-handler.ts',
+    },
+    {
+      eventName: AuditEventType.CREATE_CASE_ASSOCIATION,
+      path: '/datavaults/{dataVaultId}/caseAssociations',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/create-case-association-handler.ts',
+    },
+    {
+      eventName: AuditEventType.GET_DATA_VAULT_FILE_DETAIL,
+      path: '/datavaults/{dataVaultId}/files/{fileId}/info',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-data-vault-file-detail-handler.ts',
+    },
+    {
+      eventName: AuditEventType.DELETE_CASE_ASSOCIATION,
+      path: '/datavaults/{dataVaultId}/files/{fileId}/caseAssociations',
+      httpMethod: ApiGatewayMethod.DELETE,
+      pathToSource: '../../src/handlers/delete-case-association-handler.ts',
+    },
+    {
+      eventName: AuditEventType.CREATE_DATA_VAULT_TASK,
+      path: '/datavaults/{dataVaultId}/tasks',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/create-data-vault-task-handler.ts',
+    },
+    {
+      eventName: AuditEventType.GET_DATA_SYNC_TASKS,
+      path: '/datasync/tasks',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-data-sync-tasks-handler.ts',
+    },
+    {
+      eventName: AuditEventType.CREATE_DATA_VAULT_EXECUTION,
+      path: '/datavaults/tasks/{taskId}/executions',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/create-data-vault-execution-handler.ts',
+      roleName: DeaApiRoleName.DATASYNC_EXECUTION_ROLE,
     },
     // PRIVILEGED ENDPOINTS
     {
@@ -235,6 +317,30 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
       path: '/system/audit',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/request-system-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.REQUEST_DATA_VAULT_FILE_AUDIT,
+      path: '/datavaults/{dataVaultId}/files/{fileId}/audit',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/request-datavault-file-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.REQUEST_DATA_VAULT_AUDIT,
+      path: '/datavaults/{dataVaultId}/audit',
+      httpMethod: ApiGatewayMethod.POST,
+      pathToSource: '../../src/handlers/request-datavault-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.GET_DATA_VAULT_FILE_AUDIT,
+      path: '/datavaults/{dataVaultId}/files/{fileId}/audit/{auditId}/csv',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-datavault-file-audit-handler.ts',
+    },
+    {
+      eventName: AuditEventType.GET_DATA_VAULT_AUDIT,
+      path: '/datavaults/{dataVaultId}/audit/{auditId}/csv',
+      httpMethod: ApiGatewayMethod.GET,
+      pathToSource: '../../src/handlers/get-datavault-audit-handler.ts',
     },
   ],
 };

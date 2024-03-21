@@ -1,0 +1,1870 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DEA UI Infrastructure stack synthesizes the way we expect 1`] = `
+Object {
+  "Outputs": Object {
+    "testApiEndpointC9D07ADA": Object {
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "testApiD6ECAB50",
+            },
+            ".execute-api.",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ".",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+  },
+  "Parameters": Object {
+    "BootstrapVersion": Object {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": Object {
+    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "Parameters": Object {
+          "referencetoteststacktestS3AccessLogBucket0FEEDA43Ref": Object {
+            "Ref": "testS3AccessLogBucketF0DCA384",
+          },
+        },
+        "TemplateURL": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "https://s3.",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ".",
+              Object {
+                "Ref": "AWS::URLSuffix",
+              },
+              "/",
+              Object {
+                "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+              },
+              "/[HASH REMOVED].json",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::CloudFormation::Stack",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "testApiAccountA6723CBB": Object {
+      "DeletionPolicy": "Retain",
+      "DependsOn": Array [
+        "testApiD6ECAB50",
+      ],
+      "Properties": Object {
+        "CloudWatchRoleArn": Object {
+          "Fn::GetAtt": Array [
+            "testApiCloudWatchRole8A11639C",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "testApiCloudWatchRole8A11639C": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "testApiD6ECAB50": Object {
+      "Properties": Object {
+        "Description": "Backend API",
+        "Name": "testApi",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]": Object {
+      "DependsOn": Array [
+        "testApiuiproxyGET92230E90",
+        "testApiuiproxyDDF9EC1E",
+        "testApiuiauthtestGET880E0E8F",
+        "testApiuiauthtestC9DEEA73",
+        "testApiuicasedetailGET6D4018AE",
+        "testApiuicasedetail80E12772",
+        "testApiuicreatecasesGET786EA30D",
+        "testApiuicreatecasesA8526372",
+        "testApiuicreatedatavaultsGET9C430EDD",
+        "testApiuicreatedatavaultsF75E825E",
+        "testApiuidatasynctasksGET73F46A60",
+        "testApiuidatasynctasks0F02FE8B",
+        "testApiuidatavaultdetailGET4A5ECE13",
+        "testApiuidatavaultdetailF6C85603",
+        "testApiuidatavaultfiledetailGET045738D4",
+        "testApiuidatavaultfiledetail0956FA73",
+        "testApiuidatavaultsGET2DB190CB",
+        "testApiuidatavaults57FF5F53",
+        "testApiuieditdatavaultGETCCC565D3",
+        "testApiuieditdatavault5194C433",
+        "testApiuiGET8FD5D6F5",
+        "testApiuiloginGET86824034",
+        "testApiuilogin54AC376B",
+        "testApiui1F041DD2",
+        "testApiuiuploadfilesGET6DFAC286",
+        "testApiuiuploadfilesD762C518",
+      ],
+      "Properties": Object {
+        "Description": "Backend API",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]": Object {
+      "DependsOn": Array [
+        "testApiAccountA6723CBB",
+      ],
+      "Properties": Object {
+        "DeploymentId": Object {
+          "Ref": "DeaApiGatewaydeaapiDeployment-[HASH REMOVED]",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+        "StageName": "prod",
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "testApiui1F041DD2": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "testApiD6ECAB50",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "ui",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuiGET8FD5D6F5": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/index.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuiauthtestC9DEEA73": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "auth-test",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuiauthtestGET880E0E8F": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/auth-test.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuiauthtestC9DEEA73",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuicasedetail80E12772": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "case-detail",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuicasedetailGET6D4018AE": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/case-detail.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuicasedetail80E12772",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuicreatecasesA8526372": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "create-cases",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuicreatecasesGET786EA30D": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/create-cases.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuicreatecasesA8526372",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuicreatedatavaultsF75E825E": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "create-data-vaults",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuicreatedatavaultsGET9C430EDD": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/create-data-vaults.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuicreatedatavaultsF75E825E",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuidatasynctasks0F02FE8B": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "data-sync-tasks",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuidatasynctasksGET73F46A60": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/data-sync-tasks.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuidatasynctasks0F02FE8B",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuidatavaultdetailF6C85603": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "data-vault-detail",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuidatavaultdetailGET4A5ECE13": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/data-vault-detail.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuidatavaultdetailF6C85603",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuidatavaultfiledetail0956FA73": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "data-vault-file-detail",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuidatavaultfiledetailGET045738D4": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/data-vault-file-detail.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuidatavaultfiledetail0956FA73",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuidatavaults57FF5F53": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "data-vaults",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuidatavaultsGET2DB190CB": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/data-vaults.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuidatavaults57FF5F53",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuieditdatavault5194C433": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "edit-data-vault",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuieditdatavaultGETCCC565D3": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/edit-data-vault.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuieditdatavault5194C433",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuilogin54AC376B": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "login",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuiloginGET86824034": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/login.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuilogin54AC376B",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuiproxyDDF9EC1E": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "{proxy+}",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuiproxyGET92230E90": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/{proxy}",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuiproxyDDF9EC1E",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testApiuiuploadfilesD762C518": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testApiui1F041DD2",
+        },
+        "PathPart": "upload-files",
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testApiuiuploadfilesGET6DFAC286": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": Object {
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "Credentials": Object {
+            "Fn::GetAtt": Array [
+              "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+              "Outputs.teststackDeaUiStackrole058AC283Arn",
+            ],
+          },
+          "IntegrationHttpMethod": "GET",
+          "IntegrationResponses": Array [
+            Object {
+              "ResponseParameters": Object {
+                "method.response.header.Content-Security-Policy": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazoncognito.com https://*.s3.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-identity.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      ".amazonaws.com https://cognito-idp.",
+                      Object {
+                        "Ref": "AWS::Region",
+                      },
+                      "[HASH REMOVED]",
+                    ],
+                  ],
+                },
+                "method.response.header.Content-Type": "integration.response.header.Content-Type",
+                "method.response.header.Strict-Transport-Security": "'max-age=31540000; includeSubdomains'",
+                "method.response.header.X-Content-Type-Options": "'nosniff'",
+                "method.response.header.X-Frame-Options": "'DENY'",
+                "method.response.header.X-XSS-Protection": "'1; mode=block'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "WHEN_NO_TEMPLATES",
+          "RequestParameters": Object {
+            "integration.request.header.Accept": "method.request.header.Accept",
+            "integration.request.header.Content-Type": "method.request.header.Content-Type",
+            "integration.request.path.proxy": "method.request.path.proxy",
+          },
+          "Type": "AWS",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":s3:path/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaUiStackNestedStackDeaUiStackNestedStackResourceD5752D96",
+                    "Outputs.teststackDeaUiStackuiartifactbucketF6DC937BRef",
+                  ],
+                },
+                "/upload-files.html",
+              ],
+            ],
+          },
+        },
+        "MethodResponses": Array [
+          Object {
+            "ResponseModels": Object {
+              "application/json": "Empty",
+            },
+            "ResponseParameters": Object {
+              "method.response.header.Content-Length": true,
+              "method.response.header.Content-Security-Policy": true,
+              "method.response.header.Content-Type": true,
+              "method.response.header.Strict-Transport-Security": true,
+              "method.response.header.X-Content-Type-Options": true,
+              "method.response.header.X-Frame-Options": true,
+              "method.response.header.X-XSS-Protection": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "RequestParameters": Object {
+          "method.request.header.Accept": true,
+          "method.request.header.Content-Type": true,
+          "method.request.path.proxy": true,
+        },
+        "ResourceId": Object {
+          "Ref": "testApiuiuploadfilesD762C518",
+        },
+        "RestApiId": Object {
+          "Ref": "testApiD6ECAB50",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testKey1CDDDD5E": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "EnableKeyRotation": true,
+        "KeyPolicy": Object {
+          "Statement": Array [
+            Object {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PendingWindowInDays": 7,
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "testS3AccessLogBucketF0DCA384": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "AccessControl": "LogDeliveryWrite",
+        "OwnershipControls": Object {
+          "Rules": Array [
+            Object {
+              "ObjectOwnership": "BucketOwnerPreferred",
+            },
+          ],
+        },
+        "PublicAccessBlockConfiguration": Object {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+  },
+  "Rules": Object {
+    "CheckBootstrapVersion": Object {
+      "Assertions": Array [
+        Object {
+          "Assert": Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Contains": Array [
+                  Array [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  Object {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;

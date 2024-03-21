@@ -9,7 +9,6 @@ import {
   fileName,
   filePath,
   contentType,
-  sha256Hash,
   s3Identifier,
   caseFileStatus,
   safeReason,
@@ -27,15 +26,41 @@ export const initiateCaseFileUploadRequestSchema = Joi.object({
   fileSizeBytes: safeFileSize,
   reason: safeReason,
   details: safeDetails,
-  partRangeStart: Joi.number().greater(0),
-  partRangeEnd: Joi.number(),
   uploadId: Joi.string().optional(),
+});
+
+export const initiateCaseFileUploadResponseSchema = Joi.object({
+  caseUlid: joiUlid,
+  uploadId: s3Identifier,
+  versionId: s3Identifier,
+  ulid: joiUlid,
+  fileName: fileName,
+  filePath: filePath,
+  contentType: contentType,
+  createdBy: joiUlid,
+  isFile: Joi.boolean(),
+  chunkSizeBytes: safeChunkSize,
+  fileSizeBytes: safeFileSize,
+  ttl: Joi.number().greater(0),
+  federationCredentials: Joi.object({
+    accessKeyId: Joi.string(),
+    secretAccessKey: Joi.string(),
+    sessionToken: Joi.string(),
+  }),
+  sha256Hash: Joi.string(),
+  status: caseFileStatus,
+  reason: safeReason,
+  details: safeDetails,
+  created: Joi.date(),
+  updated: Joi.date(),
+  fileS3Key: s3Identifier,
+  bucket: Joi.string(),
+  region: Joi.string(),
 });
 
 export const completeCaseFileUploadRequestSchema = Joi.object({
   caseUlid: joiUlid,
   ulid: joiUlid,
-  sha256Hash: sha256Hash,
   uploadId: s3Identifier,
 });
 
@@ -52,8 +77,7 @@ export const caseFileResponseSchema = Joi.object({
   chunkSizeBytes: safeChunkSize,
   fileSizeBytes: safeFileSize,
   ttl: Joi.number().greater(0),
-  presignedUrls: Joi.array().items(Joi.string().uri()),
-  sha256Hash: sha256Hash,
+  sha256Hash: Joi.string(),
   status: caseFileStatus,
   reason: safeReason,
   details: safeDetails,
@@ -61,3 +85,18 @@ export const caseFileResponseSchema = Joi.object({
   updated: Joi.date(),
   fileS3Key: s3Identifier,
 });
+
+export const caseAssociationRequestSchema = Joi.object({
+  caseUlids: Joi.array().items(joiUlid).required(),
+  fileUlids: Joi.array().items(joiUlid).required(),
+});
+
+export const removeCaseAssociationRequestSchema = Joi.object({
+  caseUlids: Joi.array().items(joiUlid).required(),
+});
+
+export const downloadFileRequestBodySchema = Joi.object({
+  caseUlid: joiUlid,
+  ulid: joiUlid,
+  downloadReason: safeReason,
+})

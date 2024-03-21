@@ -8,16 +8,19 @@ import {
   ArchiveStatus,
   RestoreObjectCommand,
   S3Client,
+  S3ClientResolvedConfig,
   ServiceInputTypes,
   ServiceOutputTypes,
   StorageClass,
 } from '@aws-sdk/client-s3';
+import { SQSClient } from '@aws-sdk/client-sqs';
 import {
   STSClient,
+  STSClientResolvedConfig,
   ServiceInputTypes as STSInputs,
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { restoreCaseFile } from '../../../app/resources/restore-case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
@@ -35,8 +38,9 @@ import {
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
-let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
-let stsMock: AwsStub<STSInputs, STSOutputs>;
+let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
+let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
+let sqsMock: AwsClientStub<SQSClient>;
 let fileUploader: DeaUser;
 let caseToDownloadFrom = '';
 
@@ -61,6 +65,9 @@ describe('Test case file restore', () => {
         Expiration: new Date(),
       },
     });
+
+    sqsMock = mockClient(SQSClient);
+    sqsMock.resolves({});
   });
 
   afterAll(async () => {
@@ -118,7 +125,7 @@ describe('Test case file restore', () => {
   it("should throw an exception when case-file doesn't exist", async () => {
     await expect(
       callRestoreCaseFile(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToDownloadFrom)
-    ).rejects.toThrow(`Could not find file: ${FILE_ULID} in the DB`);
+    ).rejects.toThrow(`Could not find file`);
   });
 
   it("should throw an exception when case-file isn't active", async () => {

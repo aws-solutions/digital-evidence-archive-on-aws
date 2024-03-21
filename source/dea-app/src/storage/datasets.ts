@@ -4,6 +4,8 @@
  */
 
 import {
+  AbortMultipartUploadCommand,
+  ChecksumAlgorithm,
   CompleteMultipartUploadCommand,
   CreateMultipartUploadCommand,
   DeleteObjectCommand,
@@ -19,7 +21,6 @@ import {
   RestoreObjectCommand,
   S3Client,
   StorageClass,
-  UploadPartCommand,
 } from '@aws-sdk/client-s3';
 import {
   CreateJobCommand,
@@ -29,14 +30,24 @@ import {
   JobReportScope,
   S3ControlClient,
 } from '@aws-sdk/client-s3-control';
-import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
+import { SQSClient, SendMessageBatchCommand, SendMessageBatchRequestEntry } from '@aws-sdk/client-sqs';
+import { AssumeRoleCommand, AssumeRoleCommandInput, STSClient } from '@aws-sdk/client-sts';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { ulid } from 'ulid';
 import { v4 as uuidv4 } from 'uuid';
+import { MultipartChecksumBody } from '../app/event-handlers/calculate-incremental-checksum';
 import { getCustomUserAgent, getRequiredEnv } from '../lambda-http-helpers';
 import { logger } from '../logger';
-import { DeaCaseFile, DownloadCaseFileResult } from '../models/case-file';
+import {
+  CompleteCaseFileUploadObject,
+  DeaCaseFile,
+  DeaCaseFileUpload,
+  DownloadCaseFileResult,
+} from '../models/case-file';
+import { restrictAccountStatement } from './restrict-account-statement';
 
-const region = process.env.AWS_REGION;
+const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
+const SQS_BATCH_LIMIT = 10;
 
 export interface DatasetsProvider {
   s3Client: S3Client;
@@ -48,13 +59,18 @@ export interface DatasetsProvider {
   sourceIpValidationEnabled: boolean;
   deletionAllowed: boolean;
   datasetsRole: string;
+  endUserUploadRole: string;
   awsPartition: string;
+  checksumQueueUrl: string;
 }
 
 export interface S3Object {
   key: string;
   versionId: string;
 }
+
+const stsClient = new STSClient({ region, customUserAgent: getCustomUserAgent() });
+const sqsClient = new SQSClient({ region, customUserAgent: getCustomUserAgent() });
 
 export const defaultDatasetsProvider = {
   s3Client: new S3Client({ region, customUserAgent: getCustomUserAgent() }),
@@ -71,62 +87,96 @@ export const defaultDatasetsProvider = {
   sourceIpValidationEnabled: getRequiredEnv('SOURCE_IP_VALIDATION_ENABLED', 'true') === 'true',
   deletionAllowed: getRequiredEnv('DELETION_ALLOWED', 'false') === 'true',
   datasetsRole: getRequiredEnv('DATASETS_ROLE', 'DATASETS_ROLE is not set in your lambda!'),
+  endUserUploadRole: getRequiredEnv('UPLOAD_ROLE', 'UPLOAD_ROLE is not set in your lambda!'),
   uploadPresignedCommandExpirySeconds: Number(getRequiredEnv('UPLOAD_FILES_TIMEOUT_MINUTES', '60')) * 60,
   downloadPresignedCommandExpirySeconds: 15 * 60,
   awsPartition: getRequiredEnv('AWS_PARTITION', 'AWS_PARTITION is not set in your lambda!'),
+  checksumQueueUrl: getRequiredEnv('CHECKSUM_QUEUE_URL', 'CHECKSUM_QUEUE_URL is not set in your lambda!'),
 };
 
-export const createMultipartUploadForCaseFile = async (
+export const createCaseFileUpload = async (
   caseFile: Readonly<DeaCaseFile>,
   datasetsProvider: Readonly<DatasetsProvider>
 ): Promise<string> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
   logger.info('Initiating multipart upload.', { s3Key });
-  const response = await datasetsProvider.s3Client.send(
-    new CreateMultipartUploadCommand({
-      Bucket: datasetsProvider.bucketName,
-      Key: s3Key,
-      BucketKeyEnabled: true,
-      ServerSideEncryption: 'aws:kms',
-      ContentType: caseFile.contentType,
-      StorageClass: 'INTELLIGENT_TIERING',
-    })
-  );
+  let response;
+  try {
+    response = await datasetsProvider.s3Client.send(
+      new CreateMultipartUploadCommand({
+        Bucket: datasetsProvider.bucketName,
+        Key: s3Key,
+        BucketKeyEnabled: true,
+        ServerSideEncryption: 'aws:kms',
+        ContentType: caseFile.contentType,
+        StorageClass: 'INTELLIGENT_TIERING',
+        ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
+      })
+    );
+  } catch (error) {
+    logger.error(`received ${JSON.stringify(error)}`);
+    throw error;
+  }
 
   if (!response.UploadId) {
     throw new Error('Failed to initiate multipart upload.');
   }
 
+  logger.info('Multipart started');
+
   return response.UploadId;
 };
 
-export const generateUploadPresignedUrls = async (
-  partsRangeStart: number,
-  partsRangeEnd: number,
-  s3Key: string,
+export const getTemporaryCredentialsForUpload = async (
+  caseFile: Readonly<DeaCaseFile>,
+  uploadId: string,
+  userUlid: string,
   sourceIp: string,
-  datasetsProvider: DatasetsProvider,
-  uploadId: string
-) => {
-  const presignedUrlClient = await getUploadPresignedUrlClient(s3Key, sourceIp, datasetsProvider);
-
-  logger.info('Generating presigned URLs.', { parts: partsRangeEnd - partsRangeStart, s3Key });
-  const presignedUrlPromises = [];
-  for (let i = partsRangeStart; i <= partsRangeEnd; i++) {
-    presignedUrlPromises.push(
-      getUploadPresignedUrlPromise(s3Key, uploadId, i, presignedUrlClient, datasetsProvider)
+  datasetsProvider: Readonly<DatasetsProvider>
+): Promise<DeaCaseFileUpload> => {
+  const s3Key = getS3KeyForCaseFile(caseFile);
+  const input: AssumeRoleCommandInput = {
+    RoleSessionName: `USER_${userUlid}`,
+    RoleArn: datasetsProvider.endUserUploadRole,
+    Policy: getPolicyForUpload(s3Key, sourceIp, datasetsProvider),
+    DurationSeconds: datasetsProvider.uploadPresignedCommandExpirySeconds,
+  };
+  const command = new AssumeRoleCommand(input);
+  const federationTokenResponse = await stsClient.send(command);
+  if (
+    !federationTokenResponse.Credentials ||
+    !federationTokenResponse.Credentials.AccessKeyId ||
+    !federationTokenResponse.Credentials.SecretAccessKey ||
+    !federationTokenResponse.Credentials.SessionToken
+  ) {
+    await datasetsProvider.s3Client.send(
+      new AbortMultipartUploadCommand({
+        Bucket: datasetsProvider.bucketName,
+        Key: s3Key,
+        UploadId: uploadId,
+      })
     );
-  }
-  const presignedUrls = await Promise.all(presignedUrlPromises);
 
-  logger.info('Generated presigned URLs.', { s3Key });
-  return presignedUrls;
+    throw new Error('Failed to generate upload credentials');
+  }
+
+  return {
+    ...caseFile,
+    bucket: datasetsProvider.bucketName,
+    region,
+    uploadId,
+    federationCredentials: {
+      accessKeyId: federationTokenResponse.Credentials.AccessKeyId,
+      secretAccessKey: federationTokenResponse.Credentials.SecretAccessKey,
+      sessionToken: federationTokenResponse.Credentials.SessionToken,
+    },
+  };
 };
 
 export const completeUploadForCaseFile = async (
-  caseFile: DeaCaseFile,
+  caseFile: CompleteCaseFileUploadObject,
   datasetsProvider: DatasetsProvider
-): Promise<void> => {
+): Promise<string | undefined> => {
   let uploadedParts: Part[] = [];
   let listPartsResponse: ListPartsOutput;
   let partNumberMarker;
@@ -146,7 +196,7 @@ export const completeUploadForCaseFile = async (
     if (listPartsResponse !== undefined && listPartsResponse.Parts) {
       uploadedParts = uploadedParts.concat(
         listPartsResponse.Parts.map(function (part) {
-          return { ETag: part.ETag, PartNumber: part.PartNumber };
+          return { ETag: part.ETag, PartNumber: part.PartNumber, ChecksumSHA256: part.ChecksumSHA256 };
         })
       );
     }
@@ -169,21 +219,72 @@ export const completeUploadForCaseFile = async (
   );
   caseFile.versionId = uploadResponse.VersionId;
 
-  logger.info('Marked upload as completed. Putting legal hold on object..', { s3Key });
-  await datasetsProvider.s3Client.send(
-    new PutObjectLegalHoldCommand({
-      Bucket: datasetsProvider.bucketName,
-      Key: s3Key,
-      LegalHold: { Status: ObjectLockLegalHoldStatus.ON },
-      VersionId: uploadResponse.VersionId,
-    })
+  return handleUploadChecksum(
+    uploadedParts,
+    caseFile,
+    s3Key,
+    datasetsProvider.bucketName,
+    datasetsProvider.checksumQueueUrl
   );
+};
+
+const handleUploadChecksum = async (
+  uploadedParts: Part[],
+  caseFile: CompleteCaseFileUploadObject,
+  s3Key: string,
+  s3Bucket: string,
+  queueUrl: string
+) => {
+  if (uploadedParts.length === 1) {
+    return uploadedParts[0].ChecksumSHA256;
+  }
+
+  // Add messsage to sqs for checksum calculation
+  const sqsEntries: SendMessageBatchRequestEntry[] = [];
+  for (let currentPart = 1; currentPart <= uploadedParts.length; ++currentPart) {
+    const messageBody: MultipartChecksumBody = {
+      caseUlid: caseFile.caseUlid,
+      caseFileUlid: caseFile.ulid,
+      s3Key,
+      s3Bucket,
+      currentPart,
+      totalParts: uploadedParts.length,
+    };
+
+    const entryId = ulid();
+    sqsEntries.push({
+      Id: entryId,
+      MessageBody: JSON.stringify(messageBody),
+      MessageGroupId: `${caseFile.caseUlid}#${caseFile.ulid}#`,
+      MessageDeduplicationId: entryId,
+    });
+
+    if (sqsEntries.length === SQS_BATCH_LIMIT) {
+      const sendMessageCommand = new SendMessageBatchCommand({
+        QueueUrl: queueUrl,
+        Entries: sqsEntries,
+      });
+      await sqsClient.send(sendMessageCommand);
+      sqsEntries.length = 0;
+    }
+  }
+
+  if (sqsEntries.length > 0) {
+    const sendMessageCommand = new SendMessageBatchCommand({
+      QueueUrl: queueUrl,
+      Entries: sqsEntries,
+    });
+    await sqsClient.send(sendMessageCommand);
+  }
+
+  return undefined;
 };
 
 export const getPresignedUrlForDownload = async (
   caseFile: DeaCaseFile,
   sourceIp: string,
-  datasetsProvider: DatasetsProvider
+  datasetsProvider: DatasetsProvider,
+  downloadReason = '',
 ): Promise<DownloadCaseFileResult> => {
   const s3Key = getS3KeyForCaseFile(caseFile);
 
@@ -218,17 +319,25 @@ export const getPresignedUrlForDownload = async (
   }
 
   logger.info('Creating presigned URL for caseFile.', caseFile);
-  const presignedUrlS3Client = await getDownloadPresignedUrlClient(s3Key, sourceIp, datasetsProvider);
+  const roleSessionName = `${caseFile.caseUlid}-${caseFile.ulid}`;
+  const presignedUrlS3Client = await getDownloadPresignedUrlClient(
+    s3Key,
+    sourceIp,
+    roleSessionName,
+    datasetsProvider
+  );
   const getObjectCommand = new GetObjectCommand({
     Bucket: datasetsProvider.bucketName,
     Key: s3Key,
     VersionId: caseFile.versionId,
     ResponseContentType: caseFile.contentType,
-    ResponseContentDisposition: `attachment; filename="${caseFile.fileName}"`,
+    ResponseContentDisposition: `attachment; filename*=UTF-8''${encodeURIComponent(caseFile.fileName)}`,
   });
+
   result.downloadUrl = await getSignedUrl(presignedUrlS3Client, getObjectCommand, {
     expiresIn: datasetsProvider.downloadPresignedCommandExpirySeconds,
   });
+  result.downloadReason = downloadReason;
   return result;
 };
 
@@ -412,75 +521,23 @@ const createDeleteCaseFileBatchJob = async (
   return result.JobId;
 };
 
-function getS3KeyForCaseFile(caseFile: DeaCaseFile): string {
+function getS3KeyForCaseFile(caseFile: DeaCaseFile | CompleteCaseFileUploadObject): string {
   return caseFile.fileS3Key;
-}
-
-async function getUploadPresignedUrlPromise(
-  s3Key: string,
-  uploadId: string,
-  partNumber: number,
-  presignedUrlClient: S3Client,
-  datasetsProvider: DatasetsProvider
-): Promise<string> {
-  const uploadPartCommand = new UploadPartCommand({
-    Bucket: datasetsProvider.bucketName,
-    Key: s3Key,
-    UploadId: uploadId,
-    PartNumber: partNumber,
-  });
-  return getSignedUrl(presignedUrlClient, uploadPartCommand, {
-    expiresIn: datasetsProvider.uploadPresignedCommandExpirySeconds,
-  });
 }
 
 async function getDownloadPresignedUrlClient(
   objectKey: string,
   sourceIp: string,
+  roleSessionName: string,
   datasetsProvider: DatasetsProvider
 ): Promise<S3Client> {
-  const client = new STSClient({ region, customUserAgent: getCustomUserAgent() });
   const credentials = (
-    await client.send(
+    await stsClient.send(
       new AssumeRoleCommand({
         RoleArn: datasetsProvider.datasetsRole,
-        RoleSessionName: objectKey.replace('/', '-'),
+        RoleSessionName: roleSessionName,
         DurationSeconds: datasetsProvider.downloadPresignedCommandExpirySeconds,
         Policy: getPolicyForDownload(objectKey, sourceIp, datasetsProvider),
-      })
-    )
-  ).Credentials;
-
-  if (!credentials || !credentials.SecretAccessKey || !credentials.AccessKeyId) {
-    logger.error('Failed to assume datasets role', { datasetsRole: datasetsProvider.datasetsRole });
-    throw new Error('Failed to assume role');
-  }
-
-  return new S3Client({
-    region,
-    customUserAgent: getCustomUserAgent(),
-    credentials: {
-      accessKeyId: credentials.AccessKeyId,
-      secretAccessKey: credentials.SecretAccessKey,
-      sessionToken: credentials.SessionToken,
-      expiration: credentials.Expiration,
-    },
-  });
-}
-
-async function getUploadPresignedUrlClient(
-  objectKey: string,
-  sourceIp: string,
-  datasetsProvider: DatasetsProvider
-): Promise<S3Client> {
-  const client = new STSClient({ region });
-  const credentials = (
-    await client.send(
-      new AssumeRoleCommand({
-        RoleArn: datasetsProvider.datasetsRole,
-        RoleSessionName: objectKey.replace('/', '-'),
-        DurationSeconds: datasetsProvider.uploadPresignedCommandExpirySeconds,
-        Policy: getPolicyForUpload(objectKey, sourceIp, datasetsProvider),
       })
     )
   ).Credentials;
@@ -514,6 +571,7 @@ function getPolicyForUpload(objectKey: string, sourceIp: string, datasetsProvide
           Action: ['s3:PutObject'],
           Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
         },
+        restrictAccountStatement,
       ],
     });
   }
@@ -536,7 +594,7 @@ function getPolicyForUpload(objectKey: string, sourceIp: string, datasetsProvide
       {
         Sid: 'DenyRequestsFromOtherIpAddresses',
         Effect: 'Deny',
-        Action: ['s3:GetObject', 's3:GetObjectVersion'],
+        Action: ['s3:PutObject'],
         Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
         Condition: {
           NotIpAddress: {
@@ -544,6 +602,7 @@ function getPolicyForUpload(objectKey: string, sourceIp: string, datasetsProvide
           },
         },
       },
+      restrictAccountStatement,
     ],
   });
 }
@@ -553,6 +612,7 @@ function getPolicyForDownload(
   sourceIp: string,
   datasetsProvider: DatasetsProvider
 ): string {
+  const keyArn = getRequiredEnv('KEY_ARN');
   if (!datasetsProvider.sourceIpValidationEnabled) {
     logger.info('Not restricting presigned-url by source ip');
     return JSON.stringify({
@@ -563,6 +623,12 @@ function getPolicyForDownload(
           Effect: 'Allow',
           Action: ['s3:GetObject', 's3:GetObjectVersion'],
           Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        },
+        {
+          Sid: 'AllowDecrypt',
+          Effect: 'Allow',
+          Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+          Resource: [keyArn],
         },
       ],
     });
@@ -587,6 +653,23 @@ function getPolicyForDownload(
         Effect: 'Deny',
         Action: ['s3:GetObject', 's3:GetObjectVersion'],
         Resource: [`arn:${datasetsProvider.awsPartition}:s3:::${datasetsProvider.bucketName}/${objectKey}`],
+        Condition: {
+          NotIpAddress: {
+            'aws:SourceIp': sourceIp,
+          },
+        },
+      },
+      {
+        Sid: 'AllowDecrypt',
+        Effect: 'Allow',
+        Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        Resource: [keyArn],
+      },
+      {
+        Sid: 'DenyKeyRequestsFromOtherIpAddresses',
+        Effect: 'Deny',
+        Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        Resource: [keyArn],
         Condition: {
           NotIpAddress: {
             'aws:SourceIp': sourceIp,

@@ -10,6 +10,12 @@ export GLUE_DB=dummyDb
 export FIREHOSE_STREAM_NAME=dummyStream
 export AUDIT_LOG_GROUP=deaAuditLogsDummy
 export TRAIL_LOG_GROUP=deaTrailLogsDummy
+export DATASYNC_REPORTS_BUCKET_NAME=dummySyncBucket
+export DATASYNC_ROLE=dummyDatasyncRole
+export DATASYNC_REPORTS_ROLE=dummyDatasyncReportsRole
+export TABLE_NAME=dummyTable
 export IDENTITY_STORE_ID=dummyId
 export IDENTITY_STORE_REGION=us-east-1
+export IDENTITY_STORE_ACCOUNT="555555555555"
+export HAS_AWS_MANAGED_ACTIVE_DIRECTORY=false
 unset ADMIN_ROLE_ARN

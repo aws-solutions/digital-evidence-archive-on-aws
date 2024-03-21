@@ -7,16 +7,19 @@ import { fail } from 'assert';
 import {
   ArchiveStatus,
   S3Client,
+  S3ClientResolvedConfig,
   ServiceInputTypes,
   ServiceOutputTypes,
   StorageClass,
 } from '@aws-sdk/client-s3';
+import { SQSClient } from '@aws-sdk/client-sqs';
 import {
   STSClient,
+  STSClientResolvedConfig,
   ServiceInputTypes as STSInputs,
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
 import { DownloadCaseFileResult } from '../../../models/case-file';
@@ -36,14 +39,16 @@ import {
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
-let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
-let stsMock: AwsStub<STSInputs, STSOutputs>;
+let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
+let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
+let sqsMock: AwsClientStub<SQSClient>;
 let fileUploader: DeaUser;
 let caseToDownloadFrom = '';
 
 const FILE_ULID = 'ABCDEFGHHJKKMNNPQRSTTVWXY9';
 const UPLOAD_ID = '123456';
 const VERSION_ID = '543210';
+const DOWNLOAD_REASON = 'testing download';
 
 const region = testEnv.awsRegion;
 
@@ -65,6 +70,9 @@ describe('Test case file download', () => {
         Expiration: new Date(),
       },
     });
+
+    sqsMock = mockClient(SQSClient);
+    sqsMock.resolves({});
   });
 
   afterAll(async () => {
@@ -77,6 +85,7 @@ describe('Test case file download', () => {
       UploadId: UPLOAD_ID,
       VersionId: VERSION_ID,
     });
+    process.env.KEY_ARN = 'keyarn';
   });
 
   it('should successfully download a file', async () => {
@@ -124,7 +133,7 @@ describe('Test case file download', () => {
   it("should throw an exception when case-file doesn't exist", async () => {
     await expect(
       callDownloadCaseFile(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToDownloadFrom)
-    ).rejects.toThrow(`Could not find file: ${FILE_ULID} in the DB`);
+    ).rejects.toThrow(`Could not find file`);
   });
 
   it("should throw an exception when case-file isn't active", async () => {
@@ -282,15 +291,16 @@ describe('Test case file download', () => {
 
     const fileId = caseFile.ulid ?? fail();
     await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
-    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
+    const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom, DOWNLOAD_REASON);
     expect(downloadResult.downloadUrl).toBeTruthy();
+    expect(downloadResult.downloadReason).toBeTruthy();
     expect(downloadResult.isRestoring).toBeFalsy();
     expect(downloadResult.isArchived).toBeTruthy();
   });
 });
 
-async function downloadCaseFileAndValidate(fileId: string, caseId: string): Promise<DownloadCaseFileResult> {
-  const result = await callDownloadCaseFile(fileUploader.ulid, repositoryProvider, fileId, caseId);
+async function downloadCaseFileAndValidate(fileId: string, caseId: string, downloadReason?: string):Promise<DownloadCaseFileResult> {
+  const result = await callDownloadCaseFile(fileUploader.ulid, repositoryProvider, fileId, caseId, downloadReason);
   if (result.downloadUrl) {
     expect(result.downloadUrl).toContain(
       `https://s3.${region}.amazonaws.com/${DATASETS_PROVIDER.bucketName}`

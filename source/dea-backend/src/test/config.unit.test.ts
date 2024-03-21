@@ -3,7 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { fail } from 'assert';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { convictConfig, deaConfig, loadConfig } from '../config';
@@ -56,6 +55,7 @@ describe('convict based config', () => {
   });
 
   it('throws an error for invalid domain config', () => {
+    const oldCognitoDomain = convictConfig.get('cognito.domain');
     expect(() => {
       // need the any here because convict doesn't resolve the type properly -.-
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,19 +63,13 @@ describe('convict based config', () => {
       convictConfig.set('cognito.domain', badName);
       convictConfig.validate({ allowed: 'strict' });
     }).toThrow('Cognito domain may only contain lowercase alphanumerics and hyphens.');
+    convictConfig.set('cognito.domain', oldCognitoDomain);
   });
 
   it('returns production policies when non-test', () => {
     convictConfig.set('testStack', false);
     expect(deaConfig.retainPolicy()).toEqual(RemovalPolicy.RETAIN);
     expect(deaConfig.retentionDays()).toEqual(RetentionDays.INFINITE);
-  });
-
-  it('allows kms actions in a test stack', () => {
-    convictConfig.set('testStack', true);
-    const actions = deaConfig.kmsAccountActions();
-    const wildcard = actions.find((action) => action === 'kms:*');
-    expect(wildcard).toBeDefined();
   });
 
   it('disallows kms actions in a prod stack', () => {
@@ -106,17 +100,120 @@ describe('convict based config', () => {
     expect(deaConfig.deaAllowedOriginsList()).toEqual(['https://localhost', 'https://test']);
   });
 
-  it('returns preflight options for production', () => {
-    convictConfig.set('testStack', false);
-    expect(deaConfig.preflightOptions()).toBeUndefined();
-  });
-
-  it('returns preflight options for test stack', () => {
-    convictConfig.set('testStack', true);
+  it('returns preflight options when allowedOrigins is set', () => {
+    convictConfig.set('deaAllowedOrigins', 'https://localhost,https://test');
     const preflightOpt = deaConfig.preflightOptions();
     if (!preflightOpt) {
       fail();
     }
     expect(Object.keys(preflightOpt).length).toBeGreaterThan(0);
+  });
+
+  it('returns no preflight options when not allowedOrigins is set', () => {
+    convictConfig.set('deaAllowedOrigins', '');
+    expect(deaConfig.preflightOptions()).toBeUndefined();
+  });
+
+  it('errors if the stage name is too long', () => {
+    const oldStage = convictConfig.get('stage');
+    convictConfig.set('stage', 'abcdefghijklmnopqrstuvwxyz');
+    expect(() => {
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('The Stage name must not exceed 21 characters');
+    convictConfig.set('stage', oldStage);
+  });
+
+  it('errors if the stage is not string', () => {
+    const oldStage = convictConfig.get('stage');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore. just let me break it bro
+    convictConfig.set('stage', 3);
+    expect(() => {
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('The Stage value must be a string');
+    convictConfig.set('stage', oldStage);
+  });
+
+  it('errors if the stage has invalid characters', () => {
+    const oldStage = convictConfig.get('stage');
+    convictConfig.set('stage', 'invalidst@ge');
+    expect(() => {
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('The Stage name may only contain alphanumerics and hyphens.');
+    convictConfig.set('stage', oldStage);
+  });
+
+  it('confirms cidr format above 0', () => {
+    const oldSourceIpCidr = convictConfig.get('sourceIpSubnetMaskCIDR');
+    convictConfig.set('sourceIpSubnetMaskCIDR', -1);
+    expect(() => {
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('Source IP CIDR must be between 0 and 32');
+    convictConfig.set('sourceIpSubnetMaskCIDR', oldSourceIpCidr);
+  });
+
+  it('confirms cidr format less than 32', () => {
+    const oldSourceIpCidr = convictConfig.get('sourceIpSubnetMaskCIDR');
+    convictConfig.set('sourceIpSubnetMaskCIDR', 55);
+    expect(() => {
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('Source IP CIDR must be between 0 and 32');
+    convictConfig.set('sourceIpSubnetMaskCIDR', oldSourceIpCidr);
+  });
+
+  it('confirms cidr is a number', () => {
+    const oldSourceIpCidr = convictConfig.get('sourceIpSubnetMaskCIDR');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore. just let me break it bro
+    convictConfig.set('sourceIpSubnetMaskCIDR', 'notanumber');
+    expect(() => {
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('Source IP CIDR must be of type number');
+    convictConfig.set('sourceIpSubnetMaskCIDR', oldSourceIpCidr);
+  });
+
+  // it('confirms groupToDeaRoleRules is an array', () => {
+  //   convictConfig.set('groupToDeaRoleRules', 'notanumber');
+  //   expect(() => {
+  //     convictConfig.validate({ allowed: 'strict' });
+  //   }).toThrow('groupToDeaRoleRules must be of type Array');
+  // });
+
+  // it('confirms groupToDeaRoleRules has a length under 25', () => {
+  //   const someArray: string[] = [];
+  //   someArray.length = 23;
+  //   convictConfig.set('groupToDeaRoleRules', someArray);
+  //   expect(() => {
+  //     convictConfig.validate({ allowed: 'strict' });
+  //   }).toThrow('something');
+  // });
+
+  it('confirms upload timeout is a number', () => {
+    const oldUploadTimeout = convictConfig.get('uploadFilesTimeoutMinutes');
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore. just let me break it bro
+    convictConfig.set('uploadFilesTimeoutMinutes', 'notanumber');
+    expect(() => {
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('The Upload Timeout value must be a number');
+    convictConfig.set('uploadFilesTimeoutMinutes', oldUploadTimeout);
+  });
+
+  it('confirms upload timeout is greater than zero', () => {
+    const oldUploadTimeout = convictConfig.get('uploadFilesTimeoutMinutes');
+    convictConfig.set('uploadFilesTimeoutMinutes', -1);
+    expect(() => {
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('The Upload Timeout value must be a positive number');
+    convictConfig.set('uploadFilesTimeoutMinutes', oldUploadTimeout);
+  });
+
+  it('confirms upload timeout is less than 60', () => {
+    const oldUploadTimeout = convictConfig.get('uploadFilesTimeoutMinutes');
+    convictConfig.set('uploadFilesTimeoutMinutes', 61);
+    expect(() => {
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('The Upload Timeout value must be less than 60 minutes');
+    convictConfig.set('uploadFilesTimeoutMinutes', oldUploadTimeout);
   });
 });

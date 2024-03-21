@@ -3,8 +3,10 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { BreadcrumbGroupProps } from '@cloudscape-design/components';
+import { BreadcrumbGroupProps, StatusIndicator } from '@cloudscape-design/components';
 import { useRouter } from 'next/router';
+import * as React from 'react';
+import { useGetCaseById } from '../../api/cases';
 import { breadcrumbLabels, commonLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
@@ -19,7 +21,11 @@ function CaseDetailsPage() {
   const router = useRouter();
   const { settings } = useSettings();
   const { caseId } = router.query;
-  if (!caseId || typeof caseId !== 'string') {
+  const { data, isLoading } = useGetCaseById(caseId);
+  if (isLoading) {
+    return <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>;
+  }
+  if (!data) {
     return <h1>{commonLabels.notFoundLabel}</h1>;
   }
 
@@ -31,14 +37,14 @@ function CaseDetailsPage() {
       href,
     },
     {
-      text: breadcrumbLabels.caseDetailsLabel,
+      text: data?.name ?? '',
       href: '#',
     },
   ];
 
   return (
     <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
-      <CaseDetailsBody caseId={caseId}></CaseDetailsBody>
+      <CaseDetailsBody caseId={data.ulid} data={data} />
     </BaseLayout>
   );
 }

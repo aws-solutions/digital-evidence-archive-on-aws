@@ -4,7 +4,7 @@
  */
 
 import { getRequiredPathParam, getRequiredPayload, getUserUlid } from '../../lambda-http-helpers';
-import { CompleteCaseFileUploadDTO } from '../../models/case-file';
+import { CompleteCaseFileUploadDTO, CompleteCaseFileUploadObject } from '../../models/case-file';
 import { completeCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
@@ -44,12 +44,16 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
     userUlid,
     repositoryProvider
   );
-  const patchedFile = Object.assign(
+  if (!existingFile.ulid) {
+    throw new ValidationError('File not found');
+  }
+  const ulid = existingFile.ulid;
+  const patchedFile: CompleteCaseFileUploadObject = Object.assign(
     {},
     {
+      ulid,
       ...existingFile,
       uploadId: requestCaseFile.uploadId,
-      sha256Hash: requestCaseFile.sha256Hash,
       fileS3Key: `${requestCaseFile.caseUlid}/${requestCaseFile.ulid}`,
     }
   );

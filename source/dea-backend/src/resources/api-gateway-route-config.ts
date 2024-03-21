@@ -5,6 +5,7 @@
 
 import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
 import { AuthorizationType } from 'aws-cdk-lib/aws-apigateway';
+import { DeaApiRoleName } from './dea-route-config';
 
 export interface ApiGatewayRouteConfig {
   readonly routes: ApiGatewayRoute[];
@@ -19,6 +20,7 @@ export interface ApiGatewayRoute {
   readonly queryParams?: string[];
   readonly authMethod?: AuthorizationType; //Override authorization type if auth type should be custom or none
   readonly latencyAlarmThreshold?: number; //Threshold in ms for latency alarm
+  readonly roleName?: DeaApiRoleName;
 }
 
 export enum ApiGatewayMethod {

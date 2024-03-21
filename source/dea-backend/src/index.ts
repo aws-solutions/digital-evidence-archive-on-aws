@@ -15,26 +15,33 @@ import { DeaEventHandlers } from './constructs/dea-event-handlers';
 import { DeaOperationalDashboard } from './constructs/dea-ops-dashboard';
 import { DeaParameters, DeaParametersStack } from './constructs/dea-parameters';
 import { DeaRestApiConstruct } from './constructs/dea-rest-api';
+import { addLegalHoldInfrastructure } from './constructs/legal-hold-infra';
+import { ObjectChecksumStack } from './constructs/object-checksum-stack';
+import { addLambdaSuppressions, addResourcePolicySuppressions } from './helpers/nag-suppressions';
 import { addSnapshotSerializers } from './test/infra/dea-snapshot-serializers';
 import { validateAppRegistryConstruct } from './test/infra/validate-app-registry-construct';
 import { validateAuthConstruct } from './test/infra/validate-auth-construct';
 import { validateBackendConstruct } from './test/infra/validate-backend-construct';
 
 export {
+  DeaAppRegisterConstruct,
   DeaAuditTrail,
   DeaAuth,
   DeaAuthStack,
   DeaBackendConstruct,
+  DeaEventHandlers,
+  DeaOperationalDashboard,
   DeaParameters,
   DeaParametersStack,
   DeaRestApiConstruct,
-  DeaEventHandlers,
-  DeaAppRegisterConstruct,
-  DeaOperationalDashboard,
-  deaConfig,
-  validateBackendConstruct,
-  validateAppRegistryConstruct,
-  createCfnOutput,
+  ObjectChecksumStack,
+  addLambdaSuppressions,
+  addLegalHoldInfrastructure,
+  addResourcePolicySuppressions,
   addSnapshotSerializers,
+  createCfnOutput,
+  deaConfig,
+  validateAppRegistryConstruct,
   validateAuthConstruct,
+  validateBackendConstruct,
 };

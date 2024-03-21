@@ -4,8 +4,9 @@
  */
 
 import ErrorPrefixes from './app/error-prefixes';
+import { calculateIncrementalChecksum } from './app/event-handlers/calculate-incremental-checksum';
 import { addGroupsClaimToToken } from './app/event-handlers/pretoken-generation-trigger';
-import { putLegalHoldForCreatedS3AuditObject } from './app/event-handlers/put-legal-hold-for-created-s3-audit-object';
+import { putLegalHoldForCreatedS3Object } from './app/event-handlers/put-legal-hold-for-created-s3-object';
 import { FORBIDDEN_ERROR_NAME, ForbiddenError } from './app/exceptions/forbidden-exception';
 import { NOT_FOUND_ERROR_NAME, NotFoundError } from './app/exceptions/not-found-exception';
 import {
@@ -13,6 +14,18 @@ import {
   ReauthenticationError,
 } from './app/exceptions/reauthentication-exception';
 import { VALIDATION_ERROR_NAME, ValidationError } from './app/exceptions/validation-exception';
+import { getCaseAudit } from './app/resources/audit/get-case-audit';
+import { getCaseFileAudit } from './app/resources/audit/get-case-file-audit';
+import { getDataVaultAudit } from './app/resources/audit/get-datavault-audit';
+import { getDataVaultFileAudit } from './app/resources/audit/get-datavault-file-audit';
+import { getSystemAudit } from './app/resources/audit/get-system-audit';
+import { getUserAudit } from './app/resources/audit/get-user-audit';
+import { startCaseAudit } from './app/resources/audit/start-case-audit';
+import { startCaseFileAudit } from './app/resources/audit/start-case-file-audit';
+import { startDataVaultAudit } from './app/resources/audit/start-datavault-audit';
+import { startDataVaultFileAudit } from './app/resources/audit/start-datavault-file-audit';
+import { startSystemAudit } from './app/resources/audit/start-system-audit';
+import { startUserAudit } from './app/resources/audit/start-user-audit';
 import { completeCaseFileUpload } from './app/resources/complete-case-file-upload';
 import { createCaseMembership } from './app/resources/create-case-membership';
 import { createCases } from './app/resources/create-cases';
@@ -27,44 +40,42 @@ import { deleteCase } from './app/resources/delete-cases';
 import { downloadCaseFile } from './app/resources/download-case-file';
 import { getAllCases } from './app/resources/get-all-cases';
 import { getAvailableEndpointsForUser } from './app/resources/get-available-endpoints';
-import { getCaseAudit } from './app/resources/get-case-audit';
 import { getCase } from './app/resources/get-case-details';
-import { getCaseFileAudit } from './app/resources/get-case-file-audit';
 import { getCaseFileDetails } from './app/resources/get-case-file-details';
 import { getCaseMembership } from './app/resources/get-case-membership';
 import { getLoginUrl } from './app/resources/get-login-url';
 import { getLogoutUrl } from './app/resources/get-logout-url';
 import { getMyCases } from './app/resources/get-my-cases';
 import { getScopedCaseInformation } from './app/resources/get-scoped-case-information';
-import { getSystemAudit } from './app/resources/get-system-audit';
 import { getToken } from './app/resources/get-token';
-import { getUserAudit } from './app/resources/get-user-audit';
 import { getUsers } from './app/resources/get-users';
 import { initiateCaseFileUpload } from './app/resources/initiate-case-file-upload';
 import { listCaseFiles } from './app/resources/list-case-files';
 import { refreshToken } from './app/resources/refresh-token';
 import { restoreCaseFile } from './app/resources/restore-case-file';
 import { revokeToken } from './app/resources/revoke-token';
-import { startCaseAudit } from './app/resources/start-case-audit';
-import { startCaseFileAudit } from './app/resources/start-case-file-audit';
-import { startSystemAudit } from './app/resources/start-system-audit';
-import { startUserAudit } from './app/resources/start-user-audit';
 import { updateCaseMembership } from './app/resources/update-case-membership';
 import { updateCaseStatus } from './app/resources/update-case-status';
 import { updateCases } from './app/resources/update-cases';
 import { verifyCaseACLs } from './app/resources/verify-case-acls';
 import { auditService } from './app/services/audit-service';
 import { getCaseUser } from './app/services/case-user-service';
+import * as ServiceConstants from './app/services/service-constants';
 import { transformAuditEventForS3 } from './app/transform/audit-logs-to-s3-transformation-handler';
 import { getRequiredPathParam, getUserUlid } from './lambda-http-helpers';
 import { Oauth2Token, RefreshToken, RevokeToken } from './models/auth';
 import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
 import { DeaCaseFile } from './models/case-file';
+import { dataSyncExecutionEvent } from './storage/datasync-event-handler';
+import {
+  restrictAccountStatement,
+  restrictAccountStatementStatementProps,
+} from './storage/restrict-account-statement';
 import { deleteCaseFileHandler } from './storage/s3-batch-delete-case-file-handler';
 import {
-  s3BatchJobStatusChangeHandler,
   S3BatchEventBridgeDetail,
+  s3BatchJobStatusChangeHandler,
 } from './storage/s3-batch-job-status-change-handler';
 import { dummyContext, getDummyEvent } from './test/integration-objects';
 import { getTestAuditService } from './test/services/test-audit-service-provider';
@@ -73,73 +84,82 @@ import { testEnv } from './test-e2e/helpers/settings';
 import * as testHelpers from './test-e2e/resources/test-helpers';
 
 export {
-  auditService,
-  getToken,
-  refreshToken,
-  revokeToken,
-  getLoginUrl,
-  getLogoutUrl,
-  createCases,
-  deleteCase,
-  getAllCases,
-  getMyCases,
-  getCase,
-  getCaseFileDetails,
-  listCaseFiles,
-  initiateCaseFileUpload,
-  completeCaseFileUpload,
-  downloadCaseFile,
-  runPreExecutionChecks,
-  updateCases,
-  updateCaseStatus,
-  createCaseMembership,
-  deleteCaseMembership,
-  getCaseMembership,
-  getCaseUser,
-  startCaseAudit,
-  getCaseAudit,
-  startCaseFileAudit,
-  getCaseFileAudit,
-  getRequiredPathParam,
-  getScopedCaseInformation,
-  getUsers,
-  getUserUlid,
-  updateCaseMembership,
-  verifyCaseACLs,
-  getTestAuditService,
-  getDummyEvent,
-  getAvailableEndpointsForUser,
-  startUserAudit,
-  getUserAudit,
-  startSystemAudit,
-  getSystemAudit,
   CaseAction,
-  DeaCase,
-  DeaCaseFile,
-  Oauth2Token,
-  RefreshToken,
-  RevokeToken,
+  CognitoHelper,
   DEAGatewayProxyHandler,
   DEAPreLambdaExecutionChecks,
-  ForbiddenError,
+  DeaCase,
+  DeaCaseFile,
+  ErrorPrefixes,
   FORBIDDEN_ERROR_NAME,
-  NotFoundError,
+  ForbiddenError,
   NOT_FOUND_ERROR_NAME,
-  ReauthenticationError,
+  NotFoundError,
+  Oauth2Token,
   REAUTHENTICATION_ERROR_NAME,
-  ValidationError,
+  ReauthenticationError,
+  RefreshToken,
+  RevokeToken,
+  S3BatchEventBridgeDetail,
+  ServiceConstants,
   VALIDATION_ERROR_NAME,
+  ValidationError,
+  auditService,
+  calculateIncrementalChecksum,
+  completeCaseFileUpload,
+  createCaseMembership,
+  createCases,
+  dataSyncExecutionEvent,
+  deleteCase,
+  deleteCaseFileHandler,
+  deleteCaseMembership,
+  downloadCaseFile,
   dummyContext,
+  getAllCases,
+  getAvailableEndpointsForUser,
+  getCase,
+  getCaseAudit,
+  getCaseFileAudit,
+  getCaseFileDetails,
+  getCaseMembership,
+  getCaseUser,
+  getDataVaultAudit,
+  getDataVaultFileAudit,
+  getDummyEvent,
+  getLoginUrl,
+  getLogoutUrl,
+  getMyCases,
+  getRequiredPathParam,
+  getScopedCaseInformation,
+  getSystemAudit,
+  getTestAuditService,
+  getToken,
+  getUserAudit,
+  getUserUlid,
+  getUsers,
+  initiateCaseFileUpload,
+  listCaseFiles,
+  addGroupsClaimToToken,
+  putLegalHoldForCreatedS3Object,
+  refreshToken,
+  restoreCaseFile,
+  restrictAccountStatement,
+  restrictAccountStatementStatementProps,
+  revokeToken,
+  runPreExecutionChecks,
+  s3BatchJobStatusChangeHandler,
+  startCaseAudit,
+  startCaseFileAudit,
+  startDataVaultAudit,
+  startDataVaultFileAudit,
+  startSystemAudit,
+  startUserAudit,
   testEnv,
   testHelpers,
-  CognitoHelper,
-  deleteCaseFileHandler,
-  s3BatchJobStatusChangeHandler,
-  S3BatchEventBridgeDetail,
-  withAllowedOrigin,
-  restoreCaseFile,
-  addGroupsClaimToToken,
-  putLegalHoldForCreatedS3AuditObject,
   transformAuditEventForS3,
-  ErrorPrefixes,
+  updateCaseMembership,
+  updateCaseStatus,
+  updateCases,
+  verifyCaseACLs,
+  withAllowedOrigin,
 };

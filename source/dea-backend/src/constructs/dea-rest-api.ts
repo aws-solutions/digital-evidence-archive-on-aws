@@ -5,7 +5,9 @@
 
 import path from 'path';
 import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
-import { Aws, Duration, Fn } from 'aws-cdk-lib';
+import * as ServiceConstants from '@aws/dea-app/lib/app/services/service-constants';
+import { restrictAccountStatementStatementProps } from '@aws/dea-app/lib/storage/restrict-account-statement';
+import { Aws, Duration, Fn, NestedStack } from 'aws-cdk-lib';
 import {
   AccessLogFormat,
   AuthorizationType,
@@ -29,12 +31,13 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { ApiGateway } from 'aws-cdk-lib/aws-route53-targets';
 import { Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
 import {
   AwsCustomResource,
   AwsCustomResourcePolicy,
@@ -44,7 +47,7 @@ import {
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { ApiGatewayRoute, ApiGatewayRouteConfig } from '../resources/api-gateway-route-config';
-import { deaApiRouteConfig } from '../resources/dea-route-config';
+import { DeaApiRoleName, deaApiRouteConfig } from '../resources/dea-route-config';
 import { createCfnOutput } from './construct-support';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
@@ -64,20 +67,29 @@ interface DeaRestApiProps {
   deaTableArn: string;
   deaTableName: string;
   deaDatasetsBucket: Bucket;
+  deaDatasetsBucketDataSyncRoleArn: string;
+  checksumQueue: Queue;
   s3BatchDeleteCaseFileRoleArn: string;
+  deaDataSyncReportsBucket: Bucket;
+  deaDataSyncReportsRoleArn: string;
   deaAuditLogArn: string;
   deaTrailLogArn: string;
   kmsKey: Key;
   lambdaEnv: LambdaEnvironment;
   opsDashboard?: DeaOperationalDashboard;
   athenaConfig: AthenaConfig;
+  // this is exclusively for our snapshot/cdk testing as they currently don't support rendering nested stacks
+  flattenRestApi?: boolean;
+  nestedConstructs?: NestedStack[];
 }
 
 export class DeaRestApiConstruct extends Construct {
   public authLambdaRole: Role;
   public lambdaBaseRole: Role;
+  public roleMap: Map<DeaApiRoleName, Role>;
   // datasetsRole and auditDownloadRole are needed to create session credentials to restrict pre-signed URL access parameters such as ip-address
   public datasetsRole: Role;
+  public endUserUploadRole: Role;
   public auditDownloadRole: Role;
   public customResourceRole: Role;
   public deaRestApi: RestApi;
@@ -102,11 +114,36 @@ export class DeaRestApiConstruct extends Construct {
       props.deaAuditLogArn,
       props.deaTrailLogArn,
       props.s3BatchDeleteCaseFileRoleArn,
-      props.athenaConfig
+      props.athenaConfig,
+      props.deaDatasetsBucketDataSyncRoleArn,
+      props.deaDataSyncReportsRoleArn
     );
     props.athenaConfig.athenaAuditBucket.grantRead(this.lambdaBaseRole);
 
     this.authLambdaRole = this.createAuthLambdaRole();
+
+    this.roleMap = new Map<DeaApiRoleName, Role>();
+
+    this.roleMap.set(DeaApiRoleName.AUTH_ROLE, this.authLambdaRole);
+    const initiateUploadRole = this.createInitiateUploadRole(
+      props.kmsKey.keyArn,
+      props.deaDatasetsBucket.bucketArn,
+      props.deaTableArn
+    );
+    this.roleMap.set(DeaApiRoleName.INITIATE_UPLOAD_ROLE, initiateUploadRole);
+
+    const completeUploadRole = this.createCompleteUploadRole(
+      props.kmsKey.keyArn,
+      props.deaDatasetsBucket.bucketArn,
+      props.deaTableArn,
+      props.checksumQueue
+    );
+    this.roleMap.set(DeaApiRoleName.COMPLETE_UPLOAD_ROLE, completeUploadRole);
+
+    this.endUserUploadRole = this.createEndUserUploadRole(
+      initiateUploadRole,
+      props.deaDatasetsBucket.bucketArn
+    );
 
     this.datasetsRole = this.createDatasetsRole(props.kmsKey.keyArn, props.deaDatasetsBucket.bucketArn);
 
@@ -115,9 +152,17 @@ export class DeaRestApiConstruct extends Construct {
       props.athenaConfig.athenaOutputBucket.bucketArn
     );
 
+    const datasyncExecutionRole = this.createExecutionRole(props.deaTableArn);
+    this.roleMap.set(DeaApiRoleName.DATASYNC_EXECUTION_ROLE, datasyncExecutionRole);
+
+    props.lambdaEnv['UPLOAD_ROLE'] = this.endUserUploadRole.roleArn;
     props.lambdaEnv['DATASETS_ROLE'] = this.datasetsRole.roleArn;
     props.lambdaEnv['AUDIT_DOWNLOAD_ROLE_ARN'] = this.auditDownloadRole.roleArn;
     props.lambdaEnv['KEY_ARN'] = props.kmsKey.keyArn;
+    props.lambdaEnv['DATASYNC_ROLE'] = props.deaDatasetsBucketDataSyncRoleArn;
+    props.lambdaEnv['DATASYNC_REPORTS_BUCKET_NAME'] = props.deaDataSyncReportsBucket.bucketName;
+    props.lambdaEnv['DATASYNC_REPORTS_ROLE'] = props.deaDataSyncReportsRoleArn;
+    props.lambdaEnv['CHECKSUM_QUEUE_URL'] = props.checksumQueue.queueUrl;
 
     this.customResourceRole = new Role(this, 'custom-resource-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
@@ -129,9 +174,9 @@ export class DeaRestApiConstruct extends Construct {
         actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:Describe*'],
         principals: [
           new ArnPrincipal(this.lambdaBaseRole.roleArn),
-          new ArnPrincipal(this.authLambdaRole.roleArn),
           new ArnPrincipal(this.datasetsRole.roleArn),
           new ArnPrincipal(this.auditDownloadRole.roleArn),
+          ...Array.from(this.roleMap).map(([_, role]) => new ArnPrincipal(role.roleArn)),
         ],
         resources: ['*'],
         sid: 'lambda-roles-key-share-statement',
@@ -140,6 +185,7 @@ export class DeaRestApiConstruct extends Construct {
 
     this.accessLogGroup = new LogGroup(this, 'APIGatewayAccessLogs', {
       encryptionKey: props.kmsKey,
+      retention: deaConfig.retentionDays(),
     });
 
     protectedDeaResourceArns.push(this.accessLogGroup.logGroupArn);
@@ -168,7 +214,12 @@ export class DeaRestApiConstruct extends Construct {
     const policy = this.getApiGatewayPolicy();
     const vpcEndpoints = this.getVpcEndPointObject();
 
-    this.deaRestApi = new RestApi(this, `dea-api`, {
+    const deaApiNestedStack = new NestedStack(this, 'dea-api-stack');
+    if (!props.flattenRestApi) {
+      props.nestedConstructs?.push(deaApiNestedStack);
+    }
+
+    this.deaRestApi = new RestApi(props.flattenRestApi ? this : deaApiNestedStack, `dea-api`, {
       description: 'Backend API',
       endpointConfiguration: {
         types: [endpoint],
@@ -177,6 +228,7 @@ export class DeaRestApiConstruct extends Construct {
       deployOptions: {
         stageName: STAGE,
         metricsEnabled: true,
+        tracingEnabled: true,
         // Per method throttling limit. Conservative setting based on fact that we have 35 APIs and Lambda concurrency is 1000
         // Worst case this setting could potentially initiate up to 1750 API calls running at any moment (which is over lambda limit),
         // but it is unlikely that all the APIs are going to be used at the 50TPS limit.
@@ -194,6 +246,21 @@ export class DeaRestApiConstruct extends Construct {
           '/availableEndpoints/GET': {
             throttlingBurstLimit: 30,
             throttlingRateLimit: 30,
+            metricsEnabled: true,
+          },
+          '/datasync/tasks/GET': {
+            throttlingBurstLimit: 20,
+            throttlingRateLimit: 20,
+            metricsEnabled: true,
+          },
+          '/datavaults/{dataVaultId}/tasks/POST': {
+            throttlingBurstLimit: 20,
+            throttlingRateLimit: 20,
+            metricsEnabled: true,
+          },
+          '/datavaults/tasks/{taskId}/executions/POST': {
+            throttlingBurstLimit: 20,
+            throttlingRateLimit: 20,
             metricsEnabled: true,
           },
         },
@@ -216,7 +283,6 @@ export class DeaRestApiConstruct extends Construct {
           })
         ),
       },
-      defaultCorsPreflightOptions: deaConfig.preflightOptions(),
       defaultMethodOptions: {
         authorizationType: AuthorizationType.IAM,
       },
@@ -338,6 +404,7 @@ export class DeaRestApiConstruct extends Construct {
       value: this.deaRestApi.url,
     });
 
+    const resourcesWithPreflight: Set<string> = new Set<string>();
     routeConfig.routes.forEach((route) => {
       // Delete Case Handler is only needed for running integration and end-to-end tests.
       if (route.eventName === AuditEventType.DELETE_CASE && !deaConfig.isTestStack()) {
@@ -348,13 +415,26 @@ export class DeaRestApiConstruct extends Construct {
       // and we should give the lambda limited permissions
       // otherwise it is a DEA execution API, which needs the
       // full set of permissions
-      const lambdaRole = route.authMethod ? this.authLambdaRole : this.lambdaBaseRole;
-      this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv);
+      let lambdaRole = this.lambdaBaseRole;
+      if (route.roleName) {
+        const maybeRole = this.roleMap.get(route.roleName);
+        if (!maybeRole) {
+          throw new Error(`Route requested unspecified role ${route.roleName}`);
+        }
+        lambdaRole = maybeRole;
+      }
+      this.addMethod(this.deaRestApi, route, lambdaRole, lambdaEnv, resourcesWithPreflight);
       this.opsDashboard?.addMethodOperationalComponents(this.deaRestApi, route);
     });
   }
 
-  private addMethod(api: RestApi, route: ApiGatewayRoute, role: Role, lambdaEnv: LambdaEnvironment): void {
+  private addMethod(
+    api: RestApi,
+    route: ApiGatewayRoute,
+    role: Role,
+    lambdaEnv: LambdaEnvironment,
+    resourcesWithPreflight: Set<string>
+  ): void {
     const urlParts = route.path.split('/').filter((str) => str);
     let parent = api.root;
     urlParts.forEach((part, index) => {
@@ -364,6 +444,13 @@ export class DeaRestApiConstruct extends Construct {
       }
 
       if (index === urlParts.length - 1) {
+        if (!resourcesWithPreflight.has(resource.resourceId)) {
+          resourcesWithPreflight.add(resource.resourceId);
+          const preflightOpts = deaConfig.preflightOptions();
+          if (preflightOpts) {
+            resource.addCorsPreflight(preflightOpts);
+          }
+        }
         const lambda = this.createLambda(
           `${route.httpMethod}_${route.eventName}`,
           role,
@@ -399,6 +486,8 @@ export class DeaRestApiConstruct extends Construct {
         const methodIntegration = new LambdaIntegration(lambda, {
           proxy: true,
           requestParameters: queryParams,
+          // allowTestInvoke allows method invocation from the console, and also costs us a resource per method
+          allowTestInvoke: false,
         });
         const method = resource.addMethod(route.httpMethod, methodIntegration, {
           requestParameters: methodQueryParams,
@@ -429,6 +518,8 @@ export class DeaRestApiConstruct extends Construct {
       timeout: Duration.seconds(20),
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
+      tracing: Tracing.PASS_THROUGH,
+      // nosemgrep
       entry: path.join(__dirname, pathToSource),
       depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
       environment: {
@@ -506,13 +597,16 @@ export class DeaRestApiConstruct extends Construct {
     auditLogArn: string,
     trailLogArn: string,
     s3BatchDeleteCaseFileRoleArn: string,
-    athenaConfig: AthenaConfig
+    athenaConfig: AthenaConfig,
+    deaDatasetsBucketDataSyncRoleArn: string,
+    deaDataSyncReportsRoleArn: string
   ): Role {
     const STAGE = deaConfig.stage();
 
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
     );
+
     const role = new Role(this, 'dea-base-lambda-role', {
       assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [basicExecutionPolicy],
@@ -529,7 +623,7 @@ export class DeaRestApiConstruct extends Construct {
           'dynamodb:Query',
           'dynamodb:UpdateItem',
         ],
-        resources: [tableArn, `${tableArn}/index/GSI1`, `${tableArn}/index/GSI2`],
+        resources: [tableArn, `${tableArn}/index/GSI1`, `${tableArn}/index/GSI2`, `${tableArn}/index/GSI3`],
       })
     );
 
@@ -551,8 +645,34 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
+        actions: [
+          'datasync:CreateLocationS3',
+          'datasync:CreateTask',
+          'datasync:StartTaskExecution',
+          'datasync:UpdateTask',
+          'datasync:UpdateTaskExecution',
+          'datasync:ListTasks',
+          'datasync:DescribeTask',
+          'datasync:DescribeLocationS3',
+          'datasync:ListTaskExecutions',
+          'datasync:DescribeTaskExecution',
+        ],
+        resources: [`arn:${Aws.PARTITION}:datasync:${Aws.REGION}:${Aws.ACCOUNT_ID}:*`],
+      })
+    );
+
+    // If it is a test stack, include the source buckets created for MDI E2E tests
+    const listBucketResources = deaConfig.isTestStack()
+      ? [
+          ...deaConfig.dataSyncLocationBuckets(),
+          datasetsBucketArn,
+          'arn:*:s3:::dea-mdi-e2e-test-source-bucket*',
+        ]
+      : [...deaConfig.dataSyncLocationBuckets(), datasetsBucketArn];
+    role.addToPolicy(
+      new PolicyStatement({
         actions: ['s3:ListBucket'],
-        resources: [`${datasetsBucketArn}`],
+        resources: listBucketResources,
       })
     );
 
@@ -573,7 +693,11 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: [s3BatchDeleteCaseFileRoleArn],
+        resources: [
+          s3BatchDeleteCaseFileRoleArn,
+          deaDatasetsBucketDataSyncRoleArn,
+          deaDataSyncReportsRoleArn,
+        ],
       })
     );
 
@@ -587,7 +711,9 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/dea/${STAGE}*`],
+        resources: [
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
+        ],
       })
     );
 
@@ -637,12 +763,15 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
+
     return role;
   }
 
   private createDatasetsRole(kmsKeyArn: string, datasetsBucketArn: string): Role {
     const role = new Role(this, 'dea-datasets-role', {
       assumedBy: this.lambdaBaseRole,
+      maxSessionDuration: Duration.minutes(deaConfig.uploadFilesTimeoutMinutes()),
     });
 
     role.addToPolicy(
@@ -659,12 +788,15 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
+
     return role;
   }
 
   private createAuditDownloadRole(kmsKeyArn: string, auditResultsBucketArn: string): Role {
     const role = new Role(this, 'dea-audit-download-role', {
       assumedBy: this.lambdaBaseRole,
+      maxSessionDuration: Duration.minutes(deaConfig.auditDownloadTimeoutMinutes()),
     });
 
     role.addToPolicy(
@@ -684,9 +816,151 @@ export class DeaRestApiConstruct extends Construct {
     return role;
   }
 
+  private createEndUserUploadRole(assumingRole: Role, datasetsBucketArn: string) {
+    const role = new Role(this, 'dea-end-user-upload-role', {
+      assumedBy: assumingRole,
+      maxSessionDuration: Duration.minutes(deaConfig.uploadFilesTimeoutMinutes()),
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    return role;
+  }
+
+  private createInitiateUploadRole(kmsKeyArn: string, datasetsBucketArn: string, tableArn: string): Role {
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+
+    const role = new Role(this, 'dea-initiate-upload-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [basicExecutionPolicy],
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          'dynamodb:GetItem',
+          'dynamodb:DeleteItem',
+          'dynamodb:BatchGetItem',
+          'dynamodb:BatchWriteItem',
+          'dynamodb:PutItem',
+          'dynamodb:Query',
+          'dynamodb:UpdateItem',
+        ],
+        resources: [tableArn, `${tableArn}/index/GSI1`, `${tableArn}/index/GSI2`, `${tableArn}/index/GSI3`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject', 's3:GetObject', 's3:GetObjectVersion'],
+        resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
+        resources: [
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${
+            ServiceConstants.PARAM_PREFIX
+          }${deaConfig.stage()}*`,
+        ],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [kmsKeyArn],
+      })
+    );
+
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
+
+    return role;
+  }
+
+  private createCompleteUploadRole(
+    kmsKeyArn: string,
+    datasetsBucketArn: string,
+    tableArn: string,
+    checksumQueue: Queue
+  ): Role {
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+
+    const role = new Role(this, 'dea-complete-upload-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [basicExecutionPolicy],
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['dynamodb:GetItem', 'dynamodb:PutItem', 'dynamodb:UpdateItem'],
+        resources: [tableArn],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['dynamodb:Query'],
+        resources: [tableArn, `${tableArn}/index/GSI2`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [checksumQueue.queueArn],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
+        resources: [
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${
+            ServiceConstants.PARAM_PREFIX
+          }${deaConfig.stage()}*`,
+        ],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          's3:AbortMultipartUpload',
+          's3:ListMultipartUploadParts',
+          's3:GetObject',
+          's3:PutObject',
+          's3:GetObjectVersion',
+        ],
+        resources: [`${datasetsBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [kmsKeyArn],
+      })
+    );
+
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
+
+    return role;
+  }
+
   private createAuthLambdaRole(): Role {
     const STAGE = deaConfig.stage();
-
     const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
       'service-role/AWSLambdaBasicExecutionRole'
     );
@@ -698,7 +972,9 @@ export class DeaRestApiConstruct extends Construct {
     role.addToPolicy(
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
-        resources: [`arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/dea/${STAGE}*`],
+        resources: [
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
+        ],
       })
     );
 
@@ -706,10 +982,78 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['secretsmanager:GetSecretValue'],
         resources: [
-          `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:/dea/${STAGE}/clientSecret-*`,
+          `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:${ServiceConstants.PARAM_PREFIX}${STAGE}/clientSecret-*`,
         ],
       })
     );
+
+    return role;
+  }
+
+  private createExecutionRole(tableArn: string): Role {
+    const STAGE = deaConfig.stage();
+
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+
+    const role = new Role(this, 'dea-execution-lambda-role', {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [basicExecutionPolicy],
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          'dynamodb:GetItem',
+          'dynamodb:DeleteItem',
+          'dynamodb:BatchGetItem',
+          'dynamodb:BatchWriteItem',
+          'dynamodb:PutItem',
+          'dynamodb:Query',
+          'dynamodb:UpdateItem',
+        ],
+        resources: [tableArn, `${tableArn}/index/GSI1`, `${tableArn}/index/GSI2`, `${tableArn}/index/GSI3`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          'datasync:StartTaskExecution',
+          'datasync:UpdateTask',
+          'datasync:UpdateTaskExecution',
+          'datasync:ListTasks',
+          'datasync:DescribeTask',
+          'datasync:DescribeLocationS3',
+          'datasync:ListTaskExecutions',
+          'datasync:DescribeTaskExecution',
+        ],
+        resources: [`arn:${Aws.PARTITION}:datasync:${Aws.REGION}:${Aws.ACCOUNT_ID}:*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['ssm:GetParameters'],
+        resources: [
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
+        ],
+      })
+    );
+
+    // add list of optional external source type policies for execution to work
+    const listBucketResources = [...deaConfig.dataSyncSourcePermissions()];
+    if (listBucketResources.length > 0) {
+      role.addToPolicy(
+        new PolicyStatement({
+          actions: listBucketResources,
+          resources: ['*'],
+        })
+      );
+    }
+
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
 
     return role;
   }

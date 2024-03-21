@@ -28,6 +28,21 @@ export const UserModel: Model<UserType> = deaTable.getModel('User');
 export type AuditJobType = Entity<typeof DeaSchema.models.AuditJob>;
 export const AuditJobModel: Model<AuditJobType> = deaTable.getModel('AuditJob');
 
+export type DataVaultType = Entity<typeof DeaSchema.models.DataVault>;
+export const DataVaultModel: Model<DataVaultType> = deaTable.getModel('DataVault');
+
+export type DataVaultTaskType = Entity<typeof DeaSchema.models.DataVaultTask>;
+export const DataVaultTaskModel: Model<DataVaultTaskType> = deaTable.getModel('DataVaultTask');
+
+export type DataVaultExecutionType = Entity<typeof DeaSchema.models.DataVaultExecution>;
+export const DataVaultExecutionModel: Model<DataVaultExecutionType> = deaTable.getModel('DataVaultExecution');
+
+export type DataVaultFileType = Entity<typeof DeaSchema.models.DataVaultFile>;
+export const DataVaultFileModel: Model<DataVaultFileType> = deaTable.getModel('DataVaultFile');
+
+export type ObjectChecksumJobType = Entity<typeof DeaSchema.models.ObjectChecksumJob>;
+export const ObjectChecksumJobModel: Model<ObjectChecksumJobType> = deaTable.getModel('ObjectChecksumJob');
+
 export interface CaseModelRepositoryProvider {
   CaseModel: Model<CaseType>;
 }
@@ -56,6 +71,26 @@ export interface AuditJobModelRepositoryProvider {
   AuditJobModel: Model<AuditJobType>;
 }
 
+export interface DataVaultModelRepositoryProvider {
+  DataVaultModel: Model<DataVaultType>;
+}
+
+export interface DataVaultTaskModelRepositoryProvider {
+  DataVaultTaskModel: Model<DataVaultTaskType>;
+}
+
+export interface DataVaultExecutionModelRepositoryProvider {
+  DataVaultExecutionModel: Model<DataVaultExecutionType>;
+}
+
+export interface DataVaultFileModelRepositoryProvider {
+  DataVaultFileModel: Model<DataVaultFileType>;
+}
+
+export interface ObjectChecksumJobModelRepositoryProvider {
+  ObjectChecksumJobModel: Model<ObjectChecksumJobType>;
+}
+
 export interface ModelRepositoryProvider
   extends CaseModelRepositoryProvider,
     CaseUserModelRepositoryProvider,
@@ -63,7 +98,12 @@ export interface ModelRepositoryProvider
     SessionModelRepositoryProvider,
     JobModelRepositoryProvider,
     UserModelRepositoryProvider,
-    AuditJobModelRepositoryProvider {
+    AuditJobModelRepositoryProvider,
+    DataVaultModelRepositoryProvider,
+    DataVaultTaskModelRepositoryProvider,
+    DataVaultExecutionModelRepositoryProvider,
+    DataVaultFileModelRepositoryProvider,
+    ObjectChecksumJobModelRepositoryProvider {
   table: Table;
 }
 
@@ -76,4 +116,9 @@ export const defaultProvider: ModelRepositoryProvider = {
   JobModel: JobModel,
   UserModel: UserModel,
   AuditJobModel: AuditJobModel,
+  DataVaultModel: DataVaultModel,
+  DataVaultTaskModel: DataVaultTaskModel,
+  DataVaultExecutionModel: DataVaultExecutionModel,
+  DataVaultFileModel: DataVaultFileModel,
+  ObjectChecksumJobModel: ObjectChecksumJobModel,
 };

@@ -9,6 +9,7 @@ import {
   ServiceInputTypes as S3Input,
   ServiceOutputTypes as S3Output,
   PutObjectCommand,
+  S3ClientResolvedConfig,
 } from '@aws-sdk/client-s3';
 import {
   S3ControlClient,
@@ -16,13 +17,16 @@ import {
   ServiceOutputTypes as S3ControlOutput,
   CreateJobCommand,
   JobReportScope,
+  S3ControlClientResolvedConfig,
 } from '@aws-sdk/client-s3-control';
+import { SQSClient } from '@aws-sdk/client-sqs';
 import {
   STSClient,
+  STSClientResolvedConfig,
   ServiceInputTypes as STSInputs,
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { v4 as uuidv4 } from 'uuid';
 import { updateCaseStatus } from '../../../app/resources/update-case-status';
@@ -47,9 +51,10 @@ import {
 
 let repositoryProvider: ModelRepositoryProvider;
 let caseOwner: DeaUser;
-let s3Mock: AwsStub<S3Input, S3Output>;
-let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput>;
-let stsMock: AwsStub<STSInputs, STSOutputs>;
+let s3Mock: AwsStub<S3Input, S3Output, S3ClientResolvedConfig>;
+let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput, S3ControlClientResolvedConfig>;
+let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
+let sqsMock: AwsClientStub<SQSClient>;
 
 const ETAG = 'hehe';
 const VERSION_ID = 'haha';
@@ -77,6 +82,9 @@ describe('update case status', () => {
         Expiration: new Date(),
       },
     });
+
+    sqsMock = mockClient(SQSClient);
+    sqsMock.resolves({});
   });
 
   afterAll(async () => {
@@ -383,8 +391,10 @@ describe('update case status', () => {
       s3BatchDeleteCaseFileLambdaArn: 'arn:aws:lambda:us-east-1:1234:function:foo',
       s3BatchDeleteCaseFileRole: 'arn:aws:iam::1234:role/foo',
       sourceIpValidationEnabled: true,
+      endUserUploadRole: 'arn:aws:iam::1234:role/baz',
       datasetsRole: 'arn:aws:iam::1234:role/bar',
       awsPartition: 'aws',
+      checksumQueueUrl: 'checksumQueueUrl',
     };
 
     await expect(

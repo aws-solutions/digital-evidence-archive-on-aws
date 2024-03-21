@@ -12,12 +12,22 @@ import {
   UserType,
   CaseFileType,
   JobType,
+  DataVaultType,
+  DataVaultTaskType,
+  DataVaultExecutionType,
+  DataVaultFileType,
+  ObjectChecksumJobType,
 } from '../persistence/schema/entities';
 import { CaseAction } from './case-action';
 import { CaseFileStatus } from './case-file-status';
 import { CaseStatus } from './case-status';
 import { CaseUser } from './case-user';
+import { DeaDataVault } from './data-vault';
+import { DeaDataVaultExecution } from './data-vault-execution';
+import { DeaDataVaultFile } from './data-vault-file';
+import { DeaDataVaultTask } from './data-vault-task';
 import { Job } from './job';
+import { ObjectChecksumJob } from './object-checksum-job';
 import { DeaSession } from './session';
 import { DeaUser } from './user';
 
@@ -36,6 +46,62 @@ export const caseFromEntity = (caseEntity: CaseType): DeaCase => {
     s3BatchJobId: caseEntity.s3BatchJobId,
     created: caseEntity.created,
     updated: caseEntity.updated,
+  };
+};
+
+export const dataVaultFromEntity = (dataVaultEntity: DataVaultType): DeaDataVault => {
+  return {
+    ulid: dataVaultEntity.ulid,
+    name: dataVaultEntity.name,
+    description: dataVaultEntity.description,
+    objectCount: dataVaultEntity.objectCount,
+    totalSizeBytes: dataVaultEntity.totalSizeBytes,
+    created: dataVaultEntity.created,
+    updated: dataVaultEntity.updated,
+  };
+};
+
+export const dataVaultTaskFromEntity = (dataVaultTaskEntity: DataVaultTaskType): DeaDataVaultTask => {
+  return {
+    taskId: dataVaultTaskEntity.taskId,
+    dataVaultUlid: dataVaultTaskEntity.dataVaultUlid,
+    name: dataVaultTaskEntity.name,
+    description: dataVaultTaskEntity.description,
+    sourceLocationArn: dataVaultTaskEntity.sourceLocationArn,
+    destinationLocationArn: dataVaultTaskEntity.destinationLocationArn,
+    taskArn: dataVaultTaskEntity.taskArn,
+    deleted: dataVaultTaskEntity.deleted,
+  };
+};
+
+export const dataVaultExecutionFromEntity = (
+  dataVaultExecutionEntity: DataVaultExecutionType
+): DeaDataVaultExecution => {
+  return {
+    executionId: dataVaultExecutionEntity.executionId,
+    taskId: dataVaultExecutionEntity.taskId,
+    created: dataVaultExecutionEntity.created,
+    createdBy: dataVaultExecutionEntity.createdBy,
+  };
+};
+
+export const dataVaultFileFromEntity = (dataVaultFileEntity: DataVaultFileType): DeaDataVaultFile => {
+  return {
+    ulid: dataVaultFileEntity.ulid,
+    fileName: dataVaultFileEntity.fileName,
+    filePath: dataVaultFileEntity.filePath,
+    dataVaultUlid: dataVaultFileEntity.dataVaultUlid,
+    isFile: dataVaultFileEntity.isFile,
+    fileSizeBytes: dataVaultFileEntity.fileSizeBytes,
+    contentType: dataVaultFileEntity.contentType,
+    createdBy: dataVaultFileEntity.createdBy,
+    sha256Hash: dataVaultFileEntity.sha256Hash,
+    versionId: dataVaultFileEntity.versionId,
+    executionId: dataVaultFileEntity.executionId,
+    fileS3Key: dataVaultFileEntity.fileS3Key,
+    created: dataVaultFileEntity.created,
+    updated: dataVaultFileEntity.updated,
+    caseCount: dataVaultFileEntity.caseCount,
   };
 };
 
@@ -120,6 +186,11 @@ export const caseFileFromEntity = (caseFileEntity: CaseFileType): DeaCaseFileRes
     details: caseFileEntity.details,
     // if fileS3Key is set returns their value. Otherwise, fileS3Key value comes from the <caseUlid,ulid> tupple.
     fileS3Key: caseFileEntity.fileS3Key ?? `${caseFileEntity.caseUlid}/${caseFileEntity.ulid}`,
+    dataVaultUlid: caseFileEntity.dataVaultUlid,
+    executionId: caseFileEntity.executionId,
+    associationCreatedBy: caseFileEntity.associationCreatedBy,
+    associationDate: caseFileEntity.associationDate,
+    dataVaultUploadDate: caseFileEntity.dataVaultUploadDate,
   };
 };
 
@@ -129,5 +200,13 @@ export const jobFromEntity = (jobEntity: JobType): Job => {
     caseUlid: jobEntity.caseUlid,
     updated: jobEntity.updated,
     created: jobEntity.created,
+  };
+};
+
+export const checksumJobFromEntity = (checksumJobEntity: ObjectChecksumJobType): ObjectChecksumJob => {
+  return {
+    parentUlid: checksumJobEntity.parentUlid,
+    fileUlid: checksumJobEntity.fileUlid,
+    serializedHasher: checksumJobEntity.serializedHasher,
   };
 };

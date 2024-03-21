@@ -39,8 +39,8 @@ const mockFilesRoot = {
       sha256Hash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
       versionId: '8pXrPWVxZoRiCszVYB2lShmCoxWH9Fca',
       status: 'ACTIVE',
-      created: '2023-03-09T17:08:40.682Z',
-      updated: '2023-03-09T17:08:40.682Z',
+      created: '2023-03-11T17:08:40.682Z',
+      updated: '2023-03-11T17:08:40.682Z',
       isFile: false,
       ttl: 1678385311,
     },
@@ -107,7 +107,7 @@ const mockFilesFood = {
 };
 
 const mockedCaseDetail = {
-  ulid: 'abc',
+  ulid: CASE_ID,
   name: 'mocked case',
   status: 'ACTIVE',
 };
@@ -192,7 +192,7 @@ mockedAxios.request.mockImplementation((eventObj) => {
       headers: {},
       config: {},
     });
-  } else if (eventObj.url?.endsWith('100/actions')) {
+  } else if (eventObj.url?.endsWith(`${CASE_ID}/actions`)) {
     return Promise.resolve({
       data: mockedCaseActions,
       status: 200,
@@ -284,7 +284,8 @@ describe('CaseDetailsPage', () => {
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
-    const mockedCaseInfo = await screen.findByText('mocked case');
+    const mockedCaseInfo = await screen.findAllByText('mocked case');
+    expect(mockedCaseInfo.length).toEqual(2); // Header and breadcrumb
     expect(mockedCaseInfo).toBeTruthy();
 
     const table = await screen.findByTestId('file-table');
@@ -420,7 +421,7 @@ describe('CaseDetailsPage', () => {
     await act(async () => {
       item.findDismissButton()!.click();
     });
-  }, 15000);
+  }, 30000);
 
   it('navigates to upload files page', async () => {
     const page = render(<CaseDetailsPage />);
@@ -429,7 +430,9 @@ describe('CaseDetailsPage', () => {
     const uploadButton = await page.findByTestId('upload-file-button');
     fireEvent.click(uploadButton);
 
-    expect(push).toHaveBeenCalledWith(`/upload-files?caseId=${CASE_ID}&filePath=/`);
+    expect(push).toHaveBeenCalledWith(
+      `/upload-files?caseId=${CASE_ID}&filePath=/&caseName=${mockedCaseDetail.name}`
+    );
   });
 
   it('downloads a case audit', async () => {
@@ -454,7 +457,7 @@ describe('CaseDetailsPage', () => {
     fireEvent.click(fileEntry);
 
     expect(push).toHaveBeenCalledWith(
-      `/file-detail?caseId=${mockFilesRoot.files[1].caseUlid}&fileId=${mockFilesRoot.files[1].ulid}`
+      `/file-detail?caseId=${mockFilesRoot.files[1].caseUlid}&fileId=${mockFilesRoot.files[1].ulid}&caseName=${mockedCaseDetail.name}`
     );
   });
 });

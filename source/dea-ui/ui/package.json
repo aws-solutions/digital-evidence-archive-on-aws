@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-ui",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "NextJS frontend UI for Digital Evidence Archive",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/blob/main/source/dea-ui/ui/",
   "repository": {
@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "author": {
     "name": "Amazon Web Services",
-    "url": "http://aws.amazon.com"
+    "url": "https://aws.amazon.com/solutions"
   },
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -35,6 +35,7 @@
     "lint:fix": "next lint --fix --max-warnings=0",
     "make-badges": "istanbul-badges-readme --coverageDir=./temp/coverage --exitCode=1",
     "pkg-json-lint": "npmPkgJsonLint -c ../../../.npmpackagejsonlintrc.json .",
+    "mdi:only": "",
     "serve": "node .next/server/webpack-runtime.js",
     "sort-package-json": "sort-package-json package.json",
     "start": "next start",
@@ -42,6 +43,8 @@
     "test:dev": "jest --watch",
     "test:noe2e": "jest --ci --coverage '.*/*(integration|unit).test.*' && rushx make-badges",
     "test:only": "jest --ci --coverage",
+    "cdkunit:only": "echo ':)'",
+    "cdkunit:only:u": "echo ':)'",
     "test:sonar": "rushx test:only",
     "unit:only": "jest --ci '.*/*unit.test.*'",
     "version:major": "npm version major",
@@ -49,19 +52,21 @@
     "version:patch": "npm version patch"
   },
   "dependencies": {
-    "@aws-sdk/client-athena": "~3.398.0",
-    "@aws-sdk/client-cognito-identity": "~3.398.0",
-    "@aws-sdk/client-cognito-identity-provider": "~3.398.0",
+    "@aws-sdk/client-athena": "~3.474.0",
+    "@aws-sdk/client-cognito-identity": "~3.474.0",
+    "@aws-sdk/client-cognito-identity-provider": "~3.474.0",
+    "@aws-sdk/client-s3": "~3.474.0",
     "@aws/dea-app": "workspace:*",
     "@cloudscape-design/collection-hooks": "^1.0.20",
-    "@cloudscape-design/components": "^3.0.262",
+    "@cloudscape-design/component-toolkit": "~1.0.0-beta.25",
+    "@cloudscape-design/components": "~3.0.405",
     "@cloudscape-design/design-tokens": "~3.0.11",
-    "@cloudscape-design/global-styles": "~1.0.8",
+    "@cloudscape-design/global-styles": "~1.0.13",
     "@cloudscape-design/jest-preset": "~2.0.8",
     "@types/crypto-js": "^4.1.1",
     "aws4-axios": "~3.3.0",
     "axios": "^1.6.5",
-    "crypto-js": "^4.2.0",
+    "crypto-js": "~4.2.0",
     "date-fns": "^2.28.0",
     "i18next": "~21.10.0",
     "jest-environment-jsdom": "~29.6.3",

@@ -21,6 +21,8 @@ export interface NavigationProps {
 const MY_CASES_ENDPOINT = '/cases/my-casesGET';
 const ALL_CASES_ENDPOINT = '/cases/all-casesGET';
 const SYSTEM_AUDIT_ENDPOINT = '/system/auditPOST';
+const DATA_VAULTS_ENDPOINT = '/datavaultsGET';
+const DATA_SYNC_TASKS_ENDPOINT = '/datasync/tasksGET';
 
 export default function Navigation({ initialHref }: NavigationProps): JSX.Element {
   const router = useRouter();
@@ -41,6 +43,22 @@ export default function Navigation({ initialHref }: NavigationProps): JSX.Elemen
 
   if (availableEndpoints.data?.includes(ALL_CASES_ENDPOINT)) {
     navItems.push({ type: 'link', text: navigationLabels.allSystemCasesLabel, href: '/all-cases' });
+  }
+
+  if (availableEndpoints.data?.includes(DATA_VAULTS_ENDPOINT)) {
+    navItems.push({
+      type: 'link',
+      text: navigationLabels.dataVaultsLabel,
+      href: '/data-vaults',
+    });
+  }
+
+  if (availableEndpoints.data?.includes(DATA_SYNC_TASKS_ENDPOINT)) {
+    navItems.push({
+      type: 'link',
+      text: navigationLabels.dataSyncTasksLabel,
+      href: '/data-sync-tasks',
+    });
   }
 
   const downloadSystemAudit = async () => {

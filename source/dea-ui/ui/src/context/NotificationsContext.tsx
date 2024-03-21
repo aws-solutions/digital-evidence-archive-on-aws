@@ -10,13 +10,13 @@ import { IAppNotification } from '../models/AppNotification';
 
 export interface INotificationsProps {
   notifications: IAppNotification[];
-  pushNotification: (type: FlashbarProps.Type, content: string) => void;
+  pushNotification: (type: FlashbarProps.Type, content: React.ReactNode) => void;
   dismissNotification: (id: string) => void;
 }
 
 const defaultAppNotification: INotificationsProps = {
   notifications: [],
-  pushNotification: (_type: FlashbarProps.Type, _content: string) => {
+  pushNotification: (_type: FlashbarProps.Type, _content: React.ReactNode) => {
     /*do nothing*/
   },
   dismissNotification: (_id: string) => {
@@ -30,7 +30,7 @@ const NotificationsContext: Context<INotificationsProps> =
 export function NotificationsProvider({ children }: { children: React.ReactNode }): JSX.Element {
   const [notifications, setNotifications] = useState<IAppNotification[]>([]);
 
-  function pushNotification(type: FlashbarProps.Type, content: string): void {
+  function pushNotification(type: FlashbarProps.Type, content: React.ReactNode): void {
     setNotifications([...notifications, { id: uuidv4(), type, content }]);
   }
 

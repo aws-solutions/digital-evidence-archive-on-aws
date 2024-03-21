@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { Credentials } from 'aws-lambda';
 import { CaseFileStatus } from './case-file-status';
 
 export interface DeaCaseFile {
@@ -16,9 +17,6 @@ export interface DeaCaseFile {
   readonly ulid?: string; // ulid will not exist before case-file is persisted
   readonly contentType?: string;
   readonly sha256Hash?: string;
-  uploadId?: string;
-  presignedUrls?: ReadonlyArray<string>;
-  chunkSizeBytes?: number;
   ttl?: number;
   versionId?: string;
   readonly details?: string;
@@ -27,7 +25,20 @@ export interface DeaCaseFile {
 
   readonly created?: Date;
   readonly updated?: Date;
+
+  readonly dataVaultUlid?: string;
+  readonly executionId?: string;
+  readonly associationCreatedBy?: string;
+  readonly associationDate?: Date;
+  readonly dataVaultUploadDate?: Date;
 }
+
+export type DeaCaseFileUpload = DeaCaseFile & {
+  readonly uploadId: string;
+  readonly federationCredentials: Credentials;
+  readonly bucket: string;
+  readonly region: string;
+};
 
 export interface DeaCaseFileResult {
   ulid: string;
@@ -48,10 +59,22 @@ export interface DeaCaseFileResult {
   reason?: string;
   details?: string;
   fileS3Key: string;
+  dataVaultUlid?: string;
+  executionId?: string;
+  associationCreatedBy?: string;
+  associationDate?: Date;
+  dataVaultUploadDate?: Date;
+}
+
+export interface DownloadCaseFileRequest {
+  caseUlid: string;
+  ulid: string;
+  downloadReason?: string;
 }
 
 export interface DownloadCaseFileResult {
   downloadUrl?: string;
+  downloadReason?: string;
   isArchived?: boolean;
   isRestoring?: boolean;
 }
@@ -65,21 +88,47 @@ export interface CaseFileDTO {
   readonly filePath: string;
   readonly fileSizeBytes: number;
   readonly sha256Hash?: string;
-  readonly status: string;
+  readonly status: CaseFileStatus;
   readonly created?: Date;
   readonly updated?: Date;
   readonly isFile: boolean;
   readonly reason?: string;
   readonly details?: string;
   readonly fileS3Key: string;
+  readonly dataVaultUlid?: string;
+  readonly executionId?: string;
+  readonly associationCreatedBy?: string;
+  readonly associationDate?: Date;
+  readonly dataVaultUploadDate?: Date;
+  dataVaultName?: string;
 }
 
 export interface CompleteCaseFileUploadDTO {
   readonly caseUlid: string;
   readonly ulid: string;
-  readonly sha256Hash: string;
   readonly uploadId: string;
 }
+
+export type CompleteCaseFileUploadObject = {
+  readonly caseUlid: string;
+  readonly fileName: string;
+  readonly filePath: string;
+  readonly isFile: boolean;
+  readonly fileSizeBytes: number;
+  readonly createdBy: string;
+  status: CaseFileStatus;
+  readonly ulid: string;
+  readonly contentType?: string;
+  ttl?: number;
+  versionId?: string;
+  readonly details?: string;
+  readonly reason?: string;
+  readonly fileS3Key: string;
+
+  readonly created?: Date;
+  readonly updated?: Date;
+  readonly uploadId: string;
+};
 
 export interface InitiateCaseFileUploadDTO {
   readonly caseUlid: string;
@@ -89,10 +138,17 @@ export interface InitiateCaseFileUploadDTO {
   readonly fileSizeBytes: number;
   readonly details?: string;
   readonly reason?: string;
-  readonly chunkSizeBytes: number;
-  readonly partRangeStart: number;
-  readonly partRangeEnd: number;
   readonly uploadId?: string;
 }
 
+export interface CaseAssociationDTO {
+  readonly caseUlids: string[];
+  readonly fileUlids: string[];
+}
+
+export interface RemoveCaseAssociationDTO {
+  readonly caseUlids: string[];
+}
+
 export type UploadDTO = InitiateCaseFileUploadDTO | CompleteCaseFileUploadDTO;
+export type DownloadDTO = DeaCaseFileResult | CaseFileDTO;

@@ -7,8 +7,12 @@ viperlight
 Config
 
 # Line specific ignores
+
 source/dea-app/lib/test/integration-objects.js:79
+source/dea-app/src/storage/datasets.ts:169
+source/dea-app/src/storage/datasets.ts:170
 
 # Bogus email ignores
+
 source/release.config.js:3
 source/rush.json:17

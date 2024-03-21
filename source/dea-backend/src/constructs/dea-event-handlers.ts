@@ -4,6 +4,7 @@
  */
 
 import path from 'path';
+import { restrictAccountStatementStatementProps } from '@aws/dea-app/lib/storage/restrict-account-statement';
 import { Duration, aws_events_targets } from 'aws-cdk-lib';
 import { Rule } from 'aws-cdk-lib/aws-events';
 import {
@@ -15,12 +16,17 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { CfnFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Bucket, EventType } from 'aws-cdk-lib/aws-s3';
+import { LambdaDestination } from 'aws-cdk-lib/aws-s3-notifications';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
+
+const DATASYNC_POST_PROCESSING_LAMBDA_EXECUTION_TIME_IN_SECONDS = 900;
 
 interface LambdaEnvironment {
   [key: string]: string;
@@ -29,6 +35,7 @@ interface LambdaEnvironment {
 interface DeaEventHandlerProps {
   deaTableArn: string;
   deaDatasetsBucketArn: string;
+  dataSyncLogsBucket: Bucket;
   lambdaEnv: LambdaEnvironment;
   kmsKey: Key;
   opsDashboard?: DeaOperationalDashboard;
@@ -38,6 +45,7 @@ export class DeaEventHandlers extends Construct {
   public s3BatchDeleteCaseFileLambda: NodejsFunction;
   public s3BatchDeleteCaseFileBatchJobRole: Role;
   public s3BatchDeleteCaseFileLambdaRole: Role;
+  public dataSyncExecutionEventRole: Role;
 
   public constructor(scope: Construct, stackName: string, props: DeaEventHandlerProps) {
     super(scope, stackName);
@@ -103,6 +111,58 @@ export class DeaEventHandlers extends Construct {
       undefined,
       true
     );
+
+    // Create Lambda and event for DataSync
+    this.dataSyncExecutionEventRole = this.createDataSyncExecutionEventRole(
+      'data-sync-execution-event-role',
+      props.deaTableArn,
+      props.dataSyncLogsBucket.bucketArn,
+      props.deaDatasetsBucketArn,
+      props.kmsKey.keyArn
+    );
+
+    const dataSyncFileProcessingDLQ = new Queue(this, 'datasync-files-processing-dlq', {
+      enforceSSL: true,
+    });
+
+    props.opsDashboard?.addDeadLetterQueueOperationalComponents(
+      'DataSyncFilesProcessingDLQ',
+      dataSyncFileProcessingDLQ
+    );
+
+    const dataSyncExecutionEventLambda = this.createLambda(
+      `datasync_execution_event`,
+      'DataSyncExecutionEventLambda',
+      '../../src/handlers/datasync-execution-event-handler.ts',
+      { NODE_OPTIONS: '--max-old-space-size=8192', ...props.lambdaEnv },
+      this.dataSyncExecutionEventRole,
+      DATASYNC_POST_PROCESSING_LAMBDA_EXECUTION_TIME_IN_SECONDS,
+      512,
+      2,
+      dataSyncFileProcessingDLQ
+    );
+
+    props.opsDashboard?.addLambdaOperationalComponents(
+      dataSyncExecutionEventLambda,
+      'DataSyncExecutionEventLambda',
+      undefined,
+      true
+    );
+
+    this.createBucketEventForDataSyncExecution(dataSyncExecutionEventLambda, props.dataSyncLogsBucket);
+  }
+
+  private createBucketEventForDataSyncExecution(
+    dataProcessingLambda: NodejsFunction,
+    dataSyncLogsBucket: Bucket
+  ) {
+    dataSyncLogsBucket.addEventNotification(
+      EventType.OBJECT_CREATED,
+      new LambdaDestination(dataProcessingLambda),
+      {
+        prefix: 'Detailed-Reports',
+      }
+    );
   }
 
   private createEventBridgeRuleForS3BatchJobs(targetLambda: NodejsFunction) {
@@ -124,14 +184,21 @@ export class DeaEventHandlers extends Construct {
     cfnExportName: string,
     pathToSource: string,
     lambdaEnv: LambdaEnvironment,
-    role: Role
+    role: Role,
+    timeoutSeconds = 60,
+    memorySize = 512,
+    reservedConcurrentExecutions?: number,
+    dlq?: Queue
   ): NodejsFunction {
-    const lambda = new NodejsFunction(this, id, {
-      memorySize: 512,
+    const lambdaProps: NodejsFunctionProps = {
+      memorySize: memorySize,
+      tracing: Tracing.ACTIVE,
       role,
-      timeout: Duration.seconds(60),
+      timeout: Duration.seconds(timeoutSeconds),
+      reservedConcurrentExecutions,
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
+      // nosemgrep
       entry: path.join(__dirname, pathToSource),
       depsLockFilePath: path.join(__dirname, '../../../common/config/rush/pnpm-lock.yaml'),
       environment: {
@@ -144,7 +211,11 @@ export class DeaEventHandlers extends Construct {
         minify: true,
         sourceMap: true,
       },
-    });
+      deadLetterQueue: dlq ? dlq : undefined,
+      deadLetterQueueEnabled: dlq ? true : false,
+    };
+
+    const lambda = new NodejsFunction(this, id, lambdaProps);
 
     //CFN NAG Suppression
     const lambdaMetaDataNode = lambda.node.defaultChild;
@@ -196,6 +267,8 @@ export class DeaEventHandlers extends Construct {
         resources: [this.s3BatchDeleteCaseFileLambda.functionArn],
       })
     );
+
+    role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
 
     return role;
   }
@@ -288,6 +361,66 @@ export class DeaEventHandlers extends Construct {
       new PolicyStatement({
         actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
         resources: [kmsKeyArn],
+      })
+    );
+
+    return role;
+  }
+
+  private createDataSyncExecutionEventRole(
+    id: string,
+    tableArn: string,
+    datasyncLogBucketArn: string,
+    datasetsBucketArn: string,
+    kmsKeyArn: string
+  ): Role {
+    const basicExecutionPolicy = ManagedPolicy.fromAwsManagedPolicyName(
+      'service-role/AWSLambdaBasicExecutionRole'
+    );
+    const role = new Role(this, id, {
+      assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [basicExecutionPolicy],
+    });
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          'dynamodb:GetItem',
+          'dynamodb:PutItem',
+          'dynamodb:BatchWriteItem',
+          'dynamodb:Query',
+          'dynamodb:UpdateItem',
+          'dynamodb:DeleteItem',
+        ],
+        resources: [tableArn],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['datasync:DescribeTaskExecution', 'datasync:DescribeTask', 'datasync:DescribeLocationS3'],
+        resources: ['*'],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [kmsKeyArn],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:GetObject', 's3:ListBucket', 's3:GetObjectVersion'],
+        resources: [`${datasyncLogBucketArn}/*`],
+      })
+    );
+
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:GetObject', 's3:ListBucket', 's3:GetObjectVersion'],
+        resources: [`${datasetsBucketArn}/*`],
       })
     );
 

@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { DeaCaseFile } from '@aws/dea-app/lib/models/case-file';
+import { DownloadDTO } from '@aws/dea-app/lib/models/case-file';
 import { CaseFileStatus } from '@aws/dea-app/lib/models/case-file-status';
 import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { PropertyFilterProperty, useCollection } from '@cloudscape-design/collection-hooks';
@@ -14,7 +14,6 @@ import {
   Header,
   Pagination,
   SpaceBetween,
-  Spinner,
   StatusIndicator,
   Table,
   TextFilter,
@@ -22,7 +21,7 @@ import {
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
-import { getPresignedUrl, restoreFile, useGetCaseActions, useListCaseFiles } from '../../api/cases';
+import { restoreFile, useGetCaseActions, useListCaseFiles } from '../../api/cases';
 import {
   caseStatusLabels,
   commonLabels,
@@ -35,6 +34,7 @@ import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadFiles, canRestoreFiles, canUploadFiles } from '../../helpers/userActionSupport';
+import DownloadButton from '../buttons/DownloadButton';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { ConfirmModal } from '../common-components/ConfirmModal';
 import { CaseDetailsTabsProps } from './CaseDetailsTabs';
@@ -49,10 +49,10 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     basePath: '/',
   });
   const { data, isLoading } = useListCaseFiles(props.caseId, filesTableState.basePath);
-  const [selectedFiles, setSelectedFiles] = React.useState<DeaCaseFile[]>([]);
+  const [selectedFiles, setSelectedFiles] = React.useState<DownloadDTO[]>([]);
   const [downloadInProgress, setDownloadInProgress] = React.useState(false);
 
-  const [filesToRestore, setFilesToRestore] = React.useState<DeaCaseFile[]>([]);
+  const [filesToRestore, setFilesToRestore] = React.useState<DownloadDTO[]>([]);
   const { pushNotification } = useNotifications();
 
   const filteringProperties: readonly PropertyFilterProperty[] = [
@@ -84,12 +84,12 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       defaultPage: 0,
       pageSize: 50,
     },
-    sorting: {},
+    sorting: { defaultState: { isDescending: true, sortingColumn: { sortingField: 'created' } } },
     selection: {},
   });
 
   if (isLoading) {
-    return <h1>{commonLabels.loadingLabel}</h1>;
+    return <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>;
   }
 
   const pathParts = filesTableState.basePath.split('/');
@@ -103,7 +103,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     }
   });
 
-  const fileFolderCell = (caseFile: DeaCaseFile) => {
+  const fileFolderCell = (caseFile: DownloadDTO) => {
     return !caseFile.isFile ? (
       <Button
         data-testid={`${caseFile.fileName}-button`}
@@ -126,7 +126,9 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         variant="link"
         onClick={(e: { preventDefault: () => void }) => {
           e.preventDefault();
-          return router.push(`/file-detail?caseId=${caseFile.caseUlid}&fileId=${caseFile.ulid}`);
+          return router.push(
+            `/file-detail?caseId=${caseFile.caseUlid}&fileId=${caseFile.ulid}&caseName=${props.caseName}`
+          );
         }}
       >
         {caseFile.fileName}
@@ -151,10 +153,6 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     }
   }
 
-  function cancelRestore() {
-    setFilesToRestore([]);
-  }
-
   function tableActions() {
     if (props.caseStatus === CaseStatus.ACTIVE) {
       return (
@@ -169,8 +167,10 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
             message={fileOperationsLabels.restoreFilesModalDescription}
             confirmAction={restoreFiles}
             confirmButtonText={commonLabels.restoreButton}
-            cancelAction={cancelRestore}
-            cancelButtonText={fileOperationsLabels.cancelRestoringLabel}
+            cancelAction={() => {
+              setFilesToRestore([]);
+            }}
+            cancelButtonText={commonLabels.cancelButton}
           />
           <Button
             data-testid="upload-file-button"
@@ -179,18 +179,16 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           >
             {commonLabels.uploadButton}
           </Button>
-          <Button
-            data-testid="download-file-button"
-            variant="primary"
-            onClick={downloadFilesHandler}
-            disabled={
-              downloadInProgress ||
-              !(canDownloadFiles(userActions?.data?.actions) && props.caseStatus === CaseStatus.ACTIVE)
-            }
-          >
-            {commonLabels.downloadButton}
-            {downloadInProgress ? <Spinner size="big" /> : null}
-          </Button>
+          <DownloadButton
+            caseId={props.caseId}
+            caseStatus={props.caseStatus}
+            selectedFiles={selectedFiles}
+            selectedFilesCallback={setSelectedFiles}
+            downloadInProgress={downloadInProgress}
+            downloadInProgressCallback={setDownloadInProgress}
+            filesToRestore={filesToRestore}
+            filesToRestoreCallback={setFilesToRestore}
+          />
         </SpaceBetween>
       );
     }
@@ -242,44 +240,9 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const tablePagination = <Pagination {...paginationProps} ariaLabels={paginationLabels} />;
 
   function uploadFilesHandler() {
-    return router.push(`/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}`);
-  }
-
-  async function downloadFilesHandler() {
-    const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
-    try {
-      setDownloadInProgress(true);
-      for (const file of selectedFiles) {
-        try {
-          const downloadResponse = await getPresignedUrl({ caseUlid: file.caseUlid, ulid: file.ulid });
-          if (!downloadResponse.downloadUrl) {
-            if (downloadResponse.isRestoring) {
-              pushNotification('info', fileOperationsLabels.restoreInProgress(file.fileName));
-            } else if (downloadResponse.isArchived) {
-              if (canRestoreFiles(userActions?.data?.actions, availableEndpoints.data)) {
-                filesToRestore.push(file);
-              } else {
-                pushNotification('error', fileOperationsLabels.archivedFileNoPermissionError(file.fileName));
-              }
-            }
-            continue;
-          }
-          const alink = document.createElement('a');
-          alink.href = downloadResponse.downloadUrl;
-          alink.download = file.fileName;
-          alink.click();
-          // sleep 5ms => common problem when trying to quickly download files in succession => https://stackoverflow.com/a/54200538
-          // long term we should consider zipping the files in the backend and then downloading as a single file
-          await sleep(100);
-        } catch (e) {
-          pushNotification('error', fileOperationsLabels.downloadFailed(file.fileName));
-          console.log(`failed to download ${file.fileName}`, e);
-        }
-      }
-    } finally {
-      setDownloadInProgress(false);
-      setSelectedFiles([]);
-    }
+    return router.push(
+      `/upload-files?caseId=${props.caseId}&filePath=${filesTableState.basePath}&caseName=${props.caseName}`
+    );
   }
 
   function getStatus(status: CaseFileStatus) {
@@ -306,44 +269,47 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       isItemDisabled={(item) => item.status !== CaseFileStatus.ACTIVE || !item.isFile}
       columnDefinitions={[
         {
-          id: 'name',
+          id: 'fileName',
           header: commonTableLabels.nameHeader,
           cell: fileFolderCell,
           width: 400,
           minWidth: 165,
-          sortingField: 'name',
+          sortingField: 'fileName',
         },
         {
-          id: 'fileType',
+          id: 'contentType',
           header: commonTableLabels.fileTypeHeader,
           cell: (e) => e.contentType,
           width: 170,
           minWidth: 170,
-          sortingField: 'fileType',
+          sortingField: 'contentType',
         },
         {
-          id: 'size',
+          id: 'fileSizeBytes',
           header: commonTableLabels.fileSizeHeader,
           cell: (e) => formatFileSize(e.fileSizeBytes),
-          width: 100,
-          minWidth: 100,
-          sortingField: 'fileType',
+          width: 160,
+          minWidth: 160,
+          sortingField: 'fileSizeBytes',
         },
         {
-          id: 'uploadDate',
+          id: 'created',
           header: commonTableLabels.dateUploadedHeader,
-          cell: (e) => formatDateFromISOString(e.created?.toString()),
+          cell: (e) =>
+            formatDateFromISOString(
+              e.dataVaultUploadDate ? e.dataVaultUploadDate.toString() : e.created?.toString()
+            ),
           width: 165,
           minWidth: 165,
-          sortingField: 'uploadDate',
+          sortingField: 'created',
         },
         {
-          id: 'uploader',
+          id: 'createdBy',
           header: commonTableLabels.uploadedByHeader,
           cell: (e) => e.createdBy,
           width: 150,
           minWidth: 150,
-          sortingField: 'uploader',
+          sortingField: 'createdBy',
         },
         {
           id: 'status',

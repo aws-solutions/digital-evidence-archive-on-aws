@@ -67,6 +67,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "@aws-sdk/client-datasync",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws-sdk/client-dynamodb",
       "allowedCategories": [ "production" ]
     },
@@ -123,6 +127,10 @@
       "allowedCategories": [ "production", "prototypes" ]
     },
     {
+      "name": "@aws-sdk/client-sqs",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "@aws-sdk/client-ssm",
       "allowedCategories": [ "production", "prototypes" ]
     },
@@ -140,6 +148,10 @@
     },
     {
       "name": "@aws-sdk/util-dynamodb",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@aws-sdk/util-stream-node",
       "allowedCategories": [ "production" ]
     },
     {
@@ -228,6 +240,10 @@
     },
     {
       "name": "@cloudscape-design/collection-hooks",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "@cloudscape-design/component-toolkit",
       "allowedCategories": [ "production" ]
     },
     {
@@ -407,6 +423,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "csv-parse",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "csv-string",
       "allowedCategories": [ "production" ]
     },
@@ -460,6 +480,10 @@
     },
     {
       "name": "fast-check",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "fs",
       "allowedCategories": [ "production" ]
     },
     {

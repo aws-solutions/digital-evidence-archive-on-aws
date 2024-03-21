@@ -7,7 +7,8 @@ import { AthenaClient, GetQueryExecutionCommand, QueryExecutionState } from '@aw
 import { STSClient } from '@aws-sdk/client-sts';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import { anyOfClass, anything, instance, mock, when } from 'ts-mockito';
-import { getSystemAudit } from '../../../app/resources/get-system-audit';
+import { getSystemAudit } from '../../../app/resources/audit/get-system-audit';
+import { AuditResult } from '../../../app/services/audit-service';
 import { AuditType } from '../../../persistence/schema/dea-schema';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
@@ -41,6 +42,7 @@ describe('get system audit', () => {
     process.env.AWS_PARTITION = 'aws';
     process.env.AWS_REGION = 'eu-west-1';
     process.env.KEY_ARN = 'keyarn';
+    process.env.SOURCE_IP_MASK_CIDR = '32';
   });
 
   afterAll(() => {
@@ -97,8 +99,8 @@ describe('get system audit', () => {
     });
     const result = await getSystemAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
-    const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
+    const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');
-    expect(responseBody.csvFormattedData).toBeUndefined();
+    expect(responseBody.downloadUrl).toBeUndefined();
   });
 });

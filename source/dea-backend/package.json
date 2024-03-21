@@ -1,7 +1,7 @@
 {
   "name": "@aws/dea-backend",
-  "version": "1.0.7",
-  "description": "Example infrastructure to deploy express app",
+  "version": "1.1.0",
+  "description": "Stack for deploying DEA backend",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/tree/main/",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "author": {
     "name": "Amazon Web Services",
-    "url": "http://aws.amazon.com"
+    "url": "https://aws.amazon.com/solutions"
   },
   "main": "lib/index.js",
   "scripts": {
@@ -30,15 +30,18 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix --max-warnings=0",
     "make-badges": "istanbul-badges-readme --coverageDir=./temp/coverage --exitCode=1",
+    "mdi:only": "",
     "pkg-json-lint": "npmPkgJsonLint -c ../../.npmpackagejsonlintrc.json .",
     "sort-package-json": "sort-package-json package.json",
     "test": "rushx test:only && rushx make-badges",
     "test:dev": ". ../common/scripts/setEnv.sh && heft test --test-path-pattern test --watch",
     "test:noe2e": ". ../common/scripts/setEnv.sh && heft test --no-build --test-path-pattern '.*/*(integration|unit).test.*' && rushx make-badges",
+    "test:noe2enocdk": ". ../common/scripts/setEnv.sh && heft test --no-build --test-path-pattern '.*/*.(integration|unit).test.*' && rushx make-badges",
     "test:only": ". ../common/scripts/setEnv.sh && heft test --no-build --verbose --test-path-pattern test",
-    "test:only:u": ". ../common/scripts/setEnv.sh && heft test -u --no-build --verbose --test-path-pattern test",
+    "cdkunit:only": ". ../common/scripts/setEnv.sh && heft test --no-build --verbose --test-path-pattern '.*/*cdkunit.test.*'",
+    "cdkunit:only:u": ". ../common/scripts/setEnv.sh && heft test -u --no-build --verbose --test-path-pattern '.*/*cdkunit.test.*'",
     "test:sonar": "rushx unit:only",
-    "unit:only": ". ../common/scripts/setEnvDummy.sh && heft test --no-build --test-path-pattern '.*/*unit.test.*'",
+    "unit:only": ". ../common/scripts/setEnvDummy.sh && heft test --no-build --test-path-pattern '.*/*.unit.test.*'",
     "version:major": "npm version major",
     "version:minor": "npm version minor",
     "version:patch": "npm version patch"
@@ -46,9 +49,9 @@
   "dependencies": {
     "@aws-cdk/aws-cognito-identitypool-alpha": "^2.22.0-alpha.0",
     "@aws-cdk/aws-glue-alpha": "~2.86.0-alpha.0",
-    "@aws-sdk/client-cloudformation": "~3.398.0",
-    "@aws-sdk/client-kinesis": "~3.398.0",
-    "@aws-sdk/client-s3": "~3.398.0",
+    "@aws-sdk/client-cloudformation": "~3.474.0",
+    "@aws-sdk/client-kinesis": "~3.474.0",
+    "@aws-sdk/client-s3": "~3.474.0",
     "@aws/dea-app": "workspace:*",
     "@types/aws-lambda": "^8.10.114",
     "aws-cdk": "2.88.0",
@@ -67,7 +70,7 @@
     "@aws-cdk/aws-kinesisfirehose-alpha": "~2.88.0-alpha.0",
     "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "~2.88.0-alpha.0",
     "@aws-cdk/aws-servicecatalogappregistry-alpha": "~2.78.0-alpha.0",
-    "@aws-sdk/client-cloudwatch-logs": "~3.398.0",
+    "@aws-sdk/client-cloudwatch-logs": "~3.474.0",
     "@rushstack/eslint-config": "^3.3.3",
     "@rushstack/heft": "^0.50.0",
     "@rushstack/heft-jest-plugin": "^0.5.5",

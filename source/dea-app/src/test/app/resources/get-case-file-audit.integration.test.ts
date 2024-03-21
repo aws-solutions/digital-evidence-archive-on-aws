@@ -5,15 +5,17 @@
 
 import { fail } from 'assert';
 import { AthenaClient, GetQueryExecutionCommand, QueryExecutionState } from '@aws-sdk/client-athena';
-import { S3Client, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
+import { S3Client, S3ClientResolvedConfig, ServiceInputTypes, ServiceOutputTypes } from '@aws-sdk/client-s3';
 import {
   STSClient,
+  STSClientResolvedConfig,
   ServiceInputTypes as STSInputs,
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
 import { anyOfClass, anything, instance, mock, when } from 'ts-mockito';
-import { getCaseFileAudit } from '../../../app/resources/get-case-file-audit';
+import { getCaseFileAudit } from '../../../app/resources/audit/get-case-file-audit';
+import { AuditResult } from '../../../app/services/audit-service';
 import { AuditType } from '../../../persistence/schema/dea-schema';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
@@ -29,8 +31,8 @@ import {
 let caseId = '';
 let fileId = '';
 let athenaMock;
-let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
-let stsMock: AwsStub<STSInputs, STSOutputs>;
+let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
+let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 
 describe('get case file audit', () => {
   const OLD_ENV = process.env;
@@ -81,6 +83,7 @@ describe('get case file audit', () => {
     process.env.AWS_PARTITION = 'aws';
     process.env.AWS_REGION = 'eu-west-1';
     process.env.KEY_ARN = 'keyarn';
+    process.env.SOURCE_IP_MASK_CIDR = '32';
   });
 
   afterAll(() => {
@@ -143,9 +146,9 @@ describe('get case file audit', () => {
     });
     const result = await getCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
     expect(result.statusCode).toEqual(200);
-    const responseBody: { status: string; csvFormattedData: string } = JSON.parse(result.body);
+    const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');
-    expect(responseBody.csvFormattedData).toBeUndefined();
+    expect(responseBody.downloadUrl).toBeUndefined();
   });
 
   it('throws an error if case does not exist', async () => {

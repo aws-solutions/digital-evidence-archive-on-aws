@@ -4,26 +4,30 @@
  */
 
 /* eslint-disable no-new */
+import assert from 'assert';
+import { deaConfig } from '@aws/dea-backend/lib/config';
+import { createCfnOutput } from '@aws/dea-backend/lib/constructs/construct-support';
+import { DeaAppRegisterConstruct } from '@aws/dea-backend/lib/constructs/dea-app-registry';
+import { DeaAuditTrail } from '@aws/dea-backend/lib/constructs/dea-audit-trail';
+import { DeaAuth, DeaAuthStack } from '@aws/dea-backend/lib/constructs/dea-auth';
+import { DeaBackendConstruct } from '@aws/dea-backend/lib/constructs/dea-backend-stack';
+import { DeaEventHandlers } from '@aws/dea-backend/lib/constructs/dea-event-handlers';
+import { DeaOperationalDashboard } from '@aws/dea-backend/lib/constructs/dea-ops-dashboard';
+import { DeaParameters, DeaParametersStack } from '@aws/dea-backend/lib/constructs/dea-parameters';
+import { DeaRestApiConstruct } from '@aws/dea-backend/lib/constructs/dea-rest-api';
+import { addLegalHoldInfrastructure } from '@aws/dea-backend/lib/constructs/legal-hold-infra';
+import { ObjectChecksumStack } from '@aws/dea-backend/lib/constructs/object-checksum-stack';
 import {
-  DeaAppRegisterConstruct,
-  DeaAuditTrail,
-  DeaAuth,
-  DeaAuthStack,
-  DeaBackendConstruct,
-  DeaEventHandlers,
-  DeaParameters,
-  DeaParametersStack,
-  DeaRestApiConstruct,
-  createCfnOutput,
-  deaConfig,
-  DeaOperationalDashboard,
-} from '@aws/dea-backend';
-import { DeaUiConstruct } from '@aws/dea-ui-infrastructure';
+  addLambdaSuppressions,
+  addResourcePolicySuppressions,
+} from '@aws/dea-backend/lib/helpers/nag-suppressions';
+import { DeaUiConstruct } from '@aws/dea-ui-infrastructure/lib/dea-ui-stack';
 import * as cdk from 'aws-cdk-lib';
 import { Aws, CfnResource, Duration } from 'aws-cdk-lib';
 import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountPrincipal,
+  ArnPrincipal,
   Effect,
   ManagedPolicy,
   PolicyDocument,
@@ -33,11 +37,10 @@ import {
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Construct } from 'constructs';
 import { restrictResourcePolicies } from './apply-bucket-policies';
-import { addLambdaSuppressions, addResourcePolicySuppressions } from './nag-suppressions';
 
 // DEA AppRegistry Constants
 // TODO - would be ideal to reference process.env.npm_package_version here but rush breaks that env
-export const SOLUTION_VERSION = '1.0.7';
+export const SOLUTION_VERSION = '1.1.0';
 export const SOLUTION_ID = 'SO0224';
 
 export class DeaMainStack extends cdk.Stack {
@@ -45,11 +48,14 @@ export class DeaMainStack extends cdk.Stack {
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     const stackProps: cdk.StackProps = {
+      suppressTemplateIndentation: true,
       ...props,
       description: `(${SOLUTION_ID}) Digital Evidence Archive v${SOLUTION_VERSION} - This solution helps investigative units manage and store digital evidence on AWS.`,
     };
 
     super(scope, id, stackProps);
+
+    const nestedConstructs: cdk.NestedStack[] = [];
 
     let dashboard: DeaOperationalDashboard | undefined = undefined;
     if (!deaConfig.isOneClick()) {
@@ -82,6 +88,10 @@ export class DeaMainStack extends cdk.Stack {
       opsDashboard: dashboard,
     });
 
+    createCfnOutput(this, 'deaTableName', {
+      value: backendConstruct.deaTable.tableName,
+    });
+
     const region = deaConfig.region();
     const stage = deaConfig.stage();
 
@@ -89,12 +99,14 @@ export class DeaMainStack extends cdk.Stack {
       kmsKey,
       deaDatasetsBucket: backendConstruct.datasetsBucket,
       deaTableArn: backendConstruct.deaTable.tableArn,
+      accessLoggingBucket: backendConstruct.accessLogsBucket,
       opsDashboard: dashboard,
     });
 
     const deaEventHandlers = new DeaEventHandlers(this, 'DeaEventHandlers', {
       deaTableArn: backendConstruct.deaTable.tableArn,
       deaDatasetsBucketArn: backendConstruct.datasetsBucket.bucketArn,
+      dataSyncLogsBucket: backendConstruct.dataSyncLogsBucket,
       kmsKey,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
@@ -108,10 +120,33 @@ export class DeaMainStack extends cdk.Stack {
       opsDashboard: dashboard,
     });
 
+    const objectLockHandlerRole = addLegalHoldInfrastructure(
+      this,
+      [
+        {
+          bucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
+          prefix: `${auditTrail.auditCloudwatchToS3Infra.auditPrefix}`,
+        },
+        { bucket: backendConstruct.datasetsBucket, prefix: '' },
+      ],
+      dashboard
+    );
+
+    const checksumStack = new ObjectChecksumStack(this, 'ObjectChecksumStack', {
+      deaTable: backendConstruct.deaTable,
+      kmsKey,
+      objectBucket: backendConstruct.datasetsBucket,
+    });
+    nestedConstructs.push(checksumStack);
+
     const deaApi = new DeaRestApiConstruct(this, 'DeaApiGateway', protectedDeaResourceArns, {
       deaTableArn: backendConstruct.deaTable.tableArn,
       deaTableName: backendConstruct.deaTable.tableName,
       deaDatasetsBucket: backendConstruct.datasetsBucket,
+      deaDatasetsBucketDataSyncRoleArn: backendConstruct.datasetsDataSyncRole.roleArn,
+      deaDataSyncReportsBucket: backendConstruct.dataSyncLogsBucket,
+      deaDataSyncReportsRoleArn: backendConstruct.dataSyncLogsBucketRole.roleArn,
+      checksumQueue: checksumStack.checksumQueue,
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
@@ -132,6 +167,7 @@ export class DeaMainStack extends cdk.Stack {
         TRAIL_LOG_GROUP_NAME: auditTrail.trailLogGroup.logGroupName,
         AWS_USE_FIPS_ENDPOINT: deaConfig.fipsEndpointsEnabled().toString(),
         SOURCE_IP_VALIDATION_ENABLED: deaConfig.sourceIpValidationEnabled().toString(),
+        SOURCE_IP_MASK_CIDR: deaConfig.sourceIpSubnetMaskCIDR(),
         DELETION_ALLOWED: deaConfig.deletionAllowed().toString(),
         UPLOAD_FILES_TIMEOUT_MINUTES: deaConfig.uploadFilesTimeoutMinutes().toString(),
         ATHENA_WORKGROUP: auditTrail.auditCloudwatchToS3Infra.athenaWorkGroupName,
@@ -142,8 +178,8 @@ export class DeaMainStack extends cdk.Stack {
         SOLUTION_VERSION,
       },
       opsDashboard: dashboard,
+      nestedConstructs,
     });
-
     // For OneClick we need to have one Cfn template, so we will
     // deploy DeaAuth and DeaParameters as constructs
     // However for us-gov-east-1, we need to deploy DeaAuth in
@@ -190,20 +226,33 @@ export class DeaMainStack extends cdk.Stack {
 
       // Store relevant parameters for the functioning of DEA
       // in SSM Param Store and Secrets Manager
-      new DeaParameters(this, `DeaParameters`, {
+      const deaParams = new DeaParameters(this, `DeaParameters`, {
         deaAuthInfo: authConstruct.deaAuthInfo,
         kmsKey,
       });
+
+      nestedConstructs.push(deaParams);
     }
 
     // Add SSM/SecretManager paths to protected DeaResourceArns
     protectedDeaResourceArns.push(
-      `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/dea/${stage}*`
+      `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter/dev/1/${stage}*`
     );
     protectedDeaResourceArns.push(
-      `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:/dea/${stage}/*`
+      `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:/dev/1/${stage}/*`
     );
 
+    const applicationAccessRoleArns = [
+      deaApi.lambdaBaseRole.roleArn,
+      ...Array.from(deaApi.roleMap).map(([, role]) => role.roleArn),
+      deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
+      deaEventHandlers.s3BatchDeleteCaseFileLambdaRole.roleArn,
+      deaApi.datasetsRole.roleArn,
+      backendConstruct.datasetsDataSyncRole.roleArn,
+      deaEventHandlers.dataSyncExecutionEventRole.roleArn,
+      objectLockHandlerRole.roleArn,
+      checksumStack.checksumHandlerRole.roleArn,
+    ];
     restrictResourcePolicies(
       {
         kmsKey,
@@ -211,12 +260,10 @@ export class DeaMainStack extends cdk.Stack {
         datasetsBucket: backendConstruct.datasetsBucket,
         auditQueryBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
       },
-      deaApi.lambdaBaseRole,
-      deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole,
-      deaEventHandlers.s3BatchDeleteCaseFileLambdaRole,
       deaApi.customResourceRole,
-      deaApi.datasetsRole,
-      deaApi.auditDownloadRole
+      applicationAccessRoleArns,
+      deaConfig.adminRoleArn(),
+      deaApi.endUserUploadRole.roleArn
     );
 
     const permissionBoundaryOnDeaResources =
@@ -227,12 +274,31 @@ export class DeaMainStack extends cdk.Stack {
     });
 
     // DEA UI Construct
-    new DeaUiConstruct(this, 'DeaUiConstruct', {
+    const uiConstruct = new DeaUiConstruct(this, 'DeaUiNestedStack', {
       kmsKey: kmsKey,
       restApi: deaApi.deaRestApi,
       accessLogsBucket: backendConstruct.accessLogsBucket,
       accessLogPrefix: uiAccessLogPrefix,
     });
+    nestedConstructs.push(uiConstruct);
+
+    createCfnOutput(this, 'artifactBucketName', {
+      value: uiConstruct.bucket.bucketName,
+    });
+
+    if (deaConfig.isOneClick()) {
+      // Fetch solutions bucket and version
+      const DIST_BUCKET = process.env.DIST_OUTPUT_BUCKET ?? assert(false);
+      const DIST_VERSION = process.env.DIST_VERSION || '%%VERSION%%';
+      const solutionsBucketName = `${DIST_BUCKET}-reference`;
+      for (const nestedConstruct of nestedConstructs) {
+        const nestedStackResource = nestedConstruct.nestedStackResource;
+        if (nestedStackResource instanceof CfnResource) {
+          const templateUrl = `https://${solutionsBucketName}.s3.amazonaws.com/digital-evidence-archive/${DIST_VERSION}/${nestedConstruct.artifactId}.nested.template`;
+          nestedStackResource.addPropertyOverride('TemplateURL', templateUrl);
+        }
+      }
+    }
 
     // Stack node resource handling
     // ======================================
@@ -249,10 +315,6 @@ export class DeaMainStack extends cdk.Stack {
 
   private uiStackConstructNagSuppress(): void {
     const lambdaSuppresionList = [];
-
-    lambdaSuppresionList.push(
-      this.node.findChild('Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C').node.defaultChild
-    );
 
     // custom resource role
     lambdaSuppresionList.push(this.node.findChild('AWS679f53fac002430cb0da5b7982bd2287').node.defaultChild);
@@ -296,6 +358,19 @@ export class DeaMainStack extends cdk.Stack {
         }),
       ],
     });
+
+    const adminRoleArn = deaConfig.adminRoleArn();
+    if (adminRoleArn) {
+      mainKeyPolicy.addStatements(
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: ['kms:Encrypt*', 'kms:Decrypt*', 'kms:GenerateDataKey*'],
+          principals: [new ArnPrincipal(adminRoleArn)],
+          resources: ['*'],
+          sid: 'grant admin key access',
+        })
+      );
+    }
 
     const key = new Key(this, 'primaryCustomerKey', {
       enableKeyRotation: true,
@@ -392,12 +467,25 @@ export class DeaMainStack extends cdk.Stack {
     const apiGwMethodArray = [];
 
     // API GW - UI Suppressions
-    const uiPages = ['login', 'case-detail', 'create-cases', 'upload-files', 'auth-test'];
+    const uiPages = [
+      'login',
+      'case-detail',
+      'create-cases',
+      'upload-files',
+      'auth-test',
+      'data-vaults',
+      'data-vault-detail',
+      'create-data-vaults',
+      'edit-data-vault',
+      'data-sync-tasks',
+      'data-vault-file-detail',
+    ];
 
     //Home page
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
+        .node.findChild('dea-api-stack')
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('ui')
@@ -409,6 +497,7 @@ export class DeaMainStack extends cdk.Stack {
       apiGwMethodArray.push(
         this.node
           .findChild('DeaApiGateway')
+          .node.findChild('dea-api-stack')
           .node.findChild('dea-api')
           .node.findChild('Default')
           .node.findChild('ui')
@@ -420,6 +509,7 @@ export class DeaMainStack extends cdk.Stack {
       apiGwMethodArray.push(
         this.node
           .findChild('DeaApiGateway')
+          .node.findChild('dea-api-stack')
           .node.findChild('dea-api')
           .node.findChild('Default')
           .node.findChild('ui')
@@ -432,6 +522,7 @@ export class DeaMainStack extends cdk.Stack {
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
+        .node.findChild('dea-api-stack')
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
@@ -443,6 +534,7 @@ export class DeaMainStack extends cdk.Stack {
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
+        .node.findChild('dea-api-stack')
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
@@ -453,6 +545,7 @@ export class DeaMainStack extends cdk.Stack {
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
+        .node.findChild('dea-api-stack')
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
@@ -463,6 +556,7 @@ export class DeaMainStack extends cdk.Stack {
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
+        .node.findChild('dea-api-stack')
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
@@ -473,6 +567,7 @@ export class DeaMainStack extends cdk.Stack {
     apiGwMethodArray.push(
       this.node
         .findChild('DeaApiGateway')
+        .node.findChild('dea-api-stack')
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
@@ -487,7 +582,7 @@ export class DeaMainStack extends cdk.Stack {
           rules_to_suppress: [
             {
               id: 'W59',
-              reason: 'Auth not implemented yet, will revisit',
+              reason: 'Auth not required on auth related APIs or UI',
             },
           ],
         });

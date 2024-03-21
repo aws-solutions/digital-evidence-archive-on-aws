@@ -1,0 +1,451 @@
+openapi: '3.0.0'
+info:
+  version: 1.1.0
+  title: DEA Mass Data Ingestion API
+paths:
+  /datavaults:
+    post:
+      tags:
+        - datavaults
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDataVaultObject'
+      responses:
+        200:
+          description: Data Vault successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataVault'
+    get:
+      summary: Get all data vaults
+      description: returns list of data vaults
+      tags:
+        - datavaults
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: next
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  datavaults:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DataVaults'
+                  next:
+                    type: string
+  /datavaults/{dataVaultId}/details:
+    get:
+      summary: Return Data Vault details by Data Vault Id
+      description: Get metadata for a specific data vault. return not found if user doesn’t have access
+      tags:
+        - datavaults
+      parameters:
+        - in: path
+          name: dataVaultId
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataVault'
+    put:
+      summary: Update data vault details
+      tags:
+        - datavaults
+      parameters:
+        - in: path
+          name: dataVaultId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataVaultUpdateRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataVault'
+  /datasync/tasks:
+    get:
+      summary: Get datasync tasks on AWS account
+      description: returns list of datasync tasks
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  DataSyncTasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DataSyncTasks'
+                  next:
+                    type: string
+  /datavaults/{dataVaultId}/files:
+    get:
+      summary: list files by directory
+      description: List files within a datavault in given file path or datavault root
+      tags:
+        - datavaults
+      parameters:
+        - in: path
+          name: dataVaultId
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: filePath
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: next
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dataVaultFiles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DataVaultFiles'
+                  next:
+                    type: string
+  /datavaults/{dataVaultId}/caseAssociations:
+    post:
+      summary: Associate data vault file to case
+      description: Creates a case file entry to associate data vault file to case
+      tags:
+        - datavaults
+      parameters:
+        - in: path
+          name: dataVaultId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                caseUlids:
+                  type: array
+                  items:
+                    type: string
+                fileUlids:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  DataVaultFiles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DataVaultFiles'
+  /datavaults/{dataVaultId}/files/{fileId}/caseAssociations:
+    delete:
+      summary: Deletes case association
+      tags:
+        - datavaults
+      parameters:
+        - in: path
+          name: dataVaultId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                caseUlids:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        200:
+          description: Success
+  /datavaults/{dataVaultId}/tasks:
+    post:
+      summary: Creates a data vault task
+      tags:
+        - datavaults
+      parameters:
+        - in: path
+          name: dataVaultId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDataVaultTaskObject'
+      responses:
+        200:
+          description: Data Vault Task successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataVaultTask'
+  /datavaults/{dataVaultId}/files/{fileId}/info:
+    get:
+      summary: File details
+      description: Get details for a file within a data vault
+      tags:
+        - datavaults
+      parameters:
+        - in: path
+          name: dataVaultId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  file:
+                    $ref: '#/components/schemas/DataVaultFile'
+  /datavaults/tasks/{taskId}/executions:
+    post:
+      summary: Creates a data vault execution
+      tags:
+        - datavaults
+      parameters:
+        - in: path
+          name: taskId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                taskArn:
+                  type: string
+      responses:
+        200:
+          description: Data Vault Execution successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataVaultExecution'
+components:
+  schemas:
+    DataVault:
+      type: object
+      properties:
+        ulid:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        objectCount:
+          type: number
+        totalSizeBytes:
+          type: number
+        created:
+          type: string
+        updated:
+          type: string
+    DataVaults:
+      type: array
+      items:
+        $ref: '#/components/schemas/DataVault'
+    DataSyncTask:
+      type: object
+      properties:
+        taskArn:
+          type: string
+        taskId:
+          type: string
+        sourceLocationArn:
+          type: string
+        destinationLocationArn:
+          type: string
+        dataVaultUlid:
+          type: string
+        status:
+          type: string
+        created:
+          type: string
+        lastExecutionCompleted:
+          type: string
+    DataSyncTasks:
+      type: array
+      items:
+        $ref: '#/components/schemas/DataSyncTask'
+    DataVaultUpdateRequest:
+      type: object
+      properties:
+        dataVaultId:
+          type: string
+        dataVaultName:
+          type: string
+        dataVaultDescription:
+          type: string
+    CreateDataVaultObject:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Cookie Stealing
+        description:
+          type: string
+          example: Suspecting cookie monster stole all the cookies
+        status:
+          type: string
+          example: ACTIVE
+    DataVaultFile:
+      type: object
+      properties:
+        fileName:
+          type: string
+        filePath:
+          type: string
+        dataVaultUlid:
+          type: string
+        fileSizeBytes:
+          type: number
+        sha256Hash:
+          type: string
+        ulid:
+          type: string
+        versionId:
+          type: string
+        fileS3Key:
+          type: string
+        uploadId:
+          type: string
+        isFile:
+          type: boolean
+        contentType:
+          type: string
+        executionId:
+          type: string
+        created:
+          type: string
+        updated:
+          type: string
+        caseCount:
+          type: number
+        cases:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScopedCase'
+    ScopedCase:
+      type: object
+      properties:
+        ulid:
+          type: string
+        name:
+          type: string
+    DataVaultFiles:
+      type: array
+      items:
+        $ref: '#/components/schemas/DataVaultFile'
+    CreateDataVaultTaskObject:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Cookie Stealing
+        description:
+          type: string
+          example: Suspecting cookie monster stole all the cookies
+        sourceLocationArn:
+          type: string
+        destinationLocationArn:
+          type: string
+    DataVaultTask:
+      type: object
+      properties:
+        taskId:
+          type: string
+        dataVaultUlid:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        sourceLocationArn:
+          type: string
+        destinationLocationArn:
+          type: string
+        taskArn:
+          type: number
+        created:
+          type: string
+        updated:
+          type: string
+        deleted:
+          type: boolean
+    DataVaultExecution:
+      type: object
+      properties:
+        taskId:
+          type: string
+        executionId:
+          type: string
+        createdBy:
+          type: string
+        created:
+          type: string

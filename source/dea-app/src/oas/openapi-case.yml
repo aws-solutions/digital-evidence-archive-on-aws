@@ -1,6 +1,6 @@
 openapi: '3.0.0'
 info:
-  version: 1.0.7
+  version: 1.1.0
   title: DEA Case API
 paths:
   /cases/all-cases:
@@ -67,6 +67,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   userId:
                     type: string
@@ -90,6 +91,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 $ref: '#/components/schemas/ScopedCase'
   /cases:
     post:
@@ -129,6 +131,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   userId:
                     type: string
@@ -439,7 +442,7 @@ paths:
                   file:
                     $ref: '#/components/schemas/CaseFile'
   /cases/{caseId}/files/{fileId}/contents:
-    get:
+    post:
       summary: Download file
       description: Download the contents of a file via s3 signed url
       tags:
@@ -455,6 +458,19 @@ paths:
           schema:
             type: string
           required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                caseUlid:
+                  type: string
+                ulid:
+                  type: string
+                downloadReason:
+                  type: string
       responses:
         200:
           description: Success Response
@@ -465,11 +481,13 @@ paths:
                 properties:
                   isArchived:
                     type: boolean
+                  isRestoring:
+                    type: boolean
                   downloadUrl:
                     type: string
                     format: uri
-                  isRestoring:
-                    type: boolean
+                  downloadReason:
+                    type: string
     put:
       summary: Complete case file upload
       tags:

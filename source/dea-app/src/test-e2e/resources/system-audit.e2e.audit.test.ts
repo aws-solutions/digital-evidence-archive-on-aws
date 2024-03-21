@@ -10,6 +10,7 @@ import { Oauth2Token } from '../../models/auth';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
+  AuditExpectations,
   MINUTES_TO_MILLISECONDS,
   callDeaAPIWithCreds,
   createCaseSuccess,
@@ -154,11 +155,12 @@ describe('system audit e2e', () => {
       // Dynamo - Query
       const applicationEntries = entries.filter((entry) => entry.Event_Type !== 'AwsApiCall');
 
-      const expectedDetails = {
+      const expectedDetails: AuditExpectations = {
         expectedResult: 'success',
         expectedCaseUlid: createdCase.ulid,
         expectedFileHash: '',
         expectedFileUlid: '',
+        expectedDataVaultId: '',
       };
       const createCaseEntry = applicationEntries.find(
         (entry) => entry.Event_Type === AuditEventType.CREATE_CASE && entry.Username === testUser

@@ -7,15 +7,18 @@ import { fail } from 'assert';
 import {
   CreateMultipartUploadCommand,
   S3Client,
+  S3ClientResolvedConfig,
   ServiceInputTypes,
   ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
+import { SQSClient } from '@aws-sdk/client-sqs';
 import {
   STSClient,
+  STSClientResolvedConfig,
   ServiceInputTypes as STSInputs,
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import Joi from 'joi';
 import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
@@ -29,7 +32,6 @@ import { bogusUlid, fakeUlid } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
-  CHUNK_SIZE_BYTES,
   DATASETS_PROVIDER,
   callCompleteCaseFileUpload,
   callCreateCase,
@@ -39,8 +41,9 @@ import {
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
-let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes>;
-let stsMock: AwsStub<STSInputs, STSOutputs>;
+let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
+let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
+let sqsMock: AwsClientStub<SQSClient>;
 let fileUploader: DeaUser;
 let caseToUploadTo = '';
 
@@ -70,6 +73,9 @@ describe('Test initiate case file upload', () => {
         Expiration: new Date(),
       },
     });
+
+    sqsMock = mockClient(SQSClient);
+    sqsMock.resolves({});
   });
 
   afterAll(async () => {
@@ -358,9 +364,6 @@ async function initiateCaseFileUploadAndValidate(caseUlid: string, fileName: str
     CaseFileStatus.PENDING,
     fileName
   );
-
-  // initiate-case-file should return chunkSizeBytes in its response
-  expect(deaCaseFile.chunkSizeBytes).toEqual(CHUNK_SIZE_BYTES);
 
   expect(s3Mock).toHaveReceivedCommandTimes(CreateMultipartUploadCommand, 1);
   expect(s3Mock).toHaveReceivedCommandWith(CreateMultipartUploadCommand, {

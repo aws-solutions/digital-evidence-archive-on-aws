@@ -47,7 +47,7 @@ const mockFilesRoot = {
 };
 
 const mockedCaseDetail = {
-  ulid: 'abc',
+  ulid: CASE_ID,
   name: 'mocked case',
   status: 'ACTIVE',
 };
@@ -76,7 +76,7 @@ describe('case detail file restore', () => {
   it('restores selected files', async () => {
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url?.endsWith('100/details')) {
+      if (eventObj.url?.endsWith(`${CASE_ID}/details`)) {
         return Promise.resolve({
           data: mockedCaseDetail,
           status: 200,
@@ -84,7 +84,7 @@ describe('case detail file restore', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url?.endsWith('100/actions')) {
+      } else if (eventObj.url?.endsWith(`${CASE_ID}/actions`)) {
         return Promise.resolve({
           data: mockedCaseActions,
           status: 200,
@@ -145,8 +145,24 @@ describe('case detail file restore', () => {
     await act(async () => {
       fileSelector.click();
     });
-    const downloadButton = await screen.findByText(commonLabels.downloadButton);
-    fireEvent.click(downloadButton);
+
+    /**
+     * Click the download button, then a modal with a second download button and input field should appear
+     * User enters some download reason, then click download, and the modal should close
+     */
+    await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeEnabled());
+    await waitFor(() => expect(wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()).toBe(false));
+    await wrapper(screen.getByTestId('download-file-button')).click();
+
+    await waitFor(() => expect(wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()).toBe(true));
+    const wrappedReason = wrapper(document.body).findInput('[data-testid="download-file-reason-modal-input"]');
+    if (!wrappedReason) {
+      fail();
+    }
+    wrappedReason.setInputValue('Reason for download,;,.');
+
+    wrapper(screen.getByTestId('download-file-reason-modal-primary-button')).click();
+    await waitFor(() => expect(wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()).toBe(false));
 
     // restore modal will become visible when user tries to download archived file
     await waitFor(() =>

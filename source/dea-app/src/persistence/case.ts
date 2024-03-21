@@ -11,7 +11,7 @@ import { CaseStatus } from '../models/case-status';
 import { caseFromEntity } from '../models/projections';
 import { DeaUser } from '../models/user';
 import { isDefined } from './persistence-helpers';
-import { CaseModelRepositoryProvider, ModelRepositoryProvider } from './schema/entities';
+import { CaseModelRepositoryProvider, CaseType, ModelRepositoryProvider } from './schema/entities';
 
 export const getCase = async (
   ulid: string,
@@ -168,4 +168,41 @@ export const deleteCase = async (
     PK: `CASE#${caseUlid}#`,
     SK: `CASE#`,
   });
+};
+
+export const getCases = async (
+  ulids: string[],
+  repositoryProvider: ModelRepositoryProvider
+): Promise<Map<string, DeaCase>> => {
+  // Build a batch object of get the cases
+  let caseEntities: CaseType[] = [];
+  let batch = {};
+  let batchSize = 0;
+  for (const caseUlid of ulids) {
+    await getCase(caseUlid, batch, repositoryProvider);
+    ++batchSize;
+    if (batchSize === 25) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const cases = (await repositoryProvider.table.batchGet(batch, {
+        parse: true,
+        hidden: false,
+        consistent: true,
+      })) as CaseType[];
+      caseEntities = caseEntities.concat(cases);
+      batch = {};
+      batchSize = 0;
+    }
+  }
+
+  if (batchSize > 0) {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const cases = (await repositoryProvider.table.batchGet(batch, {
+      parse: true,
+      hidden: false,
+      consistent: true,
+    })) as CaseType[];
+    caseEntities = caseEntities.concat(cases);
+  }
+
+  return new Map(caseEntities.map((entity) => [entity.ulid, caseFromEntity(entity)]));
 };

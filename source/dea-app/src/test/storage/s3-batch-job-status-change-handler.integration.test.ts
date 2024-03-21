@@ -4,18 +4,26 @@
  */
 
 import { fail } from 'assert';
-import { S3Client, ServiceInputTypes as S3Input, ServiceOutputTypes as S3Output } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  S3ClientResolvedConfig,
+  ServiceInputTypes as S3Input,
+  ServiceOutputTypes as S3Output,
+} from '@aws-sdk/client-s3';
 import {
   S3ControlClient,
+  S3ControlClientResolvedConfig,
   ServiceInputTypes as S3ControlInput,
   ServiceOutputTypes as S3ControlOutput,
 } from '@aws-sdk/client-s3-control';
+import { SQSClient } from '@aws-sdk/client-sqs';
 import {
   STSClient,
+  STSClientResolvedConfig,
   ServiceInputTypes as STSInputs,
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
-import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { v4 as uuidv4 } from 'uuid';
 import { DeaCaseInput } from '../../models/case';
@@ -47,9 +55,10 @@ import {
 
 let repositoryProvider: ModelRepositoryProvider;
 let caseOwner: DeaUser;
-let s3Mock: AwsStub<S3Input, S3Output>;
-let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput>;
-let stsMock: AwsStub<STSInputs, STSOutputs>;
+let s3Mock: AwsStub<S3Input, S3Output, S3ClientResolvedConfig>;
+let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput, S3ControlClientResolvedConfig>;
+let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
+let sqsMock: AwsClientStub<SQSClient>;
 
 const ETAG = 'hehe';
 const VERSION_ID = 'haha';
@@ -78,6 +87,9 @@ describe('S3 batch job status change handler', () => {
         Expiration: new Date(),
       },
     });
+
+    sqsMock = mockClient(SQSClient);
+    sqsMock.resolves({});
   });
 
   afterAll(async () => {
@@ -268,14 +280,19 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
   const caseId = createdCase.ulid;
 
   // setup file
-  let caseFile = await callInitiateCaseFileUpload(
+  const caseFileUpload = await callInitiateCaseFileUpload(
     caseOwner.ulid,
     repositoryProvider,
     createdCase.ulid,
     'file1'
   );
-  const fileId = caseFile.ulid ?? fail();
-  caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, createdCase.ulid);
+  const fileId = caseFileUpload.ulid ?? fail();
+  const caseFile = await callCompleteCaseFileUpload(
+    caseOwner.ulid,
+    repositoryProvider,
+    fileId,
+    createdCase.ulid
+  );
 
   const jobId = uuidv4();
   s3ControlMock.resolves({

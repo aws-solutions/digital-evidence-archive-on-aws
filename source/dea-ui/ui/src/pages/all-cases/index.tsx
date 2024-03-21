@@ -17,14 +17,14 @@ export default function AllCasesPage() {
     },
   ];
   return (
-    <BaseLayout breadcrumbs={breadcrumbs}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/all-cases">
       <CaseTable
         detailPage="manage-case"
         useCaseFetcher={useListAllCases}
         canCreate={false}
         headerLabel={caseListLabels.systemCasesLabel}
         headerDescription={caseListLabels.systemCasesPageDescription}
-      ></CaseTable>
+      />
     </BaseLayout>
   );
 }

@@ -99,7 +99,7 @@
         },
         {
           "path": "/cases/{caseId}/files/{fileId}/contents",
-          "method": "GET"
+          "method": "POST"
         },
         {
           "path": "/cases/my-cases",
@@ -142,6 +142,10 @@
         {
           "path": "/cases/{caseId}/actions",
           "method": "GET"
+        },
+        {
+          "path": "/cases/{caseId}/status",
+          "method": "PUT"
         },
         {
           "path": "/cases/{caseId}/userMemberships",
@@ -209,7 +213,7 @@
         },
         {
           "path": "/cases/{caseId}/files/{fileId}/contents",
-          "method": "GET"
+          "method": "POST"
         },
         {
           "path": "/cases/my-cases",
@@ -253,6 +257,66 @@
         },
         {
           "path": "/system/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults",
+          "method": "GET"
+        },
+        {
+          "path": "/datasync/tasks",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/details",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/details",
+          "method": "PUT"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/caseAssociations",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/tasks",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/info",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/caseAssociations",
+          "method": "DELETE"
+        },
+        {
+          "path": "/datavaults/tasks/{taskId}/executions",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/audit/{auditId}/csv",
           "method": "GET"
         }
       ]
@@ -327,6 +391,66 @@
         },
         {
           "path": "/system/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults",
+          "method": "GET"
+        },
+        {
+          "path": "/datasync/tasks",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/details",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/details",
+          "method": "PUT"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/caseAssociations",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/tasks",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/info",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/caseAssociations",
+          "method": "DELETE"
+        },
+        {
+          "path": "/datavaults/tasks/{taskId}/executions",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/audit",
+          "method": "POST"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/audit/{auditId}/csv",
+          "method": "GET"
+        },
+        {
+          "path": "/datavaults/{dataVaultId}/audit/{auditId}/csv",
           "method": "GET"
         }
       ]

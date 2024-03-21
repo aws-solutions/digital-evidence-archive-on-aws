@@ -18,13 +18,18 @@ import { commonLabels } from '../../common/labels';
  * ```
  * @returns empty table information and call to action
  */
-export function TableEmptyDisplay(noItemType: string, noItemTypeDisplay: string): JSX.Element {
+export function TableEmptyDisplay(
+  noItemType: string,
+  noItemTypeDisplay: string,
+  action?: React.ReactNode
+): JSX.Element {
   return (
     <Box textAlign="center" color="inherit">
       <b>{noItemType}</b>
       <Box padding={{ bottom: 's' }} variant="p" color="inherit">
         {noItemTypeDisplay}
       </Box>
+      {action}
     </Box>
   );
 }

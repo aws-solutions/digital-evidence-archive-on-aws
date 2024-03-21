@@ -19,7 +19,13 @@ export ATHENA_WORKGROUP_NAME=$(aws cloudformation list-exports --region $REGION 
 export AUDIT_LOG_GROUP=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-auditLogName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
 export TRAIL_LOG_GROUP=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-trailLogName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
 export FIREHOSE_STREAM_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-firehoseName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+export DATASYNC_ROLE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaDataSyncRole'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+export DATASYNC_REPORTS_ROLE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaDataSyncReportsRole'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+export DATASYNC_REPORTS_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaDataSyncReportsBucketName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+export TABLE_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-deaTableName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
 # Test-required ENV
 export IDENTITY_STORE_ID=dummyId
 export IDENTITY_STORE_REGION=us-east-1
+export IDENTITY_STORE_ACCOUNT="555555555555"
+export HAS_AWS_MANAGED_ACTIVE_DIRECTORY=false
 unset ADMIN_ROLE_ARN

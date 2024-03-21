@@ -17,9 +17,10 @@ import { logger } from '../../logger';
 import { Oauth2Token } from '../../models/auth';
 import { ThrottlingException } from '../exceptions/throttling-exception';
 import { ValidationError } from '../exceptions/validation-exception';
+import { PARAM_PREFIX } from './service-constants';
 
-const stage = getRequiredEnv('STAGE', 'devsample');
-const region = getRequiredEnv('AWS_REGION', 'us-east-1');
+const stage = getRequiredEnv('STAGE');
+const region = getRequiredEnv('AWS_REGION');
 
 export type AvailableEndpointsSignature = (event: APIGatewayProxyEvent) => Promise<string[]>;
 
@@ -39,14 +40,14 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
     return cachedCognitoParams;
   }
 
-  const ssmClient = new SSMClient({ region });
+  const ssmClient = new SSMClient({ region, customUserAgent: getCustomUserAgent() });
 
-  const cognitoDomainPath = `/dea/${stage}-userpool-cognito-domain-param`;
-  const clientIdPath = `/dea/${stage}-userpool-client-id-param`;
-  const callbackUrlPath = `/dea/${stage}-client-callback-url-param`;
-  const identityPoolIdPath = `/dea/${stage}-identity-pool-id-param`;
-  const userPoolIdPath = `/dea/${stage}-userpool-id-param`;
-  const agencyIdpNamePath = `/dea/${stage}-agency-idp-name`;
+  const cognitoDomainPath = `${PARAM_PREFIX}${stage}-userpool-cognito-domain-param`;
+  const clientIdPath = `${PARAM_PREFIX}${stage}-userpool-client-id-param`;
+  const callbackUrlPath = `${PARAM_PREFIX}${stage}-client-callback-url-param`;
+  const identityPoolIdPath = `${PARAM_PREFIX}${stage}-identity-pool-id-param`;
+  const userPoolIdPath = `${PARAM_PREFIX}${stage}-userpool-id-param`;
+  const agencyIdpNamePath = `${PARAM_PREFIX}${stage}-agency-idp-name`;
 
   const response = await ssmClient.send(
     new GetParametersCommand({
@@ -172,9 +173,9 @@ export const getCredentialsByToken = async (idToken: string) => {
 };
 
 const getClientSecret = async () => {
-  const clientSecretId = `/dea/${stage}/clientSecret`;
+  const clientSecretId = `${PARAM_PREFIX}${stage}/clientSecret`;
 
-  const client = new SecretsManagerClient({ region: region });
+  const client = new SecretsManagerClient({ region: region, customUserAgent: getCustomUserAgent() });
   const input = {
     SecretId: clientSecretId,
   };
@@ -342,9 +343,9 @@ export const revokeRefreshToken = async (refreshToken: string) => {
 
 export const getAvailableEndpoints: AvailableEndpointsSignature = async (event) => {
   const deaRoleName = getRequiredHeader(event, 'deaRole');
-  const ssmClient = new SSMClient({ region });
-  const roleActionsPath = `/dea/${stage}-${deaRoleName}-actions`;
-  const deleteAllowedParamPath = `/dea/${stage}/deletionAllowed`;
+  const ssmClient = new SSMClient({ region, customUserAgent: getCustomUserAgent() });
+  const roleActionsPath = `${PARAM_PREFIX}${stage}-${deaRoleName}-actions`;
+  const deleteAllowedParamPath = `${PARAM_PREFIX}${stage}/deletionAllowed`;
   const response = await ssmClient.send(
     new GetParametersCommand({
       Names: [roleActionsPath, deleteAllowedParamPath],

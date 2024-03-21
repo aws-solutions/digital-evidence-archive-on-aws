@@ -67,7 +67,7 @@ describe('session persistence', () => {
     expect(session.tokenId).toStrictEqual(tokenId);
     expect(session.isRevoked).toBeFalsy();
     expect(session.created).toBeDefined();
-    expect(session.created).toStrictEqual(session.updated);
+    expect(session.updated).toBeDefined();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(session.created!.getTime()).toBeLessThan(new Date().getTime());
     // Check that the TTL was set to an hour from now

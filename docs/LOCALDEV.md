@@ -6,8 +6,12 @@ By default the build process will seek a configuration file ([example](/source/c
 DEA deployment requires a Cognito Domain Prefix to be specified for creation and reference during CDK deployment, for this you must set a value for `DOMAIN_PREFIX` in your environment. If a value is not specified a CfnParameter will be added to the stack, which will produce an error if not specified during deployment along the lines of `Resolution error: ID components may not include unresolved tokens`.
 There are several environment values required to run E2E tests successfully, these should be set for you when running the test suite after deploying your stack. If you notice your tests failing due to unset values you can run the [setEnv](/source/common/scripts/setEnv.sh) script to pull these values from your stack (e.g. `source ./common/scripts/setEnv.sh`).
 
-Install Rush 
+Clone repo
+```sh
+git clone https://github.com/aws-solutions/digital-evidence-archive-on-aws.git
+```
 
+Install Rush 
 
 ```sh
 npm install -g @microsoft/rush

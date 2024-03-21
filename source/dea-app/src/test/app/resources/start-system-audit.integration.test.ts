@@ -6,7 +6,7 @@
 import { AthenaClient, StartQueryExecutionCommand } from '@aws-sdk/client-athena';
 import Joi from 'joi';
 import { anyOfClass, instance, mock, when } from 'ts-mockito';
-import { startSystemAudit } from '../../../app/resources/start-system-audit';
+import { startSystemAudit } from '../../../app/resources/audit/start-system-audit';
 import { joiUlid } from '../../../models/validation/joi-common';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { dummyContext, getDummyEvent } from '../../integration-objects';

@@ -8,6 +8,7 @@ import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { getCaseFile, hydrateUsersForFiles } from '../services/case-file-service';
+import { getDataVault } from '../services/data-vault-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
@@ -27,6 +28,13 @@ export const getCaseFileDetails: DEAGatewayProxyHandler = async (
   }
 
   const hydratedFiles = await hydrateUsersForFiles([retrievedCaseFile], repositoryProvider);
+
+  if (hydratedFiles[0].dataVaultUlid) {
+    const dataVault = await getDataVault(hydratedFiles[0].dataVaultUlid, repositoryProvider);
+    if (dataVault) {
+      hydratedFiles[0].dataVaultName = dataVault.name;
+    }
+  }
 
   return responseOk(event, hydratedFiles[0]);
 };

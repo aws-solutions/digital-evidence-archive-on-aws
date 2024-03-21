@@ -4,7 +4,13 @@
  */
 
 import Joi from 'joi';
-import { getQueryParam, getRequiredEnv, getRequiredHeader, getTokenId } from '../lambda-http-helpers';
+import {
+  getOauthToken,
+  getQueryParam,
+  getRequiredEnv,
+  getRequiredHeader,
+  getTokenId,
+} from '../lambda-http-helpers';
 import { getDummyEvent } from './integration-objects';
 
 describe('lambda http helper edge cases', () => {
@@ -53,6 +59,40 @@ describe('lambda http helper edge cases', () => {
         headers: {},
       });
       expect(() => getRequiredHeader(event, 'idToken')).toThrow(`Required header 'idToken' is missing.`);
+    });
+  });
+
+  describe('getOauthToken', () => {
+    it('throws when idtoken is missing', () => {
+      const event = getDummyEvent({
+        headers: {
+          cookie: `refreshToken=${JSON.stringify({ refresh_token: 'def' })}`,
+        },
+      });
+      expect(() => getOauthToken(event)).toThrow('ID Token cookie is not set');
+    });
+
+    it('throws when refreshToken is missing', () => {
+      const event = getDummyEvent({
+        headers: {
+          cookie: `idToken=${JSON.stringify({
+            id_token: 'abc',
+            expires_in: 123,
+          })};`,
+        },
+      });
+      expect(() => getOauthToken(event)).toThrow('Refresh Token cookie is not set');
+    });
+
+    it('throws when the cookie is malformed', () => {
+      const event = getDummyEvent({
+        headers: {
+          cookie: `idToken=
+            "id_token": "abc",
+          }; refreshToken={}`,
+        },
+      });
+      expect(() => getOauthToken(event)).toThrow('Invalid OAuth token validation');
     });
   });
 });

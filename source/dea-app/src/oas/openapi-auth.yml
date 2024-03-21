@@ -1,6 +1,6 @@
 openapi: '3.0.0'
 info:
-  version: 1.0.7
+  version: 1.1.0
   title: DEA Auth API
 paths:
   /auth/{authCode}/token:
@@ -76,6 +76,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   loginUrl:
                     type: string
@@ -98,6 +99,7 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   logoutUrl:
                     type: string

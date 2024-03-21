@@ -1,37 +1,13 @@
 # Digital Evidence Archive UI
 
-⚠️ $\textcolor{red}{\text{Experimental}}$ ⚠️ : Not for use in any critical, production, or otherwise important deployments
-
-This is a prototype app and you should expect to modify the source code to reflect your project needs.
-
 ## Code Coverage
 
 | Statements                                                                                   | Branches                                                                                 | Functions                                                                                  | Lines                                                                              |
 | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| ![Statements](https://img.shields.io/badge/statements-90.9%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-82.12%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-90.75%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-91.1%25-brightgreen.svg?style=flat) |
+| ![Statements](https://img.shields.io/badge/statements-91.87%25-brightgreen.svg?style=flat) | ![Branches](https://img.shields.io/badge/branches-81.23%25-yellow.svg?style=flat) | ![Functions](https://img.shields.io/badge/functions-90.17%25-brightgreen.svg?style=flat) | ![Lines](https://img.shields.io/badge/lines-92.47%25-brightgreen.svg?style=flat) |
 
-## Deploying code changes
+## [Local Development](/docs/LOCALDEV.md)
 
-Navigate to DEA root directory and follow instructions in [README](../../../README.md)
-
-## Running locally
-
-First, run the https proxy so your cookies will work:
-```sh
-rushx dev:https
-```
-In a separate tab or process, run the development server:
-
-```sh
-rushx dev
-```
-
-Open [https://localhost:3001](https://localhost:3001) with your browser to see the result. You'll need to navigate further to /{stage}/ui, e.g. [https://localhost:3001/devsample/ui](https://localhost:3001/devsample/ui)
-
-The UI running locally will be configured to point to your deployed backend via the DEA_API_URL environment variable, which will be copied into a generated [.env.local](.env.local) for use by Nextjs.
-
-You can generate cognito tests users by following the directions here:
-([Test User Generation for API requests](../../README.md)) you will be redirected to the UI which will now have credentials.
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
