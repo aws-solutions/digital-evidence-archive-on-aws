@@ -212,6 +212,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
             filteringClearAriaLabel={i18nStringsForPropertyFilter.clearAriaLabel}
             selectedAriaLabel={commonLabels.selectedLabel}
             ariaDescribedby={allOptions.map((option) => option.label).join(' ')}
+            deselectAriaLabel={commonLabels.deselectLabel}
           />
         </Box>
       </Modal>
@@ -289,7 +290,6 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         {dataVaultDetailLabels.filesTableHeaderDescription}{' '}
         <Link
           external
-          externalIconAriaLabel={accessibilityLabels.implementationGuideLinkLabel}
           ariaLabel={accessibilityLabels.implementationGuideLinkLabel}
           href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
         >
@@ -308,6 +308,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
             iconName="copy"
             variant="inline-icon"
             data-testid="copy-datasync-link-button"
+            ariaLabel={commonLabels.copyLinkLabel}
             onClick={() => {
               void navigator.clipboard.writeText('https://aws.amazon.com/datasync/');
             }}
@@ -360,15 +361,12 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         setSelectedFiles(detail.selectedItems);
       }}
       selectedItems={selectedFiles}
+      renderAriaLive={commonTableLabels.renderAriaLiveLabel}
+      totalItemsCount={items.length}
       ariaLabels={{
         selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
-        allItemsSelectionLabel: ({ selectedItems }) =>
-          `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
-        itemSelectionLabel: ({ selectedItems }, item) => {
-          console.log(item);
-          const isItemSelected = selectedItems.filter((i) => i.fileName === item.fileName).length;
-          return `${item} is${isItemSelected ? ' ' : ' not'} selected`;
-        },
+        allItemsSelectionLabel: commonTableLabels.allItemsSelectionLabel,
+        itemSelectionLabel: commonTableLabels.itemSelectionLabel,
       }}
       columnDefinitions={[
         {

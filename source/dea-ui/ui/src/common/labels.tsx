@@ -4,7 +4,11 @@
  */
 
 import { CaseAction, OWNER_ACTIONS } from '@aws/dea-app/lib/models/case-action';
+import { DownloadDTO } from '@aws/dea-app/lib/models/case-file';
+import { DeaDataVaultFile } from '@aws/dea-app/lib/models/data-vault-file';
 import { AppLayoutProps, SelectProps, TableProps } from '@cloudscape-design/components';
+import { OptionDefinition } from '@cloudscape-design/components/internal/components/option/interfaces';
+import { FileUploadProgressRow } from '../components/upload-files/UploadFilesForm';
 
 export const systemUseNotificationText =
   'CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT according ' +
@@ -52,6 +56,7 @@ export const commonLabels = {
   linkCopiedLabel: 'Link copied',
   selectedLabel: 'selected',
   clearLabel: 'Clear field',
+  deselectLabel: (e: OptionDefinition) => `Remove ${e.label}`,
 };
 
 export const commonTableLabels = {
@@ -84,6 +89,21 @@ export const commonTableLabels = {
   associateButtonLabel: 'Associate to case',
   lastExecutionCompletedHeader: 'Last execution completed',
   tableCheckboxSelectionGroupLabel: 'File/folder selection:',
+  renderAriaLiveLabel: (data: TableProps.LiveAnnouncement) =>
+    data.totalItemsCount && data.totalItemsCount === 0
+      ? 'No items to display'
+      : `Display items ${data.firstIndex} to ${data.lastIndex} of ${data.totalItemsCount}`,
+  allItemsSelectionLabel: ({ selectedItems }: any) =>
+    `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
+  itemSelectionLabel: (
+    { selectedItems }: TableProps.SelectionState<DeaDataVaultFile | DownloadDTO | FileUploadProgressRow>,
+    item: DeaDataVaultFile | DownloadDTO | FileUploadProgressRow
+  ) => {
+    const isItemSelected = selectedItems.filter(
+      (i: DeaDataVaultFile | DownloadDTO | FileUploadProgressRow) => i.fileName === item.fileName
+    ).length;
+    return `${item.fileName} is${isItemSelected ? '' : ' not'} selected`;
+  },
 };
 
 export const layoutLabels: AppLayoutProps.Labels = {
@@ -127,8 +147,6 @@ export const caseListLabels = {
   casesPageDescription: 'Search for cases, view case details, or create new cases to store digital evidence.',
   systemCasesPageDescription:
     'All cases within the system are listed, including ones that haven’t been shared with you. You can search for cases and give member access.',
-  renderAriaLiveLabel: (data: TableProps.LiveAnnouncement) =>
-    `Display items ${data.firstIndex} to ${data.lastIndex} of ${data.totalItemsCount}`,
   tableRadioGroupSelectionLabel: 'Case selection:',
 };
 

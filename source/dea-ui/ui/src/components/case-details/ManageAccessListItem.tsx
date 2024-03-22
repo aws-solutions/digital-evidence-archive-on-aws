@@ -79,7 +79,7 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
               data-testid={`${caseMember.userUlid}-multiselect`}
               selectedOptions={selectedOptions}
               onChange={onPermissionsChangeHandler}
-              deselectAriaLabel={(e) => `Remove ${e.label}`}
+              deselectAriaLabel={commonLabels.deselectLabel}
               options={caseActionOptions.selectableOptions()}
               placeholder={manageCaseAccessLabels.manageMemberPermissionsPlaceholder}
               tokenLimit={1}

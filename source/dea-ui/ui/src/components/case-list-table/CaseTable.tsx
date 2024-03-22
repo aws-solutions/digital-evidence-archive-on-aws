@@ -243,19 +243,16 @@ function CaseTable(props: CaseTableProps): JSX.Element {
       trackBy="ulid"
       loading={isLoading}
       variant="full-page"
-      renderAriaLive={caseListLabels.renderAriaLiveLabel}
+      renderAriaLive={commonTableLabels.renderAriaLiveLabel}
+      totalItemsCount={items.length}
       items={items}
       loadingText={caseListLabels.loading}
       resizableColumns={true}
       ariaLabels={{
         tableLabel: caseListLabels.casesLabel,
         selectionGroupLabel: caseListLabels.tableRadioGroupSelectionLabel,
-        allItemsSelectionLabel: ({ selectedItems }) =>
-          `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
-        itemSelectionLabel: ({ selectedItems }, item) => {
-          const isItemSelected = selectedItems.filter((i) => i.name === item.name).length;
-          return `${item.name} is${isItemSelected ? '' : ' not'} selected`;
-        },
+        allItemsSelectionLabel: commonTableLabels.allItemsSelectionLabel,
+        itemSelectionLabel: commonTableLabels.itemSelectionLabel,
       }}
       empty={TableEmptyDisplay(caseListLabels.noCasesLabel, caseListLabels.noDisplayLabel)}
       header={

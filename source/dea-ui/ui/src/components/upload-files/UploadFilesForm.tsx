@@ -39,7 +39,7 @@ import { UploadFilesProps } from './UploadFilesBody';
 
 const MINUTES_TO_MILLISECONDS = 60 * 1000;
 
-interface FileUploadProgressRow {
+export interface FileUploadProgressRow {
   fileName: string;
   status: UploadStatus;
   fileSizeBytes: number;
@@ -393,12 +393,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
           ariaLabels={{
             tableLabel: fileOperationsLabels.caseFilesLabel,
             selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
-            allItemsSelectionLabel: ({ selectedItems }) =>
-              `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
-            itemSelectionLabel: ({ selectedItems }, item) => {
-              const isItemSelected = selectedItems.filter((i) => i.fileName === item.fileName).length;
-              return `${item.fileName} is${isItemSelected ? '' : ' not'} selected`;
-            },
+            allItemsSelectionLabel: commonTableLabels.allItemsSelectionLabel,
+            itemSelectionLabel: commonTableLabels.itemSelectionLabel,
           }}
           columnDefinitions={[
             {

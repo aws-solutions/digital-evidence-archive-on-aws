@@ -284,7 +284,6 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         {props.headerDescription}{' '}
         <Link
           external
-          externalIconAriaLabel={accessibilityLabels.implementationGuideLinkLabel}
           ariaLabel={accessibilityLabels.implementationGuideLinkLabel}
           href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
         >
@@ -309,12 +308,8 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
       ariaLabels={{
         tableLabel: dataSyncTaskListLabels.dataSyncTasksLabel,
         selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
-        allItemsSelectionLabel: ({ selectedItems }) =>
-          `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
-        itemSelectionLabel: ({ selectedItems }, item) => {
-          const isItemSelected = selectedItems.filter((i) => i.fileName === item.fileName).length;
-          return `${item.fileName} is${isItemSelected ? '' : ' not'} selected`;
-        },
+        allItemsSelectionLabel: commonTableLabels.allItemsSelectionLabel,
+        itemSelectionLabel: commonTableLabels.itemSelectionLabel,
       }}
       items={items}
       loadingText={dataSyncTaskListLabels.loading}

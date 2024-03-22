@@ -261,12 +261,8 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       ariaLabels={{
         tableLabel: filesListLabels.caseFilesLabel,
         selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
-        allItemsSelectionLabel: ({ selectedItems }) =>
-          `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
-        itemSelectionLabel: ({ selectedItems }, item) => {
-          const isItemSelected = selectedItems.filter((i) => i.fileName === item.fileName).length;
-          return `${item.fileName} is${isItemSelected ? '' : ' not'} selected`;
-        },
+        allItemsSelectionLabel: commonTableLabels.allItemsSelectionLabel,
+        itemSelectionLabel: commonTableLabels.itemSelectionLabel,
       }}
       isItemDisabled={(item) => item.status !== CaseFileStatus.ACTIVE || !item.isFile}
       columnDefinitions={[

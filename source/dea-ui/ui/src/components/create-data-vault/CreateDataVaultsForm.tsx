@@ -44,7 +44,6 @@ function CreateDataVaultsForm(): JSX.Element {
           <Link
             external
             color="inverted"
-            externalIconAriaLabel={accessibilityLabels.implementationGuideLinkLabel}
             ariaLabel={accessibilityLabels.implementationGuideLinkLabel}
             href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
           >
