@@ -40,7 +40,7 @@ export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
     return cachedCognitoParams;
   }
 
-  const ssmClient = new SSMClient({ region });
+  const ssmClient = new SSMClient({ region, customUserAgent: getCustomUserAgent() });
 
   const cognitoDomainPath = `${PARAM_PREFIX}${stage}-userpool-cognito-domain-param`;
   const clientIdPath = `${PARAM_PREFIX}${stage}-userpool-client-id-param`;
@@ -175,7 +175,7 @@ export const getCredentialsByToken = async (idToken: string) => {
 const getClientSecret = async () => {
   const clientSecretId = `${PARAM_PREFIX}${stage}/clientSecret`;
 
-  const client = new SecretsManagerClient({ region: region });
+  const client = new SecretsManagerClient({ region: region, customUserAgent: getCustomUserAgent() });
   const input = {
     SecretId: clientSecretId,
   };
@@ -343,7 +343,7 @@ export const revokeRefreshToken = async (refreshToken: string) => {
 
 export const getAvailableEndpoints: AvailableEndpointsSignature = async (event) => {
   const deaRoleName = getRequiredHeader(event, 'deaRole');
-  const ssmClient = new SSMClient({ region });
+  const ssmClient = new SSMClient({ region, customUserAgent: getCustomUserAgent() });
   const roleActionsPath = `${PARAM_PREFIX}${stage}-${deaRoleName}-actions`;
   const deleteAllowedParamPath = `${PARAM_PREFIX}${stage}/deletionAllowed`;
   const response = await ssmClient.send(

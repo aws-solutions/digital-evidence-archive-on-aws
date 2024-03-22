@@ -5,7 +5,7 @@
 import { Container, Header, ColumnLayout, TextContent, SpaceBetween } from '@cloudscape-design/components';
 import { fileDetailLabels, commonTableLabels, dataVaultDetailLabels } from '../../common/labels';
 
-export interface dataVaultAssociationDetailsProps {
+export interface DataVaultAssociationDetailsProps {
   readonly dataVaultUlid: string;
   readonly dataVaultName: string;
   readonly executionId: string;
@@ -13,7 +13,7 @@ export interface dataVaultAssociationDetailsProps {
   readonly associationDate: Date | undefined;
 }
 
-function DataVaultAssociationDetailsBody(props: dataVaultAssociationDetailsProps): JSX.Element {
+function DataVaultAssociationDetailsBody(props: DataVaultAssociationDetailsProps): JSX.Element {
   return (
     <Container header={<Header variant="h2">{dataVaultDetailLabels.dataVaultDetailsLabel}</Header>}>
       <ColumnLayout columns={2} variant="text-grid">

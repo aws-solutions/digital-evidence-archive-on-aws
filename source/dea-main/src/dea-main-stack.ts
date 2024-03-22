@@ -467,7 +467,19 @@ export class DeaMainStack extends cdk.Stack {
     const apiGwMethodArray = [];
 
     // API GW - UI Suppressions
-    const uiPages = ['login', 'case-detail', 'create-cases', 'upload-files', 'auth-test'];
+    const uiPages = [
+      'login',
+      'case-detail',
+      'create-cases',
+      'upload-files',
+      'auth-test',
+      'data-vaults',
+      'data-vault-detail',
+      'create-data-vaults',
+      'edit-data-vault',
+      'data-sync-tasks',
+      'data-vault-file-detail',
+    ];
 
     //Home page
     apiGwMethodArray.push(
@@ -570,7 +582,7 @@ export class DeaMainStack extends cdk.Stack {
           rules_to_suppress: [
             {
               id: 'W59',
-              reason: 'Auth not implemented yet, will revisit',
+              reason: 'Auth not required on auth related APIs or UI',
             },
           ],
         });

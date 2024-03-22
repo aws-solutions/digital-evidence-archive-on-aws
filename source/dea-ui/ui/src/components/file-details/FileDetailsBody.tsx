@@ -85,6 +85,22 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
       return <h1>{commonLabels.notFoundLabel}</h1>;
     }
 
+    let uploadDate = null;
+
+    if (fileData.dataVaultUploadDate) {
+      uploadDate = new Date(fileData.dataVaultUploadDate);
+    } else if (fileData.created) {
+      uploadDate = new Date(fileData.created);
+    }
+
+    uploadDate = uploadDate
+      ? uploadDate.toLocaleString([], {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+      : '-';
+
     return (
       <ContentLayout
         header={
@@ -137,21 +153,7 @@ function FileDetailsBody(props: FileDetailsBodyProps): JSX.Element {
                     <strong>{fileDetailLabels.uploadDateLabel}</strong>
                   </span>
                   <SpaceBetween size="l">
-                    <p>
-                      {fileData.dataVaultUploadDate
-                        ? new Date(fileData.dataVaultUploadDate).toLocaleString([], {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })
-                        : fileData.created
-                        ? new Date(fileData.created).toLocaleString([], {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })
-                        : '-'}
-                    </p>
+                    <p>{uploadDate}</p>
 
                     <span>
                       <strong>{fileDetailLabels.fileSizeLabel}</strong>

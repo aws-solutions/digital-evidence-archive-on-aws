@@ -18,7 +18,7 @@ You can deploy using your local computer via the terminal (for Mac/Linux users) 
 
 ### Step 0: Setup a Custom Domain (Recommended)
 
-We recommend using a custom domain, otherwise the URL for the solution will not be human readable. You will need to register a domain using AWS Route53 or other provider, and import a certificate for the domain using AWS Certificate Manager.
+We recommend using a custom domain, since the default URL for this solution is not human readable and is limited to [older TLS versions with known vulnerabilities](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html). You will need to register a domain using AWS Route53 or other provider, and import a certificate for the domain using AWS Certificate Manager.
 
 #### Option 1: Using a Route53 Domain
 
@@ -619,3 +619,7 @@ Licensed under the Apache License Version 2.0 (the "License"). You may not use t
 <http://www.apache.org/licenses/>
 
 or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+## Collection of Anonymous Operational Metrics
+This solution collects anonymous operational metrics to help AWS improve the quality of features of the solution. For more information, including how to disable
+this capability, please see the [implementation guide](https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html).

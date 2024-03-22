@@ -4,7 +4,7 @@
  */
 
 import { DataSyncClient } from '@aws-sdk/client-datasync';
-import { getRequiredEnv } from '../lambda-http-helpers';
+import { getCustomUserAgent, getRequiredEnv } from '../lambda-http-helpers';
 
 const region = process.env.AWS_REGION ?? 'us-east-1';
 
@@ -17,14 +17,16 @@ export interface DataSyncProvider {
   dataSyncReportsBucketArn: string;
 }
 
-export const defaultDataSyncProvider = {
-  dataSyncClient: new DataSyncClient({ region }),
+const partition = region.includes('us-gov') ? 'aws-us-gov' : 'aws';
+
+export const defaultDataSyncProvider: DataSyncProvider = {
+  dataSyncClient: new DataSyncClient({ region, customUserAgent: getCustomUserAgent() }),
   dataSyncRoleArn: getRequiredEnv('DATASYNC_ROLE', 'DATASYNC_ROLE is not set in your lambda!'),
   datasetsBucketName: getRequiredEnv(
     'DATASETS_BUCKET_NAME',
     'DATASETS_BUCKET_NAME is not set in your lambda!'
   ),
-  datasetsBucketArn: `arn:aws:s3:::${getRequiredEnv(
+  datasetsBucketArn: `arn:${partition}:s3:::${getRequiredEnv(
     'DATASETS_BUCKET_NAME',
     'DATASETS_BUCKET_NAME is not set in your lambda!'
   )}`,
@@ -32,7 +34,7 @@ export const defaultDataSyncProvider = {
     'DATASYNC_REPORTS_ROLE',
     'DATASYNC_LOGS_ROLE is not set in your lambda!'
   ),
-  dataSyncReportsBucketArn: `arn:aws:s3:::${getRequiredEnv(
+  dataSyncReportsBucketArn: `arn:${partition}:s3:::${getRequiredEnv(
     'DATASYNC_REPORTS_BUCKET_NAME',
     'DATASYNC_REPORTS_BUCKET_NAME is not set in your lambda!'
   )}`,

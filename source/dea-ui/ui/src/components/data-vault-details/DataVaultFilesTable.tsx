@@ -334,7 +334,9 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         variant="primary"
         onClick={() =>
           window.open(
-            'https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html'
+            'https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html',
+            '_blank',
+            'noopener'
           )
         }
       >
@@ -416,7 +418,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
           width: 100,
           minWidth: 100,
           sortingField: 'caseAssociation',
-          sortingComparator: (a, b) => a.caseCount - b.caseCount
+          sortingComparator: (a, b) => a.caseCount - b.caseCount,
         },
       ]}
       items={items}
