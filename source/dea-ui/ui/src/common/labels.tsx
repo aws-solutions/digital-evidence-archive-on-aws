@@ -93,7 +93,9 @@ export const commonTableLabels = {
     data.totalItemsCount && data.totalItemsCount === 0
       ? 'No items to display'
       : `Display items ${data.firstIndex} to ${data.lastIndex} of ${data.totalItemsCount}`,
-  allItemsSelectionLabel: ({ selectedItems }: any) =>
+  allItemsSelectionLabel: ({
+    selectedItems,
+  }: TableProps.SelectionState<DeaDataVaultFile | DownloadDTO | FileUploadProgressRow>) =>
     `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
   itemSelectionLabel: (
     { selectedItems }: TableProps.SelectionState<DeaDataVaultFile | DownloadDTO | FileUploadProgressRow>,
