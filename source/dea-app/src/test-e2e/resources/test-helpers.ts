@@ -344,7 +344,7 @@ export const inviteUserToCase = async (
     actions,
   };
   const inviteResponse = await callDeaAPIWithCreds(
-    `${deaApiUrl}cases/${targetCaseUlid}/userMemberships`,
+    `${deaApiUrl}cases/${targetCaseUlid}/user-memberships`,
     'POST',
     ownerToken,
     ownerCreds,
@@ -622,7 +622,7 @@ export const callAuthAPIWithOauthToken = async (url: string, oauthToken: Oauth2T
 };
 
 export const revokeToken = async (deaApiUrl: string, oauthToken: Oauth2Token): Promise<void> => {
-  const revokeUrl = `${deaApiUrl}auth/revokeToken`;
+  const revokeUrl = `${deaApiUrl}auth/revoke-token`;
   const revokeResponse = await callAuthAPIWithOauthToken(revokeUrl, oauthToken);
 
   if (revokeResponse.status != 200) {
@@ -631,7 +631,7 @@ export const revokeToken = async (deaApiUrl: string, oauthToken: Oauth2Token): P
 };
 
 export const useRefreshToken = async (deaApiUrl: string, oauthToken: Oauth2Token): Promise<Oauth2Token> => {
-  const refreshUrl = `${deaApiUrl}auth/refreshToken`;
+  const refreshUrl = `${deaApiUrl}auth/refresh-token`;
   const refreshResponse = await callAuthAPIWithOauthToken(refreshUrl, oauthToken);
 
   if (refreshResponse.status != 200) {

@@ -47,7 +47,7 @@ import Breadcrumb, { BreadcrumbItem } from '../common-components/Breadcrumb';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
 import { i18nStringsForPropertyFilter } from '../common-components/commonDefinitions';
 
-export const CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH = '/datavaults/{dataVaultId}/caseAssociationsPOST';
+export const CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH = '/datavaults/{dataVaultId}/case-associationsPOST';
 
 export interface DataVaultFilesTableProps {
   readonly dataVaultId: string;

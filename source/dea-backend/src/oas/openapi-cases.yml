@@ -120,7 +120,7 @@ paths:
                     type: string
                   caseId:
                     type: string
-  /cases/{caseId}/scopedInformation:
+  /cases/{caseId}/scoped-information:
     get:
       summary: Return scoped information on case by Case Id
       description: Get specific set case details. Intended for evidence managers and admins
@@ -140,7 +140,7 @@ paths:
               schema:
                 type: object
                 $ref: '#/components/schemas/ScopedCase'
-  /cases/{caseId}/userMemberships:
+  /cases/{caseId}/user-memberships:
     post:
       summary: Add a user as a collaborator to a case
       tags:

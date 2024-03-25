@@ -108,7 +108,7 @@ export const validateEndpointACLs = (
           actions: [],
         });
         for (let i = 0; i <= 4; ++i) {
-          const postEndpoint = `${deaApiUrl}cases/${testHarness.targetCase.ulid}/userMemberships`;
+          const postEndpoint = `${deaApiUrl}cases/${testHarness.targetCase.ulid}/user-memberships`;
           const postData = membershipData?.replace('{companion}', testHarness.companionIds[i]);
 
           const cr = await callDeaAPIWithCreds(
@@ -344,7 +344,7 @@ const initializeACLE2ETest = async (
   // userWithRequiredActions
   membershipPromises.push(
     callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${createdCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${createdCase.ulid}/user-memberships`,
       'POST',
       ownerToken,
       ownerCreds,
@@ -358,7 +358,7 @@ const initializeACLE2ETest = async (
   // userWithAllButRequiredActions
   membershipPromises.push(
     callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${createdCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${createdCase.ulid}/user-memberships`,
       'POST',
       ownerToken,
       ownerCreds,
@@ -372,7 +372,7 @@ const initializeACLE2ETest = async (
   // userWithNoActions
   membershipPromises.push(
     callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${createdCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${createdCase.ulid}/user-memberships`,
       'POST',
       ownerToken,
       ownerCreds,

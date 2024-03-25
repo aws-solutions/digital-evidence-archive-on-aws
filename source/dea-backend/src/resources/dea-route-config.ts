@@ -14,6 +14,10 @@ export enum DeaApiRoleName {
   DATASYNC_EXECUTION_ROLE = 'CREATE_EXECUTION_ROLE',
 }
 
+// NOTE: Follow best practices for REST Apis: https://restfulapi.net/resource-naming/
+// No camelcase, use hyphens instead
+// No uppercase letters, should be case insensitive
+
 export const deaApiRouteConfig: ApiGatewayRouteConfig = {
   routes: [
     {
@@ -55,13 +59,13 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.GET_USERS_FROM_CASE,
-      path: '/cases/{caseId}/userMemberships',
+      path: '/cases/{caseId}/user-memberships',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-case-membership-handler.ts',
     },
     {
       eventName: AuditEventType.INVITE_USER_TO_CASE,
-      path: '/cases/{caseId}/userMemberships',
+      path: '/cases/{caseId}/user-memberships',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/create-case-user-handler.ts',
     },
@@ -128,7 +132,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.REFRESH_AUTH_TOKEN,
-      path: '/auth/refreshToken',
+      path: '/auth/refresh-token',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/refresh-token-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
@@ -137,7 +141,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.REVOKE_AUTH_TOKEN,
-      path: '/auth/revokeToken',
+      path: '/auth/revoke-token',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/revoke-token-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
@@ -146,7 +150,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.GET_LOGIN_URL,
-      path: '/auth/loginUrl',
+      path: '/auth/login-url',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-login-url-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
@@ -155,7 +159,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.GET_LOGOUT_URL,
-      path: '/auth/logoutUrl',
+      path: '/auth/logout-url',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-logout-url-handler.ts',
       // TODO: Implement custom authorizer for UI trying to access credentials
@@ -195,7 +199,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.GET_AVAILABLE_ENDPOINTS,
-      path: '/availableEndpoints',
+      path: '/available-endpoints',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-available-endpoints-handler.ts',
     },
@@ -232,7 +236,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.CREATE_CASE_ASSOCIATION,
-      path: '/datavaults/{dataVaultId}/caseAssociations',
+      path: '/datavaults/{dataVaultId}/case-associations',
       httpMethod: ApiGatewayMethod.POST,
       pathToSource: '../../src/handlers/create-case-association-handler.ts',
     },
@@ -244,7 +248,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     },
     {
       eventName: AuditEventType.DELETE_CASE_ASSOCIATION,
-      path: '/datavaults/{dataVaultId}/files/{fileId}/caseAssociations',
+      path: '/datavaults/{dataVaultId}/files/{fileId}/case-associations',
       httpMethod: ApiGatewayMethod.DELETE,
       pathToSource: '../../src/handlers/delete-case-association-handler.ts',
     },
@@ -271,7 +275,7 @@ export const deaApiRouteConfig: ApiGatewayRouteConfig = {
     {
       // intended for evidence managers/admins to see a specific set of case details
       eventName: AuditEventType.GET_SCOPED_CASE_INFO,
-      path: '/cases/{caseId}/scopedInformation',
+      path: '/cases/{caseId}/scoped-information',
       httpMethod: ApiGatewayMethod.GET,
       pathToSource: '../../src/handlers/get-scoped-case-info-handler.ts',
     },

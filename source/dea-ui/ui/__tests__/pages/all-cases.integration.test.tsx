@@ -43,7 +43,7 @@ describe('All Cases Dashboard', () => {
           config: {},
         });
       } else {
-        //availableEndpoints
+        //available-endpoints
         return Promise.resolve({
           data: {
             endpoints: ['/cases/all-casesGET', '/cases/my-casesGET'],

@@ -11,7 +11,7 @@ const CASE_ID = '{caseId}';
 const getCaseCollabsArgs: argsType = [
   'getCaseCollaborators',
   [CaseAction.INVITE],
-  `cases/${CASE_ID}/userMemberships`,
+  `cases/${CASE_ID}/user-memberships`,
   'GET',
   undefined,
   false,

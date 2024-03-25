@@ -12,7 +12,7 @@ const CASE_ID = '{caseId}';
 const inviteToCasesArgs: argsType = [
   'inviteToCaseACLs',
   [CaseAction.INVITE],
-  `cases/${CASE_ID}/userMemberships`,
+  `cases/${CASE_ID}/user-memberships`,
   'POST',
   JSON.stringify({
     userUlid: COMPANION_ID,

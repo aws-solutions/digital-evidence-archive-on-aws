@@ -100,7 +100,7 @@ describe('system audit e2e', () => {
       expect(getResponse.status).toEqual(200);
 
       const membershipsResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${caseUlid}/userMemberships`,
+        `${deaApiUrl}cases/${caseUlid}/user-memberships`,
         'GET',
         idToken,
         creds

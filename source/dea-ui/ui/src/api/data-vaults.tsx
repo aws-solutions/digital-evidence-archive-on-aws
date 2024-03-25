@@ -84,7 +84,7 @@ export const createDataVaultFileAssociation = async (
   dataVaultId: string,
   caseAssociationDTO: CaseAssociationDTO
 ): Promise<DeaCaseFile[]> => {
-  return httpApiPost(`datavaults/${dataVaultId}/caseAssociations`, { ...caseAssociationDTO });
+  return httpApiPost(`datavaults/${dataVaultId}/case-associations`, { ...caseAssociationDTO });
 };
 
 export const removeDataVaultFileCaseAssociation = async (
@@ -92,7 +92,7 @@ export const removeDataVaultFileCaseAssociation = async (
   fileId: string,
   removeCaseAssociationDTO: RemoveCaseAssociationDTO
 ): Promise<void> => {
-  await httpApiDelete(`datavaults/${dataVaultId}/files/${fileId}/caseAssociations`, {
+  await httpApiDelete(`datavaults/${dataVaultId}/files/${fileId}/case-associations`, {
     ...removeCaseAssociationDTO,
   });
 };

@@ -26,7 +26,7 @@ export const getToken = async (authCode: string, codeVerifier: string): Promise<
 
 export const refreshToken = async (): Promise<TokenResponse> => {
   try {
-    const response: TokenResponse = await httpApiPost(`auth/refreshToken`, {});
+    const response: TokenResponse = await httpApiPost(`auth/refresh-token`, {});
     return response;
   } catch (error) {
     console.error(error);
@@ -36,7 +36,7 @@ export const refreshToken = async (): Promise<TokenResponse> => {
 
 export const getLoginUrl = async (callbackUrl: string) => {
   try {
-    const response: string = await httpApiGet(`auth/loginUrl?callbackUrl=${callbackUrl}`, {});
+    const response: string = await httpApiGet(`auth/login-url?callbackUrl=${callbackUrl}`, {});
     return response;
   } catch (error) {
     console.error(error);
@@ -46,7 +46,7 @@ export const getLoginUrl = async (callbackUrl: string) => {
 
 export const getLogoutUrl = async (callbackUrl: string) => {
   try {
-    const response: string = await httpApiGet(`auth/logoutUrl?callbackUrl=${callbackUrl}`, {});
+    const response: string = await httpApiGet(`auth/logout-url?callbackUrl=${callbackUrl}`, {});
     return response;
   } catch (error) {
     console.error(error);
@@ -55,11 +55,11 @@ export const getLogoutUrl = async (callbackUrl: string) => {
 };
 
 export const revokeToken = async (): Promise<void> => {
-  await httpApiPost(`auth/revokeToken`, undefined);
+  await httpApiPost(`auth/revoke-token`, undefined);
 };
 
 export const useAvailableEndpoints = (): DeaListResult<string> => {
-  const { data, error } = useSWR('availableEndpoints', httpApiGet<{ endpoints: string[] }>);
+  const { data, error } = useSWR('available-endpoints', httpApiGet<{ endpoints: string[] }>);
 
   return { data: data?.endpoints ?? [], isLoading: !data && !error };
 };

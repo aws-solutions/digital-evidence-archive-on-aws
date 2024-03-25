@@ -29,7 +29,7 @@ describe('get available endpoints E2E', () => {
     creds = credentials[0];
     idToken = credentials[1];
     // Call an api to add this user to the DB
-    await callDeaAPIWithCreds(`${deaApiUrl}availableEndpoints`, 'GET', idToken, creds);
+    await callDeaAPIWithCreds(`${deaApiUrl}available-endpoints`, 'GET', idToken, creds);
   }, 30000);
 
   afterAll(async () => {
@@ -37,12 +37,12 @@ describe('get available endpoints E2E', () => {
   }, 30000);
 
   it('should return available endpoints for a requesting user', async () => {
-    const response = await callDeaAPIWithCreds(`${deaApiUrl}availableEndpoints`, 'GET', idToken, creds);
+    const response = await callDeaAPIWithCreds(`${deaApiUrl}available-endpoints`, 'GET', idToken, creds);
 
     expect(response.status).toEqual(200);
     const payload: AvailableEndpointsBody = response.data;
 
     expect(payload.endpoints).toHaveLength(1);
-    expect(payload.endpoints).toContain('/availableEndpointsGET');
+    expect(payload.endpoints).toContain('/available-endpointsGET');
   }, 20000);
 });

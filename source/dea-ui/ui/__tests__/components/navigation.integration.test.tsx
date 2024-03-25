@@ -47,7 +47,7 @@ describe('Navigation', () => {
           config: {},
         });
       } else {
-        //availableEndpoints
+        //available-endpoints
         return Promise.resolve({
           data: {
             endpoints: ['/system/auditPOST'],
@@ -95,7 +95,7 @@ describe('Navigation', () => {
           config: {},
         });
       } else {
-        //availableEndpoints
+        //available-endpoints
         return Promise.resolve({
           data: {
             endpoints: ['/system/auditPOST'],

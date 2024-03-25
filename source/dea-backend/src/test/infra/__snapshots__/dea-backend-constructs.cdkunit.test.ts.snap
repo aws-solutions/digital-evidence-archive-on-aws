@@ -10398,27 +10398,27 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenE48A5552",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
         "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
-        "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF",
-        "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D",
-        "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0",
-        "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
-        "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
-        "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
-        "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D",
-        "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
+        "DeaRestApiConstructdeaapiauthloginurlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginurlB13CE613",
+        "DeaRestApiConstructdeaapiauthloginurlGETA681A0EF",
+        "DeaRestApiConstructdeaapiauthloginurlOPTIONS0BD31F47",
+        "DeaRestApiConstructdeaapiauthloginurl63DC1B87",
+        "DeaRestApiConstructdeaapiauthlogouturlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogouturl5C0CA1D2",
+        "DeaRestApiConstructdeaapiauthlogouturlGETF0105A89",
+        "DeaRestApiConstructdeaapiauthlogouturlOPTIONSF027324B",
+        "DeaRestApiConstructdeaapiauthlogouturl1652A893",
+        "DeaRestApiConstructdeaapiauthrefreshtokenOPTIONSE3B76787",
+        "DeaRestApiConstructdeaapiauthrefreshtokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshtoken6AB99C42",
+        "DeaRestApiConstructdeaapiauthrefreshtokenPOST2504A083",
+        "DeaRestApiConstructdeaapiauthrefreshtoken71A6A510",
         "DeaRestApiConstructdeaapiauthE4846931",
-        "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeTokenD51670A5",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTD4C71CFF",
-        "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
-        "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpoints4616DB7F",
-        "DeaRestApiConstructdeaapiavailableEndpointsGET587EF9CF",
-        "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289",
-        "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
+        "DeaRestApiConstructdeaapiauthrevoketokenOPTIONSC40AAE80",
+        "DeaRestApiConstructdeaapiauthrevoketokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevoketoken61A9F7CD",
+        "DeaRestApiConstructdeaapiauthrevoketokenPOSTF34DC088",
+        "DeaRestApiConstructdeaapiauthrevoketoken24CFF257",
+        "DeaRestApiConstructdeaapiavailableendpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableendpoints0EAEB04D",
+        "DeaRestApiConstructdeaapiavailableendpointsGET5D20F552",
+        "DeaRestApiConstructdeaapiavailableendpointsOPTIONS79EE5096",
+        "DeaRestApiConstructdeaapiavailableendpoints49EF3FF0",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsFAD4690C",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETDE6D1CEA",
         "DeaRestApiConstructdeaapicasescaseIdactionsOPTIONSE258076A",
@@ -10475,20 +10475,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTFB8341CA",
         "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F",
         "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation45DD1C2C",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETB786FCDD",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedinformationCE9D68E3",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationGETCAD44EAB",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationOPTIONS3D21209C",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformation0948ECF1",
         "DeaRestApiConstructdeaapicasescaseIdstatusOPTIONS0760E14E",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus787AC3AD",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUT31B9CA11",
         "DeaRestApiConstructdeaapicasescaseIdstatus0AD7015F",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMemberships87E19089",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdusermemberships046386FD",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsGETEE01B56C",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsOPTIONSCEE52245",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdusermembershipsE995A1CB",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsPOST874FCF45",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsAF9CCF9E",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships94BCD26D",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
@@ -10523,10 +10523,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdaudit95E194F4",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdauditPOSTE7EF33C3",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdaudit67B26240",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsOPTIONS27250341",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdcaseAssociations1E61BB37",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsPOST57A60C97",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsDEDFE3A4",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsOPTIONS1FF5AEF4",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdcaseassociations39E869A9",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsPOSTDAD17844",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociations07162FBE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails77C4C7BF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGET9FD745C9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsOPTIONSF037F791",
@@ -10542,10 +10542,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesfileIdaudit142FBC27",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdauditPOSTB9D945B3",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdaudit909C543D",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEdatavaultsdataVaultIdfilesfileIdcaseAssociationsABC0037D",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsDELETE644AF6FC",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsOPTIONS3D552A8E",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociations5C3F4D29",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEdatavaultsdataVaultIdfilesfileIdcaseassociations6A03FCCC",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsDELETE3DA7FCB0",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsOPTIONSA5CD5AF3",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsADD97A93",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfo58AF901A",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGET02C2F5DE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoOPTIONS67146261",
@@ -10745,27 +10745,27 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenE48A5552",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
         "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
-        "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF",
-        "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D",
-        "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0",
-        "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
-        "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
-        "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
-        "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D",
-        "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
+        "DeaRestApiConstructdeaapiauthloginurlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginurlB13CE613",
+        "DeaRestApiConstructdeaapiauthloginurlGETA681A0EF",
+        "DeaRestApiConstructdeaapiauthloginurlOPTIONS0BD31F47",
+        "DeaRestApiConstructdeaapiauthloginurl63DC1B87",
+        "DeaRestApiConstructdeaapiauthlogouturlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogouturl5C0CA1D2",
+        "DeaRestApiConstructdeaapiauthlogouturlGETF0105A89",
+        "DeaRestApiConstructdeaapiauthlogouturlOPTIONSF027324B",
+        "DeaRestApiConstructdeaapiauthlogouturl1652A893",
+        "DeaRestApiConstructdeaapiauthrefreshtokenOPTIONSE3B76787",
+        "DeaRestApiConstructdeaapiauthrefreshtokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshtoken6AB99C42",
+        "DeaRestApiConstructdeaapiauthrefreshtokenPOST2504A083",
+        "DeaRestApiConstructdeaapiauthrefreshtoken71A6A510",
         "DeaRestApiConstructdeaapiauthE4846931",
-        "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeTokenD51670A5",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTD4C71CFF",
-        "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
-        "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpoints4616DB7F",
-        "DeaRestApiConstructdeaapiavailableEndpointsGET587EF9CF",
-        "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289",
-        "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
+        "DeaRestApiConstructdeaapiauthrevoketokenOPTIONSC40AAE80",
+        "DeaRestApiConstructdeaapiauthrevoketokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevoketoken61A9F7CD",
+        "DeaRestApiConstructdeaapiauthrevoketokenPOSTF34DC088",
+        "DeaRestApiConstructdeaapiauthrevoketoken24CFF257",
+        "DeaRestApiConstructdeaapiavailableendpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableendpoints0EAEB04D",
+        "DeaRestApiConstructdeaapiavailableendpointsGET5D20F552",
+        "DeaRestApiConstructdeaapiavailableendpointsOPTIONS79EE5096",
+        "DeaRestApiConstructdeaapiavailableendpoints49EF3FF0",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsFAD4690C",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETDE6D1CEA",
         "DeaRestApiConstructdeaapicasescaseIdactionsOPTIONSE258076A",
@@ -10822,20 +10822,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTFB8341CA",
         "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F",
         "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation45DD1C2C",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETB786FCDD",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedinformationCE9D68E3",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationGETCAD44EAB",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationOPTIONS3D21209C",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformation0948ECF1",
         "DeaRestApiConstructdeaapicasescaseIdstatusOPTIONS0760E14E",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus787AC3AD",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUT31B9CA11",
         "DeaRestApiConstructdeaapicasescaseIdstatus0AD7015F",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMemberships87E19089",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdusermemberships046386FD",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsGETEE01B56C",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsOPTIONSCEE52245",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdusermembershipsE995A1CB",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsPOST874FCF45",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsAF9CCF9E",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships94BCD26D",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
@@ -10870,10 +10870,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdaudit95E194F4",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdauditPOSTE7EF33C3",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdaudit67B26240",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsOPTIONS27250341",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdcaseAssociations1E61BB37",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsPOST57A60C97",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsDEDFE3A4",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsOPTIONS1FF5AEF4",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdcaseassociations39E869A9",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsPOSTDAD17844",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociations07162FBE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails77C4C7BF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGET9FD745C9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsOPTIONSF037F791",
@@ -10889,10 +10889,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesfileIdaudit142FBC27",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdauditPOSTB9D945B3",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdaudit909C543D",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEdatavaultsdataVaultIdfilesfileIdcaseAssociationsABC0037D",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsDELETE644AF6FC",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsOPTIONS3D552A8E",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociations5C3F4D29",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEdatavaultsdataVaultIdfilesfileIdcaseassociations6A03FCCC",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsDELETE3DA7FCB0",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsOPTIONSA5CD5AF3",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsADD97A93",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfo58AF901A",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGET02C2F5DE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoOPTIONS67146261",
@@ -10977,27 +10977,27 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenE48A5552",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
         "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
-        "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF",
-        "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D",
-        "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0",
-        "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
-        "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
-        "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
-        "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D",
-        "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
+        "DeaRestApiConstructdeaapiauthloginurlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginurlB13CE613",
+        "DeaRestApiConstructdeaapiauthloginurlGETA681A0EF",
+        "DeaRestApiConstructdeaapiauthloginurlOPTIONS0BD31F47",
+        "DeaRestApiConstructdeaapiauthloginurl63DC1B87",
+        "DeaRestApiConstructdeaapiauthlogouturlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogouturl5C0CA1D2",
+        "DeaRestApiConstructdeaapiauthlogouturlGETF0105A89",
+        "DeaRestApiConstructdeaapiauthlogouturlOPTIONSF027324B",
+        "DeaRestApiConstructdeaapiauthlogouturl1652A893",
+        "DeaRestApiConstructdeaapiauthrefreshtokenOPTIONSE3B76787",
+        "DeaRestApiConstructdeaapiauthrefreshtokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshtoken6AB99C42",
+        "DeaRestApiConstructdeaapiauthrefreshtokenPOST2504A083",
+        "DeaRestApiConstructdeaapiauthrefreshtoken71A6A510",
         "DeaRestApiConstructdeaapiauthE4846931",
-        "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeTokenD51670A5",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTD4C71CFF",
-        "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
-        "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpoints4616DB7F",
-        "DeaRestApiConstructdeaapiavailableEndpointsGET587EF9CF",
-        "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289",
-        "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
+        "DeaRestApiConstructdeaapiauthrevoketokenOPTIONSC40AAE80",
+        "DeaRestApiConstructdeaapiauthrevoketokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevoketoken61A9F7CD",
+        "DeaRestApiConstructdeaapiauthrevoketokenPOSTF34DC088",
+        "DeaRestApiConstructdeaapiauthrevoketoken24CFF257",
+        "DeaRestApiConstructdeaapiavailableendpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableendpoints0EAEB04D",
+        "DeaRestApiConstructdeaapiavailableendpointsGET5D20F552",
+        "DeaRestApiConstructdeaapiavailableendpointsOPTIONS79EE5096",
+        "DeaRestApiConstructdeaapiavailableendpoints49EF3FF0",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsFAD4690C",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETDE6D1CEA",
         "DeaRestApiConstructdeaapicasescaseIdactionsOPTIONSE258076A",
@@ -11054,20 +11054,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTFB8341CA",
         "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F",
         "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation45DD1C2C",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETB786FCDD",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedinformationCE9D68E3",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationGETCAD44EAB",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationOPTIONS3D21209C",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformation0948ECF1",
         "DeaRestApiConstructdeaapicasescaseIdstatusOPTIONS0760E14E",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus787AC3AD",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUT31B9CA11",
         "DeaRestApiConstructdeaapicasescaseIdstatus0AD7015F",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMemberships87E19089",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdusermemberships046386FD",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsGETEE01B56C",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsOPTIONSCEE52245",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdusermembershipsE995A1CB",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsPOST874FCF45",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsAF9CCF9E",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships94BCD26D",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
@@ -11102,10 +11102,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdaudit95E194F4",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdauditPOSTE7EF33C3",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdaudit67B26240",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsOPTIONS27250341",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdcaseAssociations1E61BB37",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsPOST57A60C97",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsDEDFE3A4",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsOPTIONS1FF5AEF4",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdcaseassociations39E869A9",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsPOSTDAD17844",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociations07162FBE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails77C4C7BF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGET9FD745C9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsOPTIONSF037F791",
@@ -11121,10 +11121,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesfileIdaudit142FBC27",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdauditPOSTB9D945B3",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdaudit909C543D",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEdatavaultsdataVaultIdfilesfileIdcaseAssociationsABC0037D",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsDELETE644AF6FC",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsOPTIONS3D552A8E",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociations5C3F4D29",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEdatavaultsdataVaultIdfilesfileIdcaseassociations6A03FCCC",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsDELETE3DA7FCB0",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsOPTIONSA5CD5AF3",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsADD97A93",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfo58AF901A",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGET02C2F5DE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoOPTIONS67146261",
@@ -11210,27 +11210,27 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiauthauthCodetokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthauthCodetokenE48A5552",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
         "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
-        "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF",
-        "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D",
-        "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0",
-        "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
-        "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
-        "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
-        "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D",
-        "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
+        "DeaRestApiConstructdeaapiauthloginurlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginurlB13CE613",
+        "DeaRestApiConstructdeaapiauthloginurlGETA681A0EF",
+        "DeaRestApiConstructdeaapiauthloginurlOPTIONS0BD31F47",
+        "DeaRestApiConstructdeaapiauthloginurl63DC1B87",
+        "DeaRestApiConstructdeaapiauthlogouturlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogouturl5C0CA1D2",
+        "DeaRestApiConstructdeaapiauthlogouturlGETF0105A89",
+        "DeaRestApiConstructdeaapiauthlogouturlOPTIONSF027324B",
+        "DeaRestApiConstructdeaapiauthlogouturl1652A893",
+        "DeaRestApiConstructdeaapiauthrefreshtokenOPTIONSE3B76787",
+        "DeaRestApiConstructdeaapiauthrefreshtokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshtoken6AB99C42",
+        "DeaRestApiConstructdeaapiauthrefreshtokenPOST2504A083",
+        "DeaRestApiConstructdeaapiauthrefreshtoken71A6A510",
         "DeaRestApiConstructdeaapiauthE4846931",
-        "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeTokenD51670A5",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTD4C71CFF",
-        "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
-        "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpoints4616DB7F",
-        "DeaRestApiConstructdeaapiavailableEndpointsGET587EF9CF",
-        "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289",
-        "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
+        "DeaRestApiConstructdeaapiauthrevoketokenOPTIONSC40AAE80",
+        "DeaRestApiConstructdeaapiauthrevoketokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevoketoken61A9F7CD",
+        "DeaRestApiConstructdeaapiauthrevoketokenPOSTF34DC088",
+        "DeaRestApiConstructdeaapiauthrevoketoken24CFF257",
+        "DeaRestApiConstructdeaapiavailableendpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableendpoints0EAEB04D",
+        "DeaRestApiConstructdeaapiavailableendpointsGET5D20F552",
+        "DeaRestApiConstructdeaapiavailableendpointsOPTIONS79EE5096",
+        "DeaRestApiConstructdeaapiavailableendpoints49EF3FF0",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdactionsFAD4690C",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETDE6D1CEA",
         "DeaRestApiConstructdeaapicasescaseIdactionsOPTIONSE258076A",
@@ -11287,20 +11287,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTFB8341CA",
         "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F",
         "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation45DD1C2C",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETB786FCDD",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedinformationCE9D68E3",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationGETCAD44EAB",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationOPTIONS3D21209C",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformation0948ECF1",
         "DeaRestApiConstructdeaapicasescaseIdstatusOPTIONS0760E14E",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4PUTcasescaseIdstatus787AC3AD",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUT31B9CA11",
         "DeaRestApiConstructdeaapicasescaseIdstatus0AD7015F",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMemberships87E19089",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdusermemberships046386FD",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsGETEE01B56C",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsOPTIONSCEE52245",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdusermembershipsE995A1CB",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsPOST874FCF45",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsAF9CCF9E",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEcasescaseIdusersuserIdmemberships94BCD26D",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
@@ -11335,10 +11335,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdaudit95E194F4",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdauditPOSTE7EF33C3",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdaudit67B26240",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsOPTIONS27250341",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdcaseAssociations1E61BB37",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsPOST57A60C97",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsDEDFE3A4",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsOPTIONS1FF5AEF4",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdcaseassociations39E869A9",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsPOSTDAD17844",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociations07162FBE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIddetails77C4C7BF",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGET9FD745C9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsOPTIONSF037F791",
@@ -11354,10 +11354,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdauditPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdfilesfileIdaudit142FBC27",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdauditPOSTB9D945B3",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdaudit909C543D",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEdatavaultsdataVaultIdfilesfileIdcaseAssociationsABC0037D",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsDELETE644AF6FC",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsOPTIONS3D552A8E",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociations5C3F4D29",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEdatavaultsdataVaultIdfilesfileIdcaseassociations6A03FCCC",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsDELETE3DA7FCB0",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsOPTIONSA5CD5AF3",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsADD97A93",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETdatavaultsdataVaultIdfilesfileIdinfo58AF901A",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGET02C2F5DE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoOPTIONS67146261",
@@ -11653,22 +11653,22 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapiauthauthCodetokenOPTIONSE3AA1727",
         "DeaRestApiConstructdeaapiauthauthCodetokenPOST81D6F43B",
         "DeaRestApiConstructdeaapiauthauthCodetokenC94184D9",
-        "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D",
-        "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0",
-        "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
-        "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3",
-        "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5",
-        "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
-        "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E",
-        "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D",
-        "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
+        "DeaRestApiConstructdeaapiauthloginurlGETA681A0EF",
+        "DeaRestApiConstructdeaapiauthloginurlOPTIONS0BD31F47",
+        "DeaRestApiConstructdeaapiauthloginurl63DC1B87",
+        "DeaRestApiConstructdeaapiauthlogouturlGETF0105A89",
+        "DeaRestApiConstructdeaapiauthlogouturlOPTIONSF027324B",
+        "DeaRestApiConstructdeaapiauthlogouturl1652A893",
+        "DeaRestApiConstructdeaapiauthrefreshtokenOPTIONSE3B76787",
+        "DeaRestApiConstructdeaapiauthrefreshtokenPOST2504A083",
+        "DeaRestApiConstructdeaapiauthrefreshtoken71A6A510",
         "DeaRestApiConstructdeaapiauthE4846931",
-        "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E",
-        "DeaRestApiConstructdeaapiauthrevokeTokenPOSTD4C71CFF",
-        "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
-        "DeaRestApiConstructdeaapiavailableEndpointsGET587EF9CF",
-        "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289",
-        "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
+        "DeaRestApiConstructdeaapiauthrevoketokenOPTIONSC40AAE80",
+        "DeaRestApiConstructdeaapiauthrevoketokenPOSTF34DC088",
+        "DeaRestApiConstructdeaapiauthrevoketoken24CFF257",
+        "DeaRestApiConstructdeaapiavailableendpointsGET5D20F552",
+        "DeaRestApiConstructdeaapiavailableendpointsOPTIONS79EE5096",
+        "DeaRestApiConstructdeaapiavailableendpoints49EF3FF0",
         "DeaRestApiConstructdeaapicasescaseIdactionsGETDE6D1CEA",
         "DeaRestApiConstructdeaapicasescaseIdactionsOPTIONSE258076A",
         "DeaRestApiConstructdeaapicasescaseIdactions4A0D9ED8",
@@ -11710,16 +11710,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapicasescaseIdownerPOSTFB8341CA",
         "DeaRestApiConstructdeaapicasescaseIdownerFA6D485F",
         "DeaRestApiConstructdeaapicasescaseId5919A5AE",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETB786FCDD",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD",
-        "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationGETCAD44EAB",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformationOPTIONS3D21209C",
+        "DeaRestApiConstructdeaapicasescaseIdscopedinformation0948ECF1",
         "DeaRestApiConstructdeaapicasescaseIdstatusOPTIONS0760E14E",
         "DeaRestApiConstructdeaapicasescaseIdstatusPUT31B9CA11",
         "DeaRestApiConstructdeaapicasescaseIdstatus0AD7015F",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4",
-        "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsGETEE01B56C",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsOPTIONSCEE52245",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsPOST874FCF45",
+        "DeaRestApiConstructdeaapicasescaseIdusermembershipsAF9CCF9E",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsDELETE66E50CD4",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsOPTIONS925E45CE",
         "DeaRestApiConstructdeaapicasescaseIdusersuserIdmembershipsPUT67F6E361",
@@ -11746,9 +11746,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdauditOPTIONS97FC6008",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdauditPOSTE7EF33C3",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdaudit67B26240",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsOPTIONS27250341",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsPOST57A60C97",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsDEDFE3A4",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsOPTIONS1FF5AEF4",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsPOSTDAD17844",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociations07162FBE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsGET9FD745C9",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsOPTIONSF037F791",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsPUT925FD572",
@@ -11760,9 +11760,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdauditOPTIONS92804CA0",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdauditPOSTB9D945B3",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdaudit909C543D",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsDELETE644AF6FC",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsOPTIONS3D552A8E",
-        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociations5C3F4D29",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsDELETE3DA7FCB0",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsOPTIONSA5CD5AF3",
+        "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsADD97A93",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoGET02C2F5DE",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoOPTIONS67146261",
         "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdinfoCCCD7E15",
@@ -11847,7 +11847,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "DataTraceEnabled": false,
             "HttpMethod": "GET",
             "MetricsEnabled": true,
-            "ResourcePath": "/~1availableEndpoints",
+            "ResourcePath": "/~1available-endpoints",
             "ThrottlingBurstLimit": 30,
             "ThrottlingRateLimit": 30,
           },
@@ -12048,19 +12048,19 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA": Object {
+    "DeaRestApiConstructdeaapiauthloginurl63DC1B87": Object {
       "Properties": Object {
         "ParentId": Object {
           "Ref": "DeaRestApiConstructdeaapiauthE4846931",
         },
-        "PathPart": "loginUrl",
+        "PathPart": "login-url",
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapiauthloginUrlGET4F783A6D": Object {
+    "DeaRestApiConstructdeaapiauthloginurlGETA681A0EF": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
@@ -12092,7 +12092,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
+          "Ref": "DeaRestApiConstructdeaapiauthloginurl63DC1B87",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -12100,7 +12100,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiauthloginUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginUrl306C3EFF": Object {
+    "DeaRestApiConstructdeaapiauthloginurlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthloginurlB13CE613": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -12134,14 +12134,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/GET/auth/loginUrl",
+              "/GET/auth/login-url",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapiauthloginUrlOPTIONSFCC225D0": Object {
+    "DeaRestApiConstructdeaapiauthloginurlOPTIONS0BD31F47": Object {
       "Properties": Object {
         "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
@@ -12177,7 +12177,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         ],
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthloginUrlA5F3FDDA",
+          "Ref": "DeaRestApiConstructdeaapiauthloginurl63DC1B87",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -12185,19 +12185,19 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412": Object {
+    "DeaRestApiConstructdeaapiauthlogouturl1652A893": Object {
       "Properties": Object {
         "ParentId": Object {
           "Ref": "DeaRestApiConstructdeaapiauthE4846931",
         },
-        "PathPart": "logoutUrl",
+        "PathPart": "logout-url",
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapiauthlogoutUrlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogoutUrl42120548": Object {
+    "DeaRestApiConstructdeaapiauthlogouturlGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETauthlogouturl5C0CA1D2": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -12231,14 +12231,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/GET/auth/logoutUrl",
+              "/GET/auth/logout-url",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapiauthlogoutUrlGETC563ACE3": Object {
+    "DeaRestApiConstructdeaapiauthlogouturlGETF0105A89": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "GET",
@@ -12270,7 +12270,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
+          "Ref": "DeaRestApiConstructdeaapiauthlogouturl1652A893",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -12278,7 +12278,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiauthlogoutUrlOPTIONS3CD200C5": Object {
+    "DeaRestApiConstructdeaapiauthlogouturlOPTIONSF027324B": Object {
       "Properties": Object {
         "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
@@ -12314,7 +12314,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         ],
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthlogoutUrlC5CCF412",
+          "Ref": "DeaRestApiConstructdeaapiauthlogouturl1652A893",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -12322,19 +12322,19 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiauthrefreshToken91363B5F": Object {
+    "DeaRestApiConstructdeaapiauthrefreshtoken71A6A510": Object {
       "Properties": Object {
         "ParentId": Object {
           "Ref": "DeaRestApiConstructdeaapiauthE4846931",
         },
-        "PathPart": "refreshToken",
+        "PathPart": "refresh-token",
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapiauthrefreshTokenOPTIONS265AFE2E": Object {
+    "DeaRestApiConstructdeaapiauthrefreshtokenOPTIONSE3B76787": Object {
       "Properties": Object {
         "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
@@ -12370,7 +12370,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         ],
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
+          "Ref": "DeaRestApiConstructdeaapiauthrefreshtoken71A6A510",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -12378,7 +12378,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiauthrefreshTokenPOST4BC88F2D": Object {
+    "DeaRestApiConstructdeaapiauthrefreshtokenPOST2504A083": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "POST",
@@ -12410,7 +12410,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthrefreshToken91363B5F",
+          "Ref": "DeaRestApiConstructdeaapiauthrefreshtoken71A6A510",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -12418,7 +12418,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiauthrefreshTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshToken36514E33": Object {
+    "DeaRestApiConstructdeaapiauthrefreshtokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrefreshtoken6AB99C42": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -12452,26 +12452,26 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/POST/auth/refreshToken",
+              "/POST/auth/refresh-token",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A": Object {
+    "DeaRestApiConstructdeaapiauthrevoketoken24CFF257": Object {
       "Properties": Object {
         "ParentId": Object {
           "Ref": "DeaRestApiConstructdeaapiauthE4846931",
         },
-        "PathPart": "revokeToken",
+        "PathPart": "revoke-token",
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapiauthrevokeTokenOPTIONS8E56248E": Object {
+    "DeaRestApiConstructdeaapiauthrevoketokenOPTIONSC40AAE80": Object {
       "Properties": Object {
         "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
@@ -12507,7 +12507,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         ],
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
+          "Ref": "DeaRestApiConstructdeaapiauthrevoketoken24CFF257",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -12515,7 +12515,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiauthrevokeTokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevokeTokenD51670A5": Object {
+    "DeaRestApiConstructdeaapiauthrevoketokenPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTauthrevoketoken61A9F7CD": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -12549,14 +12549,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/POST/auth/revokeToken",
+              "/POST/auth/revoke-token",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapiauthrevokeTokenPOSTD4C71CFF": Object {
+    "DeaRestApiConstructdeaapiauthrevoketokenPOSTF34DC088": Object {
       "Properties": Object {
         "AuthorizationType": "NONE",
         "HttpMethod": "POST",
@@ -12588,7 +12588,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiauthrevokeTokenF456D19A",
+          "Ref": "DeaRestApiConstructdeaapiauthrevoketoken24CFF257",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -12596,7 +12596,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiavailableEndpointsF75CB106": Object {
+    "DeaRestApiConstructdeaapiavailableendpoints49EF3FF0": Object {
       "Properties": Object {
         "ParentId": Object {
           "Fn::GetAtt": Array [
@@ -12604,14 +12604,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "RootResourceId",
           ],
         },
-        "PathPart": "availableEndpoints",
+        "PathPart": "available-endpoints",
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapiavailableEndpointsGET587EF9CF": Object {
+    "DeaRestApiConstructdeaapiavailableendpointsGET5D20F552": Object {
       "Properties": Object {
         "AuthorizationType": "AWS_IAM",
         "HttpMethod": "GET",
@@ -12643,7 +12643,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
+          "Ref": "DeaRestApiConstructdeaapiavailableendpoints49EF3FF0",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -12651,7 +12651,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapiavailableEndpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableEndpoints4616DB7F": Object {
+    "DeaRestApiConstructdeaapiavailableendpointsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETavailableendpoints0EAEB04D": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -12685,14 +12685,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/GET/availableEndpoints",
+              "/GET/available-endpoints",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapiavailableEndpointsOPTIONS52EA7289": Object {
+    "DeaRestApiConstructdeaapiavailableendpointsOPTIONS79EE5096": Object {
       "Properties": Object {
         "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
@@ -12728,7 +12728,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         ],
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapiavailableEndpointsF75CB106",
+          "Ref": "DeaRestApiConstructdeaapiavailableendpoints49EF3FF0",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -14900,19 +14900,19 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594": Object {
+    "DeaRestApiConstructdeaapicasescaseIdscopedinformation0948ECF1": Object {
       "Properties": Object {
         "ParentId": Object {
           "Ref": "DeaRestApiConstructdeaapicasescaseId5919A5AE",
         },
-        "PathPart": "scopedInformation",
+        "PathPart": "scoped-information",
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedInformation45DD1C2C": Object {
+    "DeaRestApiConstructdeaapicasescaseIdscopedinformationGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdscopedinformationCE9D68E3": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -14946,14 +14946,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/GET/cases/*/scopedInformation",
+              "/GET/cases/*/scoped-information",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasescaseIdscopedInformationGETB786FCDD": Object {
+    "DeaRestApiConstructdeaapicasescaseIdscopedinformationGETCAD44EAB": Object {
       "Properties": Object {
         "AuthorizationType": "AWS_IAM",
         "HttpMethod": "GET",
@@ -14985,7 +14985,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdscopedinformation0948ECF1",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -14993,7 +14993,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIdscopedInformationOPTIONSBA104BDD": Object {
+    "DeaRestApiConstructdeaapicasescaseIdscopedinformationOPTIONS3D21209C": Object {
       "Properties": Object {
         "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
@@ -15029,7 +15029,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         ],
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIdscopedInformation3670B594",
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdscopedinformation0948ECF1",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -15174,19 +15174,19 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3": Object {
+    "DeaRestApiConstructdeaapicasescaseIdusermembershipsAF9CCF9E": Object {
       "Properties": Object {
         "ParentId": Object {
           "Ref": "DeaRestApiConstructdeaapicasescaseId5919A5AE",
         },
-        "PathPart": "userMemberships",
+        "PathPart": "user-memberships",
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIduserMemberships87E19089": Object {
+    "DeaRestApiConstructdeaapicasescaseIdusermembershipsGETApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4GETcasescaseIdusermemberships046386FD": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -15220,14 +15220,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/GET/cases/*/userMemberships",
+              "/GET/cases/*/user-memberships",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsGETC6D66454": Object {
+    "DeaRestApiConstructdeaapicasescaseIdusermembershipsGETEE01B56C": Object {
       "Properties": Object {
         "AuthorizationType": "AWS_IAM",
         "HttpMethod": "GET",
@@ -15259,7 +15259,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdusermembershipsAF9CCF9E",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -15267,7 +15267,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsOPTIONS8FB7464B": Object {
+    "DeaRestApiConstructdeaapicasescaseIdusermembershipsOPTIONSCEE52245": Object {
       "Properties": Object {
         "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
@@ -15303,7 +15303,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         ],
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdusermembershipsAF9CCF9E",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -15311,7 +15311,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOST84A13ED4": Object {
+    "DeaRestApiConstructdeaapicasescaseIdusermembershipsPOST874FCF45": Object {
       "Properties": Object {
         "AuthorizationType": "AWS_IAM",
         "HttpMethod": "POST",
@@ -15343,7 +15343,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapicasescaseIduserMembershipsD5C1FDF3",
+          "Ref": "DeaRestApiConstructdeaapicasescaseIdusermembershipsAF9CCF9E",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -15351,7 +15351,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapicasescaseIduserMembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIduserMemberships7500E258": Object {
+    "DeaRestApiConstructdeaapicasescaseIdusermembershipsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTcasescaseIdusermembershipsE995A1CB": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -15385,7 +15385,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/POST/cases/*/userMemberships",
+              "/POST/cases/*/user-memberships",
             ],
           ],
         },
@@ -16458,19 +16458,19 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsDEDFE3A4": Object {
+    "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociations07162FBE": Object {
       "Properties": Object {
         "ParentId": Object {
           "Ref": "DeaRestApiConstructdeaapidatavaultsdataVaultId186748E9",
         },
-        "PathPart": "caseAssociations",
+        "PathPart": "case-associations",
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsOPTIONS27250341": Object {
+    "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsOPTIONS1FF5AEF4": Object {
       "Properties": Object {
         "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
@@ -16506,7 +16506,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         ],
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsDEDFE3A4",
+          "Ref": "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociations07162FBE",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -16514,47 +16514,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsPOST57A60C97": Object {
-      "Properties": Object {
-        "AuthorizationType": "AWS_IAM",
-        "HttpMethod": "POST",
-        "Integration": Object {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": Object {
-            "Fn::Join": Array [
-              "",
-              Array [
-                "arn:",
-                Object {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                Object {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaRestApiConstructPOSTCreateCaseAssociation9A9F0D84",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsDEDFE3A4",
-        },
-        "RestApiId": Object {
-          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseAssociationsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdcaseAssociations1E61BB37": Object {
+    "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsPOSTApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4POSTdatavaultsdataVaultIdcaseassociations39E869A9": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -16588,12 +16548,52 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/POST/datavaults/*/caseAssociations",
+              "/POST/datavaults/*/case-associations",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
+    },
+    "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociationsPOSTDAD17844": Object {
+      "Properties": Object {
+        "AuthorizationType": "AWS_IAM",
+        "HttpMethod": "POST",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "DeaRestApiConstructPOSTCreateCaseAssociation9A9F0D84",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "DeaRestApiConstructdeaapidatavaultsdataVaultIdcaseassociations07162FBE",
+        },
+        "RestApiId": Object {
+          "Ref": "DeaRestApiConstructdeaapi6587DDA1",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
     },
     "DeaRestApiConstructdeaapidatavaultsdataVaultIddetailsD8DDCCE8": Object {
       "Properties": Object {
@@ -17248,19 +17248,19 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociations5C3F4D29": Object {
+    "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsADD97A93": Object {
       "Properties": Object {
         "ParentId": Object {
           "Ref": "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileId50FC80BE",
         },
-        "PathPart": "caseAssociations",
+        "PathPart": "case-associations",
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
         },
       },
       "Type": "AWS::ApiGateway::Resource",
     },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsDELETE644AF6FC": Object {
+    "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsDELETE3DA7FCB0": Object {
       "Properties": Object {
         "AuthorizationType": "AWS_IAM",
         "HttpMethod": "DELETE",
@@ -17292,7 +17292,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociations5C3F4D29",
+          "Ref": "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsADD97A93",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",
@@ -17300,7 +17300,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::ApiGateway::Method",
     },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEdatavaultsdataVaultIdfilesfileIdcaseAssociationsABC0037D": Object {
+    "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsDELETEApiPermissionteststackDeaRestApiConstructdeaapi96FE45F4DELETEdatavaultsdataVaultIdfilesfileIdcaseassociations6A03FCCC": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
         "FunctionName": Object {
@@ -17334,14 +17334,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               Object {
                 "Ref": "DeaRestApiConstructdeaapiDeploymentStage[STAGE-REMOVED][HASH REMOVED]",
               },
-              "/DELETE/datavaults/*/files/*/caseAssociations",
+              "/DELETE/datavaults/*/files/*/case-associations",
             ],
           ],
         },
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociationsOPTIONS3D552A8E": Object {
+    "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsOPTIONSA5CD5AF3": Object {
       "Properties": Object {
         "ApiKeyRequired": false,
         "AuthorizationType": "NONE",
@@ -17377,7 +17377,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         ],
         "ResourceId": Object {
-          "Ref": "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseAssociations5C3F4D29",
+          "Ref": "DeaRestApiConstructdeaapidatavaultsdataVaultIdfilesfileIdcaseassociationsADD97A93",
         },
         "RestApiId": Object {
           "Ref": "DeaRestApiConstructdeaapi6587DDA1",

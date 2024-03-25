@@ -77,7 +77,7 @@ describe('CaseOwner E2E', () => {
     caseIdsToDelete.push(targetCase.ulid!);
     // confirm owner is only returned in the membership list
     const membershipSingleItemResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
       'GET',
       ownerToken,
       ownerCreds
@@ -105,7 +105,7 @@ describe('CaseOwner E2E', () => {
 
     // confirm owner and invitee are returned in the membership list with "owner" relevant permission(s)
     const membershipListResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
       'GET',
       ownerToken,
       ownerCreds
@@ -182,7 +182,7 @@ describe('CaseOwner E2E', () => {
     caseIdsToDelete.push(targetCase.ulid!);
     // confirm owner is only returned in the membership list
     const membershipSingleItemResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
       'GET',
       ownerToken,
       ownerCreds
@@ -202,7 +202,7 @@ describe('CaseOwner E2E', () => {
       actions: viewOnlyPermissions,
     };
     const grantViewAccess = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
       'POST',
       ownerToken,
       ownerCreds,
@@ -212,7 +212,7 @@ describe('CaseOwner E2E', () => {
 
     // confirm the invitee has just the "view" permission
     const membershipWithInviteeResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
       'GET',
       ownerToken,
       ownerCreds
@@ -280,7 +280,7 @@ describe('CaseOwner E2E', () => {
 
     // confirm owner and invitee are returned in the membership list with "owner" relevant permission(s)
     const membershipListResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
       'GET',
       ownerToken,
       ownerCreds

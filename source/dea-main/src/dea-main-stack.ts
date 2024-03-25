@@ -538,7 +538,7 @@ export class DeaMainStack extends cdk.Stack {
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
-        .node.findChild('refreshToken')
+        .node.findChild('refresh-token')
         .node.findChild('POST').node.defaultChild
     );
 
@@ -549,7 +549,7 @@ export class DeaMainStack extends cdk.Stack {
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
-        .node.findChild('revokeToken')
+        .node.findChild('revoke-token')
         .node.findChild('POST').node.defaultChild
     );
 
@@ -560,7 +560,7 @@ export class DeaMainStack extends cdk.Stack {
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
-        .node.findChild('loginUrl')
+        .node.findChild('login-url')
         .node.findChild('GET').node.defaultChild
     );
 
@@ -571,7 +571,7 @@ export class DeaMainStack extends cdk.Stack {
         .node.findChild('dea-api')
         .node.findChild('Default')
         .node.findChild('auth')
-        .node.findChild('logoutUrl')
+        .node.findChild('logout-url')
         .node.findChild('GET').node.defaultChild
     );
 

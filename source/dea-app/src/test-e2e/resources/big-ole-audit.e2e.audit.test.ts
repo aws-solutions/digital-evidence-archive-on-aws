@@ -178,7 +178,7 @@ describe('case audit e2e', () => {
   }
 
   function addGetMembershipsCall(caseUlid: string) {
-    return callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/userMemberships`, 'GET', idToken, creds);
+    return callDeaAPIWithCreds(`${deaApiUrl}cases/${caseUlid}/user-memberships`, 'GET', idToken, creds);
   }
 
   function addGetFilesCall(caseUlid: string) {

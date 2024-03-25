@@ -138,14 +138,14 @@ const getInitialIdentity = (event: APIGatewayProxyEvent): ActorIdentity => {
     };
   }
 
-  if (event.resource === '/auth/loginUrl') {
+  if (event.resource === '/auth/login-url') {
     return {
       idType: IdentityType.LOGIN_URL_REQUESTOR,
       sourceIp: event.requestContext.identity.sourceIp,
     };
   }
 
-  if (event.resource === '/auth/logoutUrl') {
+  if (event.resource === '/auth/logout-url') {
     return {
       idType: IdentityType.LOGOUT_URL_REQUESTOR,
       sourceIp: event.requestContext.identity.sourceIp,

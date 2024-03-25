@@ -37,7 +37,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/getTokenResult'
-  /auth/refreshToken:
+  /auth/refresh-token:
     post:
       summary: Fetches new ID Token to refresh credentials using Refresh Token
       operationId: refreshToken
@@ -50,7 +50,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/getTokenResult'
-  /auth/revokeToken:
+  /auth/revoke-token:
     post:
       summary: Revokes and invalides Cognito Refresh Token
       operationId: revokeToken
@@ -59,7 +59,7 @@ paths:
       responses:
         '200':
           description: Successfully Revoked Token
-  /auth/loginUrl:
+  /auth/login-url:
     get:
       summary: Get login URL
       operationId: loginUrl
@@ -82,7 +82,7 @@ paths:
                 properties:
                   loginUrl:
                     type: string
-  /auth/logoutUrl:
+  /auth/logout-url:
     get:
       summary: Get logout URL
       operationId: logoutUrl

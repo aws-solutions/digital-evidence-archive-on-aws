@@ -105,7 +105,7 @@ describe('GetCaseActions E2E', () => {
       actions: inviteeActions,
     };
     const inviteResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
       'POST',
       ownerToken,
       ownerCreds,

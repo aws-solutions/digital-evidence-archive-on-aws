@@ -104,7 +104,7 @@ describe('get my cases api', () => {
 
     // Now invited the original user
     await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${invitedCaseId}/userMemberships`,
+      `${deaApiUrl}cases/${invitedCaseId}/user-memberships`,
       'POST',
       idToken2,
       creds2,

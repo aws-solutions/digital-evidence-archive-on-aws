@@ -175,7 +175,7 @@ resources:
     parentId: fld_d4da873fe6fd4f018495e12e93e1fddf
     modified: 1683866054186
     created: 1683865436219
-    url: "{{deaApiUrl}}auth/refreshToken"
+    url: "{{deaApiUrl}}auth/refresh-token"
     name: POST refresh-token
     description: ""
     method: POST
@@ -196,7 +196,7 @@ resources:
     parentId: fld_d4da873fe6fd4f018495e12e93e1fddf
     modified: 1683866486358
     created: 1683865436221
-    url: "{{deaApiUrl}}auth/revokeToken"
+    url: "{{deaApiUrl}}auth/revoke-token"
     name: POST revokeToken
     description: ""
     method: POST
@@ -217,7 +217,7 @@ resources:
     parentId: fld_d4da873fe6fd4f018495e12e93e1fddf
     modified: 1683866195147
     created: 1683865436211
-    url: "{{deaApiUrl}}auth/loginUrl"
+    url: "{{deaApiUrl}}auth/login-url"
     name: GET loginUrl
     description: ""
     method: GET
@@ -242,7 +242,7 @@ resources:
     parentId: fld_d4da873fe6fd4f018495e12e93e1fddf
     modified: 1683866205940
     created: 1683865436213
-    url: "{{deaApiUrl}}auth/logoutUrl"
+    url: "{{deaApiUrl}}auth/logout-url"
     name: GET logoutUrl
     description: ""
     method: GET
@@ -267,7 +267,7 @@ resources:
     parentId: fld_1e89808be4094b3a8ca131d24da25b49
     modified: 1683873005949
     created: 1683872994961
-    url: "{{deaApiUrl}}cases/{{caseUlid}}/scopedInformation"
+    url: "{{deaApiUrl}}cases/{{caseUlid}}/scoped-information"
     name: GET case scoped information
     description: ""
     method: GET
@@ -721,7 +721,7 @@ resources:
     parentId: fld_6c4198840c55480da17692ea0f5aa2ac
     modified: 1702539577649
     created: 1702539538561
-    url: "{{ _.deaApiUrl }}datavaults/{{ _.dataVaultUlid }}/caseAssociations"
+    url: "{{ _.deaApiUrl }}datavaults/{{ _.dataVaultUlid }}/case-associations"
     name: POST case association
     description: ""
     method: POST
@@ -761,7 +761,7 @@ resources:
     modified: 1702539848635
     created: 1702539801899
     url: "{{ _.deaApiUrl }}datavaults/{{ _.dataVaultUlid }}/files/{{
-      _.dataVaultFileId }}/caseAssociations"
+      _.dataVaultFileId }}/case-associations"
     name: DEL case association
     description: ""
     method: DELETE
@@ -1326,7 +1326,7 @@ resources:
     parentId: wrk_01f26046da65445daff05b4377c4dfdf
     modified: 1683870834848
     created: 1683870828348
-    url: "{{deaApiUrl}}cases/{{caseUlid}}/userMemberships"
+    url: "{{deaApiUrl}}cases/{{caseUlid}}/user-memberships"
     name: GET case user memberships
     description: ""
     method: GET
@@ -1358,7 +1358,7 @@ resources:
     parentId: wrk_01f26046da65445daff05b4377c4dfdf
     modified: 1683871464674
     created: 1683871433640
-    url: "{{deaApiUrl}}cases/{{caseUlid}}/userMemberships"
+    url: "{{deaApiUrl}}cases/{{caseUlid}}/user-memberships"
     name: POST case membership invite
     description: ""
     method: POST
@@ -1851,7 +1851,7 @@ resources:
     parentId: wrk_01f26046da65445daff05b4377c4dfdf
     modified: 1683872962327
     created: 1683872956600
-    url: "{{deaApiUrl}}availableEndpoints"
+    url: "{{deaApiUrl}}available-endpoints"
     name: GET available-endpoints
     description: ""
     method: GET

@@ -27,11 +27,11 @@
           "method": "PUT"
         },
         {
-          "path": "/cases/{caseId}/userMemberships",
+          "path": "/cases/{caseId}/user-memberships",
           "method": "GET"
         },
         {
-          "path": "/cases/{caseId}/userMemberships",
+          "path": "/cases/{caseId}/user-memberships",
           "method": "POST"
         },
         {
@@ -47,19 +47,19 @@
           "method": "POST"
         },
         {
-          "path": "/auth/loginUrl",
+          "path": "/auth/login-url",
           "method": "GET"
         },
         {
-          "path": "/auth/logoutUrl",
+          "path": "/auth/logout-url",
           "method": "GET"
         },
         {
-          "path": "/auth/refreshToken",
+          "path": "/auth/refresh-token",
           "method": "POST"
         },
         {
-          "path": "/auth/revokeToken",
+          "path": "/auth/revoke-token",
           "method": "POST"
         },
         {
@@ -107,7 +107,7 @@
           "method": "POST"
         },
         {
-          "path": "/availableEndpoints",
+          "path": "/available-endpoints",
           "method": "GET"
         }
       ]
@@ -145,7 +145,7 @@
           "method": "GET"
         },
         {
-          "path": "/datavaults/{dataVaultId}/caseAssociations",
+          "path": "/datavaults/{dataVaultId}/case-associations",
           "method": "POST"
         },
         {
@@ -157,7 +157,7 @@
           "method": "GET"
         },
         {
-          "path": "/datavaults/{dataVaultId}/files/{fileId}/caseAssociations",
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/case-associations",
           "method": "DELETE"
         },
         {
@@ -193,11 +193,11 @@
           "method": "GET"
         },
         {
-          "path": "/cases/{caseId}/userMemberships",
+          "path": "/cases/{caseId}/user-memberships",
           "method": "GET"
         },
         {
-          "path": "/cases/{caseId}/userMemberships",
+          "path": "/cases/{caseId}/user-memberships",
           "method": "POST"
         },
         {
@@ -213,19 +213,19 @@
           "method": "POST"
         },
         {
-          "path": "/auth/loginUrl",
+          "path": "/auth/login-url",
           "method": "GET"
         },
         {
-          "path": "/auth/logoutUrl",
+          "path": "/auth/logout-url",
           "method": "GET"
         },
         {
-          "path": "/auth/refreshToken",
+          "path": "/auth/refresh-token",
           "method": "POST"
         },
         {
-          "path": "/auth/revokeToken",
+          "path": "/auth/revoke-token",
           "method": "POST"
         },
         {
@@ -277,7 +277,7 @@
           "method": "POST"
         },
         {
-          "path": "/availableEndpoints",
+          "path": "/available-endpoints",
           "method": "GET"
         },
         {
@@ -339,7 +339,7 @@
           "method": "GET"
         },
         {
-          "path": "/datavaults/{dataVaultId}/caseAssociations",
+          "path": "/datavaults/{dataVaultId}/case-associations",
           "method": "POST"
         },
         {
@@ -351,7 +351,7 @@
           "method": "GET"
         },
         {
-          "path": "/datavaults/{dataVaultId}/files/{fileId}/caseAssociations",
+          "path": "/datavaults/{dataVaultId}/files/{fileId}/case-associations",
           "method": "DELETE"
         },
         {
@@ -375,7 +375,7 @@
           "method": "GET"
         },
         {
-          "path": "/cases/{caseId}/userMemberships",
+          "path": "/cases/{caseId}/user-memberships",
           "method": "GET"
         },
         {
@@ -383,19 +383,19 @@
           "method": "POST"
         },
         {
-          "path": "/auth/loginUrl",
+          "path": "/auth/login-url",
           "method": "GET"
         },
         {
-          "path": "/auth/logoutUrl",
+          "path": "/auth/logout-url",
           "method": "GET"
         },
         {
-          "path": "/auth/refreshToken",
+          "path": "/auth/refresh-token",
           "method": "POST"
         },
         {
-          "path": "/auth/revokeToken",
+          "path": "/auth/revoke-token",
           "method": "POST"
         },
         {
@@ -411,7 +411,7 @@
           "method": "GET"
         },
         {
-          "path": "/availableEndpoints",
+          "path": "/available-endpoints",
           "method": "GET"
         },
         {

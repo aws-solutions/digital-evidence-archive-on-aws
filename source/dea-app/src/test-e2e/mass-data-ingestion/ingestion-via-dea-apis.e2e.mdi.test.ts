@@ -571,7 +571,7 @@ describe('mass data ingestion e2e tests using dea apis only', () => {
     expect(
       (
         await callDeaAPIWithCreds(
-          `${deaApiUrl}datavaults/${dataVault2.ulid}/caseAssociations`,
+          `${deaApiUrl}datavaults/${dataVault2.ulid}/case-associations`,
           'POST',
           idToken,
           creds,

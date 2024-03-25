@@ -91,7 +91,7 @@ describe('CaseMembership E2E', () => {
       actions: [CaseAction.VIEW_CASE_DETAILS],
     };
     const inviteResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
       'POST',
       ownerToken,
       ownerCreds,
@@ -101,7 +101,7 @@ describe('CaseMembership E2E', () => {
 
     //confirm duplicate invites throw 400 - Bad Request
     const duplicateInviteResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
       'POST',
       ownerToken,
       ownerCreds,
@@ -111,7 +111,7 @@ describe('CaseMembership E2E', () => {
 
     // confirm owner and invitee are returned in the membership list.
     const membershipListResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+      `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
       'GET',
       ownerToken,
       ownerCreds
@@ -220,7 +220,7 @@ describe('CaseMembership E2E', () => {
   describe('GET', () => {
     it('should give an error when the case does not exist', async () => {
       const membershipListResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${bogusUlid}/userMemberships`,
+        `${deaApiUrl}cases/${bogusUlid}/user-memberships`,
         'GET',
         ownerToken,
         ownerCreds
@@ -233,7 +233,7 @@ describe('CaseMembership E2E', () => {
   describe('POST', () => {
     it('should give an error when payload is missing', async () => {
       const inviteResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+        `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
         'POST',
         ownerToken,
         ownerCreds
@@ -249,7 +249,7 @@ describe('CaseMembership E2E', () => {
         actions: [CaseAction.VIEW_CASE_DETAILS],
       };
       const inviteResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+        `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
         'POST',
         ownerToken,
         ownerCreds,
@@ -266,7 +266,7 @@ describe('CaseMembership E2E', () => {
         actions: [CaseAction.VIEW_CASE_DETAILS],
       };
       const inviteResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${targetCase.ulid}/userMemberships`,
+        `${deaApiUrl}cases/${targetCase.ulid}/user-memberships`,
         'POST',
         ownerToken,
         ownerCreds,
@@ -283,7 +283,7 @@ describe('CaseMembership E2E', () => {
         actions: [CaseAction.VIEW_CASE_DETAILS],
       };
       const inviteResponse = await callDeaAPIWithCreds(
-        `${deaApiUrl}cases/${bogusUlid}/userMemberships`,
+        `${deaApiUrl}cases/${bogusUlid}/user-memberships`,
         'POST',
         ownerToken,
         ownerCreds,

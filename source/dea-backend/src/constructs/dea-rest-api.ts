@@ -240,10 +240,10 @@ export class DeaRestApiConstruct extends Construct {
             throttlingRateLimit: 40,
             metricsEnabled: true,
           },
-          // /availableEndpoints reads data from the Parameter Store.
+          // /available-endpoints reads data from the Parameter Store.
           // Default throughput: 40 (Shared by the following API actions: GetParameters)
           // 30TPS is the safe value to avoid getting 502's Http errors for this endpoint.
-          '/availableEndpoints/GET': {
+          '/available-endpoints/GET': {
             throttlingBurstLimit: 30,
             throttlingRateLimit: 30,
             metricsEnabled: true,
