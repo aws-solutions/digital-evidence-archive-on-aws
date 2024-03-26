@@ -4,19 +4,19 @@ import { commonLabels } from '../../src/common/labels';
 import LoginPage from '../../src/pages/login';
 
 interface Query {
-  code: string; 
+  code: string;
 }
 let query: Query = {
   code: 'abcdefg',
-}
+};
 jest.mock('next/navigation', () => ({
   useSearchParams: () => ({
-    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key]),
   }),
   useRouter: () => ({
     push: jest.fn(),
-  })
-})); 
+  }),
+}));
 
 describe('LoginPage', () => {
   it('renders a login page when waiting to log in', async () => {

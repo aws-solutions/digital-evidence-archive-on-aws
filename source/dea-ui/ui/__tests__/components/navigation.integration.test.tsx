@@ -13,8 +13,8 @@ const mockedAxios = Axios as jest.Mocked<typeof Axios>;
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
-  })
-})); 
+  }),
+}));
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
 global.window.URL.createObjectURL = jest.fn(() => {});

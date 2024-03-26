@@ -25,7 +25,7 @@ const customJestConfig = {
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
     '^@/pages/(.*)$': '<rootDir>/src/pages/$1',
     // https://stackoverflow.com/questions/73203367/jest-syntaxerror-unexpected-token-export-with-uuid-library
-    'uuid': require.resolve('uuid'),     
+    uuid: require.resolve('uuid'),
   },
   testEnvironment: 'jest-environment-jsdom',
   preset: '@cloudscape-design/jest-preset',

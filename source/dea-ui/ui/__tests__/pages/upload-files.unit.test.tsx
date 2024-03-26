@@ -16,7 +16,7 @@ const CASE_NAME = 'mocked case';
 const FILE_PATH = '/huh';
 
 interface Query {
-  caseId: string | object; 
+  caseId: string | object;
   caseName: string | object;
   filePath: string | object;
 }
@@ -24,15 +24,15 @@ let query: Query = {
   caseId: CASE_ID,
   caseName: CASE_NAME,
   filePath: FILE_PATH,
-}
+};
 jest.mock('next/navigation', () => ({
   useSearchParams: () => ({
-    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key]),
   }),
   useRouter: () => ({
-    push
-  })
-})); 
+    push,
+  }),
+}));
 
 jest.mock('axios');
 

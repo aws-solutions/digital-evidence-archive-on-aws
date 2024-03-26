@@ -12,19 +12,19 @@ afterEach(cleanup);
 
 const CASE_ID = '100';
 interface Query {
-  caseId: string | object; 
+  caseId: string | object;
 }
 let query: Query = {
   caseId: CASE_ID,
-}
+};
 jest.mock('next/navigation', () => ({
   useSearchParams: () => ({
-    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key]),
   }),
   useRouter: () => ({
     push: jest.fn(),
-  })
-})); 
+  }),
+}));
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
 global.window.URL.createObjectURL = jest.fn(() => {});

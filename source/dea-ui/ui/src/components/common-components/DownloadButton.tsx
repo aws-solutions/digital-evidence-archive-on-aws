@@ -119,7 +119,7 @@ function DownloadButton(props: DownloadButtonProps): JSX.Element {
           // inactive case can't download evidence, even if evidence are all active/not destroyed
           props.caseStatus !== CaseStatus.ACTIVE ||
           // individual evidence download page needs special disallow case since the page requires a selectedFiles entry to load metadata
-          (props.selectedFiles.length === 1 && props.selectedFiles[0].status !== CaseFileStatus.ACTIVE) 
+          (props.selectedFiles.length === 1 && props.selectedFiles[0].status !== CaseFileStatus.ACTIVE)
         }
       >
         {commonLabels.downloadButton}

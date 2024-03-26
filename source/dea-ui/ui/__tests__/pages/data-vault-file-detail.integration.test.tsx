@@ -20,8 +20,8 @@ const DATA_VAULT_NAME = 'mocked data vault';
 const FILE_NAME = 'FILE_NAME';
 
 interface Query {
-  dataVaultId: string; 
-  fileId: string; 
+  dataVaultId: string;
+  fileId: string;
   dataVaultName: string;
   fileName?: string | object;
 }
@@ -30,13 +30,13 @@ let query: Query = {
   fileId: FILE_ID,
   dataVaultName: DATA_VAULT_NAME,
   fileName: FILE_NAME,
-}
+};
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     push,
   })),
   useSearchParams: () => ({
-    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key]),
   }),
 }));
 

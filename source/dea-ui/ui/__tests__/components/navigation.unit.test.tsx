@@ -5,8 +5,8 @@ import Navigation from '../../src/components/Navigation';
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
-  })
-})); 
+  }),
+}));
 
 describe('Navigation', () => {
   it('should render navigation with a default header', async () => {

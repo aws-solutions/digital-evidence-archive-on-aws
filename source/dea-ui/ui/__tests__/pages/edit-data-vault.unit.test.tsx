@@ -8,21 +8,21 @@ import EditDataVaultPage from '../../src/pages/edit-data-vault';
 const DATA_VAULT_ID = '100';
 const DATA_VAULT_NAME = 'mocked data vault';
 interface Query {
-  dataVaultId: string | object; 
-  dataVaultName: string | object; 
+  dataVaultId: string | object;
+  dataVaultName: string | object;
 }
 let query: Query = {
   dataVaultId: DATA_VAULT_ID,
   dataVaultName: DATA_VAULT_NAME,
-}
+};
 jest.mock('next/navigation', () => ({
   useSearchParams: () => ({
-    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key]),
   }),
   useRouter: () => ({
     push: jest.fn(),
-  })
-})); 
+  }),
+}));
 
 jest.mock('../../src/api/data-vaults', () => ({
   useGetDataVaultById: jest.fn(),

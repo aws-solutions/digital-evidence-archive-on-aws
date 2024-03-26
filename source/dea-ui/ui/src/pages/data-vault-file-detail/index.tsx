@@ -18,9 +18,9 @@ export interface IHomeProps {
 
 function DataVaultFileDetailPage() {
   const searchParams = useSearchParams();
-  const dataVaultId  = searchParams.get('dataVaultId');
-  const fileId  = searchParams.get('fileId');
-  const dataVaultName  = searchParams.get('dataVaultName');
+  const dataVaultId = searchParams.get('dataVaultId');
+  const fileId = searchParams.get('fileId');
+  const dataVaultName = searchParams.get('dataVaultName');
 
   const [fileName, setFileName] = React.useState('');
   const { settings } = useSettings();

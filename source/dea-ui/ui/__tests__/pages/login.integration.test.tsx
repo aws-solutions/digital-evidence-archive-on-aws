@@ -10,8 +10,8 @@ jest.mock('next/navigation', () => ({
   })),
   useSearchParams: jest.fn().mockImplementation(() => ({
     get: jest.fn().mockReturnValue({
-      code: null
-    })
+      code: null,
+    }),
   })),
 }));
 
@@ -60,9 +60,9 @@ describe('LoginPage', () => {
 
     const mockSearchParams = {
       get: jest.fn().mockReturnValue({
-        code: null
-      })
-    }
+        code: null,
+      }),
+    };
     const useSearchParamsSpy = jest.spyOn(require('next/navigation'), 'useSearchParams');
     useSearchParamsSpy.mockReturnValue(mockSearchParams);
 

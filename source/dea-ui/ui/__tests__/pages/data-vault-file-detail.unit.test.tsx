@@ -34,23 +34,23 @@ jest.mock('../../src/api/auth', () => ({
 }));
 
 interface Query {
-  dataVaultId: string; 
-  fileId: string; 
+  dataVaultId: string;
+  fileId: string;
   dataVaultName: string;
 }
 let query: Query = {
   dataVaultId: '100',
   fileId: '200',
   dataVaultName: 'mocked data vault',
-}
+};
 jest.mock('next/navigation', () => ({
   useSearchParams: () => ({
-    get: jest.fn().mockImplementation((key: keyof Query) => query[key])
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key]),
   }),
   useRouter: () => ({
     push: jest.fn(),
-  })
-})); 
+  }),
+}));
 
 describe('CaseDetailsPage', () => {
   it('renders a data vault file details page', async () => {

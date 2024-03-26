@@ -31,7 +31,7 @@ jest.mock('next/navigation', () => {
   return {
     __esModule: true,
     ...jest.requireActual('next/navigation'),
-  }
+  };
 });
 
 const useRouter = jest.spyOn(NextNav, 'useRouter');
