@@ -147,7 +147,7 @@ mockedAxios.request.mockImplementation((eventObj) => {
       headers: {},
       config: {},
     });
-  } else if (eventObj.url?.endsWith(`${CASE_ID}/user-memberships`)) {
+  } else if (eventObj.url?.endsWith(`${CASE_ID}/userMemberships`)) {
     if (eventObj.method === 'POST') {
       return Promise.resolve({
         data: {},

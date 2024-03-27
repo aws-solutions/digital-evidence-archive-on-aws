@@ -80,7 +80,7 @@ mockedAxios.request.mockImplementation((eventObj) => {
       headers: {},
       config: {},
     });
-  } else if (eventObj.url?.endsWith('available-endpoints')) {
+  } else if (eventObj.url?.endsWith('availableEndpoints')) {
     return Promise.resolve({
       data: {
         endpoints: [DATA_VAULTS_PUT_ENDPOINT, DATA_VAULTS_AUDIT_ENDPOINT],

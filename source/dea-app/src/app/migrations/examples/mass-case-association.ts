@@ -118,7 +118,7 @@ const associateFiles = async (
   deaApiUrl: string
 ) => {
   const response = await callDeaAPIWithCreds(
-    `${deaApiUrl}datavaults/${dataVaultUlid}/case-associations`,
+    `${deaApiUrl}datavaults/${dataVaultUlid}/caseAssociations`,
     'POST',
     idToken,
     creds,

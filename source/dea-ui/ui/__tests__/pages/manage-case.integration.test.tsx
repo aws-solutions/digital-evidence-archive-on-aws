@@ -66,7 +66,7 @@ describe('Manage Case Page', () => {
     const user = userEvent.setup();
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url?.endsWith('scoped-information')) {
+      if (eventObj.url?.endsWith('scopedInformation')) {
         return Promise.resolve({
           data: mockedScopedCaseInfo,
           status: 200,
@@ -141,7 +141,7 @@ describe('Manage Case Page', () => {
     const user = userEvent.setup();
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url?.endsWith('scoped-information')) {
+      if (eventObj.url?.endsWith('scopedInformation')) {
         return Promise.resolve({
           data: mockedScopedCaseInfo,
           status: 200,

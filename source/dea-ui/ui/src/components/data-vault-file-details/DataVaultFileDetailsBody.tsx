@@ -48,7 +48,7 @@ export interface DataVaultFileDetailsBodyProps {
 export const DATA_VAULTS_FILE_AUDIT_ENDPOINT = '/datavaults/{dataVaultId}/files/{fileId}/auditPOST';
 export const DOWNLOAD_VAULT_FILE_AUDIT_TEST_ID = 'download-data-vault-file-audit-button';
 export const DELETE_DATA_VAULT_FILE_CASE_ASSOCIATION_PATH =
-  '/datavaults/{dataVaultId}/files/{fileId}/case-associationsDELETE';
+  '/datavaults/{dataVaultId}/files/{fileId}/caseAssociationsDELETE';
 
 function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Element {
   const { data, isLoading, mutate } = useGetDataVaultFileDetailsById(props.dataVaultId, props.fileId);

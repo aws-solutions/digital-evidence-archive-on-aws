@@ -27,7 +27,7 @@ describe('get available endpoints', () => {
     expect(response.statusCode).toEqual(200);
     const payload: AvailableEndpointsBody = JSON.parse(response.body);
     expect(payload.endpoints.length).toEqual(1);
-    expect(payload.endpoints).toContain('/available-endpointsGET');
+    expect(payload.endpoints).toContain('/availableEndpointsGET');
   });
 
   it('should throw a validation error if the role is not present in headers', async () => {

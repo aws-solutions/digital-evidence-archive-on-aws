@@ -52,7 +52,7 @@ describe('get scoped case info E2E', () => {
 
     // manager can see the case without membership
     const getResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${createdCase.ulid}/scoped-information`,
+      `${deaApiUrl}cases/${createdCase.ulid}/scopedInformation`,
       'GET',
       managerToken,
       managerCreds
@@ -66,7 +66,7 @@ describe('get scoped case info E2E', () => {
 
     // case worker does not have access to the elevated endpoint
     const workerResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${createdCase.ulid}/scoped-information`,
+      `${deaApiUrl}cases/${createdCase.ulid}/scopedInformation`,
       'GET',
       workerToken,
       workerCreds
@@ -81,7 +81,7 @@ describe('get scoped case info E2E', () => {
     const url = `${deaApiUrl}cases`;
     const caseId = 'FAKEEFGHHJKKMNNPQRSTTVWXY9';
     const response = await callDeaAPIWithCreds(
-      `${url}/${caseId}/scoped-information`,
+      `${url}/${caseId}/scopedInformation`,
       'GET',
       managerToken,
       managerCreds

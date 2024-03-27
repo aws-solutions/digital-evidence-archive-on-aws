@@ -5,7 +5,7 @@ info:
 paths:
   # root resource path entity must match the file name or the documentation will not get attached to the right API Gateweay resource
   # (e.g. openapi-auth.yml must only contain '/auth' and all child APIs)
-  /available-endpoints:
+  /availableEndpoints:
     get:
       summary: Get available endpoints for a user
       tags:

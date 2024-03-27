@@ -107,7 +107,7 @@ describe('case detail file restore', () => {
           headers: {},
           config: {},
         });
-      } else if (eventObj.url?.endsWith('available-endpoints')) {
+      } else if (eventObj.url?.endsWith('availableEndpoints')) {
         return Promise.resolve({
           data: {
             endpoints: ['/cases/{caseId}/files/{fileId}/restorePUT'],

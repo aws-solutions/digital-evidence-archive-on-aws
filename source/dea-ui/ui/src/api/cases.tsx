@@ -67,7 +67,7 @@ export const useGetFileDetailsById = (
 };
 
 export const useGetScopedCaseInfoById = (id: string): DeaSingleResult<ScopedDeaCaseDTO | undefined> => {
-  const { data, error } = useSWR(() => `cases/${id}/scoped-information`, httpApiGet<ScopedDeaCaseDTO>);
+  const { data, error } = useSWR(() => `cases/${id}/scopedInformation`, httpApiGet<ScopedDeaCaseDTO>);
   return { data, isLoading: !data && !error };
 };
 
@@ -109,7 +109,7 @@ export const useGetUsers = (nameBeginsWith: string): DeaListResult<DeaUser> => {
 };
 
 export const addCaseMember = async (caseUserForm: CaseUserForm): Promise<void> => {
-  await httpApiPost(`cases/${caseUserForm.caseUlid}/user-memberships`, { ...caseUserForm });
+  await httpApiPost(`cases/${caseUserForm.caseUlid}/userMemberships`, { ...caseUserForm });
 };
 
 export const addCaseOwner = async (caseOwner: CaseOwnerDTO): Promise<void> => {
@@ -118,7 +118,7 @@ export const addCaseOwner = async (caseOwner: CaseOwnerDTO): Promise<void> => {
 
 export const useGetCaseMembers = (id: string): DeaListResult<CaseUser> => {
   const { data, error, mutate } = useSWR(
-    () => `cases/${id}/user-memberships`,
+    () => `cases/${id}/userMemberships`,
     httpApiGet<{ caseUsers: CaseUser[] }>
   );
   const cases: CaseUser[] = data?.caseUsers ?? [];

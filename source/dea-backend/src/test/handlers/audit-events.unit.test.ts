@@ -238,7 +238,7 @@ describe('dea lambda audits', () => {
 
     const theEvent = getDummyEvent();
     theEvent.requestContext.identity.cognitoIdentityId = null;
-    theEvent.resource = '/auth/login-url';
+    theEvent.resource = '/auth/loginUrl';
 
     const response = await sut(theEvent, dummyContext);
     expect(response).toEqual({ body: ':D', statusCode: 200 });
@@ -268,7 +268,7 @@ describe('dea lambda audits', () => {
 
     const theEvent = getDummyEvent();
     theEvent.requestContext.identity.cognitoIdentityId = null;
-    theEvent.resource = '/auth/logout-url';
+    theEvent.resource = '/auth/logoutUrl';
 
     const response = await sut(theEvent, dummyContext);
     expect(response).toEqual({ body: ':D', statusCode: 200 });
@@ -394,7 +394,7 @@ describe('dea lambda audits', () => {
     );
 
     const theEvent = getDummyEvent();
-    theEvent.resource = '/cases/{caseId}/user-memberships';
+    theEvent.resource = '/cases/{caseId}/userMemberships';
     theEvent.httpMethod = 'POST';
     theEvent.body = '{"userUlid": "abc123"}';
 
@@ -429,7 +429,7 @@ describe('dea lambda audits', () => {
     );
 
     const theEvent = getDummyEvent();
-    theEvent.resource = '/cases/{caseId}/user-memberships';
+    theEvent.resource = '/cases/{caseId}/userMemberships';
     theEvent.httpMethod = 'POST';
     theEvent.body = ':D';
 
@@ -648,7 +648,7 @@ describe('dea lambda audits', () => {
       testAuditService.service
     );
 
-    theEvent.resource = '/cases/{caseId}/user-memberships';
+    theEvent.resource = '/cases/{caseId}/userMemberships';
     theEvent.httpMethod = 'POST';
     theEvent.body = '{"userUlid": "abc123"}';
 

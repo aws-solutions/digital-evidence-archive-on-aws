@@ -116,7 +116,7 @@ describe('user audit e2e', () => {
     expect(getManagerCaseResponse.status).toEqual(404);
 
     const membershipsResponse = await callDeaAPIWithCreds(
-      `${deaApiUrl}cases/${caseUlid}/user-memberships`,
+      `${deaApiUrl}cases/${caseUlid}/userMemberships`,
       'GET',
       workerIdToken,
       creds

@@ -30,7 +30,7 @@ describe('DataSyncTasks Dashboard', () => {
   beforeAll(() => {
     mockedAxios.create.mockReturnThis();
     mockedAxios.request.mockImplementation((eventObj) => {
-      if (eventObj.url?.endsWith('available-endpoints')) {
+      if (eventObj.url?.endsWith('availableEndpoints')) {
         return Promise.resolve({
           data: {
             endpoints: ['/datavaults/tasks/{taskId}/executionsPOST'],

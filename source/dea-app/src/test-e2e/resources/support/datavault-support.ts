@@ -259,7 +259,7 @@ export const createCaseAssociationSuccess = async (
   associationDTO: CaseAssociationDTO
 ): Promise<DeaCaseFileResult[]> => {
   const response = await callDeaAPIWithCreds(
-    `${baseUrl}datavaults/${dataVaultId}/case-associations`,
+    `${baseUrl}datavaults/${dataVaultId}/caseAssociations`,
     'POST',
     idToken,
     creds,
@@ -279,7 +279,7 @@ export const deleteCaseAssociationSuccess = async (
   associationDTO: RemoveCaseAssociationDTO
 ): Promise<DeaDataVaultFile> => {
   const response = await callDeaAPIWithCreds(
-    `${baseUrl}datavaults/${dataVaultId}/files/${fileId}/case-associations`,
+    `${baseUrl}datavaults/${dataVaultId}/files/${fileId}/caseAssociations`,
     'DELETE',
     idToken,
     creds,

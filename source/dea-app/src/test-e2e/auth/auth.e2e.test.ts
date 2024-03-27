@@ -158,7 +158,7 @@ describe('API authentication', () => {
     }
 
     // fetch url
-    const url = `${deaApiUrl}auth/login-url?callbackUrl=${cognitoParams.callbackUrl}`;
+    const url = `${deaApiUrl}auth/loginUrl?callbackUrl=${cognitoParams.callbackUrl}`;
     const response = await client.get(url, { validateStatus });
     expect(response.data).toEqual(expectedUrl);
   });

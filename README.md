@@ -154,7 +154,7 @@ For each role, specify the name, description, and an array of endpoints defined 
 
 > - Fetch information on a case, there is no membership requirement on the caller.  
 {
-  "path": "/cases/{caseId}/scoped-information",
+  "path": "/cases/{caseId}/scopedInformation",
   "method": "GET"
 }
 

@@ -128,7 +128,7 @@ paths:
                       $ref: '#/components/schemas/DataVaultFiles'
                   next:
                     type: string
-  /datavaults/{dataVaultId}/case-associations:
+  /datavaults/{dataVaultId}/caseAssociations:
     post:
       summary: Associate data vault file to case
       description: Creates a case file entry to associate data vault file to case
@@ -166,7 +166,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/DataVaultFiles'
-  /datavaults/{dataVaultId}/files/{fileId}/case-associations:
+  /datavaults/{dataVaultId}/files/{fileId}/caseAssociations:
     delete:
       summary: Deletes case association
       tags:
