@@ -62,7 +62,14 @@ describe('get system audit', () => {
         auditId,
       },
     });
-    const result = await getSystemAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
+    const result = await getSystemAudit(
+      event,
+      dummyContext,
+      modelProvider,
+      undefined,
+      undefined,
+      clientMockInstance
+    );
 
     expect(result.statusCode).toEqual(200);
     expect(result.body).toContain('"status":"SUCCEEDED"');
@@ -80,7 +87,14 @@ describe('get system audit', () => {
         auditId,
       },
     });
-    const result = await getSystemAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
+    const result = await getSystemAudit(
+      event,
+      dummyContext,
+      modelProvider,
+      undefined,
+      undefined,
+      clientMockInstance
+    );
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual(QueryExecutionState.RUNNING.valueOf());
@@ -97,7 +111,14 @@ describe('get system audit', () => {
         auditId,
       },
     });
-    const result = await getSystemAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
+    const result = await getSystemAudit(
+      event,
+      dummyContext,
+      modelProvider,
+      undefined,
+      undefined,
+      clientMockInstance
+    );
     expect(result.statusCode).toEqual(200);
     const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');

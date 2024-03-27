@@ -52,7 +52,14 @@ describe('start case audit', () => {
         caseId,
       },
     });
-    const result = await startCaseAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
+    const result = await startCaseAudit(
+      event,
+      dummyContext,
+      modelProvider,
+      undefined,
+      undefined,
+      clientMockInstance
+    );
 
     expect(result.statusCode).toEqual(200);
     const body: { auditId: string } = JSON.parse(result.body);
@@ -73,7 +80,7 @@ describe('start case audit', () => {
       },
     });
     await expect(
-      startCaseAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      startCaseAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Unknown error starting Athena Query.');
   });
 
@@ -91,7 +98,7 @@ describe('start case audit', () => {
       },
     });
     await expect(
-      startCaseAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      startCaseAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Could not find case');
   });
 });

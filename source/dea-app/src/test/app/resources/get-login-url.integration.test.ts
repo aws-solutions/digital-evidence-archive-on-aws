@@ -3,12 +3,10 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { getLoginUrl } from '../../../app/resources/get-login-url';
-import {
-  CognitoSsmParams,
-  getCognitoSsmParams,
-  getLoginHostedUiUrl,
-} from '../../../app/services/auth-service';
+import { getLoginHostedUiUrl } from '../../../app/services/auth-service';
+import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/parameter-service';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { testParametersProvider } from '../../test-parameters-provider';
 
 let expectedUrl: string;
 let cognitoParams: CognitoSsmParams;
@@ -16,12 +14,12 @@ let cognitoParams: CognitoSsmParams;
 describe('get-login-url', () => {
   beforeAll(async () => {
     // get SSM parameters to compare
-    cognitoParams = await getCognitoSsmParams();
+    cognitoParams = await getCognitoSsmParams(testParametersProvider);
     expectedUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
   });
 
   it('successfully get login url from auth service', async () => {
-    const loginUrl = await getLoginHostedUiUrl(cognitoParams.callbackUrl);
+    const loginUrl = await getLoginHostedUiUrl(cognitoParams.callbackUrl, testParametersProvider);
     expect(loginUrl).toEqual(expectedUrl);
   });
 
@@ -32,7 +30,7 @@ describe('get-login-url', () => {
       },
     });
 
-    const response = await getLoginUrl(event, dummyContext);
+    const response = await getLoginUrl(event, dummyContext, undefined, testParametersProvider);
     if (!response.body) {
       fail();
     }

@@ -16,7 +16,6 @@ import { IdentityType } from '../../../app/services/audit-service';
 import { useRefreshToken } from '../../../app/services/auth-service';
 import { createSession, shouldSessionBeConsideredInactive } from '../../../app/services/session-service';
 import { createUser } from '../../../app/services/user-service';
-import { getTokenPayload } from '../../../cognito-token-helpers';
 import { Oauth2Token } from '../../../models/auth';
 import { DeaUser } from '../../../models/user';
 import { sessionResponseSchema } from '../../../models/validation/session';
@@ -32,6 +31,7 @@ import {
   setUserArnWithRole,
 } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
+import { testParametersProvider } from '../../test-parameters-provider';
 
 let repositoryProvider: ModelRepositoryProvider;
 
@@ -62,7 +62,7 @@ describe('lambda pre-execution checks', () => {
       id_token: oauthToken.id_token,
       expires_in: oauthToken.expires_in,
     })}; refreshToken=${JSON.stringify({ refresh_token: oauthToken.refresh_token })}`;
-    const tokenPayload = await getTokenPayload(oauthToken.id_token);
+    const tokenPayload = await cognitoHelper.getTokenPayload(oauthToken.id_token);
     const tokenId = tokenPayload.sub;
     const idPoolId = event.requestContext.identity.cognitoIdentityId ?? 'us-east-1:1-2-3-a-b-c';
 
@@ -72,7 +72,7 @@ describe('lambda pre-execution checks', () => {
     expect(await getUserByTokenId(tokenId, repositoryProvider)).toBeUndefined();
 
     // run the pre-checks
-    await runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider);
+    await runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider, testParametersProvider);
 
     expect(auditEvent.actorIdentity.idType).toEqual(IdentityType.FULL_USER_ID);
 
@@ -125,7 +125,7 @@ describe('lambda pre-execution checks', () => {
 
     const result = await cognitoHelper.getIdTokenForUser(testUser);
     const idToken2 = result.id_token;
-    const tokenId2 = (await getTokenPayload(idToken2)).sub;
+    const tokenId2 = (await cognitoHelper.getTokenPayload(idToken2)).sub;
     expect(tokenId2).toStrictEqual(tokenId);
 
     const event2 = getDummyEvent();
@@ -136,7 +136,13 @@ describe('lambda pre-execution checks', () => {
     })};refreshToken=${JSON.stringify({ refresh_token: result.refresh_token })}`;
 
     const auditEvent2 = getDummyAuditEvent();
-    await runPreExecutionChecks(event2, dummyContext, auditEvent2, repositoryProvider);
+    await runPreExecutionChecks(
+      event2,
+      dummyContext,
+      auditEvent2,
+      repositoryProvider,
+      testParametersProvider
+    );
 
     // Expect that the DEA Role was parsed from the userArn of the Identity Pool credentials
     expect(event2.headers['deaRole']).toBeDefined();
@@ -173,9 +179,9 @@ describe('lambda pre-execution checks', () => {
     const auditEvent = getDummyAuditEvent();
 
     // run the pre-checks
-    await expect(runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider)).rejects.toThrow(
-      NotFoundError
-    );
+    await expect(
+      runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider, testParametersProvider)
+    ).rejects.toThrow(NotFoundError);
   }, 40000);
 
   it('should succeed if session meets requirements', async () => {
@@ -324,7 +330,7 @@ describe('lambda pre-execution checks', () => {
 
     // Get new id token with old refresh token, call API with new id token, it should fail
     // since old session with origin_jti was revoked
-    const [newIdTokenForOldSession] = await useRefreshToken(oauthToken.refresh_token);
+    const [newIdTokenForOldSession] = await useRefreshToken(oauthToken.refresh_token, testParametersProvider);
     await expect(callPreChecks(newIdTokenForOldSession, idPoolId)).rejects.toThrow(ReauthenticationError);
 
     // Try new session again it should succeed.
@@ -357,7 +363,7 @@ describe('lambda pre-execution checks', () => {
     const user = `NoIdentityPoolId${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'NoIdentityPool', 'PoolId');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
-    const tokenPayload = await getTokenPayload(oauthToken.id_token);
+    const tokenPayload = await cognitoHelper.getTokenPayload(oauthToken.id_token);
     const tokenId = tokenPayload.sub;
     const endIdPoolId = `oldusernowupdatesidpoolid${suffix}`;
 
@@ -395,7 +401,7 @@ const callPreChecks = async (oauthToken: Oauth2Token, idPoolId?: string): Promis
   const auditEvent = getDummyAuditEvent();
 
   // Call API expect success
-  await runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider);
+  await runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider, testParametersProvider);
 
   return event.headers['userUlid']!;
 };

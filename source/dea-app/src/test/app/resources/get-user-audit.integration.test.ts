@@ -75,7 +75,14 @@ describe('get user audit', () => {
         auditId,
       },
     });
-    const result = await getUserAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
+    const result = await getUserAudit(
+      event,
+      dummyContext,
+      modelProvider,
+      undefined,
+      undefined,
+      clientMockInstance
+    );
 
     expect(result.statusCode).toEqual(200);
     expect(result.body).toContain('"status":"SUCCEEDED"');
@@ -94,7 +101,14 @@ describe('get user audit', () => {
         auditId,
       },
     });
-    const result = await getUserAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
+    const result = await getUserAudit(
+      event,
+      dummyContext,
+      modelProvider,
+      undefined,
+      undefined,
+      clientMockInstance
+    );
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual(QueryExecutionState.RUNNING.valueOf());
@@ -112,7 +126,14 @@ describe('get user audit', () => {
         auditId,
       },
     });
-    const result = await getUserAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
+    const result = await getUserAudit(
+      event,
+      dummyContext,
+      modelProvider,
+      undefined,
+      undefined,
+      clientMockInstance
+    );
     expect(result.statusCode).toEqual(200);
     const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');
@@ -131,7 +152,7 @@ describe('get user audit', () => {
       },
     });
     await expect(
-      getUserAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      getUserAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrowError('Could not find user');
   });
 });

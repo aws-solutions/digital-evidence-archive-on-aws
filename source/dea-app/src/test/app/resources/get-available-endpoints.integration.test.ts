@@ -6,6 +6,7 @@
 import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { getAvailableEndpointsForUser } from '../../../app/resources/get-available-endpoints';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { testParametersProvider } from '../../test-parameters-provider';
 
 interface AvailableEndpointsBody {
   endpoints: string[];
@@ -21,7 +22,7 @@ describe('get available endpoints', () => {
       theEvent,
       dummyContext,
       undefined,
-      undefined,
+      testParametersProvider,
       undefined
     );
     expect(response.statusCode).toEqual(200);
@@ -36,7 +37,7 @@ describe('get available endpoints', () => {
     });
 
     await expect(
-      getAvailableEndpointsForUser(theEvent, dummyContext, undefined, undefined, undefined)
+      getAvailableEndpointsForUser(theEvent, dummyContext, undefined, testParametersProvider, undefined)
     ).rejects.toThrow(ValidationError);
   });
 
@@ -49,7 +50,7 @@ describe('get available endpoints', () => {
       theEvent,
       dummyContext,
       undefined,
-      undefined,
+      testParametersProvider,
       undefined
     );
     expect(response.statusCode).toEqual(200);

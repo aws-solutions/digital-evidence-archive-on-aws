@@ -8,119 +8,20 @@ import {
   GetCredentialsForIdentityCommand,
   GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
-import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
-import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
-import { APIGatewayProxyEvent } from 'aws-lambda';
 import axios from 'axios';
-import { getCustomUserAgent, getRequiredEnv, getRequiredHeader } from '../../lambda-http-helpers';
+import { getCustomUserAgent, getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { Oauth2Token } from '../../models/auth';
+import { ParametersProvider } from '../../storage/parameters';
 import { ThrottlingException } from '../exceptions/throttling-exception';
 import { ValidationError } from '../exceptions/validation-exception';
-import { PARAM_PREFIX } from './service-constants';
+import { getClientSecret, getCognitoSsmParams } from './parameter-service';
 
 const stage = getRequiredEnv('STAGE');
 const region = getRequiredEnv('AWS_REGION');
 
-export type AvailableEndpointsSignature = (event: APIGatewayProxyEvent) => Promise<string[]>;
-
-export interface CognitoSsmParams {
-  cognitoDomainUrl: string;
-  clientId: string;
-  callbackUrl: string;
-  identityPoolId: string;
-  userPoolId: string;
-  agencyIdpName?: string;
-}
-
-let cachedCognitoParams: CognitoSsmParams;
-
-export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
-  if (cachedCognitoParams) {
-    return cachedCognitoParams;
-  }
-
-  const ssmClient = new SSMClient({ region, customUserAgent: getCustomUserAgent() });
-
-  const cognitoDomainPath = `${PARAM_PREFIX}${stage}-userpool-cognito-domain-param`;
-  const clientIdPath = `${PARAM_PREFIX}${stage}-userpool-client-id-param`;
-  const callbackUrlPath = `${PARAM_PREFIX}${stage}-client-callback-url-param`;
-  const identityPoolIdPath = `${PARAM_PREFIX}${stage}-identity-pool-id-param`;
-  const userPoolIdPath = `${PARAM_PREFIX}${stage}-userpool-id-param`;
-  const agencyIdpNamePath = `${PARAM_PREFIX}${stage}-agency-idp-name`;
-
-  const response = await ssmClient.send(
-    new GetParametersCommand({
-      Names: [
-        cognitoDomainPath,
-        clientIdPath,
-        callbackUrlPath,
-        identityPoolIdPath,
-        userPoolIdPath,
-        agencyIdpNamePath,
-      ],
-    })
-  );
-
-  if (!response.Parameters) {
-    throw new Error(
-      `No parameters found for: ${cognitoDomainPath}, ${clientIdPath}, ${callbackUrlPath}, ${identityPoolIdPath}, ${userPoolIdPath}, ${agencyIdpNamePath}`
-    );
-  }
-
-  let cognitoDomainUrl;
-  let clientId;
-  let callbackUrl;
-  let identityPoolId;
-  let userPoolId;
-  let agencyIdpName;
-
-  response.Parameters.forEach((param) => {
-    switch (param.Name) {
-      case cognitoDomainPath:
-        cognitoDomainUrl = param.Value;
-        if (cognitoDomainUrl && process.env.AWS_REGION === 'us-gov-west-1') {
-          // support our one-click in us-gov-west-1, which only has fips endpoints
-          cognitoDomainUrl = cognitoDomainUrl.replace('.auth.', '.auth-fips.');
-        }
-        break;
-      case clientIdPath:
-        clientId = param.Value;
-        break;
-      case callbackUrlPath:
-        callbackUrl = param.Value;
-        break;
-      case identityPoolIdPath:
-        identityPoolId = param.Value;
-        break;
-      case userPoolIdPath:
-        userPoolId = param.Value;
-        break;
-      case agencyIdpNamePath:
-        agencyIdpName = param.Value;
-        break;
-    }
-  });
-
-  if (cognitoDomainUrl && clientId && callbackUrl && identityPoolId && userPoolId) {
-    cachedCognitoParams = {
-      cognitoDomainUrl,
-      clientId,
-      callbackUrl,
-      identityPoolId,
-      userPoolId,
-      agencyIdpName,
-    };
-    return cachedCognitoParams;
-  } else {
-    throw new Error(
-      `Unable to grab the parameters in SSM needed for token verification: ${cognitoDomainUrl}, ${clientId}, ${callbackUrl}, ${identityPoolId}`
-    );
-  }
-};
-
-export const getLoginHostedUiUrl = async (redirectUri: string) => {
-  const cognitoParams = await getCognitoSsmParams();
+export const getLoginHostedUiUrl = async (redirectUri: string, parametersProvider: ParametersProvider) => {
+  const cognitoParams = await getCognitoSsmParams(parametersProvider);
 
   const oauth2AuthorizeEndpointUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${redirectUri}`;
 
@@ -131,16 +32,16 @@ export const getLoginHostedUiUrl = async (redirectUri: string) => {
   return oauth2AuthorizeEndpointUrl;
 };
 
-export const getCognitoLogoutUrl = async (redirectUri: string) => {
-  const cognitoParams = await getCognitoSsmParams();
+export const getCognitoLogoutUrl = async (redirectUri: string, parametersProvider: ParametersProvider) => {
+  const cognitoParams = await getCognitoSsmParams(parametersProvider);
 
   const cognitoLogoutUrl = `${cognitoParams.cognitoDomainUrl}/logout?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${redirectUri}`;
 
   return cognitoLogoutUrl;
 };
 
-export const getCredentialsByToken = async (idToken: string) => {
-  const cognitoParams = await getCognitoSsmParams();
+export const getCredentialsByToken = async (idToken: string, parametersProvider: ParametersProvider) => {
+  const cognitoParams = await getCognitoSsmParams(parametersProvider);
 
   // Set up the Cognito Identity client
   const cognitoRegion = region.includes('gov') ? 'us-gov-west-1' : region;
@@ -172,30 +73,14 @@ export const getCredentialsByToken = async (idToken: string) => {
   return Credentials;
 };
 
-const getClientSecret = async () => {
-  const clientSecretId = `${PARAM_PREFIX}${stage}/clientSecret`;
-
-  const client = new SecretsManagerClient({ region: region, customUserAgent: getCustomUserAgent() });
-  const input = {
-    SecretId: clientSecretId,
-  };
-  const command = new GetSecretValueCommand(input);
-  const secretResponse = await client.send(command);
-
-  if (secretResponse.SecretString) {
-    return secretResponse.SecretString;
-  } else {
-    throw new ValidationError(`Cognito secret ${clientSecretId} not found!`);
-  }
-};
-
 export const exchangeAuthorizationCode = async (
   authorizationCode: string,
   codeVerifier: string,
+  parametersProvider: ParametersProvider,
   origin?: string,
   callbackOverride?: string
 ): Promise<[Oauth2Token, string, string]> => {
-  const cognitoParams = await getCognitoSsmParams();
+  const cognitoParams = await getCognitoSsmParams(parametersProvider);
   const axiosInstance = axios.create({
     baseURL: cognitoParams.cognitoDomainUrl,
   });
@@ -213,7 +98,7 @@ export const exchangeAuthorizationCode = async (
     callbackUrl = callbackOverride;
   }
 
-  const clientSecret = await getClientSecret();
+  const clientSecret = await getClientSecret(parametersProvider);
 
   const data = new URLSearchParams();
   data.append('grant_type', 'authorization_code');
@@ -256,13 +141,16 @@ export const exchangeAuthorizationCode = async (
   return [response.data, cognitoParams.identityPoolId, cognitoParams.userPoolId];
 };
 
-export const useRefreshToken = async (refreshToken: string): Promise<[Oauth2Token, string, string]> => {
-  const cognitoParams = await getCognitoSsmParams();
+export const useRefreshToken = async (
+  refreshToken: string,
+  parametersProvider: ParametersProvider
+): Promise<[Oauth2Token, string, string]> => {
+  const cognitoParams = await getCognitoSsmParams(parametersProvider);
   const axiosInstance = axios.create({
     baseURL: cognitoParams.cognitoDomainUrl,
   });
 
-  const clientSecret = await getClientSecret();
+  const clientSecret = await getClientSecret(parametersProvider);
 
   const data = new URLSearchParams();
   data.append('grant_type', 'refresh_token');
@@ -302,13 +190,13 @@ export const useRefreshToken = async (refreshToken: string): Promise<[Oauth2Toke
   return [response.data, cognitoParams.identityPoolId, cognitoParams.userPoolId];
 };
 
-export const revokeRefreshToken = async (refreshToken: string) => {
-  const cognitoParams = await getCognitoSsmParams();
+export const revokeRefreshToken = async (refreshToken: string, parametersProvider: ParametersProvider) => {
+  const cognitoParams = await getCognitoSsmParams(parametersProvider);
   const axiosInstance = axios.create({
     baseURL: cognitoParams.cognitoDomainUrl,
   });
 
-  const clientSecret = await getClientSecret();
+  const clientSecret = await getClientSecret(parametersProvider);
 
   // Get encoded client ID for client secret support
   const encodedClientId = Buffer.from(`${cognitoParams.clientId}:${clientSecret}`).toString('base64');
@@ -339,28 +227,4 @@ export const revokeRefreshToken = async (refreshToken: string) => {
   }
 
   return response.status;
-};
-
-export const getAvailableEndpoints: AvailableEndpointsSignature = async (event) => {
-  const deaRoleName = getRequiredHeader(event, 'deaRole');
-  const ssmClient = new SSMClient({ region, customUserAgent: getCustomUserAgent() });
-  const roleActionsPath = `${PARAM_PREFIX}${stage}-${deaRoleName}-actions`;
-  const deleteAllowedParamPath = `${PARAM_PREFIX}${stage}/deletionAllowed`;
-  const response = await ssmClient.send(
-    new GetParametersCommand({
-      Names: [roleActionsPath, deleteAllowedParamPath],
-    })
-  );
-
-  const roleActionsParam = response.Parameters?.find((parameter) => parameter.Name === roleActionsPath);
-  const roleActionsList = roleActionsParam?.Value?.split(',') ?? [];
-
-  const deletionAllowedParam = response.Parameters?.find(
-    (parameter) => parameter.Name === deleteAllowedParamPath
-  );
-  const deletionAllowed = deletionAllowedParam?.Value ?? 'false';
-  if (deletionAllowed === 'true' && roleActionsList.includes('/cases/{caseId}/statusPUT')) {
-    roleActionsList.push('/cases/{caseId}/filesDELETE');
-  }
-  return roleActionsList;
 };

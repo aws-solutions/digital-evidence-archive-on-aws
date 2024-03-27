@@ -3920,7 +3920,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -3937,7 +3946,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4035,7 +4055,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -4052,7 +4081,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4182,7 +4222,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -4199,7 +4248,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4313,7 +4373,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -4330,7 +4399,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4444,7 +4524,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -4461,7 +4550,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4575,7 +4675,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -4592,7 +4701,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4706,7 +4826,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -4723,7 +4852,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4837,7 +4977,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -4854,7 +5003,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4968,7 +5128,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -4985,7 +5154,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5099,7 +5279,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -5116,7 +5305,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5230,7 +5430,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -5247,7 +5456,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5361,7 +5581,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -5378,7 +5607,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5492,7 +5732,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -5509,7 +5758,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5623,7 +5883,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -5640,7 +5909,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5754,7 +6034,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -5771,7 +6060,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5885,7 +6185,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -5902,7 +6211,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -6016,7 +6336,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -6033,7 +6362,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -6147,7 +6487,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -6164,7 +6513,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -6278,7 +6638,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -6295,7 +6664,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -6409,7 +6789,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -6426,7 +6815,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -6540,7 +6940,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -6557,7 +6966,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -6671,7 +7091,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -6688,7 +7117,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -6802,7 +7242,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -6819,7 +7268,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -6933,7 +7393,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -6950,7 +7419,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7064,7 +7544,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -7081,7 +7570,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7195,7 +7695,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -7212,7 +7721,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7326,7 +7846,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -7343,7 +7872,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7441,7 +7981,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -7458,7 +8007,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7588,7 +8148,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -7605,7 +8174,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7719,7 +8299,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -7736,7 +8325,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7834,7 +8434,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -7851,7 +8460,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaexecutionlambdarole5E07FC29",
@@ -7981,7 +8601,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -7998,7 +8627,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -8112,7 +8752,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -8129,7 +8778,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -8243,7 +8903,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -8260,7 +8929,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -8374,7 +9054,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -8391,7 +9080,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeainitiateuploadrole47691B14",
@@ -8505,7 +9205,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -8522,7 +9231,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -8636,7 +9356,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -8653,7 +9382,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -8767,7 +9507,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -8784,7 +9533,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -8898,7 +9658,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -8915,7 +9684,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9029,7 +9809,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -9046,7 +9835,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9160,7 +9960,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -9177,7 +9986,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9291,7 +10111,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -9308,7 +10137,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9422,7 +10262,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -9439,7 +10288,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9553,7 +10413,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -9570,7 +10439,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -9684,7 +10564,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -9701,7 +10590,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeacompleteuploadrole5698638D",
@@ -9815,7 +10715,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -9832,7 +10741,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9946,7 +10866,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -9963,7 +10892,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10077,7 +11017,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -10094,7 +11043,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10208,7 +11168,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -10225,7 +11194,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10339,7 +11319,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             },
             "NODE_OPTIONS": "--enable-source-maps",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_ENABLED": "true",
+            "PARAMETERS_SECRETS_EXTENSION_CACHE_SIZE": "1000",
+            "PARAMETERS_SECRETS_EXTENSION_HTTP_PORT": "2773",
+            "PARAMETERS_SECRETS_EXTENSION_LOG_LEVEL": "info",
+            "PARAMETERS_SECRETS_EXTENSION_MAX_CONNECTIONS": "3",
             "SAMESITE": "None",
+            "SECRETS_MANAGER_TIMEOUT_MILLIS": "0",
+            "SECRETS_MANAGER_TTL": "300",
+            "SSM_PARAMETER_STORE_TIMEOUT_MILLIS": "0",
+            "SSM_PARAMETER_STORE_TTL": "300",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendConstructDeaTableB48721A0",
@@ -10356,7 +11345,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "Layers": Array [
+          Object {
+            "Fn::FindInMap": Array [
+              "ParamsandsecretslayerMap",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              "1x0x103xx86x64",
+            ],
+          },
+        ],
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -18701,7 +19701,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "PolicyDocument": Object {
           "Statement": Array [
             Object {
-              "Action": "ssm:GetParameters",
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::Join": Array [
@@ -18986,7 +19989,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": "ssm:GetParameters",
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::Join": Array [
@@ -19296,7 +20302,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": "ssm:GetParameters",
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::Join": Array [
@@ -19674,7 +20683,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": "ssm:GetParameters",
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::Join": Array [
@@ -19854,7 +20866,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": "ssm:GetParameters",
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::Join": Array [

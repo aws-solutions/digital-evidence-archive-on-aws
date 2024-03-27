@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import * as ServiceConstants from '@aws/dea-app/lib/app/services/service-constants';
+import { PARAM_PREFIX } from '@aws/dea-app/lib/storage/parameters';
 import { NestedStack, SecretValue, Stack, StackProps } from 'aws-cdk-lib';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
@@ -68,7 +68,7 @@ export class DeaParameters extends NestedStack {
   private storeDeletionAllowedInformationInSSM() {
     const stage = deaConfig.stage();
     new StringParameter(this, 'deletion-allowed-ssm-param', {
-      parameterName: `${ServiceConstants.PARAM_PREFIX}${stage}/deletionAllowed`,
+      parameterName: `${PARAM_PREFIX}${stage}/deletionAllowed`,
       allowedPattern: '^true|false$',
       stringValue: deaConfig.deletionAllowed().toString(),
       description: 'Is deletion of files allowed in this installation of DEA',
@@ -80,7 +80,7 @@ export class DeaParameters extends NestedStack {
     const stage = deaConfig.stage();
     availableEndpointsPerRole.forEach((endpointStrings: string[], roleName: string) => {
       new StringListParameter(this, `${roleName}_actions`, {
-        parameterName: `${ServiceConstants.PARAM_PREFIX}${stage}-${roleName}-actions`,
+        parameterName: `${PARAM_PREFIX}${stage}-${roleName}-actions`,
         stringListValue: endpointStrings,
         description: 'stores the available endpoints for a role',
         tier: ParameterTier.STANDARD,
@@ -91,8 +91,8 @@ export class DeaParameters extends NestedStack {
 
   private storeSecrets(clientSecret: SecretValue, kmsKey: Key) {
     const stage = deaConfig.stage();
-    new Secret(this, `${ServiceConstants.PARAM_PREFIX}${stage}/clientSecret`, {
-      secretName: `${ServiceConstants.PARAM_PREFIX}${stage}/clientSecret`,
+    new Secret(this, `${PARAM_PREFIX}${stage}/clientSecret`, {
+      secretName: `${PARAM_PREFIX}${stage}/clientSecret`,
       encryptionKey: kmsKey,
       secretStringValue: clientSecret,
     });
@@ -112,7 +112,7 @@ export class DeaParameters extends NestedStack {
 
     // NOTE: all Parameters must use the same path prefix so
     // they can be specified as protected in the DeaPermissionsBoundary
-    const pathPrefix = `${ServiceConstants.PARAM_PREFIX}${stage}-`;
+    const pathPrefix = `${PARAM_PREFIX}${stage}-`;
 
     new StringParameter(this, 'user-pool-id-ssm-param', {
       parameterName: `${pathPrefix}userpool-id-param`,

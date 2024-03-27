@@ -105,7 +105,14 @@ describe('get case file audit', () => {
         auditId,
       },
     });
-    const result = await getCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(
+      event,
+      dummyContext,
+      modelProvider,
+      undefined,
+      undefined,
+      clientMockInstance
+    );
 
     expect(result.statusCode).toEqual(200);
     expect(result.body).toContain('"status":"SUCCEEDED"');
@@ -125,7 +132,14 @@ describe('get case file audit', () => {
         auditId,
       },
     });
-    const result = await getCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(
+      event,
+      dummyContext,
+      modelProvider,
+      undefined,
+      undefined,
+      clientMockInstance
+    );
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual(QueryExecutionState.RUNNING.valueOf());
@@ -144,7 +158,14 @@ describe('get case file audit', () => {
         auditId,
       },
     });
-    const result = await getCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
+    const result = await getCaseFileAudit(
+      event,
+      dummyContext,
+      modelProvider,
+      undefined,
+      undefined,
+      clientMockInstance
+    );
     expect(result.statusCode).toEqual(200);
     const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');
@@ -165,7 +186,7 @@ describe('get case file audit', () => {
       },
     });
     await expect(
-      getCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      getCaseFileAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Could not find case');
   });
 
@@ -183,7 +204,7 @@ describe('get case file audit', () => {
       },
     });
     await expect(
-      getCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      getCaseFileAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Could not find file');
   });
 });

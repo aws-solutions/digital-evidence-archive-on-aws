@@ -7,11 +7,14 @@ import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { Credentials, aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import _ from 'lodash';
-import { getCognitoSsmParams } from '../../app/services/auth-service';
-import { PARAM_PREFIX } from '../../app/services/service-constants';
-import { getTokenPayload } from '../../cognito-token-helpers';
 import { Oauth2Token } from '../../models/auth';
-import { PkceStrings, getAuthorizationCode, getPkceStrings } from '../helpers/auth-helper';
+import { PARAM_PREFIX } from '../../storage/parameters';
+import {
+  PkceStrings,
+  getAuthorizationCode,
+  getCognitoSsmParams,
+  getPkceStrings,
+} from '../helpers/auth-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
@@ -50,7 +53,7 @@ describe('API authentication', () => {
   it('should have the DEARole field in the id Token', async () => {
     const [_creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
-    const payload = await getTokenPayload(idToken.id_token);
+    const payload = await cognitoHelper.getTokenPayload(idToken.id_token);
     expect(payload['custom:DEARole']).toStrictEqual('AuthTestGroup');
   }, 40000);
 
@@ -473,7 +476,7 @@ describe('API authentication', () => {
     const idToken = retrievedTokens.id_token;
 
     // Confirm IdToken has the correct fields
-    const payload = await getTokenPayload(idToken);
+    const payload = await cognitoHelper.getTokenPayload(idToken);
     expect(payload['custom:DEARole']).toStrictEqual('CaseWorker');
     expect(payload['family_name']).toBeDefined();
     expect(payload['given_name']).toBeDefined();

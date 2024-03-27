@@ -5,7 +5,7 @@
 
 import path from 'path';
 import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
-import * as ServiceConstants from '@aws/dea-app/lib/app/services/service-constants';
+import { PARAM_PREFIX } from '@aws/dea-app/lib/storage/parameters';
 import { restrictAccountStatementStatementProps } from '@aws/dea-app/lib/storage/restrict-account-statement';
 import { Aws, Duration, Fn, NestedStack } from 'aws-cdk-lib';
 import {
@@ -31,7 +31,14 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { CfnFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
+import {
+  CfnFunction,
+  ParamsAndSecretsLayerVersion,
+  ParamsAndSecretsLogLevel,
+  ParamsAndSecretsVersions,
+  Runtime,
+  Tracing,
+} from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
@@ -510,14 +517,23 @@ export class DeaRestApiConstruct extends Construct {
     pathToSource: string,
     lambdaEnv: LambdaEnvironment
   ): NodejsFunction {
+    // The below is a lambda layer which automatically caches results from SSM Parameter Store and
+    // SecretsManager without adding caching code ourself. Saves on network calls and thus latency
+    const ttlDuration = Duration.millis(deaConfig.lambdaCacheTtl());
+    const paramsAndSecrets = ParamsAndSecretsLayerVersion.fromVersion(ParamsAndSecretsVersions.V1_0_103, {
+      logLevel: ParamsAndSecretsLogLevel.INFO,
+      parameterStoreTtl: ttlDuration,
+      secretsManagerTtl: ttlDuration,
+    });
     const lambda = new NodejsFunction(this, id, {
-      // Set to 2048MB to mitigate memory allocation issues. Some executions were using more than 512MB.
+      // Set to 3000MB to mitigate memory allocation issues. Some executions were using more than 512MB.
       // E.g: Error: Runtime exited with error: signal: killed Runtime.ExitError.
-      memorySize: 2048,
+      memorySize: 3000,
       role: role,
       timeout: Duration.seconds(20),
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
+      paramsAndSecrets,
       tracing: Tracing.PASS_THROUGH,
       // nosemgrep
       entry: path.join(__dirname, pathToSource),
@@ -703,9 +719,9 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['ssm:GetParameters'],
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
         resources: [
-          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${PARAM_PREFIX}${STAGE}*`,
         ],
       })
     );
@@ -850,11 +866,11 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['ssm:GetParameters'],
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
         resources: [
-          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${
-            ServiceConstants.PARAM_PREFIX
-          }${deaConfig.stage()}*`,
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${
+            Aws.ACCOUNT_ID
+          }:parameter${PARAM_PREFIX}${deaConfig.stage()}*`,
         ],
       })
     );
@@ -909,11 +925,11 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['ssm:GetParameters'],
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
         resources: [
-          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${
-            ServiceConstants.PARAM_PREFIX
-          }${deaConfig.stage()}*`,
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${
+            Aws.ACCOUNT_ID
+          }:parameter${PARAM_PREFIX}${deaConfig.stage()}*`,
         ],
       })
     );
@@ -955,9 +971,9 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['ssm:GetParameters'],
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
         resources: [
-          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${PARAM_PREFIX}${STAGE}*`,
         ],
       })
     );
@@ -966,7 +982,7 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['secretsmanager:GetSecretValue'],
         resources: [
-          `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:${ServiceConstants.PARAM_PREFIX}${STAGE}/clientSecret-*`,
+          `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:${PARAM_PREFIX}${STAGE}/clientSecret-*`,
         ],
       })
     );
@@ -1019,9 +1035,9 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['ssm:GetParameters'],
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
         resources: [
-          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${PARAM_PREFIX}${STAGE}*`,
         ],
       })
     );

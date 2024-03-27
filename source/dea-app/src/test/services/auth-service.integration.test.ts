@@ -6,18 +6,18 @@
 import Joi from 'joi';
 import { ValidationError } from '../../app/exceptions/validation-exception';
 import {
-  CognitoSsmParams,
   exchangeAuthorizationCode,
-  getCognitoSsmParams,
   getCredentialsByToken,
   getLoginHostedUiUrl,
   revokeRefreshToken,
   useRefreshToken,
 } from '../../app/services/auth-service';
+import { CognitoSsmParams, getCognitoSsmParams } from '../../app/services/parameter-service';
 import { Oauth2TokenSchema } from '../../models/validation/auth';
 import { PkceStrings, getAuthorizationCode, getPkceStrings } from '../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../test-e2e/resources/test-helpers';
+import { testParametersProvider } from '../test-parameters-provider';
 
 let cognitoParams: CognitoSsmParams;
 let pkceStrings: PkceStrings;
@@ -37,7 +37,7 @@ describe('auth service', () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
     await cognitoHelper.createUser(testUser2, 'AuthTestGroup', firstName, lastName);
-    cognitoParams = await getCognitoSsmParams();
+    cognitoParams = await getCognitoSsmParams(testParametersProvider);
     pkceStrings = getPkceStrings();
   });
 
@@ -46,7 +46,7 @@ describe('auth service', () => {
   });
 
   it('should return the correct login URL', async () => {
-    const loginUrl = await getLoginHostedUiUrl(cognitoParams.callbackUrl);
+    const loginUrl = await getLoginHostedUiUrl(cognitoParams.callbackUrl, testParametersProvider);
 
     expect(loginUrl).toEqual(
       `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`
@@ -66,6 +66,7 @@ describe('auth service', () => {
     const [tokens] = await exchangeAuthorizationCode(
       authCode,
       pkceStrings.code_verifier,
+      testParametersProvider,
       undefined,
       authTestUrl
     );
@@ -77,7 +78,7 @@ describe('auth service', () => {
     // Assert if no id token fectched in exchangeAuthorizationCode
     expect(idToken).toBeTruthy();
 
-    const credentials = await getCredentialsByToken(idToken);
+    const credentials = await getCredentialsByToken(idToken, testParametersProvider);
 
     expect(credentials).toHaveProperty('AccessKeyId');
     expect(credentials).toHaveProperty('SecretKey');
@@ -97,6 +98,7 @@ describe('auth service', () => {
     const [{ id_token }] = await exchangeAuthorizationCode(
       authCode,
       pkceStrings.code_verifier,
+      testParametersProvider,
       undefined,
       authTestUrl
     );
@@ -106,34 +108,34 @@ describe('auth service', () => {
   }, 40000);
 
   it('revoke token should fail when trying to revoke id Token', async () => {
-    await expect(revokeRefreshToken(idToken)).rejects.toThrow(ValidationError);
+    await expect(revokeRefreshToken(idToken, testParametersProvider)).rejects.toThrow(ValidationError);
   }, 40000);
 
   it('successfully obtain new id token using refresh token. Revoking the token should prevent future use for the refresh token', async () => {
-    const [response] = await useRefreshToken(refreshToken);
+    const [response] = await useRefreshToken(refreshToken, testParametersProvider);
     Joi.assert(response, Oauth2TokenSchema);
 
     // now revoke the token
-    const revokeResponse = await revokeRefreshToken(refreshToken);
+    const revokeResponse = await revokeRefreshToken(refreshToken, testParametersProvider);
     expect(revokeResponse).toEqual(200);
 
     // try to use the refresh token again and it should fail
-    await expect(useRefreshToken(refreshToken)).rejects.toThrow(ValidationError);
+    await expect(useRefreshToken(refreshToken, testParametersProvider)).rejects.toThrow(ValidationError);
   }, 60000);
 
   it('should throw an error if the authorization code is not valid', async () => {
     const dummyAuthCode = 'DUMMY_AUTH_CODE';
     const dummyCodeVerifier = 'DUMMY_PKCE_VERIFIER';
-    await expect(exchangeAuthorizationCode(dummyAuthCode, dummyCodeVerifier)).rejects.toThrow(
-      ValidationError
-    );
+    await expect(
+      exchangeAuthorizationCode(dummyAuthCode, dummyCodeVerifier, testParametersProvider)
+    ).rejects.toThrow(ValidationError);
   }, 40000);
 
   it('should throw an error if the id token is not valid', async () => {
     const dummyIdToken = 'DUMMY_ID_TOKEN';
     const dummyCodeChallenge = 'DUMMY_CODE_CHALLENGE';
-    await expect(exchangeAuthorizationCode(dummyIdToken, dummyCodeChallenge)).rejects.toThrow(
-      ValidationError
-    );
+    await expect(
+      exchangeAuthorizationCode(dummyIdToken, dummyCodeChallenge, testParametersProvider)
+    ).rejects.toThrow(ValidationError);
   }, 40000);
 });

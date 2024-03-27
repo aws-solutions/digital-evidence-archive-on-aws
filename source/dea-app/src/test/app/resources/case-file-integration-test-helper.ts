@@ -103,7 +103,13 @@ export const callInitiateCaseFileUpload = async (
       chunkSizeBytes,
     }),
   });
-  const response = await initiateCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
+  const response = await initiateCaseFileUpload(
+    event,
+    dummyContext,
+    repositoryProvider,
+    undefined,
+    DATASETS_PROVIDER
+  );
   checkApiSucceeded(response);
   return JSON.parse(response.body);
 };
@@ -127,7 +133,13 @@ export const callCompleteCaseFileUpload = async (
       ulid,
     }),
   });
-  const response = await completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
+  const response = await completeCaseFileUpload(
+    event,
+    dummyContext,
+    repositoryProvider,
+    undefined,
+    DATASETS_PROVIDER
+  );
 
   checkApiSucceeded(response);
   return JSON.parse(response.body);
@@ -154,7 +166,13 @@ export const callDownloadCaseFile = async (
       downloadReason: reason,
     }),
   });
-  const response = await downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
+  const response = await downloadCaseFile(
+    event,
+    dummyContext,
+    repositoryProvider,
+    undefined,
+    DATASETS_PROVIDER
+  );
   checkApiSucceeded(response);
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -176,7 +194,13 @@ export const callRestoreCaseFile = async (
       fileId,
     },
   });
-  const response = await restoreCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
+  const response = await restoreCaseFile(
+    event,
+    dummyContext,
+    repositoryProvider,
+    undefined,
+    DATASETS_PROVIDER
+  );
   expect(response.statusCode).toEqual(204);
 };
 
@@ -216,7 +240,13 @@ export const callGetCaseFileDetails = async (
       fileId,
     },
   });
-  const response = await getCaseFileDetails(event, dummyContext, repositoryProvider, DATASETS_PROVIDER);
+  const response = await getCaseFileDetails(
+    event,
+    dummyContext,
+    repositoryProvider,
+    undefined,
+    DATASETS_PROVIDER
+  );
   checkApiSucceeded(response);
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -288,7 +318,13 @@ export const callUpdateCaseStatusAndValidate = async (
       status,
     }),
   });
-  const response = await updateCaseStatus(event, dummyContext, repositoryProvider, datasetsProvider);
+  const response = await updateCaseStatus(
+    event,
+    dummyContext,
+    repositoryProvider,
+    undefined,
+    datasetsProvider
+  );
   checkApiSucceeded(response);
 
   const updatedCase: DeaCase = jsonParseWithDates(response.body);

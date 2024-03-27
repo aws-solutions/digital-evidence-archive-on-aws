@@ -10,6 +10,7 @@ import { taskIdJoi } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
 import { defaultDataSyncProvider } from '../../storage/dataSync';
+import { defaultParametersProvider } from '../../storage/parameters';
 import { defaultAthenaClient } from '../audit/dea-audit-plugin';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getDataSyncTask, startDatasyncTaskExecution } from '../services/data-sync-service';
@@ -23,6 +24,9 @@ export const createDataVaultExecution: DEAGatewayProxyHandler = async (
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  _parametersProvider = defaultParametersProvider,
   /* istanbul ignore next */
   _datasetsProvider = defaultDatasetsProvider,
   /* istanbul ignore next */

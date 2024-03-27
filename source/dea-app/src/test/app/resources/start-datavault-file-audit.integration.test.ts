@@ -89,6 +89,7 @@ describe('start datavault file audit', () => {
       dummyContext,
       modelProvider,
       undefined,
+      undefined,
       clientMockInstance
     );
 
@@ -112,7 +113,7 @@ describe('start datavault file audit', () => {
       },
     });
     await expect(
-      startDataVaultFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      startDataVaultFileAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Unknown error starting Athena Query.');
   });
 
@@ -131,7 +132,7 @@ describe('start datavault file audit', () => {
       },
     });
     await expect(
-      startDataVaultFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      startDataVaultFileAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('DataVault not found.');
   });
 
@@ -150,7 +151,7 @@ describe('start datavault file audit', () => {
       },
     });
     await expect(
-      startDataVaultFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      startDataVaultFileAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('DataVault File not found.');
   });
 });

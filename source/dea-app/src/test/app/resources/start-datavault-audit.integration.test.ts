@@ -65,6 +65,7 @@ describe('start datavault audit', () => {
       dummyContext,
       modelProvider,
       undefined,
+      undefined,
       clientMockInstance
     );
 
@@ -87,7 +88,7 @@ describe('start datavault audit', () => {
       },
     });
     await expect(
-      startDataVaultAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      startDataVaultAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Unknown error starting Athena Query.');
   });
 
@@ -105,7 +106,7 @@ describe('start datavault audit', () => {
       },
     });
     await expect(
-      startDataVaultAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      startDataVaultAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('DataVault not found.');
   });
 });

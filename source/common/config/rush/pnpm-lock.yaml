@@ -104,9 +104,7 @@ importers:
       '@aws-sdk/client-identitystore': 3.474.0
       '@aws-sdk/client-s3': 3.474.0
       '@aws-sdk/client-s3-control': 3.474.0
-      '@aws-sdk/client-secrets-manager': 3.474.0
       '@aws-sdk/client-sqs': 3.474.0
-      '@aws-sdk/client-ssm': 3.474.0
       '@aws-sdk/client-sts': 3.474.0
       '@aws-sdk/s3-request-presigner': 3.474.0
       '@aws-sdk/types': 3.468.0
@@ -134,6 +132,8 @@ importers:
       uuid: 9.0.1
     devDependencies:
       '@aws-sdk/client-iam': 3.474.0
+      '@aws-sdk/client-secrets-manager': 3.474.0
+      '@aws-sdk/client-ssm': 3.474.0
       '@rushstack/eslint-config': 3.5.1_sjjl3gun7puonkp27uqtyjm5b4
       '@rushstack/heft': 0.50.7_@types+node@18.19.3
       '@rushstack/heft-jest-plugin': 0.5.13_ml6k4q7qqqosyzpb55hyaznf7i
@@ -1449,7 +1449,7 @@ packages:
       uuid: 8.3.2
     transitivePeerDependencies:
       - aws-crt
-    dev: false
+    dev: true
 
   /@aws-sdk/client-sqs/3.474.0:
     resolution: {integrity: sha512-FtdoZFQit790JUEZJslq0BBkx/CkLvvoTcLOKMCclQUOWHGi83Fsd++MzYHijE24ZXojgmvWxJirscKFwKn9dQ==}
@@ -1547,7 +1547,7 @@ packages:
       uuid: 8.3.2
     transitivePeerDependencies:
       - aws-crt
-    dev: false
+    dev: true
 
   /@aws-sdk/client-sso/3.474.0:
     resolution: {integrity: sha512-6toUmQUIHkDM/P2/nyLEO/mcWOIPByTlegqX9VCHhYh9Fs5MDT2nit7I6fZzBjZjB5oVTwKjbzgxae9cE3bhqw==}
@@ -6657,7 +6657,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001599
+      caniuse-lite: 1.0.30001600
       electron-to-chromium: 1.4.614
       node-releases: 2.0.14
       update-browserslist-db: 1.0.13_browserslist@4.22.2
@@ -6738,8 +6738,8 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  /caniuse-lite/1.0.30001599:
-    resolution: {integrity: sha512-LRAQHZ4yT1+f9LemSMeqdMpMxZcc4RMWdj4tiFe3G8tNkWK+E58g+/tzotb5cU6TbcVJLr4fySiAW7XmxQvZQA==}
+  /caniuse-lite/1.0.30001600:
+    resolution: {integrity: sha512-+2S9/2JFhYmYaDpZvo0lKkfvuKIglrx68MwOBqMGHhQsNkLjB5xtc/TGoEPs+MxjSyN/72qer2g97nzR641mOQ==}
 
   /caseless/0.12.0:
     resolution: {integrity: sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==}
@@ -10698,7 +10698,7 @@ packages:
       '@next/env': 14.1.0
       '@swc/helpers': 0.5.2
       busboy: 1.6.0
-      caniuse-lite: 1.0.30001599
+      caniuse-lite: 1.0.30001600
       graceful-fs: 4.2.11
       postcss: 8.4.31
       react: 18.2.0

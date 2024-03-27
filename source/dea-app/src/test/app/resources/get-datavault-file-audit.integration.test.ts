@@ -123,6 +123,7 @@ describe('get datavault file audit', () => {
       dummyContext,
       modelProvider,
       undefined,
+      undefined,
       clientMockInstance
     );
 
@@ -149,6 +150,7 @@ describe('get datavault file audit', () => {
       dummyContext,
       modelProvider,
       undefined,
+      undefined,
       clientMockInstance
     );
     expect(result.statusCode).toEqual(200);
@@ -174,6 +176,7 @@ describe('get datavault file audit', () => {
       dummyContext,
       modelProvider,
       undefined,
+      undefined,
       clientMockInstance
     );
     expect(result.statusCode).toEqual(200);
@@ -196,7 +199,7 @@ describe('get datavault file audit', () => {
       },
     });
     await expect(
-      getDataVaultFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      getDataVaultFileAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('DataVault not found.');
   });
 
@@ -214,7 +217,7 @@ describe('get datavault file audit', () => {
       },
     });
     await expect(
-      getDataVaultFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      getDataVaultFileAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('DataVault File not found.');
   });
 });

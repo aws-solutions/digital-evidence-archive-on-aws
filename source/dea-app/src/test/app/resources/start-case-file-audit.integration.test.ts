@@ -92,6 +92,7 @@ describe('start case file audit', () => {
       dummyContext,
       modelProvider,
       undefined,
+      undefined,
       clientMockInstance
     );
 
@@ -115,7 +116,7 @@ describe('start case file audit', () => {
       },
     });
     await expect(
-      startCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      startCaseFileAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Unknown error starting Athena Query.');
   });
 
@@ -134,7 +135,7 @@ describe('start case file audit', () => {
       },
     });
     await expect(
-      startCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      startCaseFileAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Could not find case');
   });
 
@@ -153,7 +154,7 @@ describe('start case file audit', () => {
       },
     });
     await expect(
-      startCaseFileAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      startCaseFileAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Could not find file');
   });
 });

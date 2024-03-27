@@ -14,6 +14,7 @@ import { initiateCaseFileUploadRequestSchema } from '../../models/validation/cas
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
+import { defaultParametersProvider } from '../../storage/parameters';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseFileService from '../services/case-file-service';
 import { validateInitiateUploadRequirements } from '../services/case-file-service';
@@ -26,6 +27,9 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  _parametersProvider = defaultParametersProvider,
   /* istanbul ignore next */
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {

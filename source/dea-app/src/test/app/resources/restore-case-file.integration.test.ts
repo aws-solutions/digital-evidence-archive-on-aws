@@ -103,9 +103,9 @@ describe('Test case file restore', () => {
         fileId: FILE_ULID,
       },
     });
-    await expect(restoreCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)).rejects.toThrow(
-      `Required path param 'caseId' is missing.`
-    );
+    await expect(
+      restoreCaseFile(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
+    ).rejects.toThrow(`Required path param 'caseId' is missing.`);
   });
 
   it('should throw a validation exception when file-id path param missing', async () => {
@@ -117,9 +117,9 @@ describe('Test case file restore', () => {
         caseId: FILE_ULID,
       },
     });
-    await expect(restoreCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)).rejects.toThrow(
-      `Required path param 'fileId' is missing.`
-    );
+    await expect(
+      restoreCaseFile(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
+    ).rejects.toThrow(`Required path param 'fileId' is missing.`);
   });
 
   it("should throw an exception when case-file doesn't exist", async () => {

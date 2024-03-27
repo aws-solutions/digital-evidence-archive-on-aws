@@ -2,8 +2,11 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import pkceChallenge from 'pkce-challenge';
 import puppeteer from 'puppeteer';
+import { CognitoSsmParams } from '../../app/services/parameter-service';
+import { PARAM_PREFIX } from '../../storage/parameters';
 import { testEnv } from './settings';
 
 export interface PkceStrings {
@@ -73,4 +76,91 @@ export const getPkceStrings = (): PkceStrings => {
     code_challenge: challenge.code_challenge,
     code_verifier: challenge.code_verifier,
   };
+};
+
+let cachedCognitoParams: CognitoSsmParams;
+
+export const getCognitoSsmParams = async (): Promise<CognitoSsmParams> => {
+  if (cachedCognitoParams) {
+    return cachedCognitoParams;
+  }
+
+  const ssmClient = new SSMClient({ region: testEnv.awsRegion });
+  const stage = testEnv.stage;
+
+  const cognitoDomainPath = `${PARAM_PREFIX}${stage}-userpool-cognito-domain-param`;
+  const clientIdPath = `${PARAM_PREFIX}${stage}-userpool-client-id-param`;
+  const callbackUrlPath = `${PARAM_PREFIX}${stage}-client-callback-url-param`;
+  const identityPoolIdPath = `${PARAM_PREFIX}${stage}-identity-pool-id-param`;
+  const userPoolIdPath = `${PARAM_PREFIX}${stage}-userpool-id-param`;
+  const agencyIdpNamePath = `${PARAM_PREFIX}${stage}-agency-idp-name`;
+
+  const response = await ssmClient.send(
+    new GetParametersCommand({
+      Names: [
+        cognitoDomainPath,
+        clientIdPath,
+        callbackUrlPath,
+        identityPoolIdPath,
+        userPoolIdPath,
+        agencyIdpNamePath,
+      ],
+    })
+  );
+
+  if (!response.Parameters) {
+    throw new Error(
+      `No parameters found for: ${cognitoDomainPath}, ${clientIdPath}, ${callbackUrlPath}, ${identityPoolIdPath}, ${userPoolIdPath}, ${agencyIdpNamePath}`
+    );
+  }
+
+  let cognitoDomainUrl;
+  let clientId;
+  let callbackUrl;
+  let identityPoolId;
+  let userPoolId;
+  let agencyIdpName;
+
+  response.Parameters.forEach((param) => {
+    switch (param.Name) {
+      case cognitoDomainPath:
+        cognitoDomainUrl = param.Value;
+        if (cognitoDomainUrl && process.env.AWS_REGION === 'us-gov-west-1') {
+          // support our one-click in us-gov-west-1, which only has fips endpoints
+          cognitoDomainUrl = cognitoDomainUrl.replace('.auth.', '.auth-fips.');
+        }
+        break;
+      case clientIdPath:
+        clientId = param.Value;
+        break;
+      case callbackUrlPath:
+        callbackUrl = param.Value;
+        break;
+      case identityPoolIdPath:
+        identityPoolId = param.Value;
+        break;
+      case userPoolIdPath:
+        userPoolId = param.Value;
+        break;
+      case agencyIdpNamePath:
+        agencyIdpName = param.Value;
+        break;
+    }
+  });
+
+  if (cognitoDomainUrl && clientId && callbackUrl && identityPoolId && userPoolId) {
+    cachedCognitoParams = {
+      cognitoDomainUrl,
+      clientId,
+      callbackUrl,
+      identityPoolId,
+      userPoolId,
+      agencyIdpName,
+    };
+    return cachedCognitoParams;
+  } else {
+    throw new Error(
+      `Unable to grab the parameters in SSM needed for token verification: ${cognitoDomainUrl}, ${clientId}, ${callbackUrl}, ${identityPoolId}`
+    );
+  }
 };

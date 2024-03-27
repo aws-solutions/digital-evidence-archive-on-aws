@@ -11,6 +11,7 @@ import { updateCaseStatusSchema } from '../../models/validation/case';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
+import { defaultParametersProvider } from '../../storage/parameters';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
@@ -23,6 +24,9 @@ export const updateCaseStatus: DEAGatewayProxyHandler = async (
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  _parametersProvider = defaultParametersProvider,
   /* istanbul ignore next */
   datasetsProvider: DatasetsProvider = defaultDatasetsProvider
 ) => {

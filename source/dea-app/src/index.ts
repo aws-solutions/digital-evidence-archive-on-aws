@@ -60,7 +60,6 @@ import { updateCases } from './app/resources/update-cases';
 import { verifyCaseACLs } from './app/resources/verify-case-acls';
 import { auditService } from './app/services/audit-service';
 import { getCaseUser } from './app/services/case-user-service';
-import * as ServiceConstants from './app/services/service-constants';
 import { transformAuditEventForS3 } from './app/transform/audit-logs-to-s3-transformation-handler';
 import { getRequiredPathParam, getUserUlid } from './lambda-http-helpers';
 import { Oauth2Token, RefreshToken, RevokeToken } from './models/auth';
@@ -68,6 +67,7 @@ import { DeaCase } from './models/case';
 import { CaseAction } from './models/case-action';
 import { DeaCaseFile } from './models/case-file';
 import { dataSyncExecutionEvent } from './storage/datasync-event-handler';
+import { PARAM_PREFIX } from './storage/parameters';
 import {
   restrictAccountStatement,
   restrictAccountStatementStatementProps,
@@ -101,7 +101,7 @@ export {
   RefreshToken,
   RevokeToken,
   S3BatchEventBridgeDetail,
-  ServiceConstants,
+  PARAM_PREFIX,
   VALIDATION_ERROR_NAME,
   ValidationError,
   auditService,

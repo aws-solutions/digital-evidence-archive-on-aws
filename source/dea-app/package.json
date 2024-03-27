@@ -63,8 +63,6 @@
     "@aws-sdk/client-identitystore": "~3.474.0",
     "@aws-sdk/client-s3": "~3.474.0",
     "@aws-sdk/client-s3-control": "~3.474.0",
-    "@aws-sdk/client-secrets-manager": "~3.474.0",
-    "@aws-sdk/client-ssm": "~3.474.0",
     "@aws-sdk/client-sts": "~3.474.0",
     "@aws-sdk/s3-request-presigner": "~3.474.0",
     "@aws-sdk/types": "~3.468.0",
@@ -93,6 +91,8 @@
   },
   "devDependencies": {
     "@aws-sdk/client-iam": "~3.474.0",
+    "@aws-sdk/client-secrets-manager": "~3.474.0",
+    "@aws-sdk/client-ssm": "~3.474.0",
     "@rushstack/eslint-config": "^3.3.3",
     "@rushstack/heft": "^0.50.0",
     "@rushstack/heft-jest-plugin": "^0.5.5",

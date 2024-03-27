@@ -5,7 +5,7 @@
 
 import { ParameterTier, ParameterType, PutParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 import minimist from 'minimist';
-import { PARAM_PREFIX } from '../../app/services/service-constants';
+import { PARAM_PREFIX } from '../../storage/parameters';
 import { testEnv } from '../../test-e2e/helpers/settings';
 
 const args = minimist(process.argv.slice(2));

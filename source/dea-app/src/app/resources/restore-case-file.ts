@@ -8,6 +8,7 @@ import { CaseFileStatus } from '../../models/case-file-status';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider, restoreObject } from '../../storage/datasets';
+import { defaultParametersProvider } from '../../storage/parameters';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getRequiredCaseFile } from '../services/case-file-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -19,6 +20,9 @@ export const restoreCaseFile: DEAGatewayProxyHandler = async (
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  _parametersProvider = defaultParametersProvider,
   /* istanbul ignore next */
   datasetsProvider = defaultDatasetsProvider
 ) => {

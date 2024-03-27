@@ -9,6 +9,7 @@ import { auditQuerySchema } from '../../../models/validation/audit';
 import { joiUlid } from '../../../models/validation/joi-common';
 import { defaultProvider } from '../../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../../storage/datasets';
+import { defaultParametersProvider } from '../../../storage/parameters';
 import { defaultAthenaClient } from '../../audit/dea-audit-plugin';
 import { auditService } from '../../services/audit-service';
 import { getRequiredCase } from '../../services/case-service';
@@ -21,6 +22,9 @@ export const startCaseAudit: DEAGatewayProxyHandler = async (
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  _parametersProvider = defaultParametersProvider,
   /* istanbul ignore next */
   _datasetsProvider = defaultDatasetsProvider,
   /* istanbul ignore next */

@@ -22,12 +22,13 @@ import {
   MessageActionType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
+import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { Credentials } from 'aws4-axios';
-import { PARAM_PREFIX } from '../../app/services/service-constants';
 import { getTokenPayload } from '../../cognito-token-helpers';
 import { Oauth2Token } from '../../models/auth';
 import { ModelRepositoryProvider, UserModelRepositoryProvider } from '../../persistence/schema/entities';
 import { deleteUser, getUserByTokenId } from '../../persistence/user';
+import { PARAM_PREFIX } from '../../storage/parameters';
 import { testEnv } from './settings';
 
 export default class CognitoHelper {
@@ -235,9 +236,16 @@ export default class CognitoHelper {
     }
   }
 
+  public async getTokenPayload(idToken: string): Promise<CognitoIdTokenPayload> {
+    return await getTokenPayload(idToken, {
+      userPoolId: this.userPoolId,
+      clientId: this.userPoolClientId,
+    });
+  }
+
   public async getUserDbId(username: string, repositoryProvider: UserModelRepositoryProvider) {
     const { id_token } = await this.getIdTokenForUser(username);
-    const tokenId = (await getTokenPayload(id_token)).sub;
+    const tokenId = (await this.getTokenPayload(id_token)).sub;
     const dbUser = await getUserByTokenId(tokenId, repositoryProvider);
     if (!dbUser) {
       throw new Error('Failed to get user from db');
@@ -253,7 +261,7 @@ export default class CognitoHelper {
         // NOTE: it won't be there unless you called
         // lambda using creds from the the user
         const { id_token } = await this.getIdTokenForUser(username);
-        const tokenId = (await getTokenPayload(id_token)).sub;
+        const tokenId = (await this.getTokenPayload(id_token)).sub;
         if (repositoryProvider) {
           const dbUser = await getUserByTokenId(tokenId, repositoryProvider);
           if (dbUser) {

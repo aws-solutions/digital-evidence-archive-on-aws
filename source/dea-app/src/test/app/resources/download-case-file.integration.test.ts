@@ -112,7 +112,7 @@ describe('Test case file download', () => {
       },
     });
     await expect(
-      downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+      downloadCaseFile(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
     ).rejects.toThrow(`Required path param 'caseId' is missing.`);
   });
 
@@ -126,7 +126,7 @@ describe('Test case file download', () => {
       },
     });
     await expect(
-      downloadCaseFile(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+      downloadCaseFile(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
     ).rejects.toThrow(`Required path param 'fileId' is missing.`);
   });
 

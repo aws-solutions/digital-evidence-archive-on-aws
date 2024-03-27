@@ -3,7 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { getDeaUserFromToken, getExpirationTimeFromToken, getTokenPayload } from '../cognito-token-helpers';
+import { getDeaUserFromToken, getExpirationTimeFromToken } from '../cognito-token-helpers';
 import CognitoHelper from '../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../test-e2e/resources/test-helpers';
 
@@ -27,7 +27,7 @@ describe('cognito helpers integration test', () => {
   it('should decode and return payload for valid token', async () => {
     const { id_token, refresh_token } = await cognitoHelper.getIdTokenForUser(testUser);
 
-    const payload = await getTokenPayload(id_token);
+    const payload = await cognitoHelper.getTokenPayload(id_token);
 
     expect(payload.iss).toStrictEqual('https://' + cognitoHelper.idpUrl);
     expect(payload.aud).toStrictEqual(cognitoHelper.userPoolClientId);
@@ -43,19 +43,19 @@ describe('cognito helpers integration test', () => {
     const modifiedToken =
       id_token.substring(0, replacementIndex) + replacementChar + id_token.substring(replacementIndex + 1);
 
-    await expect(getTokenPayload(modifiedToken)).rejects.toThrow('Unable to verify id token: ');
+    await expect(cognitoHelper.getTokenPayload(modifiedToken)).rejects.toThrow('Unable to verify id token: ');
   });
 
   it('should decode and return a DeaUserInput from the token', async () => {
     const { id_token } = await cognitoHelper.getIdTokenForUser(testUser);
-    const tokenPayload = await getTokenPayload(id_token);
+    const tokenPayload = await cognitoHelper.getTokenPayload(id_token);
     const idPoolId = 'ID_POOL_ID';
 
     const deaUser = await getDeaUserFromToken(tokenPayload, idPoolId);
 
     expect(deaUser).toBeDefined();
 
-    expect(deaUser.tokenId).toStrictEqual((await getTokenPayload(id_token)).sub);
+    expect(deaUser.tokenId).toStrictEqual((await cognitoHelper.getTokenPayload(id_token)).sub);
     expect(deaUser.idPoolId).toStrictEqual(idPoolId);
     expect(deaUser.firstName).toStrictEqual(firstName);
     expect(deaUser.lastName).toStrictEqual(lastName);
@@ -63,7 +63,7 @@ describe('cognito helpers integration test', () => {
 
   it('should fail when first/last name not in id token', async () => {
     const { id_token } = await cognitoHelper.getIdTokenForUser(testUser);
-    const tokenPayload = await getTokenPayload(id_token);
+    const tokenPayload = await cognitoHelper.getTokenPayload(id_token);
     const idPoolId = 'ID_POOL_ID';
 
     delete tokenPayload['given_name'];
@@ -80,7 +80,7 @@ describe('cognito helpers integration test', () => {
 
   it('should return a ID Token expiration time from the token', async () => {
     const { id_token } = await cognitoHelper.getIdTokenForUser(testUser);
-    const tokenPayload = await getTokenPayload(id_token);
+    const tokenPayload = await cognitoHelper.getTokenPayload(id_token);
 
     tokenPayload['exp'] = 10000;
     tokenPayload['iat'] = 9000;

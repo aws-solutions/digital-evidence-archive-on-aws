@@ -158,7 +158,7 @@ describe('Test complete case file upload', () => {
       },
     });
     await expect(
-      completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+      completeCaseFileUpload(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
     ).rejects.toThrow('Complete case file upload payload missing.');
   });
 
@@ -275,7 +275,7 @@ describe('Test complete case file upload', () => {
       }),
     });
     await expect(
-      completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+      completeCaseFileUpload(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
     ).rejects.toThrow('Requested Case Ulid does not match resource');
   });
 
@@ -291,7 +291,7 @@ describe('Test complete case file upload', () => {
       }),
     });
     await expect(
-      completeCaseFileUpload(event, dummyContext, repositoryProvider, DATASETS_PROVIDER)
+      completeCaseFileUpload(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
     ).rejects.toThrow('Requested File Ulid does not match resource');
   });
 });

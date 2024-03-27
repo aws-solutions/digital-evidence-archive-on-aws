@@ -5,15 +5,30 @@
 
 import { getExpirationTimeFromToken, getTokenPayload } from '../../cognito-token-helpers';
 import { getOauthToken } from '../../lambda-http-helpers';
+import { defaultParametersProvider } from '../../storage/parameters';
 import { useRefreshToken } from '../services/auth-service';
+import { getUserPoolInfo } from '../services/parameter-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
 import { okSetIdTokenCookie } from './dea-lambda-utils';
 
-export const refreshToken: DEAGatewayProxyHandler = async (event) => {
+export const refreshToken: DEAGatewayProxyHandler = async (
+  event,
+  context,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  _repositoryProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  parametersProvider = defaultParametersProvider
+) => {
   const oauthToken = getOauthToken(event);
-  const [refreshTokenResult, identityPoolId, userPoolId] = await useRefreshToken(oauthToken.refresh_token);
+  const [refreshTokenResult, identityPoolId, userPoolId] = await useRefreshToken(
+    oauthToken.refresh_token,
+    parametersProvider
+  );
 
-  const idTokenPayload = await getTokenPayload(refreshTokenResult.id_token);
+  const userPoolInfo = await getUserPoolInfo(parametersProvider);
+  const idTokenPayload = await getTokenPayload(refreshTokenResult.id_token, userPoolInfo);
 
   const expirationTime = getExpirationTimeFromToken(idTokenPayload);
 

@@ -120,6 +120,21 @@ const uploadTimeoutFormat: convict.Format = {
   },
 };
 
+const lambdaCacheTtlFormat: convict.Format = {
+  name: 'lambda-cache-ttl',
+  validate: function (val) {
+    if (typeof val !== 'number') {
+      throw new Error('The Lambda Cache TTL value must be a number');
+    }
+    if (val < 0) {
+      throw new Error('The Lambda Cache TTL value must be a positive number');
+    }
+    if (val > 300000) {
+      throw new Error('The Lambda Cache TTL value must be less than 300000 ms (300 seconds, 5 minutes)');
+    }
+  },
+};
+
 const convictSchema = {
   stage: {
     doc: 'The deployment stage.',
@@ -381,6 +396,11 @@ const convictSchema = {
     default: undefined,
     env: 'ADMIN_ROLE_ARN',
   },
+  lambdaCacheTtl: {
+    doc: 'TTL in milliseconds for SSM Parameters and ClientSecrets Cache in lambda',
+    format: lambdaCacheTtlFormat.name,
+    default: 300000,
+  },
 };
 
 export interface GroupToDEARoleRule {
@@ -439,6 +459,7 @@ convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
 convict.addFormat(deaStageFormat);
 convict.addFormat(uploadTimeoutFormat);
+convict.addFormat(lambdaCacheTtlFormat);
 convict.addFormat(SubnetMaskCIDRFormat);
 
 interface DEAConfig {
@@ -471,6 +492,7 @@ interface DEAConfig {
   includeDynamoDataPlaneEventsInTrail(): boolean;
   auditDownloadTimeoutMinutes(): number;
   adminRoleArn(): string | undefined;
+  lambdaCacheTtl(): number;
 }
 
 export const convictConfig = convict(convictSchema);
@@ -563,6 +585,7 @@ export const deaConfig: DEAConfig = {
   dataSyncLocationBuckets: () => convictConfig.get('dataSyncLocationBuckets'),
   dataSyncSourcePermissions: () => convictConfig.get('dataSyncSourcePermissions'),
   adminRoleArn: () => convictConfig.get('adminRoleArn'),
+  lambdaCacheTtl: () => convictConfig.get('lambdaCacheTtl'),
 };
 
 export const loadConfig = (stage: string): void => {

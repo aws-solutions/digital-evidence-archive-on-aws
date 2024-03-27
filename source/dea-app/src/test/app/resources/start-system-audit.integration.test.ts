@@ -40,7 +40,14 @@ describe('start system audit', () => {
     });
 
     const event = getDummyEvent();
-    const result = await startSystemAudit(event, dummyContext, modelProvider, undefined, clientMockInstance);
+    const result = await startSystemAudit(
+      event,
+      dummyContext,
+      modelProvider,
+      undefined,
+      undefined,
+      clientMockInstance
+    );
 
     expect(result.statusCode).toEqual(200);
     const body: { auditId: string } = JSON.parse(result.body);
@@ -57,7 +64,7 @@ describe('start system audit', () => {
 
     const event = getDummyEvent();
     await expect(
-      startSystemAudit(event, dummyContext, modelProvider, undefined, clientMockInstance)
+      startSystemAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Unknown error starting Athena Query.');
   });
 });

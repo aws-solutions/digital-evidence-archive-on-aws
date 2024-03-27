@@ -9,6 +9,7 @@ import { dataSyncPaginationLimit } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
 import { defaultDatasetsProvider } from '../../storage/datasets';
 import { defaultDataSyncProvider } from '../../storage/dataSync';
+import { defaultParametersProvider } from '../../storage/parameters';
 import { defaultAthenaClient } from '../audit/dea-audit-plugin';
 import * as dataSyncService from '../services/data-sync-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -20,6 +21,9 @@ export const getDataSyncTasks: DEAGatewayProxyHandler = async (
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   _repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  _parametersProvider = defaultParametersProvider,
   /* istanbul ignore next */
   _datasetsProvider = defaultDatasetsProvider,
   /* istanbul ignore next */
