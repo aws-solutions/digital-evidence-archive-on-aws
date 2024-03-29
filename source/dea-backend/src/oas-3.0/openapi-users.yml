@@ -110,3 +110,26 @@ components:
     QueryStatus:
       type: string
       enum: [Cancelled, Complete, Failed, Running, Scheduled, Timeout, Unknown]
+    User:
+      type: object
+      required:
+        - ulid
+        - firstName
+        - lastName
+        - lowerFirstName
+        - lowerLastName      
+      properties:
+        ulid:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        lowerFirstName:
+          type: string
+        lowerLastName:
+          type: string
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'      

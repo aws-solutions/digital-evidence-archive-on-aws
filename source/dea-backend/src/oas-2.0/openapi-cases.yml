@@ -1,0 +1,867 @@
+swagger: '2.0'
+info:
+  version: 1.1.1
+  title: DEA Case API
+paths:
+  /cases:
+    post:
+      tags:
+        - cases
+      parameters:
+        - in: body
+          name: Case data
+          required: true
+          schema:
+            $ref: '#/definitions/CreateCaseObject'
+      responses:
+        '200':
+          description: Case successfully created
+          schema:
+            $ref: '#/definitions/Case'
+  /cases/my-cases:
+    get:
+      summary: get user's cases
+      description: returns array of cases on which the user has membership
+      tags:
+        - cases
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+        - in: query
+          name: next
+          type: string
+      responses:
+        '200':
+          description: Success Response
+          schema:
+            type: object
+            properties:
+              total:
+                type: number
+              cases:
+                type: object
+                items:
+                  $ref: '#/definitions/MyCases'
+              next:
+                type: string
+  /cases/all-cases:
+    get:
+      summary: Get all cases
+      description: admin-only returns list of cases
+      tags:
+        - elevated
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+        - in: query
+          name: next
+          type: string
+      responses:
+        '200':
+          description: Success Response
+          schema:
+            type: object
+            properties:
+              total:
+                type: number
+              cases:
+                type: object
+                items:
+                  $ref: '#/definitions/Cases'
+              next:
+                type: string
+  /cases/{caseId}/owner:
+    post:
+      summary: Set new owner of a case
+      description: Admin-only set new owner of a case
+      tags:
+        - elevated
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: body
+          name: Case Actions
+          required: true
+          schema:
+            type: object
+            required:
+              - userId
+              - caseId
+            properties:
+              userId:
+                type: string
+              caseId:
+                type: string
+      responses:
+        '200':
+          description: Case owner set successfully
+          schema:
+            $ref: '#/definitions/CaseUser'
+  /cases/{caseId}/scopedInformation:
+    get:
+      summary: Return scoped information on case by Case Id
+      description: Get specific set case details. Intended for evidence managers and admins
+      tags:
+        - elevated
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ScopedCase'
+  /cases/{caseId}/userMemberships:
+    post:
+      summary: Add a user as a collaborator to a case
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: body
+          name: Case membership data
+          required: true
+          schema:
+            $ref: '#/definitions/CaseUserRequest'
+      responses:
+        '200':
+          description: Case membership created
+          schema:
+            $ref: '#/definitions/CaseUser'
+    get:
+      summary: Get all users by case
+      description: get all users with membership on a case
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: query
+          name: limit
+          type: integer
+        - in: query
+          name: next
+          type: string
+      responses:
+        '200':
+          description: Success Response
+          schema:
+            type: object
+            properties:
+              users:
+                type: array
+                items:
+                  $ref: '#/definitions/CaseUser'
+              total:
+                type: number
+              next:
+                type: string
+  /cases/{caseId}/users/{userId}/memberships:
+    put:
+      summary: Update case user
+      description: Update the details on an existing case membership
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: path
+          name: userId
+          required: true
+          type: string
+        - in: body
+          name: Case user data
+          required: true
+          schema:
+            $ref: '#/definitions/CaseUserRequest'
+      responses:
+        '200':
+          description: Case user successfully updated
+          schema:
+            $ref: '#/definitions/CaseUser'
+    delete:
+      summary: Remove case user
+      description: Remove a collaborator from a case
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: path
+          name: userId
+          required: true
+          type: string
+      responses:
+        '204':
+          description: No content, delete successful
+  /cases/{caseId}/actions:
+    get:
+      summary: Return case actions available to user by case Id
+      description: Get user for case and their available actions
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/CaseUser'
+  /cases/{caseId}/details:
+    get:
+      summary: Return case details by case Id
+      description: Get metadata for a specific case. return not found if user doesn’t have access
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Case'
+    put:
+      summary: Update case details
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: body
+          name: Case update data
+          required: true
+          schema:
+            $ref: '#/definitions/CaseUpdateRequest'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Case'
+    delete:
+      summary: Delete case
+      tags:
+        - elevated
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+  /cases/{caseId}/status:
+    put:
+      summary: Update case status and optionally request deletion of case files
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: body
+          name: Case status update data
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              deleteFiles:
+                type: boolean
+                default: false
+              status:
+                $ref: '#/definitions/CaseStatus'
+      responses:
+        '200':
+          description: Successfully updated case
+          schema:
+            $ref: '#/definitions/Case'
+  /cases/{caseId}/files:
+    post:
+      summary: Begin case file upload
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: body
+          name: Case file upload data
+          required: true
+          schema:
+            $ref: '#/definitions/CaseFileInitiateUpload'
+      responses:
+        '200':
+          description: Success Response
+          schema:
+            $ref: '#/definitions/CaseUploadResponse'
+    get:
+      summary: list files by directory
+      description: List files within a case in given file path or case root
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: query
+          name: filePath
+          type: string
+        - in: query
+          name: limit
+          type: integer
+        - in: query
+          name: next
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              caseFiles:
+                type: array
+                items:
+                  $ref: '#/definitions/CaseFiles'
+              next:
+                type: string
+  /cases/{caseId}/files/{fileId}/info:
+    get:
+      summary: File details
+      description: Get details for a file within a case
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: path
+          name: fileId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success Response
+          schema:
+            type: object
+            properties:
+              file:
+                $ref: '#/definitions/CaseFile'
+  /cases/{caseId}/files/{fileId}/contents:
+    post:
+      summary: Download file
+      description: Download the contents of a file via s3 signed url
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: path
+          name: fileId
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: File download data
+          required: true
+          schema:
+            type: object
+            required:
+              - caseUlid
+              - ulid
+              - downloadReason
+            properties:
+              caseUlid:
+                type: string
+              ulid:
+                type: string
+              downloadReason:
+                type: string
+      responses:
+        '200':
+          description: Success Response
+          schema:
+            type: object
+            properties:
+              isArchived:
+                type: boolean
+              isRestoring:
+                type: boolean
+              downloadUrl:
+                type: string
+                format: uri
+              downloadReason:
+                type: string
+
+    put:
+      summary: Complete case file upload
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: path
+          name: fileId
+          required: true
+          type: string
+        - in: body
+          name: Case file upload completion data
+          required: true
+          schema:
+            $ref: '#/definitions/CaseFileCompleteUpload'
+      responses:
+        '200':
+          description: Success Response
+          schema:
+            $ref: '#/definitions/CompleteCaseFileUploadResponse'
+  /cases/{caseId}/files/{fileId}/restore:
+    put:
+      summary: Restore archived file
+      description: Restore archived file by moving it to frequent access tier or creating a restored copy
+      tags:
+        - cases
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: path
+          name: fileId
+          required: true
+          type: string
+      responses:
+        '204':
+          description: No content, restore successful
+  /cases/{caseId}/files/{fileId}/audit:
+    post:
+      summary: Generates audit log for a file
+      tags:
+        - audit
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: path
+          name: fileId
+          required: true
+          type: string
+        - in: body
+          name: Audit log request data
+          required: false
+          schema:
+            $ref: '#/definitions/AuditPayload'
+      responses:
+        '200':
+          description: Audit Query ID
+          schema:
+            type: object
+            properties:
+              auditId:
+                type: string
+  /cases/{caseId}/files/{fileId}/audit/{auditId}/csv:
+    get:
+      summary: Returns audit log for a specific file by file ID, case ID, and audit log ID
+      tags:
+        - audit
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: path
+          name: fileId
+          required: true
+          type: string
+        - in: path
+          name: auditId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Audit log CSV result and status
+          schema:
+            $ref: '#/definitions/AuditResult'
+  /cases/{caseId}/audit:
+    post:
+      summary: Generates audit log for case ID
+      tags:
+        - audit
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: body
+          name: Audit log request data
+          required: false
+          schema:
+            $ref: '#/definitions/AuditPayload'
+      responses:
+        '200':
+          description: Audit Query ID
+          schema:
+            type: object
+            properties:
+              auditId:
+                type: string
+  /cases/{caseId}/audit/{auditId}/csv:
+    get:
+      summary: Returns audit log by audit log ID and case ID
+      tags:
+        - audit
+      parameters:
+        - in: path
+          name: caseId
+          required: true
+          type: string
+        - in: path
+          name: auditId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Audit log CSV result and status
+          schema:
+            $ref: '#/definitions/AuditResult'
+
+definitions:
+  Case:
+    type: object
+    properties:
+      ulid:
+        type: string
+      name:
+        type: string
+      status:
+        $ref: '#/definitions/CaseStatus'
+      description:
+        type: string
+      objectCount:
+        type: number
+      totalSizeBytes:
+        type: number
+      status:
+        $ref: '#/definitions/CaseFileStatus'
+      s3BatchJobId:
+        type: string
+      created:
+        type: string
+      updated:
+        type: string
+
+  MyCase:
+    allOf:
+      - $ref: '#/definitions/Case'
+      - type: object
+        properties:
+          actions:
+            type: array
+            items:
+              $ref: '#/definitions/CaseAction'
+  MyCases:
+    type: array
+    items:
+      $ref: '#/definitions/MyCase'
+  Cases:
+    type: array
+    items:
+      $ref: '#/definitions/Case'
+
+  ScopedCase:
+    type: object
+    properties:
+      ulid:
+        type: string
+      name:
+        type: string
+
+  CaseUpdateRequest:
+    type: object
+    required:
+      - ulid
+      - name
+    properties:
+      ulid:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+
+  CreateCaseObject:
+    type: object
+    required:
+      - name
+      - status
+    properties:
+      name:
+        type: string
+        example: Cookie Stealing
+      description:
+        type: string
+        example: Suspecting cookie monster stole all the cookies
+      status:
+        type: string
+        example: ACTIVE
+
+  CaseUser:
+    type: object
+    properties:
+      userUlid:
+        type: string
+      caseUlid:
+        type: string
+      actions:
+        type: array
+        items:
+          $ref: '#/definitions/CaseAction'
+      caseName:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      created:
+        type: string
+      updated:
+        type: string
+  CaseUsers:
+    type: array
+    items:
+      $ref: '#/definitions/CaseUser'
+
+  CaseUserRequest:
+    type: object
+    required:
+      - userUlid
+      - caseUlid
+      - actions
+    properties:
+      userUlid:
+        type: string
+      caseUlid:
+        type: string
+      actions:
+        type: array
+        items:
+          $ref: '#/definitions/CaseAction'
+  CaseFileCompleteUpload:
+    type: object
+    required:
+      - caseUlid
+      - ulid
+      - uploadId
+    properties:
+      caseUlid:
+        type: string
+      ulid:
+        type: string
+      uploadId:
+        type: string
+  CaseFileInitiateUpload:
+    type: object
+    required:
+      - caseUlid
+      - fileName
+      - filePath
+      - contentType
+      - fileSizeBytes
+    properties:
+      fileName:
+        type: string
+      filePath:
+        type: string
+      caseUlid:
+        type: string
+      fileSizeBytes:
+        type: number
+      details:
+        type: string
+      reason:
+        type: string
+      contentType:
+        type: string
+      uploadId:
+        type: string
+  CaseFile:
+    type: object
+    properties:
+      fileName:
+        type: string
+      filePath:
+        type: string
+      caseUlid:
+        type: string
+      contentType:
+        type: string
+      createdBy:
+        type: string
+      fileSizeBytes:
+        type: number
+      sha256Hash:
+        type: string
+      ulid:
+        type: string
+      status:
+        $ref: '#/definitions/CaseFileStatus'
+      uploadId:
+        type: string
+      isFile:
+        type: boolean
+      reason:
+        type: string
+      details:
+        type: string
+      fileS3Key:
+        type: string
+      dataVaultUlid:
+        type: string
+      executionId:
+        type: string
+      associationCreatedBy:
+        type: string
+      associationDate:
+        type: string
+      dataVaultUploadDate:
+        type: string
+      dataVaultName:
+        type: string
+      created:
+        type: string
+      updated:
+        type: string
+
+  CaseFiles:
+    type: array
+    items:
+      $ref: '#/definitions/CaseFile'
+
+  CaseUploadResponse:
+    allOf:
+      - $ref: '#/definitions/CaseFile'
+      - type: object
+        properties:
+          federationCredentials:
+            type: string
+          bucket:
+            type: string
+          region:
+            type: string
+  CompleteCaseFileUploadResponse:
+    allOf:
+      - $ref: '#/definitions/CaseFile'
+      - type: object
+        properties:
+          ttl:
+            type: number
+
+  AuditResult:
+    type: object
+    properties:
+      status:
+        type: string
+        items:
+          $ref: '#/definitions/QueryStatus'
+      downloadUrl:
+        type: string
+
+  AuditPayload:
+    type: object
+    properties:
+      from:
+        type: number
+      to:
+        type: number
+
+  QueryStatus:
+    type: string
+    enum:
+      - Cancelled
+      - Complete
+      - Failed
+      - Running
+      - Scheduled
+      - Timeout
+      - Unknown
+
+  User:
+    type: object
+    properties:
+      ulid:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      lowerFirstName:
+        type: string
+      lowerLastName:
+        type: string
+
+  Users:
+    type: array
+    items:
+      $ref: '#/definitions/User'
+
+  CaseAction:
+    type: string
+    enum:
+      - VIEW_CASE_DETAILS
+      - UPDATE_CASE_DETAILS
+      - UPDATE_CASE_STATUS
+      - UPLOAD
+      - DOWNLOAD
+      - VIEW_FILES
+      - CASE_AUDIT
+      - INVITE
+      - RESTORE_FILES
+
+  CaseStatus:
+    type: string
+    enum:
+      - ACTIVE
+      - INACTIVE
+
+  CaseFileStatus:
+    type: string
+    enum:
+      - ACTIVE
+      - DELETING
+      - DELETE_FAILED
+      - DELETED
+      - PENDING
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /CHINGCHOW7/qwdqwdqwdqwd/1.0.0

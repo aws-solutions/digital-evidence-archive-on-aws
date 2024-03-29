@@ -44,10 +44,12 @@ paths:
               schema:
                 type: object
                 properties:
+                  total:
+                    type: integer
                   cases:
-                    type: array
+                    type: object
                     items:
-                      $ref: '#/components/schemas/Cases'
+                      $ref: '#/components/schemas/MyCases'
                   next:
                     type: string
   /cases/all-cases:
@@ -73,8 +75,10 @@ paths:
               schema:
                 type: object
                 properties:
+                  total:
+                    type: integer
                   cases:
-                    type: array
+                    type: object
                     items:
                       $ref: '#/components/schemas/Cases'
                   next:
@@ -96,30 +100,22 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - userId
+                - caseId
               properties:
                 userId:
                   type: string
                 caseId:
                   type: string
-                actions:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/CaseAction'
-                isOwner:
-                  type: boolean
-                  default: true
       responses:
         200:
-          description: Case successfully created
+          description: Case owner set successfully
           content:
             application/json:
               schema:
                 type: object
-                properties:
-                  userId:
-                    type: string
-                  caseId:
-                    type: string
+                $ref: '#/components/schemas/CaseUser'
   /cases/{caseId}/scopedInformation:
     get:
       summary: Return scoped information on case by Case Id
@@ -158,16 +154,12 @@ paths:
               $ref: '#/components/schemas/CaseUserRequest'
       responses:
         200:
-          description: Case successfully created
+          description: Case membership created
           content:
             application/json:
               schema:
                 type: object
-                properties:
-                  userId:
-                    type: string
-                  caseId:
-                    type: string
+                $ref: '#/components/schemas/CaseUser'
     get:
       summary: Get all users by case
       description: get all users with membership on a case
@@ -195,10 +187,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  users:
+                  total:
+                    type: integer
+                  cases:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Users'
+                      $ref: '#/components/schemas/CaseUsers'
                   next:
                     type: string
   /cases/{caseId}/users/{userId}/memberships:
@@ -225,11 +219,11 @@ paths:
               $ref: '#/components/schemas/CaseUserRequest'
       responses:
         200:
-          description: Case successfully created
+          description: Case user successfully updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CaseUserRequest'
+                $ref: '#/components/schemas/CaseUser'
     delete:
       summary: Remove case user
       description: Remove a collaborator from a case
@@ -348,7 +342,7 @@ paths:
                   $ref: '#/components/schemas/CaseStatus'
       responses:
         200:
-          description: Success
+          description: Successfully updated case
           content:
             application/json:
               schema:
@@ -368,7 +362,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CaseFiles'
+              $ref: '#/components/schemas/CaseFileInitiateUpload'
       responses:
         200:
           description: Success Response
@@ -465,6 +459,10 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - caseUlid
+                - ulid
+                - downloadReason
               properties:
                 caseUlid:
                   type: string
@@ -508,14 +506,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CaseFiles'
+              $ref: '#/components/schemas/CaseFileCompleteUpload'
       responses:
         200:
           description: Success Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CaseUploadResponse'
+                $ref: '#/components/schemas/CompleteCaseFileUploadResponse'
   /cases/{caseId}/files/{fileId}/restore:
     put:
       summary: Restore archived file
@@ -670,11 +668,13 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/CaseStatus'
+        description:
+          type: string
         objectCount:
           type: number
         totalSizeBytes:
           type: number
-        fileStatus:
+        status:
           $ref: '#/components/schemas/CaseFileStatus'
         s3BatchJobId:
           type: string
@@ -686,6 +686,19 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Case'
+    MyCase:
+      allOf:
+        - $ref: '#/components/schemas/Case'
+        - type: object
+          properties:
+            actions:
+              type: array
+              items:
+                $ref: '#/components/schemas/CaseAction'
+    MyCases:
+      type: array
+      items:
+        $ref: '#/components/schemas/MyCase'
     ScopedCase:
       type: object
       properties:
@@ -695,15 +708,21 @@ components:
           type: string
     CaseUpdateRequest:
       type: object
+      required:
+        - ulid
+        - name
       properties:
-        caseId:
+        ulid:
           type: string
-        caseName:
+        name:
           type: string
-        caseDescription:
+        description:
           type: string
     CreateCaseObject:
       type: object
+      required:
+        - name
+        - status
       properties:
         name:
           type: string
@@ -717,9 +736,9 @@ components:
     CaseUser:
       type: object
       properties:
-        userId:
+        userUlid:
           type: string
-        caseId:
+        caseUlid:
           type: string
         actions:
           type: array
@@ -735,19 +754,63 @@ components:
           type: string
         updated:
           type: string
+    CaseUsers:
+      type: array
+      items:
+        $ref: '#/components/schemas/CaseUser'
     CaseUserRequest:
       type: object
+      required:
+        - userUlid
+        - caseUlid
+        - actions
       properties:
-        userId:
+        userUlid:
           type: string
-        caseId:
+        caseUlid:
           type: string
         actions:
           type: array
           items:
             $ref: '#/components/schemas/CaseAction'
-        isOwner:
-          type: boolean
+    CaseFileCompleteUpload:
+      type: object
+      required:
+        - caseUlid
+        - ulid
+        - uploadId
+      properties:
+        caseUlid:
+          type: string
+        ulid:
+          type: string
+        uploadId:
+          type: string
+    CaseFileInitiateUpload:
+      type: object
+      required:
+        - caseUlid
+        - fileName
+        - filePath
+        - contentType
+        - fileSizeBytes
+      properties:
+        fileName:
+          type: string
+        filePath:
+          type: string
+        caseUlid:
+          type: string
+        fileSizeBytes:
+          type: number
+        details:
+          type: string
+        reason:
+          type: string
+        contentType:
+          type: string
+        uploadId:
+          type: string
     CaseFile:
       type: object
       properties:
@@ -755,7 +818,11 @@ components:
           type: string
         filePath:
           type: string
-        caseId:
+        caseUlid:
+          type: string
+        contentType:
+          type: string
+        createdBy:
           type: string
         fileSizeBytes:
           type: number
@@ -763,30 +830,56 @@ components:
           type: string
         ulid:
           type: string
+        status:
+          $ref: '#/components/schemas/CaseFileStatus'
         uploadId:
           type: string
         isFile:
           type: boolean
-        contentPath:
+        reason:
+          type: string
+        details:
+          type: string
+        fileS3Key:
+          type: string
+        dataVaultUlid:
+          type: string
+        executionId:
+          type: string
+        associationCreatedBy:
+          type: string
+        associationDate:
+          type: string
+        dataVaultUploadDate:
+          type: string
+        dataVaultName:
+          type: string
+        created:
+          type: string
+        updated:
           type: string
     CaseFiles:
       type: array
       items:
         $ref: '#/components/schemas/CaseFile'
     CaseUploadResponse:
-      type: object
-      properties:
-        caseId:
-          type: string
-        uploadId:
-          type: string
-        versionId:
-          type: string
-        presignedUrls:
-          type: array
-          items:
-            type: string
-            format: uri
+      allOf:
+        - $ref: '#/components/schemas/CaseFile'
+        - type: object
+          properties:
+            federationCredentials:
+              type: string
+            bucket:
+              type: string
+            region:
+              type: string
+    CompleteCaseFileUploadResponse:
+      allOf:
+        - $ref: '#/components/schemas/CaseFile'
+        - type: object
+          properties:
+            ttl:
+              type: number
     AuditResult:
       type: object
       properties:
@@ -827,10 +920,21 @@ components:
 
     CaseAction:
       type: string
-      enum: [VIEW_CASE_DETAILS, UPLOAD, DOWNLOAD, ARCHIVE, RESTORE, VIEW_FILES, CASE_AUDIT, INVITE, OWN]
+      enum:
+        [
+          VIEW_CASE_DETAILS,
+          UPDATE_CASE_DETAILS,
+          UPDATE_CASE_STATUS,
+          UPLOAD,
+          DOWNLOAD,
+          VIEW_FILES,
+          CASE_AUDIT,
+          INVITE,
+          RESTORE,
+        ]
     CaseStatus:
       type: string
-      enum: [ACTIVE, ARCHIVE, DELETED]
+      enum: [ACTIVE, INACTIVE]
     CaseFileStatus:
       type: string
       enum: [ACTIVE, DELETING, DELETE_FAILED, DELETED, PENDING]
