@@ -524,6 +524,7 @@ export class DeaRestApiConstruct extends Construct {
       logLevel: ParamsAndSecretsLogLevel.INFO,
       parameterStoreTtl: ttlDuration,
       secretsManagerTtl: ttlDuration,
+      maxConnections: 1000,
     });
     const lambda = new NodejsFunction(this, id, {
       // Set to 3000MB to mitigate memory allocation issues. Some executions were using more than 512MB.

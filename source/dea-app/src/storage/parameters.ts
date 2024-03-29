@@ -28,6 +28,8 @@ type SsmParameterResponse = {
 
 const secretsEndpoint = `http://localhost:${PARAMETERS_SECRETS_EXTENSION_HTTP_PORT}/secretsmanager/get?secretId=`;
 const ssmEndpoint = `http://localhost:${PARAMETERS_SECRETS_EXTENSION_HTTP_PORT}/systemsmanager/parameters/get/?name=`;
+const RETRIES = 3;
+const SLEEP_IN_MS = 10;
 export const defaultParametersProvider: ParametersProvider = {
   async getSecretValue(secretName: string): Promise<string> {
     const url = `${secretsEndpoint}${secretName}`;
@@ -60,21 +62,36 @@ export const defaultParametersProvider: ParametersProvider = {
       logger.error('Session token is undefined, cannot retrieve secrets value');
       throw new Error('Cannot retrieve paramter, misconfigured lambda.');
     }
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-Aws-Parameters-Secrets-Token': sessionToken,
-      },
-    });
 
-    if (!response.ok) {
-      throw new Error(
-        `Error occured while requesting parameter ${parameterPath}. Responses status was ${response.status}`
-      );
+    for (let i = 0; i < RETRIES; i++) {
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'X-Aws-Parameters-Secrets-Token': sessionToken,
+          },
+        });
+
+        if (!response.ok) {
+          if (response.statusText.includes('ParameterNotFound')) {
+            throw new Error('Parameter does not exist.');
+          } else {
+            await sleep(SLEEP_IN_MS);
+            continue;
+          }
+        }
+
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        const parameterContent = (await response.json()) as { Parameter: SsmParameterResponse };
+        return parameterContent.Parameter.Value;
+      } catch (e) {
+        logger.info(`Caught error trying to retrieve param ${parameterPath}:`, e);
+        await sleep(SLEEP_IN_MS);
+      }
     }
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const parameterContent = (await response.json()) as { Parameter: SsmParameterResponse };
-    return parameterContent.Parameter.Value;
+    throw new Error('Unable to obtain parameter from SSM');
   },
 };
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
