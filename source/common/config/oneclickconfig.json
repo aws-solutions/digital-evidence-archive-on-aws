@@ -67,10 +67,6 @@
           "method": "POST"
         },
         {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
-        },
-        {
           "path": "/users",
           "method": "GET"
         },
@@ -231,10 +227,6 @@
         {
           "path": "/auth/revokeToken",
           "method": "POST"
-        },
-        {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
         },
         {
           "path": "/users",

@@ -131,16 +131,10 @@ describe('DeaBackend constructs', () => {
     template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCount);
 
     //Auth construct
-    const apiEndpointArns = new Map([
-      ['A', 'Aarn'],
-      ['B', 'Barn'],
-      ['C', 'Carn'],
-      ['D', 'Darn'],
-    ]);
     const authStack = new DeaAuth(stack, 'DeaAuth', {
       region: stack.region,
       restApi: restApi.deaRestApi,
-      apiEndpointArns: apiEndpointArns,
+      apiEndpointArns: restApi.apiEndpointArns,
     });
 
     new DeaParameters(stack, 'DeaParameters', {
@@ -222,16 +216,10 @@ describe('DeaBackend constructs', () => {
       opsDashboard: dashboard,
     });
 
-    const apiEndpointArns = new Map([
-      ['A', 'Aarn'],
-      ['B', 'Barn'],
-      ['C', 'Carn'],
-      ['D', 'Darn'],
-    ]);
     const authStack = new DeaAuth(stack, 'DeaAuth', {
       region: stack.region,
       restApi: restApi.deaRestApi,
-      apiEndpointArns: apiEndpointArns,
+      apiEndpointArns: restApi.apiEndpointArns,
     });
 
     new DeaParameters(stack, 'DeaParameters', {
@@ -320,16 +308,10 @@ describe('DeaBackend constructs', () => {
     });
 
     //Auth construct
-    const apiEndpointArns = new Map([
-      ['A', 'Aarn'],
-      ['B', 'Barn'],
-      ['C', 'Carn'],
-      ['D', 'Darn'],
-    ]);
     const authStack = new DeaAuth(stack, 'DeaAuth', {
       region: stack.region,
       restApi: restApi.deaRestApi,
-      apiEndpointArns: apiEndpointArns,
+      apiEndpointArns: restApi.apiEndpointArns,
     });
 
     new DeaParameters(stack, 'DeaParameters', {
@@ -440,16 +422,10 @@ describe('DeaBackend constructs', () => {
     });
 
     //Auth construct
-    const apiEndpointArns = new Map([
-      ['A', 'Aarn'],
-      ['B', 'Barn'],
-      ['C', 'Carn'],
-      ['D', 'Darn'],
-    ]);
     const authStack = new DeaAuth(stack, 'DeaAuth', {
       region: stack.region,
       restApi: restApi.deaRestApi,
-      apiEndpointArns: apiEndpointArns,
+      apiEndpointArns: restApi.apiEndpointArns,
     });
 
     new DeaParameters(stack, 'DeaParameters', {

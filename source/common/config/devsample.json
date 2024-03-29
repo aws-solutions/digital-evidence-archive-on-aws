@@ -70,10 +70,6 @@
           "method": "POST"
         },
         {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
-        },
-        {
           "path": "/users",
           "method": "GET"
         },
@@ -182,10 +178,6 @@
         {
           "path": "/auth/revokeToken",
           "method": "POST"
-        },
-        {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
         },
         {
           "path": "/users",
@@ -354,10 +346,6 @@
           "method": "POST"
         },
         {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
-        },
-        {
           "path": "/users",
           "method": "GET"
         },
@@ -474,14 +462,6 @@
           "method": "GET"
         },
         {
-          "path": "/auth/token",
-          "method": "POST"
-        },
-        {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
-        },
-        {
           "path": "/auth/loginUrl",
           "method": "GET"
         },
@@ -516,14 +496,6 @@
           "method": "GET"
         },
         {
-          "path": "/auth/token",
-          "method": "POST"
-        },
-        {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
-        },
-        {
           "path": "/auth/loginUrl",
           "method": "GET"
         }
@@ -544,14 +516,6 @@
         {
           "path": "/cases/{caseId}/details",
           "method": "DELETE"
-        },
-        {
-          "path": "/auth/token",
-          "method": "POST"
-        },
-        {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
         },
         {
           "path": "/auth/loginUrl",

@@ -3,7 +3,6 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { assert } from 'console';
 import * as fs from 'fs';
 import path from 'path';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
@@ -234,6 +233,7 @@ export class DeaAuth extends Construct {
 
     const deaRoleTypes = deaConfig.deaRoleTypes();
     deaRoleTypes.forEach((roleType) => {
+      console.log(`Mapping role: ${roleType.name}`);
       const endpointStrings = roleType.endpoints.map((endpoint) => `${endpoint.path}${endpoint.method}`);
       const groupEndpoints = this.getEndpoints(apiEndpointArns, endpointStrings);
       this.createDEARole(
@@ -715,9 +715,14 @@ export class DeaAuth extends Construct {
 
   private getEndpoints(apiEndpointArns: Map<string, string>, paths: string[]): string[] {
     const endpoints = paths
-      .map((path) => apiEndpointArns.get(path))
-      .filter((endpoint): endpoint is string => endpoint !== null);
-    assert(endpoints.length == paths.length);
+      .map((path) => {
+        const arn = apiEndpointArns.get(path);
+        if (!arn) {
+          console.error(`Could not find ARN for ${path}`);
+        }
+        return arn;
+      })
+      .filter((endpoint): endpoint is string => !!endpoint);
     return endpoints;
   }
 
