@@ -12,6 +12,7 @@ import axios from 'axios';
 import { getCustomUserAgent, getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { Oauth2Token } from '../../models/auth';
+import { CacheProvider } from '../../storage/cache';
 import { ParametersProvider } from '../../storage/parameters';
 import { ThrottlingException } from '../exceptions/throttling-exception';
 import { ValidationError } from '../exceptions/validation-exception';
@@ -20,8 +21,12 @@ import { getClientSecret, getCognitoSsmParams } from './parameter-service';
 const stage = getRequiredEnv('STAGE');
 const region = getRequiredEnv('AWS_REGION');
 
-export const getLoginHostedUiUrl = async (redirectUri: string, parametersProvider: ParametersProvider) => {
-  const cognitoParams = await getCognitoSsmParams(parametersProvider);
+export const getLoginHostedUiUrl = async (
+  redirectUri: string,
+  cacheProvider: CacheProvider,
+  parametersProvider: ParametersProvider
+) => {
+  const cognitoParams = await getCognitoSsmParams(parametersProvider, cacheProvider);
 
   const oauth2AuthorizeEndpointUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${redirectUri}`;
 
@@ -32,16 +37,24 @@ export const getLoginHostedUiUrl = async (redirectUri: string, parametersProvide
   return oauth2AuthorizeEndpointUrl;
 };
 
-export const getCognitoLogoutUrl = async (redirectUri: string, parametersProvider: ParametersProvider) => {
-  const cognitoParams = await getCognitoSsmParams(parametersProvider);
+export const getCognitoLogoutUrl = async (
+  redirectUri: string,
+  cacheProvider: CacheProvider,
+  parametersProvider: ParametersProvider
+) => {
+  const cognitoParams = await getCognitoSsmParams(parametersProvider, cacheProvider);
 
   const cognitoLogoutUrl = `${cognitoParams.cognitoDomainUrl}/logout?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${redirectUri}`;
 
   return cognitoLogoutUrl;
 };
 
-export const getCredentialsByToken = async (idToken: string, parametersProvider: ParametersProvider) => {
-  const cognitoParams = await getCognitoSsmParams(parametersProvider);
+export const getCredentialsByToken = async (
+  idToken: string,
+  cacheProvider: CacheProvider,
+  parametersProvider: ParametersProvider
+) => {
+  const cognitoParams = await getCognitoSsmParams(parametersProvider, cacheProvider);
 
   // Set up the Cognito Identity client
   const cognitoRegion = region.includes('gov') ? 'us-gov-west-1' : region;
@@ -76,11 +89,12 @@ export const getCredentialsByToken = async (idToken: string, parametersProvider:
 export const exchangeAuthorizationCode = async (
   authorizationCode: string,
   codeVerifier: string,
+  cacheProvider: CacheProvider,
   parametersProvider: ParametersProvider,
   origin?: string,
   callbackOverride?: string
 ): Promise<[Oauth2Token, string, string]> => {
-  const cognitoParams = await getCognitoSsmParams(parametersProvider);
+  const cognitoParams = await getCognitoSsmParams(parametersProvider, cacheProvider);
   const axiosInstance = axios.create({
     baseURL: cognitoParams.cognitoDomainUrl,
   });
@@ -98,7 +112,7 @@ export const exchangeAuthorizationCode = async (
     callbackUrl = callbackOverride;
   }
 
-  const clientSecret = await getClientSecret(parametersProvider);
+  const clientSecret = await getClientSecret(parametersProvider, cacheProvider);
 
   const data = new URLSearchParams();
   data.append('grant_type', 'authorization_code');
@@ -143,14 +157,15 @@ export const exchangeAuthorizationCode = async (
 
 export const useRefreshToken = async (
   refreshToken: string,
+  cacheProvider: CacheProvider,
   parametersProvider: ParametersProvider
 ): Promise<[Oauth2Token, string, string]> => {
-  const cognitoParams = await getCognitoSsmParams(parametersProvider);
+  const cognitoParams = await getCognitoSsmParams(parametersProvider, cacheProvider);
   const axiosInstance = axios.create({
     baseURL: cognitoParams.cognitoDomainUrl,
   });
 
-  const clientSecret = await getClientSecret(parametersProvider);
+  const clientSecret = await getClientSecret(parametersProvider, cacheProvider);
 
   const data = new URLSearchParams();
   data.append('grant_type', 'refresh_token');
@@ -190,13 +205,17 @@ export const useRefreshToken = async (
   return [response.data, cognitoParams.identityPoolId, cognitoParams.userPoolId];
 };
 
-export const revokeRefreshToken = async (refreshToken: string, parametersProvider: ParametersProvider) => {
-  const cognitoParams = await getCognitoSsmParams(parametersProvider);
+export const revokeRefreshToken = async (
+  refreshToken: string,
+  cacheProvider: CacheProvider,
+  parametersProvider: ParametersProvider
+) => {
+  const cognitoParams = await getCognitoSsmParams(parametersProvider, cacheProvider);
   const axiosInstance = axios.create({
     baseURL: cognitoParams.cognitoDomainUrl,
   });
 
-  const clientSecret = await getClientSecret(parametersProvider);
+  const clientSecret = await getClientSecret(parametersProvider, cacheProvider);
 
   // Get encoded client ID for client secret support
   const encodedClientId = Buffer.from(`${cognitoParams.clientId}:${clientSecret}`).toString('base64');

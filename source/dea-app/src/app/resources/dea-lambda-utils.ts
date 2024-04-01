@@ -11,6 +11,7 @@ import { logger } from '../../logger';
 import { Oauth2Token } from '../../models/auth';
 import { DeaUser } from '../../models/user';
 import { defaultProvider } from '../../persistence/schema/entities';
+import { defaultCacheProvider } from '../../storage/cache';
 import { defaultParametersProvider } from '../../storage/parameters';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ReauthenticationError } from '../exceptions/reauthentication-exception';
@@ -19,6 +20,7 @@ import { getUserPoolInfo } from '../services/parameter-service';
 import * as SessionService from '../services/session-service';
 import * as UserService from '../services/user-service';
 import {
+  LambdaCacheProvider,
   LambdaContext,
   LambdaEvent,
   LambdaParametersProvider,
@@ -32,6 +34,7 @@ export type DEAPreLambdaExecutionChecks = (
   context: LambdaContext,
   auditEvent: CJISAuditEventBody,
   repositoryProvider: LambdaRepositoryProvider,
+  cacheProvider: LambdaCacheProvider,
   parametersProvider: LambdaParametersProvider
 ) => Promise<void>;
 
@@ -44,6 +47,9 @@ export const runPreExecutionChecks = async (
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  cacheProvider = defaultCacheProvider,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   parametersProvider = defaultParametersProvider
@@ -58,7 +64,7 @@ export const runPreExecutionChecks = async (
   // since it is not encoded from the id pool
   // Additionally we get the first and last name of the user from the id token
   const idToken = getOauthToken(event).id_token;
-  const userPoolInfo = await getUserPoolInfo(parametersProvider);
+  const userPoolInfo = await getUserPoolInfo(parametersProvider, cacheProvider);
   const idTokenPayload = await getTokenPayload(idToken, userPoolInfo);
   const deaRoleString = event.requestContext.identity.userArn;
   if (!deaRoleString) {

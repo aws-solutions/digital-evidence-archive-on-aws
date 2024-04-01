@@ -62,6 +62,7 @@ describe('start user audit', () => {
       modelProvider,
       undefined,
       undefined,
+      undefined,
       clientMockInstance
     );
 
@@ -84,7 +85,7 @@ describe('start user audit', () => {
       },
     });
     await expect(
-      startUserAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
+      startUserAudit(event, dummyContext, modelProvider, undefined, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Unknown error starting Athena Query.');
   });
 
@@ -97,7 +98,7 @@ describe('start user audit', () => {
       },
     });
     await expect(
-      startUserAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
+      startUserAudit(event, dummyContext, modelProvider, undefined, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Could not find user');
   });
 });

@@ -104,7 +104,7 @@ describe('Test case file restore', () => {
       },
     });
     await expect(
-      restoreCaseFile(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
+      restoreCaseFile(event, dummyContext, repositoryProvider, undefined, undefined, DATASETS_PROVIDER)
     ).rejects.toThrow(`Required path param 'caseId' is missing.`);
   });
 
@@ -118,7 +118,7 @@ describe('Test case file restore', () => {
       },
     });
     await expect(
-      restoreCaseFile(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
+      restoreCaseFile(event, dummyContext, repositoryProvider, undefined, undefined, DATASETS_PROVIDER)
     ).rejects.toThrow(`Required path param 'fileId' is missing.`);
   });
 

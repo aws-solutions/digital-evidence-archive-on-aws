@@ -8,6 +8,7 @@ import { DEAAuditQuery, defaultAuditQuery } from '../../../models/audit';
 import { auditQuerySchema } from '../../../models/validation/audit';
 import { joiUlid } from '../../../models/validation/joi-common';
 import { defaultProvider } from '../../../persistence/schema/entities';
+import { defaultCacheProvider } from '../../../storage/cache';
 import { defaultDatasetsProvider } from '../../../storage/datasets';
 import { defaultParametersProvider } from '../../../storage/parameters';
 import { defaultAthenaClient } from '../../audit/dea-audit-plugin';
@@ -23,6 +24,9 @@ export const startCaseFileAudit: DEAGatewayProxyHandler = async (
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  _cacheProvider = defaultCacheProvider,
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
   _parametersProvider = defaultParametersProvider,

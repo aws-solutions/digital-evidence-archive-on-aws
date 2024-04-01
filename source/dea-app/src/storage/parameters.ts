@@ -3,95 +3,82 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
+import { GetParameterCommand, GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
+import { getCustomUserAgent } from '../lambda-http-helpers';
 import { logger } from '../logger';
 
 export const PARAM_PREFIX = '/dea/1/';
 
-const PARAMETERS_SECRETS_EXTENSION_HTTP_PORT = 2773;
+const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
 
 export interface ParametersProvider {
   getSecretValue(secretName: string): Promise<string>;
   getSsmParameterValue(parameterPath: string): Promise<string>;
+  getSsmParametersValue(parameterPaths: string[]): Promise<(string | undefined)[]>;
 }
 
-type SsmParameterResponse = {
-  ARN: string;
-  DataType: string;
-  LastModifiedDate: number;
-  Name: string;
-  Selector: string;
-  SourceResult: string;
-  Type: string;
-  Value: string;
-  Version: number;
-};
-
-const secretsEndpoint = `http://localhost:${PARAMETERS_SECRETS_EXTENSION_HTTP_PORT}/secretsmanager/get?secretId=`;
-const ssmEndpoint = `http://localhost:${PARAMETERS_SECRETS_EXTENSION_HTTP_PORT}/systemsmanager/parameters/get/?name=`;
-const RETRIES = 3;
-const SLEEP_IN_MS = 10;
+const ssmClient = new SSMClient({ region, customUserAgent: getCustomUserAgent() });
+const secretsClient = new SecretsManagerClient({ region, customUserAgent: getCustomUserAgent() });
 export const defaultParametersProvider: ParametersProvider = {
   async getSecretValue(secretName: string): Promise<string> {
-    const url = `${secretsEndpoint}${secretName}`;
-    const sessionToken = process.env.AWS_SESSION_TOKEN;
-    if (!sessionToken) {
-      logger.error('Session token is undefined, cannot retrieve secrets value');
-      throw new Error('Cannot retrieve paramter, misconfigured lambda.');
-    }
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-Aws-Parameters-Secrets-Token': sessionToken,
-      },
+    const command = new GetSecretValueCommand({
+      SecretId: secretName,
     });
 
-    if (!response.ok) {
-      throw new Error(
-        `Error occured while requesting secret ${secretName}. Responses status was ${response.status}`
-      );
-    }
+    try {
+      const secretResponse = await secretsClient.send(command);
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const secretContent = (await response.json()) as { SecretString: string };
-    return secretContent.SecretString;
+      if (secretResponse.SecretString) {
+        return secretResponse.SecretString;
+      } else {
+        throw new Error(`Error occured while requesting secret ${secretName}.`);
+      }
+    } catch (e) {
+      logger.error(`Failed to retrieve secret: ${secretName}`, e);
+      throw new Error(`Failed to retrieve secret: ${secretName}`);
+    }
   },
   async getSsmParameterValue(parameterPath: string): Promise<string> {
-    const url = `${ssmEndpoint}${parameterPath}`;
-    const sessionToken = process.env.AWS_SESSION_TOKEN;
-    if (!sessionToken) {
-      logger.error('Session token is undefined, cannot retrieve secrets value');
-      throw new Error('Cannot retrieve paramter, misconfigured lambda.');
-    }
+    const command = new GetParameterCommand({
+      Name: parameterPath,
+    });
 
-    for (let i = 0; i < RETRIES; i++) {
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'X-Aws-Parameters-Secrets-Token': sessionToken,
-          },
-        });
+    try {
+      const paramResponse = await ssmClient.send(command);
 
-        if (!response.ok) {
-          if (response.statusText.includes('ParameterNotFound')) {
-            throw new Error('Parameter does not exist.');
-          } else {
-            await sleep(SLEEP_IN_MS);
-            continue;
-          }
-        }
-
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const parameterContent = (await response.json()) as { Parameter: SsmParameterResponse };
-        return parameterContent.Parameter.Value;
-      } catch (e) {
-        logger.info(`Caught error trying to retrieve param ${parameterPath}:`, e);
-        await sleep(SLEEP_IN_MS);
+      if (paramResponse.Parameter?.Value) {
+        return paramResponse.Parameter.Value;
+      } else {
+        throw new Error(`Error occured while requesting parameter ${parameterPath}.`);
       }
+    } catch (e) {
+      logger.error(`Failed to retrieve parameter: ${parameterPath}`, e);
+      throw new Error(`Failed to retrieve parameter: ${parameterPath}`);
     }
+  },
+  async getSsmParametersValue(parameterPaths: string[]): Promise<(string | undefined)[]> {
+    const command = new GetParametersCommand({
+      Names: parameterPaths,
+    });
 
-    throw new Error('Unable to obtain parameter from SSM');
+    try {
+      const paramsResponse = await ssmClient.send(command);
+      const params = paramsResponse.Parameters;
+
+      if (!paramsResponse || !params) {
+        logger.error(`Error occured while requesting parameters ${parameterPaths}.`, paramsResponse);
+        throw new Error(`Error occured while requesting parameters ${parameterPaths}.`);
+      }
+
+      // Match up parameters to their values
+      const values: (string | undefined)[] = parameterPaths.map(
+        (path) => params.find((param) => param.Name === path)?.Value
+      );
+      return values;
+    } catch (e) {
+      logger.error(`Failed to retrieve parameters: ${parameterPaths}`, e);
+      throw new Error(`Failed to retrieve parameters: ${parameterPaths}`);
+    }
   },
 };
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

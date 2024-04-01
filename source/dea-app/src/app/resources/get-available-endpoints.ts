@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { defaultCacheProvider } from '../../storage/cache';
 import { defaultParametersProvider } from '../../storage/parameters';
 import { getAvailableEndpoints } from '../services/parameter-service';
 import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
@@ -16,8 +17,11 @@ export const getAvailableEndpointsForUser: DEAGatewayProxyHandler = async (
   _repositoryProvider,
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
+  cacheProvider = defaultCacheProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
   parametersProvider = defaultParametersProvider
 ) => {
-  const actions = await getAvailableEndpoints(event, parametersProvider);
+  const actions = await getAvailableEndpoints(event, parametersProvider, cacheProvider);
   return responseOk(event, { endpoints: actions });
 };

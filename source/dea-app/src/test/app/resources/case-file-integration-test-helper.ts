@@ -108,6 +108,7 @@ export const callInitiateCaseFileUpload = async (
     dummyContext,
     repositoryProvider,
     undefined,
+    undefined,
     DATASETS_PROVIDER
   );
   checkApiSucceeded(response);
@@ -137,6 +138,7 @@ export const callCompleteCaseFileUpload = async (
     event,
     dummyContext,
     repositoryProvider,
+    undefined,
     undefined,
     DATASETS_PROVIDER
   );
@@ -171,6 +173,7 @@ export const callDownloadCaseFile = async (
     dummyContext,
     repositoryProvider,
     undefined,
+    undefined,
     DATASETS_PROVIDER
   );
   checkApiSucceeded(response);
@@ -198,6 +201,7 @@ export const callRestoreCaseFile = async (
     event,
     dummyContext,
     repositoryProvider,
+    undefined,
     undefined,
     DATASETS_PROVIDER
   );
@@ -244,6 +248,7 @@ export const callGetCaseFileDetails = async (
     event,
     dummyContext,
     repositoryProvider,
+    undefined,
     undefined,
     DATASETS_PROVIDER
   );
@@ -322,6 +327,7 @@ export const callUpdateCaseStatusAndValidate = async (
     event,
     dummyContext,
     repositoryProvider,
+    undefined,
     undefined,
     datasetsProvider
   );

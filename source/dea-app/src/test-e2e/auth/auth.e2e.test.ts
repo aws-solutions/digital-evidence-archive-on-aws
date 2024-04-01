@@ -7,14 +7,11 @@ import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { Credentials, aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import _ from 'lodash';
+import { getCognitoSsmParams } from '../../app/services/parameter-service';
 import { Oauth2Token } from '../../models/auth';
-import { PARAM_PREFIX } from '../../storage/parameters';
-import {
-  PkceStrings,
-  getAuthorizationCode,
-  getCognitoSsmParams,
-  getPkceStrings,
-} from '../helpers/auth-helper';
+import { defaultCacheProvider } from '../../storage/cache';
+import { PARAM_PREFIX, defaultParametersProvider } from '../../storage/parameters';
+import { PkceStrings, getAuthorizationCode, getPkceStrings } from '../helpers/auth-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 import {
@@ -151,7 +148,7 @@ describe('API authentication', () => {
     const client = axios.create();
 
     // get SSM parameters to compare
-    const cognitoParams = await getCognitoSsmParams();
+    const cognitoParams = await getCognitoSsmParams(defaultParametersProvider, defaultCacheProvider);
     let expectedUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
     // If you have an external IdP integrated, then DEA uses
     // the identity_provider query param to redirect automatically
@@ -170,7 +167,7 @@ describe('API authentication', () => {
     const client = axios.create();
 
     // 2. Get Auth Code
-    const cognitoParams = await getCognitoSsmParams();
+    const cognitoParams = await getCognitoSsmParams(defaultParametersProvider, defaultCacheProvider);
 
     // Get test auth code page
     const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
@@ -412,7 +409,7 @@ describe('API authentication', () => {
     }
 
     // Use Hosted UI to federate user and get auth code
-    const cognitoParams = await getCognitoSsmParams();
+    const cognitoParams = await getCognitoSsmParams(defaultParametersProvider, defaultCacheProvider);
     const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
     let authCode: string | undefined;
     for (let i = 0; i < 3; i++) {

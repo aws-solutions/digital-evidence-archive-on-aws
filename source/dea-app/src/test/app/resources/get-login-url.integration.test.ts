@@ -5,8 +5,9 @@
 import { getLoginUrl } from '../../../app/resources/get-login-url';
 import { getLoginHostedUiUrl } from '../../../app/services/auth-service';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/parameter-service';
+import { defaultCacheProvider } from '../../../storage/cache';
+import { defaultParametersProvider } from '../../../storage/parameters';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
-import { testParametersProvider } from '../../test-parameters-provider';
 
 let expectedUrl: string;
 let cognitoParams: CognitoSsmParams;
@@ -14,12 +15,16 @@ let cognitoParams: CognitoSsmParams;
 describe('get-login-url', () => {
   beforeAll(async () => {
     // get SSM parameters to compare
-    cognitoParams = await getCognitoSsmParams(testParametersProvider);
+    cognitoParams = await getCognitoSsmParams(defaultParametersProvider, defaultCacheProvider);
     expectedUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
   });
 
   it('successfully get login url from auth service', async () => {
-    const loginUrl = await getLoginHostedUiUrl(cognitoParams.callbackUrl, testParametersProvider);
+    const loginUrl = await getLoginHostedUiUrl(
+      cognitoParams.callbackUrl,
+      defaultCacheProvider,
+      defaultParametersProvider
+    );
     expect(loginUrl).toEqual(expectedUrl);
   });
 
@@ -30,7 +35,7 @@ describe('get-login-url', () => {
       },
     });
 
-    const response = await getLoginUrl(event, dummyContext, undefined, testParametersProvider);
+    const response = await getLoginUrl(event, dummyContext);
     if (!response.body) {
       fail();
     }

@@ -74,6 +74,7 @@ describe('get case audit', () => {
       modelProvider,
       undefined,
       undefined,
+      undefined,
       clientMockInstance
     );
 
@@ -98,6 +99,7 @@ describe('get case audit', () => {
       event,
       dummyContext,
       modelProvider,
+      undefined,
       undefined,
       undefined,
       clientMockInstance
@@ -125,6 +127,7 @@ describe('get case audit', () => {
       modelProvider,
       undefined,
       undefined,
+      undefined,
       clientMockInstance
     );
     expect(result.statusCode).toEqual(200);
@@ -146,7 +149,7 @@ describe('get case audit', () => {
       },
     });
     await expect(
-      getCaseAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
+      getCaseAudit(event, dummyContext, modelProvider, undefined, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Could not find case');
   });
 });

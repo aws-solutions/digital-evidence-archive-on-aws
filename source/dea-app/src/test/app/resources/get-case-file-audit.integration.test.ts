@@ -111,6 +111,7 @@ describe('get case file audit', () => {
       modelProvider,
       undefined,
       undefined,
+      undefined,
       clientMockInstance
     );
 
@@ -136,6 +137,7 @@ describe('get case file audit', () => {
       event,
       dummyContext,
       modelProvider,
+      undefined,
       undefined,
       undefined,
       clientMockInstance
@@ -164,6 +166,7 @@ describe('get case file audit', () => {
       modelProvider,
       undefined,
       undefined,
+      undefined,
       clientMockInstance
     );
     expect(result.statusCode).toEqual(200);
@@ -186,7 +189,15 @@ describe('get case file audit', () => {
       },
     });
     await expect(
-      getCaseFileAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
+      getCaseFileAudit(
+        event,
+        dummyContext,
+        modelProvider,
+        undefined,
+        undefined,
+        undefined,
+        clientMockInstance
+      )
     ).rejects.toThrow('Could not find case');
   });
 
@@ -204,7 +215,15 @@ describe('get case file audit', () => {
       },
     });
     await expect(
-      getCaseFileAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
+      getCaseFileAudit(
+        event,
+        dummyContext,
+        modelProvider,
+        undefined,
+        undefined,
+        undefined,
+        clientMockInstance
+      )
     ).rejects.toThrow('Could not find file');
   });
 });

@@ -6,7 +6,6 @@
 import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { getAvailableEndpointsForUser } from '../../../app/resources/get-available-endpoints';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
-import { testParametersProvider } from '../../test-parameters-provider';
 
 interface AvailableEndpointsBody {
   endpoints: string[];
@@ -18,13 +17,7 @@ describe('get available endpoints', () => {
       headers: { deaRole: 'NoPermissionsGroup' },
     });
 
-    const response = await getAvailableEndpointsForUser(
-      theEvent,
-      dummyContext,
-      undefined,
-      testParametersProvider,
-      undefined
-    );
+    const response = await getAvailableEndpointsForUser(theEvent, dummyContext);
     expect(response.statusCode).toEqual(200);
     const payload: AvailableEndpointsBody = JSON.parse(response.body);
     expect(payload.endpoints.length).toEqual(1);
@@ -36,9 +29,7 @@ describe('get available endpoints', () => {
       headers: {},
     });
 
-    await expect(
-      getAvailableEndpointsForUser(theEvent, dummyContext, undefined, testParametersProvider, undefined)
-    ).rejects.toThrow(ValidationError);
+    await expect(getAvailableEndpointsForUser(theEvent, dummyContext)).rejects.toThrow(ValidationError);
   });
 
   it('should return an empty array if the role has no matching parameter', async () => {
@@ -46,13 +37,7 @@ describe('get available endpoints', () => {
       headers: { deaRole: 'BogusRole' },
     });
 
-    const response = await getAvailableEndpointsForUser(
-      theEvent,
-      dummyContext,
-      undefined,
-      testParametersProvider,
-      undefined
-    );
+    const response = await getAvailableEndpointsForUser(theEvent, dummyContext);
     expect(response.statusCode).toEqual(200);
     const payload: AvailableEndpointsBody = JSON.parse(response.body);
     expect(payload.endpoints.length).toEqual(0);

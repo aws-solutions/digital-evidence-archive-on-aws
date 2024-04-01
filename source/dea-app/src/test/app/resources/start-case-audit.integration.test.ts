@@ -58,6 +58,7 @@ describe('start case audit', () => {
       modelProvider,
       undefined,
       undefined,
+      undefined,
       clientMockInstance
     );
 
@@ -80,7 +81,7 @@ describe('start case audit', () => {
       },
     });
     await expect(
-      startCaseAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
+      startCaseAudit(event, dummyContext, modelProvider, undefined, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Unknown error starting Athena Query.');
   });
 
@@ -98,7 +99,7 @@ describe('start case audit', () => {
       },
     });
     await expect(
-      startCaseAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
+      startCaseAudit(event, dummyContext, modelProvider, undefined, undefined, undefined, clientMockInstance)
     ).rejects.toThrow('Could not find case');
   });
 });

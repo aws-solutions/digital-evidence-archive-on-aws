@@ -13,6 +13,8 @@ import { isolateCookieValue } from '../../../lambda-http-helpers';
 import { Oauth2Token } from '../../../models/auth';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { getSession } from '../../../persistence/session';
+import { defaultCacheProvider } from '../../../storage/cache';
+import { defaultParametersProvider } from '../../../storage/parameters';
 import { PkceStrings, getAuthorizationCode, getPkceStrings } from '../../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
@@ -24,7 +26,6 @@ import {
   setUserArnWithRole,
 } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
-import { testParametersProvider } from '../../test-parameters-provider';
 
 let cognitoParams: CognitoSsmParams;
 let repositoryProvider: ModelRepositoryProvider;
@@ -42,7 +43,7 @@ describe('refresh-token', () => {
   beforeAll(async () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
-    cognitoParams = await getCognitoSsmParams(testParametersProvider);
+    cognitoParams = await getCognitoSsmParams(defaultParametersProvider, defaultCacheProvider);
     repositoryProvider = await getTestRepositoryProvider('refreshTokenTest');
     pkceStrings = getPkceStrings();
   });
@@ -96,7 +97,7 @@ describe('refresh-token', () => {
       },
     });
 
-    const response = await getToken(event, dummyContext, undefined, testParametersProvider);
+    const response = await getToken(event, dummyContext);
     expect(response.statusCode).toEqual(200);
 
     if (!response.body) {
@@ -116,13 +117,7 @@ describe('refresh-token', () => {
     const auditEvent = getDummyAuditEvent();
 
     // call runLambdaPrechecks to add session to database
-    await runPreExecutionChecks(
-      dummyEvent,
-      dummyContext,
-      auditEvent,
-      repositoryProvider,
-      testParametersProvider
-    );
+    await runPreExecutionChecks(dummyEvent, dummyContext, auditEvent, repositoryProvider);
 
     const userUlid = dummyEvent.headers['userUlid']!;
     const tokenId = dummyEvent.headers['tokenId']!;
@@ -133,12 +128,7 @@ describe('refresh-token', () => {
     expect(session?.isRevoked).toBeFalsy();
 
     // refresh token to get new id token
-    const refreshResponse = await refreshToken(
-      dummyEvent,
-      dummyContext,
-      repositoryProvider,
-      testParametersProvider
-    );
+    const refreshResponse = await refreshToken(dummyEvent, dummyContext, repositoryProvider);
     expect(refreshResponse.statusCode).toEqual(200);
     const newCookie = setCookieToCookie(refreshResponse);
     const newAuthToken = cookieToOauth(newCookie);
@@ -148,13 +138,7 @@ describe('refresh-token', () => {
     const dummyEvent1 = getDummyEvent();
     dummyEvent1.headers['cookie'] = newCookie;
     setUserArnWithRole(dummyEvent1, /*roleName=*/ 'CaseWorker');
-    await runPreExecutionChecks(
-      dummyEvent1,
-      dummyContext,
-      auditEvent,
-      repositoryProvider,
-      testParametersProvider
-    );
+    await runPreExecutionChecks(dummyEvent1, dummyContext, auditEvent, repositoryProvider);
 
     // Check only one session for the user
     // since the new and old id token share an origin_jti
@@ -194,7 +178,7 @@ describe('refresh-token', () => {
       },
     });
 
-    const response = await getToken(event, dummyContext, undefined, testParametersProvider);
+    const response = await getToken(event, dummyContext);
     expect(response.statusCode).toEqual(200);
 
     if (!response.body) {
@@ -222,13 +206,7 @@ describe('refresh-token', () => {
     const auditEvent = getDummyAuditEvent();
 
     // call runLambdaPrechecks to add session to database
-    await runPreExecutionChecks(
-      dummyEvent,
-      dummyContext,
-      auditEvent,
-      repositoryProvider,
-      testParametersProvider
-    );
+    await runPreExecutionChecks(dummyEvent, dummyContext, auditEvent, repositoryProvider);
 
     const userUlid = dummyEvent.headers['userUlid']!;
     const tokenId = dummyEvent.headers['tokenId']!;
@@ -238,8 +216,6 @@ describe('refresh-token', () => {
     expect(session).toBeDefined();
     expect(session?.isRevoked).toBeFalsy();
 
-    await expect(
-      refreshToken(dummyEvent, dummyContext, repositoryProvider, testParametersProvider)
-    ).rejects.toThrow(ValidationError);
+    await expect(refreshToken(dummyEvent, dummyContext)).rejects.toThrow(ValidationError);
   }, 40000);
 });

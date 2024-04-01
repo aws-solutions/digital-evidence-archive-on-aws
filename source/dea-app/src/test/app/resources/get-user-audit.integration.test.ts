@@ -81,6 +81,7 @@ describe('get user audit', () => {
       modelProvider,
       undefined,
       undefined,
+      undefined,
       clientMockInstance
     );
 
@@ -105,6 +106,7 @@ describe('get user audit', () => {
       event,
       dummyContext,
       modelProvider,
+      undefined,
       undefined,
       undefined,
       clientMockInstance
@@ -132,6 +134,7 @@ describe('get user audit', () => {
       modelProvider,
       undefined,
       undefined,
+      undefined,
       clientMockInstance
     );
     expect(result.statusCode).toEqual(200);
@@ -152,7 +155,7 @@ describe('get user audit', () => {
       },
     });
     await expect(
-      getUserAudit(event, dummyContext, modelProvider, undefined, undefined, clientMockInstance)
+      getUserAudit(event, dummyContext, modelProvider, undefined, undefined, undefined, clientMockInstance)
     ).rejects.toThrowError('Could not find user');
   });
 });

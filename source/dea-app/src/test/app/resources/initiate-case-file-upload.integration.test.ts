@@ -103,7 +103,7 @@ describe('Test initiate case file upload', () => {
       },
     });
     await expect(
-      initiateCaseFileUpload(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
+      initiateCaseFileUpload(event, dummyContext, repositoryProvider, undefined, undefined, DATASETS_PROVIDER)
     ).rejects.toThrow('Initiate case file upload payload missing.');
   });
 
@@ -295,7 +295,7 @@ describe('Test initiate case file upload', () => {
       }),
     });
     await expect(
-      initiateCaseFileUpload(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
+      initiateCaseFileUpload(event, dummyContext, repositoryProvider, undefined, undefined, DATASETS_PROVIDER)
     ).rejects.toThrow('Requested Case Ulid does not match resource');
   });
 
@@ -319,7 +319,7 @@ describe('Test initiate case file upload', () => {
       }),
     });
     await expect(
-      initiateCaseFileUpload(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
+      initiateCaseFileUpload(event, dummyContext, repositoryProvider, undefined, undefined, DATASETS_PROVIDER)
     ).rejects.toThrow(Joi.ValidationError);
   });
 
@@ -343,7 +343,7 @@ describe('Test initiate case file upload', () => {
       }),
     });
     await expect(
-      initiateCaseFileUpload(event, dummyContext, repositoryProvider, undefined, DATASETS_PROVIDER)
+      initiateCaseFileUpload(event, dummyContext, repositoryProvider, undefined, undefined, DATASETS_PROVIDER)
     ).rejects.toThrow(Joi.ValidationError);
   });
 });

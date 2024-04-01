@@ -5,11 +5,12 @@
 import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { getToken } from '../../../app/resources/get-token';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/parameter-service';
+import { defaultCacheProvider } from '../../../storage/cache';
+import { defaultParametersProvider } from '../../../storage/parameters';
 import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
-import { testParametersProvider } from '../../test-parameters-provider';
 
 let cognitoParams: CognitoSsmParams;
 let pkceStrings: PkceStrings;
@@ -26,7 +27,7 @@ describe('get-token', () => {
   beforeAll(async () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
-    cognitoParams = await getCognitoSsmParams(testParametersProvider);
+    cognitoParams = await getCognitoSsmParams(defaultParametersProvider, defaultCacheProvider);
     pkceStrings = getPkceStrings();
   });
 
@@ -63,7 +64,7 @@ describe('get-token', () => {
       },
     });
 
-    const response = await getToken(event, dummyContext, undefined, testParametersProvider);
+    const response = await getToken(event, dummyContext);
     expect(response.statusCode).toEqual(200);
 
     if (!response.multiValueHeaders) {

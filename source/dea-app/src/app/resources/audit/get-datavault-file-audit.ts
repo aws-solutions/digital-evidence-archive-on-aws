@@ -7,6 +7,7 @@ import { getRequiredEnv, getRequiredPathParam } from '../../../lambda-http-helpe
 import { joiUlid } from '../../../models/validation/joi-common';
 import { AuditType } from '../../../persistence/schema/dea-schema';
 import { defaultProvider } from '../../../persistence/schema/entities';
+import { defaultCacheProvider } from '../../../storage/cache';
 import { defaultDatasetsProvider } from '../../../storage/datasets';
 import { defaultParametersProvider } from '../../../storage/parameters';
 import { defaultAthenaClient } from '../../audit/dea-audit-plugin';
@@ -22,6 +23,9 @@ export const getDataVaultFileAudit: DEAGatewayProxyHandler = async (
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  _cacheProvider = defaultCacheProvider,
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
   _parametersProvider = defaultParametersProvider,

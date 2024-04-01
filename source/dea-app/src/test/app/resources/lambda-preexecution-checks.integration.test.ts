@@ -22,6 +22,8 @@ import { sessionResponseSchema } from '../../../models/validation/session';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { listSessionsForUser, updateSession } from '../../../persistence/session';
 import { getUserByTokenId, listUsers } from '../../../persistence/user';
+import { defaultCacheProvider } from '../../../storage/cache';
+import { defaultParametersProvider } from '../../../storage/parameters';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
 import {
@@ -31,7 +33,6 @@ import {
   setUserArnWithRole,
 } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
-import { testParametersProvider } from '../../test-parameters-provider';
 
 let repositoryProvider: ModelRepositoryProvider;
 
@@ -72,7 +73,7 @@ describe('lambda pre-execution checks', () => {
     expect(await getUserByTokenId(tokenId, repositoryProvider)).toBeUndefined();
 
     // run the pre-checks
-    await runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider, testParametersProvider);
+    await runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider);
 
     expect(auditEvent.actorIdentity.idType).toEqual(IdentityType.FULL_USER_ID);
 
@@ -136,13 +137,7 @@ describe('lambda pre-execution checks', () => {
     })};refreshToken=${JSON.stringify({ refresh_token: result.refresh_token })}`;
 
     const auditEvent2 = getDummyAuditEvent();
-    await runPreExecutionChecks(
-      event2,
-      dummyContext,
-      auditEvent2,
-      repositoryProvider,
-      testParametersProvider
-    );
+    await runPreExecutionChecks(event2, dummyContext, auditEvent2, repositoryProvider);
 
     // Expect that the DEA Role was parsed from the userArn of the Identity Pool credentials
     expect(event2.headers['deaRole']).toBeDefined();
@@ -179,9 +174,9 @@ describe('lambda pre-execution checks', () => {
     const auditEvent = getDummyAuditEvent();
 
     // run the pre-checks
-    await expect(
-      runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider, testParametersProvider)
-    ).rejects.toThrow(NotFoundError);
+    await expect(runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider)).rejects.toThrow(
+      NotFoundError
+    );
   }, 40000);
 
   it('should succeed if session meets requirements', async () => {
@@ -330,7 +325,11 @@ describe('lambda pre-execution checks', () => {
 
     // Get new id token with old refresh token, call API with new id token, it should fail
     // since old session with origin_jti was revoked
-    const [newIdTokenForOldSession] = await useRefreshToken(oauthToken.refresh_token, testParametersProvider);
+    const [newIdTokenForOldSession] = await useRefreshToken(
+      oauthToken.refresh_token,
+      defaultCacheProvider,
+      defaultParametersProvider
+    );
     await expect(callPreChecks(newIdTokenForOldSession, idPoolId)).rejects.toThrow(ReauthenticationError);
 
     // Try new session again it should succeed.
@@ -401,7 +400,7 @@ const callPreChecks = async (oauthToken: Oauth2Token, idPoolId?: string): Promis
   const auditEvent = getDummyAuditEvent();
 
   // Call API expect success
-  await runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider, testParametersProvider);
+  await runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider);
 
   return event.headers['userUlid']!;
 };

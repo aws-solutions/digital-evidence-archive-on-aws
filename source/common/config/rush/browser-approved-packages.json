@@ -579,6 +579,10 @@
       "allowedCategories": [ "production", "prototypes" ]
     },
     {
+      "name": "node-cache",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "node-fetch",
       "allowedCategories": [ "production" ]
     },

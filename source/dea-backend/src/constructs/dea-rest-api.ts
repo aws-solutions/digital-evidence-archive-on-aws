@@ -31,14 +31,7 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import {
-  CfnFunction,
-  ParamsAndSecretsLayerVersion,
-  ParamsAndSecretsLogLevel,
-  ParamsAndSecretsVersions,
-  Runtime,
-  Tracing,
-} from 'aws-cdk-lib/aws-lambda';
+import { CfnFunction, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
@@ -517,15 +510,6 @@ export class DeaRestApiConstruct extends Construct {
     pathToSource: string,
     lambdaEnv: LambdaEnvironment
   ): NodejsFunction {
-    // The below is a lambda layer which automatically caches results from SSM Parameter Store and
-    // SecretsManager without adding caching code ourself. Saves on network calls and thus latency
-    const ttlDuration = Duration.millis(deaConfig.lambdaCacheTtl());
-    const paramsAndSecrets = ParamsAndSecretsLayerVersion.fromVersion(ParamsAndSecretsVersions.V1_0_103, {
-      logLevel: ParamsAndSecretsLogLevel.INFO,
-      parameterStoreTtl: ttlDuration,
-      secretsManagerTtl: ttlDuration,
-      maxConnections: 1000,
-    });
     const lambda = new NodejsFunction(this, id, {
       // Set to 3000MB to mitigate memory allocation issues. Some executions were using more than 512MB.
       // E.g: Error: Runtime exited with error: signal: killed Runtime.ExitError.
@@ -534,7 +518,6 @@ export class DeaRestApiConstruct extends Construct {
       timeout: Duration.seconds(20),
       runtime: Runtime.NODEJS_18_X,
       handler: 'handler',
-      paramsAndSecrets,
       tracing: Tracing.PASS_THROUGH,
       // nosemgrep
       entry: path.join(__dirname, pathToSource),

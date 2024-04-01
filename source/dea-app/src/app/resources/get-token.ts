@@ -7,6 +7,7 @@ import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-help
 import { ExchangeToken } from '../../models/auth';
 import { ExchangeTokenSchema } from '../../models/validation/auth';
 import { authCode as authCodeRegex } from '../../models/validation/joi-common';
+import { defaultCacheProvider } from '../../storage/cache';
 import { defaultParametersProvider } from '../../storage/parameters';
 import { exchangeAuthorizationCode } from '../services/auth-service';
 import { getUserPoolInfo } from '../services/parameter-service';
@@ -21,6 +22,9 @@ export const getToken: DEAGatewayProxyHandler = async (
   _repositoryProvider,
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
+  cacheProvider = defaultCacheProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
   parametersProvider = defaultParametersProvider
 ) => {
   const authCode = getRequiredPathParam(event, 'authCode', authCodeRegex);
@@ -28,12 +32,13 @@ export const getToken: DEAGatewayProxyHandler = async (
   const [getTokenResult, identityPoolId, userPoolId] = await exchangeAuthorizationCode(
     authCode,
     tokenPayload.codeVerifier,
+    cacheProvider,
     parametersProvider,
     event.headers['origin'],
     event.headers['callback-override']
   );
 
-  const userPoolInfo = await getUserPoolInfo(parametersProvider);
+  const userPoolInfo = await getUserPoolInfo(parametersProvider, cacheProvider);
   const idTokenPayload = await getTokenPayload(getTokenResult.id_token, userPoolInfo);
   let username = idTokenPayload['cognito:username'];
   if (idTokenPayload['given_name'] && idTokenPayload['family_name']) {

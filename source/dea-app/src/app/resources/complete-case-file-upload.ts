@@ -8,6 +8,7 @@ import { CompleteCaseFileUploadDTO, CompleteCaseFileUploadObject } from '../../m
 import { completeCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
+import { defaultCacheProvider } from '../../storage/cache';
 import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
 import { defaultParametersProvider } from '../../storage/parameters';
 import { ValidationError } from '../exceptions/validation-exception';
@@ -22,6 +23,9 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  _cacheProvider = defaultCacheProvider,
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
   _parametersProvider = defaultParametersProvider,

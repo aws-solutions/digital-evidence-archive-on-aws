@@ -7,6 +7,7 @@ import { getStringPaginationParameters } from '../../lambda-http-helpers';
 import { DeaDataSyncTask } from '../../models/data-sync-task';
 import { dataSyncPaginationLimit } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
+import { defaultCacheProvider } from '../../storage/cache';
 import { defaultDatasetsProvider } from '../../storage/datasets';
 import { defaultDataSyncProvider } from '../../storage/dataSync';
 import { defaultParametersProvider } from '../../storage/parameters';
@@ -21,6 +22,9 @@ export const getDataSyncTasks: DEAGatewayProxyHandler = async (
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   _repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  _cacheProvider = defaultCacheProvider,
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
   _parametersProvider = defaultParametersProvider,

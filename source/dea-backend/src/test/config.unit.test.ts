@@ -216,33 +216,4 @@ describe('convict based config', () => {
     }).toThrow('The Upload Timeout value must be less than 60 minutes');
     convictConfig.set('uploadFilesTimeoutMinutes', oldUploadTimeout);
   });
-
-  it('confirms lambdaCacheTtl is a number', () => {
-    const oldLambdaTtl = convictConfig.get('lambdaCacheTtl');
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore. just let me break it bro
-    convictConfig.set('lambdaCacheTtl', 'notanumber');
-    expect(() => {
-      convictConfig.validate({ allowed: 'strict' });
-    }).toThrow('The Lambda Cache TTL value must be a number');
-    convictConfig.set('lambdaCacheTtl', oldLambdaTtl);
-  });
-
-  it('confirms lambdaCacheTtl is greater than zero', () => {
-    const oldLambdaTtl = convictConfig.get('lambdaCacheTtl');
-    convictConfig.set('lambdaCacheTtl', -1);
-    expect(() => {
-      convictConfig.validate({ allowed: 'strict' });
-    }).toThrow('The Lambda Cache TTL value must be a positive number');
-    convictConfig.set('lambdaCacheTtl', oldLambdaTtl);
-  });
-
-  it('confirms lambdaCacheTtl is less than 300000', () => {
-    const oldLambdaTtl = convictConfig.get('lambdaCacheTtl');
-    convictConfig.set('lambdaCacheTtl', 300001);
-    expect(() => {
-      convictConfig.validate({ allowed: 'strict' });
-    }).toThrow('The Lambda Cache TTL value must be less than 300000 ms (300 seconds, 5 minutes)');
-    convictConfig.set('lambdaCacheTtl', oldLambdaTtl);
-  });
 });

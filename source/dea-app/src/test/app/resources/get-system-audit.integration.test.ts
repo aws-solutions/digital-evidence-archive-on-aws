@@ -68,6 +68,7 @@ describe('get system audit', () => {
       modelProvider,
       undefined,
       undefined,
+      undefined,
       clientMockInstance
     );
 
@@ -93,6 +94,7 @@ describe('get system audit', () => {
       modelProvider,
       undefined,
       undefined,
+      undefined,
       clientMockInstance
     );
     expect(result.statusCode).toEqual(200);
@@ -115,6 +117,7 @@ describe('get system audit', () => {
       event,
       dummyContext,
       modelProvider,
+      undefined,
       undefined,
       undefined,
       clientMockInstance

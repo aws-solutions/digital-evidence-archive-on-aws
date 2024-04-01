@@ -8,6 +8,7 @@ import { DataVaultTaskDTO, DeaDataVaultTaskInput } from '../../models/data-vault
 import { createDataVaultTaskSchema } from '../../models/validation/data-vault';
 import { joiUlid } from '../../models/validation/joi-common';
 import { defaultProvider } from '../../persistence/schema/entities';
+import { defaultCacheProvider } from '../../storage/cache';
 import { defaultDatasetsProvider } from '../../storage/datasets';
 import { defaultDataSyncProvider } from '../../storage/dataSync';
 import { defaultParametersProvider } from '../../storage/parameters';
@@ -23,6 +24,9 @@ export const createDataVaultTask: DEAGatewayProxyHandler = async (
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
   repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  _cacheProvider = defaultCacheProvider,
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
   _parametersProvider = defaultParametersProvider,
