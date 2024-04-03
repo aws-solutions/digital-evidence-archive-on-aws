@@ -399,7 +399,9 @@ export const fileUploadLabels = {
   chooseFolderLabel: 'Choose folders',
   chooseFilesLabel: 'Choose files',
   errorIconAriaLabel: 'Error',
-  removeFileAriaLabel: (e: number) => `Remove file ${e + 1}`,
+  uploadFilesSuccessLabel: (numFiles: number) => `${numFiles} files successfully uploaded.`,
+  uploadFilesFailLabel: (numFiles: number) => `${numFiles} files failed to upload.`,
+  removeFileAriaLabel: (i: number) => `Remove file ${i + 1}`,
   dismissFileAriaLabel: (f: string) => `Remove ${f}`,
 };
 

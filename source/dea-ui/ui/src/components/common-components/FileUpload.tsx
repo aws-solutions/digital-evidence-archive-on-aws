@@ -137,7 +137,7 @@ function FileUpload(props: FileUploadProps) {
             iconName="folder"
             formAction="none"
             onClick={() => uploadFolderInputRef.current?.click()}
-            ariaDescribedby={fileUploadLabels.chooseFolderLabel}
+            ariaDescribedby={'constraintText'}
           >
             {fileUploadLabels.chooseFolderLabel}
           </Button>
@@ -157,7 +157,7 @@ function FileUpload(props: FileUploadProps) {
             iconName="file"
             formAction="none"
             onClick={() => uploadFilesInputRef.current?.click()}
-            ariaDescribedby={fileUploadLabels.chooseFilesLabel}
+            ariaDescribedby={'constraintText'}
           >
             {fileUploadLabels.chooseFilesLabel}
           </Button>
@@ -178,7 +178,7 @@ function FileUpload(props: FileUploadProps) {
         alignment="vertical"
         limit={3}
       />
-      <span>{fileOperationsLabels.selectFileSubtext}</span>
+      <span id="constraintText">{fileOperationsLabels.selectFileSubtext}</span>
     </div>
   );
 }

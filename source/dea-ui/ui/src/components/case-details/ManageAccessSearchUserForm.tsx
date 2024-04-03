@@ -91,7 +91,11 @@ function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX
             ariaDescribedby={data.map((user: DeaUser) => `${user.firstName}-${user.lastName}`).join(' ')}
             clearAriaLabel={commonLabels.clearLabel}
           />
-          <Button onClick={onSubmitHandler} disabled={!selected || selected !== value}>
+          <Button
+            ariaLabel={commonLabels.addButton}
+            onClick={onSubmitHandler}
+            disabled={!selected || selected !== value}
+          >
             {commonLabels.addButton}
           </Button>
         </Grid>

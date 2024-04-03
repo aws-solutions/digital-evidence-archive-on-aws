@@ -105,6 +105,7 @@ function ManageAccessListItem(props: ManageAccessListItemProps): JSX.Element {
             cancelAction={() => setIsOpenRemoveModal(false)}
           />
           <Button
+            ariaLabel={commonLabels.removeButton}
             data-testid={`${caseMember.userUlid}-remove-button`}
             onClick={() => setIsOpenRemoveModal(true)}
             disabled={isDisabled}
