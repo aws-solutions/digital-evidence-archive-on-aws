@@ -248,13 +248,13 @@ Validate your configuration file and address any errors that appear
 
 If you plan on using the Mass Data Ingestion feature to import data into DEA, then set your admin role ARN to the account that DEA will be hosted on
 
-# Windows
+**Windows Powershell**
 
 ```sh
 $Env:ADMIN_ROLE_ARN=<'Your DEA AWS Account admin role arn. Example: arn:aws:iam::<aws account number>:role/Admin'>
 ```
 
-# Linux
+**Linux**
 
 ```sh
 export ADMIN_ROLE_ARN=<'Your DEA AWS Account admin role arn. Example: arn:aws:iam::<aws account number>:role/Admin'>
@@ -300,7 +300,7 @@ Cognito is not CJIS compliant, therefore you need to use your CJIS Compliant IdP
 
 #### 4.1: IdP Side Integration
 
-The solution can integrate with either Okta or Active Directory. You can also choose how to determine what access the user has to the solution either by defining rules based on
+The solution can integrate with either Okta or Identity Center (if you use Active Directory, you can integrate it with IdentityCenter). You can also choose how to determine what access the user has to the solution either by defining rules based on
 user group membership or by defining a custom attribute on your IdP, and for each dea user
 assigning the role name to that attribute for the user. See below for more details.
 
@@ -334,35 +334,70 @@ Use the Following Values:
 - If using Groups: add a Group Claim
   - E.g. send all groups: Name=groups, NameFormat=Unspecified, Filter: Select Matches regex Value=.*
 
-##### Integrating with Azure Active Directory
+###### Configuring DEA to connect with IdP
 
-###### Create Attribute in Active Directory
+One you have created the SAML 2.0 integration in your IdP, with the appropriate User Attribute Mapping, you can now start the integration process with DEA.
 
-If you are using group membership to define access to DEA, you can skip this step.
+Open your configuration file from step 3 and add the following (with your specific values for each of the fields) to the configuration file.
 
-Otherwise, in AD create a new custom attribute for users called DEARole, limit the possible values to only the Roles you configured in step 3. (For example: for the prodexample.json, the only possible attribute values would be CaseWorker, EvidenceManager, and WorkingManager). You can follow the instructions for doing that [here](https://windowstechno.com/how-to-create-custom-attributes-in-active-directory/).
+- metadataPath : the URL link to the IdP App Integration Metadata (recommended) or the path to the metadata file locally
+- metadataPathType: either URL or FILE
+- attributeMap: mapping from what Cognito fields are named to what you named them in your App Integration (App Integration names are on right hand side, do not modify left hand side)
+- Optional: you can set the default role, so if no rule mapping matches during federation, the user gets defined the default role. If not set, the default role is NO access to DEA
 
-###### Create SAML 2.0 Application in Azure AD
+e.g. Using Custom Attribute
 
-You will need your cognito domain prefix (as you stated in your configuration file) and your user pool Id (listed in the named CDK outputs as DeaAuthConstructuserPoolId).
+```prod.json
+"idpInfo": {
+  "metadataPath": "<URL link to IdP metatdata>",
+  "metadataPathType": "URL",
+  "attributeMap": {
+    "username": "username",
+    "email": "email",
+    "firstName": "firstName",
+    "lastName": "lastName",
+    "deaRoleName": "DEARole"
+  },
+  "defaultRole": 'CaseWorker'
+}
+```
 
-Complete ONLY Step 2: Add Amazon Cognito as an enterprise application in Azure AD in the [following article](https://aws.amazon.com/blogs/security/how-to-set-up-amazon-cognito-for-federated-authentication-using-azure-ad/).
+e.g. Using Group Membership
 
-Use the Following Values:
+For each rule your define the deaRoleName (one ofthe roles you defined in Step 3, e.g. CaseWorker, EvidenceManager) and the FilterValue (a string you want to search for in groups). For example if my filterValue is Troop and the deaRole is CaseWorker, then if the user's group contains the string Troop they will be assigned the CaseWorker role in the system.
 
-- Single sign on URL: replace DOMAIN_PREFIX with the cognito domain you defined in your configuration file, and REGION with the region you are deploying in (e.g. us-east-1)
-  - For non-US Cloud regions: (or regions/stacks not using FIPs endpoints)
-   <https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse>
-  - For US regions:
-  <https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse>
-- Audience URL: `urn:amazon:cognito:sp:USER_POOL_ID` (replace USER_POOL_ID with the id listed in the named CDK/CloudFormation stack Outputs called DeaAuthConstructuserPoolId, should look like `us-east-1_xxxxxxxxx`)
-- User Attributes and Claims: Set the following Attributes
-  - firstName
-  - lastName
-  - email
-  - username
-  - If using Custom Attribute: the name of the custom attribute you created, e.g. deaRole
-- If using Groups: add a Group Claim [see here](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/how-to-connect-fed-group-claims)
+NOTE: You can define up to 25 GroupToDeaRoleRules, and they are evaluated in order.
+
+```prod.json
+  "idpInfo": {
+    "metadataPath": "<URL link to IdP metatdata>",
+    "metadataPathType": "URL",
+    "attributeMap": {
+      "username": "username",
+      "email": "email",
+      "firstName": "firstname",
+      "lastName": "lastname",
+      "groups": "groups"
+    },
+    "groupToDeaRoleRules": [
+      {
+        "filterValue": "DEAEvidenceManager",
+        "deaRoleName": "EvidenceManager"
+      },
+      {
+        "filterValue": "SuperUser",
+        "deaRoleName": "WorkingManager"
+      },
+      {
+        "filterValue": "DEA",
+        "deaRoleName": "CaseWorker"
+      }
+    ],
+    "defaultRole": 'CaseWorker'
+  },
+```
+
+Proceed to [Relaunch Stack to Update with Authentication Information](#4.2:-Relaunch-Stack-to-Update-with-Authentication-Information)
 
 ##### Integrating with Identity Center
 
@@ -450,72 +485,9 @@ An example is given below. Please append this to your configuration file.
   },
  ```
 
-Skip to Step 4.3, Relaunch Stack to Update with Authentication Information
+Proceed to [Relaunch Stack to Update with Authentication Information](#4.2:-Relaunch-Stack-to-Update-with-Authentication-Information)
 
-#### 4.2: DEA Side Integration
-
-One you have created the SAML 2.0 integration in your IdP, with the appropriate User Attribute Mapping, you can now start the integration process with DEA.
-
-Open your configuration file from step 3 and add the following (with your specific values for each of the fields) to the configuration file.
-
-- metadataPath : the URL link to the IdP App Integration Metadata (recommended) or the path to the metadata file locally
-- metadataPathType: either URL or FILE
-- attributeMap: mapping from what Cognito fields are named to what you named them in your App Integration (App Integration names are on right hand side, do not modify left hand side)
-- Optional: you can set the default role, so if no rule mapping matches during federation, the user gets defined the default role. If not set, the default role is NO access to DEA
-
-e.g. Using Custom Attribute
-
-```prod.json
-"idpInfo": {
-  "metadataPath": "<URL link to IdP metatdata>",
-  "metadataPathType": "URL",
-  "attributeMap": {
-    "username": "username",
-    "email": "email",
-    "firstName": "firstName",
-    "lastName": "lastName",
-    "deaRoleName": "DEARole"
-  },
-  "defaultRole": 'CaseWorker'
-}
-```
-
-e.g. Using Group Membership
-
-For each rule your define the deaRoleName (one ofthe roles you defined in Step 3, e.g. CaseWorker, EvidenceManager) and the FilterValue (a string you want to search for in groups). For example if my filterValue is Troop and the deaRole is CaseWorker, then if the user's group contains the string Troop they will be assigned the CaseWorker role in the system.
-
-NOTE: You can define up to 25 GroupToDeaRoleRules, and they are evaluated in order.
-
-```prod.json
-  "idpInfo": {
-    "metadataPath": "<URL link to IdP metatdata>",
-    "metadataPathType": "URL",
-    "attributeMap": {
-      "username": "username",
-      "email": "email",
-      "firstName": "firstname",
-      "lastName": "lastname",
-      "groups": "groups"
-    },
-    "groupToDeaRoleRules": [
-      {
-        "filterValue": "DEAEvidenceManager",
-        "deaRoleName": "EvidenceManager"
-      },
-      {
-        "filterValue": "SuperUser",
-        "deaRoleName": "WorkingManager"
-      },
-      {
-        "filterValue": "DEA",
-        "deaRoleName": "CaseWorker"
-      }
-    ],
-    "defaultRole": 'CaseWorker'
-  },
-```
-
-#### 4.3: Relaunch Stack to Update with Authentication Information
+#### 4.2: Relaunch Stack to Update with Authentication Information
 
 Update the stack to use the information you provided in the configuration file to integrate your IdP with the DEA stack. Run the following commands:
 
