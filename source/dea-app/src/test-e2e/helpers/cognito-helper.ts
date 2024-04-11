@@ -31,6 +31,8 @@ import { deleteUser, getUserByTokenId } from '../../persistence/user';
 import { PARAM_PREFIX } from '../../storage/parameters';
 import { testEnv } from './settings';
 
+let clientSecret: string | undefined;
+
 export default class CognitoHelper {
   private identityPoolClient: CognitoIdentityClient;
   private userPoolProvider: CognitoIdentityProviderClient;
@@ -44,7 +46,6 @@ export default class CognitoHelper {
 
   private usersCreated: string[] = [];
   public testPassword: string;
-  private stage: string;
 
   public constructor(globalPassword?: string) {
     // If regionis us gov east, the cognito stack is in us-gov-west due to cognito inavailability
@@ -53,7 +54,6 @@ export default class CognitoHelper {
     this.userPoolId = testEnv.userPoolId;
     this.userPoolClientId = testEnv.clientId;
     this.identityPoolId = testEnv.identityPoolId;
-    this.stage = testEnv.stage;
 
     this.idpUrl = `cognito-idp.${this.cognitoRegion}.amazonaws.com/${this.userPoolId}`;
 
@@ -131,25 +131,8 @@ export default class CognitoHelper {
     return (await this.getUser(userName)) ? true : false;
   }
 
-  getClientSecret = async () => {
-    const clientSecretId = `${PARAM_PREFIX}${this.stage}/clientSecret`;
-
-    const client = new SecretsManagerClient({ region: this.region });
-    const input = {
-      SecretId: clientSecretId,
-    };
-    const command = new GetSecretValueCommand(input);
-    const secretResponse = await client.send(command);
-
-    if (secretResponse.SecretString) {
-      return secretResponse.SecretString;
-    } else {
-      throw new Error(`Cognito secret ${clientSecretId} not found!`);
-    }
-  };
-
   private async getUserPoolAuthForUser(userName: string): Promise<AuthenticationResultType> {
-    const clientSecret = await this.getClientSecret();
+    const clientSecret = await getClientSecret();
     const secretHash = this.generateSecretHash(this.userPoolClientId, clientSecret, userName);
 
     const result = await this.userPoolProvider.send(
@@ -326,4 +309,29 @@ function generatePassword(): string {
 function getRandomCharacter(keySet: string): string {
   const keySetSize = keySet.length;
   return keySet.charAt(Math.floor(Math.random() * keySetSize));
+}
+
+async function loadClientSecret() {
+  const clientSecretId = `${PARAM_PREFIX}${testEnv.stage}/clientSecret`;
+
+  const client = new SecretsManagerClient({ region: testEnv.awsRegion });
+  const input = {
+    SecretId: clientSecretId,
+  };
+  const command = new GetSecretValueCommand(input);
+  const secretResponse = await client.send(command);
+
+  if (secretResponse.SecretString) {
+    clientSecret = secretResponse.SecretString;
+  } else {
+    throw new Error(`Cognito secret ${clientSecretId} not found!`);
+  }
+}
+
+async function getClientSecret(): Promise<string> {
+  if (!clientSecret) {
+    await loadClientSecret();
+  }
+
+  return clientSecret!;
 }
