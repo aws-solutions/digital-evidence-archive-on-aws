@@ -7,15 +7,9 @@ import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-help
 import { DataVaultTaskDTO, DeaDataVaultTaskInput } from '../../models/data-vault-task';
 import { createDataVaultTaskSchema } from '../../models/validation/data-vault';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
-import { defaultCacheProvider } from '../../storage/cache';
-import { defaultDatasetsProvider } from '../../storage/datasets';
-import { defaultDataSyncProvider } from '../../storage/dataSync';
-import { defaultParametersProvider } from '../../storage/parameters';
-import { defaultAthenaClient } from '../audit/dea-audit-plugin';
 import { createDatasyncTask, createS3Location } from '../services/data-sync-service';
 import * as DataVaultService from '../services/data-vault-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const createDataVaultTask: DEAGatewayProxyHandler = async (
@@ -23,23 +17,11 @@ export const createDataVaultTask: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  _cacheProvider = defaultCacheProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  _parametersProvider = defaultParametersProvider,
-  /* istanbul ignore next */
-  _datasetsProvider = defaultDatasetsProvider,
-  /* istanbul ignore next */
-  _athenaClient = defaultAthenaClient,
-  /* istanbul ignore next */
-  dataSyncProvider = defaultDataSyncProvider
+  providers = defaultProviders
 ) => {
   const dataVaultId = getRequiredPathParam(event, 'dataVaultId', joiUlid);
 
-  await DataVaultService.getRequiredDataVault(dataVaultId, repositoryProvider);
+  await DataVaultService.getRequiredDataVault(dataVaultId, providers.repositoryProvider);
 
   const deaDataVaultTask: DataVaultTaskDTO = getRequiredPayload(
     event,
@@ -51,12 +33,12 @@ export const createDataVaultTask: DEAGatewayProxyHandler = async (
     deaDataVaultTask.destinationFolder ? deaDataVaultTask.destinationFolder.replace(/^\//, '') : ''
   }`;
 
-  const destinationLocationArn = await createS3Location(destinationFolder, dataSyncProvider);
+  const destinationLocationArn = await createS3Location(destinationFolder, providers.dataSyncProvider);
   const taskArn = await createDatasyncTask(
     deaDataVaultTask.name,
     deaDataVaultTask.sourceLocationArn,
     destinationLocationArn,
-    dataSyncProvider
+    providers.dataSyncProvider
   );
 
   const taskId = taskArn.split('/').pop() || '';
@@ -73,7 +55,10 @@ export const createDataVaultTask: DEAGatewayProxyHandler = async (
     deleted: false,
   };
 
-  const responseBody = await DataVaultService.createDataVaultTask(dataVaultTask, repositoryProvider);
+  const responseBody = await DataVaultService.createDataVaultTask(
+    dataVaultTask,
+    providers.repositoryProvider
+  );
 
   return responseOk(event, responseBody);
 };

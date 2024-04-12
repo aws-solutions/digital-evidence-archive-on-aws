@@ -21,13 +21,14 @@ import {
 } from '@aws-sdk/client-sts';
 import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
 import { DownloadCaseFileResult } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { testEnv } from '../../../test-e2e/helpers/settings';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
   callCompleteCaseFileUpload,
@@ -39,6 +40,7 @@ import {
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 let sqsMock: AwsClientStub<SQSClient>;
@@ -57,9 +59,10 @@ jest.setTimeout(20000);
 describe('Test case file download', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('CaseFileDownloadTest');
+    testProviders = createTestProvidersObject({ repositoryProvider, datasetsProvider: DATASETS_PROVIDER });
 
-    fileUploader = await callCreateUser(repositoryProvider);
-    caseToDownloadFrom = (await callCreateCase(fileUploader, repositoryProvider)).ulid ?? fail();
+    fileUploader = await callCreateUser(testProviders);
+    caseToDownloadFrom = (await callCreateCase(fileUploader, testProviders)).ulid ?? fail();
 
     stsMock = mockClient(STSClient);
     stsMock.resolves({
@@ -92,13 +95,13 @@ describe('Test case file download', () => {
     const fileName = 'positive test';
     const caseFile = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, testProviders, fileId, caseToDownloadFrom);
     await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
   });
 
@@ -111,9 +114,9 @@ describe('Test case file download', () => {
         fileId: FILE_ULID,
       },
     });
-    await expect(
-      downloadCaseFile(event, dummyContext, repositoryProvider, undefined, undefined, DATASETS_PROVIDER)
-    ).rejects.toThrow(`Required path param 'caseId' is missing.`);
+    await expect(downloadCaseFile(event, dummyContext, testProviders)).rejects.toThrow(
+      `Required path param 'caseId' is missing.`
+    );
   });
 
   it('should throw a validation exception when file-id path param missing', async () => {
@@ -125,14 +128,14 @@ describe('Test case file download', () => {
         caseId: FILE_ULID,
       },
     });
-    await expect(
-      downloadCaseFile(event, dummyContext, repositoryProvider, undefined, undefined, DATASETS_PROVIDER)
-    ).rejects.toThrow(`Required path param 'fileId' is missing.`);
+    await expect(downloadCaseFile(event, dummyContext, testProviders)).rejects.toThrow(
+      `Required path param 'fileId' is missing.`
+    );
   });
 
   it("should throw an exception when case-file doesn't exist", async () => {
     await expect(
-      callDownloadCaseFile(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToDownloadFrom)
+      callDownloadCaseFile(fileUploader.ulid, testProviders, FILE_ULID, caseToDownloadFrom)
     ).rejects.toThrow(`Could not find file`);
   });
 
@@ -140,14 +143,14 @@ describe('Test case file download', () => {
     const pendingFileName = 'downloadPendingFile';
     const caseFile = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToDownloadFrom,
       pendingFileName
     );
 
     await expect(
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      callDownloadCaseFile(fileUploader.ulid, repositoryProvider, caseFile.ulid as string, caseToDownloadFrom)
+      callDownloadCaseFile(fileUploader.ulid, testProviders, caseFile.ulid as string, caseToDownloadFrom)
     ).rejects.toThrow(`Can't download a file in ${CaseFileStatus.PENDING} state`);
   });
 
@@ -162,13 +165,13 @@ describe('Test case file download', () => {
     const fileName = 'IT deep archived file';
     const caseFile = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, testProviders, fileId, caseToDownloadFrom);
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
     expect(downloadResult.downloadUrl).toBeFalsy();
     expect(downloadResult.isRestoring).toBeFalsy();
@@ -186,13 +189,13 @@ describe('Test case file download', () => {
     const fileName = 'IT archived file';
     const caseFile = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, testProviders, fileId, caseToDownloadFrom);
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
     expect(downloadResult.downloadUrl).toBeFalsy();
     expect(downloadResult.isRestoring).toBeFalsy();
@@ -210,13 +213,13 @@ describe('Test case file download', () => {
     const fileName = 'deep archived file';
     const caseFile = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, testProviders, fileId, caseToDownloadFrom);
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
     expect(downloadResult.downloadUrl).toBeFalsy();
     expect(downloadResult.isRestoring).toBeFalsy();
@@ -234,13 +237,13 @@ describe('Test case file download', () => {
     const fileName = 'archived file';
     const caseFile = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, testProviders, fileId, caseToDownloadFrom);
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
     expect(downloadResult.downloadUrl).toBeFalsy();
     expect(downloadResult.isRestoring).toBeFalsy();
@@ -259,13 +262,13 @@ describe('Test case file download', () => {
     const fileName = 'restoring file';
     const caseFile = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, testProviders, fileId, caseToDownloadFrom);
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom);
     expect(downloadResult.downloadUrl).toBeFalsy();
     expect(downloadResult.isRestoring).toBeTruthy();
@@ -284,13 +287,13 @@ describe('Test case file download', () => {
     const fileName = 'restored file';
     const caseFile = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToDownloadFrom,
       fileName
     );
 
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToDownloadFrom);
+    await callCompleteCaseFileUpload(fileUploader.ulid, testProviders, fileId, caseToDownloadFrom);
     const downloadResult = await downloadCaseFileAndValidate(fileId, caseToDownloadFrom, DOWNLOAD_REASON);
     expect(downloadResult.downloadUrl).toBeTruthy();
     expect(downloadResult.downloadReason).toBeTruthy();
@@ -304,13 +307,7 @@ async function downloadCaseFileAndValidate(
   caseId: string,
   downloadReason?: string
 ): Promise<DownloadCaseFileResult> {
-  const result = await callDownloadCaseFile(
-    fileUploader.ulid,
-    repositoryProvider,
-    fileId,
-    caseId,
-    downloadReason
-  );
+  const result = await callDownloadCaseFile(fileUploader.ulid, testProviders, fileId, caseId, downloadReason);
   if (result.downloadUrl) {
     expect(result.downloadUrl).toContain(
       `https://s3.${region}.amazonaws.com/${DATASETS_PROVIDER.bucketName}`

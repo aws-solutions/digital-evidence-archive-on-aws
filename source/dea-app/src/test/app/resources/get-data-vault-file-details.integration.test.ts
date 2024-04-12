@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getDataVaultFileDetails } from '../../../app/resources/get-data-vault-file-details';
 import { DeaDataVaultInput } from '../../../models/data-vault';
 import { DataVaultFileDTO, DeaDataVaultFile } from '../../../models/data-vault-file';
@@ -11,16 +12,19 @@ import { createDataVault } from '../../../persistence/data-vault';
 import { createDataVaultFile } from '../../../persistence/data-vault-file';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let user: DeaUser;
 
 describe('test data vault file details', () => {
   let repositoryProvider: ModelRepositoryProvider;
+  let testProviders: LambdaProviders;
 
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('dataVaultFileTestsTable');
+    testProviders = createTestProvidersObject({ repositoryProvider });
+
     // create user
     user =
       (await createUser(
@@ -69,7 +73,7 @@ describe('test data vault file details', () => {
       },
     });
 
-    const response = await getDataVaultFileDetails(event, dummyContext, repositoryProvider);
+    const response = await getDataVaultFileDetails(event, dummyContext, testProviders);
 
     expect(response.statusCode).toEqual(200);
 
@@ -89,7 +93,7 @@ describe('test data vault file details', () => {
   it('should fail when missing data vault ulid', async () => {
     const event = getDummyEvent({});
 
-    await expect(getDataVaultFileDetails(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(getDataVaultFileDetails(event, dummyContext, testProviders)).rejects.toThrow(
       "Required path param 'dataVaultId' is missing."
     );
   });
@@ -101,7 +105,7 @@ describe('test data vault file details', () => {
       },
     });
 
-    await expect(getDataVaultFileDetails(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(getDataVaultFileDetails(event, dummyContext, testProviders)).rejects.toThrow(
       "Required path param 'fileId' is missing."
     );
   });
@@ -122,7 +126,7 @@ describe('test data vault file details', () => {
       },
     });
 
-    await expect(getDataVaultFileDetails(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(getDataVaultFileDetails(event, dummyContext, testProviders)).rejects.toThrow(
       `DataVault File not found.`
     );
   });

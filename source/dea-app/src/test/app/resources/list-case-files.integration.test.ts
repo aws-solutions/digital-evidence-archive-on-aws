@@ -13,11 +13,12 @@ import {
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
 import { AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getCaseFileDetails } from '../../../app/resources/get-case-file-details';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
   callCreateCase,
@@ -29,6 +30,7 @@ import {
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 let fileDescriber: DeaUser;
@@ -43,10 +45,11 @@ jest.setTimeout(20000);
 describe('Test list case files', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('ListCaseFilesTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
 
-    fileDescriber = await callCreateUser(repositoryProvider);
+    fileDescriber = await callCreateUser(testProviders);
 
-    caseToList = (await callCreateCase(fileDescriber, repositoryProvider)).ulid ?? fail();
+    caseToList = (await callCreateCase(fileDescriber, testProviders)).ulid ?? fail();
 
     stsMock = mockClient(STSClient);
     stsMock.resolves({
@@ -72,10 +75,10 @@ describe('Test list case files', () => {
   });
 
   it('List case-files should successfully get case-files', async () => {
-    const caseFile = await callInitiateCaseFileUpload(fileDescriber.ulid, repositoryProvider, caseToList);
+    const caseFile = await callInitiateCaseFileUpload(fileDescriber.ulid, testProviders, caseToList);
     const caseFileList: ResponseCaseFilePage = await callListCaseFiles(
       fileDescriber.ulid,
-      repositoryProvider,
+      testProviders,
       caseToList
     );
     expect(caseFileList.files.length).toEqual(1);
@@ -93,21 +96,21 @@ describe('Test list case files', () => {
     const filePath = '/';
     const caseFile1 = await callInitiateCaseFileUpload(
       fileDescriber.ulid,
-      repositoryProvider,
+      testProviders,
       caseToList,
       'file1',
       filePath
     );
     const caseFile2 = await callInitiateCaseFileUpload(
       fileDescriber.ulid,
-      repositoryProvider,
+      testProviders,
       caseToList,
       'file2',
       filePath
     );
     const caseFileList1: ResponseCaseFilePage = await callListCaseFiles(
       fileDescriber.ulid,
-      repositoryProvider,
+      testProviders,
       caseToList,
       '1',
       filePath
@@ -117,7 +120,7 @@ describe('Test list case files', () => {
 
     const caseFileList2: ResponseCaseFilePage = await callListCaseFiles(
       fileDescriber.ulid,
-      repositoryProvider,
+      testProviders,
       caseToList,
       '30',
       filePath,
@@ -153,7 +156,7 @@ describe('Test list case files', () => {
   it('List case-files should successfully get case-files with no results', async () => {
     const caseFileList: ResponseCaseFilePage = await callListCaseFiles(
       fileDescriber.ulid,
-      repositoryProvider,
+      testProviders,
       caseToList,
       '30',
       '/noresult/'
@@ -171,14 +174,14 @@ describe('Test list case files', () => {
         fileId: FILE_ULID,
       },
     });
-    await expect(getCaseFileDetails(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(getCaseFileDetails(event, dummyContext, testProviders)).rejects.toThrow(
       `Required path param 'caseId' is missing.`
     );
   });
 
   it('List case-files should throw an exception when case does not exist in DB', async () => {
     // use a bogus ULID
-    await expect(callListCaseFiles(fileDescriber.ulid, repositoryProvider, FILE_ULID)).rejects.toThrow(
+    await expect(callListCaseFiles(fileDescriber.ulid, testProviders, FILE_ULID)).rejects.toThrow(
       `Could not find case: ${FILE_ULID} in the DB`
     );
   });

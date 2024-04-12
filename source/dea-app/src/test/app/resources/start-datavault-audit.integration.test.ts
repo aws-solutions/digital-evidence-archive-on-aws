@@ -18,7 +18,7 @@ import { startDataVaultAudit } from '../../../app/resources/audit/start-datavaul
 import { joiUlid } from '../../../models/validation/joi-common';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import { callCreateDataVault } from './data-vault-integration-test-helper';
 
@@ -60,15 +60,11 @@ describe('start datavault audit', () => {
         dataVaultId,
       },
     });
-    const result = await startDataVaultAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await startDataVaultAudit(event, dummyContext, testProvider);
 
     expect(result.statusCode).toEqual(200);
     const body: { auditId: string } = JSON.parse(result.body);
@@ -88,17 +84,13 @@ describe('start datavault audit', () => {
         dataVaultId,
       },
     });
-    await expect(
-      startDataVaultAudit(
-        event,
-        dummyContext,
-        modelProvider,
-        undefined,
-        undefined,
-        undefined,
-        clientMockInstance
-      )
-    ).rejects.toThrow('Unknown error starting Athena Query.');
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    await expect(startDataVaultAudit(event, dummyContext, testProvider)).rejects.toThrow(
+      'Unknown error starting Athena Query.'
+    );
   });
 
   it('throws an error if vault does not exist', async () => {
@@ -114,16 +106,12 @@ describe('start datavault audit', () => {
         dataVaultId: bogusUlid,
       },
     });
-    await expect(
-      startDataVaultAudit(
-        event,
-        dummyContext,
-        modelProvider,
-        undefined,
-        undefined,
-        undefined,
-        clientMockInstance
-      )
-    ).rejects.toThrow('DataVault not found.');
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    await expect(startDataVaultAudit(event, dummyContext, testProvider)).rejects.toThrow(
+      'DataVault not found.'
+    );
   });
 });

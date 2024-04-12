@@ -4,9 +4,8 @@
  */
 
 import { getPaginationParameters } from '../../lambda-http-helpers';
-import { defaultProvider } from '../../persistence/schema/entities';
 import * as UserService from '../services/user-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 import { getNextToken } from './get-next-token';
 
@@ -15,7 +14,7 @@ export const getUsers: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   let nameBeginsWith: string | undefined;
   if (event.queryStringParameters) {
@@ -25,7 +24,7 @@ export const getUsers: DEAGatewayProxyHandler = async (
   const paginationParams = getPaginationParameters(event);
   const pageOfUsers = await UserService.getUsers(
     nameBeginsWith,
-    repositoryProvider,
+    providers.repositoryProvider,
     paginationParams.nextToken,
     paginationParams.limit
   );

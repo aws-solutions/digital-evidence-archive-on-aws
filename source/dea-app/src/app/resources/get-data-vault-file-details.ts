@@ -5,9 +5,8 @@
 
 import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
 import { getRequiredDataVaultFile, hydrateDataVaultFile } from '../services/data-vault-file-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const getDataVaultFileDetails: DEAGatewayProxyHandler = async (
@@ -15,14 +14,18 @@ export const getDataVaultFileDetails: DEAGatewayProxyHandler = async (
   context,
   /* the default dataVault is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const dataVaultId = getRequiredPathParam(event, 'dataVaultId', joiUlid);
   const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
 
-  const retrievedDataVaultFile = await getRequiredDataVaultFile(dataVaultId, fileId, repositoryProvider);
+  const retrievedDataVaultFile = await getRequiredDataVaultFile(
+    dataVaultId,
+    fileId,
+    providers.repositoryProvider
+  );
 
-  const hydratedFile = await hydrateDataVaultFile(retrievedDataVaultFile, repositoryProvider);
+  const hydratedFile = await hydrateDataVaultFile(retrievedDataVaultFile, providers.repositoryProvider);
 
   return responseOk(event, hydratedFile);
 };

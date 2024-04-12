@@ -4,9 +4,8 @@
  */
 
 import { getPaginationParameters } from '../../lambda-http-helpers';
-import { defaultProvider } from '../../persistence/schema/entities';
 import { listAllCases } from '../services/case-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 import { getNextToken } from './get-next-token';
 
@@ -15,12 +14,12 @@ export const getAllCases: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const paginationParams = getPaginationParameters(event);
 
   const pageOfCases = await listAllCases(
-    repositoryProvider,
+    providers.repositoryProvider,
     paginationParams.nextToken,
     paginationParams.limit
   );

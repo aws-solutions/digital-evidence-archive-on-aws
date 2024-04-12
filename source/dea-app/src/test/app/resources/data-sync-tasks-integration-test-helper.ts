@@ -6,7 +6,7 @@
 import { getDataSyncTasks } from '../../../app/resources/get-data-sync-tasks';
 import { retry } from '../../../app/services/service-helpers';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 
 export const callGetDataSyncTasks = async (
   repositoryProvider: ModelRepositoryProvider,
@@ -22,7 +22,7 @@ export const callGetDataSyncTasks = async (
         },
       }),
       dummyContext,
-      repositoryProvider
+      createTestProvidersObject({ repositoryProvider })
     );
     return response;
   });

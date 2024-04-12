@@ -5,10 +5,9 @@
 
 import { getRequiredPathParam, getUserUlid } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { getCaseUser } from '../services/case-user-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const getCaseActions: DEAGatewayProxyHandler = async (
@@ -16,12 +15,12 @@ export const getCaseActions: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const caseUlid = getRequiredPathParam(event, 'caseId', joiUlid);
   const userUlid = getUserUlid(event);
 
-  const caseUser = await getCaseUser({ caseUlid, userUlid }, repositoryProvider);
+  const caseUser = await getCaseUser({ caseUlid, userUlid }, providers.repositoryProvider);
   if (!caseUser) {
     throw new NotFoundError(`Could not find case: ${caseUlid} in the DB`);
   }

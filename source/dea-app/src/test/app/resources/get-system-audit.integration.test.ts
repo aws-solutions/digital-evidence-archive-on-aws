@@ -11,7 +11,7 @@ import { getSystemAudit } from '../../../app/resources/audit/get-system-audit';
 import { AuditResult } from '../../../app/services/audit-service';
 import { AuditType } from '../../../persistence/schema/dea-schema';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import { getQueryResponseWithState, startAudit } from '../audit-test-support';
 
@@ -62,15 +62,11 @@ describe('get system audit', () => {
         auditId,
       },
     });
-    const result = await getSystemAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getSystemAudit(event, dummyContext, testProvider);
 
     expect(result.statusCode).toEqual(200);
     expect(result.body).toContain('"status":"SUCCEEDED"');
@@ -88,15 +84,11 @@ describe('get system audit', () => {
         auditId,
       },
     });
-    const result = await getSystemAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getSystemAudit(event, dummyContext, testProvider);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual(QueryExecutionState.RUNNING.valueOf());
@@ -113,15 +105,11 @@ describe('get system audit', () => {
         auditId,
       },
     });
-    const result = await getSystemAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getSystemAudit(event, dummyContext, testProvider);
     expect(result.statusCode).toEqual(200);
     const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');

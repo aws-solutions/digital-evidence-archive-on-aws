@@ -19,10 +19,11 @@ import { AuditResult } from '../../../app/services/audit-service';
 import { AuditType } from '../../../persistence/schema/dea-schema';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import { getQueryResponseWithState, startAudit } from '../audit-test-support';
 import {
+  DATASETS_PROVIDER,
   callCreateCase,
   callCreateUser,
   callInitiateCaseFileUpload,
@@ -66,12 +67,16 @@ describe('get case file audit', () => {
     });
 
     modelProvider = await getTestRepositoryProvider('getCaseFileAuditIntegration');
+    const testProviders = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      datasetsProvider: DATASETS_PROVIDER,
+    });
 
-    const user = await callCreateUser(modelProvider);
+    const user = await callCreateUser(testProviders);
 
-    caseId = (await callCreateCase(user, modelProvider)).ulid ?? fail();
+    caseId = (await callCreateCase(user, testProviders)).ulid ?? fail();
 
-    fileId = (await callInitiateCaseFileUpload(user.ulid, modelProvider, caseId, 'file1')).ulid ?? fail();
+    fileId = (await callInitiateCaseFileUpload(user.ulid, testProviders, caseId, 'file1')).ulid ?? fail();
   });
 
   beforeEach(() => {
@@ -105,15 +110,11 @@ describe('get case file audit', () => {
         auditId,
       },
     });
-    const result = await getCaseFileAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getCaseFileAudit(event, dummyContext, testProvider);
 
     expect(result.statusCode).toEqual(200);
     expect(result.body).toContain('"status":"SUCCEEDED"');
@@ -133,15 +134,11 @@ describe('get case file audit', () => {
         auditId,
       },
     });
-    const result = await getCaseFileAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getCaseFileAudit(event, dummyContext, testProvider);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual(QueryExecutionState.RUNNING.valueOf());
@@ -160,15 +157,11 @@ describe('get case file audit', () => {
         auditId,
       },
     });
-    const result = await getCaseFileAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getCaseFileAudit(event, dummyContext, testProvider);
     expect(result.statusCode).toEqual(200);
     const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');
@@ -188,17 +181,11 @@ describe('get case file audit', () => {
         auditId,
       },
     });
-    await expect(
-      getCaseFileAudit(
-        event,
-        dummyContext,
-        modelProvider,
-        undefined,
-        undefined,
-        undefined,
-        clientMockInstance
-      )
-    ).rejects.toThrow('Could not find case');
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    await expect(getCaseFileAudit(event, dummyContext, testProvider)).rejects.toThrow('Could not find case');
   });
 
   it('throws an error if case-file does not exist', async () => {
@@ -214,16 +201,10 @@ describe('get case file audit', () => {
         auditId,
       },
     });
-    await expect(
-      getCaseFileAudit(
-        event,
-        dummyContext,
-        modelProvider,
-        undefined,
-        undefined,
-        undefined,
-        clientMockInstance
-      )
-    ).rejects.toThrow('Could not find file');
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    await expect(getCaseFileAudit(event, dummyContext, testProvider)).rejects.toThrow('Could not find file');
   });
 });

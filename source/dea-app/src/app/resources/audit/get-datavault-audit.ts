@@ -6,14 +6,9 @@
 import { getRequiredEnv, getRequiredPathParam } from '../../../lambda-http-helpers';
 import { joiUlid } from '../../../models/validation/joi-common';
 import { AuditType } from '../../../persistence/schema/dea-schema';
-import { defaultProvider } from '../../../persistence/schema/entities';
-import { defaultCacheProvider } from '../../../storage/cache';
-import { defaultDatasetsProvider } from '../../../storage/datasets';
-import { defaultParametersProvider } from '../../../storage/parameters';
-import { defaultAthenaClient } from '../../audit/dea-audit-plugin';
 import { auditService } from '../../services/audit-service';
 import { getRequiredDataVault } from '../../services/data-vault-service';
-import { DEAGatewayProxyHandler } from '../dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from '../dea-gateway-proxy-handler';
 import { responseOk } from '../dea-lambda-utils';
 
 export const getDataVaultAudit: DEAGatewayProxyHandler = async (
@@ -21,30 +16,20 @@ export const getDataVaultAudit: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  _cacheProvider = defaultCacheProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  _parametersProvider = defaultParametersProvider,
-  /* istanbul ignore next */
-  _datasetsProvider = defaultDatasetsProvider,
-  /* istanbul ignore next */
-  athenaClient = defaultAthenaClient
+  providers = defaultProviders
 ) => {
   const auditId = getRequiredPathParam(event, 'auditId', joiUlid);
   const dataVaultId = getRequiredPathParam(event, 'dataVaultId', joiUlid);
   const subnetCIDR = getRequiredEnv('SOURCE_IP_MASK_CIDR');
 
-  await getRequiredDataVault(dataVaultId, repositoryProvider);
+  await getRequiredDataVault(dataVaultId, providers.repositoryProvider);
 
   const result = await auditService.getAuditResult(
     auditId,
     `${dataVaultId}`,
     AuditType.DATAVAULT,
-    athenaClient,
-    repositoryProvider,
+    providers.athenaClient,
+    providers.repositoryProvider,
     `${event.requestContext.identity.sourceIp}/${subnetCIDR}`
   );
 

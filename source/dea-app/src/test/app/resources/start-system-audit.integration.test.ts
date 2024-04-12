@@ -9,7 +9,7 @@ import { anyOfClass, instance, mock, when } from 'ts-mockito';
 import { startSystemAudit } from '../../../app/resources/audit/start-system-audit';
 import { joiUlid } from '../../../models/validation/joi-common';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 describe('start system audit', () => {
@@ -40,15 +40,11 @@ describe('start system audit', () => {
     });
 
     const event = getDummyEvent();
-    const result = await startSystemAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await startSystemAudit(event, dummyContext, testProvider);
 
     expect(result.statusCode).toEqual(200);
     const body: { auditId: string } = JSON.parse(result.body);
@@ -64,16 +60,12 @@ describe('start system audit', () => {
     });
 
     const event = getDummyEvent();
-    await expect(
-      startSystemAudit(
-        event,
-        dummyContext,
-        modelProvider,
-        undefined,
-        undefined,
-        undefined,
-        clientMockInstance
-      )
-    ).rejects.toThrow('Unknown error starting Athena Query.');
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    await expect(startSystemAudit(event, dummyContext, testProvider)).rejects.toThrow(
+      'Unknown error starting Athena Query.'
+    );
   });
 });

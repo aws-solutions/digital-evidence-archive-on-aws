@@ -6,17 +6,20 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
 import { createDataVault } from '../../../app/resources/create-data-vault';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { DeaDataVault } from '../../../models/data-vault';
 import { dataVaultResponseSchema } from '../../../models/validation/data-vault';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
-let repositoryProvider: ModelRepositoryProvider;
-
 describe('create data vaults resource', () => {
+  let repositoryProvider: ModelRepositoryProvider;
+  let testProviders: LambdaProviders;
+
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('createDataVaultTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
   });
 
   afterAll(async () => {
@@ -30,7 +33,7 @@ describe('create data vaults resource', () => {
         name,
       }),
     });
-    const response = await createDataVault(event, dummyContext, repositoryProvider);
+    const response = await createDataVault(event, dummyContext, testProviders);
     const newDataVault = await validateAndReturnDataVault(name, response);
     expect(newDataVault.ulid).toBeDefined();
   });
@@ -42,9 +45,9 @@ describe('create data vaults resource', () => {
         name,
       }),
     });
-    await createDataVault(event, dummyContext, repositoryProvider);
+    await createDataVault(event, dummyContext, testProviders);
 
-    await expect(createDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createDataVault(event, dummyContext, testProviders)).rejects.toThrow(
       'Data Vault name is already in use'
     );
   });
@@ -53,9 +56,7 @@ describe('create data vaults resource', () => {
     const event = getDummyEvent({
       body: JSON.stringify({}),
     });
-    await expect(createDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      '"name" is required'
-    );
+    await expect(createDataVault(event, dummyContext, testProviders)).rejects.toThrow('"name" is required');
   });
 
   async function validateAndReturnDataVault(name: string, response: APIGatewayProxyResult) {

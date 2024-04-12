@@ -21,7 +21,7 @@ import { createUser } from '../../persistence/user';
 import { DataSyncProvider, defaultDataSyncProvider } from '../../storage/dataSync';
 import { dataSyncExecutionEvent, generateFolderPrefixEntries } from '../../storage/datasync-event-handler';
 import { testEnv } from '../../test-e2e/helpers/settings';
-import { dummyContext, getDummyEvent } from '../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../integration-objects';
 import { getTestRepositoryProvider } from '../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
@@ -151,7 +151,11 @@ describe('datasync event handler', () => {
         name,
       }),
     });
-    const response = await createDataVault(event, dummyContext, repositoryProvider);
+    const response = await createDataVault(
+      event,
+      dummyContext,
+      createTestProvidersObject({ repositoryProvider })
+    );
     const deaDataVault = await JSON.parse(response.body);
 
     const locationUri = `s3://sampleBucketName/DATAVAULT${deaDataVault.ulid}/folder 1/folder 2/folder 3/folder 4/`;
@@ -362,7 +366,8 @@ describe('datasync event handler', () => {
         name,
       }),
     });
-    const response = await createDataVault(event, dummyContext, repositoryProvider);
+    const testProvider = createTestProvidersObject({ repositoryProvider });
+    const response = await createDataVault(event, dummyContext, testProvider);
     const deaDataVault = await JSON.parse(response.body);
 
     // Create source location arn
@@ -382,7 +387,7 @@ describe('datasync event handler', () => {
       }),
     });
 
-    const taskResponse = await createDataVaultTask(taskEvent, dummyContext, repositoryProvider);
+    const taskResponse = await createDataVaultTask(taskEvent, dummyContext, testProvider);
     deaTask = JSON.parse(taskResponse.body);
 
     const taskArn = deaTask.taskArn;
@@ -398,11 +403,7 @@ describe('datasync event handler', () => {
     });
     executionEvent.headers['userUlid'] = user.ulid;
 
-    const executionResponse = await createDataVaultExecution(
-      executionEvent,
-      dummyContext,
-      repositoryProvider
-    );
+    const executionResponse = await createDataVaultExecution(executionEvent, dummyContext, testProvider);
 
     const deaExecution = JSON.parse(executionResponse.body);
 

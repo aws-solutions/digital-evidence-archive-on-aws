@@ -4,15 +4,14 @@
  */
 
 import { fail } from 'assert';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getAllCases } from '../../../app/resources/get-all-cases';
 import { createUser } from '../../../app/services/user-service';
 import { DeaCase } from '../../../models/case';
 import { createCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
-
-let repositoryProvider: ModelRepositoryProvider;
 
 type ResponseCasePage = {
   cases: DeaCase[];
@@ -20,8 +19,12 @@ type ResponseCasePage = {
 };
 
 describe('get all cases resource', () => {
+  let repositoryProvider: ModelRepositoryProvider;
+  let testProviders: LambdaProviders;
+
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('getAllCasesTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
   });
 
   afterAll(async () => {
@@ -81,7 +84,7 @@ describe('get all cases resource', () => {
         limit: '1',
       },
     });
-    const response = await getAllCases(event, dummyContext, repositoryProvider);
+    const response = await getAllCases(event, dummyContext, testProviders);
 
     if (!response.body) {
       fail();
@@ -96,7 +99,7 @@ describe('get all cases resource', () => {
         next: casesPage.next,
       },
     });
-    const response2 = await getAllCases(event2, dummyContext, repositoryProvider);
+    const response2 = await getAllCases(event2, dummyContext, testProviders);
     if (!response2.body) {
       fail();
     }

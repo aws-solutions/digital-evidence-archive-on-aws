@@ -5,8 +5,7 @@
 
 import { getPaginationParameters } from '../../lambda-http-helpers';
 import { listDataVaults } from '../../persistence/data-vault';
-import { defaultProvider } from '../../persistence/schema/entities';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 import { getNextToken } from './get-next-token';
 
@@ -15,12 +14,12 @@ export const getDataVaults: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const paginationParams = getPaginationParameters(event);
 
   const pageOfDataVaults = await listDataVaults(
-    repositoryProvider,
+    providers.repositoryProvider,
     paginationParams.nextToken,
     paginationParams.limit
   );

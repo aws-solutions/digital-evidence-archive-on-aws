@@ -7,11 +7,9 @@ import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-help
 import { ExchangeToken } from '../../models/auth';
 import { ExchangeTokenSchema } from '../../models/validation/auth';
 import { authCode as authCodeRegex } from '../../models/validation/joi-common';
-import { defaultCacheProvider } from '../../storage/cache';
-import { defaultParametersProvider } from '../../storage/parameters';
 import { exchangeAuthorizationCode } from '../services/auth-service';
 import { getUserPoolInfo } from '../services/parameter-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { okSetIdTokenCookie } from './dea-lambda-utils';
 
 export const getToken: DEAGatewayProxyHandler = async (
@@ -19,26 +17,20 @@ export const getToken: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  _repositoryProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  cacheProvider = defaultCacheProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  parametersProvider = defaultParametersProvider
+  providers = defaultProviders
 ) => {
   const authCode = getRequiredPathParam(event, 'authCode', authCodeRegex);
   const tokenPayload: ExchangeToken = getRequiredPayload(event, 'exchange token', ExchangeTokenSchema);
   const [getTokenResult, identityPoolId, userPoolId] = await exchangeAuthorizationCode(
     authCode,
     tokenPayload.codeVerifier,
-    cacheProvider,
-    parametersProvider,
+    providers.cacheProvider,
+    providers.parametersProvider,
     event.headers['origin'],
     event.headers['callback-override']
   );
 
-  const userPoolInfo = await getUserPoolInfo(parametersProvider, cacheProvider);
+  const userPoolInfo = await getUserPoolInfo(providers.parametersProvider, providers.cacheProvider);
   const idTokenPayload = await getTokenPayload(getTokenResult.id_token, userPoolInfo);
   let username = idTokenPayload['cognito:username'];
   if (idTokenPayload['given_name'] && idTokenPayload['family_name']) {

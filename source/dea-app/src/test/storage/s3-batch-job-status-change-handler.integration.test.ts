@@ -26,6 +26,7 @@ import {
 import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { v4 as uuidv4 } from 'uuid';
+import { LambdaProviders } from '../../app/resources/dea-gateway-proxy-handler';
 import { DeaCaseInput } from '../../models/case';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
@@ -45,7 +46,7 @@ import {
   FILE_SIZE_BYTES,
   validateCaseStatusUpdatedAsExpected,
 } from '../app/resources/case-file-integration-test-helper';
-import { dummyContext } from '../integration-objects';
+import { createTestProvidersObject, dummyContext } from '../integration-objects';
 import { getTestRepositoryProvider } from '../persistence/local-db-table';
 import {
   CALLBACK_FN,
@@ -54,6 +55,7 @@ import {
 } from './s3-batch-delete-case-file-handler.integration.test';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 let caseOwner: DeaUser;
 let s3Mock: AwsStub<S3Input, S3Output, S3ClientResolvedConfig>;
 let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput, S3ControlClientResolvedConfig>;
@@ -66,6 +68,7 @@ const VERSION_ID = 'haha';
 describe('S3 batch job status change handler', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('s3BatchStatusChangeHandler');
+    testProviders = createTestProvidersObject({ repositoryProvider, datasetsProvider: DATASETS_PROVIDER });
 
     caseOwner =
       (await createUser(
@@ -282,17 +285,12 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
   // setup file
   const caseFileUpload = await callInitiateCaseFileUpload(
     caseOwner.ulid,
-    repositoryProvider,
+    testProviders,
     createdCase.ulid,
     'file1'
   );
   const fileId = caseFileUpload.ulid ?? fail();
-  const caseFile = await callCompleteCaseFileUpload(
-    caseOwner.ulid,
-    repositoryProvider,
-    fileId,
-    createdCase.ulid
-  );
+  const caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, testProviders, fileId, createdCase.ulid);
 
   const jobId = uuidv4();
   s3ControlMock.resolves({
@@ -310,7 +308,7 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
     createdCase,
     true,
     CaseStatus.INACTIVE,
-    repositoryProvider
+    testProviders
   );
   await validateCaseStatusUpdatedAsExpected(
     createdCase,
@@ -318,7 +316,7 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
     CaseStatus.INACTIVE,
     CaseFileStatus.DELETING,
     jobId,
-    repositoryProvider,
+    testProviders,
     1,
     FILE_SIZE_BYTES
   );
@@ -332,7 +330,7 @@ async function setupTestEnv(caseName: string, callDeleteFilesLambda = true, fail
       repositoryProvider,
       DATASETS_PROVIDER
     );
-    const deletedCaseFile = await callGetCaseFileDetails(caseOwner.ulid, repositoryProvider, fileId, caseId);
+    const deletedCaseFile = await callGetCaseFileDetails(caseOwner.ulid, testProviders, fileId, caseId);
     const expectedResult = `Successfully deleted object: ${caseId}/${fileId}`;
     expect(deleteFileResponse).toEqual(getS3BatchResult(caseId, fileId, 'Succeeded', expectedResult));
     expect(deletedCaseFile.status).toEqual(CaseFileStatus.DELETED);

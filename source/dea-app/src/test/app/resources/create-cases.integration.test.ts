@@ -7,6 +7,7 @@ import { fail } from 'assert';
 import { APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
 import { createCases } from '../../../app/resources/create-cases';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getCaseUsersForUser } from '../../../app/services/case-user-service';
 import { DeaCase } from '../../../models/case';
 import { OWNER_ACTIONS } from '../../../models/case-action';
@@ -14,15 +15,17 @@ import { DeaUser } from '../../../models/user';
 import { caseResponseSchema } from '../../../models/validation/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 let user: DeaUser;
 
 describe('create cases resource', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('createCasesTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
 
     // create user
     user =
@@ -102,7 +105,7 @@ describe('create cases resource', () => {
       }),
     });
     event.headers['userUlid'] = user.ulid;
-    await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createCases(event, dummyContext, testProviders)).rejects.toThrow(
       'Case name is already in use'
     );
   });
@@ -118,7 +121,7 @@ describe('create cases resource', () => {
       }),
     });
     event.headers['userUlid'] = user.ulid;
-    await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(`"name" is required`);
+    await expect(createCases(event, dummyContext, testProviders)).rejects.toThrow(`"name" is required`);
   });
 
   it('should throw a validation exception when no payload is provided', async () => {
@@ -126,7 +129,7 @@ describe('create cases resource', () => {
       body: null,
     });
     event.headers['userUlid'] = user.ulid;
-    await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createCases(event, dummyContext, testProviders)).rejects.toThrow(
       'Create cases payload missing.'
     );
   });
@@ -139,7 +142,7 @@ describe('create cases resource', () => {
       },
     });
     event.headers['userUlid'] = user.ulid;
-    await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createCases(event, dummyContext, testProviders)).rejects.toThrow(
       'Create cases payload is malformed. Failed to parse.'
     );
   });
@@ -159,9 +162,7 @@ describe('create cases resource', () => {
       }),
     });
     event.headers['userUlid'] = user.ulid;
-    await expect(createCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      `"ulid" is not allowed`
-    );
+    await expect(createCases(event, dummyContext, testProviders)).rejects.toThrow(`"ulid" is not allowed`);
   });
 
   it('should create ACTIVE case when no status given', async () => {
@@ -175,7 +176,7 @@ describe('create cases resource', () => {
       }),
     });
     event.headers['userUlid'] = user.ulid;
-    const response = await createCases(event, dummyContext, repositoryProvider);
+    const response = await createCases(event, dummyContext, testProviders);
     await validateAndReturnCase(name, description, 'ACTIVE', response);
   });
 });
@@ -191,7 +192,7 @@ async function createAndValidateCase(name: string, description: string, userUlid
     }),
   });
   event.headers['userUlid'] = userUlid;
-  const response = await createCases(event, dummyContext, repositoryProvider);
+  const response = await createCases(event, dummyContext, testProviders);
   const newCase = await validateAndReturnCase(name, description, status, response);
   return newCase.ulid ?? fail();
 }

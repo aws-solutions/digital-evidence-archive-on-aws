@@ -6,10 +6,9 @@
 import { getRequiredPayload, getUserUlid } from '../../lambda-http-helpers';
 import { DeaCase } from '../../models/case';
 import { createCaseSchema } from '../../models/validation/case';
-import { defaultProvider } from '../../persistence/schema/entities';
 import * as CaseService from '../services/case-service';
 import { getUser } from '../services/user-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const createCases: DEAGatewayProxyHandler = async (
@@ -17,10 +16,10 @@ export const createCases: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const userUlid = getUserUlid(event);
-  const user = await getUser(userUlid, repositoryProvider);
+  const user = await getUser(userUlid, providers.repositoryProvider);
   if (!user) {
     // Note: before every lambda checks are run to add first time
     // federated users to the db. If the caller is not in the db
@@ -30,7 +29,7 @@ export const createCases: DEAGatewayProxyHandler = async (
 
   const deaCase: DeaCase = getRequiredPayload(event, 'Create cases', createCaseSchema);
 
-  const updateBody = await CaseService.createCases(deaCase, user, repositoryProvider);
+  const updateBody = await CaseService.createCases(deaCase, user, providers.repositoryProvider);
 
   return responseOk(event, updateBody);
 };

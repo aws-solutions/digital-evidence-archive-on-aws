@@ -6,20 +6,23 @@
 import { fail } from 'assert';
 import { OneTableError } from 'dynamodb-onetable';
 import Joi from 'joi';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { updateDataVault } from '../../../app/resources/update-data-vault';
 import { DeaDataVault, DeaDataVaultInput } from '../../../models/data-vault';
 import { dataVaultResponseSchema } from '../../../models/validation/data-vault';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { createDataVault } from '../../../persistence/data-vault';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 
 describe('update dataVaults resource', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('updateDataVaultTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
   });
 
   afterAll(async () => {
@@ -46,7 +49,7 @@ describe('update dataVaults resource', () => {
       }),
     });
 
-    const response = await updateDataVault(event, dummyContext, repositoryProvider);
+    const response = await updateDataVault(event, dummyContext, testProviders);
 
     expect(response.statusCode).toEqual(200);
 
@@ -84,7 +87,7 @@ describe('update dataVaults resource', () => {
       }),
     });
 
-    await expect(updateDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateDataVault(event, dummyContext, testProviders)).rejects.toThrow(
       'Requested DataVault Ulid does not match resource'
     );
   });
@@ -97,7 +100,7 @@ describe('update dataVaults resource', () => {
       body: null,
     });
 
-    await expect(updateDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateDataVault(event, dummyContext, testProviders)).rejects.toThrow(
       'Update Data Vault payload missing.'
     );
   });
@@ -113,7 +116,7 @@ describe('update dataVaults resource', () => {
       },
     });
 
-    await expect(updateDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateDataVault(event, dummyContext, testProviders)).rejects.toThrow(
       'Update Data Vault payload is malformed. Failed to parse.'
     );
   });
@@ -128,7 +131,7 @@ describe('update dataVaults resource', () => {
       }),
     });
 
-    await expect(updateDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateDataVault(event, dummyContext, testProviders)).rejects.toThrow(
       "Required path param 'dataVaultId' is missing."
     );
   });
@@ -152,7 +155,7 @@ describe('update dataVaults resource', () => {
       }),
     });
 
-    await expect(updateDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateDataVault(event, dummyContext, testProviders)).rejects.toThrow(
       '"objectCount" is not allowed'
     );
   });
@@ -170,7 +173,7 @@ describe('update dataVaults resource', () => {
       }),
     });
 
-    await expect(updateDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(OneTableError);
+    await expect(updateDataVault(event, dummyContext, testProviders)).rejects.toThrow(OneTableError);
   });
 
   it('should error when updating to a name in use', async () => {
@@ -196,7 +199,7 @@ describe('update dataVaults resource', () => {
       }),
     });
 
-    await expect(updateDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateDataVault(event, dummyContext, testProviders)).rejects.toThrow(
       'Data Vault name is already in use'
     );
   });
@@ -225,7 +228,7 @@ describe('update dataVaults resource', () => {
       }),
     });
 
-    const response = await updateDataVault(event, dummyContext, repositoryProvider);
+    const response = await updateDataVault(event, dummyContext, testProviders);
 
     expect(response.statusCode).toEqual(200);
 
@@ -247,7 +250,7 @@ describe('update dataVaults resource', () => {
       }),
     });
 
-    const response2 = await updateDataVault(event2, dummyContext, repositoryProvider);
+    const response2 = await updateDataVault(event2, dummyContext, testProviders);
 
     expect(response2.statusCode).toEqual(200);
 

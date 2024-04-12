@@ -22,6 +22,7 @@ import {
 import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { listCaseFilesByFilePath } from '../../../app/services/case-file-service';
 import { DeaCaseFileResult } from '../../../models/case-file';
 import { CaseFileStatus } from '../../../models/case-file-status';
@@ -30,19 +31,20 @@ import { DeaUser } from '../../../models/user';
 import { getCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid, fakeUlid } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
+  DATASETS_PROVIDER,
+  FILE_SIZE_BYTES,
   callCompleteCaseFileUpload,
   callCreateCase,
   callCreateUser,
   callInitiateCaseFileUpload,
-  DATASETS_PROVIDER,
-  FILE_SIZE_BYTES,
   validateCaseFile,
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 let sqsMock: AwsClientStub<SQSClient>;
@@ -59,9 +61,10 @@ jest.setTimeout(30000);
 describe('Test complete case file upload', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('CompleteCaseFileUploadTest');
+    testProviders = createTestProvidersObject({ repositoryProvider, datasetsProvider: DATASETS_PROVIDER });
 
-    fileUploader = await callCreateUser(repositoryProvider);
-    caseToUploadTo = (await callCreateCase(fileUploader, repositoryProvider)).ulid ?? fail();
+    fileUploader = await callCreateUser(testProviders);
+    caseToUploadTo = (await callCreateCase(fileUploader, testProviders)).ulid ?? fail();
 
     stsMock = mockClient(STSClient);
     stsMock.resolves({
@@ -99,7 +102,7 @@ describe('Test complete case file upload', () => {
     const fileName = 'positive test';
     const caseFile = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToUploadTo,
       fileName
     );
@@ -114,18 +117,18 @@ describe('Test complete case file upload', () => {
 
   it('should successfully complete a file upload and create no duplicate path entries', async () => {
     const caseToUploadTo =
-      (await callCreateCase(fileUploader, repositoryProvider, 'two files in a case')).ulid ?? fail();
+      (await callCreateCase(fileUploader, testProviders, 'two files in a case')).ulid ?? fail();
     const fileName = 'file1.png';
     const fileName2 = 'file2.png';
     const caseFile = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToUploadTo,
       fileName
     );
     const caseFile2 = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToUploadTo,
       fileName2
     );
@@ -157,41 +160,41 @@ describe('Test complete case file upload', () => {
         fileId: bogusUlid,
       },
     });
-    await expect(
-      completeCaseFileUpload(event, dummyContext, repositoryProvider, undefined, undefined, DATASETS_PROVIDER)
-    ).rejects.toThrow('Complete case file upload payload missing.');
+    await expect(completeCaseFileUpload(event, dummyContext, testProviders)).rejects.toThrow(
+      'Complete case file upload payload missing.'
+    );
   });
 
   it('Complete upload should throw an exception when user does not exist in DB', async () => {
-    await expect(
-      callCompleteCaseFileUpload(FILE_ULID, repositoryProvider, FILE_ULID, CASE_ULID)
-    ).rejects.toThrow('Could not find case-file upload user');
+    await expect(callCompleteCaseFileUpload(FILE_ULID, testProviders, FILE_ULID, CASE_ULID)).rejects.toThrow(
+      'Could not find case-file upload user'
+    );
   });
 
   it('Complete upload should throw an exception when userId not present in headers', async () => {
-    await expect(
-      callCompleteCaseFileUpload(undefined, repositoryProvider, FILE_ULID, CASE_ULID)
-    ).rejects.toThrow('userUlid was not present in the event header');
+    await expect(callCompleteCaseFileUpload(undefined, testProviders, FILE_ULID, CASE_ULID)).rejects.toThrow(
+      'userUlid was not present in the event header'
+    );
   });
 
   it('Complete upload should throw an exception when case does not exist in DB', async () => {
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, CASE_ULID)
+      callCompleteCaseFileUpload(fileUploader.ulid, testProviders, FILE_ULID, CASE_ULID)
     ).rejects.toThrow('Could not find case');
   });
 
   it('Complete upload should throw an exception when case is inactive', async () => {
     const inactiveCaseUlid =
-      (await callCreateCase(fileUploader, repositoryProvider, 'inactive', 'inactive', CaseStatus.INACTIVE))
-        .ulid ?? fail();
+      (await callCreateCase(fileUploader, testProviders, 'inactive', 'inactive', CaseStatus.INACTIVE)).ulid ??
+      fail();
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, inactiveCaseUlid)
+      callCompleteCaseFileUpload(fileUploader.ulid, testProviders, FILE_ULID, inactiveCaseUlid)
     ).rejects.toThrow('Case is in an invalid state for uploading files');
   });
 
   it("Complete upload should throw an exception when case-file doesn't exist", async () => {
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToUploadTo)
+      callCompleteCaseFileUpload(fileUploader.ulid, testProviders, FILE_ULID, caseToUploadTo)
     ).rejects.toThrow('Could not find file');
   });
 
@@ -199,7 +202,7 @@ describe('Test complete case file upload', () => {
     const activeFileName = 'completeActiveFile';
     const caseFile = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToUploadTo,
       activeFileName
     );
@@ -208,7 +211,7 @@ describe('Test complete case file upload', () => {
     await completeCaseFileUploadAndValidate(fileId, caseToUploadTo, activeFileName);
 
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, fileId, caseToUploadTo)
+      callCompleteCaseFileUpload(fileUploader.ulid, testProviders, fileId, caseToUploadTo)
     ).rejects.toThrow('File is in incorrect state for upload');
   });
 
@@ -216,50 +219,50 @@ describe('Test complete case file upload', () => {
     const activeFileName = 'mismatchUserFile';
     const caseFile = await callInitiateCaseFileUpload(
       fileUploader.ulid,
-      repositoryProvider,
+      testProviders,
       caseToUploadTo,
       activeFileName
     );
 
-    const newFileUploader = (await callCreateUser(repositoryProvider, 'fail', 'fail', 'fail')) ?? fail();
+    const newFileUploader = (await callCreateUser(testProviders, 'fail', 'fail', 'fail')) ?? fail();
     if (!caseFile.ulid) {
       fail();
     }
 
     await expect(
-      callCompleteCaseFileUpload(newFileUploader.ulid, repositoryProvider, caseFile.ulid, caseToUploadTo)
+      callCompleteCaseFileUpload(newFileUploader.ulid, testProviders, caseFile.ulid, caseToUploadTo)
     ).rejects.toThrow('Mismatch in user creating and completing file upload');
   });
 
   it('Complete upload should enforce a strict payload', async () => {
     // validate caseUlid
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, 'ABCD')
+      callCompleteCaseFileUpload(fileUploader.ulid, testProviders, FILE_ULID, 'ABCD')
     ).rejects.toThrow();
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, '')
+      callCompleteCaseFileUpload(fileUploader.ulid, testProviders, FILE_ULID, '')
     ).rejects.toThrow();
 
     // validate ulid
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, 'ABCD', caseToUploadTo)
+      callCompleteCaseFileUpload(fileUploader.ulid, testProviders, 'ABCD', caseToUploadTo)
     ).rejects.toThrow();
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, '', caseToUploadTo)
+      callCompleteCaseFileUpload(fileUploader.ulid, testProviders, '', caseToUploadTo)
     ).rejects.toThrow();
 
     // validate sha256Hash
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToUploadTo)
+      callCompleteCaseFileUpload(fileUploader.ulid, testProviders, FILE_ULID, caseToUploadTo)
     ).rejects.toThrow(); // empty hash
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToUploadTo)
+      callCompleteCaseFileUpload(fileUploader.ulid, testProviders, FILE_ULID, caseToUploadTo)
     ).rejects.toThrow(); // short hash
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToUploadTo)
+      callCompleteCaseFileUpload(fileUploader.ulid, testProviders, FILE_ULID, caseToUploadTo)
     ).rejects.toThrow(); // long hash
     await expect(
-      callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, FILE_ULID, caseToUploadTo)
+      callCompleteCaseFileUpload(fileUploader.ulid, testProviders, FILE_ULID, caseToUploadTo)
     ).rejects.toThrow(); // illegal character
   });
 
@@ -274,9 +277,9 @@ describe('Test complete case file upload', () => {
         ulid: bogusUlid,
       }),
     });
-    await expect(
-      completeCaseFileUpload(event, dummyContext, repositoryProvider, undefined, undefined, DATASETS_PROVIDER)
-    ).rejects.toThrow('Requested Case Ulid does not match resource');
+    await expect(completeCaseFileUpload(event, dummyContext, testProviders)).rejects.toThrow(
+      'Requested Case Ulid does not match resource'
+    );
   });
 
   it('should error if the payload and resource file ids do not match', async () => {
@@ -290,9 +293,9 @@ describe('Test complete case file upload', () => {
         ulid: fakeUlid,
       }),
     });
-    await expect(
-      completeCaseFileUpload(event, dummyContext, repositoryProvider, undefined, undefined, DATASETS_PROVIDER)
-    ).rejects.toThrow('Requested File Ulid does not match resource');
+    await expect(completeCaseFileUpload(event, dummyContext, testProviders)).rejects.toThrow(
+      'Requested File Ulid does not match resource'
+    );
   });
 });
 
@@ -302,7 +305,7 @@ async function completeCaseFileUploadAndValidate(
   fileName: string,
   callCount = 1
 ): Promise<DeaCaseFileResult> {
-  const deaCaseFile = await callCompleteCaseFileUpload(fileUploader.ulid, repositoryProvider, ulid, caseUlid);
+  const deaCaseFile = await callCompleteCaseFileUpload(fileUploader.ulid, testProviders, ulid, caseUlid);
   await validateCaseFile(deaCaseFile, ulid, caseUlid, fileUploader.ulid, CaseFileStatus.ACTIVE, fileName);
 
   expect(s3Mock).toHaveReceivedCommandTimes(ListPartsCommand, callCount);

@@ -6,14 +6,8 @@
 import { getStringPaginationParameters } from '../../lambda-http-helpers';
 import { DeaDataSyncTask } from '../../models/data-sync-task';
 import { dataSyncPaginationLimit } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
-import { defaultCacheProvider } from '../../storage/cache';
-import { defaultDatasetsProvider } from '../../storage/datasets';
-import { defaultDataSyncProvider } from '../../storage/dataSync';
-import { defaultParametersProvider } from '../../storage/parameters';
-import { defaultAthenaClient } from '../audit/dea-audit-plugin';
 import * as dataSyncService from '../services/data-sync-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const getDataSyncTasks: DEAGatewayProxyHandler = async (
@@ -21,23 +15,11 @@ export const getDataSyncTasks: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  _repositoryProvider = defaultProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  _cacheProvider = defaultCacheProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  _parametersProvider = defaultParametersProvider,
-  /* istanbul ignore next */
-  _datasetsProvider = defaultDatasetsProvider,
-  /* istanbul ignore next */
-  _athenaClient = defaultAthenaClient,
-  /* istanbul ignore next */
-  dataSyncProvider = defaultDataSyncProvider
+  providers = defaultProviders
 ) => {
   const { limit, next } = getStringPaginationParameters(event, dataSyncPaginationLimit);
 
-  const listTasksResponse = await dataSyncService.listDatasyncTasks(dataSyncProvider, limit, next);
+  const listTasksResponse = await dataSyncService.listDatasyncTasks(providers.dataSyncProvider, limit, next);
 
   // Create an array to store DeaDataSyncTask objects
   const deaDataSyncTasks: DeaDataSyncTask[] = [];
@@ -45,7 +27,7 @@ export const getDataSyncTasks: DEAGatewayProxyHandler = async (
   // Loop through the tasks and fetch details for each
   for (const task of listTasksResponse.Tasks ?? []) {
     if (task.TaskArn) {
-      const deaDataSyncTask = await dataSyncService.describeTask(task.TaskArn, dataSyncProvider);
+      const deaDataSyncTask = await dataSyncService.describeTask(task.TaskArn, providers.dataSyncProvider);
       deaDataSyncTasks.push(deaDataSyncTask);
     }
   }

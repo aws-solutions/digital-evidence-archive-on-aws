@@ -9,6 +9,7 @@ import { S3ControlClient } from '@aws-sdk/client-s3-control';
 import { APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
 import { completeCaseFileUpload } from '../../../app/resources/complete-case-file-upload';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { downloadCaseFile } from '../../../app/resources/download-case-file';
 import { getCaseFileDetails } from '../../../app/resources/get-case-file-details';
 import { initiateCaseFileUpload } from '../../../app/resources/initiate-case-file-upload';
@@ -31,7 +32,6 @@ import { caseResponseSchema } from '../../../models/validation/case';
 import { ONE_MB } from '../../../models/validation/joi-common';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { getJob } from '../../../persistence/job';
-import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { testEnv } from '../../../test-e2e/helpers/settings';
 import { dummyContext, getDummyEvent } from '../../integration-objects';
@@ -74,7 +74,7 @@ jest.setTimeout(20000);
 
 export const callInitiateCaseFileUpload = async (
   uploaderId: string | undefined,
-  repositoryProvider: ModelRepositoryProvider,
+  testProviders: LambdaProviders,
   caseUlid: string,
   fileName = FILE_NAME,
   filePath = FILE_PATH,
@@ -103,21 +103,14 @@ export const callInitiateCaseFileUpload = async (
       chunkSizeBytes,
     }),
   });
-  const response = await initiateCaseFileUpload(
-    event,
-    dummyContext,
-    repositoryProvider,
-    undefined,
-    undefined,
-    DATASETS_PROVIDER
-  );
+  const response = await initiateCaseFileUpload(event, dummyContext, testProviders);
   checkApiSucceeded(response);
   return JSON.parse(response.body);
 };
 
 export const callCompleteCaseFileUpload = async (
   uploaderId: string | undefined,
-  repositoryProvider: ModelRepositoryProvider,
+  testProviders: LambdaProviders,
   ulid: string,
   caseUlid: string
 ): Promise<DeaCaseFileResult> => {
@@ -134,14 +127,7 @@ export const callCompleteCaseFileUpload = async (
       ulid,
     }),
   });
-  const response = await completeCaseFileUpload(
-    event,
-    dummyContext,
-    repositoryProvider,
-    undefined,
-    undefined,
-    DATASETS_PROVIDER
-  );
+  const response = await completeCaseFileUpload(event, dummyContext, testProviders);
 
   checkApiSucceeded(response);
   return JSON.parse(response.body);
@@ -149,7 +135,7 @@ export const callCompleteCaseFileUpload = async (
 
 export const callDownloadCaseFile = async (
   requesterUlid: string | undefined,
-  repositoryProvider: ModelRepositoryProvider,
+  testProviders: LambdaProviders,
   fileId: string,
   caseId: string,
   reason = 'no test reason specified'
@@ -168,14 +154,7 @@ export const callDownloadCaseFile = async (
       downloadReason: reason,
     }),
   });
-  const response = await downloadCaseFile(
-    event,
-    dummyContext,
-    repositoryProvider,
-    undefined,
-    undefined,
-    DATASETS_PROVIDER
-  );
+  const response = await downloadCaseFile(event, dummyContext, testProviders);
   checkApiSucceeded(response);
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -184,7 +163,7 @@ export const callDownloadCaseFile = async (
 
 export const callRestoreCaseFile = async (
   requesterUlid: string | undefined,
-  repositoryProvider: ModelRepositoryProvider,
+  testProviders: LambdaProviders,
   fileId: string,
   caseId: string
 ): Promise<void> => {
@@ -197,25 +176,22 @@ export const callRestoreCaseFile = async (
       fileId,
     },
   });
-  const response = await restoreCaseFile(
-    event,
-    dummyContext,
-    repositoryProvider,
-    undefined,
-    undefined,
-    DATASETS_PROVIDER
-  );
+  const response = await restoreCaseFile(event, dummyContext, testProviders);
   expect(response.statusCode).toEqual(204);
 };
 
 export const callCreateCase = async (
   owner: DeaUser,
-  repositoryProvider: ModelRepositoryProvider,
+  testProviders: LambdaProviders,
   name: string = CASE_NAME,
   description: string = CASE_DESCRIPTION,
   status = CaseStatus.ACTIVE
 ): Promise<DeaCase> => {
-  const theCase = await CaseService.createCases({ name, description }, owner, repositoryProvider);
+  const theCase = await CaseService.createCases(
+    { name, description },
+    owner,
+    testProviders.repositoryProvider
+  );
   if (status == CaseStatus.INACTIVE) {
     const updatedCase = Object.assign(
       {},
@@ -224,14 +200,14 @@ export const callCreateCase = async (
         status: CaseStatus.INACTIVE,
       }
     );
-    return await CaseService.updateCases(updatedCase, repositoryProvider);
+    return await CaseService.updateCases(updatedCase, testProviders.repositoryProvider);
   }
   return theCase;
 };
 
 export const callGetCaseFileDetails = async (
   requesterUlid: string | undefined,
-  repositoryProvider: ModelRepositoryProvider,
+  testProviders: LambdaProviders,
   fileId: string,
   caseId: string
 ): Promise<CaseFileDTO> => {
@@ -244,14 +220,7 @@ export const callGetCaseFileDetails = async (
       fileId,
     },
   });
-  const response = await getCaseFileDetails(
-    event,
-    dummyContext,
-    repositoryProvider,
-    undefined,
-    undefined,
-    DATASETS_PROVIDER
-  );
+  const response = await getCaseFileDetails(event, dummyContext, testProviders);
   checkApiSucceeded(response);
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -260,7 +229,7 @@ export const callGetCaseFileDetails = async (
 
 export const callListCaseFiles = async (
   requesterUlid: string | undefined,
-  repositoryProvider: ModelRepositoryProvider,
+  testProviders: LambdaProviders,
   caseId: string,
   limit = '30',
   filePath: string = FILE_PATH,
@@ -279,13 +248,13 @@ export const callListCaseFiles = async (
       next,
     },
   });
-  const response = await listCaseFiles(event, dummyContext, repositoryProvider);
+  const response = await listCaseFiles(event, dummyContext, testProviders);
   checkApiSucceeded(response);
   return JSON.parse(response.body);
 };
 
 export const callCreateUser = async (
-  repositoryProvider: ModelRepositoryProvider,
+  testProviders: LambdaProviders,
   tokenId: string = TOKEN_ID,
   idPoolId: string = ID_POOL_ID,
   firstName: string = FIRST_NAME,
@@ -298,7 +267,7 @@ export const callCreateUser = async (
       firstName,
       lastName,
     },
-    repositoryProvider
+    testProviders.repositoryProvider
   );
 };
 
@@ -307,8 +276,7 @@ export const callUpdateCaseStatusAndValidate = async (
   createdCase: DeaCase,
   deleteFiles: boolean,
   status: CaseStatus,
-  repositoryProvider: ModelRepositoryProvider,
-  datasetsProvider = DATASETS_PROVIDER
+  testProviders: LambdaProviders
 ): Promise<DeaCase> => {
   const event = getDummyEvent({
     headers: {
@@ -323,14 +291,7 @@ export const callUpdateCaseStatusAndValidate = async (
       status,
     }),
   });
-  const response = await updateCaseStatus(
-    event,
-    dummyContext,
-    repositoryProvider,
-    undefined,
-    undefined,
-    datasetsProvider
-  );
+  const response = await updateCaseStatus(event, dummyContext, testProviders);
   checkApiSucceeded(response);
 
   const updatedCase: DeaCase = jsonParseWithDates(response.body);
@@ -345,7 +306,7 @@ export async function validateCaseStatusUpdatedAsExpected(
   status: CaseStatus,
   filesStatus: CaseFileStatus,
   s3BatchJobId: string | undefined,
-  repositoryProvider: ModelRepositoryProvider,
+  testProviders: LambdaProviders,
   objectCount = 0,
   totalSizeBytes = 0
 ) {
@@ -366,7 +327,7 @@ export async function validateCaseStatusUpdatedAsExpected(
   });
 
   if (s3BatchJobId) {
-    const job = await getJob(s3BatchJobId, repositoryProvider);
+    const job = await getJob(s3BatchJobId, testProviders.repositoryProvider);
     if (!job) {
       fail();
     }
@@ -397,6 +358,7 @@ export const validateCaseFile = async (
   expectedDetails = DETAILS
 ): Promise<void> => {
   expect(deaCaseFile.ulid).toEqual(expectedfileId);
+  expect(deaCaseFile.caseUlid).toEqual(expectedCaseId);
   expect(deaCaseFile.isFile).toEqual(true);
   expect(deaCaseFile.status).toEqual(expectedStatus);
   expect(deaCaseFile.contentType).toEqual(expectedContentType);

@@ -9,14 +9,10 @@ import { CaseFileStatus } from '../../models/case-file-status';
 import { CaseStatus } from '../../models/case-status';
 import { updateCaseStatusSchema } from '../../models/validation/case';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
-import { defaultCacheProvider } from '../../storage/cache';
-import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
-import { defaultParametersProvider } from '../../storage/parameters';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseService from '../services/case-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const updateCaseStatus: DEAGatewayProxyHandler = async (
@@ -24,15 +20,7 @@ export const updateCaseStatus: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  _cacheProvider = defaultCacheProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  _parametersProvider = defaultParametersProvider,
-  /* istanbul ignore next */
-  datasetsProvider: DatasetsProvider = defaultDatasetsProvider
+  providers = defaultProviders
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const input: UpdateCaseStatusInput = getRequiredPayload(
@@ -40,13 +28,13 @@ export const updateCaseStatus: DEAGatewayProxyHandler = async (
     'Update case status',
     updateCaseStatusSchema
   );
-  const deaCase = await CaseService.getCase(caseId, repositoryProvider);
+  const deaCase = await CaseService.getCase(caseId, providers.repositoryProvider);
 
   if (!deaCase) {
     throw new NotFoundError(`Could not find case: ${input.name}`);
   }
 
-  if (input.deleteFiles && !datasetsProvider.deletionAllowed) {
+  if (input.deleteFiles && !providers.datasetsProvider.deletionAllowed) {
     throw new ValidationError('The application is not configured to delete files');
   }
 
@@ -76,8 +64,8 @@ export const updateCaseStatus: DEAGatewayProxyHandler = async (
     deaCase,
     input.status,
     input.deleteFiles,
-    repositoryProvider,
-    datasetsProvider
+    providers.repositoryProvider,
+    providers.datasetsProvider
   );
   return responseOk(event, updatedCase);
 };

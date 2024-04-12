@@ -14,7 +14,12 @@ import { defaultParametersProvider } from '../../../storage/parameters';
 import { PkceStrings, getAuthorizationCode, getPkceStrings } from '../../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent, setCookieToCookie } from '../../integration-objects';
+import {
+  createTestProvidersObject,
+  dummyContext,
+  getDummyEvent,
+  setCookieToCookie,
+} from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let cognitoParams: CognitoSsmParams;
@@ -23,6 +28,7 @@ let pkceStrings: PkceStrings;
 
 describe('revoke-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
+  const testProviders = createTestProvidersObject({});
 
   const suffix = randomSuffix(5);
   const testUser = `RevokeCodeIntegrationTestUser${suffix}`;
@@ -72,7 +78,7 @@ describe('revoke-token', () => {
       },
     });
 
-    const response = await getToken(event, dummyContext);
+    const response = await getToken(event, dummyContext, testProviders);
     expect(response.statusCode).toEqual(200);
 
     if (!response.body) {
@@ -84,10 +90,10 @@ describe('revoke-token', () => {
     });
 
     // revoke token (marks session as revoked)
-    const revokeResponse = await revokeToken(dummyEvent, dummyContext, repositoryProvider);
+    const revokeResponse = await revokeToken(dummyEvent, dummyContext, testProviders);
     expect(revokeResponse.body).toEqual('200');
 
-    await expect(refreshToken(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(ValidationError);
+    await expect(refreshToken(dummyEvent, dummyContext, testProviders)).rejects.toThrow(ValidationError);
   }, 40000);
 
   it('should throw a validation error if the refreshToken is not valid', async () => {
@@ -113,7 +119,7 @@ describe('revoke-token', () => {
       },
     });
 
-    const response = await getToken(event, dummyContext, undefined);
+    const response = await getToken(event, dummyContext, testProviders);
     expect(response.statusCode).toEqual(200);
 
     if (!response.body) {
@@ -136,6 +142,6 @@ describe('revoke-token', () => {
       headers: { cookie },
     });
 
-    await expect(revokeToken(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(ValidationError);
+    await expect(revokeToken(dummyEvent, dummyContext, testProviders)).rejects.toThrow(ValidationError);
   }, 40000);
 });

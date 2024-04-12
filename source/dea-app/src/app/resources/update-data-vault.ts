@@ -7,10 +7,9 @@ import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-help
 import { DeaDataVaultUpdateInput } from '../../models/data-vault';
 import { updateDataVaultSchema } from '../../models/validation/data-vault';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as DataVaultService from '../services/data-vault-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const updateDataVault: DEAGatewayProxyHandler = async (
@@ -18,7 +17,7 @@ export const updateDataVault: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const dataVaultId = getRequiredPathParam(event, 'dataVaultId', joiUlid);
 
@@ -31,9 +30,12 @@ export const updateDataVault: DEAGatewayProxyHandler = async (
   if (dataVaultId !== deaDataVault.ulid) {
     throw new ValidationError('Requested DataVault Ulid does not match resource');
   }
-  await DataVaultService.getDataVault(dataVaultId, repositoryProvider);
+  await DataVaultService.getDataVault(dataVaultId, providers.repositoryProvider);
 
-  const dataVaultUpdateResult = await DataVaultService.updateDataVaults(deaDataVault, repositoryProvider);
+  const dataVaultUpdateResult = await DataVaultService.updateDataVaults(
+    deaDataVault,
+    providers.repositoryProvider
+  );
 
   return responseOk(event, dataVaultUpdateResult);
 };

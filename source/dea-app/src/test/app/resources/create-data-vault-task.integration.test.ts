@@ -6,23 +6,24 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
 import { createDataVault } from '../../../app/resources/create-data-vault';
 import { createDataVaultTask } from '../../../app/resources/create-data-vault-task';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { createS3Location } from '../../../app/services/data-sync-service';
 import { DeaDataVault } from '../../../models/data-vault';
 import { DeaDataVaultTask } from '../../../models/data-vault-task';
 import { dataVaultResponseSchema, dataVaultTaskResponseSchema } from '../../../models/validation/data-vault';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { DataSyncProvider, defaultDataSyncProvider } from '../../../storage/dataSync';
-import { getDummyEvent, dummyContext } from '../../integration-objects';
+import { getDummyEvent, dummyContext, createTestProvidersObject } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
-let repositoryProvider: ModelRepositoryProvider;
-let newDataVault: DeaDataVault;
-let locationArn1: string;
-const dataSyncProvider: DataSyncProvider = defaultDataSyncProvider;
-
 describe('create data vault tasks resource', () => {
+  let repositoryProvider: ModelRepositoryProvider;
+  let testProviders: LambdaProviders;
+  let newDataVault: DeaDataVault;
+  let locationArn1: string;
+
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('createDataVaultTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
   });
 
   afterAll(async () => {
@@ -36,11 +37,14 @@ describe('create data vault tasks resource', () => {
         name,
       }),
     });
-    const response = await createDataVault(event, dummyContext, repositoryProvider);
+    const response = await createDataVault(event, dummyContext, testProviders);
     newDataVault = await validateAndReturnDataVault(name, response);
 
     // Create source location arn
-    locationArn1 = await createS3Location(`/DATAVAULT${newDataVault.ulid}/locationtest1`, dataSyncProvider);
+    locationArn1 = await createS3Location(
+      `/DATAVAULT${newDataVault.ulid}/locationtest1`,
+      testProviders.dataSyncProvider
+    );
 
     const event2 = getDummyEvent({
       pathParameters: {
@@ -53,7 +57,7 @@ describe('create data vault tasks resource', () => {
       }),
     });
 
-    const response2 = await createDataVaultTask(event2, dummyContext, repositoryProvider);
+    const response2 = await createDataVaultTask(event2, dummyContext, testProviders);
 
     const dataVaultTask = await validateAndReturnDataVaultTask('testTask', newDataVault.ulid, response2);
 
@@ -72,7 +76,7 @@ describe('create data vault tasks resource', () => {
       }),
     });
 
-    await expect(createDataVaultTask(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createDataVaultTask(event, dummyContext, testProviders)).rejects.toThrow(
       '"name" is required'
     );
   });
@@ -89,7 +93,7 @@ describe('create data vault tasks resource', () => {
       }),
     });
 
-    await expect(createDataVaultTask(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createDataVaultTask(event, dummyContext, testProviders)).rejects.toThrow(
       '"sourceLocationArn" length must be at least 20 characters long'
     );
   });

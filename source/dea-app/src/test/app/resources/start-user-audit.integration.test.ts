@@ -11,7 +11,7 @@ import { joiUlid } from '../../../models/validation/joi-common';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 describe('start user audit', () => {
@@ -56,15 +56,11 @@ describe('start user audit', () => {
         userId,
       },
     });
-    const result = await startUserAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await startUserAudit(event, dummyContext, testProvider);
 
     expect(result.statusCode).toEqual(200);
     const body: { auditId: string } = JSON.parse(result.body);
@@ -84,9 +80,13 @@ describe('start user audit', () => {
         userId,
       },
     });
-    await expect(
-      startUserAudit(event, dummyContext, modelProvider, undefined, undefined, undefined, clientMockInstance)
-    ).rejects.toThrow('Unknown error starting Athena Query.');
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    await expect(startUserAudit(event, dummyContext, testProvider)).rejects.toThrow(
+      'Unknown error starting Athena Query.'
+    );
   });
 
   it('throws an error for an invalid user', async () => {
@@ -97,8 +97,10 @@ describe('start user audit', () => {
         userId: bogusUlid,
       },
     });
-    await expect(
-      startUserAudit(event, dummyContext, modelProvider, undefined, undefined, undefined, clientMockInstance)
-    ).rejects.toThrow('Could not find user');
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    await expect(startUserAudit(event, dummyContext, testProvider)).rejects.toThrow('Could not find user');
   });
 });

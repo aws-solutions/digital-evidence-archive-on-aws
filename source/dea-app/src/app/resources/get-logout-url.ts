@@ -5,10 +5,8 @@
 import Joi from 'joi';
 import { getQueryParam } from '../../lambda-http-helpers';
 import { loginUrlRegex } from '../../models/validation/joi-common';
-import { defaultCacheProvider } from '../../storage/cache';
-import { defaultParametersProvider } from '../../storage/parameters';
 import { getCognitoLogoutUrl } from '../services/auth-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const getLogoutUrl: DEAGatewayProxyHandler = async (
@@ -16,17 +14,15 @@ export const getLogoutUrl: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  _repositoryProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  cacheProvider = defaultCacheProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  parametersProvider = defaultParametersProvider
+  providers = defaultProviders
 ) => {
   const callbackUrl = getQueryParam(event, 'callbackUrl', '', Joi.string().uri());
 
-  const logoutUrl = await getCognitoLogoutUrl(callbackUrl, cacheProvider, parametersProvider);
+  const logoutUrl = await getCognitoLogoutUrl(
+    callbackUrl,
+    providers.cacheProvider,
+    providers.parametersProvider
+  );
 
   Joi.assert(logoutUrl, loginUrlRegex);
   return responseOk(event, logoutUrl);

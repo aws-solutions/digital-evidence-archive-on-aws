@@ -12,14 +12,13 @@ import {
 import { CaseAssociationDTO } from '../../models/case-file';
 import { caseAssociationRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
 import {
   associateFilesListToCase,
   enforceCaseAssociationLimitProtection,
   fetchNestedFilesInFolders,
 } from '../services/data-vault-file-service';
 import { getRequiredDataVault } from '../services/data-vault-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const createCaseAssociation: DEAGatewayProxyHandler = async (
@@ -27,7 +26,7 @@ export const createCaseAssociation: DEAGatewayProxyHandler = async (
   context,
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const caseAssociationRequest: CaseAssociationDTO = getRequiredPayload(
     event,
@@ -36,7 +35,7 @@ export const createCaseAssociation: DEAGatewayProxyHandler = async (
   );
 
   const DataVaultId = getRequiredPathParam(event, 'dataVaultId', joiUlid);
-  await getRequiredDataVault(DataVaultId, repositoryProvider);
+  await getRequiredDataVault(DataVaultId, providers.repositoryProvider);
 
   const paginationParams = getPaginationParameters(event);
 
@@ -49,7 +48,7 @@ export const createCaseAssociation: DEAGatewayProxyHandler = async (
     DataVaultId,
     caseAssociationRequest.fileUlids,
     paginationParams.limit,
-    repositoryProvider
+    providers.repositoryProvider
   );
 
   const filesTransferred = await associateFilesListToCase(
@@ -57,7 +56,7 @@ export const createCaseAssociation: DEAGatewayProxyHandler = async (
     userUlid,
     caseAssociationRequest.caseUlids,
     allFileUlids,
-    repositoryProvider
+    providers.repositoryProvider
   );
 
   return responseOk(event, { filesTransferred });

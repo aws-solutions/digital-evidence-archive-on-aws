@@ -5,15 +5,17 @@
 
 import { fail } from 'assert';
 import Joi from 'joi';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getUsers } from '../../../app/resources/get-users';
 import { createUser } from '../../../app/services/user-service';
 import { DeaUser } from '../../../models/user';
 import { userResponseSchema } from '../../../models/validation/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 
 type ResponseUserPage = {
   users: DeaUser[];
@@ -23,6 +25,7 @@ type ResponseUserPage = {
 describe('get users resource', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('getUsersTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
   });
 
   afterAll(async () => {
@@ -55,7 +58,7 @@ describe('get users resource', () => {
         limit: '1',
       },
     });
-    const response = await getUsers(event, dummyContext, repositoryProvider);
+    const response = await getUsers(event, dummyContext, testProviders);
 
     if (!response.body) {
       fail();
@@ -72,7 +75,7 @@ describe('get users resource', () => {
         next: casesPage.next,
       },
     });
-    const response2 = await getUsers(event2, dummyContext, repositoryProvider);
+    const response2 = await getUsers(event2, dummyContext, testProviders);
     if (!response2.body) {
       fail();
     }
@@ -121,7 +124,7 @@ describe('get users resource', () => {
         nameBeginsWith: 'FNameA',
       },
     });
-    const response = await getUsers(event, dummyContext, repositoryProvider);
+    const response = await getUsers(event, dummyContext, testProviders);
 
     if (!response.body) {
       fail();

@@ -6,6 +6,7 @@
 import { Paged } from 'dynamodb-onetable';
 import { createCaseAssociation } from '../../../app/resources/create-case-association';
 import { createDataVault } from '../../../app/resources/create-data-vault';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { deleteCaseAssociation } from '../../../app/resources/delete-case-association';
 import { getCase } from '../../../app/resources/get-case-details';
 import { listDataVaultFilesByFilePath } from '../../../app/services/data-vault-file-service';
@@ -17,18 +18,20 @@ import { createCase } from '../../../persistence/case';
 import { createDataVaultFile } from '../../../persistence/data-vault-file';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import { callListCaseFiles } from './case-file-integration-test-helper';
 import { dataVaultFileGenerate, dataVaultFolderGenerate } from './data-vault-integration-test-helper';
 
-let user: DeaUser;
-
 describe('test data vault file disassociation from cases', () => {
   let repositoryProvider: ModelRepositoryProvider;
+  let testProviders: LambdaProviders;
+  let user: DeaUser;
 
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('dataVaultFileDisassociationTestsTable');
+    testProviders = createTestProvidersObject({ repositoryProvider });
+
     // create user
     user =
       (await createUser(
@@ -49,7 +52,7 @@ describe('test data vault file disassociation from cases', () => {
         name,
       }),
     });
-    const response = await createDataVault(event, dummyContext, repositoryProvider);
+    const response = await createDataVault(event, dummyContext, testProviders);
     const newDataVault = await JSON.parse(response.body);
 
     // Add files to data vault
@@ -107,23 +110,23 @@ describe('test data vault file disassociation from cases', () => {
     const caseAssociateResponse = await createCaseAssociation(
       caseAssociateEvent,
       dummyContext,
-      repositoryProvider
+      testProviders
     );
 
     expect(caseAssociateResponse.statusCode).toEqual(200);
     expect(JSON.parse(caseAssociateResponse.body).filesTransferred.length).toEqual(4); // (2 files) * 2 cases
 
     // Check cases root directory for number of files
-    const caseFiles1 = await callListCaseFiles(user.ulid, repositoryProvider, createdCase.ulid, '30', '/');
+    const caseFiles1 = await callListCaseFiles(user.ulid, testProviders, createdCase.ulid, '30', '/');
     expect(caseFiles1.files.length).toEqual(1);
 
-    const caseFiles2 = await callListCaseFiles(user.ulid, repositoryProvider, createdCase2.ulid, '30', '/');
+    const caseFiles2 = await callListCaseFiles(user.ulid, testProviders, createdCase2.ulid, '30', '/');
     expect(caseFiles2.files.length).toEqual(1);
 
     // Check cases /nestedFolder/folder2 directory for number of files
     const caseFilesNested = await callListCaseFiles(
       user.ulid,
-      repositoryProvider,
+      testProviders,
       createdCase.ulid,
       '30',
       '/nestedFolder/folder2/'
@@ -137,7 +140,7 @@ describe('test data vault file disassociation from cases', () => {
       },
     });
 
-    const caseResponse = await getCase(caseEvent, dummyContext, repositoryProvider);
+    const caseResponse = await getCase(caseEvent, dummyContext, testProviders);
 
     expect(caseResponse.statusCode).toEqual(200);
 
@@ -170,13 +173,13 @@ describe('test data vault file disassociation from cases', () => {
         }),
       }),
       dummyContext,
-      repositoryProvider
+      testProviders
     );
 
     // Check cases at /nestedFolder/folder2 directory. 1 file expected.
     const caseFilesAfterRemovingFirstAssociation = await callListCaseFiles(
       user.ulid,
-      repositoryProvider,
+      testProviders,
       createdCase.ulid,
       '30',
       '/nestedFolder/folder2/'
@@ -196,13 +199,13 @@ describe('test data vault file disassociation from cases', () => {
         }),
       }),
       dummyContext,
-      repositoryProvider
+      testProviders
     );
 
     // Check cases at root directory for number of files. Must be empty.
     const caseFilesAfterRemovingSecondAssociation = await callListCaseFiles(
       user.ulid,
-      repositoryProvider,
+      testProviders,
       createdCase.ulid,
       '30',
       '/'
@@ -219,7 +222,7 @@ describe('test data vault file disassociation from cases', () => {
         caseUlids: ['AAAAAAAAAAAAAAAAAAAAAAAAAA', 'AAAAAAAAAAAAAAAAAAAAAAAAAA'],
       }),
     });
-    await expect(deleteCaseAssociation(caseAssociateEvent, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(deleteCaseAssociation(caseAssociateEvent, dummyContext, testProviders)).rejects.toThrow(
       "Required path param 'dataVaultId' is missing."
     );
   }, 40000);
@@ -233,7 +236,7 @@ describe('test data vault file disassociation from cases', () => {
         caseUlids: ['AAAAAAAAAAAAAAAAAAAAAAAAAA', 'AAAAAAAAAAAAAAAAAAAAAAAAAA'],
       }),
     });
-    await expect(deleteCaseAssociation(caseAssociateEvent, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(deleteCaseAssociation(caseAssociateEvent, dummyContext, testProviders)).rejects.toThrow(
       "Required path param 'fileId' is missing."
     );
   }, 40000);
@@ -252,7 +255,7 @@ describe('test data vault file disassociation from cases', () => {
     deleteCaseAssociateEvent.headers['userUlid'] = user.ulid;
 
     await expect(
-      deleteCaseAssociation(deleteCaseAssociateEvent, dummyContext, repositoryProvider)
+      deleteCaseAssociation(deleteCaseAssociateEvent, dummyContext, testProviders)
     ).rejects.toThrow('caseUlids" is required');
   });
 
@@ -270,7 +273,7 @@ describe('test data vault file disassociation from cases', () => {
           }),
         }),
         dummyContext,
-        repositoryProvider
+        testProviders
       )
     ).rejects.toThrow(`DataVault not found.`);
   }, 40000);
@@ -282,7 +285,7 @@ describe('test data vault file disassociation from cases', () => {
         name,
       }),
     });
-    const response = await createDataVault(event, dummyContext, repositoryProvider);
+    const response = await createDataVault(event, dummyContext, testProviders);
     const newDataVault = await JSON.parse(response.body);
     await expect(
       deleteCaseAssociation(
@@ -296,7 +299,7 @@ describe('test data vault file disassociation from cases', () => {
           }),
         }),
         dummyContext,
-        repositoryProvider
+        testProviders
       )
     ).rejects.toThrow(`DataVault File not found.`);
   }, 40000);
@@ -309,7 +312,7 @@ describe('test data vault file disassociation from cases', () => {
         name,
       }),
     });
-    const response = await createDataVault(event, dummyContext, repositoryProvider);
+    const response = await createDataVault(event, dummyContext, testProviders);
     const newDataVault = await JSON.parse(response.body);
 
     //Adds a file to the data vault
@@ -333,7 +336,7 @@ describe('test data vault file disassociation from cases', () => {
           }),
         }),
         dummyContext,
-        repositoryProvider
+        testProviders
       )
     ).rejects.toThrow(`Could not find file`);
   }, 40000);

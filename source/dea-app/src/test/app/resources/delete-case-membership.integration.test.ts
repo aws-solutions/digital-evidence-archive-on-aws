@@ -4,6 +4,7 @@
  */
 
 import { ValidationError } from '../../../app/exceptions/validation-exception';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { deleteCaseMembership } from '../../../app/resources/delete-case-membership';
 import * as CaseService from '../../../app/services/case-service';
 import { createCaseUserMembership, getCaseUser } from '../../../app/services/case-user-service';
@@ -14,15 +15,17 @@ import { DeaUser, DeaUserInput } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
-let repositoryProvider: ModelRepositoryProvider;
-let caseOwner: DeaUser;
-
 describe('delete case membership resource', () => {
+  let repositoryProvider: ModelRepositoryProvider;
+  let testProviders: LambdaProviders;
+  let caseOwner: DeaUser;
+
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('deleteCaseMembershipTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
 
     caseOwner =
       (await createUser(
@@ -79,7 +82,7 @@ describe('delete case membership resource', () => {
       await getCaseUser({ caseUlid: newCase.ulid, userUlid: user.ulid }, repositoryProvider)
     ).toBeDefined();
 
-    const response = await deleteCaseMembership(event, dummyContext, repositoryProvider);
+    const response = await deleteCaseMembership(event, dummyContext, testProviders);
     expect(response.statusCode).toEqual(204);
 
     // membership is gone after delete
@@ -96,7 +99,7 @@ describe('delete case membership resource', () => {
       },
     });
 
-    const response = await deleteCaseMembership(event, dummyContext, repositoryProvider);
+    const response = await deleteCaseMembership(event, dummyContext, testProviders);
     expect(response.statusCode).toEqual(204);
   });
 
@@ -107,17 +110,13 @@ describe('delete case membership resource', () => {
       },
     });
 
-    await expect(deleteCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      ValidationError
-    );
+    await expect(deleteCaseMembership(event, dummyContext, testProviders)).rejects.toThrow(ValidationError);
     const event2 = getDummyEvent({
       pathParameters: {
         userId: bogusUlid,
       },
     });
 
-    await expect(deleteCaseMembership(event2, dummyContext, repositoryProvider)).rejects.toThrow(
-      ValidationError
-    );
+    await expect(deleteCaseMembership(event2, dummyContext, testProviders)).rejects.toThrow(ValidationError);
   });
 });

@@ -2,12 +2,13 @@
  *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+
 import { getLoginUrl } from '../../../app/resources/get-login-url';
 import { getLoginHostedUiUrl } from '../../../app/services/auth-service';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/parameter-service';
 import { defaultCacheProvider } from '../../../storage/cache';
 import { defaultParametersProvider } from '../../../storage/parameters';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 
 let expectedUrl: string;
 let cognitoParams: CognitoSsmParams;
@@ -35,7 +36,7 @@ describe('get-login-url', () => {
       },
     });
 
-    const response = await getLoginUrl(event, dummyContext);
+    const response = await getLoginUrl(event, dummyContext, createTestProvidersObject({}));
     if (!response.body) {
       fail();
     }

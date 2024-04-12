@@ -3,10 +3,8 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 import { getOauthToken } from '../../lambda-http-helpers';
-import { defaultCacheProvider } from '../../storage/cache';
-import { defaultParametersProvider } from '../../storage/parameters';
 import { revokeRefreshToken } from '../services/auth-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const revokeToken: DEAGatewayProxyHandler = async (
@@ -14,19 +12,13 @@ export const revokeToken: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  _repositoryProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  cacheProvider = defaultCacheProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  parametersProvider = defaultParametersProvider
+  providers = defaultProviders
 ) => {
   const oauthToken = getOauthToken(event);
   const revokeTokenResult = await revokeRefreshToken(
     oauthToken.refresh_token,
-    cacheProvider,
-    parametersProvider
+    providers.cacheProvider,
+    providers.parametersProvider
   );
 
   return responseOk(event, revokeTokenResult);

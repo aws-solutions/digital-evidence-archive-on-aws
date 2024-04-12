@@ -7,6 +7,7 @@ import { fail } from 'assert';
 import Joi from 'joi';
 import { NotFoundError } from '../../../app/exceptions/not-found-exception';
 import { ValidationError } from '../../../app/exceptions/validation-exception';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getCase } from '../../../app/resources/get-case-details';
 import { createUser } from '../../../app/services/user-service';
 import { DeaCase, DeaCaseInput } from '../../../models/case';
@@ -15,14 +16,16 @@ import { caseResponseSchema } from '../../../models/validation/case';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { createCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
-let repositoryProvider: ModelRepositoryProvider;
-
 describe('get case details resource', () => {
+  let repositoryProvider: ModelRepositoryProvider;
+  let testProviders: LambdaProviders;
+
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('getCaseDetailsTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
   });
 
   afterAll(async () => {
@@ -52,7 +55,7 @@ describe('get case details resource', () => {
       },
     });
 
-    const response = await getCase(event, dummyContext, repositoryProvider);
+    const response = await getCase(event, dummyContext, testProviders);
 
     expect(response.statusCode).toEqual(200);
 
@@ -77,10 +80,10 @@ describe('get case details resource', () => {
       },
     });
 
-    await expect(getCase(event, dummyContext, repositoryProvider)).rejects.toThrow(NotFoundError);
+    await expect(getCase(event, dummyContext, testProviders)).rejects.toThrow(NotFoundError);
   });
 
   it('should throw an error if the path param is missing', async () => {
-    await expect(getCase(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(ValidationError);
+    await expect(getCase(getDummyEvent(), dummyContext, testProviders)).rejects.toThrow(ValidationError);
   });
 });

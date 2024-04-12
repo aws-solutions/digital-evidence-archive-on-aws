@@ -7,14 +7,10 @@ import { getRequiredPathParam, getRequiredPayload, getUserUlid } from '../../lam
 import { CompleteCaseFileUploadDTO, CompleteCaseFileUploadObject } from '../../models/case-file';
 import { completeCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
-import { defaultCacheProvider } from '../../storage/cache';
-import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
-import { defaultParametersProvider } from '../../storage/parameters';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseFileService from '../services/case-file-service';
 import { validateCompleteCaseFileRequirements } from '../services/case-file-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
@@ -22,15 +18,7 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   context,
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  _cacheProvider = defaultCacheProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  _parametersProvider = defaultParametersProvider,
-  /* istanbul ignore next */
-  datasetsProvider: DatasetsProvider = defaultDatasetsProvider
+  providers = defaultProviders
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
@@ -50,7 +38,7 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
   const existingFile = await validateCompleteCaseFileRequirements(
     requestCaseFile,
     userUlid,
-    repositoryProvider
+    providers.repositoryProvider
   );
   if (!existingFile.ulid) {
     throw new ValidationError('File not found');
@@ -68,8 +56,8 @@ export const completeCaseFileUpload: DEAGatewayProxyHandler = async (
 
   const completeUploadResponse = await CaseFileService.completeCaseFileUpload(
     patchedFile,
-    repositoryProvider,
-    datasetsProvider
+    providers.repositoryProvider,
+    providers.datasetsProvider
   );
 
   return responseOk(event, completeUploadResponse);

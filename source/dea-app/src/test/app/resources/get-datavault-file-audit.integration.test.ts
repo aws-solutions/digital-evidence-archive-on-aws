@@ -21,7 +21,7 @@ import { createDataVaultFile } from '../../../persistence/data-vault-file';
 import { AuditType } from '../../../persistence/schema/dea-schema';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import { getQueryResponseWithState, startAudit } from '../audit-test-support';
 import { callCreateUser } from './case-file-integration-test-helper';
@@ -66,7 +66,7 @@ describe('get datavault file audit', () => {
 
     modelProvider = await getTestRepositoryProvider('getDataVaultFileIntegration');
 
-    const user = await callCreateUser(modelProvider);
+    const user = await callCreateUser(createTestProvidersObject({ repositoryProvider: modelProvider }));
 
     dataVaultId =
       (await callCreateDataVault(modelProvider, 'GetDVFile', 'Get dvfile integration')).ulid ?? fail();
@@ -118,15 +118,11 @@ describe('get datavault file audit', () => {
         auditId,
       },
     });
-    const result = await getDataVaultFileAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getDataVaultFileAudit(event, dummyContext, testProvider);
 
     expect(result.statusCode).toEqual(200);
     expect(result.body).toContain('"status":"SUCCEEDED"');
@@ -146,15 +142,11 @@ describe('get datavault file audit', () => {
         auditId,
       },
     });
-    const result = await getDataVaultFileAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getDataVaultFileAudit(event, dummyContext, testProvider);
     expect(result.statusCode).toEqual(200);
     const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual(QueryExecutionState.RUNNING.valueOf());
@@ -173,15 +165,11 @@ describe('get datavault file audit', () => {
         auditId,
       },
     });
-    const result = await getDataVaultFileAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getDataVaultFileAudit(event, dummyContext, testProvider);
     expect(result.statusCode).toEqual(200);
     const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');
@@ -201,17 +189,13 @@ describe('get datavault file audit', () => {
         auditId,
       },
     });
-    await expect(
-      getDataVaultFileAudit(
-        event,
-        dummyContext,
-        modelProvider,
-        undefined,
-        undefined,
-        undefined,
-        clientMockInstance
-      )
-    ).rejects.toThrow('DataVault not found.');
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    await expect(getDataVaultFileAudit(event, dummyContext, testProvider)).rejects.toThrow(
+      'DataVault not found.'
+    );
   });
 
   it('throws an error if datavault-file does not exist', async () => {
@@ -227,16 +211,12 @@ describe('get datavault file audit', () => {
         auditId,
       },
     });
-    await expect(
-      getDataVaultFileAudit(
-        event,
-        dummyContext,
-        modelProvider,
-        undefined,
-        undefined,
-        undefined,
-        clientMockInstance
-      )
-    ).rejects.toThrow('DataVault File not found.');
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    await expect(getDataVaultFileAudit(event, dummyContext, testProvider)).rejects.toThrow(
+      'DataVault File not found.'
+    );
   });
 });

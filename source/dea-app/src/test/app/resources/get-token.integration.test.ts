@@ -10,13 +10,14 @@ import { defaultParametersProvider } from '../../../storage/parameters';
 import { getAuthorizationCode, getPkceStrings, PkceStrings } from '../../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 
 let cognitoParams: CognitoSsmParams;
 let pkceStrings: PkceStrings;
 
 describe('get-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
+  const testProviders = createTestProvidersObject({});
   const OLD_ENV = process.env;
 
   const suffix = randomSuffix(5);
@@ -64,7 +65,7 @@ describe('get-token', () => {
       },
     });
 
-    const response = await getToken(event, dummyContext);
+    const response = await getToken(event, dummyContext, testProviders);
     expect(response.statusCode).toEqual(200);
 
     if (!response.multiValueHeaders) {
@@ -82,7 +83,7 @@ describe('get-token', () => {
       },
     });
 
-    await expect(getToken(event, dummyContext)).rejects.toThrow(ValidationError);
+    await expect(getToken(event, dummyContext, testProviders)).rejects.toThrow(ValidationError);
   });
 
   it('should throw a validation error if the codeVerifier is not valid', async () => {
@@ -104,10 +105,10 @@ describe('get-token', () => {
       },
     });
 
-    await expect(getToken(event, dummyContext)).rejects.toThrow(ValidationError);
+    await expect(getToken(event, dummyContext, testProviders)).rejects.toThrow(ValidationError);
   });
 
   it('should throw an error if the path param is missing', async () => {
-    await expect(getToken(getDummyEvent(), dummyContext)).rejects.toThrow(ValidationError);
+    await expect(getToken(getDummyEvent(), dummyContext, testProviders)).rejects.toThrow(ValidationError);
   });
 });

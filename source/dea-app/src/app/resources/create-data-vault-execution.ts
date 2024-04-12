@@ -7,16 +7,10 @@ import { getRequiredPathParam, getRequiredPayload, getUserUlid } from '../../lam
 import { DataVaultExecutionDTO, DeaDataVaultExecution } from '../../models/data-vault-execution';
 import { createDataVaultExecutionSchema } from '../../models/validation/data-vault';
 import { taskIdJoi } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
-import { defaultCacheProvider } from '../../storage/cache';
-import { defaultDatasetsProvider } from '../../storage/datasets';
-import { defaultDataSyncProvider } from '../../storage/dataSync';
-import { defaultParametersProvider } from '../../storage/parameters';
-import { defaultAthenaClient } from '../audit/dea-audit-plugin';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getDataSyncTask, startDatasyncTaskExecution } from '../services/data-sync-service';
 import * as DataVaultService from '../services/data-vault-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const createDataVaultExecution: DEAGatewayProxyHandler = async (
@@ -24,19 +18,7 @@ export const createDataVaultExecution: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  _cacheProvider = defaultCacheProvider,
-  /* the default cases are handled in e2e tests */
-  /* istanbul ignore next */
-  _parametersProvider = defaultParametersProvider,
-  /* istanbul ignore next */
-  _datasetsProvider = defaultDatasetsProvider,
-  /* istanbul ignore next */
-  _athenaClient = defaultAthenaClient,
-  /* istanbul ignore next */
-  dataSyncProvider = defaultDataSyncProvider
+  providers = defaultProviders
 ) => {
   const dataVaultExecutionDTO: DataVaultExecutionDTO = getRequiredPayload(
     event,
@@ -52,19 +34,22 @@ export const createDataVaultExecution: DEAGatewayProxyHandler = async (
 
   const dataVaultTask = await getDataSyncTask(
     dataVaultExecutionDTO.taskArn,
-    dataSyncProvider,
-    repositoryProvider
+    providers.dataSyncProvider,
+    providers.repositoryProvider
   );
   // Create the task in DDB if doesn't exists.
   try {
-    await DataVaultService.createDataVaultTask(dataVaultTask, repositoryProvider);
+    await DataVaultService.createDataVaultTask(dataVaultTask, providers.repositoryProvider);
   } catch (error) {
     if (!(error instanceof ValidationError)) {
       throw error;
     }
   }
 
-  const executionArn = await startDatasyncTaskExecution(dataVaultExecutionDTO.taskArn, dataSyncProvider);
+  const executionArn = await startDatasyncTaskExecution(
+    dataVaultExecutionDTO.taskArn,
+    providers.dataSyncProvider
+  );
 
   const executionId = executionArn.split('/').pop() || '';
 
@@ -76,7 +61,7 @@ export const createDataVaultExecution: DEAGatewayProxyHandler = async (
 
   const responseBody = await DataVaultService.createDataVaultExecution(
     dataVaultExecution,
-    repositoryProvider
+    providers.repositoryProvider
   );
 
   return responseOk(event, responseBody);

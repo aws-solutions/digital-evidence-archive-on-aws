@@ -19,7 +19,7 @@ import { AuditResult } from '../../../app/services/audit-service';
 import { AuditType } from '../../../persistence/schema/dea-schema';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import { getQueryResponseWithState, startAudit } from '../audit-test-support';
 import { callCreateDataVault } from './data-vault-integration-test-helper';
@@ -94,15 +94,11 @@ describe('get datavault audit', () => {
         auditId,
       },
     });
-    const result = await getDataVaultAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getDataVaultAudit(event, dummyContext, testProvider);
 
     expect(result.statusCode).toEqual(200);
     expect(result.body).toContain('"status":"SUCCEEDED"');
@@ -121,15 +117,11 @@ describe('get datavault audit', () => {
         auditId,
       },
     });
-    const result = await getDataVaultAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getDataVaultAudit(event, dummyContext, testProvider);
     expect(result.statusCode).toEqual(200);
     const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual(QueryExecutionState.RUNNING.valueOf());
@@ -147,15 +139,11 @@ describe('get datavault audit', () => {
         auditId,
       },
     });
-    const result = await getDataVaultAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getDataVaultAudit(event, dummyContext, testProvider);
     expect(result.statusCode).toEqual(200);
     const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');
@@ -174,16 +162,12 @@ describe('get datavault audit', () => {
         auditId,
       },
     });
-    await expect(
-      getDataVaultAudit(
-        event,
-        dummyContext,
-        modelProvider,
-        undefined,
-        undefined,
-        undefined,
-        clientMockInstance
-      )
-    ).rejects.toThrow('DataVault not found.');
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    await expect(getDataVaultAudit(event, dummyContext, testProvider)).rejects.toThrow(
+      'DataVault not found.'
+    );
   });
 });

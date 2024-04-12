@@ -13,7 +13,7 @@ import { AuditResult } from '../../../app/services/audit-service';
 import { AuditType } from '../../../persistence/schema/dea-schema';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import { getQueryResponseWithState, startAudit } from '../audit-test-support';
 import { callCreateCase, callCreateUser } from './case-file-integration-test-helper';
@@ -24,6 +24,7 @@ describe('get case audit', () => {
   let stsMock: AwsClientStub<STSClient>;
 
   let modelProvider: ModelRepositoryProvider;
+
   beforeAll(async () => {
     modelProvider = await getTestRepositoryProvider('getCaseAuditIntegration');
     stsMock = mockClient(STSClient);
@@ -35,8 +36,9 @@ describe('get case audit', () => {
         Expiration: new Date(),
       },
     });
-    const user = await callCreateUser(modelProvider);
-    caseId = (await callCreateCase(user, modelProvider)).ulid ?? fail();
+    const testProviders = createTestProvidersObject({ repositoryProvider: modelProvider });
+    const user = await callCreateUser(testProviders);
+    caseId = (await callCreateCase(user, testProviders)).ulid ?? fail();
   });
 
   beforeEach(() => {
@@ -68,15 +70,12 @@ describe('get case audit', () => {
         auditId,
       },
     });
-    const result = await getCaseAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+
+    const result = await getCaseAudit(event, dummyContext, testProvider);
 
     expect(result.statusCode).toEqual(200);
     expect(result.body).toContain('"status":"SUCCEEDED"');
@@ -95,15 +94,12 @@ describe('get case audit', () => {
         auditId,
       },
     });
-    const result = await getCaseAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+
+    const result = await getCaseAudit(event, dummyContext, testProvider);
     expect(result.statusCode).toEqual(200);
     const responseBody: { status: string } = JSON.parse(result.body);
     expect(responseBody.status).toEqual(QueryExecutionState.RUNNING.valueOf());
@@ -121,15 +117,11 @@ describe('get case audit', () => {
         auditId,
       },
     });
-    const result = await getCaseAudit(
-      event,
-      dummyContext,
-      modelProvider,
-      undefined,
-      undefined,
-      undefined,
-      clientMockInstance
-    );
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    const result = await getCaseAudit(event, dummyContext, testProvider);
     expect(result.statusCode).toEqual(200);
     const responseBody: AuditResult = JSON.parse(result.body);
     expect(responseBody.status).toEqual('Unknown');
@@ -148,8 +140,10 @@ describe('get case audit', () => {
         auditId,
       },
     });
-    await expect(
-      getCaseAudit(event, dummyContext, modelProvider, undefined, undefined, undefined, clientMockInstance)
-    ).rejects.toThrow('Could not find case');
+    const testProvider = createTestProvidersObject({
+      repositoryProvider: modelProvider,
+      athenaClient: clientMockInstance,
+    });
+    await expect(getCaseAudit(event, dummyContext, testProvider)).rejects.toThrow('Could not find case');
   });
 });

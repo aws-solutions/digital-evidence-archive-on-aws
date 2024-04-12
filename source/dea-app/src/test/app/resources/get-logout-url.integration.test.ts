@@ -8,7 +8,7 @@ import { getCognitoLogoutUrl } from '../../../app/services/auth-service';
 import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/parameter-service';
 import { defaultCacheProvider } from '../../../storage/cache';
 import { defaultParametersProvider } from '../../../storage/parameters';
-import { getDummyEvent, dummyContext } from '../../integration-objects';
+import { getDummyEvent, dummyContext, createTestProvidersObject } from '../../integration-objects';
 
 let expectedUrl: string;
 let cognitoParams: CognitoSsmParams;
@@ -35,7 +35,7 @@ describe('get-logout-url', () => {
       },
     });
 
-    const response = await getLogoutUrl(event, dummyContext);
+    const response = await getLogoutUrl(event, dummyContext, createTestProvidersObject({}));
     if (!response.body) {
       fail();
     }

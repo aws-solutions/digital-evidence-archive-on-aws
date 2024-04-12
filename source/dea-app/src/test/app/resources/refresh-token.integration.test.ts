@@ -19,6 +19,7 @@ import { PkceStrings, getAuthorizationCode, getPkceStrings } from '../../../test
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
 import {
+  createTestProvidersObject,
   dummyContext,
   getDummyAuditEvent,
   getDummyEvent,
@@ -33,6 +34,7 @@ let pkceStrings: PkceStrings;
 
 describe('refresh-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
+  const testProviders = createTestProvidersObject({});
 
   const suffix = randomSuffix(5);
   const testUser = `RefreshTokenIntegrationTestUser${suffix}`;
@@ -97,7 +99,7 @@ describe('refresh-token', () => {
       },
     });
 
-    const response = await getToken(event, dummyContext);
+    const response = await getToken(event, dummyContext, testProviders);
     expect(response.statusCode).toEqual(200);
 
     if (!response.body) {
@@ -128,7 +130,7 @@ describe('refresh-token', () => {
     expect(session?.isRevoked).toBeFalsy();
 
     // refresh token to get new id token
-    const refreshResponse = await refreshToken(dummyEvent, dummyContext, repositoryProvider);
+    const refreshResponse = await refreshToken(dummyEvent, dummyContext, testProviders);
     expect(refreshResponse.statusCode).toEqual(200);
     const newCookie = setCookieToCookie(refreshResponse);
     const newAuthToken = cookieToOauth(newCookie);
@@ -178,7 +180,7 @@ describe('refresh-token', () => {
       },
     });
 
-    const response = await getToken(event, dummyContext);
+    const response = await getToken(event, dummyContext, testProviders);
     expect(response.statusCode).toEqual(200);
 
     if (!response.body) {
@@ -216,6 +218,6 @@ describe('refresh-token', () => {
     expect(session).toBeDefined();
     expect(session?.isRevoked).toBeFalsy();
 
-    await expect(refreshToken(dummyEvent, dummyContext)).rejects.toThrow(ValidationError);
+    await expect(refreshToken(dummyEvent, dummyContext, testProviders)).rejects.toThrow(ValidationError);
   }, 40000);
 });

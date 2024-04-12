@@ -7,20 +7,23 @@ import { fail } from 'assert';
 import Joi from 'joi';
 import { NotFoundError } from '../../../app/exceptions/not-found-exception';
 import { ValidationError } from '../../../app/exceptions/validation-exception';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getDataVault } from '../../../app/resources/get-data-vault-details';
 import { DeaDataVault, DeaDataVaultInput } from '../../../models/data-vault';
 import { dataVaultResponseSchema } from '../../../models/validation/data-vault';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { createDataVault } from '../../../persistence/data-vault';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 
 describe('get dataVault details resource', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('getDataVaultDetailsTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
   });
 
   afterAll(async () => {
@@ -40,7 +43,7 @@ describe('get dataVault details resource', () => {
       },
     });
 
-    const response = await getDataVault(event, dummyContext, repositoryProvider);
+    const response = await getDataVault(event, dummyContext, testProviders);
 
     expect(response.statusCode).toEqual(200);
 
@@ -64,12 +67,10 @@ describe('get dataVault details resource', () => {
       },
     });
 
-    await expect(getDataVault(event, dummyContext, repositoryProvider)).rejects.toThrow(NotFoundError);
+    await expect(getDataVault(event, dummyContext, testProviders)).rejects.toThrow(NotFoundError);
   });
 
   it('should throw an error if the path param is missing', async () => {
-    await expect(getDataVault(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(
-      ValidationError
-    );
+    await expect(getDataVault(getDummyEvent(), dummyContext, testProviders)).rejects.toThrow(ValidationError);
   });
 });
