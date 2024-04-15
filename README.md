@@ -42,24 +42,32 @@ We recommend using a custom domain, since the default URL for this solution is n
 
 **NOTE** If you are using Windows to deploy, make sure that for each of your installation steps the download path DOES NOT contain spaces. Many of the default paths go to "C:\Program Files\", but certain commands cannot run when the path has a space in it
 
-You will need npm and node installed on your machine:
+1. You will need npm and node installed on your machine:
 
 *For Windows*
 
-Follow the instructions [here](https://learn.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows) and stop before the Install Visual Studio Code section.
-NOTE: During the nvm install, when asked where to place npm, DO NOT place in "C:/Program Files", instead you can put it in "C:\Users\Public\nodejs".
-Additionally we currently require Node 18 LTS (lts/hydrogen). You can automatically use our recommended version with the `nvm install` command which will install the version we've defined in our nvmrc file.
+Download the [nvm-setup.exe file](https://github.com/coreybutler/nvm-windows/releases) for the most recent release.
+
+The Setup-NVM-for-Windows installation wizard will walk you through the setup steps, including choosing the directory where both nvm-windows and Node.js will be installed.
+**NOTE**: During the nvm install, when asked where to place npm, **DO NOT** place in "C:/Program Files", instead you can put it in "C:\Users\Public\nodejs".
+
+Additionally we currently require Node 18 LTS (lts/hydrogen). If you have already cloned the repository, you can automatically use our recommended version with the `nvm install` command which will install the version we've defined in our nvmrc file. Otherwise run
+
+```sh
+nvm install v18.19.1
+nvm use v18.19.1
+```
 
 *For Mac/Linux*
 
 ```sh
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 source ~/.bashrc
-# within the cloned DEA directory
-nvm install
+nvm install v18.19.1
+nvm use v18.19.1
 ```
 
-Next you need to install rush to be able to run commands in the repository, cdk for deployment, and a specific version of pnpm (Note pnpm needs to match the version pnpmVersion in rush.json).
+2. Next you need to install rush to be able to run commands in the repository, cdk for deployment, and a specific version of pnpm (Note pnpm needs to match the version pnpmVersion in rush.json).
 
 ```sh
 npm install -g @microsoft/rush
@@ -67,14 +75,25 @@ npm install -g pnpm@7.16.0
 npm install -g aws-cdk
 ```
 
-Ensure you have AWS Command Line Interface (AWS CLI) installed, and have your aws credentials set. You can see [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) for more information about installing AWS CLI.
-NOTE: Make sure you change the download location to ensure the path DOES NOT have any spaces.
+3. Ensure you have AWS Command Line Interface (AWS CLI) installed, and have your aws credentials set. 
 
-You'll need to pull the repository to your local machine, therefore you also need git installed. If you do not already have it on your machine you can follow the instructions for your OS [here](https://github.com/git-guides/install-git).
+You can see [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) for more information about installing AWS CLI.
+**NOTE**: Make sure you change the download location to ensure the path **DOES NOT** have any spaces. On windows, you can use ""C:\Users\Public\Amazon\AWSCLIV2\"
 
-For Windows you will need to install Cygwin so certains scripts can run during the build process. See [here](https://www.cygwin.com/) for installation details.
+You can see [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) for options to set your aws credentials. You may want to ask your AWS account owner for which option to use.
 
-If you are using Windows, you may need to restart your command prompt to see the installation changes take place.
+4. You'll need to pull the repository to your local machine, therefore you also need git installed.
+
+Check if already present:
+```sh
+git --version
+```
+
+If you do not already have it on your machine you can follow the instructions for your OS [here](https://github.com/git-guides/install-git).
+
+5. For Windows you will need to install Cygwin so certains scripts can run during the build process. See [here](https://www.cygwin.com/) for installation details.
+
+6. If you are using Windows, you may need to restart your command prompt to see the installation changes take place.
 
 ### Step 1: Clone the repository
 
@@ -94,10 +113,10 @@ Next you'll need to copy and rename the default configuration file, and open the
 **Windows**
 
 ```sh
-cd ./common/config
+cd .\common\config
 copy prodexample.json prod.json
-cd ../..
-notepad ./common/config/prod.json
+cd ..\..
+notepad .\common\config\prod.json
 ```
 
 **Linux**
@@ -242,8 +261,6 @@ export DEA_CUSTOM_DOMAIN=<true if using custom domain, otherwise do NOT set>
 export AWS_ACCT_NUMBER=<your 12 digit AWS account number>
 ```
 
-Validate your configuration file and address any errors that appear
-
 **Optional**
 
 If you plan on using the Mass Data Ingestion feature to import data into DEA, then set your admin role ARN to the account that DEA will be hosted on
@@ -260,6 +277,8 @@ $Env:ADMIN_ROLE_ARN=<'Your DEA AWS Account admin role arn. Example: arn:aws:iam:
 export ADMIN_ROLE_ARN=<'Your DEA AWS Account admin role arn. Example: arn:aws:iam::<aws account number>:role/Admin'>
 ```
 
+Validate your configuration file and address any errors that appear
+
 ```sh
 rushx validate:config
 ```
@@ -270,7 +289,7 @@ Now run the following commands to launch the stack
 
 ```sh
 rush rebuild
-rushx cdk bootstrap aws://%AWS_ACCT_NUMBER%/%AWS_REGION%
+rushx cdk bootstrap aws://$env:AWS_ACCT_NUMBER/$env:AWS_REGION
 rushx cdk deploy
 ```
 
@@ -279,7 +298,7 @@ rushx cdk deploy
 ```sh
 rush rebuild
 rushx cdk bootstrap aws://${AWS_ACCT_NUMBER}/${AWS_REGION}
-rushx cdk deploy
+rushx cdk:deploy
 ```
 
 NOTE: if you are running cdk deploy in us-gov-east-1 region, run the command with the --all flag since you are deploying more than one stack. E.g.
