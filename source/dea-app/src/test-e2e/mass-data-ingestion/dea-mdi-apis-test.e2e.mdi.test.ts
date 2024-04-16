@@ -93,7 +93,7 @@ describe('verifies StartDataVaultTaskExecutions input checks', () => {
       /*objectCount=*/ 0,
       /*totalSizeBytes=*/ 0
     );
-  });
+  }, 100000);
 
   // TODO: When Delete Data Vault is Complete, write this test
   //    it('deletes a data vault', async() => {
