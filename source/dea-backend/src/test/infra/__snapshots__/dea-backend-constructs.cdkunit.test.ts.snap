@@ -1688,6 +1688,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "Value": "true",
           },
         ],
+        "VersioningConfiguration": Object {
+          "Status": "Enabled",
+        },
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
