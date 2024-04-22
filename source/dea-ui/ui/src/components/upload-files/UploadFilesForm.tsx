@@ -11,6 +11,7 @@ import {
   UploadPartCommandInput,
   UploadPartCommandOutput,
 } from '@aws-sdk/client-s3';
+import { getCustomUserAgent } from '@aws/dea-app/lib/lambda-http-helpers';
 import {
   Alert,
   Box,
@@ -151,10 +152,13 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
     const initiatedCaseFile = await initiateUpload(activeFileUpload.uploadDto);
+    const fipsSupported = process.env.NEXT_PUBLIC_FIPS_SUPPORTED === 'true';
 
     let federationS3Client = new S3Client({
       credentials: initiatedCaseFile.federationCredentials,
       region: initiatedCaseFile.region,
+      useFipsEndpoint: fipsSupported,
+      customUserAgent: getCustomUserAgent(),
     });
 
     const credentialsInterval = setInterval(async () => {
@@ -164,6 +168,8 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         uploadId: initiatedCaseFile.uploadId,
       });
       federationS3Client = new S3Client({
+        useFipsEndpoint: fipsSupported,
+        customUserAgent: getCustomUserAgent(),
         credentials: refreshRequest.federationCredentials,
         region: initiatedCaseFile.region,
       });

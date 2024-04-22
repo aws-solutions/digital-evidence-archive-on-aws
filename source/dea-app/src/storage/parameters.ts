@@ -5,12 +5,13 @@
 
 import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager';
 import { GetParameterCommand, GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
-import { getCustomUserAgent } from '../lambda-http-helpers';
+import { getCustomUserAgent, getRequiredEnv } from '../lambda-http-helpers';
 import { logger } from '../logger';
 
 export const PARAM_PREFIX = '/dea/1/';
 
 const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
+const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
 
 export interface ParametersProvider {
   getSecretValue(secretName: string): Promise<string>;
@@ -18,8 +19,16 @@ export interface ParametersProvider {
   getSsmParametersValue(parameterPaths: string[]): Promise<(string | undefined)[]>;
 }
 
-const ssmClient = new SSMClient({ region, customUserAgent: getCustomUserAgent() });
-const secretsClient = new SecretsManagerClient({ region, customUserAgent: getCustomUserAgent() });
+const ssmClient = new SSMClient({
+  region,
+  customUserAgent: getCustomUserAgent(),
+  useFipsEndpoint: fipsSupported,
+});
+const secretsClient = new SecretsManagerClient({
+  region,
+  customUserAgent: getCustomUserAgent(),
+  useFipsEndpoint: fipsSupported,
+});
 export const defaultParametersProvider: ParametersProvider = {
   async getSecretValue(secretName: string): Promise<string> {
     const command = new GetSecretValueCommand({

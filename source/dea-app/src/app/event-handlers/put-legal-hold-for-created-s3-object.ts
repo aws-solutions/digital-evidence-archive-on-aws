@@ -10,7 +10,10 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Callback, Context, SQSMessageAttributes, SQSRecordAttributes } from 'aws-lambda';
+import { getCustomUserAgent, getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
+
+const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
 
 export interface SQSS3ObjectCreatedDetail {
   eventVersion: string;
@@ -79,7 +82,10 @@ export const putLegalHoldForCreatedS3Object: SQSS3ObjectCreatedSignature = async
   event: SQSS3ObjectCreatedEvent,
   _context: Context,
   _callback: Callback,
-  s3Client = new S3Client({})
+  s3Client = new S3Client({
+    useFipsEndpoint: fipsSupported,
+    customUserAgent: getCustomUserAgent(),
+  })
 ) => {
   logger.debug('Event', { Data: JSON.stringify(event, null, 2) });
   const legalHoldPromises: Promise<PutObjectLegalHoldCommandOutput>[] = [];

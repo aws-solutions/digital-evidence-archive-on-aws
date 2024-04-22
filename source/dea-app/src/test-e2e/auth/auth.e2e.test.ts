@@ -8,6 +8,7 @@ import { Credentials, aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import _ from 'lodash';
 import { getCognitoSsmParams } from '../../app/services/parameter-service';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { Oauth2Token } from '../../models/auth';
 import { defaultCacheProvider } from '../../storage/cache';
 import { PARAM_PREFIX, defaultParametersProvider } from '../../storage/parameters';
@@ -350,7 +351,11 @@ describe('API authentication', () => {
   // "rushx idp-test-setup --username <TEST_USER_NAME> --password <TEST_USER_PASSWORD>"
   it('should authenticate and authorize a federated user from the configured IdP', async () => {
     // Check that SSM Parameters are all present, if not skip the test
-    const ssmClient = new SSMClient({ region });
+    const ssmClient = new SSMClient({
+      region,
+      useFipsEndpoint: testEnv.fipsSupported,
+      customUserAgent: getCustomUserAgent(),
+    });
     const agencyIdpNamePath = `${PARAM_PREFIX}${stage}-agency-idp-name`;
     const testUserLogonPath = `${PARAM_PREFIX}${stage}-test/idp/idp-test-user-logon`;
     const testUserPasswordPath = `${PARAM_PREFIX}${stage}-test/idp/idp-test-user-password`;

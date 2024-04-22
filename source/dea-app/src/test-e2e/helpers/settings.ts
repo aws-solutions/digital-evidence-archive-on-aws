@@ -24,4 +24,5 @@ export const testEnv = {
   DataSyncReportsRole: process.env.DATASYNC_REPORTS_ROLE ?? throwUnset('DATASYNC_REPORTS_ROLE'),
   DataSyncReportsBucket:
     process.env.DATASYNC_REPORTS_BUCKET_NAME ?? throwUnset('DATASYNC_REPORTS_BUCKET_NAME'),
+  fipsSupported: process.env.FIPS_SUPPORTED === 'true' ?? throwUnset('FIPS_SUPPORTED'),
 };

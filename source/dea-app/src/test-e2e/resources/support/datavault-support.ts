@@ -21,6 +21,7 @@ import {
 import { Credentials } from 'aws4-axios';
 import Joi from 'joi';
 import { retry } from '../../../app/services/service-helpers';
+import { getCustomUserAgent } from '../../../lambda-http-helpers';
 import { Oauth2Token } from '../../../models/auth';
 import { CaseAssociationDTO, DeaCaseFileResult, RemoveCaseAssociationDTO } from '../../../models/case-file';
 import { DeaDataVault, DeaDataVaultInput, DeaDataVaultUpdateInput } from '../../../models/data-vault';
@@ -40,7 +41,11 @@ import {
   verifyDeaRequestSuccess,
 } from '../test-helpers';
 
-export const dataSyncClient = new DataSyncClient({ region: testEnv.awsRegion });
+export const dataSyncClient = new DataSyncClient({
+  region: testEnv.awsRegion,
+  useFipsEndpoint: testEnv.fipsSupported,
+  customUserAgent: getCustomUserAgent(),
+});
 
 export const DATA_SYNC_THROTTLE_RETRIES = 50;
 export const DATA_SYNC_THROTTLE_WAIT_INTERVAL_IN_MS = 5000;

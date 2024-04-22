@@ -20,6 +20,7 @@ import { getClientSecret, getCognitoSsmParams } from './parameter-service';
 
 const stage = getRequiredEnv('STAGE');
 const region = getRequiredEnv('AWS_REGION');
+const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
 
 export const getLoginHostedUiUrl = async (
   redirectUri: string,
@@ -61,6 +62,7 @@ export const getCredentialsByToken = async (
   const cognitoIdentityClient = new CognitoIdentityClient({
     region: cognitoRegion,
     customUserAgent: getCustomUserAgent(),
+    useFipsEndpoint: fipsSupported,
   });
 
   const Logins = {

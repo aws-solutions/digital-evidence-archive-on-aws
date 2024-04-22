@@ -13,6 +13,7 @@ import {
 import { Credentials } from 'aws4-axios';
 import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { CaseFileDTO, DeaCaseFileResult } from '../../models/case-file';
@@ -35,7 +36,11 @@ import {
   listCaseFilesSuccess,
 } from '../resources/test-helpers';
 
-export const s3Client = new S3Client({ region: testEnv.awsRegion });
+export const s3Client = new S3Client({
+  region: testEnv.awsRegion,
+  useFipsEndpoint: testEnv.fipsSupported,
+  customUserAgent: getCustomUserAgent(),
+});
 const deaApiUrl = testEnv.apiUrlOutput;
 
 export const DATASETS_BUCKET_ARN = `arn:aws:s3:::${testEnv.datasetsBucketName}`;

@@ -10,8 +10,8 @@ source/dea-backend/src/test/config.unit.test.ts
 # Line specific ignores
 
 source/dea-app/lib/test/integration-objects.js:79
-source/dea-app/src/storage/datasets.ts:169
-source/dea-app/src/storage/datasets.ts:170
+source/dea-app/src/storage/datasets.ts:182
+source/dea-app/src/storage/datasets.ts:183
 
 # Bogus email ignores
 

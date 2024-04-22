@@ -31,6 +31,7 @@ import 'aws-sdk-client-mock-jest';
 import { v4 as uuidv4 } from 'uuid';
 import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { updateCaseStatus } from '../../../app/resources/update-case-status';
+import { getCustomUserAgent } from '../../../lambda-http-helpers';
 import { DeaCaseInput } from '../../../models/case';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { CaseStatus } from '../../../models/case-status';
@@ -380,8 +381,16 @@ describe('update case status', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     const datasetsProvider = {
-      s3Client: new S3Client({ region: testEnv.awsRegion }),
-      s3ControlClient: new S3ControlClient({ region: testEnv.awsRegion }),
+      s3Client: new S3Client({
+        region: testEnv.awsRegion,
+        useFipsEndpoint: testEnv.fipsSupported,
+        customUserAgent: getCustomUserAgent(),
+      }),
+      s3ControlClient: new S3ControlClient({
+        region: testEnv.awsRegion,
+        useFipsEndpoint: testEnv.fipsSupported,
+        customUserAgent: getCustomUserAgent(),
+      }),
       bucketName: 'testBucket',
       uploadPresignedCommandExpirySeconds: 3600,
       downloadPresignedCommandExpirySeconds: 900,

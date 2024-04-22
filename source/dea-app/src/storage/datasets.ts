@@ -47,6 +47,7 @@ import {
 import { restrictAccountStatement } from './restrict-account-statement';
 
 const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
+const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
 const SQS_BATCH_LIMIT = 10;
 
 export interface DatasetsProvider {
@@ -69,11 +70,23 @@ export interface S3Object {
   versionId: string;
 }
 
-const stsClient = new STSClient({ region, customUserAgent: getCustomUserAgent() });
-const sqsClient = new SQSClient({ region, customUserAgent: getCustomUserAgent() });
+const stsClient = new STSClient({
+  region,
+  customUserAgent: getCustomUserAgent(),
+  useFipsEndpoint: fipsSupported,
+});
+const sqsClient = new SQSClient({
+  region,
+  customUserAgent: getCustomUserAgent(),
+  useFipsEndpoint: fipsSupported,
+});
 
 export const defaultDatasetsProvider = {
-  s3Client: new S3Client({ region, customUserAgent: getCustomUserAgent() }),
+  s3Client: new S3Client({
+    region,
+    customUserAgent: getCustomUserAgent(),
+    useFipsEndpoint: fipsSupported,
+  }),
   region: region,
   bucketName: getRequiredEnv('DATASETS_BUCKET_NAME', 'DATASETS_BUCKET_NAME is not set in your lambda!'),
   s3BatchDeleteCaseFileLambdaArn: getRequiredEnv(
@@ -443,7 +456,11 @@ export const deleteCaseFile = async (
 };
 
 export const describeS3BatchJob = async (JobId: string, AccountId: string): Promise<DescribeJobResult> => {
-  const s3ControlClient = new S3ControlClient({ region, customUserAgent: getCustomUserAgent() });
+  const s3ControlClient = new S3ControlClient({
+    region,
+    customUserAgent: getCustomUserAgent(),
+    useFipsEndpoint: fipsSupported,
+  });
   return s3ControlClient.send(new DescribeJobCommand({ JobId, AccountId }));
 };
 
@@ -513,7 +530,11 @@ const createDeleteCaseFileBatchJob = async (
   };
   logger.debug('CreateJobCommand Input', input);
 
-  const s3ControlClient = new S3ControlClient({ region, customUserAgent: getCustomUserAgent() });
+  const s3ControlClient = new S3ControlClient({
+    region,
+    customUserAgent: getCustomUserAgent(),
+    useFipsEndpoint: fipsSupported,
+  });
   const result = await s3ControlClient.send(new CreateJobCommand(input));
   if (!result.JobId) {
     throw new Error('Failed to create delete files batch job.');
@@ -556,6 +577,7 @@ async function getDownloadPresignedUrlClient(
       sessionToken: credentials.SessionToken,
       expiration: credentials.Expiration,
     },
+    useFipsEndpoint: fipsSupported,
   });
 }
 

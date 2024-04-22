@@ -8,6 +8,7 @@ import {
   GetCredentialsForIdentityCommand,
   GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
+import { getCustomUserAgent } from '@aws/dea-app/lib/lambda-http-helpers';
 import { getLogoutUrl, refreshToken, revokeToken } from '../api/auth';
 
 export interface Credentials {
@@ -61,9 +62,12 @@ export const refreshCredentials = async () => {
 export const getCredentialsByToken = async (idToken: string, identityPoolId: string, userPoolId: string) => {
   const region = identityPoolId.substring(0, identityPoolId.indexOf(':'));
   const cognitoRegion = region.includes('gov') ? 'us-gov-west-1' : region;
+  const fipsSupported = process.env.NEXT_PUBLIC_FIPS_SUPPORTED === 'true';
   // Set up the Cognito Identity client
   const cognitoIdentityClient = new CognitoIdentityClient({
     region: cognitoRegion,
+    useFipsEndpoint: fipsSupported,
+    customUserAgent: getCustomUserAgent(),
   });
 
   // Set up the request parameters

@@ -22,12 +22,13 @@ import { ValidationError } from '../exceptions/validation-exception';
     identity center and add the groups to the claims on the identity token. Authorization
     will proceed like normal (e.g. the same as Okta and AD), since the claims will be on the token.
 */
-
+const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
 const identityStoreId = getRequiredEnv('IDENTITY_STORE_ID');
 const identityStoreRegion = getRequiredEnv('IDENTITY_STORE_REGION');
 const identityStoreAccount = getRequiredEnv('IDENTITY_STORE_ACCOUNT');
 const idCenterClient = new IdentitystoreClient({
   region: identityStoreRegion,
+  useFipsEndpoint: fipsSupported,
   customUserAgent: getCustomUserAgent(),
 });
 
@@ -73,7 +74,8 @@ export const addGroupsClaimToToken: PreTokenGenerationSignature = async (
   let userId = event.request.userAttributes['custom:IdCenterId'];
 
   // optional environment variables should be initialized within Lambda function to be validated during unit test
-  const hasAwsManagedActiveDirectory = getRequiredEnv('HAS_AWS_MANAGED_ACTIVE_DIRECTORY').toLowerCase() === 'true';
+  const hasAwsManagedActiveDirectory =
+    getRequiredEnv('HAS_AWS_MANAGED_ACTIVE_DIRECTORY').toLowerCase() === 'true';
   if (hasAwsManagedActiveDirectory) {
     /*
       When using Microsoft Active Directory as the identity store inside Identity Center, IdCenterId maps to ${dir:guid} 
@@ -86,9 +88,9 @@ export const addGroupsClaimToToken: PreTokenGenerationSignature = async (
       throw new ValidationError(`External Active Directory ID is not set for user.`);
     }
 
-    // Parse context for variables not in environment, can assume Lambda, Directory Service (AD), and ID Center share partition 
-    // since new partition requires new account. Although AD and ID Center must be in same region, this executing Lambda does not. 
-    const partition = _context.invokedFunctionArn.split(":")[1];
+    // Parse context for variables not in environment, can assume Lambda, Directory Service (AD), and ID Center share partition
+    // since new partition requires new account. Although AD and ID Center must be in same region, this executing Lambda does not.
+    const partition = _context.invokedFunctionArn.split(':')[1];
 
     const getUserIdResponse = await idCenterClient.send(
       new GetUserIdCommand({
@@ -97,21 +99,21 @@ export const addGroupsClaimToToken: PreTokenGenerationSignature = async (
           ExternalId: {
             Issuer: `arn:${partition}:ds:${identityStoreRegion}:${identityStoreAccount}:directory/${identityStoreId}`,
             Id: externalUserId,
-          }
+          },
         },
       })
-    )
+    );
 
     if (!getUserIdResponse.UserId) {
       throw new ValidationError(`Unable to obtain user ID for user ${externalUserId}`);
     }
-    userId = getUserIdResponse.UserId
+    userId = getUserIdResponse.UserId;
   } else {
     /*
       The user attribute "custom:IdCenterId" maps to AD_GUID in IAM Identity Center. When using Identity Center 
       as the identity store, IdCenterId maps directly to UsreId in Identity Center APIs and requires no translation.
       https://docs.aws.amazon.com/singlesignon/latest/userguide/attributemappingsconcept.html#defaultattributemappings
-    */ 
+    */
     if (!userId) {
       throw new ValidationError(`Identity center id is not set for user.`);
     }

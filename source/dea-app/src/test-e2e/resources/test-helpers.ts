@@ -25,6 +25,7 @@ import sha256 from 'crypto-js/sha256';
 import * as CSV from 'csv-string';
 import Joi from 'joi';
 import { AuditEventType, AuditResult } from '../../app/services/audit-service';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase, DeaCaseInput } from '../../models/case';
 import { CaseAction } from '../../models/case-action';
@@ -48,7 +49,11 @@ import { ResponseCaseFilePage } from '../../test/app/resources/case-file-integra
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
 
-const s3Client = new S3Client({ region: testEnv.awsRegion });
+const s3Client = new S3Client({
+  region: testEnv.awsRegion,
+  useFipsEndpoint: testEnv.fipsSupported,
+  customUserAgent: getCustomUserAgent(),
+});
 
 // we don't want axios throwing an exception on non 200 codes
 export const validateStatus = () => true;
@@ -477,6 +482,8 @@ export const uploadContentToS3 = async (
   key: string
 ): Promise<void> => {
   const federationS3Client = new S3Client({
+    useFipsEndpoint: testEnv.fipsSupported,
+    customUserAgent: getCustomUserAgent(),
     region: testEnv.awsRegion,
     credentials: federationCredentials,
   });

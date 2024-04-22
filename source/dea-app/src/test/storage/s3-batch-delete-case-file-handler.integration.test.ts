@@ -24,6 +24,7 @@ import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { LambdaProviders } from '../../app/resources/dea-gateway-proxy-handler';
 import { getCase } from '../../app/services/case-service';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { DeaCaseInput } from '../../models/case';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { DeaUser } from '../../models/user';
@@ -206,8 +207,16 @@ describe('S3 batch delete case-file lambda', () => {
     await callCompleteCaseFileUpload(caseOwner.ulid, testProviders, fileId, caseId);
 
     const datasetsProvider = {
-      s3Client: new S3Client({ region: testEnv.awsRegion }),
-      s3ControlClient: new S3ControlClient({ region: testEnv.awsRegion }),
+      s3Client: new S3Client({
+        region: testEnv.awsRegion,
+        useFipsEndpoint: testEnv.fipsSupported,
+        customUserAgent: getCustomUserAgent(),
+      }),
+      s3ControlClient: new S3ControlClient({
+        region: testEnv.awsRegion,
+        useFipsEndpoint: testEnv.fipsSupported,
+        customUserAgent: getCustomUserAgent(),
+      }),
       bucketName: 'testBucket',
       uploadPresignedCommandExpirySeconds: 3600,
       downloadPresignedCommandExpirySeconds: 900,

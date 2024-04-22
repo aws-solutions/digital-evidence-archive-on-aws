@@ -7,10 +7,13 @@ import { Readable } from 'stream';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Callback, Context, SQSEvent } from 'aws-lambda';
 import cryptoJS from 'crypto-js';
+import { getCustomUserAgent, getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 import { getObjectChecksumJob, upsertObjectChecksumJob } from '../../persistence/object-checksum-job';
 import { ModelRepositoryProvider, defaultProvider } from '../../persistence/schema/entities';
 import { updateCaseFileChecksum } from '../services/case-file-service';
+
+const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
 
 export interface MultipartChecksumBody {
   caseUlid: string;
@@ -33,7 +36,10 @@ export const calculateIncrementalChecksum: SQSS3ObjectCreatedSignature = async (
   event: SQSEvent,
   _context: Context,
   _callback: Callback,
-  s3Client = new S3Client({}),
+  s3Client = new S3Client({
+    useFipsEndpoint: fipsSupported,
+    customUserAgent: getCustomUserAgent(),
+  }),
   repositoryProvider = defaultProvider
 ) => {
   logger.debug('Event', { Data: JSON.stringify(event, null, 2) });

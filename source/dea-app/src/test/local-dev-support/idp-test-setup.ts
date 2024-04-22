@@ -5,13 +5,18 @@
 
 import { ParameterTier, ParameterType, PutParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 import minimist from 'minimist';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { PARAM_PREFIX } from '../../storage/parameters';
 import { testEnv } from '../../test-e2e/helpers/settings';
 
 const args = minimist(process.argv.slice(2));
 
 const putTestUserCredsInSSMParamStore = async (username: string, password: string) => {
-  const ssmClient = new SSMClient({ region: testEnv.awsRegion });
+  const ssmClient = new SSMClient({
+    region: testEnv.awsRegion,
+    useFipsEndpoint: testEnv.fipsSupported,
+    customUserAgent: getCustomUserAgent(),
+  });
   const idpTestUserSSMPathPrefix = `${PARAM_PREFIX}${testEnv.stage}-test/idp/idp-test-user-`;
 
   await ssmClient.send(

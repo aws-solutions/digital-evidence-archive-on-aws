@@ -25,6 +25,7 @@ import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-sec
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { Credentials } from 'aws4-axios';
 import { getTokenPayload } from '../../cognito-token-helpers';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { Oauth2Token } from '../../models/auth';
 import { ModelRepositoryProvider, UserModelRepositoryProvider } from '../../persistence/schema/entities';
 import { deleteUser, getUserByTokenId } from '../../persistence/user';
@@ -57,8 +58,16 @@ export default class CognitoHelper {
 
     this.idpUrl = `cognito-idp.${this.cognitoRegion}.amazonaws.com/${this.userPoolId}`;
 
-    this.identityPoolClient = new CognitoIdentityClient({ region: this.cognitoRegion });
-    this.userPoolProvider = new CognitoIdentityProviderClient({ region: this.cognitoRegion });
+    this.identityPoolClient = new CognitoIdentityClient({
+      region: this.cognitoRegion,
+      useFipsEndpoint: testEnv.fipsSupported,
+      customUserAgent: getCustomUserAgent(),
+    });
+    this.userPoolProvider = new CognitoIdentityProviderClient({
+      region: this.cognitoRegion,
+      useFipsEndpoint: testEnv.fipsSupported,
+      customUserAgent: getCustomUserAgent(),
+    });
 
     this.testPassword = globalPassword ?? generatePassword();
   }
@@ -314,7 +323,11 @@ function getRandomCharacter(keySet: string): string {
 async function loadClientSecret() {
   const clientSecretId = `${PARAM_PREFIX}${testEnv.stage}/clientSecret`;
 
-  const client = new SecretsManagerClient({ region: testEnv.awsRegion });
+  const client = new SecretsManagerClient({
+    region: testEnv.awsRegion,
+    useFipsEndpoint: testEnv.fipsSupported,
+    customUserAgent: getCustomUserAgent(),
+  });
   const input = {
     SecretId: clientSecretId,
   };

@@ -17,6 +17,7 @@ import { listCaseFiles } from '../../../app/resources/list-case-files';
 import { restoreCaseFile } from '../../../app/resources/restore-case-file';
 import { updateCaseStatus } from '../../../app/resources/update-case-status';
 import * as CaseService from '../../../app/services/case-service';
+import { getCustomUserAgent, getRequiredEnv } from '../../../lambda-http-helpers';
 import { DeaCase } from '../../../models/case';
 import {
   CaseFileDTO,
@@ -41,6 +42,8 @@ export type ResponseCaseFilePage = {
   next: string | undefined;
 };
 
+const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
+
 const TOKEN_ID = 'CaseFile';
 const ID_POOL_ID = 'CaseFileIdentityId';
 const FIRST_NAME = 'CASE';
@@ -55,8 +58,16 @@ const CONTENT_TYPE = 'image/jpeg';
 const REASON = 'none';
 const DETAILS = 'hungry';
 export const DATASETS_PROVIDER = {
-  s3Client: new S3Client({ region: testEnv.awsRegion }),
-  s3ControlClient: new S3ControlClient({ region: testEnv.awsRegion }),
+  s3Client: new S3Client({
+    region: testEnv.awsRegion,
+    useFipsEndpoint: fipsSupported,
+    customUserAgent: getCustomUserAgent(),
+  }),
+  s3ControlClient: new S3ControlClient({
+    region: testEnv.awsRegion,
+    customUserAgent: getCustomUserAgent(),
+    useFipsEndpoint: fipsSupported,
+  }),
   bucketName: 'testBucket',
   uploadPresignedCommandExpirySeconds: 3600,
   downloadPresignedCommandExpirySeconds: 900,

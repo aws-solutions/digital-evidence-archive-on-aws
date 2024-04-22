@@ -21,8 +21,13 @@ export async function getAuditDownloadPresignedUrl(
   const keyArn = getRequiredEnv('KEY_ARN');
   const auditDownloadExpirySeconds =
     Number.parseInt(getRequiredEnv('AUDIT_DOWNLOAD_FILES_TIMEOUT_MINUTES', '60')) * 60;
+  const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
 
-  const client = new STSClient({ region, customUserAgent: getCustomUserAgent() });
+  const client = new STSClient({
+    region,
+    customUserAgent: getCustomUserAgent(),
+    useFipsEndpoint: fipsSupported,
+  });
   const downloadPolicy = getPolicyForDownload(
     bucketName,
     objectKey,
@@ -49,6 +54,7 @@ export async function getAuditDownloadPresignedUrl(
 
   const presignedUrlS3Client = new S3Client({
     region,
+    useFipsEndpoint: fipsSupported,
     customUserAgent: getCustomUserAgent(),
     credentials: {
       accessKeyId: credentials.AccessKeyId,

@@ -12,6 +12,7 @@ import {
 } from '@aws-sdk/client-athena';
 import { S3 } from '@aws-sdk/client-s3';
 import { Credentials } from 'aws4-axios';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { Oauth2Token } from '../../models/auth';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -57,7 +58,11 @@ describe('the created object legal hold process', () => {
   it(
     'applies legal hold to newly created s3 objects',
     async () => {
-      const athenaClient = new AthenaClient({ region: testEnv.awsRegion });
+      const athenaClient = new AthenaClient({
+        region: testEnv.awsRegion,
+        useFipsEndpoint: testEnv.fipsSupported,
+        customUserAgent: getCustomUserAgent(),
+      });
       const s3Client = new S3({ region: testEnv.awsRegion });
 
       const caseName = `legalHoldCase${randomSuffix()}`;

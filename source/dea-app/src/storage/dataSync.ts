@@ -6,7 +6,8 @@
 import { DataSyncClient } from '@aws-sdk/client-datasync';
 import { getCustomUserAgent, getRequiredEnv } from '../lambda-http-helpers';
 
-const region = process.env.AWS_REGION ?? 'us-east-1';
+const region = getRequiredEnv('AWS_REGION', 'us-east-1');
+const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
 
 export interface DataSyncProvider {
   dataSyncClient: DataSyncClient;
@@ -20,7 +21,11 @@ export interface DataSyncProvider {
 const partition = region.includes('us-gov') ? 'aws-us-gov' : 'aws';
 
 export const defaultDataSyncProvider: DataSyncProvider = {
-  dataSyncClient: new DataSyncClient({ region, customUserAgent: getCustomUserAgent() }),
+  dataSyncClient: new DataSyncClient({
+    region,
+    customUserAgent: getCustomUserAgent(),
+    useFipsEndpoint: fipsSupported,
+  }),
   dataSyncRoleArn: getRequiredEnv('DATASYNC_ROLE', 'DATASYNC_ROLE is not set in your lambda!'),
   datasetsBucketName: getRequiredEnv(
     'DATASETS_BUCKET_NAME',

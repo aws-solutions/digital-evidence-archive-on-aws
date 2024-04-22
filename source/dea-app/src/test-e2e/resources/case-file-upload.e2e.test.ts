@@ -18,6 +18,7 @@ import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
 import { Credentials } from 'aws4-axios';
 import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { CaseFileStatus } from '../../models/case-file-status';
@@ -269,11 +270,15 @@ describe('Test case file APIs', () => {
     const s3client = new S3Client({
       region: testEnv.awsRegion,
       credentials: initiatedCaseFile.federationCredentials,
+      useFipsEndpoint: testEnv.fipsSupported,
+      customUserAgent: getCustomUserAgent(),
     });
 
     const tempStsClient = new STSClient({
       region: testEnv.awsRegion,
       credentials: initiatedCaseFile.federationCredentials,
+      useFipsEndpoint: testEnv.fipsSupported,
+      customUserAgent: getCustomUserAgent(),
     });
 
     // can't create a new multipart upload
@@ -309,7 +314,11 @@ describe('Test case file APIs', () => {
     ).rejects.toThrow(/is not authorized to perform/g);
 
     // cleanup
-    const admins3Client = new S3Client({ region: testEnv.awsRegion });
+    const admins3Client = new S3Client({
+      region: testEnv.awsRegion,
+      useFipsEndpoint: testEnv.fipsSupported,
+      customUserAgent: getCustomUserAgent(),
+    });
     await admins3Client.send(
       new AbortMultipartUploadCommand({
         Bucket: initiatedCaseFile.bucket,
