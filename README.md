@@ -108,60 +108,14 @@ rush build
 
 ### Step 2: Customize your configuration
 
-Next you'll need to copy and rename the default configuration file, and open the copy in a text editor.
+Next you'll need to create a configuration file. You can do so by running the following commands and answering the prompts
 
-**Windows**
-
-```sh
-cd .\common\config
-copy prodexample.json prod.json
-cd ..\..
-notepad .\common\config\prod.json
-```
-
-**Linux**
+#### Generate the Config File
 
 ```sh
-cp ./common/config/prodexample.json ./common/config/prod.json
-nano ./common/config/prod.json
+cd ./dea-main
+rushx generate:config --configname <your config name here>
 ```
-
-Inside the configuration file, change the following fields
-
-1. Specify your region by including a line in the following format ```"region": "us-east-2"```
-2. Specify an unique domain prefix for your hosted Cognito login. NOTE: this is separate from your custom domain. It should look like the following:
-
-```
-"cognito": {
-  "domain": "exampleexampleexample"
-},
-```
-
-3. If you completed step 0, then import the domainName and ACM Certificate ARN (and hostedZoneId, hostedZoneName for Route53 domains)
-
-Route 53 Domains:
-
-```
-"customDomain": {
-  "domainName": "example.com",
-  "certificateArn": "arn:aws:acm:us-east-1:ACCTNUM:certificate/CERT_NUM",
-  "hostedZoneId": "NJKVNFJKNVJF345903",
-  "hostedZoneName": "example.com"
-},
-```
-
-Non Route53 Domains:
-
-```
-"customDomain": {
-  "domainName": "example.com",
-  "certificateArn": "arn:aws:acm:us-east-1:ACCTNUM:certificate/CERT_NUM"
-},
-```
-
-4. Define your User Role Types.
-You can see examples of role types already in the file. Feel free to modify these endpoints or create new roles as necessary for your use case.
-For each role, specify the name, description, and an array of endpoints defined by path and endpoint method. You can refer to API Reference section of the Implementation Guide for a list of available endpoints. Alternatively, you can view the file called dea-route-config.ts under the dea-backend folder for the most up to date list of API endpoints.  
 
 > :warning: Note about elevated endpoints: The following API endpoints, which can be configured on Roles within deaRoleTypes configuration, are considered elevated. These endpoints grant applicable users access to resources without any case-owner granted membership and are intended for "admin-type" roles.
 
@@ -209,8 +163,9 @@ For each role, specify the name, description, and an array of endpoints defined 
 
 > :warning: To compile a comprehensive Audit Log of application events Digital Evidence Archive utilizes both Application-Generated events as well as events from CloudTrail. CloudTrail events have been known to be delayed up to 20 minutes before becoming present in CloudWatch Logs. Consequently, be aware that a generated Audit report may be missing events that have occurred recently.
 
-5. If your local laws and regulations allows for or mandates the deletion of case evidence, set deletionAllowed field to true, otherwise set it to false.
-6. Go to the front end UI to change the System Use Notification.
+#### Customize your System Use Notification
+
+Go to the front end UI to change the System Use Notification.
 CJIS Policy 5.4 Use Notification states that you must display an approved system use notification message befor granting access, informing users of various usages and monitoring rules.
 
 The message should generally discuss the following information: that the user is accessing a restricted information system; that system usage may be monitored, recorded, and subject to audit; that unauthorized use of the system is prohibited and may be subject to criminal and/or civil penalties; use of the system indicateds consent to monitoring and recording.
@@ -222,13 +177,13 @@ To input your System Use Notification Message, open the following file in a text
 **Windows**
 
 ```sh
-notepad ./dea-ui/ui/src/common/labels.tsx
+notepad ../dea-ui/ui/src/common/labels.tsx
 ```
 
 **Linux**
 
 ```sh
-nano  ~/digital-evidence-archive-on-aws/source/dea-ui/ui/src/common/labels.tsx
+nano  ../dea-ui/ui/src/common/labels.tsx
 ```
 
 Scroll to the systemUseNotificationText definition, and change the text starting with CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT… to your approved system message. Save your changes

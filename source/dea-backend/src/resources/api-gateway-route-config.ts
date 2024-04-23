@@ -21,6 +21,7 @@ export interface ApiGatewayRoute {
   readonly authMethod?: AuthorizationType; //Override authorization type if auth type should be custom or none
   readonly latencyAlarmThreshold?: number; //Threshold in ms for latency alarm
   readonly roleName?: DeaApiRoleName;
+  readonly isPrivileged: boolean;
 }
 
 export enum ApiGatewayMethod {

@@ -5,7 +5,8 @@
 
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
-import { convictConfig, deaConfig, loadConfig } from '../config';
+import convict from 'convict';
+import { convictConfig, convictSchema, deaConfig, loadConfig } from '../config';
 
 describe('convict based config', () => {
   it('loads configuration from the stage', () => {
@@ -54,8 +55,33 @@ describe('convict based config', () => {
     }).toThrow('endpoints: must be of type Array: value was "InvalidEndpoints"');
   });
 
+  it('throws an error for invalid region', () => {
+    const oldRegion = convictConfig.get('region');
+
+    expect(() => {
+      // need the any here because convict doesn't resolve the type properly -.-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const badRegion: any = 'us-blah-1';
+      convictConfig.set('region', badRegion);
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('region: must be one of the possible values:');
+
+    convictConfig.set('region', oldRegion);
+  });
+
   it('throws an error for invalid domain config', () => {
     const oldCognitoDomain = convictConfig.get('cognito.domain');
+
+    // Must be a string
+    expect(() => {
+      // need the any here because convict doesn't resolve the type properly -.-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const badName: any = 1;
+      convictConfig.set('cognito.domain', badName);
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('The Cognito domain value must be a string.');
+
+    // Check the regex
     expect(() => {
       // need the any here because convict doesn't resolve the type properly -.-
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,7 +89,164 @@ describe('convict based config', () => {
       convictConfig.set('cognito.domain', badName);
       convictConfig.validate({ allowed: 'strict' });
     }).toThrow('Cognito domain may only contain lowercase alphanumerics and hyphens.');
+
+    // Test it does not allow the banned words: aws cognito and amazon
+    expect(() => {
+      // need the any here because convict doesn't resolve the type properly -.-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const badName: any = 'awsdomain';
+      convictConfig.set('cognito.domain', badName);
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('You cannot use aws, amazon, or cognito in the cognito domain prefix.');
+    expect(() => {
+      // need the any here because convict doesn't resolve the type properly -.-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const badName: any = 'cognitodomain';
+      convictConfig.set('cognito.domain', badName);
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('You cannot use aws, amazon, or cognito in the cognito domain prefix.');
+    expect(() => {
+      // need the any here because convict doesn't resolve the type properly -.-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const badName: any = 'amazondomain';
+      convictConfig.set('cognito.domain', badName);
+      convictConfig.validate({ allowed: 'strict' });
+    }).toThrow('You cannot use aws, amazon, or cognito in the cognito domain prefix.');
+
     convictConfig.set('cognito.domain', oldCognitoDomain);
+  });
+
+  it('throws for invalid custom domain configs', () => {
+    const config = convict(convictSchema);
+    // need the any here because convict doesn't resolve the type properly -.-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const goodDomainName: any = 'idcentergamma.digitalevidencearchive.com';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const badDomainName: any = 'idcentergamma.Digitalevidencearchive.com';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const goodAcmArn: any =
+      'arn:aws:acm:us-east-2:012345678910:certificate/864569eb-8eed-4fc7-891a-d54fedb8808b';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const badAcmArn: any = 'arn:aws:acm:us-east-2:012345678910';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const goodHostedZoneId: any = 'Z09256561H1NBMQR5VVM7';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const badHostedZoneId: any = '09256561H1NBMQR5VVM7JJJJJ';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const goodHostedZoneName: any = 'digitalevidencearchive.com';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const badHostedZoneName: any = 'DEA.com';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function expectFailure(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      domainName: any | undefined,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      acmArn: any | undefined,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      hostedZoneId: any | undefined,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      hostedZoneName: any | undefined,
+      error: string
+    ) {
+      config.set('customDomain.domainName', domainName);
+      config.set('customDomain.certificateArn', acmArn);
+      config.set('customDomain.hostedZoneId', hostedZoneId);
+      config.set('customDomain.hostedZoneName', hostedZoneName);
+      expect(() => {
+        config.validate({ allowed: 'strict' });
+      }).toThrow(error);
+    }
+
+    // Test cases
+    expectFailure(
+      goodDomainName,
+      undefined,
+      undefined,
+      undefined,
+      'domainName and certificateArn are required when using customDomain'
+    );
+    expectFailure(
+      undefined,
+      goodAcmArn,
+      undefined,
+      undefined,
+      'domainName and certificateArn are required when using customDomain'
+    );
+    expectFailure(
+      goodDomainName,
+      goodAcmArn,
+      goodHostedZoneId,
+      undefined,
+      'If you specify one of hostedZoneId and hostedZoneName, you must specify the other.'
+    );
+    expectFailure(
+      goodDomainName,
+      goodAcmArn,
+      undefined,
+      goodHostedZoneName,
+      'If you specify one of hostedZoneId and hostedZoneName, you must specify the other.'
+    );
+    expectFailure(badDomainName, goodAcmArn, undefined, undefined, 'Invalid domain name');
+    expectFailure(goodDomainName, badAcmArn, undefined, undefined, 'Invalid certificateArn');
+    expectFailure(goodDomainName, goodAcmArn, badHostedZoneId, goodHostedZoneName, 'Invalid hostedZoneId');
+    expectFailure(goodDomainName, goodAcmArn, goodHostedZoneId, badHostedZoneName, 'Invalid hostedZoneName');
+    expectFailure(
+      undefined,
+      undefined,
+      goodHostedZoneId,
+      goodHostedZoneName,
+      'domainName and certificateArn are required when using customDomain'
+    );
+
+    // Two valid test cases
+    // 1. All fields set
+    config.set('customDomain.domainName', goodDomainName);
+    config.set('customDomain.certificateArn', goodAcmArn);
+    config.set('customDomain.hostedZoneId', goodHostedZoneId);
+    config.set('customDomain.hostedZoneName', goodHostedZoneName);
+    config.validate({ allowed: 'strict' });
+    // 2. Hosted zone id and name not set
+    config.set('customDomain.hostedZoneId', undefined);
+    config.set('customDomain.hostedZoneName', undefined);
+    config.validate({ allowed: 'strict' });
+  });
+
+  it('handles valid gov acm arns', () => {
+    const config = convict(convictSchema);
+    // need the any here because convict doesn't resolve the type properly -.-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const goodDomainName: any = 'idcentergamma.digitalevidencearchive.com';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const goodAcmArn: any =
+      'arn:aws-us-gov:acm:us-gov-east-1:012345678910:certificate/864569eb-8eed-4fc7-891a-d54fedb8808b';
+
+    config.set('customDomain.domainName', goodDomainName);
+    config.set('customDomain.certificateArn', goodAcmArn);
+    config.validate({ allowed: 'strict' });
+  });
+
+  it('throws when admin arn is invalid', () => {
+    const config = convict(convictSchema);
+    // need the any here because convict doesn't resolve the type properly -.-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const badAdminArn: any = 'arn:aws:BAD::012345678910:role/Admin';
+
+    config.set('adminRoleArn', badAdminArn);
+    expect(() => {
+      config.validate({ allowed: 'strict' });
+    }).toThrow('Invalid admin role arn');
+  });
+
+  it('handles valid admin arn', () => {
+    const config = convict(convictSchema);
+    // need the any here because convict doesn't resolve the type properly -.-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const adminArn: any = 'arn:aws:iam::012345678910:role/Admin';
+
+    config.set('adminRoleArn', adminArn);
+    config.validate({ allowed: 'strict' });
+    expect(config.get('adminRoleArn')).toStrictEqual(adminArn);
   });
 
   it('returns production policies when non-test', () => {
@@ -171,22 +354,6 @@ describe('convict based config', () => {
     }).toThrow('Source IP CIDR must be of type number');
     convictConfig.set('sourceIpSubnetMaskCIDR', oldSourceIpCidr);
   });
-
-  // it('confirms groupToDeaRoleRules is an array', () => {
-  //   convictConfig.set('groupToDeaRoleRules', 'notanumber');
-  //   expect(() => {
-  //     convictConfig.validate({ allowed: 'strict' });
-  //   }).toThrow('groupToDeaRoleRules must be of type Array');
-  // });
-
-  // it('confirms groupToDeaRoleRules has a length under 25', () => {
-  //   const someArray: string[] = [];
-  //   someArray.length = 23;
-  //   convictConfig.set('groupToDeaRoleRules', someArray);
-  //   expect(() => {
-  //     convictConfig.validate({ allowed: 'strict' });
-  //   }).toThrow('something');
-  // });
 
   it('confirms upload timeout is a number', () => {
     const oldUploadTimeout = convictConfig.get('uploadFilesTimeoutMinutes');

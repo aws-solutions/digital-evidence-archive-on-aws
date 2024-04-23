@@ -5,6 +5,7 @@ source/dea-ui/ui/.next
 source/common/temp
 viperlight
 Config
+source/dea-backend/src/test/config.unit.test.ts
 
 # Line specific ignores
 

@@ -10,13 +10,11 @@ import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import convict from 'convict';
 // https://www.npmjs.com/package/convict
 
-const UNDEFINED_STRING = 'undefined';
-
 const FG_RED = '\x1b[31m';
 const FG_RESET = '\x1b[0m';
 const FG_GREEN = '\x1b[32m';
 
-function getSourcePath(): string {
+export function getSourcePath(): string {
   const pathParts = __dirname.split(path.sep);
   let backTrack = '';
   while (pathParts.length > 0 && pathParts.pop() !== 'source') {
@@ -25,7 +23,80 @@ function getSourcePath(): string {
   return `${__dirname}${backTrack}`;
 }
 
-const deaRoleTypesFormat: convict.Format = {
+export const REGIONS: Map<string, string> = new Map([
+  ['US East (Ohio)', 'us-east-2'],
+  ['US East (N. Virginia)', 'us-east-1'],
+  ['US West (N. California)', 'us-west-1'],
+  ['US West (Oregon)', 'us-west-2'],
+  ['AWS GovCloud (US-East)*', 'us-gov-east-1'],
+  ['AWS GovCloud (US-West)', 'us-gov-west-1'],
+  ['Canada (Central)', 'ca-central-1'],
+  ['Europe (Paris)', 'eu-west-3'],
+  ['Europe (London)', 'eu-west-2'],
+  ['Europe (Frankfurt)', 'eu-central-1'],
+  ['Europe (Stockholm)', 'eu-north-1'],
+  ['Europe (Ireland)', 'eu-west-1'],
+  ['Europe (Milan)', 'eu-south-1'],
+  ['Asia Pacific (Mumbai)', 'ap-south-1'],
+  ['Asia Pacific (Seoul)', 'ap-northeast-2'],
+  ['Asia Pacific (Singapore)', 'ap-southeast-1'],
+  ['Asia Pacific (Sydney)', 'ap-southeast-2'],
+  ['Asia Pacific (Tokyo)', 'ap-northeast-1'],
+  ['South America (São Paulo)', 'sa-east-1'],
+  ['Africa (Cape Town)', 'af-south-1'],
+  ['Middle East (Bahrain)', 'me-south-1'],
+]);
+
+const REGION_REGEX = `(${Array.from(REGIONS.values()).join('|')})`;
+function arnRegexBuilder(service: string, suffix: string): RegExp {
+  return new RegExp(`^arn:(aws|aws-us-gov):${service}:${REGION_REGEX}:[0-9]{12}:${suffix}`);
+}
+
+// The following regex taken from http://stackoverflow.com/questions/10306690/domain-name-validation-with-regex/26987741#26987741
+export const DOMAIN_REGEX = RegExp(
+  '^(((?!-))(xn--|_)?[a-z0-9-]{0,61}[a-z0-9]{1,1}.)*(xn--)?([a-z0-9][a-z0-9-]{0,60}|[a-z0-9-]{1,30}.[a-z]{2,})$'
+);
+export const ACM_REGEX = arnRegexBuilder('acm', 'certificate/[a-zA-Z0-9-_]+');
+export const HOSTED_ZONE_ID_REGEX = RegExp('^Z[A-Z0-9]{7,32}$');
+export const HOSTED_ZONE_NAME_REGEX = RegExp('^[a-z0-9][a-z0-9-]{0,60}|[a-z0-9-]{1,30}.[a-z]{2,}$');
+export const customDomainFormat: convict.Format = {
+  name: 'custom-domain',
+  validate: function (customDomain) {
+    if (customDomain.domainName || customDomain.certificateArn) {
+      if (!customDomain.domainName || !customDomain.certificateArn) {
+        throw new Error('domainName and certificateArn are required when using customDomain');
+      }
+
+      if (!DOMAIN_REGEX.test(customDomain.domainName)) {
+        throw new Error('Invalid domain name');
+      }
+
+      if (!ACM_REGEX.test(customDomain.certificateArn)) {
+        throw new Error('Invalid certificateArn');
+      }
+
+      if (customDomain.hostedZoneId || customDomain.hostedZoneName) {
+        if (!customDomain.hostedZoneId || !customDomain.hostedZoneName) {
+          throw new Error(
+            'If you specify one of hostedZoneId and hostedZoneName, you must specify the other.'
+          );
+        }
+        if (!HOSTED_ZONE_ID_REGEX.test(customDomain.hostedZoneId)) {
+          throw new Error('Invalid hostedZoneId');
+        }
+        if (!HOSTED_ZONE_NAME_REGEX.test(customDomain.hostedZoneName)) {
+          throw new Error('Invalid hostedZoneName');
+        }
+      }
+    } else {
+      if (customDomain.hostedZoneId || customDomain.hostedZoneName) {
+        throw new Error('domainName and certificateArn are required when using customDomain');
+      }
+    }
+  },
+};
+
+export const deaRoleTypesFormat: convict.Format = {
   name: 'dea-role-types',
   validate: function (deaRoles, schema) {
     if (!Array.isArray(deaRoles)) {
@@ -38,7 +109,7 @@ const deaRoleTypesFormat: convict.Format = {
   },
 };
 
-const SubnetMaskCIDRFormat: convict.Format = {
+export const SubnetMaskCIDRFormat: convict.Format = {
   name: 'subnet-mask-cidr-format',
   validate: function (val) {
     if (typeof val !== 'number') {
@@ -50,7 +121,7 @@ const SubnetMaskCIDRFormat: convict.Format = {
   },
 };
 
-const groupDeaRoleRulesFormat: convict.Format = {
+export const groupDeaRoleRulesFormat: convict.Format = {
   name: 'group-to-dearole-rules',
   validate: function (mappingRules, schema) {
     if (!Array.isArray(mappingRules)) {
@@ -67,7 +138,7 @@ const groupDeaRoleRulesFormat: convict.Format = {
   },
 };
 
-const endpointArrayFormat: convict.Format = {
+export const endpointArrayFormat: convict.Format = {
   name: 'endpoint-array',
   validate: function (endpoints, schema) {
     if (!Array.isArray(endpoints)) {
@@ -80,17 +151,24 @@ const endpointArrayFormat: convict.Format = {
   },
 };
 
-const cognitoDomainFormat: convict.Format = {
+export const cognitoDomainFormat: convict.Format = {
   name: 'cognito-domain',
   validate: function (val) {
+    if (typeof val !== 'string') {
+      throw new Error('The Cognito domain value must be a string.');
+    }
     if (!/^[a-z0-9-]+$/.test(val)) {
       throw new Error('Cognito domain may only contain lowercase alphanumerics and hyphens.');
+    }
+
+    if (val.includes('aws') || val.includes('amazon') || val.includes('cognito')) {
+      throw new Error('You cannot use aws, amazon, or cognito in the cognito domain prefix.');
     }
   },
 };
 
 const STAGE_MAX_LENGTH = 21;
-const deaStageFormat: convict.Format = {
+export const deaStageFormat: convict.Format = {
   name: 'dea-stage',
   validate: function (val) {
     if (typeof val !== 'string') {
@@ -105,7 +183,7 @@ const deaStageFormat: convict.Format = {
   },
 };
 
-const uploadTimeoutFormat: convict.Format = {
+export const uploadTimeoutFormat: convict.Format = {
   name: 'upload-timeout',
   validate: function (val) {
     if (typeof val !== 'number') {
@@ -120,52 +198,60 @@ const uploadTimeoutFormat: convict.Format = {
   },
 };
 
-const convictSchema = {
+export const ADMIN_ROLE_ARN_REGEX = new RegExp(`^arn:(aws|aws-us-gov):iam::[0-9]{12}:role/[a-zA-Z0-9-_]+`);
+
+export const convictSchema = {
   stage: {
-    doc: 'The deployment stage.',
+    doc: 'the deployment stage, used as the name for the CloudFormation Stacks',
     format: deaStageFormat.name,
     default: 'devsample',
     env: 'STAGE',
   },
   configname: {
-    doc: 'The deployment configuration filename. This is optional, by default it will use the stage name.',
+    doc: 'the deployment configuration filename. This is optional, by default it will use the stage name',
     format: String,
     default: undefined,
     env: 'CONFIGNAME',
   },
   region: {
-    doc: 'The AWS region for deployment',
-    format: String,
+    doc: 'the AWS region for deployment',
+    format: Array.from(REGIONS.values()),
     default: 'us-east-1',
     env: 'AWS_REGION',
   },
   cognito: {
     domain: {
-      doc: 'The cognito domain',
+      doc: 'used for the userpool',
       format: cognitoDomainFormat.name,
       default: undefined,
       env: 'DOMAIN_PREFIX',
+      required: true,
     },
   },
   customDomain: {
+    doc: 'Custom Domain config',
+    format: customDomainFormat.name,
+    default: {
+      domainName: undefined,
+      certificateArn: undefined,
+      hostedZoneId: undefined,
+      hostedZoneName: undefined,
+    },
+
     domainName: {
       doc: 'Custom domain for solution',
-      format: String,
       default: undefined,
     },
     certificateArn: {
-      doc: 'The reference to an AWS-managed certificate for the domain name.',
-      format: String,
+      doc: 'The reference to an AWS-managed certificate for the domain name',
       default: undefined,
     },
     hostedZoneId: {
       doc: 'The id for the hosted zone for the domain',
-      format: String,
       default: undefined,
     },
     hostedZoneName: {
       doc: 'The name of the hosted zone',
-      format: String,
       default: undefined,
     },
   },
@@ -173,12 +259,12 @@ const convictSchema = {
     vpcEndpointId: {
       doc: 'VPC endpoint of private deployment of DEA',
       format: String,
-      default: UNDEFINED_STRING,
+      default: undefined,
     },
     vpcId: {
       doc: 'VPC in which to deploy DEA',
       format: String,
-      default: UNDEFINED_STRING,
+      default: undefined,
     },
   },
   idpInfo: {
@@ -214,7 +300,7 @@ const convictSchema = {
         default: 'lastName',
       },
       deaRoleName: {
-        doc: 'name of the IDP attribute field to get the role to use for user. Either set this or use the groups attribute and define the rule mappings.',
+        doc: 'name of the IDP attribute field to get the role to use for user. Either set this or use the groups attribute and define the rule mappings',
         format: String,
         default: undefined,
       },
@@ -224,13 +310,13 @@ const convictSchema = {
         default: undefined,
       },
       idcenterid: {
-        doc: 'ONLY used for Identity Center, this is the user id to query for users group memberships.',
+        doc: 'ONLY used for Identity Center, this is the user id to query for users group memberships',
         format: String,
         default: undefined,
       },
     },
     defaultRole: {
-      doc: "Default role to assign to users that don't match the other roles.",
+      doc: "Default role to assign to users that don't match the other roles",
       format: String,
       default: undefined,
     },
@@ -346,7 +432,7 @@ const convictSchema = {
     default: true,
   },
   isMultiRegionTrail: {
-    doc: 'Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account.',
+    doc: 'Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account',
     format: 'Boolean',
     default: true,
   },
@@ -365,11 +451,13 @@ const convictSchema = {
     format: Number,
     default: 60,
   },
+  // TODO: see if we can remove by instead using AWSDataSyncReadOnlyAccess
   dataSyncLocationBuckets: {
     doc: 'Bucket ARN list for any buckets you are using as source locations for Data Vault transfers',
     format: Array,
     default: [],
   },
+  // TODO: see if we can remove by instead using AWSDataSyncReadOnlyAccess
   dataSyncSourcePermissions: {
     doc: 'list of datasync source permissions we need for listing source locations',
     format: Array,
@@ -377,7 +465,15 @@ const convictSchema = {
   },
   adminRoleArn: {
     doc: 'Optional ARN to grant KMS and Bucket permissions, useful for pipeline testing',
-    format: String,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    format: function check(val: any) {
+      if (val === undefined) {
+        return;
+      }
+      if (!ADMIN_ROLE_ARN_REGEX.test(val)) {
+        throw new Error('Invalid admin role arn');
+      }
+    },
     default: undefined,
     env: 'ADMIN_ROLE_ARN',
   },
@@ -429,11 +525,12 @@ export interface CustomDomainInfo {
 }
 
 export interface VpcEndpointInfo {
-  readonly vpcEndpointId: string;
-  readonly vpcId: string;
+  readonly vpcEndpointId: string | undefined;
+  readonly vpcId: string | undefined;
 }
 
 convict.addFormat(groupDeaRoleRulesFormat);
+convict.addFormat(customDomainFormat);
 convict.addFormat(deaRoleTypesFormat);
 convict.addFormat(endpointArrayFormat);
 convict.addFormat(cognitoDomainFormat);
@@ -488,7 +585,7 @@ export const deaConfig: DEAConfig = {
   customDomainInfo: () => convictConfig.get('customDomain'),
   isTestStack: () => convictConfig.get('testStack'),
   isOneClick: () => convictConfig.get('isOneClick'),
-  sourceIpValidationEnabled: () => convictConfig.get('sourceIpValidation') ?? true,
+  sourceIpValidationEnabled: () => convictConfig.get('sourceIpValidation'),
   sourceIpSubnetMaskCIDR: () => convictConfig.get('sourceIpSubnetMaskCIDR').toString(),
   deaRoleTypes: () => convictConfig.get('deaRoleTypes'),
   retainPolicy: () => (convictConfig.get('testStack') ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN),
@@ -546,11 +643,7 @@ export const deaConfig: DEAConfig = {
   },
   vpcEndpointInfo: () => {
     const vpcEndpoint = convictConfig.get('vpcEndpoint');
-    if (
-      !vpcEndpoint ||
-      vpcEndpoint.vpcEndpointId === UNDEFINED_STRING ||
-      vpcEndpoint.vpcId === UNDEFINED_STRING
-    ) {
+    if (!vpcEndpoint || !vpcEndpoint.vpcEndpointId || !vpcEndpoint.vpcId) {
       return undefined;
     }
     return vpcEndpoint;
@@ -574,7 +667,7 @@ export const loadConfig = (stage: string): void => {
     console.error(
       [
         `${FG_RED}--------------------------------------------------------------------------------------`,
-        `Configuration ${configFilename}.json Failed Schema Validation:`,
+        `Configuration ${stage}.json Failed Schema Validation:`,
         `${e.message}`,
         `--------------------------------------------------------------------------------------${FG_RESET}`,
       ].join('\n')
@@ -584,7 +677,7 @@ export const loadConfig = (stage: string): void => {
   console.info(
     [
       `${FG_GREEN}--------------------------------------------------------------------------------------`,
-      `Configuration ${configFilename}.json Passed Schema Validation`,
+      `Configuration ${stage}.json Passed Schema Validation`,
       `--------------------------------------------------------------------------------------${FG_RESET}`,
     ].join('\n')
   );
