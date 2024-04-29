@@ -182,7 +182,7 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
     <Table
       {...collectionProps}
       data-testid="data-vaults-table"
-      trackBy="name"
+      trackBy={(item) => item.name}
       loading={isLoading}
       variant="full-page"
       items={items}

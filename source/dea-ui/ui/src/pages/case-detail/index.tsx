@@ -21,6 +21,7 @@ function CaseDetailsPage() {
   const searchParams = useSearchParams();
   const caseId = searchParams.get('caseId');
   const { settings } = useSettings();
+
   const { data, isLoading } = useGetCaseById(caseId);
   if (isLoading) {
     return <StatusIndicator type="loading">{commonLabels.loadingLabel}</StatusIndicator>;
@@ -44,7 +45,13 @@ function CaseDetailsPage() {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/" pageName={pageName}>
+    <BaseLayout
+      breadcrumbs={breadcrumbs}
+      activeHref="/"
+      pageName={pageName}
+      toolsShow
+      initialHelpPanelPage="case-details-page"
+    >
       <CaseDetailsBody caseId={data.ulid} data={data} />
     </BaseLayout>
   );

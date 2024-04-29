@@ -376,6 +376,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               label={fileOperationsLabels.evidenceDetailsLabel}
               description={fileOperationsLabels.evidenceDetailsDescription}
               errorText={details.length > 1 ? '' : commonLabels.requiredLength('Description')}
+              i18nStrings={{
+                errorIconAriaLabel: fileUploadLabels.errorIconAriaLabel,
+              }}
             >
               <Textarea
                 value={details}
@@ -391,6 +394,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               errorText={
                 reason.length > 1 ? '' : commonLabels.requiredLength('Reason for uploading evidence')
               }
+              i18nStrings={{
+                errorIconAriaLabel: fileUploadLabels.errorIconAriaLabel,
+              }}
             >
               <Input
                 value={reason}

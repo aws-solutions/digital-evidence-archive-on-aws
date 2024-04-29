@@ -8,6 +8,7 @@ import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
 import Header from '../components/Header';
 import { AuthenticationProvider } from '../context/AuthenticationContext';
+import { HelpProvider } from '../context/HelpContext';
 import { NotificationsProvider } from '../context/NotificationsContext';
 import { SettingsProvider } from '../context/SettingsContext';
 
@@ -16,11 +17,13 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <SettingsProvider>
       <AuthenticationProvider>
-        <NotificationsProvider>
-          <Header />
-          <Component {...pageProps} />
-          <footer id="footer"></footer>
-        </NotificationsProvider>
+        <HelpProvider>
+          <NotificationsProvider>
+            <Header />
+            <Component {...pageProps} />
+            <footer id="footer"></footer>
+          </NotificationsProvider>
+        </HelpProvider>
       </AuthenticationProvider>
     </SettingsProvider>
   );

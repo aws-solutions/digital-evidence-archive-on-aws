@@ -4,11 +4,8 @@
  */
 
 import { CaseAction, OWNER_ACTIONS } from '@aws/dea-app/lib/models/case-action';
-import { DownloadDTO } from '@aws/dea-app/lib/models/case-file';
-import { DeaDataVaultFile } from '@aws/dea-app/lib/models/data-vault-file';
 import { AppLayoutProps, SelectProps, TableProps } from '@cloudscape-design/components';
 import { OptionDefinition } from '@cloudscape-design/components/internal/components/option/interfaces';
-import { FileUploadProgressRow } from '../components/upload-files/UploadFilesForm';
 
 export const systemUseNotificationText =
   'CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT according ' +
@@ -57,6 +54,7 @@ export const commonLabels = {
   selectedLabel: 'selected',
   clearLabel: 'Clear field',
   deselectLabel: (e: OptionDefinition) => `Remove ${e.label}`,
+  infoLabel: 'Info',
 };
 
 export const commonTableLabels = {
@@ -93,19 +91,18 @@ export const commonTableLabels = {
     data.totalItemsCount && data.totalItemsCount === 0
       ? 'No items to display'
       : `Display items ${data.firstIndex} to ${data.lastIndex} of ${data.totalItemsCount}`,
-  allItemsSelectionLabel: ({
-    selectedItems,
-  }: TableProps.SelectionState<DeaDataVaultFile | DownloadDTO | FileUploadProgressRow>) =>
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  allItemsSelectionLabel: ({ selectedItems }: TableProps.SelectionState<any>) =>
     `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
-  itemSelectionLabel: (
-    { selectedItems }: TableProps.SelectionState<DeaDataVaultFile | DownloadDTO | FileUploadProgressRow>,
-    item: DeaDataVaultFile | DownloadDTO | FileUploadProgressRow
-  ) => {
-    const isItemSelected = selectedItems.filter(
-      (i: DeaDataVaultFile | DownloadDTO | FileUploadProgressRow) => i.fileName === item.fileName
+  // item is type DeaCaseDTO | FileUploadProgressRow | DownloadDTO but they're too disjoint to union
+  itemSelectionLabel: ({ selectedItems }: TableProps.SelectionState<any>, item: any) => {
+    const isDeaCaseDTO = 'name' in item ? true : false;
+    const isItemSelected = selectedItems.filter((i: any) =>
+      isDeaCaseDTO ? i.name === item.name : i.fileName === item.fileName
     ).length;
-    return `${item.fileName} is${isItemSelected ? '' : ' not'} selected`;
+    return `${isDeaCaseDTO ? item.name : item.fileName} is${isItemSelected ? '' : ' not'} selected`;
   },
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 };
 
 export const layoutLabels: AppLayoutProps.Labels = {
@@ -236,10 +233,6 @@ export const manageCaseAccessLabels = {
   manageAccessDescription:
     'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
   manageAccessSearchLabel: 'Search for people',
-  manageAccessSearchInfoHeader: "Can't find someone?",
-  manageAccessSearchInfoLabel: 'Request access from admin',
-  manageAccessSearchInfoDescription:
-    'Reach out to your administrator and request a new user to be invited to the system.',
   searchPlaceholder: 'Search by name or email',
   searchAutosuggestNoMatches: 'No matches found',
   searchAutosuggestEnteredText: (value: string) => `Use: "${value}"`,

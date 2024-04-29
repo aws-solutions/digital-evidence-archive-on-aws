@@ -302,7 +302,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
       selectedItems={selectedTasks}
       selectionType="single"
       isItemDisabled={(item) => !item.dataVaultName}
-      trackBy="taskId"
+      trackBy={(item) => item.taskId}
       loading={isLoading}
       variant="full-page"
       ariaLabels={{

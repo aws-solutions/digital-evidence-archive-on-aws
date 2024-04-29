@@ -240,7 +240,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
       selectedItems={selectedCase}
       selectionType="single"
       isItemDisabled={noUserCaseStatusUpdatePermission}
-      trackBy="ulid"
+      trackBy={(item) => item.ulid}
       loading={isLoading}
       variant="full-page"
       renderAriaLive={commonTableLabels.renderAriaLiveLabel}
@@ -251,7 +251,6 @@ function CaseTable(props: CaseTableProps): JSX.Element {
       ariaLabels={{
         tableLabel: caseListLabels.casesLabel,
         selectionGroupLabel: caseListLabels.tableRadioGroupSelectionLabel,
-        allItemsSelectionLabel: commonTableLabels.allItemsSelectionLabel,
         itemSelectionLabel: commonTableLabels.itemSelectionLabel,
       }}
       empty={TableEmptyDisplay(caseListLabels.noCasesLabel, caseListLabels.noDisplayLabel)}
