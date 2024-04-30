@@ -4,7 +4,7 @@
  */
 
 import path from 'path';
-import { Duration, NestedStack } from 'aws-cdk-lib';
+import { Duration, CfnResource, NestedStack } from 'aws-cdk-lib';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -14,6 +14,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
+import { addLambdaSuppressions, addResourcePolicySuppressions } from './../helpers/nag-suppressions';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 interface ObjectChecksumStackProps {
@@ -33,6 +34,7 @@ export class ObjectChecksumStack extends NestedStack {
     const members = this.createHashQueue(this, props);
     this.checksumHandlerRole = members.handlerRole;
     this.checksumQueue = members.checksumQueue;
+    this.cfnNagSuppress();
   }
 
   private createHashQueue(scope: Construct, props: ObjectChecksumStackProps) {
@@ -135,5 +137,21 @@ export class ObjectChecksumStack extends NestedStack {
         resources: [deaTable.tableArn],
       })
     );
+  }
+
+  private cfnNagSuppress() {
+    // Nag Suppressions
+    const policyToSuppress = this.node
+      .findChild('incremental-checksum-handler')
+      .node.findChild('ServiceRole')
+      .node.findChild('DefaultPolicy').node.defaultChild;
+    if (policyToSuppress instanceof CfnResource) {
+      addResourcePolicySuppressions(policyToSuppress);
+    }
+
+    const resourceToSuppress = this.node.findChild('incremental-checksum-handler').node.findChild('Resource');
+    if (resourceToSuppress instanceof CfnResource) {
+      addLambdaSuppressions(resourceToSuppress);
+    }
   }
 }

@@ -18,13 +18,14 @@ import { DeaRestApiConstruct } from '@aws/dea-backend/lib/constructs/dea-rest-ap
 import { addLegalHoldInfrastructure } from '@aws/dea-backend/lib/constructs/legal-hold-infra';
 import { ObjectChecksumStack } from '@aws/dea-backend/lib/constructs/object-checksum-stack';
 import {
-  addLambdaSuppressions,
-  addResourcePolicySuppressions,
+  deaUiStackNagSuppress,
+  deaMainLambdaNagSuppresions,
+  deaMainPolicyNagSuppresions,
+  deaApiGwAuthNagSuppressions,
 } from '@aws/dea-backend/lib/helpers/nag-suppressions';
 import { DeaUiConstruct } from '@aws/dea-ui-infrastructure/lib/dea-ui-stack';
 import * as cdk from 'aws-cdk-lib';
 import { Aws, CfnResource, Duration } from 'aws-cdk-lib';
-import { CfnMethod } from 'aws-cdk-lib/aws-apigateway';
 import {
   AccountPrincipal,
   ArnPrincipal,
@@ -304,32 +305,15 @@ export class DeaMainStack extends cdk.Stack {
     // ======================================
     // Suppress CFN issues with dea-main stack as the primary node here since we cannot access
     // resource node directly in the ui or backend construct
-    this.uiStackConstructNagSuppress();
+    deaUiStackNagSuppress(this.node);
 
     // These are resources that will be configured in a future story. Please remove these suppressions or modify them to the specific resources as needed
     // when we tackle the particular story. Details in function below
-    this.apiGwAuthNagSuppresions();
+    deaApiGwAuthNagSuppressions(this.node);
 
-    this.policyNagSuppresions();
-  }
+    deaMainPolicyNagSuppresions(this.node);
 
-  private uiStackConstructNagSuppress(): void {
-    const lambdaSuppresionList = [];
-
-    // custom resource role
-    lambdaSuppresionList.push(this.node.findChild('AWS679f53fac002430cb0da5b7982bd2287').node.defaultChild);
-
-    // This will not exist in non-test deploys
-    const lambdaChild = this.node.tryFindChild('Custom::S3AutoDeleteObjectsCustomResourceProvider');
-    if (lambdaChild) {
-      lambdaSuppresionList.push(lambdaChild.node.findChild('Handler'));
-    }
-
-    lambdaSuppresionList.forEach((lambdaToSuppress) => {
-      if (lambdaToSuppress instanceof CfnResource) {
-        addLambdaSuppressions(lambdaToSuppress);
-      }
-    });
+    deaMainLambdaNagSuppresions(this.node);
   }
 
   private createEncryptionKey(): Key {
@@ -414,179 +398,6 @@ export class DeaMainStack extends cdk.Stack {
     ];
     return new ManagedPolicy(this, 'deaResourcesPermissionsBoundary', {
       statements,
-    });
-  }
-
-  private policyNagSuppresions(): void {
-    const cfnResources = [];
-
-    cfnResources.push(
-      this.node
-        .findChild('DeaEventHandlers')
-        .node.findChild('s3-batch-delete-case-file-handler-role')
-        .node.findChild('DefaultPolicy').node.defaultChild
-    );
-
-    cfnResources.push(
-      this.node
-        .findChild('DeaEventHandlers')
-        .node.findChild('s3-batch-status-change-handler-role')
-        .node.findChild('DefaultPolicy').node.defaultChild
-    );
-
-    cfnResources.push(
-      this.node
-        .findChild('DeaApiGateway')
-        .node.findChild('dea-base-lambda-role')
-        .node.findChild('DefaultPolicy').node.defaultChild
-    );
-
-    cfnResources.push(
-      this.node
-        .findChild('DeaApiGateway')
-        .node.findChild('UpdateBucketCORS0')
-        .node.findChild('CustomResourcePolicy').node.defaultChild
-    );
-
-    cfnResources.push(
-      this.node
-        .findChild('DeaApiGateway')
-        .node.findChild('UpdateBucketCORS1')
-        .node.findChild('CustomResourcePolicy').node.defaultChild
-    );
-
-    cfnResources.forEach((cfnResource) => {
-      if (cfnResource instanceof CfnResource) {
-        return addResourcePolicySuppressions(cfnResource);
-      }
-    });
-  }
-
-  private apiGwAuthNagSuppresions(): void {
-    // Nag suppress on all authorizationType related warnings until our Auth implementation is complete
-    const apiGwMethodArray = [];
-
-    // API GW - UI Suppressions
-    const uiPages = [
-      'login',
-      'case-detail',
-      'create-cases',
-      'upload-files',
-      'auth-test',
-      'data-vaults',
-      'data-vault-detail',
-      'create-data-vaults',
-      'edit-data-vault',
-      'data-sync-tasks',
-      'data-vault-file-detail',
-    ];
-
-    //Home page
-    apiGwMethodArray.push(
-      this.node
-        .findChild('DeaApiGateway')
-        .node.findChild('dea-api-stack')
-        .node.findChild('dea-api')
-        .node.findChild('Default')
-        .node.findChild('ui')
-        .node.findChild('GET').node.defaultChild
-    );
-
-    // Other pages
-    uiPages.forEach((page) => {
-      apiGwMethodArray.push(
-        this.node
-          .findChild('DeaApiGateway')
-          .node.findChild('dea-api-stack')
-          .node.findChild('dea-api')
-          .node.findChild('Default')
-          .node.findChild('ui')
-          .node.findChild(page)
-          .node.findChild('GET').node.defaultChild
-      );
-
-      // UI API GW Proxy
-      apiGwMethodArray.push(
-        this.node
-          .findChild('DeaApiGateway')
-          .node.findChild('dea-api-stack')
-          .node.findChild('dea-api')
-          .node.findChild('Default')
-          .node.findChild('ui')
-          .node.findChild('{proxy+}')
-          .node.findChild('GET').node.defaultChild
-      );
-    });
-
-    // Auth endpoints
-    apiGwMethodArray.push(
-      this.node
-        .findChild('DeaApiGateway')
-        .node.findChild('dea-api-stack')
-        .node.findChild('dea-api')
-        .node.findChild('Default')
-        .node.findChild('auth')
-        .node.findChild('{authCode}')
-        .node.findChild('token')
-        .node.findChild('POST').node.defaultChild
-    );
-
-    apiGwMethodArray.push(
-      this.node
-        .findChild('DeaApiGateway')
-        .node.findChild('dea-api-stack')
-        .node.findChild('dea-api')
-        .node.findChild('Default')
-        .node.findChild('auth')
-        .node.findChild('refreshToken')
-        .node.findChild('POST').node.defaultChild
-    );
-
-    apiGwMethodArray.push(
-      this.node
-        .findChild('DeaApiGateway')
-        .node.findChild('dea-api-stack')
-        .node.findChild('dea-api')
-        .node.findChild('Default')
-        .node.findChild('auth')
-        .node.findChild('revokeToken')
-        .node.findChild('POST').node.defaultChild
-    );
-
-    apiGwMethodArray.push(
-      this.node
-        .findChild('DeaApiGateway')
-        .node.findChild('dea-api-stack')
-        .node.findChild('dea-api')
-        .node.findChild('Default')
-        .node.findChild('auth')
-        .node.findChild('loginUrl')
-        .node.findChild('GET').node.defaultChild
-    );
-
-    apiGwMethodArray.push(
-      this.node
-        .findChild('DeaApiGateway')
-        .node.findChild('dea-api-stack')
-        .node.findChild('dea-api')
-        .node.findChild('Default')
-        .node.findChild('auth')
-        .node.findChild('logoutUrl')
-        .node.findChild('GET').node.defaultChild
-    );
-
-    apiGwMethodArray.forEach((apiGwMethod) => {
-      if (apiGwMethod instanceof CfnMethod) {
-        apiGwMethod.addMetadata('cfn_nag', {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          rules_to_suppress: [
-            {
-              id: 'W59',
-              reason: 'Auth not required on auth related APIs or UI',
-            },
-          ],
-        });
-      }
     });
   }
 }

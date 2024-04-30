@@ -88,6 +88,16 @@ export class DeaUiConstruct extends NestedStack {
     if (lambdaToSuppress instanceof CfnResource) {
       addLambdaSuppressions(lambdaToSuppress);
     }
+
+    const s3AutoDeleteHandlerToSuppress = this.node.tryFindChild(
+      'Custom::S3AutoDeleteObjectsCustomResourceProvider'
+    );
+    if (s3AutoDeleteHandlerToSuppress) {
+      const node = s3AutoDeleteHandlerToSuppress.node.findChild('Handler');
+      if (node instanceof CfnResource) {
+        addLambdaSuppressions(node);
+      }
+    }
   }
 
   private routeHandler(props: IUiStackProps, bucket: Bucket, executeRole: Role) {
