@@ -68,6 +68,7 @@ export class ObjectChecksumStack extends NestedStack {
     const checksumDLQ = new Queue(scope, 'incremental-checksum-dlq', {
       enforceSSL: true,
       fifo: true,
+      encryptionMasterKey: props.kmsKey,
     });
 
     const checksumQueue = new Queue(scope, 'incremental-checksum-queue', {
@@ -78,6 +79,7 @@ export class ObjectChecksumStack extends NestedStack {
         queue: checksumDLQ,
         maxReceiveCount: 5,
       },
+      encryptionMasterKey: props.kmsKey,
     });
 
     const eventSource = new SqsEventSource(checksumQueue, {
@@ -100,6 +102,7 @@ export class ObjectChecksumStack extends NestedStack {
     if (!checksumHandler.role) {
       throw new Error('Lambda role undefined');
     }
+
     return {
       checksumQueue,
       handlerRole: checksumHandler.role,
@@ -113,7 +116,7 @@ export class ObjectChecksumStack extends NestedStack {
     kmsKey: Key,
     bucket: Bucket
   ) {
-    // we need key acces for the encrypted bucket and table
+    // we need key access for the encrypted bucket and table
     handler.addToRolePolicy(
       new PolicyStatement({
         actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],

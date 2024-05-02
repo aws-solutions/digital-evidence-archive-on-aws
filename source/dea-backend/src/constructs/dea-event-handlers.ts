@@ -123,6 +123,7 @@ export class DeaEventHandlers extends Construct {
 
     const dataSyncFileProcessingDLQ = new Queue(this, 'datasync-files-processing-dlq', {
       enforceSSL: true,
+      encryptionMasterKey: props.kmsKey,
     });
 
     props.opsDashboard?.addDeadLetterQueueOperationalComponents(
