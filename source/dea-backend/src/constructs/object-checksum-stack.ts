@@ -14,6 +14,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
+import { deaConfig } from '../config';
 import { addLambdaSuppressions, addResourcePolicySuppressions } from './../helpers/nag-suppressions';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
@@ -27,6 +28,7 @@ interface ObjectChecksumStackProps {
 export class ObjectChecksumStack extends NestedStack {
   public checksumHandlerRole: IRole;
   public checksumQueue: Queue;
+  public kmsKey: Key;
 
   constructor(scope: Construct, id: string, props: ObjectChecksumStackProps) {
     super(scope, id);
@@ -34,6 +36,7 @@ export class ObjectChecksumStack extends NestedStack {
     const members = this.createHashQueue(this, props);
     this.checksumHandlerRole = members.handlerRole;
     this.checksumQueue = members.checksumQueue;
+    this.kmsKey = members.kmsKey;
     this.cfnNagSuppress();
   }
 
@@ -65,10 +68,36 @@ export class ObjectChecksumStack extends NestedStack {
       },
     });
 
+    const checkSumQueueKey = new Key(scope, 'checkSumQueueKey', {
+      enableKeyRotation: true,
+      removalPolicy: deaConfig.retainPolicy(),
+      pendingWindow: Duration.days(7),
+    });
+
+    // we need to create a new key to prevent circular dependency
+    checkSumQueueKey.grantDecrypt(checksumHandler);
+    if (checksumHandler.role) {
+      checkSumQueueKey.addToResourcePolicy(
+        new PolicyStatement({
+          actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
+          principals: [checksumHandler.role],
+          resources: ['*'],
+        })
+      );
+    }
+
+    // but we also need to grant permissions to the main kms key
+    checksumHandler.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [props.kmsKey.keyArn],
+      })
+    );
+
     const checksumDLQ = new Queue(scope, 'incremental-checksum-dlq', {
       enforceSSL: true,
       fifo: true,
-      encryptionMasterKey: props.kmsKey,
+      encryptionMasterKey: checkSumQueueKey,
     });
 
     const checksumQueue = new Queue(scope, 'incremental-checksum-queue', {
@@ -79,7 +108,7 @@ export class ObjectChecksumStack extends NestedStack {
         queue: checksumDLQ,
         maxReceiveCount: 5,
       },
-      encryptionMasterKey: props.kmsKey,
+      encryptionMasterKey: checkSumQueueKey,
     });
 
     const eventSource = new SqsEventSource(checksumQueue, {
@@ -92,7 +121,7 @@ export class ObjectChecksumStack extends NestedStack {
       checksumHandler,
       props.deaTable,
       checksumQueue,
-      props.kmsKey,
+      checkSumQueueKey,
       props.objectBucket
     );
 
@@ -106,6 +135,7 @@ export class ObjectChecksumStack extends NestedStack {
     return {
       checksumQueue,
       handlerRole: checksumHandler.role,
+      kmsKey: checkSumQueueKey,
     };
   }
 

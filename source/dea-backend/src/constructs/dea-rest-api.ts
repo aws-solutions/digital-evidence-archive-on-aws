@@ -75,6 +75,7 @@ interface DeaRestApiProps {
   deaAuditLogArn: string;
   deaTrailLogArn: string;
   kmsKey: Key;
+  checkSumQueueKey: Key;
   lambdaEnv: LambdaEnvironment;
   opsDashboard?: DeaOperationalDashboard;
   athenaConfig: AthenaConfig;
@@ -133,7 +134,7 @@ export class DeaRestApiConstruct extends Construct {
     this.roleMap.set(DeaApiRoleName.INITIATE_UPLOAD_ROLE, initiateUploadRole);
 
     const completeUploadRole = this.createCompleteUploadRole(
-      props.kmsKey.keyArn,
+      props.checkSumQueueKey.keyArn,
       props.deaDatasetsBucket.bucketArn,
       props.deaTableArn,
       props.checksumQueue
@@ -661,18 +662,11 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
-    // If it is a test stack, include the source buckets created for MDI E2E tests
-    const listBucketResources = deaConfig.isTestStack()
-      ? [
-          ...deaConfig.dataSyncLocationBuckets(),
-          datasetsBucketArn,
-          'arn:*:s3:::dea-mdi-e2e-test-source-bucket*',
-        ]
-      : [...deaConfig.dataSyncLocationBuckets(), datasetsBucketArn];
+    role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSDataSyncReadOnlyAccess'));
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['s3:ListBucket'],
-        resources: listBucketResources,
+        actions: ['ec2:DescribeNetworkInterfaces'],
+        resources: ['*'],
       })
     );
 
@@ -1026,16 +1020,13 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
-    // add list of optional external source type policies for execution to work
-    const listBucketResources = [...deaConfig.dataSyncSourcePermissions()];
-    if (listBucketResources.length > 0) {
-      role.addToPolicy(
-        new PolicyStatement({
-          actions: listBucketResources,
-          resources: ['*'],
-        })
-      );
-    }
+    role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSDataSyncReadOnlyAccess'));
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['ec2:DescribeNetworkInterfaces'],
+        resources: ['*'],
+      })
+    );
 
     role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
 

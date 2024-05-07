@@ -135,7 +135,7 @@ export class DeaMainStack extends cdk.Stack {
 
     const checksumStack = new ObjectChecksumStack(this, 'ObjectChecksumStack', {
       deaTable: backendConstruct.deaTable,
-      kmsKey,
+      kmsKey: kmsKey,
       objectBucket: backendConstruct.datasetsBucket,
     });
     nestedConstructs.push(checksumStack);
@@ -152,6 +152,7 @@ export class DeaMainStack extends cdk.Stack {
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey,
+      checkSumQueueKey: checksumStack.kmsKey,
       athenaConfig: {
         athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
         athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,

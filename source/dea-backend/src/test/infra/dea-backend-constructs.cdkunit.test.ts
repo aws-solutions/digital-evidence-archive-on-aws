@@ -79,8 +79,8 @@ describe('DeaBackend constructs', () => {
       opsDashboard: dashboard,
     });
     const checksumStack = new ObjectChecksumStack(stack, 'ObjectChecksumStack', {
-      kmsKey: key,
       deaTable: backend.deaTable,
+      kmsKey: key,
       opsDashboard: dashboard,
       objectBucket: backend.datasetsBucket,
     });
@@ -103,6 +103,7 @@ describe('DeaBackend constructs', () => {
         athenaAuditBucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
       },
       kmsKey: key,
+      checkSumQueueKey: checksumStack.kmsKey,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backend.deaTable.tableName,
@@ -183,8 +184,8 @@ describe('DeaBackend constructs', () => {
       opsDashboard: dashboard,
     });
     const checksumStack = new ObjectChecksumStack(stack, 'ObjectChecksumStack', {
-      kmsKey: key,
       deaTable: backend.deaTable,
+      kmsKey: key,
       opsDashboard: dashboard,
       objectBucket: backend.datasetsBucket,
     });
@@ -200,6 +201,7 @@ describe('DeaBackend constructs', () => {
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey: key,
+      checkSumQueueKey: checksumStack.kmsKey,
       athenaConfig: {
         athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
         athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
@@ -273,8 +275,8 @@ describe('DeaBackend constructs', () => {
       opsDashboard: dashboard,
     });
     const checksumStack = new ObjectChecksumStack(stack, 'ObjectChecksumStack', {
-      kmsKey: key,
       deaTable: backend.deaTable,
+      kmsKey: key,
       opsDashboard: dashboard,
       objectBucket: backend.datasetsBucket,
     });
@@ -290,6 +292,7 @@ describe('DeaBackend constructs', () => {
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
+      checkSumQueueKey: checksumStack.kmsKey,
       athenaConfig: {
         athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
         athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
@@ -387,8 +390,8 @@ describe('DeaBackend constructs', () => {
       opsDashboard: dashboard,
     });
     const checksumStack = new ObjectChecksumStack(stack, 'ObjectChecksumStack', {
-      kmsKey: key,
       deaTable: backend.deaTable,
+      kmsKey: key,
       opsDashboard: dashboard,
       objectBucket: backend.datasetsBucket,
     });
@@ -404,6 +407,7 @@ describe('DeaBackend constructs', () => {
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
+      checkSumQueueKey: checksumStack.kmsKey,
       athenaConfig: {
         athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
         athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,

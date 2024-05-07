@@ -451,18 +451,6 @@ export const convictSchema = {
     format: Number,
     default: 60,
   },
-  // TODO: see if we can remove by instead using AWSDataSyncReadOnlyAccess
-  dataSyncLocationBuckets: {
-    doc: 'Bucket ARN list for any buckets you are using as source locations for Data Vault transfers',
-    format: Array,
-    default: [],
-  },
-  // TODO: see if we can remove by instead using AWSDataSyncReadOnlyAccess
-  dataSyncSourcePermissions: {
-    doc: 'list of datasync source permissions we need for listing source locations',
-    format: Array,
-    default: [],
-  },
   adminRoleArn: {
     doc: 'Optional ARN to grant KMS and Bucket permissions, useful for pipeline testing',
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -550,8 +538,6 @@ interface DEAConfig {
   isOneClick(): boolean;
   sourceIpValidationEnabled(): boolean;
   sourceIpSubnetMaskCIDR(): string;
-  dataSyncLocationBuckets(): string[];
-  dataSyncSourcePermissions(): string[];
   deaRoleTypes(): DEARoleTypeDefinition[];
   retainPolicy(): RemovalPolicy;
   retentionDays(): RetentionDays;
@@ -653,8 +639,6 @@ export const deaConfig: DEAConfig = {
   uploadFilesTimeoutMinutes: () => convictConfig.get('uploadFilesTimeoutMinutes'),
   includeDynamoDataPlaneEventsInTrail: () => convictConfig.get('includeDynamoDataPlaneEventsInTrail'),
   auditDownloadTimeoutMinutes: () => convictConfig.get('auditDownloadTimeoutMinutes'),
-  dataSyncLocationBuckets: () => convictConfig.get('dataSyncLocationBuckets'),
-  dataSyncSourcePermissions: () => convictConfig.get('dataSyncSourcePermissions'),
   adminRoleArn: () => convictConfig.get('adminRoleArn'),
 };
 

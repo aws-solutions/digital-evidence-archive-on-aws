@@ -363,12 +363,6 @@ export function generateQuestions(configName: string): (Question | ListQuestion)
           default: convictSchema.auditDownloadTimeoutMinutes.default,
         });
         break;
-      case 'dataSyncLocationBuckets':
-        // TODO: Skip until we determine whether we can use AWSDataSyncReadOnlyAccess instead
-        break;
-      case 'dataSyncSourcePermissions':
-        // TODO: Skip until we determine whether we can use AWSDataSyncReadOnlyAccess instead
-        break;
       case 'adminRoleArn':
         questions.push({
           type: 'input',

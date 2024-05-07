@@ -10302,6 +10302,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             ],
           },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AWSDataSyncReadOnlyAccess",
+              ],
+            ],
+          },
         ],
       },
       "Type": "AWS::IAM::Role",
@@ -10449,17 +10461,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": "s3:ListBucket",
+              "Action": "ec2:DescribeNetworkInterfaces",
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaBackendStackS3DatasetsBucket408FF954",
-                    "Arn",
-                  ],
-                },
-                "arn:*:s3:::dea-mdi-e2e-test-source-bucket*",
-              ],
+              "Resource": "*",
             },
             Object {
               "Action": Array [
@@ -10893,8 +10897,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "primaryCustomerKey87EC2263",
-                  "Arn",
+                  "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                  "Outputs.DeaMainStackObjectChecksumStackcheckSumQueueKey7C11DDE2Arn",
                 ],
               },
             },
@@ -11125,6 +11129,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             ],
           },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AWSDataSyncReadOnlyAccess",
+              ],
+            ],
+          },
         ],
       },
       "Type": "AWS::IAM::Role",
@@ -11268,6 +11284,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   ],
                 ],
               },
+            },
+            Object {
+              "Action": "ec2:DescribeNetworkInterfaces",
+              "Effect": "Allow",
+              "Resource": "*",
             },
             Object {
               "Action": Array [

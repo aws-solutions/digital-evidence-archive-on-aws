@@ -3339,19 +3339,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Effect": "Allow",
               "Resource": "*",
             },
-            Object {
-              "Action": Array [
-                "kms:Decrypt",
-                "kms:GenerateDataKey",
-              ],
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::GetAtt": Array [
-                  "testKey1CDDDD5E",
-                  "Arn",
-                ],
-              },
-            },
           ],
           "Version": "2012-10-17",
         },
@@ -18822,6 +18809,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             ],
           },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AWSDataSyncReadOnlyAccess",
+              ],
+            ],
+          },
         ],
       },
       "Type": "AWS::IAM::Role",
@@ -18955,17 +18954,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": "s3:ListBucket",
+              "Action": "ec2:DescribeNetworkInterfaces",
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-                    "Arn",
-                  ],
-                },
-                "arn:*:s3:::dea-mdi-e2e-test-source-bucket*",
-              ],
+              "Resource": "*",
             },
             Object {
               "Action": Array [
@@ -19385,8 +19376,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "testKey1CDDDD5E",
-                  "Arn",
+                  "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                  "Outputs.teststackObjectChecksumStackcheckSumQueueKeyB4F5C939Arn",
                 ],
               },
             },
@@ -19603,6 +19594,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             ],
           },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AWSDataSyncReadOnlyAccess",
+              ],
+            ],
+          },
         ],
       },
       "Type": "AWS::IAM::Role",
@@ -19732,6 +19735,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   ],
                 ],
               },
+            },
+            Object {
+              "Action": "ec2:DescribeNetworkInterfaces",
+              "Effect": "Allow",
+              "Resource": "*",
             },
             Object {
               "Action": Array [
