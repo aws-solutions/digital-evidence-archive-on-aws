@@ -221,7 +221,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -344,7 +344,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -467,7 +467,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -590,7 +590,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -713,7 +713,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -836,7 +836,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -959,7 +959,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1082,7 +1082,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1205,7 +1205,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1328,7 +1328,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1451,7 +1451,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1574,7 +1574,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1697,7 +1697,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity.",
+                      ".amazonaws.com https://cognito-identity-fips.",
                       Object {
                         "Ref": "AWS::Region",
                       },
