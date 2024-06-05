@@ -3,8 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { PropertyFilterProps, TabsProps } from '@cloudscape-design/components';
-import { FlashbarProps } from '@cloudscape-design/components';
+import { PropertyFilterProps, TabsProps, FlashbarProps } from '@cloudscape-design/components';
 
 export const i18nStringsForFlashbar: FlashbarProps.I18nStrings = {
   ariaLabel: 'Notifications bar',

@@ -55,7 +55,7 @@ export default function LoginPage() {
             'tokenExpirationTime',
             calculateExpirationDate(response.expiresIn).toString()
           );
-          void router.push('/');
+          router.push('/');
           pushNotification('info', systemUseNotificationText);
         } catch (e) {
           console.log(e);

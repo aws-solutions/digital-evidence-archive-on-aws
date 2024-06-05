@@ -1,3 +1,7 @@
+# Deprecation Warning
+### This solution will be deprecated as of 06/30/2024. Please view our alternative partner solutions [here](https://aws.amazon.com/solutions/justice-public-safety/digital-forensics-evidence-management-systems/)
+---
+
 # Digital Evidence Archive
 
 Digital Evidence Archive on AWS enables Law Enforcement organizations to ingest evidence data to aid digital data management

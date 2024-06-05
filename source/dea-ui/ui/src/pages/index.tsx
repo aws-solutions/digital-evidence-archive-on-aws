@@ -35,7 +35,7 @@ const Home: NextPage = () => {
         !availableEndpoints.data?.includes(MY_CASES_ENDPOINT) &&
         availableEndpoints.data?.includes(ALL_CASES_ENDPOINT)
       ) {
-        void router.push('/all-cases');
+        router.push('/all-cases');
       }
     };
 

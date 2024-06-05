@@ -65,7 +65,7 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
       const challenge = pkceChallenge(128);
       sessionStorage.setItem('pkceVerifier', challenge.code_verifier);
       loginUrl += `&code_challenge=${challenge.code_challenge}&code_challenge_method=S256`;
-      void router.push(loginUrl);
+      router.push(loginUrl);
     } catch (e) {
       console.log(e);
     }
@@ -73,7 +73,7 @@ export function AuthenticationProvider({ children }: { children: React.ReactNode
   const signOut = async (): Promise<void> => {
     const logoutUrl = await signOutProcess();
     setUser(unknownUser);
-    void router.push(logoutUrl);
+    router.push(logoutUrl);
   };
 
   const isLoggedIn = user !== unknownUser;
