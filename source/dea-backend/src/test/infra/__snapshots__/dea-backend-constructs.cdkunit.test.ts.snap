@@ -731,6 +731,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "UpdateReplacePolicy": "Delete",
     },
     "DeaAuditAuditRedrivePolicyC6C6671E": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W13",
+              "reason": "IAM managed policy should not allow * resource",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Description": "A Policy which can be attached to an IAM Role, allowing that role to run the Audit Redrive script.",
         "Path": "/",

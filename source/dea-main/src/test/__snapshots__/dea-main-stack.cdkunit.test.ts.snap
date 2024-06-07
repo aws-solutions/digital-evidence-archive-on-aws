@@ -11756,6 +11756,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "UpdateReplacePolicy": "Delete",
     },
     "DeaAuditAuditRedrivePolicyC6C6671E": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W13",
+              "reason": "IAM managed policy should not allow * resource",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Description": "A Policy which can be attached to an IAM Role, allowing that role to run the Audit Redrive script.",
         "Path": "/",
@@ -13396,6 +13406,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "UpdateReplacePolicy": "Delete",
     },
     "DeaAuthConstructAuthTestGroupRole238CB12C": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -13618,6 +13638,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Policy",
     },
     "DeaAuthConstructCaseWorkerRoleF4B7631E": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -14470,6 +14500,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Policy",
     },
     "DeaAuthConstructCreateCasesTestGroupRoleA44EF3D8": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -15030,6 +15070,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "UpdateReplacePolicy": "Delete",
     },
     "DeaAuthConstructEvidenceManagerRole126B1CAE": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -16032,6 +16082,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Policy",
     },
     "DeaAuthConstructGetCaseTestGroupRoleB93A43C9": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -16224,6 +16284,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Policy",
     },
     "DeaAuthConstructGetMyCasesTestGroupRoleE55F2036": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -16703,6 +16773,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
     },
     "DeaAuthConstructNoPermissionsGroupRoleE403EB55": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -16803,6 +16883,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Policy",
     },
     "DeaAuthConstructWorkingManagerRoleD81849AB": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [

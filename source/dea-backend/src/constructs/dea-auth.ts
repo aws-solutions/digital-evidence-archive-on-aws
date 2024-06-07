@@ -11,6 +11,7 @@ import {
   CfnCondition,
   CfnJson,
   CfnParameter,
+  CfnResource,
   Duration,
   Fn,
   SecretValue,
@@ -711,6 +712,20 @@ export class DeaAuth extends Construct {
   ): void {
     const deaRole = this.createIamRole(`${name}Role`, `Role ${desc}`, endpoints, principal, roleBoundary);
     deaRolesMap.set(name, deaRole);
+
+    // CFN NAG Suppression
+    const cfnRole = deaRole.node.defaultChild;
+    if (cfnRole instanceof CfnResource) {
+      cfnRole.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W28',
+            reason: 'Static name supplied for support role',
+          },
+        ],
+      });
+    }
   }
 
   private getEndpoints(apiEndpointArns: Map<string, string>, paths: string[]): string[] {
