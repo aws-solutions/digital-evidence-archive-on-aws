@@ -11761,7 +11761,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W13",
-              "reason": "IAM managed policy should not allow * resource",
+              "reason": "Wildcard required as target resources are generated and not pre-existing",
             },
           ],
         },
@@ -13411,7 +13411,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W28",
-              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+              "reason": "Static name supplied for support role",
             },
           ],
         },
@@ -13643,7 +13643,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W28",
-              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+              "reason": "Static name supplied for support role",
             },
           ],
         },
@@ -14505,7 +14505,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W28",
-              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+              "reason": "Static name supplied for support role",
             },
           ],
         },
@@ -15075,7 +15075,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W28",
-              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+              "reason": "Static name supplied for support role",
             },
           ],
         },
@@ -16087,7 +16087,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W28",
-              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+              "reason": "Static name supplied for support role",
             },
           ],
         },
@@ -16289,7 +16289,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W28",
-              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+              "reason": "Static name supplied for support role",
             },
           ],
         },
@@ -16778,7 +16778,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W28",
-              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+              "reason": "Static name supplied for support role",
             },
           ],
         },
@@ -16888,7 +16888,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           "rules_to_suppress": Array [
             Object {
               "id": "W28",
-              "reason": "Resource found with an explicit name, this disallows updates that require replacement of this resource",
+              "reason": "Static name supplied for support role",
             },
           ],
         },
