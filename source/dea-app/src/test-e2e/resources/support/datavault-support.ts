@@ -43,7 +43,7 @@ import {
 
 export const dataSyncClient = new DataSyncClient({
   region: testEnv.awsRegion,
-  useFipsEndpoint: testEnv.fipsSupported,
+  useFipsEndpoint: testEnv.awsUseFipsEndpoint,
   customUserAgent: getCustomUserAgent(),
 });
 

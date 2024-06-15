@@ -198,9 +198,9 @@ export class DeaUiConstruct extends NestedStack {
                 `'default-src 'self';` +
                 `img-src 'self' blob: data:;` +
                 `style-src 'unsafe-inline' 'self';` +
-                `connect-src 'self' https://${deaConfig.cognitoDomain()}.${this.authSubdomain()}.${this.cognitoRegion()}.amazoncognito.com https://*.s3.${
+                `connect-src 'self' https://${deaConfig.cognitoDomain()}.auth${this.fipsDomainSuffix()}.${this.cognitoRegion()}.amazoncognito.com https://*.s3${this.fipsDomainSuffix()}.${
                   Aws.REGION
-                }.amazonaws.com https://cognito-identity${this.fipsDomainSuffix()}.${this.cognitoRegion()}.amazonaws.com https://cognito-idp.${this.cognitoRegion()}.amazonaws.com;` +
+                }.amazonaws.com https://cognito-identity${this.fipsDomainSuffix()}.${this.cognitoRegion()}.amazonaws.com https://cognito-idp${this.fipsDomainSuffix()}.${this.cognitoRegion()}.amazonaws.com;` +
                 `script-src 'strict-dynamic' '${this.sriString}';` +
                 `font-src 'self' data:;` +
                 `base-uri 'self';` +
@@ -228,18 +228,10 @@ export class DeaUiConstruct extends NestedStack {
   }
 
   private fipsDomainSuffix() {
-    if (deaConfig.fipsEndpointsEnabled()) {
+    if (deaConfig.fipsEndpointsEnabled() === 'true') {
       return '-fips';
     }
     return '';
-  }
-
-  private authSubdomain() {
-    if (deaConfig.fipsEndpointsEnabled()) {
-      return 'auth-fips';
-    }
-
-    return 'auth';
   }
 
   private getMethodOptions(): MethodOptions {

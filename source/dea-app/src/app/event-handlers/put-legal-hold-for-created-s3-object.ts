@@ -13,7 +13,7 @@ import { Callback, Context, SQSMessageAttributes, SQSRecordAttributes } from 'aw
 import { getCustomUserAgent, getRequiredEnv } from '../../lambda-http-helpers';
 import { logger } from '../../logger';
 
-const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
+const fipsSupported = getRequiredEnv('AWS_USE_FIPS_ENDPOINT', 'false') === 'true';
 
 export interface SQSS3ObjectCreatedDetail {
   eventVersion: string;

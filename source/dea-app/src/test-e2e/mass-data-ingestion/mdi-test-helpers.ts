@@ -38,7 +38,7 @@ import {
 
 export const s3Client = new S3Client({
   region: testEnv.awsRegion,
-  useFipsEndpoint: testEnv.fipsSupported,
+  useFipsEndpoint: testEnv.awsUseFipsEndpoint,
   customUserAgent: getCustomUserAgent(),
 });
 const deaApiUrl = testEnv.apiUrlOutput;

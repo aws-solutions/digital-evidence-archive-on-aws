@@ -60,7 +60,7 @@ describe('the created object legal hold process', () => {
     async () => {
       const athenaClient = new AthenaClient({
         region: testEnv.awsRegion,
-        useFipsEndpoint: testEnv.fipsSupported,
+        useFipsEndpoint: testEnv.awsUseFipsEndpoint,
         customUserAgent: getCustomUserAgent(),
       });
       const s3Client = new S3({ region: testEnv.awsRegion });

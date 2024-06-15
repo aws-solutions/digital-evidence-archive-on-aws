@@ -1010,7 +1010,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -1162,7 +1162,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -1346,7 +1346,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -1514,7 +1514,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -1682,7 +1682,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -1850,7 +1850,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -2018,7 +2018,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -2186,7 +2186,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -2354,7 +2354,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -2522,7 +2522,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -2690,7 +2690,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -2858,7 +2858,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -3026,7 +3026,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -3194,7 +3194,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -3362,7 +3362,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -3530,7 +3530,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -3698,7 +3698,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -3866,7 +3866,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -4034,7 +4034,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -4202,7 +4202,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -4370,7 +4370,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -4538,7 +4538,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -4706,7 +4706,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -4874,7 +4874,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -5042,7 +5042,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -5210,7 +5210,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -5378,7 +5378,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -5546,7 +5546,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -5714,7 +5714,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -5882,7 +5882,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -6034,7 +6034,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -6218,7 +6218,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -6386,7 +6386,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -6554,7 +6554,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -6722,7 +6722,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -6890,7 +6890,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -7058,7 +7058,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -7226,7 +7226,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -7394,7 +7394,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -7562,7 +7562,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -7730,7 +7730,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -7898,7 +7898,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -8066,7 +8066,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -8234,7 +8234,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -8402,7 +8402,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -8570,7 +8570,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -8738,7 +8738,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -8906,7 +8906,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -9074,7 +9074,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -9242,7 +9242,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -21873,7 +21873,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
@@ -22149,7 +22149,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
@@ -22557,7 +22557,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },

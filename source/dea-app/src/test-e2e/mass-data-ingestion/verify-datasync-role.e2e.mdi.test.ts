@@ -33,17 +33,17 @@ describe('verifies least privilege on datasync role', () => {
 
   const dataSyncClient = new DataSyncClient({
     region: testEnv.awsRegion,
-    useFipsEndpoint: testEnv.fipsSupported,
+    useFipsEndpoint: testEnv.awsUseFipsEndpoint,
     customUserAgent: getCustomUserAgent(),
   });
   const s3Client = new S3Client({
     region: testEnv.awsRegion,
-    useFipsEndpoint: testEnv.fipsSupported,
+    useFipsEndpoint: testEnv.awsUseFipsEndpoint,
     customUserAgent: getCustomUserAgent(),
   });
   const stsClient = new STSClient({
     region: testEnv.awsRegion,
-    useFipsEndpoint: testEnv.fipsSupported,
+    useFipsEndpoint: testEnv.awsUseFipsEndpoint,
     customUserAgent: getCustomUserAgent(),
   });
 

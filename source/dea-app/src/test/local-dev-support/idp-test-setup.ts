@@ -14,7 +14,7 @@ const args = minimist(process.argv.slice(2));
 const putTestUserCredsInSSMParamStore = async (username: string, password: string) => {
   const ssmClient = new SSMClient({
     region: testEnv.awsRegion,
-    useFipsEndpoint: testEnv.fipsSupported,
+    useFipsEndpoint: testEnv.awsUseFipsEndpoint,
     customUserAgent: getCustomUserAgent(),
   });
   const idpTestUserSSMPathPrefix = `${PARAM_PREFIX}${testEnv.stage}-test/idp/idp-test-user-`;

@@ -7,7 +7,7 @@ import { DataSyncClient } from '@aws-sdk/client-datasync';
 import { getCustomUserAgent, getRequiredEnv } from '../lambda-http-helpers';
 
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
-const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
+const fipsSupported = getRequiredEnv('AWS_USE_FIPS_ENDPOINT', 'false') === 'true';
 
 export interface DataSyncProvider {
   dataSyncClient: DataSyncClient;

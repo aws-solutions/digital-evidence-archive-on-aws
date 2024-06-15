@@ -10,7 +10,7 @@ import { getCustomUserAgent, getRequiredEnv } from '../../lambda-http-helpers';
 import { DeaSchema } from './dea-schema';
 
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
-const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
+const fipsSupported = getRequiredEnv('AWS_USE_FIPS_ENDPOINT', 'false') === 'true';
 const client = new Dynamo({
   client: new DynamoDBClient({
     region,

@@ -428,8 +428,9 @@ export const convictSchema = {
   },
   fipsEndpointsEnabled: {
     doc: 'Whether to use the FIPS-compliant endpoints',
-    format: 'Boolean',
-    default: true,
+    format: String,
+    default: 'true',
+    env: 'AWS_USE_FIPS_ENDPOINT',
   },
   isMultiRegionTrail: {
     doc: 'Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account',
@@ -548,7 +549,7 @@ interface DEAConfig {
   deletionAllowed(): boolean;
   sameSiteValue(): string;
   preflightOptions(): CorsOptions | undefined;
-  fipsEndpointsEnabled(): boolean;
+  fipsEndpointsEnabled(): string;
   isMultiRegionTrail(): boolean;
   uploadFilesTimeoutMinutes(): number;
   includeDynamoDataPlaneEventsInTrail(): boolean;
@@ -634,7 +635,7 @@ export const deaConfig: DEAConfig = {
     }
     return vpcEndpoint;
   },
-  fipsEndpointsEnabled: () => convictConfig.get('fipsEndpointsEnabled') ?? true,
+  fipsEndpointsEnabled: () => convictConfig.get('fipsEndpointsEnabled') ?? 'true',
   isMultiRegionTrail: () => convictConfig.get('isMultiRegionTrail') ?? true,
   uploadFilesTimeoutMinutes: () => convictConfig.get('uploadFilesTimeoutMinutes'),
   includeDynamoDataPlaneEventsInTrail: () => convictConfig.get('includeDynamoDataPlaneEventsInTrail'),

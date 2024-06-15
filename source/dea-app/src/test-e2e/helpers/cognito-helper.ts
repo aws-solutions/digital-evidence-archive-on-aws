@@ -60,12 +60,12 @@ export default class CognitoHelper {
 
     this.identityPoolClient = new CognitoIdentityClient({
       region: this.cognitoRegion,
-      useFipsEndpoint: testEnv.fipsSupported,
+      useFipsEndpoint: testEnv.awsUseFipsEndpoint,
       customUserAgent: getCustomUserAgent(),
     });
     this.userPoolProvider = new CognitoIdentityProviderClient({
       region: this.cognitoRegion,
-      useFipsEndpoint: testEnv.fipsSupported,
+      useFipsEndpoint: testEnv.awsUseFipsEndpoint,
       customUserAgent: getCustomUserAgent(),
     });
 
@@ -325,7 +325,7 @@ async function loadClientSecret() {
 
   const client = new SecretsManagerClient({
     region: testEnv.awsRegion,
-    useFipsEndpoint: testEnv.fipsSupported,
+    useFipsEndpoint: testEnv.awsUseFipsEndpoint,
     customUserAgent: getCustomUserAgent(),
   });
   const input = {

@@ -90,7 +90,8 @@
     "pkce-challenge": "^3.0.0",
     "ulid": "~2.3.0",
     "uuid": "^9.0.0",
-    "csv-parse": "~5.5.3"
+    "csv-parse": "~5.5.3",
+    "braces": "3.0.3"
   },
   "devDependencies": {
     "@aws-sdk/client-iam": "~3.474.0",

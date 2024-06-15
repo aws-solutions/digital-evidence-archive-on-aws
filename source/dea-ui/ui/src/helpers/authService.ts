@@ -62,7 +62,7 @@ export const refreshCredentials = async () => {
 export const getCredentialsByToken = async (idToken: string, identityPoolId: string, userPoolId: string) => {
   const region = identityPoolId.substring(0, identityPoolId.indexOf(':'));
   const cognitoRegion = region.includes('gov') ? 'us-gov-west-1' : region;
-  const fipsSupported = process.env.NEXT_PUBLIC_FIPS_SUPPORTED === 'true';
+  const fipsSupported = process.env.NEXT_PUBLIC_AWS_USE_FIPS_ENDPOINT === 'true';
   // Set up the Cognito Identity client
   const cognitoIdentityClient = new CognitoIdentityClient({
     region: cognitoRegion,

@@ -353,7 +353,7 @@ describe('API authentication', () => {
     // Check that SSM Parameters are all present, if not skip the test
     const ssmClient = new SSMClient({
       region,
-      useFipsEndpoint: testEnv.fipsSupported,
+      useFipsEndpoint: testEnv.awsUseFipsEndpoint,
       customUserAgent: getCustomUserAgent(),
     });
     const agencyIdpNamePath = `${PARAM_PREFIX}${stage}-agency-idp-name`;

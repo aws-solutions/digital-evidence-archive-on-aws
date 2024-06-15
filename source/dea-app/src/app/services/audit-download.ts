@@ -21,7 +21,7 @@ export async function getAuditDownloadPresignedUrl(
   const keyArn = getRequiredEnv('KEY_ARN');
   const auditDownloadExpirySeconds =
     Number.parseInt(getRequiredEnv('AUDIT_DOWNLOAD_FILES_TIMEOUT_MINUTES', '60')) * 60;
-  const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
+  const fipsSupported = getRequiredEnv('AWS_USE_FIPS_ENDPOINT', 'false') === 'true';
 
   const client = new STSClient({
     region,

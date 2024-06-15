@@ -383,6 +383,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "braces",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "cdk-ssm-document",
       "allowedCategories": [ "production" ]
     },

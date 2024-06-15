@@ -236,6 +236,21 @@ $Env:ADMIN_ROLE_ARN=<'Your DEA AWS Account admin role arn. Example: arn:aws:iam:
 export ADMIN_ROLE_ARN=<'Your DEA AWS Account admin role arn. Example: arn:aws:iam::<aws account number>:role/Admin'>
 ```
 
+#### FIPS
+
+You may see issues here if $AWS_USE_FIPS_ENDPOINT is set incorrectly, such as the login page constantly refreshing. In US GovCloud regions, make sure to set this env variable to true, and set to false in all other regions.
+See more information [here](https://aws.amazon.com/compliance/fips/)
+
+**Windows**
+```sh
+export AWS_USE_FIPS_ENDPOINT=<true if in US or GovCloud regions, false otherwise>
+```
+
+**Linux**
+```sh
+$Env:AWS_USE_FIPS_ENDPOINT=<true if in US GovCloud regions, false otherwise>
+```
+
 Validate your configuration file and address any errors that appear
 
 ```sh
@@ -302,6 +317,7 @@ Use the Following Values:
    <https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse>
   - For US regions:
   <https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse>
+  - Ensure $AWS_USE_FIPS_ENDPOINT env variable is set to true in US or GovCloud regions, or false otherwise (export AWS_USE_FIPS_ENDPOINT=false)
 - Audience URL: urn:amazon:cognito:sp:USER_POOL_ID (replace USER_POOL_ID with the id listed in the named CDK outputs called DeaAuthConstructuserPoolId, should look like us-east-1_xxxxxxxxx)
 - Attribute Statements: Set the following Attributes
   - firstName
@@ -402,6 +418,7 @@ Use the following values in your newly created "Customer managed application".
 - Single sign on URL: replace DOMAIN_PREFIX with the cognito domain you defined in your configuration file, and REGION with the region you are deploying in (e.g. us-east-1)
   - For non-US Cloud regions or regions/stacks not using FIPS endpoints: `https://DOMAIN_PREFIX.auth.REGION.amazoncognito.com/saml2/idpresponse`
   - For US regions: `https://DOMAIN_PREFIX.auth-fips.REGION.amazoncognito.com/saml2/idpresponse`
+  - Ensure $AWS_USE_FIPS_ENDPOINT env variable is set to true in US or GovCloud regions, or false otherwise (export AWS_USE_FIPS_ENDPOINT=false)
 - Audience URL: `urn:amazon:cognito:sp:USER_POOL_ID`
   - Replace USER_POOL_ID with the id listed in the named CDK outputs called DeaAuthConstructuserPoolId, should look like us-east-1_xxxxxxxxx
 - Attribute Statements: Set the following attribute mappings:

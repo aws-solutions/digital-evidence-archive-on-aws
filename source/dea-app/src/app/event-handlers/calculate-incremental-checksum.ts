@@ -13,7 +13,7 @@ import { getObjectChecksumJob, upsertObjectChecksumJob } from '../../persistence
 import { ModelRepositoryProvider, defaultProvider } from '../../persistence/schema/entities';
 import { updateCaseFileChecksum } from '../services/case-file-service';
 
-const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
+const fipsSupported = getRequiredEnv('AWS_USE_FIPS_ENDPOINT', 'false') === 'true';
 
 export interface MultipartChecksumBody {
   caseUlid: string;

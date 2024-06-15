@@ -209,12 +209,12 @@ describe('S3 batch delete case-file lambda', () => {
     const datasetsProvider = {
       s3Client: new S3Client({
         region: testEnv.awsRegion,
-        useFipsEndpoint: testEnv.fipsSupported,
+        useFipsEndpoint: testEnv.awsUseFipsEndpoint,
         customUserAgent: getCustomUserAgent(),
       }),
       s3ControlClient: new S3ControlClient({
         region: testEnv.awsRegion,
-        useFipsEndpoint: testEnv.fipsSupported,
+        useFipsEndpoint: testEnv.awsUseFipsEndpoint,
         customUserAgent: getCustomUserAgent(),
       }),
       bucketName: 'testBucket',

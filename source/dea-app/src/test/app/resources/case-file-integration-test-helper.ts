@@ -42,7 +42,7 @@ export type ResponseCaseFilePage = {
   next: string | undefined;
 };
 
-const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
+const fipsSupported = getRequiredEnv('AWS_USE_FIPS_ENDPOINT', 'false') === 'true';
 
 const TOKEN_ID = 'CaseFile';
 const ID_POOL_ID = 'CaseFileIdentityId';

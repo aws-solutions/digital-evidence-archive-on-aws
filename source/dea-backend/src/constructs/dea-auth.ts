@@ -5,6 +5,7 @@
 
 import * as fs from 'fs';
 import path from 'path';
+import { getRequiredEnv } from '@aws/dea-app/lib/lambda-http-helpers';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
 import {
   Aws,
@@ -642,10 +643,12 @@ export class DeaAuth extends Construct {
       writeAttributes: clientWriteAttributes,
     });
 
+    const fipsSupported = getRequiredEnv('AWS_USE_FIPS_ENDPOINT', 'false') === 'true';
+
     const cognitoDomain =
       deaConfig.partition() === 'aws-us-gov'
         ? `https://${newDomain.domainName}.auth-fips.us-gov-west-1.amazoncognito.com`
-        : newDomain.baseUrl({ fips: deaConfig.fipsEndpointsEnabled() });
+        : newDomain.baseUrl({ fips: fipsSupported });
 
     return [userPool, poolClient, cognitoDomain, poolClient.userPoolClientSecret, agencyIdpName];
   }

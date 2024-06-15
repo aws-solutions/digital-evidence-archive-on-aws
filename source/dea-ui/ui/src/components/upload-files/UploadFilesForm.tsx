@@ -152,7 +152,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
     const initiatedCaseFile = await initiateUpload(activeFileUpload.uploadDto);
-    const fipsSupported = process.env.NEXT_PUBLIC_FIPS_SUPPORTED === 'true';
+    const fipsSupported = process.env.NEXT_PUBLIC_AWS_USE_FIPS_ENDPOINT === 'true';
 
     let federationS3Client = new S3Client({
       credentials: initiatedCaseFile.federationCredentials,

@@ -10,7 +10,7 @@ import { getCustomUserAgent, getRequiredEnv } from '../../lambda-http-helpers';
 import DeaAuditWriter from './dea-audit-writer';
 
 const region = getRequiredEnv('AWS_REGION', 'us-east-1');
-const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
+const fipsSupported = getRequiredEnv('AWS_USE_FIPS_ENDPOINT', 'false') === 'true';
 
 export const defaultCloudwatchClient = new CloudWatchLogsClient({
   region,

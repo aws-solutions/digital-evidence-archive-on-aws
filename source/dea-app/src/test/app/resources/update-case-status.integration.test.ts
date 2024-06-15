@@ -383,12 +383,12 @@ describe('update case status', () => {
     const datasetsProvider = {
       s3Client: new S3Client({
         region: testEnv.awsRegion,
-        useFipsEndpoint: testEnv.fipsSupported,
+        useFipsEndpoint: testEnv.awsUseFipsEndpoint,
         customUserAgent: getCustomUserAgent(),
       }),
       s3ControlClient: new S3ControlClient({
         region: testEnv.awsRegion,
-        useFipsEndpoint: testEnv.fipsSupported,
+        useFipsEndpoint: testEnv.awsUseFipsEndpoint,
         customUserAgent: getCustomUserAgent(),
       }),
       bucketName: 'testBucket',

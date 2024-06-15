@@ -270,14 +270,14 @@ describe('Test case file APIs', () => {
     const s3client = new S3Client({
       region: testEnv.awsRegion,
       credentials: initiatedCaseFile.federationCredentials,
-      useFipsEndpoint: testEnv.fipsSupported,
+      useFipsEndpoint: testEnv.awsUseFipsEndpoint,
       customUserAgent: getCustomUserAgent(),
     });
 
     const tempStsClient = new STSClient({
       region: testEnv.awsRegion,
       credentials: initiatedCaseFile.federationCredentials,
-      useFipsEndpoint: testEnv.fipsSupported,
+      useFipsEndpoint: testEnv.awsUseFipsEndpoint,
       customUserAgent: getCustomUserAgent(),
     });
 
@@ -316,7 +316,7 @@ describe('Test case file APIs', () => {
     // cleanup
     const admins3Client = new S3Client({
       region: testEnv.awsRegion,
-      useFipsEndpoint: testEnv.fipsSupported,
+      useFipsEndpoint: testEnv.awsUseFipsEndpoint,
       customUserAgent: getCustomUserAgent(),
     });
     await admins3Client.send(

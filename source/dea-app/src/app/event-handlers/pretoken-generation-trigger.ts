@@ -22,7 +22,7 @@ import { ValidationError } from '../exceptions/validation-exception';
     identity center and add the groups to the claims on the identity token. Authorization
     will proceed like normal (e.g. the same as Okta and AD), since the claims will be on the token.
 */
-const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
+const fipsSupported = getRequiredEnv('AWS_USE_FIPS_ENDPOINT', 'false') === 'true';
 const identityStoreId = getRequiredEnv('IDENTITY_STORE_ID');
 const identityStoreRegion = getRequiredEnv('IDENTITY_STORE_REGION');
 const identityStoreAccount = getRequiredEnv('IDENTITY_STORE_ACCOUNT');

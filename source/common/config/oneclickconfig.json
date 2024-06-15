@@ -1,7 +1,6 @@
 {
   "deletionAllowed": false,
   "isOneClick": true,
-  "fipsEndpointsEnabled": false,
   "isMultiRegionTrail": false,
   "sourceIpValidation": false,
   "testStack": true,

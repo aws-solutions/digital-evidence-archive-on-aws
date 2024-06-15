@@ -47,7 +47,7 @@ import {
 import { restrictAccountStatement } from './restrict-account-statement';
 
 const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
-const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
+const fipsSupported = getRequiredEnv('AWS_USE_FIPS_ENDPOINT', 'false') === 'true';
 const SQS_BATCH_LIMIT = 10;
 
 export interface DatasetsProvider {

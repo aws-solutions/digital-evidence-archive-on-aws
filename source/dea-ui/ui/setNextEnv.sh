@@ -3,4 +3,4 @@ echo NEXT_PUBLIC_DEA_API_URL=$DEA_API_URL > .env.local
 echo NEXT_PUBLIC_STAGE=${STAGE:-devsample} >> .env.local
 echo NEXT_PUBLIC_IS_USING_CUSTOM_DOMAIN=${DEA_CUSTOM_DOMAIN} >> .env.local
 echo NEXT_PUBLIC_AWS_REGION=${AWS_REGION} >> .env.local
-echo NEXT_PUBLIC_FIPS_SUPPORTED=${FIPS_SUPPORTED:-false} >> .env.local
+echo NEXT_PUBLIC_AWS_USE_FIPS_ENDPOINT=${AWS_USE_FIPS_ENDPOINT:-false} >> .env.local

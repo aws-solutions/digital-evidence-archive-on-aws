@@ -11,7 +11,7 @@ import { logger } from '../logger';
 export const PARAM_PREFIX = '/dea/1/';
 
 const region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1';
-const fipsSupported = getRequiredEnv('FIPS_SUPPORTED', 'false') === 'true';
+const fipsSupported = getRequiredEnv('AWS_USE_FIPS_ENDPOINT', 'false') === 'true';
 
 export interface ParametersProvider {
   getSecretValue(secretName: string): Promise<string>;

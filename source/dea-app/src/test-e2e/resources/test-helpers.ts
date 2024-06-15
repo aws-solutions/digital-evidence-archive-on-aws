@@ -51,7 +51,7 @@ import { testEnv } from '../helpers/settings';
 
 const s3Client = new S3Client({
   region: testEnv.awsRegion,
-  useFipsEndpoint: testEnv.fipsSupported,
+  useFipsEndpoint: testEnv.awsUseFipsEndpoint,
   customUserAgent: getCustomUserAgent(),
 });
 
@@ -482,7 +482,7 @@ export const uploadContentToS3 = async (
   key: string
 ): Promise<void> => {
   const federationS3Client = new S3Client({
-    useFipsEndpoint: testEnv.fipsSupported,
+    useFipsEndpoint: testEnv.awsUseFipsEndpoint,
     customUserAgent: getCustomUserAgent(),
     region: testEnv.awsRegion,
     credentials: federationCredentials,

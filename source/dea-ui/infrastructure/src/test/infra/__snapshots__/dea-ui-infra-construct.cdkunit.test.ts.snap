@@ -213,7 +213,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -221,7 +221,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -336,7 +336,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -344,7 +344,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -459,7 +459,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -467,7 +467,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -582,7 +582,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -590,7 +590,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -705,7 +705,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -713,7 +713,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -828,7 +828,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -836,7 +836,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -951,7 +951,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -959,7 +959,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1074,7 +1074,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1082,7 +1082,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1197,7 +1197,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1205,7 +1205,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1320,7 +1320,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1328,7 +1328,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1443,7 +1443,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1451,7 +1451,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1566,7 +1566,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1574,7 +1574,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1689,7 +1689,7 @@ Object {
                   "Fn::Join": Array [
                     "",
                     Array [
-                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth-fips.",
+                      "'default-src 'self';img-src 'self' blob: data:;style-src 'unsafe-inline' 'self';connect-src 'self' https://[DOMAIN-REMOVED].auth.",
                       Object {
                         "Ref": "AWS::Region",
                       },
@@ -1697,7 +1697,7 @@ Object {
                       Object {
                         "Ref": "AWS::Region",
                       },
-                      ".amazonaws.com https://cognito-identity-fips.",
+                      ".amazonaws.com https://cognito-identity.",
                       Object {
                         "Ref": "AWS::Region",
                       },

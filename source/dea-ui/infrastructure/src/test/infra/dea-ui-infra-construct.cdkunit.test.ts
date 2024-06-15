@@ -30,6 +30,7 @@ describe('DEA UI Infrastructure stack', () => {
   });
 
   it('synthesizes the way we expect', () => {
+    convictConfig.set('fipsEndpointsEnabled', 'false');
     const app = new cdk.App({ context });
     const stack = new Stack(app, 'test-stack');
 
