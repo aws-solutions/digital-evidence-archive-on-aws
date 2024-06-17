@@ -78,9 +78,12 @@ export const deaMainLambdaNagSuppresions = (node: Node): void => {
     node.findChild('BucketNotificationsHandler050a0587b7544547bf325f094a3db834').node.findChild('Resource')
   );
   lambdaSuppresionList.push(node.findChild('s3-object-locker').node.findChild('Resource'));
-  lambdaSuppresionList.push(
-    node.findChild('AWSCDKCfnUtilsProviderCustomResourceProvider').node.findChild('Handler')
-  );
+
+  // This will not exist in non-test deploys
+  const lambdaChild = node.tryFindChild('AWSCDKCfnUtilsProviderCustomResourceProvider');
+  if (lambdaChild) {
+    lambdaSuppresionList.push(lambdaChild.node.findChild('Handler'));
+  }
 
   lambdaSuppresionList.forEach((lambdaToSuppress) => {
     if (lambdaToSuppress instanceof CfnResource) {
