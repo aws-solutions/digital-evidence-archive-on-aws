@@ -707,6 +707,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "ws",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "zod",
       "allowedCategories": [ "production" ]
     }
