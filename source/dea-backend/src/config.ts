@@ -429,7 +429,7 @@ export const convictSchema = {
   fipsEndpointsEnabled: {
     doc: 'Whether to use the FIPS-compliant endpoints',
     format: String,
-    default: 'true',
+    default: 'false',
     env: 'AWS_USE_FIPS_ENDPOINT',
   },
   isMultiRegionTrail: {
