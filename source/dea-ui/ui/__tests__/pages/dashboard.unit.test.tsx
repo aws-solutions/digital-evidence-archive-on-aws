@@ -5,14 +5,14 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { fail } from 'assert';
 import axios from 'axios';
 import { breadcrumbLabels, caseListLabels, commonLabels } from '../../src/common/labels';
-import { i18nStrings } from '../../src/components/common-components/commonDefinitions';
+import { i18nStringsForPropertyFilter } from '../../src/components/common-components/commonDefinitions';
 import Home from '../../src/pages';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 const push = jest.fn();
 
-jest.mock('next/router', () => ({
+jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     query: {},
     push,
@@ -99,8 +99,8 @@ describe('Dashboard', () => {
   });
 
   it('test for table property filter ii8nStrings', () => {
-    expect(i18nStrings).toEqual({
-      filteringAriaLabel: 'your choice',
+    expect(i18nStringsForPropertyFilter).toEqual({
+      filteringAriaLabel: 'Search',
       dismissAriaLabel: 'Dismiss',
       filteringPlaceholder: 'Search',
       groupValuesText: 'Values',
@@ -124,16 +124,19 @@ describe('Dashboard', () => {
       applyActionText: 'Apply',
       allPropertiesLabel: 'All properties',
       tokenLimitShowMore: 'Show more',
+      tokenOperatorAriaLabel: 'Boolean operator',
       tokenLimitShowFewer: 'Show fewer',
       clearFiltersText: 'Clear filters',
+      clearAriaLabel: 'Clear field',
       removeTokenButtonAriaLabel: expect.any(Function),
       enteredTextLabel: expect.any(Function),
     });
   });
 
   it('removeTokenButtonAriaLabel returns the expected string', () => {
-    const result = i18nStrings.removeTokenButtonAriaLabel();
-    expect(result).toEqual('Remove token');
+    const token = { propertyKey: 'name' };
+    const result = i18nStringsForPropertyFilter.removeTokenButtonAriaLabel(token);
+    expect(result).toEqual('Remove token name');
   });
 
   it('can deactivate a case', async () => {

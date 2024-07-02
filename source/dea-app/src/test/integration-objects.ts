@@ -3,8 +3,10 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { AthenaClient } from '@aws-sdk/client-athena';
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import _ from 'lodash';
+import { defaultProviders, LambdaProviders } from '../app/resources/dea-gateway-proxy-handler';
 import {
   AuditEventResult,
   AuditEventSource,
@@ -12,6 +14,12 @@ import {
   CJISAuditEventBody,
   IdentityType,
 } from '../app/services/audit-service';
+import { ModelRepositoryProvider } from '../persistence/schema/entities';
+import { CacheProvider } from '../storage/cache';
+import { DatasetsProvider } from '../storage/datasets';
+import { DataSyncProvider } from '../storage/dataSync';
+import { ParametersProvider } from '../storage/parameters';
+import { DATASETS_PROVIDER } from './app/resources/case-file-integration-test-helper';
 
 const stage = process.env.STAGE ?? 'devsample';
 
@@ -161,4 +169,24 @@ export const setCookieToCookie = (response: APIGatewayProxyResult): string => {
 
 export const setUserArnWithRole = (event: APIGatewayProxyEvent, roleName: string) => {
   event.requestContext.identity.userArn = `arn:aws:sts::123456789012:assumed-role/${stage}-${roleName}Role/CognitoIdentityCredentials`;
+};
+
+export type TestProviderOverrides = {
+  readonly repositoryProvider?: ModelRepositoryProvider;
+  readonly cacheProvider?: CacheProvider;
+  readonly parametersProvider?: ParametersProvider;
+  readonly datasetsProvider?: DatasetsProvider;
+  readonly athenaClient?: AthenaClient;
+  readonly dataSyncProvider?: DataSyncProvider;
+};
+
+export const createTestProvidersObject = (testOverrides: TestProviderOverrides): LambdaProviders => {
+  return {
+    repositoryProvider: testOverrides.repositoryProvider ?? defaultProviders.repositoryProvider,
+    cacheProvider: testOverrides.cacheProvider ?? defaultProviders.cacheProvider,
+    parametersProvider: testOverrides.parametersProvider ?? defaultProviders.parametersProvider,
+    datasetsProvider: testOverrides.datasetsProvider ?? DATASETS_PROVIDER,
+    athenaClient: testOverrides.athenaClient ?? defaultProviders.athenaClient,
+    dataSyncProvider: testOverrides.dataSyncProvider ?? defaultProviders.dataSyncProvider,
+  };
 };

@@ -4,12 +4,22 @@
  */
 import { getOauthToken } from '../../lambda-http-helpers';
 import { revokeRefreshToken } from '../services/auth-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
-export const revokeToken: DEAGatewayProxyHandler = async (event) => {
+export const revokeToken: DEAGatewayProxyHandler = async (
+  event,
+  context,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  providers = defaultProviders
+) => {
   const oauthToken = getOauthToken(event);
-  const revokeTokenResult = await revokeRefreshToken(oauthToken.refresh_token);
+  const revokeTokenResult = await revokeRefreshToken(
+    oauthToken.refresh_token,
+    providers.cacheProvider,
+    providers.parametersProvider
+  );
 
   return responseOk(event, revokeTokenResult);
 };

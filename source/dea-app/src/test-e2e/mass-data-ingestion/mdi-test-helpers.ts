@@ -13,6 +13,7 @@ import {
 import { Credentials } from 'aws4-axios';
 import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { CaseFileDTO, DeaCaseFileResult } from '../../models/case-file';
@@ -35,7 +36,11 @@ import {
   listCaseFilesSuccess,
 } from '../resources/test-helpers';
 
-export const s3Client = new S3Client({ region: testEnv.awsRegion });
+export const s3Client = new S3Client({
+  region: testEnv.awsRegion,
+  useFipsEndpoint: testEnv.awsUseFipsEndpoint,
+  customUserAgent: getCustomUserAgent(),
+});
 const deaApiUrl = testEnv.apiUrlOutput;
 
 export const DATASETS_BUCKET_ARN = `arn:aws:s3:::${testEnv.datasetsBucketName}`;
@@ -163,7 +168,6 @@ export class MdiTestHelper {
     folderName: string,
     expectedNumFiles: number
   ): SourceLocationFile[] {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const files = sourceLocation.files.filter((file) => file.filePath === folderName);
     expect(files.length).toBe(expectedNumFiles);
     return files;
@@ -245,7 +249,6 @@ export function verifyDataVaultFile(
   }
 
   if (cases) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const dvCases = dataVaultFile!.cases!;
     expect(dvCases.length).toBe(cases.length);
     cases.forEach((expectedCase) => {
@@ -293,7 +296,6 @@ export async function verifyDataVaultFileCaseAssociationsUpdated(
   expect(updatedDataVaultFileInfo.cases?.length).toBe(cases.length);
 
   for (const expectedCase of cases) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const actualCase = updatedDataVaultFileInfo.cases!.filter(
       (scopedCase) => scopedCase.ulid === expectedCase.ulid
     );
@@ -315,7 +317,6 @@ export async function downloadCaseFileAndValidateHash(
     deaApiUrl,
     idToken,
     creds,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     caseFile.dataVaultUlid!,
     dataVaultFilePath
   );
@@ -330,7 +331,7 @@ export async function downloadCaseFileAndValidateHash(
     creds,
     caseFile.caseUlid,
     caseFile.ulid,
-    "e2e test needs to download file",
+    'e2e test needs to download file'
   );
   const downloadedContent = await downloadContentFromS3(downloadUrl, caseFile.contentType);
 
@@ -386,7 +387,6 @@ export async function verifyDataVaultFolderAndFileStructure(
   const dvFoldersQueue: string[] = ['/']; // start at the root
   while (dvFoldersQueue.length > 0) {
     // Grab the file path from the queue
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const filePath = foldersVisited == 0 ? `${dvFoldersQueue.shift()!}` : `${dvFoldersQueue.shift()!}/`;
 
     // Get case contents for the queue
@@ -548,7 +548,6 @@ export async function verifyCaseFolderAndFileStructure(
   const caseFoldersQueue: string[] = ['/']; // start at the root
   while (caseFoldersQueue.length > 0) {
     // Grab the file path from the queue
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const filePath = foldersVisited == 0 ? `${caseFoldersQueue.shift()!}` : `${caseFoldersQueue.shift()!}/`;
 
     // Get case contents for the queue

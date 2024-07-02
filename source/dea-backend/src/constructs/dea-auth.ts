@@ -3,16 +3,16 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { assert } from 'console';
 import * as fs from 'fs';
-
 import path from 'path';
+import { getRequiredEnv } from '@aws/dea-app/lib/lambda-http-helpers';
 import { RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
 import {
   Aws,
   CfnCondition,
   CfnJson,
   CfnParameter,
+  CfnResource,
   Duration,
   Fn,
   SecretValue,
@@ -46,7 +46,6 @@ import {
   WebIdentityPrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
-
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import { deaConfig } from '../config';
@@ -236,6 +235,7 @@ export class DeaAuth extends Construct {
 
     const deaRoleTypes = deaConfig.deaRoleTypes();
     deaRoleTypes.forEach((roleType) => {
+      console.log(`Mapping role: ${roleType.name}`);
       const endpointStrings = roleType.endpoints.map((endpoint) => `${endpoint.path}${endpoint.method}`);
       const groupEndpoints = this.getEndpoints(apiEndpointArns, endpointStrings);
       this.createDEARole(
@@ -643,10 +643,12 @@ export class DeaAuth extends Construct {
       writeAttributes: clientWriteAttributes,
     });
 
+    const fipsSupported = getRequiredEnv('AWS_USE_FIPS_ENDPOINT', 'false') === 'true';
+
     const cognitoDomain =
       deaConfig.partition() === 'aws-us-gov'
         ? `https://${newDomain.domainName}.auth-fips.us-gov-west-1.amazoncognito.com`
-        : newDomain.baseUrl({ fips: deaConfig.fipsEndpointsEnabled() });
+        : newDomain.baseUrl({ fips: fipsSupported });
 
     return [userPool, poolClient, cognitoDomain, poolClient.userPoolClientSecret, agencyIdpName];
   }
@@ -713,13 +715,32 @@ export class DeaAuth extends Construct {
   ): void {
     const deaRole = this.createIamRole(`${name}Role`, `Role ${desc}`, endpoints, principal, roleBoundary);
     deaRolesMap.set(name, deaRole);
+
+    // CFN NAG Suppression
+    const cfnRole = deaRole.node.defaultChild;
+    if (cfnRole instanceof CfnResource) {
+      cfnRole.addMetadata('cfn_nag', {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        rules_to_suppress: [
+          {
+            id: 'W28',
+            reason: 'Static name supplied for support role',
+          },
+        ],
+      });
+    }
   }
 
   private getEndpoints(apiEndpointArns: Map<string, string>, paths: string[]): string[] {
     const endpoints = paths
-      .map((path) => apiEndpointArns.get(path))
-      .filter((endpoint): endpoint is string => endpoint !== null);
-    assert(endpoints.length == paths.length);
+      .map((path) => {
+        const arn = apiEndpointArns.get(path);
+        if (!arn) {
+          console.error(`Could not find ARN for ${path}`);
+        }
+        return arn;
+      })
+      .filter((endpoint): endpoint is string => !!endpoint);
     return endpoints;
   }
 

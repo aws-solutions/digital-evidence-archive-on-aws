@@ -11,6 +11,7 @@ import {
   UploadPartCommandInput,
   UploadPartCommandOutput,
 } from '@aws-sdk/client-s3';
+import { getCustomUserAgent } from '@aws/dea-app/lib/lambda-http-helpers';
 import {
   Alert,
   Box,
@@ -27,10 +28,11 @@ import {
   Table,
   Textarea,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { completeUpload, initiateUpload } from '../../api/cases';
-import { commonLabels, commonTableLabels, fileOperationsLabels } from '../../common/labels';
+import { commonLabels, commonTableLabels, fileOperationsLabels, fileUploadLabels } from '../../common/labels';
+import { useNotifications } from '../../context/NotificationsContext';
 import { refreshCredentials } from '../../helpers/authService';
 import { FileWithPath, formatFileSize } from '../../helpers/fileHelper';
 import { InitiateUploadForm } from '../../models/CaseFiles';
@@ -39,7 +41,7 @@ import { UploadFilesProps } from './UploadFilesBody';
 
 const MINUTES_TO_MILLISECONDS = 60 * 1000;
 
-interface FileUploadProgressRow {
+export interface FileUploadProgressRow {
   fileName: string;
   status: UploadStatus;
   fileSizeBytes: number;
@@ -54,7 +56,12 @@ enum UploadStatus {
 
 interface ActiveFileUpload {
   file: FileWithPath;
-  upoadDto: InitiateUploadForm;
+  uploadDto: InitiateUploadForm;
+}
+
+interface UploadStats {
+  success: number;
+  total: number;
 }
 
 export const ONE_MB = 1024 * 1024;
@@ -69,9 +76,23 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   const [uploadInProgress, setUploadInProgress] = useState(false);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
   const router = useRouter();
+  const { pushNotification } = useNotifications();
 
-  async function onSubmitHandler() {
+  async function sendUploadStatusNotification(stats: UploadStats, type: string) {
+    if (uploadInProgress === false) {
+      if (stats.success > 0 && type === 'success') {
+        pushNotification('success', fileUploadLabels.uploadFilesSuccessLabel(stats.success));
+      }
+      const fail = stats.total - stats.success;
+      if (fail > 0 && type === 'fail') {
+        pushNotification('error', fileUploadLabels.uploadFilesFailLabel(fail));
+      }
+    }
+  }
+
+  async function onSubmitHandler(): Promise<UploadStats> {
     // top level try/finally to set uploadInProgress bool state
+    let stat = { success: 0, total: 0 };
     try {
       setUploadInProgress(true);
 
@@ -87,8 +108,20 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
 
       let position = 0;
       while (position < selectedFiles.length) {
-        const itemsForBatch = selectedFiles.slice(position, position + MAX_PARALLEL_UPLOADS);
-        await Promise.all(itemsForBatch.map((item) => uploadFile(item)));
+        const itemsForBatch: FileWithPath[] = selectedFiles.slice(position, position + MAX_PARALLEL_UPLOADS);
+        const stats = (await Promise.all(itemsForBatch.map((item: FileWithPath) => uploadFile(item)))).reduce(
+          (acc, item): UploadStats => {
+            return {
+              success: acc.success + item.success,
+              total: acc.total + item.total,
+            };
+          },
+          { success: 0, total: 0 }
+        );
+        stat = {
+          success: stat.success + stats.success,
+          total: stat.total + stats.total,
+        };
         position += MAX_PARALLEL_UPLOADS;
       }
 
@@ -96,6 +129,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     } finally {
       setUploadInProgress(false);
     }
+    return stat;
   }
 
   async function blobToArrayBuffer(blob: Blob) {
@@ -117,20 +151,25 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
   }
 
   async function uploadFilePartsAndComplete(activeFileUpload: ActiveFileUpload, chunkSizeBytes: number) {
-    const initiatedCaseFile = await initiateUpload(activeFileUpload.upoadDto);
+    const initiatedCaseFile = await initiateUpload(activeFileUpload.uploadDto);
+    const fipsSupported = process.env.NEXT_PUBLIC_AWS_USE_FIPS_ENDPOINT === 'true';
 
     let federationS3Client = new S3Client({
       credentials: initiatedCaseFile.federationCredentials,
       region: initiatedCaseFile.region,
+      useFipsEndpoint: fipsSupported,
+      customUserAgent: getCustomUserAgent(),
     });
 
     const credentialsInterval = setInterval(async () => {
       await refreshCredentials();
       const refreshRequest = await initiateUpload({
-        ...activeFileUpload.upoadDto,
+        ...activeFileUpload.uploadDto,
         uploadId: initiatedCaseFile.uploadId,
       });
       federationS3Client = new S3Client({
+        useFipsEndpoint: fipsSupported,
+        customUserAgent: getCustomUserAgent(),
         credentials: refreshRequest.federationCredentials,
         region: initiatedCaseFile.region,
       });
@@ -182,7 +221,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
     updateFileProgress(activeFileUpload.file, UploadStatus.complete);
   }
 
-  async function uploadFile(selectedFile: FileWithPath) {
+  async function uploadFile(selectedFile: FileWithPath): Promise<UploadStats> {
     const fileSizeBytes = Math.max(selectedFile.size, 1);
     // Trying to use small chunk size (50MB) to reduce memory use.
     // Maximum object size	5 TiB
@@ -194,7 +233,7 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
       const contentType = selectedFile.type ? selectedFile.type : 'text/plain';
       const activeFileUpload = {
         file: selectedFile,
-        upoadDto: {
+        uploadDto: {
           caseUlid: props.caseId,
           fileName: selectedFile.name,
           filePath: selectedFile.relativePath,
@@ -206,9 +245,11 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         },
       };
       await uploadFilePartsAndComplete(activeFileUpload, chunkSizeBytes);
+      return { success: 1, total: 1 };
     } catch (e) {
       updateFileProgress(selectedFile, UploadStatus.failed);
       console.log('Upload failed', e);
+      return { success: 0, total: 1 };
     }
   }
 
@@ -244,7 +285,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         return (
           <Box>
             <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
-              <Icon name="status-negative" variant="error" />
+              <span role="img" aria-label="Error">
+                <Icon name="status-negative" variant="error" />
+              </span>
               <span>{uploadProgress.status}</span>
             </SpaceBetween>
           </Box>
@@ -254,8 +297,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         return (
           <Box>
             <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
-              <Icon name="check" variant="success" />
-              <span> {uploadProgress.status}</span>
+              <span role="img" aria-label="Success">
+                <Icon name="check" variant="success" />
+              </span>
+              <span>{uploadProgress.status}</span>
             </SpaceBetween>
           </Box>
         );
@@ -264,7 +309,9 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         return (
           <Box>
             <SpaceBetween direction="horizontal" size="xs" key={uploadProgress.fileName}>
-              <Icon name="file" />
+              <span role="img" aria-label="File">
+                <Icon name="file" />
+              </span>
               <span>{uploadProgress.status}</span>
             </SpaceBetween>
           </Box>
@@ -297,9 +344,11 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               <Button
                 data-testid="confirm-upload-button"
                 variant="primary"
-                onClick={() => {
-                  void onSubmitHandler();
+                onClick={async () => {
                   setConfirmationVisible(false);
+                  const stats = await onSubmitHandler();
+                  void sendUploadStatusNotification(stats, 'fail');
+                  void sendUploadStatusNotification(stats, 'success');
                 }}
               >
                 Confirm
@@ -326,7 +375,10 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               data-testid="input-details"
               label={fileOperationsLabels.evidenceDetailsLabel}
               description={fileOperationsLabels.evidenceDetailsDescription}
-              errorText={details.length > 1 ? '' : commonLabels.requiredLength}
+              errorText={details.length > 1 ? '' : commonLabels.requiredLength('Description')}
+              i18nStrings={{
+                errorIconAriaLabel: fileUploadLabels.errorIconAriaLabel,
+              }}
             >
               <Textarea
                 value={details}
@@ -339,7 +391,12 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
               data-testid="input-reason"
               label={fileOperationsLabels.uploadReasonLabel}
               description={fileOperationsLabels.uploadReasonDescription}
-              errorText={reason.length > 1 ? '' : commonLabels.requiredLength}
+              errorText={
+                reason.length > 1 ? '' : commonLabels.requiredLength('Reason for uploading evidence')
+              }
+              i18nStrings={{
+                errorIconAriaLabel: fileUploadLabels.errorIconAriaLabel,
+              }}
             >
               <Input
                 value={reason}
@@ -382,6 +439,15 @@ function UploadFilesForm(props: UploadFilesProps): JSX.Element {
         <Table
           items={uploadedFiles}
           variant="embedded"
+          firstIndex={1}
+          totalItemsCount={uploadedFiles.length}
+          renderAriaLive={commonTableLabels.renderAriaLiveLabel}
+          ariaLabels={{
+            tableLabel: fileOperationsLabels.caseFilesLabel,
+            selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
+            allItemsSelectionLabel: commonTableLabels.allItemsSelectionLabel,
+            itemSelectionLabel: commonTableLabels.itemSelectionLabel,
+          }}
           columnDefinitions={[
             {
               id: 'fileName',

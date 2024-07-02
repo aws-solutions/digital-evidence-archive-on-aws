@@ -22,7 +22,9 @@ import {
 import { S3BatchEvent, S3BatchResult, S3BatchResultResultCode } from 'aws-lambda';
 import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
+import { LambdaProviders } from '../../app/resources/dea-gateway-proxy-handler';
 import { getCase } from '../../app/services/case-service';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { DeaCaseInput } from '../../models/case';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { DeaUser } from '../../models/user';
@@ -37,7 +39,7 @@ import {
   callInitiateCaseFileUpload,
   DATASETS_PROVIDER,
 } from '../app/resources/case-file-integration-test-helper';
-import { dummyContext } from '../integration-objects';
+import { createTestProvidersObject, dummyContext } from '../integration-objects';
 import { getTestRepositoryProvider } from '../persistence/local-db-table';
 
 export const CALLBACK_FN = () => {
@@ -49,6 +51,7 @@ const INVOCATION_ID = 'invocation';
 const INVOCATION_SCHEMA = '1.0';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 let caseOwner: DeaUser;
 let s3Mock: AwsStub<S3Input, S3Output, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
@@ -57,6 +60,7 @@ let sqsMock: AwsClientStub<SQSClient>;
 describe('S3 batch delete case-file lambda', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('s3BatchDeleteCaseFileLambda');
+    testProviders = createTestProvidersObject({ repositoryProvider, datasetsProvider: DATASETS_PROVIDER });
 
     caseOwner =
       (await createUser(
@@ -111,14 +115,9 @@ describe('S3 batch delete case-file lambda', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
     const caseId = createdCase.ulid;
 
-    const caseFileUpload = await callInitiateCaseFileUpload(
-      caseOwner.ulid,
-      repositoryProvider,
-      caseId,
-      'file1'
-    );
+    const caseFileUpload = await callInitiateCaseFileUpload(caseOwner.ulid, testProviders, caseId, 'file1');
     const fileId = caseFileUpload.ulid ?? fail();
-    const caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, caseId);
+    const caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, testProviders, fileId, caseId);
 
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, caseFile.versionId ?? null),
@@ -127,7 +126,7 @@ describe('S3 batch delete case-file lambda', () => {
       repositoryProvider,
       DATASETS_PROVIDER
     );
-    const deletedCaseFile = await callGetCaseFileDetails(caseOwner.ulid, repositoryProvider, fileId, caseId);
+    const deletedCaseFile = await callGetCaseFileDetails(caseOwner.ulid, testProviders, fileId, caseId);
     expect(deletedCaseFile.status).toEqual(CaseFileStatus.DELETED);
 
     const expectedResult = `Successfully deleted object: ${caseId}/${fileId}`;
@@ -153,9 +152,9 @@ describe('S3 batch delete case-file lambda', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
     const caseId = createdCase.ulid;
 
-    const caseFile = await callInitiateCaseFileUpload(caseOwner.ulid, repositoryProvider, caseId, 'file1');
+    const caseFile = await callInitiateCaseFileUpload(caseOwner.ulid, testProviders, caseId, 'file1');
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, caseId);
+    await callCompleteCaseFileUpload(caseOwner.ulid, testProviders, fileId, caseId);
 
     const response = await deleteCaseFileHandler(
       getS3BatchDeleteCaseFileEvent(caseId, fileId, null),
@@ -164,12 +163,7 @@ describe('S3 batch delete case-file lambda', () => {
       repositoryProvider,
       DATASETS_PROVIDER
     );
-    const notDeletedCaseFile = await callGetCaseFileDetails(
-      caseOwner.ulid,
-      repositoryProvider,
-      fileId,
-      caseId
-    );
+    const notDeletedCaseFile = await callGetCaseFileDetails(caseOwner.ulid, testProviders, fileId, caseId);
 
     const expectedResult = `Missing Version ID for key: ${caseId}/${fileId}`;
 
@@ -208,13 +202,21 @@ describe('S3 batch delete case-file lambda', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
     const caseId = createdCase.ulid;
 
-    const caseFile = await callInitiateCaseFileUpload(caseOwner.ulid, repositoryProvider, caseId, 'file1');
+    const caseFile = await callInitiateCaseFileUpload(caseOwner.ulid, testProviders, caseId, 'file1');
     const fileId = caseFile.ulid ?? fail();
-    await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, caseId);
+    await callCompleteCaseFileUpload(caseOwner.ulid, testProviders, fileId, caseId);
 
     const datasetsProvider = {
-      s3Client: new S3Client({ region: testEnv.awsRegion }),
-      s3ControlClient: new S3ControlClient({ region: testEnv.awsRegion }),
+      s3Client: new S3Client({
+        region: testEnv.awsRegion,
+        useFipsEndpoint: testEnv.awsUseFipsEndpoint,
+        customUserAgent: getCustomUserAgent(),
+      }),
+      s3ControlClient: new S3ControlClient({
+        region: testEnv.awsRegion,
+        useFipsEndpoint: testEnv.awsUseFipsEndpoint,
+        customUserAgent: getCustomUserAgent(),
+      }),
       bucketName: 'testBucket',
       uploadPresignedCommandExpirySeconds: 3600,
       downloadPresignedCommandExpirySeconds: 900,
@@ -249,14 +251,9 @@ describe('S3 batch delete case-file lambda', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
     const caseId = createdCase.ulid;
 
-    const caseFileUpload = await callInitiateCaseFileUpload(
-      caseOwner.ulid,
-      repositoryProvider,
-      caseId,
-      'file1'
-    );
+    const caseFileUpload = await callInitiateCaseFileUpload(caseOwner.ulid, testProviders, caseId, 'file1');
     const fileId = caseFileUpload.ulid ?? fail();
-    const caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, repositoryProvider, fileId, caseId);
+    const caseFile = await callCompleteCaseFileUpload(caseOwner.ulid, testProviders, fileId, caseId);
 
     s3Mock.rejects('failure time!!');
 
@@ -267,12 +264,7 @@ describe('S3 batch delete case-file lambda', () => {
       repositoryProvider,
       DATASETS_PROVIDER
     );
-    const notDeletedCaseFile = await callGetCaseFileDetails(
-      caseOwner.ulid,
-      repositoryProvider,
-      fileId,
-      caseId
-    );
+    const notDeletedCaseFile = await callGetCaseFileDetails(caseOwner.ulid, testProviders, fileId, caseId);
 
     const expectedResult = `Failed to delete object: ${caseId}/${fileId}`;
 

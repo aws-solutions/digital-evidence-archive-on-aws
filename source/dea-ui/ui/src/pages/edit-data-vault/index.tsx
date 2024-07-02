@@ -5,8 +5,8 @@
 
 import { Box, BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
-import { breadcrumbLabels, commonLabels } from '../../common/labels';
+import { useSearchParams } from 'next/navigation';
+import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import EditDataVaultBody from '../../components/edit-data-vault/EditDataVaultBody';
@@ -17,11 +17,14 @@ export interface EditDataVaultPageProps {
 }
 
 const EditDataVaultPage: NextPage = () => {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const dataVaultId = searchParams.get('dataVaultId');
+  const dataVaultName = searchParams.get('dataVaultName');
   const { settings } = useSettings();
-  const { dataVaultId, dataVaultName } = router.query;
 
   const baseUrl = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
+
+  const pageName = navigationLabels.editDataVaultLabel;
 
   if (
     !dataVaultId ||
@@ -48,7 +51,7 @@ const EditDataVaultPage: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-vaults" pageName={pageName}>
       <Box margin={{ bottom: 'l' }}>
         <EditDataVaultBody dataVaultId={dataVaultId} />
       </Box>

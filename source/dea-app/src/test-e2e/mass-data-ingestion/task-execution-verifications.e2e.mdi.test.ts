@@ -256,7 +256,6 @@ describe('verifies StartDataVaultTaskExecutions input checks', () => {
             throw new Error('Expected to fail creating Data Sync Task, but it succeeded');
           }
 
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           mdiTestHelper.tasksToCleanUp.push(response.TaskArn!);
           return response;
         } catch (e) {
@@ -280,7 +279,6 @@ describe('verifies StartDataVaultTaskExecutions input checks', () => {
     if (!task) {
       throw new Error('Invalid task input');
     }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const taskArn = task.TaskArn!;
     const taskId = taskArn.split('/')[1];
 

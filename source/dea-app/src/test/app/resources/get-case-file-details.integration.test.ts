@@ -14,11 +14,12 @@ import {
   ServiceOutputTypes as STSOutputs,
 } from '@aws-sdk/client-sts';
 import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getCaseFileDetails } from '../../../app/resources/get-case-file-details';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { DeaUser } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
   callCompleteCaseFileUpload,
@@ -30,6 +31,7 @@ import {
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 let s3Mock: AwsStub<ServiceInputTypes, ServiceOutputTypes, S3ClientResolvedConfig>;
 let stsMock: AwsStub<STSInputs, STSOutputs, STSClientResolvedConfig>;
 let sqsMock: AwsClientStub<SQSClient>;
@@ -45,10 +47,11 @@ jest.setTimeout(20000);
 describe('Test get case file details', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('GetCaseFileDetailsTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
 
-    fileDescriber = await callCreateUser(repositoryProvider);
+    fileDescriber = await callCreateUser(testProviders);
 
-    caseToDescribe = (await callCreateCase(fileDescriber, repositoryProvider)).ulid ?? fail();
+    caseToDescribe = (await callCreateCase(fileDescriber, testProviders)).ulid ?? fail();
 
     stsMock = mockClient(STSClient);
     stsMock.resolves({
@@ -79,17 +82,12 @@ describe('Test get case file details', () => {
   it('Get-file-details should successfully get file details', async () => {
     const caseFileUpload = await callInitiateCaseFileUpload(
       fileDescriber.ulid,
-      repositoryProvider,
+      testProviders,
       caseToDescribe
     );
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const fileId = caseFileUpload.ulid as string;
-    let caseFile = await callGetCaseFileDetails(
-      fileDescriber.ulid,
-      repositoryProvider,
-      fileId,
-      caseToDescribe
-    );
+    let caseFile = await callGetCaseFileDetails(fileDescriber.ulid, testProviders, fileId, caseToDescribe);
     await validateCaseFile(
       caseFile,
       fileId,
@@ -98,8 +96,8 @@ describe('Test get case file details', () => {
       CaseFileStatus.PENDING
     );
 
-    await callCompleteCaseFileUpload(fileDescriber.ulid, repositoryProvider, fileId, caseToDescribe);
-    caseFile = await callGetCaseFileDetails(fileDescriber.ulid, repositoryProvider, fileId, caseToDescribe);
+    await callCompleteCaseFileUpload(fileDescriber.ulid, testProviders, fileId, caseToDescribe);
+    caseFile = await callGetCaseFileDetails(fileDescriber.ulid, testProviders, fileId, caseToDescribe);
     await validateCaseFile(
       caseFile,
       fileId,
@@ -118,7 +116,7 @@ describe('Test get case file details', () => {
         fileId: FILE_ULID,
       },
     });
-    await expect(getCaseFileDetails(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(getCaseFileDetails(event, dummyContext, testProviders)).rejects.toThrow(
       `Required path param 'caseId' is missing.`
     );
   });
@@ -132,14 +130,14 @@ describe('Test get case file details', () => {
         caseId: FILE_ULID,
       },
     });
-    await expect(getCaseFileDetails(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(getCaseFileDetails(event, dummyContext, testProviders)).rejects.toThrow(
       `Required path param 'fileId' is missing.`
     );
   });
 
   it("Get-file-details should throw an exception when case-file doesn't exist", async () => {
     await expect(
-      callGetCaseFileDetails(fileDescriber.ulid, repositoryProvider, FILE_ULID, caseToDescribe)
+      callGetCaseFileDetails(fileDescriber.ulid, testProviders, FILE_ULID, caseToDescribe)
     ).rejects.toThrow(`Could not find file: ${FILE_ULID} in the DB`);
   });
 });

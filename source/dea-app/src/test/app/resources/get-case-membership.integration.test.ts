@@ -5,6 +5,7 @@
 
 import { fail } from 'assert';
 import { NotFoundError } from '../../../app/exceptions/not-found-exception';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getCaseMembership } from '../../../app/resources/get-case-membership';
 import { createCases } from '../../../app/services/case-service';
 import { createCaseUserMembership } from '../../../app/services/case-user-service';
@@ -15,10 +16,11 @@ import { CaseUser } from '../../../models/case-user';
 import { DeaUser, DeaUserInput } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 let caseOwner: DeaUser;
 
 type ResponseCaseUserPage = {
@@ -29,6 +31,7 @@ type ResponseCaseUserPage = {
 describe('getCaseMembership', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('getCaseMembershipTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
 
     caseOwner =
       (await createUser(
@@ -106,7 +109,7 @@ describe('getCaseMembership', () => {
     });
 
     // THEN all users with membership on a case are returned.
-    const response = await getCaseMembership(event, dummyContext, repositoryProvider);
+    const response = await getCaseMembership(event, dummyContext, testProviders);
     const caseUsers: CaseUser[] = JSON.parse(response.body).caseUsers;
 
     // caseowner
@@ -180,7 +183,7 @@ describe('getCaseMembership', () => {
       },
     });
 
-    const response = await getCaseMembership(event, dummyContext, repositoryProvider);
+    const response = await getCaseMembership(event, dummyContext, testProviders);
 
     // THEN only the page size of membership on a case are returned.
     if (!response.body) {
@@ -200,7 +203,7 @@ describe('getCaseMembership', () => {
       },
     });
 
-    const response2 = await getCaseMembership(event2, dummyContext, repositoryProvider);
+    const response2 = await getCaseMembership(event2, dummyContext, testProviders);
     if (!response2.body) {
       fail();
     }
@@ -225,6 +228,6 @@ describe('getCaseMembership', () => {
     });
 
     // Then throw NotFoundError
-    await expect(getCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(NotFoundError);
+    await expect(getCaseMembership(event, dummyContext, testProviders)).rejects.toThrow(NotFoundError);
   });
 });

@@ -4,20 +4,23 @@
  */
 
 import Joi from 'joi';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getDataSyncTasks } from '../../../app/resources/get-data-sync-tasks';
 import { retry } from '../../../app/services/service-helpers';
 import { DeaDataSyncTask } from '../../../models/data-sync-task';
 import { dataSyncTaskSchema } from '../../../models/validation/data-vault';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import { callGetDataSyncTasks } from './data-sync-tasks-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 
 describe('get data sync tasks', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('dataSyncListTasksTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
   });
 
   afterAll(async () => {
@@ -26,7 +29,7 @@ describe('get data sync tasks', () => {
 
   it('should return a list of data sync tasks', async () => {
     const response = await retry(async () => {
-      const response = await getDataSyncTasks(getDummyEvent(), dummyContext, repositoryProvider);
+      const response = await getDataSyncTasks(getDummyEvent(), dummyContext, testProviders);
       return response;
     });
     if (!response) {

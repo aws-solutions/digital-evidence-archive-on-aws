@@ -99,4 +99,4 @@ export const downloadFileRequestBodySchema = Joi.object({
   caseUlid: joiUlid,
   ulid: joiUlid,
   downloadReason: safeReason,
-})
+});

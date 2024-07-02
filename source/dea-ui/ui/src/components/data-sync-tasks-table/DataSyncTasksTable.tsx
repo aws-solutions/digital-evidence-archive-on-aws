@@ -22,7 +22,7 @@ import {
   Table,
   TextContent,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { createDataVaultExecution } from '../../api/data-vaults';
@@ -33,13 +33,14 @@ import {
   paginationLabels,
   dataSyncTasksStatusLabels,
   commonLabels,
+  accessibilityLabels,
 } from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString, formatDateTimeFromISOString } from '../../helpers/dateHelper';
 import { DeaDataSyncTaskDTO, TaskStatus } from '../../models/DataSyncTask';
 import ActionContainer from '../common-components/ActionContainer';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
-import { i18nStrings } from '../common-components/commonDefinitions';
+import { i18nStringsForPropertyFilter } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
 import { filteringOptions, filteringProperties, searchableColumns } from './dataSyncTaskListDefinitions';
 
@@ -52,7 +53,7 @@ export interface DataVaultsTableProps {
   useDataSyncTasksFectcher: DataSyncTaskFetcherSignature;
   detailPage: string;
   headerLabel: string;
-  headerDescription: string;
+  headerDescription: string | JSX.Element;
 }
 
 function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
@@ -65,7 +66,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
   const [IsSubmitLoading, setIsSubmitLoading] = useState(false);
   const { pushNotification } = useNotifications();
 
-  function fecthDataSyncTasks(
+  function fetchDataSyncTasks(
     dataSyncTasks: DeaDataSyncTask[],
     dataSyncTasksLoading: boolean,
     dataVaults: DeaDataVault[],
@@ -81,7 +82,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
   }
 
   const { data, isLoading } = useMemo(
-    () => fecthDataSyncTasks(dataSyncTasks, dataSyncTasksLoading, dataVaults, dataVaultsLoading),
+    () => fetchDataSyncTasks(dataSyncTasks, dataSyncTasksLoading, dataVaults, dataVaultsLoading),
     [dataSyncTasks, dataSyncTasksLoading, dataVaults, dataVaultsLoading]
   );
   // Property and date filter collections
@@ -283,10 +284,12 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
         {props.headerDescription}{' '}
         <Link
           external
+          ariaLabel={accessibilityLabels.implementationGuideLinkLabel}
           href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
         >
           {commonTableLabels.implementationGuideLabel}
         </Link>
+        .
       </>
     );
   }
@@ -299,9 +302,15 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
       selectedItems={selectedTasks}
       selectionType="single"
       isItemDisabled={(item) => !item.dataVaultName}
-      trackBy="taskId"
+      trackBy={(item) => item.taskId}
       loading={isLoading}
       variant="full-page"
+      ariaLabels={{
+        tableLabel: dataSyncTaskListLabels.dataSyncTasksLabel,
+        selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
+        allItemsSelectionLabel: commonTableLabels.allItemsSelectionLabel,
+        itemSelectionLabel: commonTableLabels.itemSelectionLabel,
+      }}
       items={items}
       loadingText={dataSyncTaskListLabels.loading}
       resizableColumns={true}
@@ -396,7 +405,7 @@ function DataSyncTasksTable(props: DataVaultsTableProps): JSX.Element {
           <PropertyFilter
             {...propertyFilterProps}
             countText={getFilterCounterText(filteredItemsCount)}
-            i18nStrings={i18nStrings}
+            i18nStrings={i18nStringsForPropertyFilter}
             filteringOptions={filteringOptions}
             expandToViewport={true}
           />

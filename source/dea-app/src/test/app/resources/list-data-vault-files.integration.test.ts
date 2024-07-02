@@ -3,6 +3,7 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { listDataVaultFiles } from '../../../app/resources/list-data-vault-files';
 import { DeaDataVaultInput } from '../../../models/data-vault';
 import { DeaDataVaultFile } from '../../../models/data-vault-file';
@@ -11,7 +12,7 @@ import { createDataVault } from '../../../persistence/data-vault';
 import { createDataVaultFile } from '../../../persistence/data-vault-file';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import { dataVaultFileGenerate } from './data-vault-integration-test-helper';
 
@@ -19,9 +20,12 @@ let user: DeaUser;
 
 describe('data vault file persistence', () => {
   let repositoryProvider: ModelRepositoryProvider;
+  let testProviders: LambdaProviders;
 
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('dataVaultFileTestsTable');
+    testProviders = createTestProvidersObject({ repositoryProvider });
+
     // create user
     user =
       (await createUser(
@@ -68,7 +72,7 @@ describe('data vault file persistence', () => {
         },
       }),
       dummyContext,
-      repositoryProvider
+      testProviders
     );
     const dataVaultFiles1: DeaDataVaultFile[] = JSON.parse(response1.body).files;
     expect(dataVaultFiles1.length).toEqual(filesList1Count);
@@ -83,7 +87,7 @@ describe('data vault file persistence', () => {
         },
       }),
       dummyContext,
-      repositoryProvider
+      testProviders
     );
     const dataVaultFiles2: DeaDataVaultFile[] = JSON.parse(response2.body).files;
     expect(dataVaultFiles2.length).toEqual(filesList2Count);
@@ -98,7 +102,7 @@ describe('data vault file persistence', () => {
         },
       }),
       dummyContext,
-      repositoryProvider
+      testProviders
     );
     const dataVaultFilesRoot: DeaDataVaultFile[] = JSON.parse(response3.body).files;
     expect(dataVaultFilesRoot.length).toEqual(0);
@@ -117,13 +121,13 @@ describe('data vault file persistence', () => {
           },
         }),
         dummyContext,
-        repositoryProvider
+        testProviders
       )
     ).rejects.toThrow(`DataVault not found.`);
   }, 40000);
 
   it('should fail for a missing data vault id', async () => {
-    await expect(listDataVaultFiles(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(listDataVaultFiles(getDummyEvent(), dummyContext, testProviders)).rejects.toThrow(
       "Required path param 'dataVaultId' is missing."
     );
   }, 40000);

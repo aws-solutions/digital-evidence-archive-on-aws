@@ -18,6 +18,7 @@ import {
 } from '@aws-sdk/client-datasync';
 import { CreateBucketCommand, DeleteBucketCommand, S3Client } from '@aws-sdk/client-s3';
 import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { testEnv } from '../helpers/settings';
 import {
   cleanupDataSyncTestResources,
@@ -30,9 +31,21 @@ describe('verifies least privilege on datasync role', () => {
   const sourceBucketName = `dea-mdi-test-source${randSuffix}`;
   const destinationBucketName = `dea-mdi-test-dest${randSuffix}`;
 
-  const dataSyncClient = new DataSyncClient({ region: testEnv.awsRegion });
-  const s3Client = new S3Client({ region: testEnv.awsRegion });
-  const stsClient = new STSClient({ region: testEnv.awsRegion });
+  const dataSyncClient = new DataSyncClient({
+    region: testEnv.awsRegion,
+    useFipsEndpoint: testEnv.awsUseFipsEndpoint,
+    customUserAgent: getCustomUserAgent(),
+  });
+  const s3Client = new S3Client({
+    region: testEnv.awsRegion,
+    useFipsEndpoint: testEnv.awsUseFipsEndpoint,
+    customUserAgent: getCustomUserAgent(),
+  });
+  const stsClient = new STSClient({
+    region: testEnv.awsRegion,
+    useFipsEndpoint: testEnv.awsUseFipsEndpoint,
+    customUserAgent: getCustomUserAgent(),
+  });
 
   beforeAll(async () => {
     // Create the S3 Buckets
@@ -125,18 +138,14 @@ describe('verifies least privilege on datasync role', () => {
       })
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const execArn = execution.TaskExecutionArn!;
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const taskResult = await waitForTaskExecutionCompletions([execArn]);
     expect(taskResult.size).toBe(1);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const result = taskResult.get(execArn)!;
     expect(result).toBe(TaskExecutionStatus.ERROR);
 
     // Cleanup
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await cleanupDataSyncTestResources([task.TaskArn!], [source.LocationArn!, dest.LocationArn!]);
   }, 3000000);
 });

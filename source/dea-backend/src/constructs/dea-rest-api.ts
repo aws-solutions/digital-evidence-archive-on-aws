@@ -5,7 +5,7 @@
 
 import path from 'path';
 import { AuditEventType } from '@aws/dea-app/lib/app/services/audit-service';
-import * as ServiceConstants from '@aws/dea-app/lib/app/services/service-constants';
+import { PARAM_PREFIX } from '@aws/dea-app/lib/storage/parameters';
 import { restrictAccountStatementStatementProps } from '@aws/dea-app/lib/storage/restrict-account-statement';
 import { Aws, Duration, Fn, NestedStack } from 'aws-cdk-lib';
 import {
@@ -75,6 +75,7 @@ interface DeaRestApiProps {
   deaAuditLogArn: string;
   deaTrailLogArn: string;
   kmsKey: Key;
+  checkSumQueueKey: Key;
   lambdaEnv: LambdaEnvironment;
   opsDashboard?: DeaOperationalDashboard;
   athenaConfig: AthenaConfig;
@@ -133,7 +134,7 @@ export class DeaRestApiConstruct extends Construct {
     this.roleMap.set(DeaApiRoleName.INITIATE_UPLOAD_ROLE, initiateUploadRole);
 
     const completeUploadRole = this.createCompleteUploadRole(
-      props.kmsKey.keyArn,
+      props.checkSumQueueKey.keyArn,
       props.deaDatasetsBucket.bucketArn,
       props.deaTableArn,
       props.checksumQueue
@@ -241,7 +242,7 @@ export class DeaRestApiConstruct extends Construct {
             metricsEnabled: true,
           },
           // /availableEndpoints reads data from the Parameter Store.
-          // Default throughput: 40 (Shared by the following API actions: GetParameter, GetParameters, GetParametersByPath)
+          // Default throughput: 40 (Shared by the following API actions: GetParameters)
           // 30TPS is the safe value to avoid getting 502's Http errors for this endpoint.
           '/availableEndpoints/GET': {
             throttlingBurstLimit: 30,
@@ -511,9 +512,9 @@ export class DeaRestApiConstruct extends Construct {
     lambdaEnv: LambdaEnvironment
   ): NodejsFunction {
     const lambda = new NodejsFunction(this, id, {
-      // Set to 2048MB to mitigate memory allocation issues. Some executions were using more than 512MB.
+      // Set to 3000MB to mitigate memory allocation issues. Some executions were using more than 512MB.
       // E.g: Error: Runtime exited with error: signal: killed Runtime.ExitError.
-      memorySize: 2048,
+      memorySize: 3000,
       role: role,
       timeout: Duration.seconds(20),
       runtime: Runtime.NODEJS_18_X,
@@ -661,25 +662,11 @@ export class DeaRestApiConstruct extends Construct {
       })
     );
 
-    // If it is a test stack, include the source buckets created for MDI E2E tests
-    const listBucketResources = deaConfig.isTestStack()
-      ? [
-          ...deaConfig.dataSyncLocationBuckets(),
-          datasetsBucketArn,
-          'arn:*:s3:::dea-mdi-e2e-test-source-bucket*',
-        ]
-      : [...deaConfig.dataSyncLocationBuckets(), datasetsBucketArn];
+    role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSDataSyncReadOnlyAccess'));
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['s3:ListBucket'],
-        resources: listBucketResources,
-      })
-    );
-
-    role.addToPolicy(
-      new PolicyStatement({
-        actions: ['logs:StartQuery'],
-        resources: [auditLogArn, trailLogArn],
+        actions: ['ec2:DescribeNetworkInterfaces'],
+        resources: ['*'],
       })
     );
 
@@ -703,7 +690,7 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
         resources: [kmsKeyArn],
       })
     );
@@ -712,7 +699,7 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
         resources: [
-          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${PARAM_PREFIX}${STAGE}*`,
         ],
       })
     );
@@ -738,17 +725,8 @@ export class DeaRestApiConstruct extends Construct {
     // Athena Query permissions
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['athena:GetQueryResults', 'athena:GetQueryExecution', 'athena:StartQueryExecution'],
+        actions: ['athena:GetQueryExecution', 'athena:StartQueryExecution'],
         resources: ['*'],
-      })
-    );
-
-    role.addToPolicy(
-      new PolicyStatement({
-        actions: ['athena:GetWorkgroup'],
-        resources: [
-          `arn:${Aws.PARTITION}:athena:${Aws.REGION}:${Aws.ACCOUNT_ID}:workgroup/${athenaConfig.athenaWorkGroupName}`,
-        ],
       })
     );
 
@@ -868,9 +846,9 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
         resources: [
-          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${
-            ServiceConstants.PARAM_PREFIX
-          }${deaConfig.stage()}*`,
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${
+            Aws.ACCOUNT_ID
+          }:parameter${PARAM_PREFIX}${deaConfig.stage()}*`,
         ],
       })
     );
@@ -927,9 +905,9 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
         resources: [
-          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${
-            ServiceConstants.PARAM_PREFIX
-          }${deaConfig.stage()}*`,
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${
+            Aws.ACCOUNT_ID
+          }:parameter${PARAM_PREFIX}${deaConfig.stage()}*`,
         ],
       })
     );
@@ -973,7 +951,7 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['ssm:GetParameters', 'ssm:GetParameter'],
         resources: [
-          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${PARAM_PREFIX}${STAGE}*`,
         ],
       })
     );
@@ -982,7 +960,7 @@ export class DeaRestApiConstruct extends Construct {
       new PolicyStatement({
         actions: ['secretsmanager:GetSecretValue'],
         resources: [
-          `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:${ServiceConstants.PARAM_PREFIX}${STAGE}/clientSecret-*`,
+          `arn:${Aws.PARTITION}:secretsmanager:${Aws.REGION}:${Aws.ACCOUNT_ID}:secret:${PARAM_PREFIX}${STAGE}/clientSecret-*`,
         ],
       })
     );
@@ -1035,23 +1013,20 @@ export class DeaRestApiConstruct extends Construct {
 
     role.addToPolicy(
       new PolicyStatement({
-        actions: ['ssm:GetParameters'],
+        actions: ['ssm:GetParameters', 'ssm:GetParameter'],
         resources: [
-          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${ServiceConstants.PARAM_PREFIX}${STAGE}*`,
+          `arn:${Aws.PARTITION}:ssm:${Aws.REGION}:${Aws.ACCOUNT_ID}:parameter${PARAM_PREFIX}${STAGE}*`,
         ],
       })
     );
 
-    // add list of optional external source type policies for execution to work
-    const listBucketResources = [...deaConfig.dataSyncSourcePermissions()];
-    if (listBucketResources.length > 0) {
-      role.addToPolicy(
-        new PolicyStatement({
-          actions: listBucketResources,
-          resources: ['*'],
-        })
-      );
-    }
+    role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSDataSyncReadOnlyAccess'));
+    role.addToPolicy(
+      new PolicyStatement({
+        actions: ['ec2:DescribeNetworkInterfaces'],
+        resources: ['*'],
+      })
+    );
 
     role.addToPolicy(new PolicyStatement(restrictAccountStatementStatementProps));
 

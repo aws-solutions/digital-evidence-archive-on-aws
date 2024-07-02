@@ -1,0 +1,48 @@
+swagger: '2.0'
+info:
+  version: 1.1.1
+  title: DEA Data Sync API
+paths:
+  # root resource path entity must match the file name or the documentation will not get attached to the right API Gateweay resource
+  # (e.g. openapi-auth.yml must only contain '/auth' and all child APIs)
+  /datasync/tasks:
+    get:
+      summary: Get datasync tasks on AWS account
+      description: returns list of datasync tasks
+      responses:
+        200:
+          description: Success Response
+          schema:
+            type: object
+            properties:
+              DataSyncTasks:
+                type: array
+                items:
+                  $ref: '#/definitions/DataSyncTasks'
+              next:
+                type: string
+
+definitions:
+  DataSyncTask:
+    type: object
+    properties:
+      taskArn:
+        type: string
+      taskId:
+        type: string
+      sourceLocationArn:
+        type: string
+      destinationLocationArn:
+        type: string
+      dataVaultUlid:
+        type: string
+      status:
+        type: string
+      created:
+        type: string
+      lastExecutionCompleted:
+        type: string
+  DataSyncTasks:
+    type: array
+    items:
+      $ref: '#/definitions/DataSyncTask'

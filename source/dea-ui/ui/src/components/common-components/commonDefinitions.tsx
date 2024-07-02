@@ -3,10 +3,18 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { PropertyFilterProps } from '@cloudscape-design/components';
+import { PropertyFilterProps, TabsProps, FlashbarProps } from '@cloudscape-design/components';
 
-export const i18nStrings: PropertyFilterProps.I18nStrings = {
-  filteringAriaLabel: 'your choice',
+export const i18nStringsForFlashbar: FlashbarProps.I18nStrings = {
+  ariaLabel: 'Notifications bar',
+  errorIconAriaLabel: 'Error',
+  infoIconAriaLabel: 'Info',
+  successIconAriaLabel: 'Success',
+  warningIconAriaLabel: 'Warning',
+};
+
+export const i18nStringsForPropertyFilter: PropertyFilterProps.I18nStrings = {
+  filteringAriaLabel: 'Search',
   dismissAriaLabel: 'Dismiss',
   filteringPlaceholder: 'Search',
   groupValuesText: 'Values',
@@ -22,6 +30,7 @@ export const i18nStrings: PropertyFilterProps.I18nStrings = {
   operatorDoesNotContainText: 'Does not contain',
   operatorEqualsText: 'Equals',
   operatorDoesNotEqualText: 'Does not equal',
+  tokenOperatorAriaLabel: 'Boolean operator',
   editTokenHeader: 'Edit filter',
   propertyText: 'Property',
   operatorText: 'Operator',
@@ -32,6 +41,12 @@ export const i18nStrings: PropertyFilterProps.I18nStrings = {
   tokenLimitShowMore: 'Show more',
   tokenLimitShowFewer: 'Show fewer',
   clearFiltersText: 'Clear filters',
-  removeTokenButtonAriaLabel: () => 'Remove token',
+  clearAriaLabel: 'Clear field',
+  removeTokenButtonAriaLabel: (token: PropertyFilterProps.Token) => `Remove token ${token.propertyKey}`,
   enteredTextLabel: (text: string) => `Use: "${text}"`,
+};
+
+export const i18nStringForTabs: TabsProps.I18nStrings = {
+  scrollLeftAriaLabel: 'Previous tabs',
+  scrollRightAriaLabel: 'Next tabs',
 };

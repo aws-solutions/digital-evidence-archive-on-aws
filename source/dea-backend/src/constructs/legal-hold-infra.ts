@@ -6,6 +6,7 @@
 import path from 'path';
 import { Duration } from 'aws-cdk-lib';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { Key } from 'aws-cdk-lib/aws-kms';
 import { Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -13,6 +14,7 @@ import { Bucket, EventType, NotificationKeyFilter } from 'aws-cdk-lib/aws-s3';
 import { SqsDestination } from 'aws-cdk-lib/aws-s3-notifications';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
+import { deaConfig } from '../config';
 import { createCfnOutput } from './construct-support';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
@@ -46,8 +48,25 @@ export function addLegalHoldInfrastructure(
 
   opsDashboard?.addAuditLambdaErrorAlarm(objectLockHandler, 'ObjectLockLambda');
 
+  const objectLockQueueKey = new Key(scope, 'objectLockQueueKey', {
+    enableKeyRotation: true,
+    removalPolicy: deaConfig.retainPolicy(),
+    pendingWindow: Duration.days(7),
+  });
+  objectLockQueueKey.grantDecrypt(objectLockHandler);
+  if (objectLockHandler.role) {
+    objectLockQueueKey.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        principals: [objectLockHandler.role],
+        resources: ['*'],
+      })
+    );
+  }
+
   const objectLockDLQ = new Queue(scope, 's3-object-lock-dlq', {
     enforceSSL: true,
+    encryptionMasterKey: objectLockQueueKey,
   });
 
   const objectLockQueue = new Queue(scope, 's3-object-lock-queue', {
@@ -57,6 +76,7 @@ export function addLegalHoldInfrastructure(
       queue: objectLockDLQ,
       maxReceiveCount: 5,
     },
+    encryptionMasterKey: objectLockQueueKey,
   });
 
   opsDashboard?.addDeadLetterQueueOperationalComponents('LegalHoldDLQ', objectLockDLQ);
@@ -95,7 +115,6 @@ export function addLegalHoldInfrastructure(
       ...notificationKeyFilters
     );
   });
-
   if (!objectLockHandler.role) {
     throw new Error('Lambda role undefined');
   }

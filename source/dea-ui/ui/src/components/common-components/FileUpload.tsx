@@ -137,6 +137,7 @@ function FileUpload(props: FileUploadProps) {
             iconName="folder"
             formAction="none"
             onClick={() => uploadFolderInputRef.current?.click()}
+            ariaDescribedby={'constraintText'}
           >
             {fileUploadLabels.chooseFolderLabel}
           </Button>
@@ -156,6 +157,7 @@ function FileUpload(props: FileUploadProps) {
             iconName="file"
             formAction="none"
             onClick={() => uploadFilesInputRef.current?.click()}
+            ariaDescribedby={'constraintText'}
           >
             {fileUploadLabels.chooseFilesLabel}
           </Button>
@@ -171,11 +173,12 @@ function FileUpload(props: FileUploadProps) {
         items={value.map((file) => ({
           label: file.relativePath + file.name,
           tags: [formatFileSize(file.size)],
+          dismissLabel: fileUploadLabels.dismissFileAriaLabel(file.relativePath + file.name),
         }))}
         alignment="vertical"
         limit={3}
       />
-      <span>{fileOperationsLabels.selectFileSubtext}</span>
+      <span id="constraintText">{fileOperationsLabels.selectFileSubtext}</span>
     </div>
   );
 }

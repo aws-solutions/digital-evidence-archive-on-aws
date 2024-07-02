@@ -5,9 +5,8 @@
 
 import { getRequiredPathParam } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
 import * as DataVaultService from '../services/data-vault-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const getDataVault: DEAGatewayProxyHandler = async (
@@ -15,11 +14,14 @@ export const getDataVault: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const dataVaultId = getRequiredPathParam(event, 'dataVaultId', joiUlid);
 
-  const retreivedDataVault = await DataVaultService.getRequiredDataVault(dataVaultId, repositoryProvider);
+  const retreivedDataVault = await DataVaultService.getRequiredDataVault(
+    dataVaultId,
+    providers.repositoryProvider
+  );
 
   return responseOk(event, retreivedDataVault);
 };

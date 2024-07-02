@@ -18,16 +18,22 @@ import {
   TextContent,
 } from '@cloudscape-design/components';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { DeaListResult } from '../../api/models/api-results';
-import { commonLabels, commonTableLabels, dataVaultListLabels, paginationLabels } from '../../common/labels';
+import {
+  accessibilityLabels,
+  commonLabels,
+  commonTableLabels,
+  dataVaultListLabels,
+  paginationLabels,
+} from '../../common/labels';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import ActionContainer from '../common-components/ActionContainer';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
-import { i18nStrings } from '../common-components/commonDefinitions';
+import { i18nStringsForPropertyFilter } from '../common-components/commonDefinitions';
 import { TableHeader } from '../common-components/TableHeader';
 import { filteringOptions, filteringProperties, searchableColumns } from './dataVaultListDefinitions';
 import stepOneImage from './svgs/1_enable-security.svg';
@@ -117,6 +123,7 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
             {dataVaultListLabels.howItWorksDescription}{' '}
             <Link
               external
+              ariaLabel={accessibilityLabels.implementationGuideLinkLabel}
               href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
             >
               {commonTableLabels.implementationGuideLabel}
@@ -175,12 +182,18 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
     <Table
       {...collectionProps}
       data-testid="data-vaults-table"
-      trackBy="name"
+      trackBy={(item) => item.name}
       loading={isLoading}
       variant="full-page"
       items={items}
       loadingText={dataVaultListLabels.loading}
       resizableColumns={true}
+      ariaLabels={{
+        tableLabel: dataVaultListLabels.dataVaultsLabel,
+        selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
+        allItemsSelectionLabel: commonTableLabels.allItemsSelectionLabel,
+        itemSelectionLabel: commonTableLabels.itemSelectionLabel,
+      }}
       empty={TableEmptyDisplay(
         dataVaultListLabels.noDataVaultsLabel,
         dataVaultListLabels.noDisplayLabel,
@@ -250,7 +263,11 @@ function DataVaultsTable(props: DataVaultsTableProps): JSX.Element {
           <PropertyFilter
             {...propertyFilterProps}
             countText={getFilterCounterText(filteredItemsCount)}
-            i18nStrings={{ ...i18nStrings, filteringPlaceholder: dataVaultListLabels.filteringPlaceholder }}
+            i18nStrings={{
+              ...i18nStringsForPropertyFilter,
+              filteringPlaceholder: dataVaultListLabels.filteringPlaceholder,
+              filteringAriaLabel: dataVaultListLabels.filteringPlaceholder,
+            }}
             filteringOptions={filteringOptions}
             expandToViewport={true}
           />

@@ -28,6 +28,7 @@ export function AuditDownloadButton(props: AuditDownloadProps): JSX.Element {
         setDownloadInProgress(true);
         try {
           await downloadAudit(props.downloadCallback, props.type, props.targetName);
+          pushNotification('success', auditLogLabels.downloadAuditSuccess(props.targetName));
         } catch (e) {
           pushNotification('error', auditLogLabels.downloadAuditFail(props.targetName));
         } finally {

@@ -7,7 +7,6 @@ import { DeaDataVaultFile } from '@aws/dea-app/lib/models/data-vault-file';
 import { PropertyFilterProperty, useCollection } from '@cloudscape-design/collection-hooks';
 import {
   Box,
-  BreadcrumbGroup,
   Button,
   Checkbox,
   ColumnLayout,
@@ -26,12 +25,14 @@ import {
   TextFilter,
 } from '@cloudscape-design/components';
 import { OptionDefinition } from '@cloudscape-design/components/internal/components/option/interfaces';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { useListAllCases } from '../../api/cases';
 import { createDataVaultFileAssociation, useListDataVaultFiles } from '../../api/data-vaults';
 import { ScopedDeaCaseDTO } from '../../api/models/case';
 import {
+  accessibilityLabels,
+  breadcrumbLabels,
   commonLabels,
   commonTableLabels,
   dataVaultDetailLabels,
@@ -42,7 +43,9 @@ import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import ActionContainer from '../common-components/ActionContainer';
+import Breadcrumb, { BreadcrumbItem } from '../common-components/Breadcrumb';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
+import { i18nStringsForPropertyFilter } from '../common-components/commonDefinitions';
 
 export const CREATE_DATA_VAULT_CASE_ASSOCIATION_PATH = '/datavaults/{dataVaultId}/caseAssociationsPOST';
 
@@ -59,6 +62,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
   const [filesTableState, setFilesTableState] = useState({
     textFilter: '',
     basePath: '/',
+    label: 'Case files',
   });
   const { data, isLoading } = useListDataVaultFiles(props.dataVaultId, filesTableState.basePath);
   const [selectedFiles, setSelectedFiles] = useState<DeaDataVaultFile[]>([]);
@@ -87,7 +91,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
       groupValuesLabel: 'File Name Values',
     },
   ];
-  const { items, filterProps, collectionProps, paginationProps } = useCollection(data, {
+  const { items, filterProps, collectionProps, paginationProps, actions } = useCollection(data, {
     filtering: {
       empty: TableEmptyDisplay(dataVaultDetailLabels.noFilesLabel, dataVaultDetailLabels.noFilesDisplayLabel),
       noMatch: TableNoMatchDisplay(dataVaultDetailLabels.noFilesLabel),
@@ -118,13 +122,15 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
   }
 
   const pathParts = filesTableState.basePath.split('/');
-  const breadcrumbItems = [{ text: '/', href: '#' }];
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: breadcrumbLabels.rootLabel, value: '#', iconName: 'folder' },
+  ];
 
   let hrefString = '#';
   pathParts.forEach((part) => {
     if (part !== '') {
       hrefString += part + '#';
-      breadcrumbItems.push({ text: part, href: hrefString });
+      breadcrumbItems.push({ label: part, value: hrefString, iconName: 'folder' });
     }
   });
 
@@ -185,13 +191,13 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
             </SpaceBetween>
           </Box>
         }
-        header={
-          <TextContent>
-            <h2>{dataVaultDetailLabels.associateToCaseModalTitle}</h2>
-            <p>{dataVaultDetailLabels.associateToCaseDescription}</p>
-          </TextContent>
-        }
+        header={dataVaultDetailLabels.associateToCaseModalTitle}
       >
+        <TextContent>
+          <span>
+            <strong>{dataVaultDetailLabels.associateToCaseDescription}</strong>
+          </span>
+        </TextContent>
         <Box padding={{ bottom: 'xxl' }}>
           <Multiselect
             selectedOptions={selectedCases}
@@ -201,6 +207,12 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
             keepOpen={false}
             placeholder={dataVaultDetailLabels.associateToCaseMultiselectPlaceholder}
             filteringPlaceholder={dataVaultDetailLabels.associateToCaseMultiselectFilteringPlaceholder}
+            ariaLabel={dataVaultDetailLabels.associateToCaseMultiselectPlaceholder}
+            filteringAriaLabel={dataVaultDetailLabels.associateToCaseMultiselectFilteringPlaceholder}
+            filteringClearAriaLabel={i18nStringsForPropertyFilter.clearAriaLabel}
+            selectedAriaLabel={commonLabels.selectedLabel}
+            ariaDescribedby={allOptions.map((option) => option.label).join(' ')}
+            deselectAriaLabel={commonLabels.deselectLabel}
           />
         </Box>
       </Modal>
@@ -217,6 +229,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
           e.preventDefault();
           setFilesTableState((state) => ({
             ...state,
+            label: dataVaultFile.fileName,
             basePath: filesTableState.basePath + dataVaultFile.fileName + '/',
           }));
         }}
@@ -277,6 +290,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         {dataVaultDetailLabels.filesTableHeaderDescription}{' '}
         <Link
           external
+          ariaLabel={accessibilityLabels.implementationGuideLinkLabel}
           href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
         >
           {commonTableLabels.implementationGuideLabel}
@@ -294,6 +308,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
             iconName="copy"
             variant="inline-icon"
             data-testid="copy-datasync-link-button"
+            ariaLabel={commonLabels.copyLinkLabel}
             onClick={() => {
               void navigator.clipboard.writeText('https://aws.amazon.com/datasync/');
             }}
@@ -307,21 +322,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
   // table header Element
   const tableHeader = (
     <Header variant="h2" description={tableHeaderDescription()} actions={tableActions()}>
-      <SpaceBetween direction="horizontal" size="xs">
-        <span>{`${dataVaultDetailLabels.filesLabel} (${items.length})`}</span>
-        <BreadcrumbGroup
-          data-testid="file-breadcrumb"
-          onClick={(event) => {
-            event.preventDefault();
-            setFilesTableState((state) => ({
-              ...state,
-              basePath: event.detail.href.replaceAll('#', '/'),
-            }));
-          }}
-          items={breadcrumbItems}
-          ariaLabel="Breadcrumbs"
-        />
-      </SpaceBetween>
+      <span>{`${dataVaultDetailLabels.filesLabel} (${items.length})`}</span>
     </Header>
   );
 
@@ -340,7 +341,10 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
           )
         }
       >
-        {commonTableLabels.implementationGuideLabel} <Icon name="external" variant="inverted" />
+        {commonTableLabels.implementationGuideLabel}
+        <span role="img" aria-label={accessibilityLabels.implementationGuideLinkLabel}>
+          <Icon name="external" variant="inverted" />
+        </span>
       </Button>
     </>
   );
@@ -357,6 +361,13 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
         setSelectedFiles(detail.selectedItems);
       }}
       selectedItems={selectedFiles}
+      renderAriaLive={commonTableLabels.renderAriaLiveLabel}
+      totalItemsCount={items.length}
+      ariaLabels={{
+        selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
+        allItemsSelectionLabel: commonTableLabels.allItemsSelectionLabel,
+        itemSelectionLabel: commonTableLabels.itemSelectionLabel,
+      }}
       columnDefinitions={[
         {
           id: 'fileName',
@@ -405,6 +416,7 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
           width: 100,
           minWidth: 100,
           sortingField: 'caseAssociation',
+          sortingComparator: (a, b) => a.caseCount - b.caseCount,
         },
       ]}
       items={items}
@@ -412,21 +424,44 @@ function DataVaultFilesTable(props: DataVaultFilesTableProps): JSX.Element {
       resizableColumns
       empty={emptyConfig}
       filter={
-        <ColumnLayout columns={2}>
-          <TextFilter
-            data-testid="files-text-filter"
-            {...filterProps}
-            filteringPlaceholder={filesListLabels.searchLabel}
+        <SpaceBetween direction="vertical" size="m">
+          <ColumnLayout columns={2}>
+            <TextFilter
+              data-testid="files-text-filter"
+              {...filterProps}
+              filteringClearAriaLabel={i18nStringsForPropertyFilter.clearAriaLabel}
+              filteringAriaLabel={filesListLabels.searchLabel}
+              filteringPlaceholder={filesListLabels.searchLabel}
+            />
+            <Box padding="xxs">
+              <Checkbox
+                onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
+                checked={displayFilesWithoutACase}
+                ariaLabel={dataVaultDetailLabels.displayFilesCheckboxLabel}
+              >
+                {dataVaultDetailLabels.displayFilesCheckboxLabel}
+              </Checkbox>
+            </Box>
+          </ColumnLayout>
+          <Breadcrumb
+            data-testid="files-breadcrumb"
+            breadcrumbItems={breadcrumbItems}
+            filesTableState={filesTableState}
+            onClick={(event) => {
+              event.preventDefault();
+              actions.setFiltering('');
+              setFilesTableState((state) => ({
+                ...state,
+                label: event.detail.selectedOption
+                  ? event.detail.selectedOption.label
+                  : event.detail.href.replaceAll('#', '/'),
+                basePath: event.detail.selectedOption
+                  ? event.detail.selectedOption.value.replaceAll('#', '/')
+                  : event.detail.href.replaceAll('#', '/'),
+              }));
+            }}
           />
-          <Box padding="xxs">
-            <Checkbox
-              onChange={({ detail }) => setDisplayFilesWithoutACase(detail.checked)}
-              checked={displayFilesWithoutACase}
-            >
-              {dataVaultDetailLabels.displayFilesCheckboxLabel}
-            </Checkbox>
-          </Box>
-        </ColumnLayout>
+        </SpaceBetween>
       }
       header={tableHeader}
       pagination={tablePagination}

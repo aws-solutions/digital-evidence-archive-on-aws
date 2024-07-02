@@ -6,6 +6,7 @@
 import { fail } from 'assert';
 import { OneTableError } from 'dynamodb-onetable';
 import Joi from 'joi';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { updateCases } from '../../../app/resources/update-cases';
 import { DeaCase, DeaCaseInput } from '../../../models/case';
 import { DeaUser } from '../../../models/user';
@@ -14,15 +15,17 @@ import { jsonParseWithDates } from '../../../models/validation/json-parse-with-d
 import { createCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 let caseOwner: DeaUser;
 
 describe('update cases resource', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('updateCaseTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
 
     caseOwner =
       (await createUser(
@@ -60,7 +63,7 @@ describe('update cases resource', () => {
       }),
     });
 
-    const response = await updateCases(event, dummyContext, repositoryProvider);
+    const response = await updateCases(event, dummyContext, testProviders);
 
     expect(response.statusCode).toEqual(200);
 
@@ -98,7 +101,7 @@ describe('update cases resource', () => {
       }),
     });
 
-    await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCases(event, dummyContext, testProviders)).rejects.toThrow(
       'Requested Case Ulid does not match resource'
     );
   });
@@ -111,7 +114,7 @@ describe('update cases resource', () => {
       body: null,
     });
 
-    await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCases(event, dummyContext, testProviders)).rejects.toThrow(
       'Update cases payload missing.'
     );
   });
@@ -127,7 +130,7 @@ describe('update cases resource', () => {
       },
     });
 
-    await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCases(event, dummyContext, testProviders)).rejects.toThrow(
       'Update cases payload is malformed. Failed to parse.'
     );
   });
@@ -142,7 +145,7 @@ describe('update cases resource', () => {
       }),
     });
 
-    await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCases(event, dummyContext, testProviders)).rejects.toThrow(
       "Required path param 'caseId' is missing."
     );
   });
@@ -166,9 +169,7 @@ describe('update cases resource', () => {
       }),
     });
 
-    await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      '"status" is not allowed'
-    );
+    await expect(updateCases(event, dummyContext, testProviders)).rejects.toThrow('"status" is not allowed');
   });
 
   it('should not allow update of objectCount', async () => {
@@ -190,7 +191,7 @@ describe('update cases resource', () => {
       }),
     });
 
-    await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCases(event, dummyContext, testProviders)).rejects.toThrow(
       '"objectCount" is not allowed'
     );
   });
@@ -208,7 +209,7 @@ describe('update cases resource', () => {
       }),
     });
 
-    await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(OneTableError);
+    await expect(updateCases(event, dummyContext, testProviders)).rejects.toThrow(OneTableError);
   });
 
   it('should error when updating to a name in use', async () => {
@@ -234,7 +235,7 @@ describe('update cases resource', () => {
       }),
     });
 
-    await expect(updateCases(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCases(event, dummyContext, testProviders)).rejects.toThrow(
       'Case name is already in use'
     );
   });
@@ -263,7 +264,7 @@ describe('update cases resource', () => {
       }),
     });
 
-    const response = await updateCases(event, dummyContext, repositoryProvider);
+    const response = await updateCases(event, dummyContext, testProviders);
 
     expect(response.statusCode).toEqual(200);
 
@@ -285,7 +286,7 @@ describe('update cases resource', () => {
       }),
     });
 
-    const response2 = await updateCases(event2, dummyContext, repositoryProvider);
+    const response2 = await updateCases(event2, dummyContext, testProviders);
 
     expect(response2.statusCode).toEqual(200);
 

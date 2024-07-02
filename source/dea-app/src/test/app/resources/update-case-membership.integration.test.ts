@@ -4,6 +4,7 @@
  */
 
 import { ValidationError } from '../../../app/exceptions/validation-exception';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { updateCaseMembership } from '../../../app/resources/update-case-membership';
 import * as CaseService from '../../../app/services/case-service';
 import { createCaseUserMembership, getCaseUser } from '../../../app/services/case-user-service';
@@ -15,16 +16,18 @@ import { DeaUser, DeaUserInput } from '../../../models/user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { bogusUlid } from '../../../test-e2e/resources/test-helpers';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 let caseOwner: DeaUser;
 let targetMembership: CaseUser;
 
 describe('delete case membership resource', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('updateCaseMembershipTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
 
     caseOwner =
       (await createUser(
@@ -90,7 +93,7 @@ describe('delete case membership resource', () => {
       }),
     });
 
-    const response = await updateCaseMembership(event, dummyContext, repositoryProvider);
+    const response = await updateCaseMembership(event, dummyContext, testProviders);
     expect(response.statusCode).toEqual(200);
     const membershipAfter = await getCaseUser(
       { caseUlid: targetMembership.caseUlid, userUlid: targetMembership.userUlid },
@@ -114,7 +117,7 @@ describe('delete case membership resource', () => {
       }),
     });
 
-    await expect(updateCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCaseMembership(event, dummyContext, testProviders)).rejects.toThrow(
       'Requested Case id does not match resource'
     );
   });
@@ -132,7 +135,7 @@ describe('delete case membership resource', () => {
       }),
     });
 
-    await expect(updateCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCaseMembership(event, dummyContext, testProviders)).rejects.toThrow(
       'Requested User id does not match resource'
     );
   });
@@ -150,7 +153,7 @@ describe('delete case membership resource', () => {
       }),
     });
 
-    await expect(updateCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCaseMembership(event, dummyContext, testProviders)).rejects.toThrow(
       'Requested Case-User Membership not found'
     );
   });
@@ -163,7 +166,7 @@ describe('delete case membership resource', () => {
       },
     });
 
-    await expect(updateCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCaseMembership(event, dummyContext, testProviders)).rejects.toThrow(
       'CaseUser payload missing.'
     );
   });
@@ -180,7 +183,7 @@ describe('delete case membership resource', () => {
       },
     });
 
-    await expect(updateCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCaseMembership(event, dummyContext, testProviders)).rejects.toThrow(
       'CaseUser payload is malformed. Failed to parse.'
     );
   });
@@ -192,9 +195,7 @@ describe('delete case membership resource', () => {
       },
     });
 
-    await expect(updateCaseMembership(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      ValidationError
-    );
+    await expect(updateCaseMembership(event, dummyContext, testProviders)).rejects.toThrow(ValidationError);
 
     const event2 = getDummyEvent({
       pathParameters: {
@@ -202,8 +203,6 @@ describe('delete case membership resource', () => {
       },
     });
 
-    await expect(updateCaseMembership(event2, dummyContext, repositoryProvider)).rejects.toThrow(
-      ValidationError
-    );
+    await expect(updateCaseMembership(event2, dummyContext, testProviders)).rejects.toThrow(ValidationError);
   });
 });

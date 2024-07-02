@@ -5,11 +5,10 @@
 
 import { getPaginationParameters, getRequiredPathParam } from '../../lambda-http-helpers';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { getCase } from '../services/case-service';
 import { getCaseUsersForCase } from '../services/case-user-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 import { getNextToken } from './get-next-token';
 
@@ -18,19 +17,19 @@ export const getCaseMembership: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const paginationParams = getPaginationParameters(event);
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
 
-  const deaCase = await getCase(caseId, repositoryProvider);
+  const deaCase = await getCase(caseId, providers.repositoryProvider);
   if (!deaCase) {
     throw new NotFoundError(`Case with ulid ${caseId} not found.`);
   }
 
   const pageOfCaseUsers = await getCaseUsersForCase(
     caseId,
-    repositoryProvider,
+    providers.repositoryProvider,
     paginationParams.nextToken,
     paginationParams.limit
   );

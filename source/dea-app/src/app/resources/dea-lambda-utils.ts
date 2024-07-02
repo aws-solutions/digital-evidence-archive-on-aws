@@ -11,12 +11,21 @@ import { logger } from '../../logger';
 import { Oauth2Token } from '../../models/auth';
 import { DeaUser } from '../../models/user';
 import { defaultProvider } from '../../persistence/schema/entities';
+import { defaultCacheProvider } from '../../storage/cache';
+import { defaultParametersProvider } from '../../storage/parameters';
 import { NotFoundError } from '../exceptions/not-found-exception';
 import { ReauthenticationError } from '../exceptions/reauthentication-exception';
 import { CJISAuditEventBody, IdentityType } from '../services/audit-service';
+import { getUserPoolInfo } from '../services/parameter-service';
 import * as SessionService from '../services/session-service';
 import * as UserService from '../services/user-service';
-import { LambdaContext, LambdaEvent, LambdaRepositoryProvider } from './dea-gateway-proxy-handler';
+import {
+  LambdaCacheProvider,
+  LambdaContext,
+  LambdaEvent,
+  LambdaParametersProvider,
+  LambdaRepositoryProvider,
+} from './dea-gateway-proxy-handler';
 
 const stage = getRequiredEnv('STAGE');
 
@@ -24,7 +33,9 @@ export type DEAPreLambdaExecutionChecks = (
   event: LambdaEvent,
   context: LambdaContext,
   auditEvent: CJISAuditEventBody,
-  repositoryProvider: LambdaRepositoryProvider
+  repositoryProvider: LambdaRepositoryProvider,
+  cacheProvider: LambdaCacheProvider,
+  parametersProvider: LambdaParametersProvider
 ) => Promise<void>;
 
 const allowedOrigins = getAllowedOrigins();
@@ -35,7 +46,13 @@ export const runPreExecutionChecks = async (
   auditEvent: CJISAuditEventBody,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  repositoryProvider = defaultProvider,
+  /* the default cases are handled in e2e tests */
+  /* istanbul ignore next */
+  cacheProvider = defaultCacheProvider,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  parametersProvider = defaultParametersProvider
 ) => {
   if (!event.requestContext.identity.cognitoIdentityId) {
     logger.error('PreExecution checks running without cognitoId');
@@ -47,7 +64,8 @@ export const runPreExecutionChecks = async (
   // since it is not encoded from the id pool
   // Additionally we get the first and last name of the user from the id token
   const idToken = getOauthToken(event).id_token;
-  const idTokenPayload = await getTokenPayload(idToken, process.env.AWS_REGION ?? 'us-east-1');
+  const userPoolInfo = await getUserPoolInfo(parametersProvider, cacheProvider);
+  const idTokenPayload = await getTokenPayload(idToken, userPoolInfo);
   const deaRoleString = event.requestContext.identity.userArn;
   if (!deaRoleString) {
     logger.error(

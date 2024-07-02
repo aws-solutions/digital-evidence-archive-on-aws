@@ -88,6 +88,16 @@ export class DeaUiConstruct extends NestedStack {
     if (lambdaToSuppress instanceof CfnResource) {
       addLambdaSuppressions(lambdaToSuppress);
     }
+
+    const s3AutoDeleteHandlerToSuppress = this.node.tryFindChild(
+      'Custom::S3AutoDeleteObjectsCustomResourceProvider'
+    );
+    if (s3AutoDeleteHandlerToSuppress) {
+      const node = s3AutoDeleteHandlerToSuppress.node.findChild('Handler');
+      if (node instanceof CfnResource) {
+        addLambdaSuppressions(node);
+      }
+    }
   }
 
   private routeHandler(props: IUiStackProps, bucket: Bucket, executeRole: Role) {
@@ -188,9 +198,9 @@ export class DeaUiConstruct extends NestedStack {
                 `'default-src 'self';` +
                 `img-src 'self' blob: data:;` +
                 `style-src 'unsafe-inline' 'self';` +
-                `connect-src 'self' https://${deaConfig.cognitoDomain()}.${this.authSubdomain()}.${this.cognitoRegion()}.amazoncognito.com https://*.s3.${
+                `connect-src 'self' https://${deaConfig.cognitoDomain()}.auth${this.fipsDomainSuffix()}.${this.cognitoRegion()}.amazoncognito.com https://*.s3${this.fipsDomainSuffix()}.${
                   Aws.REGION
-                }.amazonaws.com https://cognito-identity.${this.cognitoRegion()}.amazonaws.com https://cognito-idp.${this.cognitoRegion()}.amazonaws.com;` +
+                }.amazonaws.com https://cognito-identity${this.fipsDomainSuffix()}.${this.cognitoRegion()}.amazonaws.com https://cognito-idp${this.fipsDomainSuffix()}.${this.cognitoRegion()}.amazonaws.com;` +
                 `script-src 'strict-dynamic' '${this.sriString}';` +
                 `font-src 'self' data:;` +
                 `base-uri 'self';` +
@@ -217,12 +227,11 @@ export class DeaUiConstruct extends NestedStack {
     return Aws.REGION;
   }
 
-  private authSubdomain() {
-    if (deaConfig.fipsEndpointsEnabled()) {
-      return 'auth-fips';
+  private fipsDomainSuffix() {
+    if (deaConfig.fipsEndpointsEnabled() === 'true') {
+      return '-fips';
     }
-
-    return 'auth';
+    return '';
   }
 
   private getMethodOptions(): MethodOptions {

@@ -1,0 +1,120 @@
+swagger: '2.0'
+info:
+  version: 1.1.1
+  title: DEA Auth API
+paths:
+  # root resource path entity must match the file name or the documentation will not get attached to the right API Gateweay resource
+  # (e.g. openapi-auth.yml must only contain '/auth' and all child APIs)
+  /auth/{authCode}/token:
+    post:
+      summary: Returns ID Token and sets Oauth Cookie
+      operationId: getToken
+      tags:
+        - auth
+      parameters:
+        - name: authCode
+          in: path
+          description: Auth code to trade for ID Token
+          required: true
+          type: string
+        - name: callback-override
+          in: header
+          description: Callback url for oauth2/token. Override default callback url
+          required: false
+          type: string
+        - name: origin
+          in: header
+          description: Override for origin URL
+          required: false
+          type: string
+        - in: body
+          name: codeVerifier
+          required: true
+          schema:
+            type: object
+            properties:
+              codeVerifier:
+                type: string              
+      responses:
+        '200':
+          description: Id Token and Cognito information for fetching credentials
+          schema:
+            $ref: '#/definitions/getTokenResult'
+  /auth/refreshToken:
+    post:
+      summary: Fetches new ID Token to refresh credentials using Refresh Token
+      operationId: refreshToken
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Id Token and Cognito information for fetching credentials
+          schema:
+            $ref: '#/definitions/getTokenResult'
+  /auth/revokeToken:
+    post:
+      summary: Revokes and invalides Cognito Refresh Token
+      operationId: revokeToken
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Successfully Revoked Token
+  /auth/loginUrl:
+    get:
+      summary: Get login URL
+      operationId: loginUrl
+      tags:
+        - auth
+      parameters:
+        - name: callbackUrl
+          in: query
+          description: callback URL for Hosted UI
+          required: true
+          type: string          
+      responses:
+        '200':
+          description: Login URL for DEA
+          schema:
+            type: object
+            properties:
+              loginUrl:
+                type: string
+  /auth/logoutUrl:
+    get:
+      summary: Get logout URL
+      operationId: logoutUrl
+      tags:
+        - auth
+      parameters:
+        - name: callbackUrl
+          in: query
+          description: callback URL for Hosted UI
+          required: true
+          type: string          
+      responses:
+        '200':
+          description: Logout URL for DEA
+          schema:
+            type: object
+            properties:
+              logoutUrl:
+                type: string
+
+definitions:
+  getTokenResult:
+    type: object
+    required:
+      - idToken
+      - identityPoolId
+      - userPoolId
+      - expiresIn
+    properties:
+      idToken:
+        type: string
+      identityPoolId:
+        type: string
+      userPoolId:
+        type: string
+      expiresIn:
+        type: number

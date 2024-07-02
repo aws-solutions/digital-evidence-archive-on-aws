@@ -7,10 +7,9 @@ import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-help
 import { CaseOwnerDTO } from '../../models/dtos/case-user-dto';
 import { caseOwnerSchema } from '../../models/validation/case-user';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import { createCaseOwnerFromDTO } from '../services/case-user-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const createCaseOwner: DEAGatewayProxyHandler = async (
@@ -18,7 +17,7 @@ export const createCaseOwner: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
 
@@ -28,6 +27,6 @@ export const createCaseOwner: DEAGatewayProxyHandler = async (
     throw new ValidationError('Requested Case Ulid does not match resource');
   }
 
-  const caseUserResult = await createCaseOwnerFromDTO(caseOwner, repositoryProvider);
+  const caseUserResult = await createCaseOwnerFromDTO(caseOwner, providers.repositoryProvider);
   return responseOk(event, caseUserResult);
 };

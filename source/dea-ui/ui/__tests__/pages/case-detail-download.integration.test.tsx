@@ -9,13 +9,21 @@ import CaseDetailsPage from '../../src/pages/case-detail';
 afterEach(cleanup);
 
 const user = userEvent.setup();
-const push = jest.fn();
+
 const CASE_ID = '100';
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID },
-    push,
-  })),
+interface Query {
+  caseId: string | object;
+}
+let query: Query = {
+  caseId: CASE_ID,
+};
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key]),
+  }),
+  useRouter: () => ({
+    push: jest.fn(),
+  }),
 }));
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
@@ -152,11 +160,21 @@ describe('case detail file download', () => {
      * User enters some download reason, then click download, and the modal should close
      */
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeEnabled());
-    await waitFor(() => expect(wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()).toBe(false));
+    await waitFor(() =>
+      expect(
+        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
+      ).toBe(false)
+    );
     await wrapper(screen.getByTestId('download-file-button')).click();
 
-    await waitFor(() => expect(wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()).toBe(true));
-    const wrappedReason = wrapper(document.body).findInput('[data-testid="download-file-reason-modal-input"]');
+    await waitFor(() =>
+      expect(
+        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
+      ).toBe(true)
+    );
+    const wrappedReason = wrapper(document.body).findInput(
+      '[data-testid="download-file-reason-modal-input"]'
+    );
     if (!wrappedReason) {
       fail();
     }
@@ -165,6 +183,10 @@ describe('case detail file download', () => {
     // download button will be disabled while in progress
     wrapper(screen.getByTestId('download-file-reason-modal-primary-button')).click();
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeDisabled());
-    await waitFor(() => expect(wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()).toBe(false));
+    await waitFor(() =>
+      expect(
+        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
+      ).toBe(false)
+    );
   });
 });

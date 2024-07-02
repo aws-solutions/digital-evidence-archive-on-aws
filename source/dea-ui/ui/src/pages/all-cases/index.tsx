@@ -5,7 +5,7 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useListAllCases } from '../../api/cases';
-import { breadcrumbLabels, caseListLabels } from '../../common/labels';
+import { breadcrumbLabels, caseListLabels, navigationLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
 import CaseTable from '../../components/case-list-table/CaseTable';
 
@@ -16,8 +16,11 @@ export default function AllCasesPage() {
       href: '#',
     },
   ];
+
+  const pageName = navigationLabels.allSystemCasesLabel;
+
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/all-cases">
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/all-cases" pageName={pageName}>
       <CaseTable
         detailPage="manage-case"
         useCaseFetcher={useListAllCases}

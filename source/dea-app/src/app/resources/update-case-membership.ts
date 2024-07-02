@@ -7,10 +7,9 @@ import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-help
 import { CaseUserDTO } from '../../models/dtos/case-user-dto';
 import { caseUserSchema } from '../../models/validation/case-user';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
 import { ValidationError } from '../exceptions/validation-exception';
 import { updateCaseUserMembershipFromDTO } from '../services/case-user-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const updateCaseMembership: DEAGatewayProxyHandler = async (
@@ -18,7 +17,7 @@ export const updateCaseMembership: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const userId = getRequiredPathParam(event, 'userId', joiUlid);
@@ -33,7 +32,7 @@ export const updateCaseMembership: DEAGatewayProxyHandler = async (
     throw new ValidationError('Requested User id does not match resource');
   }
 
-  const caseUserResult = await updateCaseUserMembershipFromDTO(caseUser, repositoryProvider);
+  const caseUserResult = await updateCaseUserMembershipFromDTO(caseUser, providers.repositoryProvider);
 
   return responseOk(event, caseUserResult);
 };

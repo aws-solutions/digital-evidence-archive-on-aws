@@ -4,7 +4,14 @@
  */
 
 import { CaseAction, OWNER_ACTIONS } from '@aws/dea-app/lib/models/case-action';
-import { AppLayoutProps, SelectProps } from '@cloudscape-design/components';
+import { AppLayoutProps, SelectProps, TableProps } from '@cloudscape-design/components';
+import { OptionDefinition } from '@cloudscape-design/components/internal/components/option/interfaces';
+
+export const systemUseNotificationText =
+  'CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT according ' +
+  'to your local laws and regulations. This is needed to fulfill CJIS Policy 5.5.4. (Use Notification). ' +
+  'Refer to the Implementation Guide for instructions on how to customize this text, and review ' +
+  'CJIS Policy 5.5.4 for latest requirement details.';
 
 export const commonLabels = {
   cancelButton: 'Cancel',
@@ -33,7 +40,7 @@ export const commonLabels = {
   description: 'Description',
   creationDate: 'Creation date',
   requiredField: 'This is a required field.',
-  requiredLength: 'Required field must be at least 2 characters long.',
+  requiredLength: (field: string) => `${field} must be at least 2 characters long.`,
   closeModalAriaLabel: 'Close modal',
   optionalLabel: 'optional',
   goBack: 'Go back',
@@ -44,6 +51,10 @@ export const commonLabels = {
   disassociateButton: 'Disassociate',
   copyLinkLabel: 'Copy AWS DataSync link',
   linkCopiedLabel: 'Link copied',
+  selectedLabel: 'selected',
+  clearLabel: 'Clear field',
+  deselectLabel: (e: OptionDefinition) => `Remove ${e.label}`,
+  infoLabel: 'Info',
 };
 
 export const commonTableLabels = {
@@ -75,6 +86,23 @@ export const commonTableLabels = {
   caseAssociationHeader: 'Case association',
   associateButtonLabel: 'Associate to case',
   lastExecutionCompletedHeader: 'Last execution completed',
+  tableCheckboxSelectionGroupLabel: 'File/folder selection:',
+  renderAriaLiveLabel: (data: TableProps.LiveAnnouncement) =>
+    data.totalItemsCount && data.totalItemsCount === 0
+      ? 'No items to display'
+      : `Display items ${data.firstIndex} to ${data.lastIndex} of ${data.totalItemsCount}`,
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  allItemsSelectionLabel: ({ selectedItems }: TableProps.SelectionState<any>) =>
+    `${selectedItems.length} ${selectedItems.length === 1 ? 'item' : 'items'} selected`,
+  // item is type DeaCaseDTO | FileUploadProgressRow | DownloadDTO but they're too disjoint to union
+  itemSelectionLabel: ({ selectedItems }: TableProps.SelectionState<any>, item: any) => {
+    const isDeaCaseDTO = 'name' in item ? true : false;
+    const isItemSelected = selectedItems.filter((i: any) =>
+      isDeaCaseDTO ? i.name === item.name : i.fileName === item.fileName
+    ).length;
+    return `${isDeaCaseDTO ? item.name : item.fileName} is${isItemSelected ? '' : ' not'} selected`;
+  },
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 };
 
 export const layoutLabels: AppLayoutProps.Labels = {
@@ -108,8 +136,7 @@ export const caseListLabels = {
   deactivateCaseLabel: 'Deactivate case',
   deactivateCaseModalLabel: (name: string) => `Are you sure you want to deactivate ${name}?`,
   deactivateCaseModalMessage:
-    'Once the case is deactivated, anyone with access will not be able to edit, or upload and download files to the case. We will keep all your files unless you prefer to delete them.',
-  deleteFilesLabel: 'Delete all files',
+    'Once the case is deactivated, anyone with access will not be able to edit, or upload and download files to the case. We will keep all your files.',
   activateCaseModalLabel: (name: string) => `Are you sure you want to activate ${name}?`,
   activateCaseModalMessage:
     'Once the case is activated, anyone with access will be able to edit, add case members, or upload/download files to the case.',
@@ -119,6 +146,7 @@ export const caseListLabels = {
   casesPageDescription: 'Search for cases, view case details, or create new cases to store digital evidence.',
   systemCasesPageDescription:
     'All cases within the system are listed, including ones that haven’t been shared with you. You can search for cases and give member access.',
+  tableRadioGroupSelectionLabel: 'Case selection:',
 };
 
 export const filesListLabels = {
@@ -172,6 +200,7 @@ export const caseDetailLabels = {
   auditLogLabel: 'Audit log',
   manageAccessLabel: 'Assign case permissions',
   caseDetailsLabel: 'Case details',
+  editCaseSuccessLabel: (name: string) => `Updates to Case ${name} have been saved.`,
 };
 
 export const auditLogLabels = {
@@ -185,8 +214,11 @@ export const auditLogLabels = {
   emptyAuditLabel: 'No audit',
   noDisplayAuditLabel: 'No audit to display.',
   loadingLabel: 'loading audit log',
-  errorLabel: 'Error downloading audit logs. Audit query is empty or encountered an error or cancellation.',
+  errorLabel:
+    'Error downloading system audit logs. Audit query is empty or encountered an error or cancellation.',
+  successLabel: 'System audit logs have been downloaded.',
   downloadAuditFail: (targetName: string) => `Failed to download audit report for ${targetName}`,
+  downloadAuditSuccess: (targetName: string) => `Audit report for ${targetName} has been downloaded`,
 };
 
 export const paginationLabels = {
@@ -201,10 +233,6 @@ export const manageCaseAccessLabels = {
   manageAccessDescription:
     'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
   manageAccessSearchLabel: 'Search for people',
-  manageAccessSearchInfoHeader: "Can't find someone?",
-  manageAccessSearchInfoLabel: 'Request access from admin',
-  manageAccessSearchInfoDescription:
-    'Reach out to your administrator and request a new user to be invited to the system.',
   searchPlaceholder: 'Search by name or email',
   searchAutosuggestNoMatches: 'No matches found',
   searchAutosuggestEnteredText: (value: string) => `Use: "${value}"`,
@@ -229,6 +257,7 @@ export const manageCaseAccessLabels = {
     'There access will be instantly removed and they will be notified by email.',
   saveSuccessMessage: 'Changes have been saved successfully.',
   saveFailMessage: 'Changes have not been saved.',
+  closePopoverMessage: 'Close information about what to do if user cannot be found',
 };
 
 export const caseStatusLabels = {
@@ -259,6 +288,7 @@ export const createCaseLabels = {
   searchPeopleDescription:
     'Members added or removed will be notified by email. Their access to the case details will be based on permissions set.',
   searchPlaceholder: 'Search by name or email',
+  createCaseSuccessLabel: (name: string) => `Case ${name} has been created. You can now upload files.`,
 };
 
 export const caseActionOptions = {
@@ -328,6 +358,13 @@ export const breadcrumbLabels = {
   createNewDataVaultLabel: 'Create data vault',
   dataSyncTasks: 'Tasks',
   editDataVaultLabel: 'Edit data vault',
+  breadcrumbLabel: 'Breadcrumbs',
+  breadcrumbIconLabel: 'Breadcrumb icon',
+  nextLevelIconLabel: 'Next level icon',
+  rootDescriptiveLabel: 'Case files root',
+  rootLabel: 'Case files',
+  selectFileLevelDropdownLabel: 'Select folder',
+  formFieldLabel: 'Select folder level',
 };
 
 export const navigationLabels = {
@@ -337,6 +374,17 @@ export const navigationLabels = {
   systemAuditLogsLabel: 'Download system audit log',
   dataVaultsLabel: 'Data vaults',
   dataSyncTasksLabel: 'File transfer tasks',
+  caseDetailLabel: 'Case details',
+  createCaseLabel: 'Create case',
+  createDataVaultLabel: 'Create data vault',
+  dataVaultDetailLabel: 'Data vault details',
+  dataVaultFileDetailLabel: 'Data vault file details',
+  editCaseLabel: 'Edit case',
+  editDataVaultLabel: 'Edit data vault',
+  fileDetailLabel: 'File detail',
+  loginLabel: 'Login',
+  manageCaseLabel: 'Manage case',
+  uploadFilesLabel: 'Upload files',
 };
 
 export const fileUploadLabels = {
@@ -344,7 +392,10 @@ export const fileUploadLabels = {
   chooseFolderLabel: 'Choose folders',
   chooseFilesLabel: 'Choose files',
   errorIconAriaLabel: 'Error',
-  removeFileAriaLabel: (e: number) => `Remove file ${e + 1}`,
+  uploadFilesSuccessLabel: (numFiles: number) => `${numFiles} files successfully uploaded.`,
+  uploadFilesFailLabel: (numFiles: number) => `${numFiles} files failed to upload.`,
+  removeFileAriaLabel: (i: number) => `Remove file ${i + 1}`,
+  dismissFileAriaLabel: (f: string) => `Remove ${f}`,
 };
 
 export const fileDetailLabels = {
@@ -356,12 +407,6 @@ export const fileDetailLabels = {
   associationDateLabel: 'Case association date',
   fileDetailsLabel: 'File details',
 };
-
-export const systemUseNotificationText =
-  'CUSTOMIZE YOUR SYSTEM USE NOTIFICATION TEXT according ' +
-  'to your local laws and regulations. This is needed to fulfill CJIS Policy 5.5.4. (Use Notification). ' +
-  'Refer to the Implementation Guide for instructions on how to customize this text, and review ' +
-  'CJIS Policy 5.5.4 for latest requirement details.';
 
 export const dataVaultListLabels = {
   loading: 'Loading data vaults',
@@ -444,8 +489,13 @@ export const dataSyncTaskListLabels = {
   runDataSyncTaskLabel: 'Transfer files',
   searchDataSyncTasksLabel: 'Search by task ID',
   dataSyncTasksLabel: 'File transfer tasks',
-  dataSyncTasksPageDescription:
-    'Choose a task and start the file transfer. For file transfer instructions, see the',
+  dataSyncTasksPageDescription: (
+    <>
+      All DataSync tasks are displayed with associated task details. Choose a task and start the file
+      transfer. <br />
+      For file transfer instructions, see the
+    </>
+  ),
   dataSyncTaskCreationInstructions: 'Task Creation Instructions.',
   runTaskModalTitle: 'Confirm details are correct',
   runTaskModalDescription: 'To update task details, sign into AWS DataSync with your DEA account.',
@@ -462,4 +512,9 @@ export const dataSyncTasksStatusLabels = {
   running: 'Running',
   queued: 'Queued',
   unavailable: 'Unavailable',
+};
+
+export const accessibilityLabels = {
+  implementationGuideLinkLabel: 'Implementation Guide, opens in a new tab',
+  tabsLabel: 'Tabs',
 };

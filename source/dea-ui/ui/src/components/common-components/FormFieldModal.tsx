@@ -22,7 +22,7 @@ interface InputModalProps {
   inputHeader: string;
   inputDetails: string;
   inputField: string;
-  setInputField: React.Dispatch<React.SetStateAction<string>>
+  setInputField: React.Dispatch<React.SetStateAction<string>>;
   confirmAction: () => void;
   confirmButtonText: string;
   cancelAction: () => void;
@@ -67,16 +67,11 @@ export function FormFieldModal(props: InputModalProps) {
       }
       header={title}
     >
-      <FormField
-        description={inputDetails}
-        label={inputHeader}
-      >
+      <FormField description={inputDetails} label={inputHeader}>
         <Input
           data-testid={inputTestId}
           value={inputField}
-          onChange={event => 
-            setInputField(event.detail.value)
-          }
+          onChange={(event) => setInputField(event.detail.value)}
         />
       </FormField>
     </Modal>

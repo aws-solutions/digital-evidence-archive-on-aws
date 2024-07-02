@@ -1,0 +1,23 @@
+/*
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
+@use '@cloudscape-design/design-tokens/index' as awsui;
+
+.breadcrumb-dropdown {
+  max-width: 40vw;
+}
+
+.breadcrumb-disabled {
+  color: awsui.$color-text-breadcrumb-current;
+}
+
+// targets mobile devices only: https://www.icwebdesign.co.uk/common-viewport-sizes
+@media only screen and (max-width: 481px) {
+  .breadcrumb-dropdown {
+    min-width: 79vw;
+    max-width: 320px;
+    padding-top: 4px;
+  }
+}

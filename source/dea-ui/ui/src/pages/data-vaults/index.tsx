@@ -5,7 +5,7 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useListAllDataVaults } from '../../api/data-vaults';
-import { breadcrumbLabels, dataVaultListLabels } from '../../common/labels';
+import { breadcrumbLabels, dataVaultListLabels, navigationLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
 import DataVaultsTable from '../../components/data-vaults-table/DataVaultsTable';
 
@@ -16,8 +16,11 @@ export default function DataVaultsPage() {
       href: '#',
     },
   ];
+
+  const pageName = navigationLabels.dataVaultsLabel;
+
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-vaults">
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-vaults" pageName={pageName}>
       <DataVaultsTable
         detailPage="data-vault-detail"
         useDataVaultFetcher={useListAllDataVaults}

@@ -25,7 +25,7 @@ export function TableEmptyDisplay(
 ): JSX.Element {
   return (
     <Box textAlign="center" color="inherit">
-      <b>{noItemType}</b>
+      <b role="status">{noItemType}</b>
       <Box padding={{ bottom: 's' }} variant="p" color="inherit">
         {noItemTypeDisplay}
       </Box>

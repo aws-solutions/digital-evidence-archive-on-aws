@@ -10,14 +10,16 @@ import {
   Container,
   ContentLayout,
   Header,
+  Link,
   SpaceBetween,
   StatusIndicator,
   TextContent,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { getCaseAuditCSV, useGetCaseActions } from '../../api/cases';
 import { DeaCaseDTO } from '../../api/models/case';
 import { auditLogLabels, caseDetailLabels, caseStatusLabels, commonLabels } from '../../common/labels';
+import { useHelp } from '../../context/HelpContext';
 import { canDownloadCaseAudit, canUpdateCaseDetails } from '../../helpers/userActionSupport';
 import { AuditDownloadButton } from '../audit/audit-download-button';
 import CaseDetailsTabs from './CaseDetailsTabs';
@@ -31,6 +33,7 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
   const router = useRouter();
   const userActions = useGetCaseActions(props.caseId);
   const caseName = props.data.name;
+  const { makeHelpPanelHandler } = useHelp();
 
   function getStatusIcon(status: CaseStatus) {
     if (status == CaseStatus.ACTIVE) {
@@ -54,7 +57,12 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
     <ContentLayout
       header={
         <SpaceBetween size="m">
-          <Header variant="h1">{props.data.name}</Header>
+          <Header
+            variant="h1"
+            info={<Link onFollow={makeHelpPanelHandler('case-details-page')}>{commonLabels.infoLabel}</Link>}
+          >
+            {props.data.name}
+          </Header>
         </SpaceBetween>
       }
     >
@@ -89,7 +97,9 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
           <ColumnLayout columns={3} variant="text-grid">
             <TextContent>
               <div>
-                <h5>{commonLabels.creationDate}</h5>
+                <span>
+                  <strong>{commonLabels.creationDate}</strong>
+                </span>
                 <p>
                   {new Date(data.created).toLocaleString([], {
                     year: 'numeric',
@@ -101,13 +111,17 @@ function CaseDetailsBody(props: CaseDetailsBodyProps): JSX.Element {
             </TextContent>
             <TextContent>
               <div>
-                <h5>{commonLabels.description}</h5>
+                <span>
+                  <strong>{commonLabels.description}</strong>
+                </span>
                 <p>{data.description ?? '-'}</p>
               </div>
             </TextContent>
             <TextContent>
               <div>
-                <h5>{commonLabels.statusLabel}</h5>
+                <span>
+                  <strong>{commonLabels.statusLabel}</strong>
+                </span>
                 <p>{getStatusIcon(data.status)}</p>
               </div>
             </TextContent>

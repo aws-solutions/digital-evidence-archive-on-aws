@@ -107,6 +107,7 @@ export class DeaAuditTrail extends Construct {
       objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
       serverAccessLogsBucket: deaAccessLoggingBucket,
       serverAccessLogsPrefix: 'trail-bucket-access-logs',
+      versioned: true,
     });
 
     createCfnOutput(this, 'deaTrailBucketName', {

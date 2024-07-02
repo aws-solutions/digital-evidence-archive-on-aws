@@ -5,6 +5,7 @@
 
 import { fail } from 'assert';
 import { ValidationError } from '../../../app/exceptions/validation-exception';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getCaseActions } from '../../../app/resources/get-case-actions';
 import { CaseAction } from '../../../models/case-action';
 import { CaseUser } from '../../../models/case-user';
@@ -13,15 +14,17 @@ import { createCase } from '../../../persistence/case';
 import { createCaseUser } from '../../../persistence/case-user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
-let repositoryProvider: ModelRepositoryProvider;
-let caseOwner: DeaUser;
-
 describe('getCaseActions', () => {
+  let repositoryProvider: ModelRepositoryProvider;
+  let testProviders: LambdaProviders;
+  let caseOwner: DeaUser;
+
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('getCaseActionsTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
 
     caseOwner =
       (await createUser(
@@ -110,7 +113,7 @@ describe('getCaseActions', () => {
     // the integration between runLambdaPrechecks and this lambda handler
     // will be tested in the e2e tests
     event.headers['userUlid'] = user.ulid;
-    const response = await getCaseActions(event, dummyContext, repositoryProvider);
+    const response = await getCaseActions(event, dummyContext, testProviders);
 
     // THEN only actions for case 1 are returned
     // confirm memberships only returned
@@ -174,13 +177,13 @@ describe('getCaseActions', () => {
       },
     });
 
-    await expect(getCaseActions(event, dummyContext, repositoryProvider)).rejects.toThrowError(
+    await expect(getCaseActions(event, dummyContext, testProviders)).rejects.toThrowError(
       'userUlid was not present in the event header'
     );
   });
 
   it('should throw an error if the path param is missing', async () => {
-    await expect(getCaseActions(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(getCaseActions(getDummyEvent(), dummyContext, testProviders)).rejects.toThrow(
       ValidationError
     );
   });

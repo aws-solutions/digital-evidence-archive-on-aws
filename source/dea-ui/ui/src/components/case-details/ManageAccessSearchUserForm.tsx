@@ -4,19 +4,11 @@
  */
 
 import { DeaUser } from '@aws/dea-app/lib/models/user';
-import {
-  Autosuggest,
-  Button,
-  Form,
-  FormField,
-  Grid,
-  Icon,
-  Popover,
-  TextContent,
-} from '@cloudscape-design/components';
+import { Autosuggest, Button, Form, FormField, Grid, Link } from '@cloudscape-design/components';
 import { useState } from 'react';
 import { useGetUsers } from '../../api/cases';
 import { commonLabels, manageCaseAccessLabels } from '../../common/labels';
+import { useHelp } from '../../context/HelpContext';
 
 export interface ManageAccessSearchUserFormProps {
   readonly onChange: (user: DeaUser) => void;
@@ -28,6 +20,7 @@ function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX
   const [value, setValue] = useState('');
   const [selected, setSelected] = useState('');
   const { data, isLoading } = useGetUsers(filteringText);
+  const { makeHelpPanelHandler } = useHelp();
 
   function handleLoadItems(event: {
     detail: { filteringText: string; firstPage: boolean; samePage: boolean };
@@ -53,21 +46,8 @@ function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX
         stretch={true}
         description={manageCaseAccessLabels.manageAccessDescription}
         label={manageCaseAccessLabels.manageAccessSearchLabel}
-        info={
-          <Popover
-            position="bottom"
-            triggerType="custom"
-            header={manageCaseAccessLabels.manageAccessSearchInfoHeader}
-            content={
-              <TextContent>
-                <strong>{manageCaseAccessLabels.manageAccessSearchInfoLabel}</strong>
-                <p>{manageCaseAccessLabels.manageAccessSearchInfoDescription}</p>
-              </TextContent>
-            }
-          >
-            <Icon name="status-info" variant="link" />
-          </Popover>
-        }
+        data-testid="manage-access-search-user-form-combobox"
+        info={<Link onFollow={makeHelpPanelHandler('search-for-people')}>{commonLabels.infoLabel}</Link>}
       >
         <Grid gridDefinition={[{ colspan: { default: 12, xs: 10 } }, { colspan: { default: 12, xs: 2 } }]}>
           <Autosuggest
@@ -87,8 +67,14 @@ function ManageAccessSearchUserForm(props: ManageAccessSearchUserFormProps): JSX
             onChange={({ detail }) => setValue(detail.value)}
             onLoadItems={handleLoadItems}
             onSelect={({ detail }) => setSelected(detail.value)}
+            ariaDescribedby={data.map((user: DeaUser) => `${user.firstName}-${user.lastName}`).join(' ')}
+            clearAriaLabel={commonLabels.clearLabel}
           />
-          <Button onClick={onSubmitHandler} disabled={!selected || selected !== value}>
+          <Button
+            ariaLabel={commonLabels.addButton}
+            onClick={onSubmitHandler}
+            disabled={!selected || selected !== value}
+          >
             {commonLabels.addButton}
           </Button>
         </Grid>

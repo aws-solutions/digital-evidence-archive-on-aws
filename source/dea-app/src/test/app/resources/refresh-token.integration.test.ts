@@ -7,16 +7,19 @@ import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { runPreExecutionChecks } from '../../../app/resources/dea-lambda-utils';
 import { getToken } from '../../../app/resources/get-token';
 import { refreshToken } from '../../../app/resources/refresh-token';
-import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/auth-service';
+import { CognitoSsmParams, getCognitoSsmParams } from '../../../app/services/parameter-service';
 import { getSessionsForUser } from '../../../app/services/session-service';
 import { isolateCookieValue } from '../../../lambda-http-helpers';
 import { Oauth2Token } from '../../../models/auth';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { getSession } from '../../../persistence/session';
+import { defaultCacheProvider } from '../../../storage/cache';
+import { defaultParametersProvider } from '../../../storage/parameters';
 import { PkceStrings, getAuthorizationCode, getPkceStrings } from '../../../test-e2e/helpers/auth-helper';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
 import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
 import {
+  createTestProvidersObject,
   dummyContext,
   getDummyAuditEvent,
   getDummyEvent,
@@ -31,6 +34,7 @@ let pkceStrings: PkceStrings;
 
 describe('refresh-token', () => {
   const cognitoHelper: CognitoHelper = new CognitoHelper();
+  const testProviders = createTestProvidersObject({});
 
   const suffix = randomSuffix(5);
   const testUser = `RefreshTokenIntegrationTestUser${suffix}`;
@@ -41,7 +45,7 @@ describe('refresh-token', () => {
   beforeAll(async () => {
     // Create user in test group
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
-    cognitoParams = await getCognitoSsmParams();
+    cognitoParams = await getCognitoSsmParams(defaultParametersProvider, defaultCacheProvider);
     repositoryProvider = await getTestRepositoryProvider('refreshTokenTest');
     pkceStrings = getPkceStrings();
   });
@@ -95,7 +99,7 @@ describe('refresh-token', () => {
       },
     });
 
-    const response = await getToken(event, dummyContext);
+    const response = await getToken(event, dummyContext, testProviders);
     expect(response.statusCode).toEqual(200);
 
     if (!response.body) {
@@ -117,9 +121,7 @@ describe('refresh-token', () => {
     // call runLambdaPrechecks to add session to database
     await runPreExecutionChecks(dummyEvent, dummyContext, auditEvent, repositoryProvider);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const userUlid = dummyEvent.headers['userUlid']!;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const tokenId = dummyEvent.headers['tokenId']!;
 
     // assert session exists
@@ -128,7 +130,7 @@ describe('refresh-token', () => {
     expect(session?.isRevoked).toBeFalsy();
 
     // refresh token to get new id token
-    const refreshResponse = await refreshToken(dummyEvent, dummyContext, repositoryProvider);
+    const refreshResponse = await refreshToken(dummyEvent, dummyContext, testProviders);
     expect(refreshResponse.statusCode).toEqual(200);
     const newCookie = setCookieToCookie(refreshResponse);
     const newAuthToken = cookieToOauth(newCookie);
@@ -143,7 +145,6 @@ describe('refresh-token', () => {
     // Check only one session for the user
     // since the new and old id token share an origin_jti
     // the new id token should continue the old session
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const newTokenId = dummyEvent1.headers['tokenId']!;
     expect(newTokenId).toStrictEqual(tokenId); // they share a jti
     const sessions = await getSessionsForUser(userUlid, repositoryProvider);
@@ -153,7 +154,6 @@ describe('refresh-token', () => {
     expect(session2?.created).toBeDefined();
     expect(session2?.created).toStrictEqual(session?.created);
     expect(session2?.updated).toBeDefined();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(session2?.updated?.getTime()).toBeGreaterThan(session2!.created!.getTime());
   }, 40000);
 
@@ -180,7 +180,7 @@ describe('refresh-token', () => {
       },
     });
 
-    const response = await getToken(event, dummyContext);
+    const response = await getToken(event, dummyContext, testProviders);
     expect(response.statusCode).toEqual(200);
 
     if (!response.body) {
@@ -210,9 +210,7 @@ describe('refresh-token', () => {
     // call runLambdaPrechecks to add session to database
     await runPreExecutionChecks(dummyEvent, dummyContext, auditEvent, repositoryProvider);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const userUlid = dummyEvent.headers['userUlid']!;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const tokenId = dummyEvent.headers['tokenId']!;
 
     // assert session exists
@@ -220,6 +218,6 @@ describe('refresh-token', () => {
     expect(session).toBeDefined();
     expect(session?.isRevoked).toBeFalsy();
 
-    await expect(refreshToken(dummyEvent, dummyContext, repositoryProvider)).rejects.toThrow(ValidationError);
+    await expect(refreshToken(dummyEvent, dummyContext, testProviders)).rejects.toThrow(ValidationError);
   }, 40000);
 });

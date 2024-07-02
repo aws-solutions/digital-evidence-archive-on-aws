@@ -8,24 +8,30 @@ import { ExchangeToken } from '../../models/auth';
 import { ExchangeTokenSchema } from '../../models/validation/auth';
 import { authCode as authCodeRegex } from '../../models/validation/joi-common';
 import { exchangeAuthorizationCode } from '../services/auth-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { getUserPoolInfo } from '../services/parameter-service';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { okSetIdTokenCookie } from './dea-lambda-utils';
 
-export const getToken: DEAGatewayProxyHandler = async (event) => {
+export const getToken: DEAGatewayProxyHandler = async (
+  event,
+  context,
+  /* the default case is handled in e2e tests */
+  /* istanbul ignore next */
+  providers = defaultProviders
+) => {
   const authCode = getRequiredPathParam(event, 'authCode', authCodeRegex);
   const tokenPayload: ExchangeToken = getRequiredPayload(event, 'exchange token', ExchangeTokenSchema);
-
   const [getTokenResult, identityPoolId, userPoolId] = await exchangeAuthorizationCode(
     authCode,
     tokenPayload.codeVerifier,
+    providers.cacheProvider,
+    providers.parametersProvider,
     event.headers['origin'],
     event.headers['callback-override']
   );
 
-  const idTokenPayload = await getTokenPayload(
-    getTokenResult.id_token,
-    process.env.AWS_REGION ?? 'us-east-1'
-  );
+  const userPoolInfo = await getUserPoolInfo(providers.parametersProvider, providers.cacheProvider);
+  const idTokenPayload = await getTokenPayload(getTokenResult.id_token, userPoolInfo);
   let username = idTokenPayload['cognito:username'];
   if (idTokenPayload['given_name'] && idTokenPayload['family_name']) {
     username = `${idTokenPayload['given_name']} ${idTokenPayload['family_name']}`;

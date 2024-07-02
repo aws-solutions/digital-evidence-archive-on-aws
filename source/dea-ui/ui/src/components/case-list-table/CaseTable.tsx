@@ -15,11 +15,10 @@ import {
   SpaceBetween,
   StatusIndicator,
   Table,
-  Toggle,
 } from '@cloudscape-design/components';
 import Box from '@cloudscape-design/components/box';
 import Modal from '@cloudscape-design/components/modal';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { updateCaseStatus } from '../../api/cases';
@@ -37,12 +36,11 @@ import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import ActionContainer from '../common-components/ActionContainer';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
-import { i18nStrings } from '../common-components/commonDefinitions';
+import { i18nStringsForPropertyFilter } from '../common-components/commonDefinitions';
 import { ConfirmModal } from '../common-components/ConfirmModal';
 import { TableHeader } from '../common-components/TableHeader';
 import { filteringOptions, filteringProperties, searchableColumns } from './caseListDefinitions';
 
-export const DELETE_CASE_FILES_PATH = '/cases/{caseId}/filesDELETE';
 export const UPDATE_CASE_STATUS_PATH = '/cases/{caseId}/statusPUT';
 export const CREATE_CASE_PATH = '/casesPOST';
 
@@ -62,7 +60,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
   const [selectedCase, setSelectedCase] = React.useState<DeaCaseDTO[]>([]);
   const [showActivateModal, setShowActivateModal] = React.useState(false);
   const [showDeactivateModal, setShowDeactivateModal] = React.useState(false);
-  const [deleteFiles, setDeleteFiles] = React.useState(false);
+  const [deleteFiles] = React.useState(false);
   const { pushNotification } = useNotifications();
 
   // Property and date filter collections
@@ -216,11 +214,6 @@ function CaseTable(props: CaseTableProps): JSX.Element {
         }
       >
         {caseListLabels.deactivateCaseModalMessage}
-        <ActionContainer required={DELETE_CASE_FILES_PATH} actions={availableEndpoints.data}>
-          <Toggle onChange={({ detail }) => setDeleteFiles(detail.checked)} checked={deleteFiles}>
-            {caseListLabels.deleteFilesLabel}
-          </Toggle>
-        </ActionContainer>
       </Modal>
     );
   }
@@ -247,12 +240,19 @@ function CaseTable(props: CaseTableProps): JSX.Element {
       selectedItems={selectedCase}
       selectionType="single"
       isItemDisabled={noUserCaseStatusUpdatePermission}
-      trackBy="ulid"
+      trackBy={(item) => item.ulid}
       loading={isLoading}
       variant="full-page"
+      renderAriaLive={commonTableLabels.renderAriaLiveLabel}
+      totalItemsCount={items.length}
       items={items}
       loadingText={caseListLabels.loading}
       resizableColumns={true}
+      ariaLabels={{
+        tableLabel: caseListLabels.casesLabel,
+        selectionGroupLabel: caseListLabels.tableRadioGroupSelectionLabel,
+        itemSelectionLabel: commonTableLabels.itemSelectionLabel,
+      }}
       empty={TableEmptyDisplay(caseListLabels.noCasesLabel, caseListLabels.noDisplayLabel)}
       header={
         <TableHeader
@@ -357,7 +357,7 @@ function CaseTable(props: CaseTableProps): JSX.Element {
           <PropertyFilter
             {...propertyFilterProps}
             countText={getFilterCounterText(filteredItemsCount)}
-            i18nStrings={i18nStrings}
+            i18nStrings={i18nStringsForPropertyFilter}
             filteringOptions={filteringOptions}
             expandToViewport={true}
           />

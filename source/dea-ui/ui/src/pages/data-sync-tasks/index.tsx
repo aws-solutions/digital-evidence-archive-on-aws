@@ -5,7 +5,7 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import { useListAllDataVaults, useListAllDataSyncTasks } from '../../api/data-vaults';
-import { breadcrumbLabels, dataSyncTaskListLabels } from '../../common/labels';
+import { breadcrumbLabels, dataSyncTaskListLabels, navigationLabels } from '../../common/labels';
 import BaseLayout from '../../components/BaseLayout';
 import DataSyncTasksTable from '../../components/data-sync-tasks-table/DataSyncTasksTable';
 
@@ -16,8 +16,11 @@ export default function DataSyncTasksPage() {
       href: '#',
     },
   ];
+
+  const pageName = navigationLabels.dataSyncTasksLabel;
+
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-sync-tasks">
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/data-sync-tasks" pageName={pageName}>
       <DataSyncTasksTable
         detailPage="data-vault-detail"
         useDataVaultFetcher={useListAllDataVaults}

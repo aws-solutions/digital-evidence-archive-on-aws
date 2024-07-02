@@ -16,10 +16,15 @@ import {
   Textarea,
   TextContent,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { createDataVault } from '../../api/data-vaults';
-import { commonLabels, commonTableLabels, createDataVaultLabels } from '../../common/labels';
+import {
+  accessibilityLabels,
+  commonLabels,
+  commonTableLabels,
+  createDataVaultLabels,
+} from '../../common/labels';
 import { useNotifications } from '../../context/NotificationsContext';
 
 function CreateDataVaultsForm(): JSX.Element {
@@ -39,12 +44,14 @@ function CreateDataVaultsForm(): JSX.Element {
           <Link
             external
             color="inverted"
+            ariaLabel={accessibilityLabels.implementationGuideLinkLabel}
             href="https://docs.aws.amazon.com/solutions/latest/digital-evidence-archive-on-aws/overview.html"
           >
             {commonTableLabels.implementationGuideLabel}
           </Link>
         </>
       );
+      // notification is already sent on success, in EditDataVaultForm.tsx
       return router.push(`/data-vault-detail?dataVaultId=${newDataVault.ulid}`);
     } catch (e) {
       if (e instanceof Error) {

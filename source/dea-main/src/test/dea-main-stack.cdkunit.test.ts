@@ -70,7 +70,7 @@ describe('DeaMainStack', () => {
   });
 
   it("disables the FIPS-compliant endpoints. Non US regions don't have FIPS endpoints.", () => {
-    convictConfig.set('fipsEndpointsEnabled', false);
+    convictConfig.set('fipsEndpointsEnabled', 'false');
     convictConfig.set('testStack', false);
 
     const app = new cdk.App({ context });

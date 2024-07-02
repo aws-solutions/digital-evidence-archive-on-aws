@@ -15,7 +15,7 @@ import {
   Textarea,
   TextContent,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { updateDataVault } from '../../api/data-vaults';
 import { commonLabels, createDataVaultLabels } from '../../common/labels';

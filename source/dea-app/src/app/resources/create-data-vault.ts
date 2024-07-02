@@ -6,16 +6,15 @@
 import { getRequiredPayload } from '../../lambda-http-helpers';
 import { DeaDataVaultInput } from '../../models/data-vault';
 import { createDataVaultSchema } from '../../models/validation/data-vault';
-import { defaultProvider } from '../../persistence/schema/entities';
 import * as DataVaultService from '../services/data-vault-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const createDataVault: DEAGatewayProxyHandler = async (
   event,
   context,
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const deaDataVault: DeaDataVaultInput = getRequiredPayload(
     event,
@@ -23,7 +22,7 @@ export const createDataVault: DEAGatewayProxyHandler = async (
     createDataVaultSchema
   );
 
-  const responseBody = await DataVaultService.createDataVault(deaDataVault, repositoryProvider);
+  const responseBody = await DataVaultService.createDataVault(deaDataVault, providers.repositoryProvider);
 
   return responseOk(event, responseBody);
 };

@@ -16,15 +16,15 @@ import { IdentityType } from '../../../app/services/audit-service';
 import { useRefreshToken } from '../../../app/services/auth-service';
 import { createSession, shouldSessionBeConsideredInactive } from '../../../app/services/session-service';
 import { createUser } from '../../../app/services/user-service';
-import { getTokenPayload } from '../../../cognito-token-helpers';
 import { Oauth2Token } from '../../../models/auth';
 import { DeaUser } from '../../../models/user';
 import { sessionResponseSchema } from '../../../models/validation/session';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { listSessionsForUser, updateSession } from '../../../persistence/session';
 import { getUserByTokenId, listUsers } from '../../../persistence/user';
+import { defaultCacheProvider } from '../../../storage/cache';
+import { defaultParametersProvider } from '../../../storage/parameters';
 import CognitoHelper from '../../../test-e2e/helpers/cognito-helper';
-import { testEnv } from '../../../test-e2e/helpers/settings';
 import { randomSuffix } from '../../../test-e2e/resources/test-helpers';
 import {
   dummyContext,
@@ -43,7 +43,6 @@ describe('lambda pre-execution checks', () => {
   const testUser = `lambdaPreExecutionChecksTestUser${suffix}`;
   const firstName = 'PreExecCheck';
   const lastName = 'TestUser';
-  const region = testEnv.awsRegion;
 
   beforeAll(async () => {
     await cognitoHelper.createUser(testUser, 'AuthTestGroup', firstName, lastName);
@@ -64,7 +63,7 @@ describe('lambda pre-execution checks', () => {
       id_token: oauthToken.id_token,
       expires_in: oauthToken.expires_in,
     })}; refreshToken=${JSON.stringify({ refresh_token: oauthToken.refresh_token })}`;
-    const tokenPayload = await getTokenPayload(oauthToken.id_token, region);
+    const tokenPayload = await cognitoHelper.getTokenPayload(oauthToken.id_token);
     const tokenId = tokenPayload.sub;
     const idPoolId = event.requestContext.identity.cognitoIdentityId ?? 'us-east-1:1-2-3-a-b-c';
 
@@ -111,7 +110,6 @@ describe('lambda pre-execution checks', () => {
 
     // Mark session revoked (mimic logout)
     // so we can test same user different idtoken
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const sessions = await listSessionsForUser(user!.ulid, repositoryProvider);
     expect(sessions.length).toEqual(1);
     const session = sessions[0];
@@ -128,7 +126,7 @@ describe('lambda pre-execution checks', () => {
 
     const result = await cognitoHelper.getIdTokenForUser(testUser);
     const idToken2 = result.id_token;
-    const tokenId2 = (await getTokenPayload(idToken2, region)).sub;
+    const tokenId2 = (await cognitoHelper.getTokenPayload(idToken2)).sub;
     expect(tokenId2).toStrictEqual(tokenId);
 
     const event2 = getDummyEvent();
@@ -201,7 +199,6 @@ describe('lambda pre-execution checks', () => {
     expect(sessions2.length).toEqual(1);
     const session2 = sessions2[0];
     expect(session2.updated).toBeDefined();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(session2.updated!.getTime()).toBeGreaterThan(session1.updated!.getTime());
     expect(session2.created).toBeDefined();
     expect(session2.created).toStrictEqual(session1.created);
@@ -328,7 +325,11 @@ describe('lambda pre-execution checks', () => {
 
     // Get new id token with old refresh token, call API with new id token, it should fail
     // since old session with origin_jti was revoked
-    const [newIdTokenForOldSession] = await useRefreshToken(oauthToken.refresh_token);
+    const [newIdTokenForOldSession] = await useRefreshToken(
+      oauthToken.refresh_token,
+      defaultCacheProvider,
+      defaultParametersProvider
+    );
     await expect(callPreChecks(newIdTokenForOldSession, idPoolId)).rejects.toThrow(ReauthenticationError);
 
     // Try new session again it should succeed.
@@ -361,7 +362,7 @@ describe('lambda pre-execution checks', () => {
     const user = `NoIdentityPoolId${suffix}`;
     await cognitoHelper.createUser(user, 'AuthTestGroup', 'NoIdentityPool', 'PoolId');
     const oauthToken = await cognitoHelper.getIdTokenForUser(user);
-    const tokenPayload = await getTokenPayload(oauthToken.id_token, region);
+    const tokenPayload = await cognitoHelper.getTokenPayload(oauthToken.id_token);
     const tokenId = tokenPayload.sub;
     const endIdPoolId = `oldusernowupdatesidpoolid${suffix}`;
 
@@ -400,6 +401,6 @@ const callPreChecks = async (oauthToken: Oauth2Token, idPoolId?: string): Promis
 
   // Call API expect success
   await runPreExecutionChecks(event, dummyContext, auditEvent, repositoryProvider);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
   return event.headers['userUlid']!;
 };

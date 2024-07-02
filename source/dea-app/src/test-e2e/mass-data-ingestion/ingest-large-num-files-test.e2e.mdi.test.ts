@@ -258,7 +258,7 @@ describe('ingests files from a source with a lot of files', () => {
     const resp = await retry(
       async () => {
         const downloadReason = 'e2e testing for ingest-large-num-files-test';
-        const body :DownloadCaseFileRequest = {
+        const body: DownloadCaseFileRequest = {
           caseUlid,
           ulid: fileUlid,
           downloadReason,
@@ -268,7 +268,7 @@ describe('ingests files from a source with a lot of files', () => {
           'POST',
           idToken,
           creds,
-          body,
+          body
         );
 
         if (response.status == 200) {

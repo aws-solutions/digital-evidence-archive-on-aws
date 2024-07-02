@@ -17,7 +17,7 @@ const downloadCaseFileArgs: argsType = [
   JSON.stringify({
     caseUlid: CASE_ID,
     ulid: FILE_ID,
-    downloadReason: 'i want to test file download,'
+    downloadReason: 'i want to test file download,',
   }),
   false,
   true,

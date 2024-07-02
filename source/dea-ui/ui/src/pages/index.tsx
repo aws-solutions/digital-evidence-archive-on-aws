@@ -5,11 +5,11 @@
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useAvailableEndpoints } from '../api/auth';
 import { useListMyCases } from '../api/cases';
-import { breadcrumbLabels, caseListLabels } from '../common/labels';
+import { breadcrumbLabels, caseListLabels, navigationLabels } from '../common/labels';
 import BaseLayout from '../components/BaseLayout';
 import CaseTable from '../components/case-list-table/CaseTable';
 
@@ -24,6 +24,8 @@ const Home: NextPage = () => {
   const router = useRouter();
   const availableEndpoints = useAvailableEndpoints();
 
+  const pageName = navigationLabels.myCasesLabel;
+
   useEffect(() => {
     const checkCaseUsage = async () => {
       if (availableEndpoints.isLoading) {
@@ -33,7 +35,7 @@ const Home: NextPage = () => {
         !availableEndpoints.data?.includes(MY_CASES_ENDPOINT) &&
         availableEndpoints.data?.includes(ALL_CASES_ENDPOINT)
       ) {
-        await router.push('/all-cases');
+        router.push('/all-cases');
       }
     };
 
@@ -48,7 +50,7 @@ const Home: NextPage = () => {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/">
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/" pageName={pageName}>
       <CaseTable
         detailPage="case-detail"
         useCaseFetcher={useListMyCases}

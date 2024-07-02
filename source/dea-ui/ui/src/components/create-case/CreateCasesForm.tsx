@@ -12,9 +12,8 @@ import {
   Input,
   SpaceBetween,
   Textarea,
-  TextContent,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createCase } from '../../api/cases';
 import { commonLabels, createCaseLabels } from '../../common/labels';
@@ -31,6 +30,7 @@ function CreateCasesForm(): JSX.Element {
     setIsSubmitLoading(true);
     try {
       const newCase = await createCase(formData);
+      pushNotification('success', createCaseLabels.createCaseSuccessLabel(newCase.name));
       return router.push(`/case-detail?caseId=${newCase.ulid}`);
     } catch (e) {
       if (e instanceof Error) {
@@ -78,6 +78,7 @@ function CreateCasesForm(): JSX.Element {
               data-testid="input-name"
               label={createCaseLabels.caseNameLabel}
               description={createCaseLabels.caseNameDescription}
+              constraintText={createCaseLabels.caseNameSubtext}
             >
               <Input
                 value={formData?.name || ''}
@@ -85,11 +86,6 @@ function CreateCasesForm(): JSX.Element {
                   setFormData({ ...formData, name: value });
                 }}
               />
-              <TextContent>
-                <p>
-                  <small>{createCaseLabels.caseNameSubtext}</small>
-                </p>
-              </TextContent>
             </FormField>
             <FormField
               data-testid="input-description"

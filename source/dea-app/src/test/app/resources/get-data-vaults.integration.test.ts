@@ -4,18 +4,21 @@
  */
 
 import { createDataVault } from '../../../app/resources/create-data-vault';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getDataVaults } from '../../../app/resources/get-data-vaults';
 import { DeaDataVault } from '../../../models/data-vault';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 
 describe('get data vaults', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('getDataVaultsTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
   });
 
   afterAll(async () => {
@@ -35,7 +38,7 @@ describe('get data vaults', () => {
         }),
       }),
       dummyContext,
-      repositoryProvider
+      testProviders
     );
 
     await createDataVault(
@@ -45,7 +48,7 @@ describe('get data vaults', () => {
         }),
       }),
       dummyContext,
-      repositoryProvider
+      testProviders
     );
 
     await createDataVault(
@@ -55,12 +58,12 @@ describe('get data vaults', () => {
         }),
       }),
       dummyContext,
-      repositoryProvider
+      testProviders
     );
 
     const event = getDummyEvent({});
 
-    const response = await getDataVaults(event, dummyContext, repositoryProvider);
+    const response = await getDataVaults(event, dummyContext, testProviders);
     const dataVaults: DeaDataVault[] = JSON.parse(response.body).dataVaults;
     expect(dataVaults.length).toEqual(3);
     expect(dataVaults.find((dataVault) => dataVault.name === dataVaultName1)).toBeDefined();

@@ -1,7 +1,6 @@
 {
   "deletionAllowed": false,
   "isOneClick": true,
-  "fipsEndpointsEnabled": false,
   "isMultiRegionTrail": false,
   "sourceIpValidation": false,
   "testStack": true,
@@ -65,10 +64,6 @@
         {
           "path": "/auth/revokeToken",
           "method": "POST"
-        },
-        {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
         },
         {
           "path": "/users",
@@ -231,10 +226,6 @@
         {
           "path": "/auth/revokeToken",
           "method": "POST"
-        },
-        {
-          "path": "/auth/credentials/{idToken}/exchange",
-          "method": "GET"
         },
         {
           "path": "/users",

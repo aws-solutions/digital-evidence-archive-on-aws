@@ -4,7 +4,7 @@
  */
 
 import { restrictAccountStatementStatementProps } from '@aws/dea-app/lib/storage/restrict-account-statement';
-import { Aws } from 'aws-cdk-lib';
+import { Aws, CfnResource } from 'aws-cdk-lib';
 import { CfnWorkGroup } from 'aws-cdk-lib/aws-athena';
 import { ManagedPolicy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
@@ -89,6 +89,20 @@ export default function createAuditRedrivePolicy(
       }),
     ],
   });
+
+  // CFN NAG Suppression
+  const cfnRedrivePolicy = redrivePolicy.node.defaultChild;
+  if (cfnRedrivePolicy instanceof CfnResource) {
+    cfnRedrivePolicy.addMetadata('cfn_nag', {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      rules_to_suppress: [
+        {
+          id: 'W13',
+          reason: 'Wildcard required as target resources are generated and not pre-existing',
+        },
+      ],
+    });
+  }
 
   return redrivePolicy;
 }

@@ -4,6 +4,7 @@
  */
 
 import { ValidationError } from '../../../app/exceptions/validation-exception';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { deleteCase } from '../../../app/resources/delete-cases';
 import { getCase } from '../../../app/services/case-service';
 import { createCaseUserMembership } from '../../../app/services/case-user-service';
@@ -13,14 +14,16 @@ import { CaseAction } from '../../../models/case-action';
 import { createCase } from '../../../persistence/case';
 import { listCaseUsersByCase } from '../../../persistence/case-user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
-let repositoryProvider: ModelRepositoryProvider;
-
 describe('delete cases resource', () => {
+  let repositoryProvider: ModelRepositoryProvider;
+  let testProviders: LambdaProviders;
+
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('deleteCasesTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
   });
 
   afterAll(async () => {
@@ -34,7 +37,7 @@ describe('delete cases resource', () => {
       },
     });
 
-    const response = await deleteCase(event, dummyContext, repositoryProvider);
+    const response = await deleteCase(event, dummyContext, testProviders);
 
     expect(response.statusCode).toEqual(204);
   });
@@ -62,7 +65,7 @@ describe('delete cases resource', () => {
       },
     });
 
-    const response = await deleteCase(event, dummyContext, repositoryProvider);
+    const response = await deleteCase(event, dummyContext, testProviders);
 
     expect(response.statusCode).toEqual(204);
 
@@ -127,7 +130,7 @@ describe('delete cases resource', () => {
       },
     });
 
-    const response = await deleteCase(event, dummyContext, repositoryProvider);
+    const response = await deleteCase(event, dummyContext, testProviders);
 
     // All memberships should be gone
     const usersOnCaseAfterDelete = await listCaseUsersByCase(
@@ -145,8 +148,6 @@ describe('delete cases resource', () => {
   }, 30000);
 
   it('should error if the path param is not provided', async () => {
-    await expect(deleteCase(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(
-      ValidationError
-    );
+    await expect(deleteCase(getDummyEvent(), dummyContext, testProviders)).rejects.toThrow(ValidationError);
   });
 });

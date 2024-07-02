@@ -8,11 +8,10 @@ import { DownloadCaseFileRequest } from '../../models/case-file';
 import { CaseFileStatus } from '../../models/case-file-status';
 import { downloadFileRequestBodySchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
-import { defaultDatasetsProvider, getPresignedUrlForDownload } from '../../storage/datasets';
+import { getPresignedUrlForDownload } from '../../storage/datasets';
 import { ValidationError } from '../exceptions/validation-exception';
 import { getRequiredCaseFile } from '../services/case-file-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const downloadCaseFile: DEAGatewayProxyHandler = async (
@@ -20,18 +19,20 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider,
-  /* istanbul ignore next */
-  datasetsProvider = defaultDatasetsProvider
+  providers = defaultProviders
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
   const subnetCIDR = getRequiredEnv('SOURCE_IP_MASK_CIDR');
 
-  const body = getRequiredPayload<DownloadCaseFileRequest>(event, 'downloadCaseFile request body', downloadFileRequestBodySchema);
-  const downloadReason :string | undefined = body.downloadReason; 
+  const body = getRequiredPayload<DownloadCaseFileRequest>(
+    event,
+    'downloadCaseFile request body',
+    downloadFileRequestBodySchema
+  );
+  const downloadReason: string | undefined = body.downloadReason;
 
-  const retrievedCaseFile = await getRequiredCaseFile(caseId, fileId, repositoryProvider);
+  const retrievedCaseFile = await getRequiredCaseFile(caseId, fileId, providers.repositoryProvider);
 
   if (retrievedCaseFile.status !== CaseFileStatus.ACTIVE) {
     throw new ValidationError(`Can't download a file in ${retrievedCaseFile.status} state`);
@@ -40,7 +41,7 @@ export const downloadCaseFile: DEAGatewayProxyHandler = async (
   const downloadResult = await getPresignedUrlForDownload(
     retrievedCaseFile,
     `${event.requestContext.identity.sourceIp}/${subnetCIDR}`,
-    datasetsProvider,
+    providers.datasetsProvider,
     downloadReason
   );
 

@@ -7,10 +7,11 @@ import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { Credentials, aws4Interceptor } from 'aws4-axios';
 import axios from 'axios';
 import _ from 'lodash';
-import { getCognitoSsmParams } from '../../app/services/auth-service';
-import { PARAM_PREFIX } from '../../app/services/service-constants';
-import { getTokenPayload } from '../../cognito-token-helpers';
+import { getCognitoSsmParams } from '../../app/services/parameter-service';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { Oauth2Token } from '../../models/auth';
+import { defaultCacheProvider } from '../../storage/cache';
+import { PARAM_PREFIX, defaultParametersProvider } from '../../storage/parameters';
 import { PkceStrings, getAuthorizationCode, getPkceStrings } from '../helpers/auth-helper';
 import CognitoHelper from '../helpers/cognito-helper';
 import { testEnv } from '../helpers/settings';
@@ -50,7 +51,7 @@ describe('API authentication', () => {
   it('should have the DEARole field in the id Token', async () => {
     const [_creds, idToken] = await cognitoHelper.getCredentialsForUser(testUser);
 
-    const payload = await getTokenPayload(idToken.id_token, region);
+    const payload = await cognitoHelper.getTokenPayload(idToken.id_token);
     expect(payload['custom:DEARole']).toStrictEqual('AuthTestGroup');
   }, 40000);
 
@@ -148,7 +149,7 @@ describe('API authentication', () => {
     const client = axios.create();
 
     // get SSM parameters to compare
-    const cognitoParams = await getCognitoSsmParams();
+    const cognitoParams = await getCognitoSsmParams(defaultParametersProvider, defaultCacheProvider);
     let expectedUrl = `${cognitoParams.cognitoDomainUrl}/oauth2/authorize?response_type=code&client_id=${cognitoParams.clientId}&redirect_uri=${cognitoParams.callbackUrl}`;
     // If you have an external IdP integrated, then DEA uses
     // the identity_provider query param to redirect automatically
@@ -167,7 +168,7 @@ describe('API authentication', () => {
     const client = axios.create();
 
     // 2. Get Auth Code
-    const cognitoParams = await getCognitoSsmParams();
+    const cognitoParams = await getCognitoSsmParams(defaultParametersProvider, defaultCacheProvider);
 
     // Get test auth code page
     const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
@@ -350,7 +351,11 @@ describe('API authentication', () => {
   // "rushx idp-test-setup --username <TEST_USER_NAME> --password <TEST_USER_PASSWORD>"
   it('should authenticate and authorize a federated user from the configured IdP', async () => {
     // Check that SSM Parameters are all present, if not skip the test
-    const ssmClient = new SSMClient({ region });
+    const ssmClient = new SSMClient({
+      region,
+      useFipsEndpoint: testEnv.awsUseFipsEndpoint,
+      customUserAgent: getCustomUserAgent(),
+    });
     const agencyIdpNamePath = `${PARAM_PREFIX}${stage}-agency-idp-name`;
     const testUserLogonPath = `${PARAM_PREFIX}${stage}-test/idp/idp-test-user-logon`;
     const testUserPasswordPath = `${PARAM_PREFIX}${stage}-test/idp/idp-test-user-password`;
@@ -409,7 +414,7 @@ describe('API authentication', () => {
     }
 
     // Use Hosted UI to federate user and get auth code
-    const cognitoParams = await getCognitoSsmParams();
+    const cognitoParams = await getCognitoSsmParams(defaultParametersProvider, defaultCacheProvider);
     const authTestUrl = cognitoParams.callbackUrl.replace('/login', '/auth-test');
     let authCode: string | undefined;
     for (let i = 0; i < 3; i++) {
@@ -473,7 +478,7 @@ describe('API authentication', () => {
     const idToken = retrievedTokens.id_token;
 
     // Confirm IdToken has the correct fields
-    const payload = await getTokenPayload(idToken, region);
+    const payload = await cognitoHelper.getTokenPayload(idToken);
     expect(payload['custom:DEARole']).toStrictEqual('CaseWorker');
     expect(payload['family_name']).toBeDefined();
     expect(payload['given_name']).toBeDefined();

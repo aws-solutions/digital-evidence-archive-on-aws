@@ -34,6 +34,14 @@ module.exports = {
     '@typescript-eslint/await-thenable': 'error',
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
   },
+  overrides: [
+    {
+      files: ['**/*.test.ts', '**/test-e2e/**/*.ts'],
+      rules: {
+        '@typescript-eslint/no-non-null-assertion': 'off',
+      },
+    },
+  ],
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'security', 'import'],
   parserOptions: { tsconfigRootDir: __dirname, project: './tsconfig.json' },

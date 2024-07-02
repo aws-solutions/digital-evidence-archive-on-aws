@@ -9,7 +9,6 @@ import { CaseStatus } from '@aws/dea-app/lib/models/case-status';
 import { PropertyFilterProperty, useCollection } from '@cloudscape-design/collection-hooks';
 import {
   Box,
-  BreadcrumbGroup,
   Button,
   Header,
   Pagination,
@@ -18,11 +17,12 @@ import {
   Table,
   TextFilter,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useAvailableEndpoints } from '../../api/auth';
 import { restoreFile, useGetCaseActions, useListCaseFiles } from '../../api/cases';
 import {
+  breadcrumbLabels,
   caseStatusLabels,
   commonLabels,
   commonTableLabels,
@@ -34,9 +34,11 @@ import { useNotifications } from '../../context/NotificationsContext';
 import { formatDateFromISOString } from '../../helpers/dateHelper';
 import { formatFileSize } from '../../helpers/fileHelper';
 import { canDownloadFiles, canRestoreFiles, canUploadFiles } from '../../helpers/userActionSupport';
-import DownloadButton from '../buttons/DownloadButton';
+import Breadcrumb, { BreadcrumbItem } from '../common-components/Breadcrumb';
 import { TableEmptyDisplay, TableNoMatchDisplay } from '../common-components/CommonComponents';
+import { i18nStringsForPropertyFilter } from '../common-components/commonDefinitions';
 import { ConfirmModal } from '../common-components/ConfirmModal';
+import DownloadButton from '../common-components/DownloadButton';
 import { CaseDetailsTabsProps } from './CaseDetailsTabs';
 
 function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
@@ -47,6 +49,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   const [filesTableState, setFilesTableState] = React.useState({
     textFilter: '',
     basePath: '/',
+    label: 'Case files',
   });
   const { data, isLoading } = useListCaseFiles(props.caseId, filesTableState.basePath);
   const [selectedFiles, setSelectedFiles] = React.useState<DownloadDTO[]>([]);
@@ -64,7 +67,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
     },
   ];
 
-  const { items, filterProps, collectionProps, paginationProps } = useCollection(data, {
+  const { items, filterProps, collectionProps, paginationProps, actions } = useCollection(data, {
     filtering: {
       empty: TableEmptyDisplay(filesListLabels.noFilesLabel, filesListLabels.noDisplayLabel),
       noMatch: TableNoMatchDisplay(filesListLabels.noFilesLabel),
@@ -93,13 +96,15 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   }
 
   const pathParts = filesTableState.basePath.split('/');
-  const breadcrumbItems = [{ text: '/', href: '#' }];
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: breadcrumbLabels.rootLabel, value: '#', iconName: 'folder' },
+  ];
 
   let hrefString = '#';
   pathParts.forEach((part) => {
     if (part !== '') {
       hrefString += part + '#';
-      breadcrumbItems.push({ text: part, href: hrefString });
+      breadcrumbItems.push({ label: part, value: hrefString, iconName: 'folder' });
     }
   });
 
@@ -113,6 +118,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
           e.preventDefault();
           setFilesTableState((state) => ({
             ...state,
+            label: caseFile.fileName,
             basePath: filesTableState.basePath + caseFile.fileName + '/',
           }));
         }}
@@ -197,21 +203,7 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
   // table header Element
   const tableHeader = (
     <Header variant="h2" description={filesListLabels.filterDescription} actions={tableActions()}>
-      <SpaceBetween direction="horizontal" size="xs">
-        <span>{`${filesListLabels.caseFilesLabel} (${props.fileCount})`}</span>
-        <BreadcrumbGroup
-          data-testid="file-breadcrumb"
-          onClick={(event) => {
-            event.preventDefault();
-            setFilesTableState((state) => ({
-              ...state,
-              basePath: event.detail.href.replaceAll('#', '/'),
-            }));
-          }}
-          items={breadcrumbItems}
-          ariaLabel="Breadcrumbs"
-        />
-      </SpaceBetween>
+      <span>{`${filesListLabels.caseFilesLabel} (${props.fileCount})`}</span>
     </Header>
   );
 
@@ -266,6 +258,12 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
         setSelectedFiles(detail.selectedItems);
       }}
       selectedItems={selectedFiles}
+      ariaLabels={{
+        tableLabel: filesListLabels.caseFilesLabel,
+        selectionGroupLabel: commonTableLabels.tableCheckboxSelectionGroupLabel,
+        allItemsSelectionLabel: commonTableLabels.allItemsSelectionLabel,
+        itemSelectionLabel: commonTableLabels.itemSelectionLabel,
+      }}
       isItemDisabled={(item) => item.status !== CaseFileStatus.ACTIVE || !item.isFile}
       columnDefinitions={[
         {
@@ -325,11 +323,33 @@ function CaseFilesTable(props: CaseDetailsTabsProps): JSX.Element {
       resizableColumns
       empty={emptyConfig}
       filter={
-        <TextFilter
-          data-testid="files-text-filter"
-          {...filterProps}
-          filteringPlaceholder={filesListLabels.searchLabel}
-        />
+        <SpaceBetween direction="vertical" size="m">
+          <TextFilter
+            data-testid="files-text-filter"
+            {...filterProps}
+            filteringClearAriaLabel={i18nStringsForPropertyFilter.clearAriaLabel}
+            filteringPlaceholder={filesListLabels.searchLabel}
+            filteringAriaLabel={filesListLabels.searchLabel}
+          />
+          <Breadcrumb
+            data-testid="files-breadcrumb"
+            breadcrumbItems={breadcrumbItems}
+            filesTableState={filesTableState}
+            onClick={(event) => {
+              event.preventDefault();
+              actions.setFiltering('');
+              setFilesTableState((state) => ({
+                ...state,
+                label: event.detail.selectedOption
+                  ? event.detail.selectedOption.label
+                  : event.detail.href.replaceAll('#', '/'),
+                basePath: event.detail.selectedOption
+                  ? event.detail.selectedOption.value.replaceAll('#', '/')
+                  : event.detail.href.replaceAll('#', '/'),
+              }));
+            }}
+          />
+        </SpaceBetween>
       }
       header={tableHeader}
       pagination={tablePagination}

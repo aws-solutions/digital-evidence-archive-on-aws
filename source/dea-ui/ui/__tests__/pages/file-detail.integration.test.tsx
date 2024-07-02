@@ -12,14 +12,27 @@ import FileDetailPage from '../../src/pages/file-detail';
 afterEach(cleanup);
 
 const push = jest.fn();
+
 const CASE_ID = '100';
 const FILE_ID = '200';
 const CASE_NAME = 'mocked case';
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID, fileId: FILE_ID, caseName: CASE_NAME },
-    push,
-  })),
+interface Query {
+  caseId: string | object;
+  fileId: string | object;
+  caseName: string | object;
+}
+let query: Query = {
+  caseId: CASE_ID,
+  fileId: FILE_ID,
+  caseName: CASE_NAME,
+};
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key]),
+  }),
+  useRouter: () => ({
+    push: jest.fn(),
+  }),
 }));
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
@@ -117,7 +130,7 @@ describe('FileDetailPage', () => {
     expect(page).toBeTruthy();
 
     const mockedFileText = await screen.findAllByText(mockedFileInfo.fileName);
-    expect(mockedFileText.length).toEqual(2); // Header and breadcrumb
+    expect(mockedFileText.length).toEqual(1); // Header
     expect(mockedFileText).toBeTruthy();
   });
 
@@ -139,11 +152,21 @@ describe('FileDetailPage', () => {
     const page = render(<FileDetailPage />);
     expect(page).toBeTruthy();
 
-    await waitFor(() => expect(wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()).toBe(false));
+    await waitFor(() =>
+      expect(
+        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
+      ).toBe(false)
+    );
     await wrapper(screen.getByTestId('download-file-button')).click();
 
-    await waitFor(() => expect(wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()).toBe(true));
-    const wrappedReason = wrapper(document.body).findInput('[data-testid="download-file-reason-modal-input"]');
+    await waitFor(() =>
+      expect(
+        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
+      ).toBe(true)
+    );
+    const wrappedReason = wrapper(document.body).findInput(
+      '[data-testid="download-file-reason-modal-input"]'
+    );
     if (!wrappedReason) {
       fail();
     }
@@ -156,6 +179,10 @@ describe('FileDetailPage', () => {
     await waitFor(() => expect(screen.queryByTestId('download-file-button')).toBeEnabled(), {
       timeout: 4000,
     });
-    await waitFor(() => expect(wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()).toBe(false));
+    await waitFor(() =>
+      expect(
+        wrapper(document.body).findModal('[data-testid="download-file-reason-modal"]')?.isVisible()
+      ).toBe(false)
+    );
   });
 });

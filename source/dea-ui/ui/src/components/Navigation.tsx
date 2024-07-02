@@ -5,11 +5,11 @@
 
 import { Icon, Spinner } from '@cloudscape-design/components';
 import SideNavigation, { SideNavigationProps } from '@cloudscape-design/components/side-navigation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useAvailableEndpoints } from '../api/auth';
 import { getSystemAuditCSV } from '../api/cases';
-import { auditLogLabels, navigationLabels } from '../common/labels';
+import { accessibilityLabels, auditLogLabels, navigationLabels } from '../common/labels';
 import { useNotifications } from '../context/NotificationsContext';
 
 export interface NavigationProps {
@@ -71,6 +71,7 @@ export default function Navigation({ initialHref }: NavigationProps): JSX.Elemen
       alink.download = `SystemAudit_${downloadDate.getFullYear()}_${
         downloadDate.getMonth() + 1
       }_${downloadDate.getDate()}_H${downloadDate.getHours()}.csv`;
+      pushNotification('success', auditLogLabels.successLabel);
       alink.click();
     } catch (e) {
       pushNotification('error', auditLogLabels.errorLabel);
@@ -84,6 +85,7 @@ export default function Navigation({ initialHref }: NavigationProps): JSX.Elemen
     {
       type: 'link',
       text: navigationLabels.documentationLabel,
+      externalIconAriaLabel: accessibilityLabels.implementationGuideLinkLabel,
       href: 'https://aws.amazon.com/solutions/implementations/digital-evidence-archive-on-aws',
       external: true,
     }
@@ -94,7 +96,13 @@ export default function Navigation({ initialHref }: NavigationProps): JSX.Elemen
       type: 'link',
       text: navigationLabels.systemAuditLogsLabel,
       href: '#',
-      info: downloadInProgress ? <Spinner /> : <Icon name="download" />,
+      info: downloadInProgress ? (
+        <Spinner />
+      ) : (
+        <span role="img" aria-label="Download">
+          <Icon name="download" />
+        </span>
+      ),
     });
   }
 

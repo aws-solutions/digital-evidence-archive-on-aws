@@ -8,6 +8,7 @@
 .upload-input {
   position: absolute;
   clip: rect(0, 0, 0, 0);
+  display: none;
 }
 
 .dropzone {
@@ -22,6 +23,7 @@
   background-color: awsui.$color-text-interactive-inverted-hover;
   border: 1px solid awsui.$color-border-button-normal-disabled;
   min-height: 200px;
+
   &-hovered {
     color: awsui.$color-background-button-primary-default;
     background-color: awsui.$color-background-dropdown-item-filter-match;

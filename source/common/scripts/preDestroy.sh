@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-read -p "This process will attempt to clean up all Digital Evidence Archive S3 Buckets, including those with Audit and CaseFile data. Are you sure want to proceed? (Enter 'Proceed with cleanup' to continue) " -n 20 -r
+export ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+
+read -p "Destroy on PROFILE/ACCOUNT: ${AWS_PROFILE}/${ACCOUNT_ID}, STAGE: ${STAGE}, PREFIX: ${DOMAIN_PREFIX}.
+This process will attempt to clean up all Digital Evidence Archive S3 Buckets, including those with Audit and CaseFile data. Are you sure want to proceed? (Enter 'Proceed with cleanup' to continue) " -n 20 -r
 echo
 if [[ $REPLY = 'Proceed with cleanup' ]]
 then
@@ -10,7 +13,9 @@ then
 
   profile_string=$(if [ -n "$AWS_PROFILE" ]; then echo "--profile $AWS_PROFILE"; fi)
 
+  export APPLICATION_DATABSE=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaTableName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
   export DATASETS_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaS3Datasets'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
+  export DATASYNC_REPORT_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-DeaDataSyncReportsBucketName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
   export S3ACCESSLOGS_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-S3AccessLogsBucketName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
   export DEATRAIL_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-deaTrailBucketName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
   export AUDIT_BUCKET_NAME=$(aws cloudformation list-exports --region $REGION $profile_string --query """Exports[?Name == '${STACKPREFIX}-auditBucketName'].Value | [0]""" | sed -e 's/^"//' -e 's/"$//')
@@ -23,6 +28,10 @@ then
   # turn off the trail so we can clean up
   aws cloudtrail stop-logging --name $TRAIL_ARN --region $REGION $profile_string
 
+  if [ "$DATASYNC_REPORT_BUCKET_NAME" != "null" ]; then
+    echo "disable logging for $DATASYNC_REPORT_BUCKET_NAME"
+    aws s3api put-bucket-logging --bucket $DATASYNC_REPORT_BUCKET_NAME --bucket-logging-status '{}' $profile_string
+  fi
   if [ "$DEATRAIL_BUCKET_NAME" != "null" ]; then
     echo "removing $DEATRAIL_BUCKET_NAME"
     aws s3api put-bucket-logging --bucket $DEATRAIL_BUCKET_NAME --bucket-logging-status '{}' $profile_string
@@ -55,6 +64,8 @@ then
     echo "removing $S3ACCESSLOGS_BUCKET_NAME"
     aws s3 rb s3://$S3ACCESSLOGS_BUCKET_NAME --force --region $REGION $profile_string || true
   fi
+  # turn off deletion protection for the table we are cleaning up
+  aws dynamodb update-table --table-name $APPLICATION_DATABSE --no-deletion-protection-enabled
 else
   echo "Aborting..."
   exit 1

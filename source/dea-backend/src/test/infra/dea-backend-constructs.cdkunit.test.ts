@@ -79,8 +79,8 @@ describe('DeaBackend constructs', () => {
       opsDashboard: dashboard,
     });
     const checksumStack = new ObjectChecksumStack(stack, 'ObjectChecksumStack', {
-      kmsKey: key,
       deaTable: backend.deaTable,
+      kmsKey: key,
       opsDashboard: dashboard,
       objectBucket: backend.datasetsBucket,
     });
@@ -103,6 +103,7 @@ describe('DeaBackend constructs', () => {
         athenaAuditBucket: auditTrail.auditCloudwatchToS3Infra.athenaAuditBucket,
       },
       kmsKey: key,
+      checkSumQueueKey: checksumStack.kmsKey,
       lambdaEnv: {
         AUDIT_LOG_GROUP_NAME: auditTrail.auditLogGroup.logGroupName,
         TABLE_NAME: backend.deaTable.tableName,
@@ -131,16 +132,10 @@ describe('DeaBackend constructs', () => {
     template.resourceCountIs('AWS::ApiGateway::Method', expectedMethodCount);
 
     //Auth construct
-    const apiEndpointArns = new Map([
-      ['A', 'Aarn'],
-      ['B', 'Barn'],
-      ['C', 'Carn'],
-      ['D', 'Darn'],
-    ]);
     const authStack = new DeaAuth(stack, 'DeaAuth', {
       region: stack.region,
       restApi: restApi.deaRestApi,
-      apiEndpointArns: apiEndpointArns,
+      apiEndpointArns: restApi.apiEndpointArns,
     });
 
     new DeaParameters(stack, 'DeaParameters', {
@@ -189,8 +184,8 @@ describe('DeaBackend constructs', () => {
       opsDashboard: dashboard,
     });
     const checksumStack = new ObjectChecksumStack(stack, 'ObjectChecksumStack', {
-      kmsKey: key,
       deaTable: backend.deaTable,
+      kmsKey: key,
       opsDashboard: dashboard,
       objectBucket: backend.datasetsBucket,
     });
@@ -206,6 +201,7 @@ describe('DeaBackend constructs', () => {
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       s3BatchDeleteCaseFileRoleArn: deaEventHandlers.s3BatchDeleteCaseFileBatchJobRole.roleArn,
       kmsKey: key,
+      checkSumQueueKey: checksumStack.kmsKey,
       athenaConfig: {
         athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
         athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
@@ -222,16 +218,10 @@ describe('DeaBackend constructs', () => {
       opsDashboard: dashboard,
     });
 
-    const apiEndpointArns = new Map([
-      ['A', 'Aarn'],
-      ['B', 'Barn'],
-      ['C', 'Carn'],
-      ['D', 'Darn'],
-    ]);
     const authStack = new DeaAuth(stack, 'DeaAuth', {
       region: stack.region,
       restApi: restApi.deaRestApi,
-      apiEndpointArns: apiEndpointArns,
+      apiEndpointArns: restApi.apiEndpointArns,
     });
 
     new DeaParameters(stack, 'DeaParameters', {
@@ -285,8 +275,8 @@ describe('DeaBackend constructs', () => {
       opsDashboard: dashboard,
     });
     const checksumStack = new ObjectChecksumStack(stack, 'ObjectChecksumStack', {
-      kmsKey: key,
       deaTable: backend.deaTable,
+      kmsKey: key,
       opsDashboard: dashboard,
       objectBucket: backend.datasetsBucket,
     });
@@ -302,6 +292,7 @@ describe('DeaBackend constructs', () => {
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
+      checkSumQueueKey: checksumStack.kmsKey,
       athenaConfig: {
         athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
         athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
@@ -320,16 +311,10 @@ describe('DeaBackend constructs', () => {
     });
 
     //Auth construct
-    const apiEndpointArns = new Map([
-      ['A', 'Aarn'],
-      ['B', 'Barn'],
-      ['C', 'Carn'],
-      ['D', 'Darn'],
-    ]);
     const authStack = new DeaAuth(stack, 'DeaAuth', {
       region: stack.region,
       restApi: restApi.deaRestApi,
-      apiEndpointArns: apiEndpointArns,
+      apiEndpointArns: restApi.apiEndpointArns,
     });
 
     new DeaParameters(stack, 'DeaParameters', {
@@ -405,8 +390,8 @@ describe('DeaBackend constructs', () => {
       opsDashboard: dashboard,
     });
     const checksumStack = new ObjectChecksumStack(stack, 'ObjectChecksumStack', {
-      kmsKey: key,
       deaTable: backend.deaTable,
+      kmsKey: key,
       opsDashboard: dashboard,
       objectBucket: backend.datasetsBucket,
     });
@@ -422,6 +407,7 @@ describe('DeaBackend constructs', () => {
       deaAuditLogArn: auditTrail.auditLogGroup.logGroupArn,
       deaTrailLogArn: auditTrail.trailLogGroup.logGroupArn,
       kmsKey: key,
+      checkSumQueueKey: checksumStack.kmsKey,
       athenaConfig: {
         athenaOutputBucket: auditTrail.auditCloudwatchToS3Infra.athenaOutputBucket,
         athenaDBName: auditTrail.auditCloudwatchToS3Infra.athenaDBName,
@@ -440,16 +426,10 @@ describe('DeaBackend constructs', () => {
     });
 
     //Auth construct
-    const apiEndpointArns = new Map([
-      ['A', 'Aarn'],
-      ['B', 'Barn'],
-      ['C', 'Carn'],
-      ['D', 'Darn'],
-    ]);
     const authStack = new DeaAuth(stack, 'DeaAuth', {
       region: stack.region,
       restApi: restApi.deaRestApi,
-      apiEndpointArns: apiEndpointArns,
+      apiEndpointArns: restApi.apiEndpointArns,
     });
 
     new DeaParameters(stack, 'DeaParameters', {

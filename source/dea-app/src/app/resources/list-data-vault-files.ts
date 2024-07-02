@@ -8,13 +8,12 @@ import Joi from 'joi';
 import { getPaginationParameters, getRequiredPathParam } from '../../lambda-http-helpers';
 import { DeaDataVaultFile } from '../../models/data-vault-file';
 import { filePath as filePathRegex, joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
 import {
   hydrateUsersForDataVaultFiles,
   listDataVaultFilesByFilePath,
 } from '../services/data-vault-file-service';
 import { getRequiredDataVault } from '../services/data-vault-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 import { getNextToken } from './get-next-token';
 
@@ -23,7 +22,7 @@ export const listDataVaultFiles: DEAGatewayProxyHandler = async (
   context,
   /* the default DataVault is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   let filePath = '/';
   if (event.queryStringParameters) {
@@ -35,17 +34,20 @@ export const listDataVaultFiles: DEAGatewayProxyHandler = async (
   const paginationParams = getPaginationParameters(event);
 
   const DataVaultId = getRequiredPathParam(event, 'dataVaultId', joiUlid);
-  await getRequiredDataVault(DataVaultId, repositoryProvider);
+  await getRequiredDataVault(DataVaultId, providers.repositoryProvider);
 
   const pageOfDataVaultFiles: Paged<DeaDataVaultFile> = await listDataVaultFilesByFilePath(
     DataVaultId,
     filePath,
     paginationParams.limit,
-    repositoryProvider,
+    providers.repositoryProvider,
     paginationParams.nextToken
   );
 
-  const hydratedFiles = await hydrateUsersForDataVaultFiles(pageOfDataVaultFiles, repositoryProvider);
+  const hydratedFiles = await hydrateUsersForDataVaultFiles(
+    pageOfDataVaultFiles,
+    providers.repositoryProvider
+  );
 
   return responseOk(event, {
     files: hydratedFiles,

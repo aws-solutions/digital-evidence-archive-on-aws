@@ -7,6 +7,7 @@ import Joi from 'joi';
 import { createDataVault } from '../../../app/resources/create-data-vault';
 import { createDataVaultExecution } from '../../../app/resources/create-data-vault-execution';
 import { createDataVaultTask } from '../../../app/resources/create-data-vault-task';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { createS3Location } from '../../../app/services/data-sync-service';
 import { DeaDataVaultExecution } from '../../../models/data-vault-execution';
 import { DeaDataVaultTask } from '../../../models/data-vault-task';
@@ -14,19 +15,18 @@ import { DeaUser } from '../../../models/user';
 import { dataVaultExecutionResponseSchema } from '../../../models/validation/data-vault';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { DataSyncProvider, defaultDataSyncProvider } from '../../../storage/dataSync';
-import { getDummyEvent, dummyContext } from '../../integration-objects';
+import { getDummyEvent, dummyContext, createTestProvidersObject } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
-let repositoryProvider: ModelRepositoryProvider;
-let user: DeaUser;
-let newTask: DeaDataVaultTask;
-
-const dataSyncProvider: DataSyncProvider = defaultDataSyncProvider;
-
 describe('create data vault execution resource', () => {
+  let repositoryProvider: ModelRepositoryProvider;
+  let testProviders: LambdaProviders;
+  let user: DeaUser;
+  let newTask: DeaDataVaultTask;
+
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('createDataVaultExecutionTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
 
     // create user
     user =
@@ -52,13 +52,13 @@ describe('create data vault execution resource', () => {
         name,
       }),
     });
-    const response = await createDataVault(event, dummyContext, repositoryProvider);
+    const response = await createDataVault(event, dummyContext, testProviders);
     const newDataVault = await JSON.parse(response.body);
 
     // Create source location arn
     const locationArn1 = await createS3Location(
       `/DATAVAULT${newDataVault.ulid}/locationtest1`,
-      dataSyncProvider
+      testProviders.dataSyncProvider
     );
 
     const taskEvent = getDummyEvent({
@@ -72,7 +72,7 @@ describe('create data vault execution resource', () => {
       }),
     });
 
-    const taskResponse = await createDataVaultTask(taskEvent, dummyContext, repositoryProvider);
+    const taskResponse = await createDataVaultTask(taskEvent, dummyContext, testProviders);
     newTask = JSON.parse(taskResponse.body);
 
     const taskArn = newTask.taskArn;
@@ -88,11 +88,7 @@ describe('create data vault execution resource', () => {
     });
     executionEvent.headers['userUlid'] = user.ulid;
 
-    const executionResponse = await createDataVaultExecution(
-      executionEvent,
-      dummyContext,
-      repositoryProvider
-    );
+    const executionResponse = await createDataVaultExecution(executionEvent, dummyContext, testProviders);
 
     const dataVaultExecution = await validateAndReturnDataVaultExecution(taskId, executionResponse);
 
@@ -126,14 +122,14 @@ describe('create data vault execution resource', () => {
     });
     executionEvent.headers['userUlid'] = user.ulid;
 
-    await expect(createDataVaultExecution(executionEvent, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createDataVaultExecution(executionEvent, dummyContext, testProviders)).rejects.toThrow(
       'Requested task ID does not match resource'
     );
   });
 
   it('should fail when a data vault task id and arn is missing', async () => {
     const event = getDummyEvent({});
-    await expect(createDataVaultExecution(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createDataVaultExecution(event, dummyContext, testProviders)).rejects.toThrow(
       'Execute Data Vault Task payload missing.'
     );
   });

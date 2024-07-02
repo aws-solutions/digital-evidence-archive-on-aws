@@ -4,9 +4,9 @@
  */
 
 import { BreadcrumbGroupProps } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import * as React from 'react';
-import { breadcrumbLabels, commonLabels } from '../../common/labels';
+import { breadcrumbLabels, commonLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import FileDetailsBody from '../../components/file-details/FileDetailsBody';
@@ -17,10 +17,14 @@ export interface IHomeProps {
 }
 
 function FileDetailPage() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const caseId = searchParams.get('caseId');
+  const fileId = searchParams.get('fileId');
+  const caseName = searchParams.get('caseName');
+
   const [fileName, setFileName] = React.useState('');
   const { settings } = useSettings();
-  const { caseId, fileId, caseName } = router.query;
+
   if (
     !caseId ||
     typeof caseId !== 'string' ||
@@ -33,6 +37,8 @@ function FileDetailPage() {
   }
 
   const href_prefix = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
+
+  const pageName = navigationLabels.fileDetailLabel;
 
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
@@ -50,7 +56,7 @@ function FileDetailPage() {
   ];
 
   return (
-    <BaseLayout breadcrumbs={breadcrumbs} navigationHide>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/" pageName={pageName}>
       <FileDetailsBody caseId={caseId} fileId={fileId} setFileName={setFileName} />
     </BaseLayout>
   );

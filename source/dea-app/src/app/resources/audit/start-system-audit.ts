@@ -6,11 +6,8 @@
 import { getOptionalPayload } from '../../../lambda-http-helpers';
 import { DEAAuditQuery, defaultAuditQuery } from '../../../models/audit';
 import { auditQuerySchema } from '../../../models/validation/audit';
-import { defaultProvider } from '../../../persistence/schema/entities';
-import { defaultDatasetsProvider } from '../../../storage/datasets';
-import { defaultAthenaClient } from '../../audit/dea-audit-plugin';
 import { auditService } from '../../services/audit-service';
-import { DEAGatewayProxyHandler } from '../dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from '../dea-gateway-proxy-handler';
 import { responseOk } from '../dea-lambda-utils';
 
 export const startSystemAudit: DEAGatewayProxyHandler = async (
@@ -18,11 +15,7 @@ export const startSystemAudit: DEAGatewayProxyHandler = async (
   context,
   /* the default case is handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider,
-  /* istanbul ignore next */
-  _datasetsProvider = defaultDatasetsProvider,
-  /* istanbul ignore next */
-  athenaClient = defaultAthenaClient
+  providers = defaultProviders
 ) => {
   const startAudit: DEAAuditQuery = getOptionalPayload(
     event,
@@ -33,8 +26,8 @@ export const startSystemAudit: DEAGatewayProxyHandler = async (
   const queryId = await auditService.requestSystemAudit(
     startAudit.from,
     startAudit.to,
-    athenaClient,
-    repositoryProvider
+    providers.athenaClient,
+    providers.repositoryProvider
   );
 
   return responseOk(event, { auditId: queryId });

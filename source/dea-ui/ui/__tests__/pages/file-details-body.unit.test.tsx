@@ -9,7 +9,7 @@ import FileDetailsBody from '../../src/components/file-details/FileDetailsBody';
 import { commonLabels } from '../../src/common/labels';
 
 let query: { caseId: any; fileId: any } = { caseId: '100', fileId: '200' };
-jest.mock('next/router', () => ({
+jest.mock('next/navigation', () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     query,
     push: jest.fn(),

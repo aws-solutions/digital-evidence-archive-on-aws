@@ -383,6 +383,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "braces",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "cdk-ssm-document",
       "allowedCategories": [ "production" ]
     },
@@ -495,6 +499,10 @@
       "allowedCategories": [ "production" ]
     },
     {
+      "name": "inquirer",
+      "allowedCategories": [ "production" ]
+    },
+    {
       "name": "istanbul-badges-readme",
       "allowedCategories": [ "production", "prototypes" ]
     },
@@ -577,6 +585,10 @@
     {
       "name": "next-transpile-modules",
       "allowedCategories": [ "production", "prototypes" ]
+    },
+    {
+      "name": "node-cache",
+      "allowedCategories": [ "production" ]
     },
     {
       "name": "node-fetch",
@@ -692,6 +704,10 @@
     },
     {
       "name": "winston-transport",
+      "allowedCategories": [ "production" ]
+    },
+    {
+      "name": "ws",
       "allowedCategories": [ "production" ]
     },
     {

@@ -4,6 +4,7 @@
  */
 
 import { fail } from 'assert';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getMyCases } from '../../../app/resources/get-my-cases';
 import { DeaCase } from '../../../models/case';
 import { CaseAction } from '../../../models/case-action';
@@ -12,10 +13,11 @@ import { createCase } from '../../../persistence/case';
 import { createCaseUser } from '../../../persistence/case-user';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 let caseOwner: DeaUser;
 
 type ResponseCasePage = {
@@ -26,6 +28,7 @@ type ResponseCasePage = {
 describe('getMyCases', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('getMyCasesTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
 
     caseOwner =
       (await createUser(
@@ -121,7 +124,7 @@ describe('getMyCases', () => {
     // the integration between runLambdaPrechecks and this lambda handler
     // will be tested in the e2e tests
     event.headers['userUlid'] = user.ulid;
-    const response = await getMyCases(event, dummyContext, repositoryProvider);
+    const response = await getMyCases(event, dummyContext, testProviders);
 
     // THEN only cases with memberships (1 + 2) are returned
     // confirm memberships only returned
@@ -185,7 +188,7 @@ describe('getMyCases', () => {
     // the integration between runLambdaPrechecks and this lambda handler
     // will be tested in the e2e tests
     event.headers['userUlid'] = user.ulid;
-    const response = await getMyCases(event, dummyContext, repositoryProvider);
+    const response = await getMyCases(event, dummyContext, testProviders);
 
     // THEN only cases with memberships are returned
     // confirm memberships only returned
@@ -204,7 +207,7 @@ describe('getMyCases', () => {
     });
     event2.headers['userUlid'] = user.ulid;
 
-    const response2 = await getMyCases(event2, dummyContext, repositoryProvider);
+    const response2 = await getMyCases(event2, dummyContext, testProviders);
     if (!response2.body) {
       fail();
     }
@@ -262,7 +265,7 @@ describe('getMyCases', () => {
       },
     });
 
-    await expect(getMyCases(event, dummyContext, repositoryProvider)).rejects.toThrowError(
+    await expect(getMyCases(event, dummyContext, testProviders)).rejects.toThrowError(
       'userUlid was not present in the event header'
     );
   });

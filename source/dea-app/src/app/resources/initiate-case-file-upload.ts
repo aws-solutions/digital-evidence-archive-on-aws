@@ -12,12 +12,10 @@ import {
 import { InitiateCaseFileUploadDTO } from '../../models/case-file';
 import { initiateCaseFileUploadRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
-import { DatasetsProvider, defaultDatasetsProvider } from '../../storage/datasets';
 import { ValidationError } from '../exceptions/validation-exception';
 import * as CaseFileService from '../services/case-file-service';
 import { validateInitiateUploadRequirements } from '../services/case-file-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseOk } from './dea-lambda-utils';
 
 export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
@@ -25,9 +23,7 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
   context,
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider,
-  /* istanbul ignore next */
-  datasetsProvider: DatasetsProvider = defaultDatasetsProvider
+  providers = defaultProviders
 ) => {
   const caseId = getRequiredPathParam(event, 'caseId', joiUlid);
   const requestCaseFile: InitiateCaseFileUploadDTO = getRequiredPayload(
@@ -41,7 +37,7 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
 
   const userUlid = getUserUlid(event);
   if (!requestCaseFile.uploadId) {
-    await validateInitiateUploadRequirements(requestCaseFile, userUlid, repositoryProvider);
+    await validateInitiateUploadRequirements(requestCaseFile, userUlid, providers.repositoryProvider);
   }
   const subnetCIDR = getRequiredEnv('SOURCE_IP_MASK_CIDR');
 
@@ -49,8 +45,8 @@ export const initiateCaseFileUpload: DEAGatewayProxyHandler = async (
     requestCaseFile,
     userUlid,
     `${event.requestContext.identity.sourceIp}/${subnetCIDR}`,
-    repositoryProvider,
-    datasetsProvider
+    providers.repositoryProvider,
+    providers.datasetsProvider
   );
 
   return responseOk(event, initiateUploadResponse);

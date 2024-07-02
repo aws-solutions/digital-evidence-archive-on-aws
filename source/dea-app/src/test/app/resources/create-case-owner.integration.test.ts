@@ -9,6 +9,7 @@ import { NotFoundError } from '../../../app/exceptions/not-found-exception';
 import { ValidationError } from '../../../app/exceptions/validation-exception';
 import { createCaseMembership } from '../../../app/resources/create-case-membership';
 import { createCaseOwner } from '../../../app/resources/create-case-owner';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import * as CaseService from '../../../app/services/case-service';
 import * as UserService from '../../../app/services/user-service';
 import { DeaCaseInput } from '../../../models/case';
@@ -19,15 +20,17 @@ import { caseUserResponseSchema } from '../../../models/validation/case-user';
 import { jsonParseWithDates } from '../../../models/validation/json-parse-with-dates';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
-let repositoryProvider: ModelRepositoryProvider;
-let caseOwner: DeaUser;
-
 describe('create case owner resource', () => {
+  let repositoryProvider: ModelRepositoryProvider;
+  let testProviders: LambdaProviders;
+  let caseOwner: DeaUser;
+
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('createCaseOwnerTest');
+    testProviders = createTestProvidersObject({ repositoryProvider });
 
     caseOwner =
       (await createUser(
@@ -70,7 +73,7 @@ describe('create case owner resource', () => {
       }),
     });
 
-    const response = await createCaseOwner(event, dummyContext, repositoryProvider);
+    const response = await createCaseOwner(event, dummyContext, testProviders);
 
     expect(response.statusCode).toEqual(200);
 
@@ -116,7 +119,7 @@ describe('create case owner resource', () => {
       }),
     });
 
-    const responseViewOnly = await createCaseMembership(eventViewOnly, dummyContext, repositoryProvider);
+    const responseViewOnly = await createCaseMembership(eventViewOnly, dummyContext, testProviders);
 
     expect(responseViewOnly.statusCode).toEqual(200);
 
@@ -144,7 +147,7 @@ describe('create case owner resource', () => {
       }),
     });
 
-    const response = await createCaseOwner(event, dummyContext, repositoryProvider);
+    const response = await createCaseOwner(event, dummyContext, testProviders);
 
     expect(response.statusCode).toEqual(200);
 
@@ -164,7 +167,7 @@ describe('create case owner resource', () => {
   });
 
   it('should error if the path param is not provided', async () => {
-    await expect(createCaseOwner(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createCaseOwner(getDummyEvent(), dummyContext, testProviders)).rejects.toThrow(
       ValidationError
     );
   });
@@ -177,7 +180,7 @@ describe('create case owner resource', () => {
       body: null,
     });
 
-    await expect(createCaseOwner(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createCaseOwner(event, dummyContext, testProviders)).rejects.toThrow(
       'CaseOwner payload missing.'
     );
   });
@@ -193,7 +196,7 @@ describe('create case owner resource', () => {
       },
     });
 
-    await expect(createCaseOwner(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createCaseOwner(event, dummyContext, testProviders)).rejects.toThrow(
       'CaseOwner payload is malformed. Failed to parse.'
     );
   });
@@ -212,7 +215,7 @@ describe('create case owner resource', () => {
       }),
     });
 
-    await expect(createCaseOwner(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createCaseOwner(event, dummyContext, testProviders)).rejects.toThrow(
       'Requested Case Ulid does not match resource'
     );
   });
@@ -237,8 +240,8 @@ describe('create case owner resource', () => {
       }),
     });
 
-    await expect(createCaseOwner(event, dummyContext, repositoryProvider)).rejects.toThrow(NotFoundError);
-    await expect(createCaseOwner(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createCaseOwner(event, dummyContext, testProviders)).rejects.toThrow(NotFoundError);
+    await expect(createCaseOwner(event, dummyContext, testProviders)).rejects.toThrow(
       `Case with ulid ${bogusUlid} not found.`
     );
   });
@@ -268,8 +271,8 @@ describe('create case owner resource', () => {
       }),
     });
 
-    await expect(createCaseOwner(event, dummyContext, repositoryProvider)).rejects.toThrow(NotFoundError);
-    await expect(createCaseOwner(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(createCaseOwner(event, dummyContext, testProviders)).rejects.toThrow(NotFoundError);
+    await expect(createCaseOwner(event, dummyContext, testProviders)).rejects.toThrow(
       `User with ulid ${bogusUlid} not found.`
     );
   });

@@ -11,9 +11,9 @@ import {
   Header,
   SpaceBetween,
 } from '@cloudscape-design/components';
-import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 import { addCaseOwner, useGetScopedCaseInfoById } from '../../api/cases';
-import { breadcrumbLabels, manageCaseAccessLabels } from '../../common/labels';
+import { breadcrumbLabels, manageCaseAccessLabels, navigationLabels } from '../../common/labels';
 import { isUsingCustomDomain } from '../../common/utility';
 import BaseLayout from '../../components/BaseLayout';
 import ManageAccessSearchUserForm from '../../components/case-details/ManageAccessSearchUserForm';
@@ -22,10 +22,9 @@ import { useSettings } from '../../context/SettingsContext';
 
 export default function ManageCasePage() {
   const { settings } = useSettings();
-  const router = useRouter();
-  const query = router.query;
+  const searchParams = useSearchParams();
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const caseId = query.caseId as string;
+  const caseId = searchParams.get('caseId') as string;
   const { pushNotification } = useNotifications();
   const { data } = useGetScopedCaseInfoById(caseId);
 
@@ -43,6 +42,8 @@ export default function ManageCasePage() {
 
   const href = isUsingCustomDomain ? `/ui` : `/${settings.stage}/ui`;
 
+  const pageName = navigationLabels.manageCaseLabel;
+
   const breadcrumbs: BreadcrumbGroupProps.Item[] = [
     {
       text: breadcrumbLabels.homePageLabel,
@@ -53,8 +54,9 @@ export default function ManageCasePage() {
       href: '#',
     },
   ];
+
   return (
-    <BaseLayout breadcrumbs={breadcrumbs}>
+    <BaseLayout breadcrumbs={breadcrumbs} activeHref="/all-cases" pageName={pageName}>
       <ContentLayout
         header={
           <SpaceBetween size="m">

@@ -1,6 +1,6 @@
 {
   "name": "@aws/dea-app",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "This package sets up API routes for DEA",
   "homepage": "https://github.com/aws-solutions/digital-evidence-archive-on-aws/tree/main/",
   "repository": {
@@ -74,8 +74,8 @@
     "@types/aws-lambda": "^8.10.114",
     "@types/crypto-js": "^4.1.1",
     "@types/jsonwebtoken": "~9.0.1",
-    "aws-cdk": "2.88.0",
-    "aws-cdk-lib": "2.88.0",
+    "aws-cdk": "2.133.0",
+    "aws-cdk-lib": "2.133.0",
     "aws-jwt-verify": "^4.0.0",
     "aws-lambda": "^1.0.7",
     "constructs": "10.2.69",
@@ -86,10 +86,12 @@
     "joi": "~17.9.1",
     "jsonwebtoken": "~9.0.0",
     "lodash": "^4.17.21",
+    "node-cache": "^5.1.2",
     "pkce-challenge": "^3.0.0",
     "ulid": "~2.3.0",
     "uuid": "^9.0.0",
-    "csv-parse": "~5.5.3"
+    "csv-parse": "~5.5.3",
+    "braces": "3.0.3"
   },
   "devDependencies": {
     "@aws-sdk/client-iam": "~3.474.0",
@@ -112,7 +114,7 @@
     "aws-sdk-client-mock": "^3.0.0",
     "aws-sdk-client-mock-jest": "^3.0.0",
     "aws4-axios": "~3.3.0",
-    "axios": "^1.6.5",
+    "axios": "^1.7.2",
     "concurrently": "^7.6.0",
     "dynamo-db-local": "~5.0.1",
     "eslint": "^8.47.0",

@@ -18,6 +18,7 @@ import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
 import { Credentials } from 'aws4-axios';
 import { enc } from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
+import { getCustomUserAgent } from '../../lambda-http-helpers';
 import { Oauth2Token } from '../../models/auth';
 import { DeaCase } from '../../models/case';
 import { CaseFileStatus } from '../../models/case-file-status';
@@ -208,13 +209,27 @@ describe('Test case file APIs', () => {
       expect(s3ObjectHasLegalHold(file2Object)).toBeTruthy();
 
       // verify download-case-file works as expected
-      const downloadUrl = await getCaseFileDownloadUrl(DEA_API_URL, idToken, creds, caseUlid, fileUlid, "e2e test needs to download file");
+      const downloadUrl = await getCaseFileDownloadUrl(
+        DEA_API_URL,
+        idToken,
+        creds,
+        caseUlid,
+        fileUlid,
+        'e2e test needs to download file'
+      );
       const downloadedContent = await downloadContentFromS3(downloadUrl, describedCaseFile.contentType);
       expect(downloadedContent).toEqual(FILE_CONTENT);
       expect(sha256(downloadedContent).toString(enc.Base64)).toEqual(describedCaseFile.sha256Hash);
 
       // verify the multipart-uploaded file
-      const downloadUrl2 = await getCaseFileDownloadUrl(DEA_API_URL, idToken, creds, caseUlid, fileUlid2, "e2e test needs to download file");
+      const downloadUrl2 = await getCaseFileDownloadUrl(
+        DEA_API_URL,
+        idToken,
+        creds,
+        caseUlid,
+        fileUlid2,
+        'e2e test needs to download file'
+      );
       const downloadedContent2 = await downloadContentFromS3(downloadUrl2, describedCaseFile2.contentType);
       expect(downloadedContent2).toEqual(LARGE_FILE_CONTENT.toString());
       console.log(`checking hash ${new Date()}`);
@@ -255,11 +270,15 @@ describe('Test case file APIs', () => {
     const s3client = new S3Client({
       region: testEnv.awsRegion,
       credentials: initiatedCaseFile.federationCredentials,
+      useFipsEndpoint: testEnv.awsUseFipsEndpoint,
+      customUserAgent: getCustomUserAgent(),
     });
 
     const tempStsClient = new STSClient({
       region: testEnv.awsRegion,
       credentials: initiatedCaseFile.federationCredentials,
+      useFipsEndpoint: testEnv.awsUseFipsEndpoint,
+      customUserAgent: getCustomUserAgent(),
     });
 
     // can't create a new multipart upload
@@ -295,7 +314,11 @@ describe('Test case file APIs', () => {
     ).rejects.toThrow(/is not authorized to perform/g);
 
     // cleanup
-    const admins3Client = new S3Client({ region: testEnv.awsRegion });
+    const admins3Client = new S3Client({
+      region: testEnv.awsRegion,
+      useFipsEndpoint: testEnv.awsUseFipsEndpoint,
+      customUserAgent: getCustomUserAgent(),
+    });
     await admins3Client.send(
       new AbortMultipartUploadCommand({
         Bucket: initiatedCaseFile.bucket,

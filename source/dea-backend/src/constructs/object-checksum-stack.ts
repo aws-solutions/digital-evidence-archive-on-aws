@@ -4,7 +4,7 @@
  */
 
 import path from 'path';
-import { Duration, NestedStack } from 'aws-cdk-lib';
+import { Duration, CfnResource, NestedStack } from 'aws-cdk-lib';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -14,6 +14,8 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
+import { deaConfig } from '../config';
+import { addLambdaSuppressions, addResourcePolicySuppressions } from './../helpers/nag-suppressions';
 import { DeaOperationalDashboard } from './dea-ops-dashboard';
 
 interface ObjectChecksumStackProps {
@@ -26,6 +28,7 @@ interface ObjectChecksumStackProps {
 export class ObjectChecksumStack extends NestedStack {
   public checksumHandlerRole: IRole;
   public checksumQueue: Queue;
+  public kmsKey: Key;
 
   constructor(scope: Construct, id: string, props: ObjectChecksumStackProps) {
     super(scope, id);
@@ -33,6 +36,8 @@ export class ObjectChecksumStack extends NestedStack {
     const members = this.createHashQueue(this, props);
     this.checksumHandlerRole = members.handlerRole;
     this.checksumQueue = members.checksumQueue;
+    this.kmsKey = members.kmsKey;
+    this.cfnNagSuppress();
   }
 
   private createHashQueue(scope: Construct, props: ObjectChecksumStackProps) {
@@ -63,9 +68,36 @@ export class ObjectChecksumStack extends NestedStack {
       },
     });
 
+    const checkSumQueueKey = new Key(scope, 'checkSumQueueKey', {
+      enableKeyRotation: true,
+      removalPolicy: deaConfig.retainPolicy(),
+      pendingWindow: Duration.days(7),
+    });
+
+    // we need to create a new key to prevent circular dependency
+    checkSumQueueKey.grantDecrypt(checksumHandler);
+    if (checksumHandler.role) {
+      checkSumQueueKey.addToResourcePolicy(
+        new PolicyStatement({
+          actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
+          principals: [checksumHandler.role],
+          resources: ['*'],
+        })
+      );
+    }
+
+    // but we also need to grant permissions to the main kms key
+    checksumHandler.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
+        resources: [props.kmsKey.keyArn],
+      })
+    );
+
     const checksumDLQ = new Queue(scope, 'incremental-checksum-dlq', {
       enforceSSL: true,
       fifo: true,
+      encryptionMasterKey: checkSumQueueKey,
     });
 
     const checksumQueue = new Queue(scope, 'incremental-checksum-queue', {
@@ -76,6 +108,7 @@ export class ObjectChecksumStack extends NestedStack {
         queue: checksumDLQ,
         maxReceiveCount: 5,
       },
+      encryptionMasterKey: checkSumQueueKey,
     });
 
     const eventSource = new SqsEventSource(checksumQueue, {
@@ -88,7 +121,7 @@ export class ObjectChecksumStack extends NestedStack {
       checksumHandler,
       props.deaTable,
       checksumQueue,
-      props.kmsKey,
+      checkSumQueueKey,
       props.objectBucket
     );
 
@@ -98,9 +131,11 @@ export class ObjectChecksumStack extends NestedStack {
     if (!checksumHandler.role) {
       throw new Error('Lambda role undefined');
     }
+
     return {
       checksumQueue,
       handlerRole: checksumHandler.role,
+      kmsKey: checkSumQueueKey,
     };
   }
 
@@ -111,7 +146,7 @@ export class ObjectChecksumStack extends NestedStack {
     kmsKey: Key,
     bucket: Bucket
   ) {
-    // we need key acces for the encrypted bucket and table
+    // we need key access for the encrypted bucket and table
     handler.addToRolePolicy(
       new PolicyStatement({
         actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:GenerateDataKey'],
@@ -135,5 +170,21 @@ export class ObjectChecksumStack extends NestedStack {
         resources: [deaTable.tableArn],
       })
     );
+  }
+
+  private cfnNagSuppress() {
+    // Nag Suppressions
+    const policyToSuppress = this.node
+      .findChild('incremental-checksum-handler')
+      .node.findChild('ServiceRole')
+      .node.findChild('DefaultPolicy').node.defaultChild;
+    if (policyToSuppress instanceof CfnResource) {
+      addResourcePolicySuppressions(policyToSuppress);
+    }
+
+    const resourceToSuppress = this.node.findChild('incremental-checksum-handler').node.findChild('Resource');
+    if (resourceToSuppress instanceof CfnResource) {
+      addLambdaSuppressions(resourceToSuppress);
+    }
   }
 }

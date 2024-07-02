@@ -129,6 +129,14 @@ Object {
         "Ref": "DeaBackendConstructS3DatasetsBucketDDF4C58A",
       },
     },
+    "DeaBackendConstructDeaTableName18A03194": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-DeaTableName",
+      },
+      "Value": Object {
+        "Ref": "DeaBackendConstructDeaTableB48721A0",
+      },
+    },
     "DeaBackendConstructS3AccessLogsBucketNameBE0DE775": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-S3AccessLogsBucketName",
@@ -301,7 +309,6 @@ import urllib.request
 s3 = boto3.client("s3")
 
 EVENTBRIDGE_CONFIGURATION = 'EventBridgeConfiguration'
-
 CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations"]
 
 def handler(event: dict, context):
@@ -309,18 +316,15 @@ def handler(event: dict, context):
   error_message = ""
   try:
     props = event["ResourceProperties"]
-    bucket = props["BucketName"]
     notification_configuration = props["NotificationConfiguration"]
-    request_type = event["RequestType"]
     managed = props.get('Managed', 'true').lower() == 'true'
     stack_id = event['StackId']
-
+    old = event.get("OldResourceProperties", {}).get("NotificationConfiguration", {})
     if managed:
-      config = handle_managed(request_type, notification_configuration)
+      config = handle_managed(event["RequestType"], notification_configuration)
     else:
-      config = handle_unmanaged(bucket, stack_id, request_type, notification_configuration)
-
-    put_bucket_notification_configuration(bucket, config)
+      config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
+    s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config)
   except Exception as e:
     logging.exception("Failed to put bucket notification configuration")
     response_status = "FAILED"
@@ -333,15 +337,25 @@ def handle_managed(request_type, notification_configuration):
     return {}
   return notification_configuration
 
-def handle_unmanaged(bucket, stack_id, request_type, notification_configuration):
-  external_notifications = find_external_notifications(bucket, stack_id)
+def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old):
+  def with_id(n):
+    n['Id'] = f"{stack_id}-{hash(json.dumps(n, sort_keys=True))}"
+    return n
+
+  external_notifications = {}
+  existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
+  for t in CONFIGURATION_TYPES:
+    if request_type == 'Update':
+        ids = [with_id(n) for n in old.get(t, [])]
+        old_incoming_ids = [n['Id'] for n in ids]
+        external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] in old_incoming_ids]
+    elif request_type == 'Create':
+        external_notifications[t] = [n for n in existing_notifications.get(t, [])]
+  if EVENTBRIDGE_CONFIGURATION in existing_notifications:
+    external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
 
   if request_type == 'Delete':
     return external_notifications
-
-  def with_id(notification):
-    notification['Id'] = f"{stack_id}-{hash(json.dumps(notification, sort_keys=True))}"
-    return notification
 
   notifications = {}
   for t in CONFIGURATION_TYPES:
@@ -355,23 +369,6 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration)
     notifications[EVENTBRIDGE_CONFIGURATION] = external_notifications[EVENTBRIDGE_CONFIGURATION]
 
   return notifications
-
-def find_external_notifications(bucket, stack_id):
-  existing_notifications = get_bucket_notification_configuration(bucket)
-  external_notifications = {}
-  for t in CONFIGURATION_TYPES:
-    external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'].startswith(f"{stack_id}-")]
-
-  if EVENTBRIDGE_CONFIGURATION in existing_notifications:
-    external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
-
-  return external_notifications
-
-def get_bucket_notification_configuration(bucket):
-  return s3.get_bucket_notification_configuration(Bucket=bucket)
-
-def put_bucket_notification_configuration(bucket, notification_configuration):
-  s3.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=notification_configuration)
 
 def submit_response(event: dict, context, response_status: str, error_message: str):
   response_body = json.dumps(
@@ -734,6 +731,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "UpdateReplacePolicy": "Delete",
     },
     "DeaAuditAuditRedrivePolicyC6C6671E": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W13",
+              "reason": "Wildcard required as target resources are generated and not pre-existing",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Description": "A Policy which can be attached to an IAM Role, allowing that role to run the Audit Redrive script.",
         "Path": "/",
@@ -1691,6 +1698,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "Value": "true",
           },
         ],
+        "VersioningConfiguration": Object {
+          "Status": "Enabled",
+        },
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
@@ -1757,6 +1767,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
+                "s3:PutBucketPolicy",
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
@@ -2087,6 +2098,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
+                "s3:PutBucketPolicy",
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
@@ -2613,6 +2625,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
+                "s3:PutBucketPolicy",
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
@@ -3076,6 +3089,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
+                "s3:PutBucketPolicy",
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
@@ -3380,6 +3394,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     },
     "DeaEventHandlersdatasyncfilesprocessingdlq1F4AB033": Object {
       "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "KmsMasterKeyId": Object {
+          "Fn::GetAtt": Array [
+            "testKey1CDDDD5E",
+            "Arn",
+          ],
+        },
+      },
       "Type": "AWS::SQS::Queue",
       "UpdateReplacePolicy": "Delete",
     },
@@ -3936,7 +3958,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4051,7 +4073,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4198,7 +4220,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4329,7 +4351,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4460,7 +4482,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4591,7 +4613,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4722,7 +4744,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4853,7 +4875,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -4984,7 +5006,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5115,7 +5137,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5246,7 +5268,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5377,7 +5399,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5508,7 +5530,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5639,7 +5661,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5770,7 +5792,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -5901,7 +5923,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -6032,7 +6054,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -6163,7 +6185,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -6294,7 +6316,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -6425,7 +6447,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -6556,7 +6578,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -6687,7 +6709,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -6818,7 +6840,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -6949,7 +6971,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7080,7 +7102,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7211,7 +7233,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7342,7 +7364,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7457,7 +7479,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7604,7 +7626,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7735,7 +7757,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -7850,7 +7872,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaexecutionlambdarole5E07FC29",
@@ -7997,7 +8019,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -8128,7 +8150,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -8259,7 +8281,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -8390,7 +8412,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeainitiateuploadrole47691B14",
@@ -8521,7 +8543,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -8652,7 +8674,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -8783,7 +8805,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -8914,7 +8936,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9045,7 +9067,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9176,7 +9198,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9307,7 +9329,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9438,7 +9460,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9569,7 +9591,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeaauthlambdarole2081E9E6",
@@ -9700,7 +9722,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeacompleteuploadrole5698638D",
@@ -9831,7 +9853,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -9962,7 +9984,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10093,7 +10115,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10224,7 +10246,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -10355,7 +10377,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaRestApiConstructdeabaselambdarole9EA2B06B",
@@ -18797,6 +18819,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             ],
           },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AWSDataSyncReadOnlyAccess",
+              ],
+            ],
+          },
         ],
       },
       "Type": "AWS::IAM::Role",
@@ -18930,35 +18964,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": "s3:ListBucket",
+              "Action": "ec2:DescribeNetworkInterfaces",
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaBackendConstructS3DatasetsBucketDDF4C58A",
-                    "Arn",
-                  ],
-                },
-                "arn:*:s3:::dea-mdi-e2e-test-source-bucket*",
-              ],
-            },
-            Object {
-              "Action": "logs:StartQuery",
-              "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "deaAuditLogs7B75D3F1",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::GetAtt": Array [
-                    "deaTrailLogs0A0531F5",
-                    "Arn",
-                  ],
-                },
-              ],
+              "Resource": "*",
             },
             Object {
               "Action": Array [
@@ -18994,7 +19002,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
-                "kms:Encrypt",
                 "kms:Decrypt",
                 "kms:GenerateDataKey",
               ],
@@ -19069,40 +19076,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
-                "athena:GetQueryResults",
                 "athena:GetQueryExecution",
                 "athena:StartQueryExecution",
               ],
               "Effect": "Allow",
               "Resource": "*",
-            },
-            Object {
-              "Action": "athena:GetWorkgroup",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":athena:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":workgroup/",
-                    Object {
-                      "Ref": "AWS::StackName",
-                    },
-                    "-dea-athena-workgroup",
-                  ],
-                ],
-              },
             },
             Object {
               "Action": Array [
@@ -19408,8 +19386,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "testKey1CDDDD5E",
-                  "Arn",
+                  "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                  "Outputs.teststackObjectChecksumStackcheckSumQueueKeyB4F5C939Arn",
                 ],
               },
             },
@@ -19626,6 +19604,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             ],
           },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AWSDataSyncReadOnlyAccess",
+              ],
+            ],
+          },
         ],
       },
       "Type": "AWS::IAM::Role",
@@ -19730,7 +19720,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": "ssm:GetParameters",
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::Join": Array [
@@ -19752,6 +19745,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   ],
                 ],
               },
+            },
+            Object {
+              "Action": "ec2:DescribeNetworkInterfaces",
+              "Effect": "Allow",
+              "Resource": "*",
             },
             Object {
               "Action": Array [
@@ -20006,15 +20004,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "Arn",
           ],
         },
-        "Runtime": Object {
-          "Fn::FindInMap": Array [
-            "DefaultCrNodeVersionMap",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            "value",
-          ],
-        },
+        "Runtime": "nodejs18.x",
+        "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
     },

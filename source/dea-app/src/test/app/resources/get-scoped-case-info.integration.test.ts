@@ -7,20 +7,23 @@ import { fail } from 'assert';
 import Joi from 'joi';
 import { NotFoundError } from '../../../app/exceptions/not-found-exception';
 import { ValidationError } from '../../../app/exceptions/validation-exception';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { getScopedCaseInformation } from '../../../app/resources/get-scoped-case-information';
 import { createUser } from '../../../app/services/user-service';
 import { DeaCaseInput } from '../../../models/case';
 import { scopedCaseResponseSchema } from '../../../models/validation/case';
 import { createCase } from '../../../persistence/case';
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 
 describe('get scoped case info resource', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('getScopedCaseInfo');
+    testProviders = createTestProvidersObject({ repositoryProvider });
   });
 
   afterAll(async () => {
@@ -50,7 +53,7 @@ describe('get scoped case info resource', () => {
       },
     });
 
-    const response = await getScopedCaseInformation(event, dummyContext, repositoryProvider);
+    const response = await getScopedCaseInformation(event, dummyContext, testProviders);
 
     expect(response.statusCode).toEqual(200);
 
@@ -73,13 +76,11 @@ describe('get scoped case info resource', () => {
       },
     });
 
-    await expect(getScopedCaseInformation(event, dummyContext, repositoryProvider)).rejects.toThrow(
-      NotFoundError
-    );
+    await expect(getScopedCaseInformation(event, dummyContext, testProviders)).rejects.toThrow(NotFoundError);
   });
 
   it('should throw an error if the path param is missing', async () => {
-    await expect(getScopedCaseInformation(getDummyEvent(), dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(getScopedCaseInformation(getDummyEvent(), dummyContext, testProviders)).rejects.toThrow(
       ValidationError
     );
   });

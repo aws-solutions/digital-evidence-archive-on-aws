@@ -12,7 +12,7 @@ Object {
       ],
     },
   },
-  "Description": "(SO0224) Digital Evidence Archive v1.1.0 - This solution helps investigative units manage and store digital evidence on AWS.",
+  "Description": "(SO0224) Digital Evidence Archive v1.1.1 - This solution helps investigative units manage and store digital evidence on AWS.",
   "Mappings": Object {
     "Solution": Object {
       "Data": Object {
@@ -20,7 +20,7 @@ Object {
         "ApplicationType": "AWS-Solutions",
         "ID": "SO0224",
         "SolutionName": "Digital Evidence Archive",
-        "SolutionVersion": "1.1.0",
+        "SolutionVersion": "1.1.1",
       },
     },
   },
@@ -282,6 +282,14 @@ Object {
         "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
       },
     },
+    "DeaBackendStackDeaTableName709BC262": Object {
+      "Export": Object {
+        "Name": "[STAGE-REMOVED]-DeaTableName",
+      },
+      "Value": Object {
+        "Ref": "DeaBackendStackDeaTableE9FE4A05",
+      },
+    },
     "DeaBackendStackS3AccessLogsBucketName84ED5230": Object {
       "Export": Object {
         "Name": "[STAGE-REMOVED]-S3AccessLogsBucketName",
@@ -423,6 +431,24 @@ Object {
       "DependsOn": Array [
         "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867",
       ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)        indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
@@ -640,6 +666,24 @@ Object {
         "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
         "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
       ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)        indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Code": Object {
           "ZipFile": "import boto3  # type: ignore
@@ -650,7 +694,6 @@ import urllib.request
 s3 = boto3.client("s3")
 
 EVENTBRIDGE_CONFIGURATION = 'EventBridgeConfiguration'
-
 CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations"]
 
 def handler(event: dict, context):
@@ -658,18 +701,15 @@ def handler(event: dict, context):
   error_message = ""
   try:
     props = event["ResourceProperties"]
-    bucket = props["BucketName"]
     notification_configuration = props["NotificationConfiguration"]
-    request_type = event["RequestType"]
     managed = props.get('Managed', 'true').lower() == 'true'
     stack_id = event['StackId']
-
+    old = event.get("OldResourceProperties", {}).get("NotificationConfiguration", {})
     if managed:
-      config = handle_managed(request_type, notification_configuration)
+      config = handle_managed(event["RequestType"], notification_configuration)
     else:
-      config = handle_unmanaged(bucket, stack_id, request_type, notification_configuration)
-
-    put_bucket_notification_configuration(bucket, config)
+      config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
+    s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config)
   except Exception as e:
     logging.exception("Failed to put bucket notification configuration")
     response_status = "FAILED"
@@ -682,15 +722,25 @@ def handle_managed(request_type, notification_configuration):
     return {}
   return notification_configuration
 
-def handle_unmanaged(bucket, stack_id, request_type, notification_configuration):
-  external_notifications = find_external_notifications(bucket, stack_id)
+def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old):
+  def with_id(n):
+    n['Id'] = f"{stack_id}-{hash(json.dumps(n, sort_keys=True))}"
+    return n
+
+  external_notifications = {}
+  existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
+  for t in CONFIGURATION_TYPES:
+    if request_type == 'Update':
+        ids = [with_id(n) for n in old.get(t, [])]
+        old_incoming_ids = [n['Id'] for n in ids]
+        external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] in old_incoming_ids]
+    elif request_type == 'Create':
+        external_notifications[t] = [n for n in existing_notifications.get(t, [])]
+  if EVENTBRIDGE_CONFIGURATION in existing_notifications:
+    external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
 
   if request_type == 'Delete':
     return external_notifications
-
-  def with_id(notification):
-    notification['Id'] = f"{stack_id}-{hash(json.dumps(notification, sort_keys=True))}"
-    return notification
 
   notifications = {}
   for t in CONFIGURATION_TYPES:
@@ -704,23 +754,6 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration)
     notifications[EVENTBRIDGE_CONFIGURATION] = external_notifications[EVENTBRIDGE_CONFIGURATION]
 
   return notifications
-
-def find_external_notifications(bucket, stack_id):
-  existing_notifications = get_bucket_notification_configuration(bucket)
-  external_notifications = {}
-  for t in CONFIGURATION_TYPES:
-    external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'].startswith(f"{stack_id}-")]
-
-  if EVENTBRIDGE_CONFIGURATION in existing_notifications:
-    external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
-
-  return external_notifications
-
-def get_bucket_notification_configuration(bucket):
-  return s3.get_bucket_notification_configuration(Bucket=bucket)
-
-def put_bucket_notification_configuration(bucket, notification_configuration):
-  s3.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=notification_configuration)
 
 def submit_response(event: dict, context, response_status: str, error_message: str):
   response_body = json.dumps(
@@ -789,6 +822,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Role",
     },
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -963,7 +1010,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -1016,7 +1063,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -1036,7 +1083,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1115,7 +1162,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -1168,7 +1215,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -1188,7 +1235,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1299,7 +1346,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -1352,7 +1399,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -1372,7 +1419,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1467,7 +1514,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -1520,7 +1567,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -1540,7 +1587,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1635,7 +1682,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -1688,7 +1735,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -1708,7 +1755,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1803,7 +1850,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -1856,7 +1903,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -1876,7 +1923,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -1971,7 +2018,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -2024,7 +2071,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -2044,7 +2091,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2139,7 +2186,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -2192,7 +2239,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -2212,7 +2259,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2307,7 +2354,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -2360,7 +2407,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -2380,7 +2427,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2475,7 +2522,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -2528,7 +2575,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -2548,7 +2595,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2643,7 +2690,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -2696,7 +2743,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -2716,7 +2763,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2811,7 +2858,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -2864,7 +2911,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -2884,7 +2931,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -2979,7 +3026,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -3032,7 +3079,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -3052,7 +3099,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3147,7 +3194,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -3200,7 +3247,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -3220,7 +3267,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3315,7 +3362,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -3368,7 +3415,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -3388,7 +3435,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3483,7 +3530,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -3536,7 +3583,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -3556,7 +3603,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3651,7 +3698,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -3704,7 +3751,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -3724,7 +3771,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3819,7 +3866,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -3872,7 +3919,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -3892,7 +3939,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -3987,7 +4034,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -4040,7 +4087,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -4060,7 +4107,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -4155,7 +4202,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -4208,7 +4255,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -4228,7 +4275,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeaauthlambdarole4F5CC393",
@@ -4323,7 +4370,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -4376,7 +4423,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -4396,7 +4443,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeaauthlambdarole4F5CC393",
@@ -4491,7 +4538,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -4544,7 +4591,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -4564,7 +4611,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -4659,7 +4706,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -4712,7 +4759,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -4732,7 +4779,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -4827,7 +4874,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -4880,7 +4927,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -4900,7 +4947,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -4995,7 +5042,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -5048,7 +5095,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -5068,7 +5115,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -5163,7 +5210,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -5216,7 +5263,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -5236,7 +5283,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -5331,7 +5378,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -5384,7 +5431,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -5404,7 +5451,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -5499,7 +5546,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -5552,7 +5599,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -5572,7 +5619,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -5667,7 +5714,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -5720,7 +5767,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -5740,7 +5787,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -5835,7 +5882,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -5888,7 +5935,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -5908,7 +5955,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -5987,7 +6034,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -6040,7 +6087,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -6060,7 +6107,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeaexecutionlambdarole77096FF9",
@@ -6171,7 +6218,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -6224,7 +6271,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -6244,7 +6291,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -6339,7 +6386,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -6392,7 +6439,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -6412,7 +6459,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -6507,7 +6554,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -6560,7 +6607,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -6580,7 +6627,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeaauthlambdarole4F5CC393",
@@ -6675,7 +6722,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -6728,7 +6775,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -6748,7 +6795,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeainitiateuploadrole5DA1EC43",
@@ -6843,7 +6890,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -6896,7 +6943,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -6916,7 +6963,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -7011,7 +7058,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -7064,7 +7111,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -7084,7 +7131,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeaauthlambdarole4F5CC393",
@@ -7179,7 +7226,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -7232,7 +7279,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -7252,7 +7299,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -7347,7 +7394,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -7400,7 +7447,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -7420,7 +7467,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -7515,7 +7562,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -7568,7 +7615,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -7588,7 +7635,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -7683,7 +7730,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -7736,7 +7783,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -7756,7 +7803,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -7851,7 +7898,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -7904,7 +7951,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -7924,7 +7971,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -8019,7 +8066,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -8072,7 +8119,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -8092,7 +8139,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -8187,7 +8234,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -8240,7 +8287,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -8260,7 +8307,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeaauthlambdarole4F5CC393",
@@ -8355,7 +8402,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -8408,7 +8455,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -8428,7 +8475,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeacompleteuploadrole0214DB7D",
@@ -8523,7 +8570,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -8576,7 +8623,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -8596,7 +8643,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -8691,7 +8738,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -8744,7 +8791,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -8764,7 +8811,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -8859,7 +8906,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -8912,7 +8959,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -8932,7 +8979,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -9027,7 +9074,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -9080,7 +9127,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -9100,7 +9147,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -9195,7 +9242,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "AWS_PARTITION": Object {
               "Ref": "AWS::Partition",
             },
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "CHECKSUM_QUEUE_URL": Object {
               "Fn::GetAtt": Array [
                 "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
@@ -9248,7 +9295,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NODE_OPTIONS": "--enable-source-maps",
             "SAMESITE": "None",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "SOURCE_IP_MASK_CIDR": "32",
             "SOURCE_IP_VALIDATION_ENABLED": "false",
             "STAGE": "[STAGE-REMOVED]",
@@ -9268,7 +9315,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
           },
         },
         "Handler": "index.handler",
-        "MemorySize": 2048,
+        "MemorySize": 3000,
         "Role": Object {
           "Fn::GetAtt": Array [
             "DeaApiGatewaydeabaselambdarole91512884",
@@ -10140,6 +10187,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Role",
     },
     "DeaApiGatewaydeaauthlambdaroleDefaultPolicy1298F4B5": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -10238,6 +10299,18 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   "Ref": "AWS::Partition",
                 },
                 ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AWSDataSyncReadOnlyAccess",
               ],
             ],
           },
@@ -10388,35 +10461,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": "s3:ListBucket",
+              "Action": "ec2:DescribeNetworkInterfaces",
               "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "DeaBackendStackS3DatasetsBucket408FF954",
-                    "Arn",
-                  ],
-                },
-                "arn:*:s3:::dea-mdi-e2e-test-source-bucket*",
-              ],
-            },
-            Object {
-              "Action": "logs:StartQuery",
-              "Effect": "Allow",
-              "Resource": Array [
-                Object {
-                  "Fn::GetAtt": Array [
-                    "deaAuditLogs7B75D3F1",
-                    "Arn",
-                  ],
-                },
-                Object {
-                  "Fn::GetAtt": Array [
-                    "deaTrailLogs0A0531F5",
-                    "Arn",
-                  ],
-                },
-              ],
+              "Resource": "*",
             },
             Object {
               "Action": Array [
@@ -10452,7 +10499,6 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
-                "kms:Encrypt",
                 "kms:Decrypt",
                 "kms:GenerateDataKey",
               ],
@@ -10527,40 +10573,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
-                "athena:GetQueryResults",
                 "athena:GetQueryExecution",
                 "athena:StartQueryExecution",
               ],
               "Effect": "Allow",
               "Resource": "*",
-            },
-            Object {
-              "Action": "athena:GetWorkgroup",
-              "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    "arn:",
-                    Object {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":athena:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":workgroup/",
-                    Object {
-                      "Ref": "AWS::StackName",
-                    },
-                    "-dea-athena-workgroup",
-                  ],
-                ],
-              },
             },
             Object {
               "Action": Array [
@@ -10753,6 +10770,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Role",
     },
     "DeaApiGatewaydeacompleteuploadroleDefaultPolicyBD66BAAD": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -10866,8 +10897,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::GetAtt": Array [
-                  "primaryCustomerKey87EC2263",
-                  "Arn",
+                  "ObjectChecksumStackNestedStackObjectChecksumStackNestedStackResource0096D908",
+                  "Outputs.DeaMainStackObjectChecksumStackcheckSumQueueKey7C11DDE2Arn",
                 ],
               },
             },
@@ -10932,6 +10963,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Role",
     },
     "DeaApiGatewaydeadatasetsroleDefaultPolicyA7BF2A75": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -11084,11 +11129,37 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
             ],
           },
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AWSDataSyncReadOnlyAccess",
+              ],
+            ],
+          },
         ],
       },
       "Type": "AWS::IAM::Role",
     },
     "DeaApiGatewaydeaexecutionlambdaroleDefaultPolicy3BDDE4CC": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -11188,7 +11259,10 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               },
             },
             Object {
-              "Action": "ssm:GetParameters",
+              "Action": Array [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
               "Effect": "Allow",
               "Resource": Object {
                 "Fn::Join": Array [
@@ -11210,6 +11284,11 @@ def submit_response(event: dict, context, response_status: str, error_message: s
                   ],
                 ],
               },
+            },
+            Object {
+              "Action": "ec2:DescribeNetworkInterfaces",
+              "Effect": "Allow",
+              "Resource": "*",
             },
             Object {
               "Action": Array [
@@ -11280,6 +11359,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Role",
     },
     "DeaApiGatewaydeainitiateuploadroleDefaultPolicyF406F23F": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -11663,6 +11756,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "UpdateReplacePolicy": "Delete",
     },
     "DeaAuditAuditRedrivePolicyC6C6671E": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W13",
+              "reason": "Wildcard required as target resources are generated and not pre-existing",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Description": "A Policy which can be attached to an IAM Role, allowing that role to run the Audit Redrive script.",
         "Path": "/",
@@ -12048,6 +12151,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Role",
     },
     "DeaAuditFireHosetoS3RoleDefaultPolicy7310F109": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -12495,6 +12612,24 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::Glue::Table",
     },
     "DeaAuditauditprocessinglambdaE24A4EB0": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)        indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
@@ -12578,6 +12713,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Role",
     },
     "DeaAuditauditprocessinglambdaServiceRoleDefaultPolicy603DB2EE": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -12664,6 +12813,9 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "Value": "true",
           },
         ],
+        "VersioningConfiguration": Object {
+          "Status": "Enabled",
+        },
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
@@ -12730,6 +12882,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
+                "s3:PutBucketPolicy",
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
@@ -13046,6 +13199,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
+                "s3:PutBucketPolicy",
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
@@ -13252,6 +13406,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "UpdateReplacePolicy": "Delete",
     },
     "DeaAuthConstructAuthTestGroupRole238CB12C": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Static name supplied for support role",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -13474,6 +13638,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Policy",
     },
     "DeaAuthConstructCaseWorkerRoleF4B7631E": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Static name supplied for support role",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -14326,6 +14500,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Policy",
     },
     "DeaAuthConstructCreateCasesTestGroupRoleA44EF3D8": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Static name supplied for support role",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -14886,6 +15070,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "UpdateReplacePolicy": "Delete",
     },
     "DeaAuthConstructEvidenceManagerRole126B1CAE": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Static name supplied for support role",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -15888,6 +16082,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Policy",
     },
     "DeaAuthConstructGetCaseTestGroupRoleB93A43C9": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Static name supplied for support role",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -16080,6 +16284,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Policy",
     },
     "DeaAuthConstructGetMyCasesTestGroupRoleE55F2036": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Static name supplied for support role",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -16559,6 +16773,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
     },
     "DeaAuthConstructNoPermissionsGroupRoleE403EB55": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Static name supplied for support role",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -16659,6 +16883,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Policy",
     },
     "DeaAuthConstructWorkingManagerRoleD81849AB": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W28",
+              "reason": "Static name supplied for support role",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
           "Statement": Array [
@@ -19715,6 +19949,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Role",
     },
     "DeaBackendStackDataSyncPermissionsRoleDefaultPolicyD856CD39": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -20066,6 +20314,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
+                "s3:PutBucketPolicy",
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
@@ -21232,6 +21481,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::S3::BucketPolicy",
     },
     "DeaBackendStackdeaDataSyncLogsBucketRoleDefaultPolicy13C48E04": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -21474,6 +21737,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             },
             Object {
               "Action": Array [
+                "s3:PutBucketPolicy",
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
@@ -21609,14 +21873,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--max-old-space-size=8192",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -21641,6 +21905,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::Lambda::Function",
     },
     "DeaEventHandlersdatasyncexecutioneventroleDefaultPolicy2981975F": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -21791,6 +22069,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     },
     "DeaEventHandlersdatasyncfilesprocessingdlq1F4AB033": Object {
       "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "KmsMasterKeyId": Object {
+          "Fn::GetAtt": Array [
+            "primaryCustomerKey87EC2263",
+            "Arn",
+          ],
+        },
+      },
       "Type": "AWS::SQS::Queue",
       "UpdateReplacePolicy": "Delete",
     },
@@ -21863,14 +22149,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -22037,6 +22323,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Role",
     },
     "DeaEventHandlerss3batchdeletecasefileroleDefaultPolicy9351E35A": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -22257,14 +22557,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               "Ref": "deaAuditLogs7B75D3F1",
             },
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-            "AWS_USE_FIPS_ENDPOINT": "true",
+            "AWS_USE_FIPS_ENDPOINT": "false",
             "DATASETS_BUCKET_NAME": Object {
               "Ref": "DeaBackendStackS3DatasetsBucket408FF954",
             },
             "DELETION_ALLOWED": "true",
             "NODE_OPTIONS": "--enable-source-maps",
             "SOLUTION_ID": "SO0224",
-            "SOLUTION_VERSION": "1.1.0",
+            "SOLUTION_VERSION": "1.1.1",
             "STAGE": "[STAGE-REMOVED]",
             "TABLE_NAME": Object {
               "Ref": "DeaBackendStackDeaTableE9FE4A05",
@@ -22395,7 +22695,8 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "Arn",
           ],
         },
-        "Runtime": "nodejs16.x",
+        "Runtime": "nodejs18.x",
+        "Timeout": 900,
       },
       "Type": "AWS::Lambda::Function",
     },
@@ -22811,6 +23112,116 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       },
       "Type": "AWS::IAM::Policy",
     },
+    "objectLockQueueKey4E77E518": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "EnableKeyRotation": true,
+        "KeyPolicy": Object {
+          "Statement": Array [
+            Object {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      "arn:",
+                      Object {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::",
+                      Object {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":root",
+                    ],
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "kms:Decrypt",
+                "kms:GenerateDataKey",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "AWS": Object {
+                  "Fn::GetAtt": Array [
+                    "s3objectlockerServiceRole1F047986",
+                    "Arn",
+                  ],
+                },
+              },
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Condition": Object {
+                "ArnLike": Object {
+                  "aws:SourceArn": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaAuditauditBucketD75893B5",
+                      "Arn",
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "s3.amazonaws.com",
+              },
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "kms:GenerateDataKey*",
+                "kms:Decrypt",
+              ],
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "s3.amazonaws.com",
+              },
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Condition": Object {
+                "ArnLike": Object {
+                  "aws:SourceArn": Object {
+                    "Fn::GetAtt": Array [
+                      "DeaBackendStackS3DatasetsBucket408FF954",
+                      "Arn",
+                    ],
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "s3.amazonaws.com",
+              },
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PendingWindowInDays": 7,
+      },
+      "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Delete",
+    },
     "primaryCustomerKey87EC2263": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
@@ -23114,6 +23525,14 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     },
     "s3objectlockdlq6924D087": Object {
       "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "KmsMasterKeyId": Object {
+          "Fn::GetAtt": Array [
+            "objectLockQueueKey4E77E518",
+            "Arn",
+          ],
+        },
+      },
       "Type": "AWS::SQS::Queue",
       "UpdateReplacePolicy": "Delete",
     },
@@ -23155,6 +23574,24 @@ def submit_response(event: dict, context, response_status: str, error_message: s
         "s3objectlockerServiceRoleDefaultPolicy38D3854F",
         "s3objectlockerServiceRole1F047986",
       ],
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W58",
+              "reason": "AWSCustomResource Lambda Function has AWSLambdaBasicExecutionRole policy attached which has the required permission to write to Cloudwatch Logs",
+            },
+            Object {
+              "id": "W92",
+              "reason": "Reserved concurrency is currently not required. Revisit in the future",
+            },
+            Object {
+              "id": "W89",
+              "reason": "The serverless application lens (https://docs.aws.amazon.com/wellarchitected/latest/serverless-applications-lens/aws-lambda.html)        indicates lambdas should not be deployed in private VPCs unless they require acces to resources also within a VPC",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
@@ -23216,6 +23653,20 @@ def submit_response(event: dict, context, response_status: str, error_message: s
       "Type": "AWS::IAM::Role",
     },
     "s3objectlockerServiceRoleDefaultPolicy38D3854F": Object {
+      "Metadata": Object {
+        "cfn_nag": Object {
+          "rules_to_suppress": Array [
+            Object {
+              "id": "W12",
+              "reason": "Star resource is required for the action",
+            },
+            Object {
+              "id": "W76",
+              "reason": "Complexity generated via CDK environment",
+            },
+          ],
+        },
+      },
       "Properties": Object {
         "PolicyDocument": Object {
           "Statement": Array [
@@ -23226,6 +23677,16 @@ def submit_response(event: dict, context, response_status: str, error_message: s
               ],
               "Effect": "Allow",
               "Resource": "*",
+            },
+            Object {
+              "Action": "kms:Decrypt",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "objectLockQueueKey4E77E518",
+                  "Arn",
+                ],
+              },
             },
             Object {
               "Action": Array [
@@ -23334,6 +23795,12 @@ def submit_response(event: dict, context, response_status: str, error_message: s
     "s3objectlockqueue113069A2": Object {
       "DeletionPolicy": "Delete",
       "Properties": Object {
+        "KmsMasterKeyId": Object {
+          "Fn::GetAtt": Array [
+            "objectLockQueueKey4E77E518",
+            "Arn",
+          ],
+        },
         "RedrivePolicy": Object {
           "deadLetterTargetArn": Object {
             "Fn::GetAtt": Array [

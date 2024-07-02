@@ -29,7 +29,9 @@ import {
 import { AwsClientStub, AwsStub, mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { v4 as uuidv4 } from 'uuid';
+import { LambdaProviders } from '../../../app/resources/dea-gateway-proxy-handler';
 import { updateCaseStatus } from '../../../app/resources/update-case-status';
+import { getCustomUserAgent } from '../../../lambda-http-helpers';
 import { DeaCaseInput } from '../../../models/case';
 import { CaseFileStatus } from '../../../models/case-file-status';
 import { CaseStatus } from '../../../models/case-status';
@@ -38,7 +40,7 @@ import { createCase, getCase, updateCaseStatus as updateCaseStatusInDb } from '.
 import { ModelRepositoryProvider } from '../../../persistence/schema/entities';
 import { createUser } from '../../../persistence/user';
 import { testEnv } from '../../../test-e2e/helpers/settings';
-import { dummyContext, getDummyEvent } from '../../integration-objects';
+import { createTestProvidersObject, dummyContext, getDummyEvent } from '../../integration-objects';
 import { getTestRepositoryProvider } from '../../persistence/local-db-table';
 import {
   callCompleteCaseFileUpload,
@@ -50,6 +52,7 @@ import {
 } from './case-file-integration-test-helper';
 
 let repositoryProvider: ModelRepositoryProvider;
+let testProviders: LambdaProviders;
 let caseOwner: DeaUser;
 let s3Mock: AwsStub<S3Input, S3Output, S3ClientResolvedConfig>;
 let s3ControlMock: AwsStub<S3ControlInput, S3ControlOutput, S3ControlClientResolvedConfig>;
@@ -62,6 +65,8 @@ const VERSION_ID = 'haha';
 describe('update case status', () => {
   beforeAll(async () => {
     repositoryProvider = await getTestRepositoryProvider('updateCaseStatus');
+    testProviders = createTestProvidersObject({ repositoryProvider, datasetsProvider: DATASETS_PROVIDER });
+
     caseOwner =
       (await createUser(
         {
@@ -118,13 +123,13 @@ describe('update case status', () => {
 
     const caseFile = await callInitiateCaseFileUpload(
       caseOwner.ulid,
-      repositoryProvider,
+      testProviders,
       createdCase.ulid,
       'file1'
     );
     await callCompleteCaseFileUpload(
       caseOwner.ulid,
-      repositoryProvider,
+      testProviders,
       caseFile.ulid ?? fail(),
       createdCase.ulid
     );
@@ -139,7 +144,7 @@ describe('update case status', () => {
       createdCase,
       true,
       CaseStatus.INACTIVE,
-      repositoryProvider
+      testProviders
     );
     await validateCaseStatusUpdatedAsExpected(
       createdCase,
@@ -147,7 +152,7 @@ describe('update case status', () => {
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETING,
       jobId,
-      repositoryProvider,
+      testProviders,
       1,
       FILE_SIZE_BYTES
     );
@@ -167,7 +172,7 @@ describe('update case status', () => {
       createdCase,
       true,
       CaseStatus.INACTIVE,
-      repositoryProvider
+      testProviders
     );
 
     await validateCaseStatusUpdatedAsExpected(
@@ -176,7 +181,7 @@ describe('update case status', () => {
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETED,
       undefined,
-      repositoryProvider
+      testProviders
     );
 
     //ensure no job was created
@@ -199,7 +204,7 @@ describe('update case status', () => {
       createdCase,
       false,
       CaseStatus.ACTIVE,
-      repositoryProvider
+      testProviders
     );
 
     await validateCaseStatusUpdatedAsExpected(
@@ -208,7 +213,7 @@ describe('update case status', () => {
       CaseStatus.ACTIVE,
       CaseFileStatus.ACTIVE,
       undefined,
-      repositoryProvider
+      testProviders
     );
 
     //ensure no job was created
@@ -224,13 +229,13 @@ describe('update case status', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
     const caseFile = await callInitiateCaseFileUpload(
       caseOwner.ulid,
-      repositoryProvider,
+      testProviders,
       createdCase.ulid,
       'file1'
     );
     await callCompleteCaseFileUpload(
       caseOwner.ulid,
-      repositoryProvider,
+      testProviders,
       caseFile.ulid ?? fail(),
       createdCase.ulid
     );
@@ -245,7 +250,7 @@ describe('update case status', () => {
       createdCase,
       true,
       CaseStatus.INACTIVE,
-      repositoryProvider
+      testProviders
     );
     await validateCaseStatusUpdatedAsExpected(
       createdCase,
@@ -253,7 +258,7 @@ describe('update case status', () => {
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETING,
       jobId,
-      repositoryProvider,
+      testProviders,
       1,
       FILE_SIZE_BYTES
     );
@@ -264,7 +269,7 @@ describe('update case status', () => {
         inactivatedCase,
         false,
         CaseStatus.ACTIVE,
-        repositoryProvider
+        testProviders
       )
     ).rejects.toThrow("Case status can't be changed to ACTIVE when its files are being deleted");
   });
@@ -281,7 +286,7 @@ describe('update case status', () => {
       createdCase,
       true,
       CaseStatus.INACTIVE,
-      repositoryProvider
+      testProviders
     );
 
     // update case status again. expect case without updates
@@ -290,7 +295,7 @@ describe('update case status', () => {
       createdCase,
       true,
       CaseStatus.INACTIVE,
-      repositoryProvider
+      testProviders
     );
 
     // validate that both updated and 'notUpdated' cases are as expected and newer than created case
@@ -300,7 +305,7 @@ describe('update case status', () => {
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETED,
       undefined,
-      repositoryProvider
+      testProviders
     );
     await validateCaseStatusUpdatedAsExpected(
       createdCase,
@@ -308,7 +313,7 @@ describe('update case status', () => {
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETED,
       undefined,
-      repositoryProvider
+      testProviders
     );
 
     if (!updatedCase.updated || !notUpdatedCase.updated) {
@@ -336,7 +341,7 @@ describe('update case status', () => {
       createdCase,
       false,
       CaseStatus.ACTIVE,
-      repositoryProvider
+      testProviders
     );
 
     if (!createdCase.updated || !notUpdatedCase.updated) {
@@ -360,13 +365,7 @@ describe('update case status', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     await expect(
-      callUpdateCaseStatusAndValidate(
-        caseOwner.ulid,
-        createdCase,
-        true,
-        CaseStatus.ACTIVE,
-        repositoryProvider
-      )
+      callUpdateCaseStatusAndValidate(caseOwner.ulid, createdCase, true, CaseStatus.ACTIVE, testProviders)
     ).rejects.toThrow('Delete files can only be requested when inactivating a case');
 
     //ensure no job was created
@@ -382,8 +381,16 @@ describe('update case status', () => {
     const createdCase = await createCase(theCase, caseOwner, repositoryProvider);
 
     const datasetsProvider = {
-      s3Client: new S3Client({ region: testEnv.awsRegion }),
-      s3ControlClient: new S3ControlClient({ region: testEnv.awsRegion }),
+      s3Client: new S3Client({
+        region: testEnv.awsRegion,
+        useFipsEndpoint: testEnv.awsUseFipsEndpoint,
+        customUserAgent: getCustomUserAgent(),
+      }),
+      s3ControlClient: new S3ControlClient({
+        region: testEnv.awsRegion,
+        useFipsEndpoint: testEnv.awsUseFipsEndpoint,
+        customUserAgent: getCustomUserAgent(),
+      }),
       bucketName: 'testBucket',
       uploadPresignedCommandExpirySeconds: 3600,
       downloadPresignedCommandExpirySeconds: 900,
@@ -403,8 +410,7 @@ describe('update case status', () => {
         createdCase,
         true,
         CaseStatus.INACTIVE,
-        repositoryProvider,
-        datasetsProvider
+        createTestProvidersObject({ repositoryProvider, datasetsProvider })
       )
     ).rejects.toThrow('The application is not configured to delete files');
 
@@ -422,13 +428,13 @@ describe('update case status', () => {
 
     const caseFile = await callInitiateCaseFileUpload(
       caseOwner.ulid,
-      repositoryProvider,
+      testProviders,
       createdCase.ulid,
       'file1'
     );
     await callCompleteCaseFileUpload(
       caseOwner.ulid,
-      repositoryProvider,
+      testProviders,
       caseFile.ulid ?? fail(),
       createdCase.ulid
     );
@@ -437,13 +443,7 @@ describe('update case status', () => {
       ETag: undefined,
     });
     await expect(
-      callUpdateCaseStatusAndValidate(
-        caseOwner.ulid,
-        createdCase,
-        true,
-        CaseStatus.INACTIVE,
-        repositoryProvider
-      )
+      callUpdateCaseStatusAndValidate(caseOwner.ulid, createdCase, true, CaseStatus.INACTIVE, testProviders)
     ).rejects.toThrow('Failed to delete files. Please retry.');
 
     const updatedCase = (await getCase(createdCase.ulid, undefined, repositoryProvider)) ?? fail();
@@ -453,7 +453,7 @@ describe('update case status', () => {
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETE_FAILED,
       undefined,
-      repositoryProvider,
+      testProviders,
       1,
       FILE_SIZE_BYTES
     );
@@ -471,13 +471,13 @@ describe('update case status', () => {
 
     const caseFile = await callInitiateCaseFileUpload(
       caseOwner.ulid,
-      repositoryProvider,
+      testProviders,
       createdCase.ulid,
       'file1'
     );
     await callCompleteCaseFileUpload(
       caseOwner.ulid,
-      repositoryProvider,
+      testProviders,
       caseFile.ulid ?? fail(),
       createdCase.ulid
     );
@@ -486,13 +486,7 @@ describe('update case status', () => {
       JobId: undefined,
     });
     await expect(
-      callUpdateCaseStatusAndValidate(
-        caseOwner.ulid,
-        createdCase,
-        true,
-        CaseStatus.INACTIVE,
-        repositoryProvider
-      )
+      callUpdateCaseStatusAndValidate(caseOwner.ulid, createdCase, true, CaseStatus.INACTIVE, testProviders)
     ).rejects.toThrow('Failed to delete files. Please retry.');
 
     const updatedCase = (await getCase(createdCase.ulid, undefined, repositoryProvider)) ?? fail();
@@ -502,7 +496,7 @@ describe('update case status', () => {
       CaseStatus.INACTIVE,
       CaseFileStatus.DELETE_FAILED,
       undefined,
-      repositoryProvider,
+      testProviders,
       1,
       FILE_SIZE_BYTES
     );
@@ -519,7 +513,7 @@ describe('update case status', () => {
       body: null,
     });
 
-    await expect(updateCaseStatus(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCaseStatus(event, dummyContext, testProviders)).rejects.toThrow(
       'Update case status payload missing.'
     );
 
@@ -539,7 +533,7 @@ describe('update case status', () => {
       },
     });
 
-    await expect(updateCaseStatus(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCaseStatus(event, dummyContext, testProviders)).rejects.toThrow(
       'Update case status payload is malformed. Failed to parse.'
     );
 
@@ -557,7 +551,7 @@ describe('update case status', () => {
       }),
     });
 
-    await expect(updateCaseStatus(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCaseStatus(event, dummyContext, testProviders)).rejects.toThrow(
       "Required path param 'caseId' is missing."
     );
 
@@ -579,7 +573,7 @@ describe('update case status', () => {
       }),
     });
 
-    await expect(updateCaseStatus(event, dummyContext, repositoryProvider)).rejects.toThrow(
+    await expect(updateCaseStatus(event, dummyContext, testProviders)).rejects.toThrow(
       'Could not find case: hello'
     );
 

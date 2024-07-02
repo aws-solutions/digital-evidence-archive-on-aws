@@ -130,7 +130,9 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
         <Box padding={{ bottom: 'xxl' }}>
           <SpaceBetween size="s">
             <TextContent>
-              <h5>{dataVaultDetailLabels.disassociateFromCaseModalSectionHeader}</h5>
+              <span>
+                <strong>{dataVaultDetailLabels.disassociateFromCaseModalSectionHeader}</strong>
+              </span>
             </TextContent>
             <SpaceBetween size="l">
               <TextContent>{associatedCasesOption(data?.cases)}</TextContent>
@@ -215,19 +217,25 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
           >
             <ColumnLayout columns={3} variant="text-grid">
               <TextContent>
-                <h5>{fileDetailLabels.uploadDateLabel}</h5>
+                <span>
+                  <strong>{fileDetailLabels.uploadDateLabel}</strong>
+                </span>
                 <SpaceBetween size="l">
                   <p>{formatDateFromISOString(data.created?.toString())}</p>
                 </SpaceBetween>
               </TextContent>
               <TextContent>
-                <h5>{fileDetailLabels.fileSizeLabel}</h5>
+                <span>
+                  <strong>{fileDetailLabels.fileSizeLabel}</strong>
+                </span>
                 <SpaceBetween size="l">
                   <p>{formatFileSize(data.fileSizeBytes)}</p>
                 </SpaceBetween>
               </TextContent>
               <TextContent>
-                <h5>{fileDetailLabels.shaHashLabel}</h5>
+                <span>
+                  <strong>{fileDetailLabels.shaHashLabel}</strong>
+                </span>
                 <SpaceBetween size="l">
                   <p>{data.sha256Hash}</p>
                 </SpaceBetween>
@@ -262,11 +270,15 @@ function DataVaultFileDetailsBody(props: DataVaultFileDetailsBodyProps): JSX.Ele
           >
             <ColumnLayout columns={2} variant="text-grid">
               <TextContent>
-                <h5>{commonTableLabels.executionIdHeader}</h5>
+                <span>
+                  <strong>{commonTableLabels.executionIdHeader}</strong>
+                </span>
                 <p>{data.executionId}</p>
               </TextContent>
               <TextContent>
-                <h5>{commonTableLabels.caseAssociationHeader}</h5>
+                <span>
+                  <strong>{commonTableLabels.caseAssociationHeader}</strong>
+                </span>
                 {associatedCasesTextContent(data.cases)}
               </TextContent>
             </ColumnLayout>

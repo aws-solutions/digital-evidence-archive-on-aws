@@ -3,47 +3,20 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 
-import { GetParametersCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import { CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
 import { ValidationError } from './app/exceptions/validation-exception';
-import { PARAM_PREFIX } from './app/services/service-constants';
-import { getCustomUserAgent, getRequiredEnv } from './lambda-http-helpers';
+import { CognitoUserPoolInfo } from './app/services/parameter-service';
 import { DeaUserInput } from './models/user';
 
-const stage = getRequiredEnv('STAGE');
-
-export const getTokenPayload = async (idToken: string, region: string): Promise<CognitoIdTokenPayload> => {
-  const ssmClient = new SSMClient({ region, customUserAgent: getCustomUserAgent() });
-  const userPoolIdPath = `${PARAM_PREFIX}${stage}-userpool-id-param`;
-  const clientIdPath = `${PARAM_PREFIX}${stage}-userpool-client-id-param`;
-  const response = await ssmClient.send(
-    new GetParametersCommand({
-      Names: [userPoolIdPath, clientIdPath],
-    })
-  );
-
-  if (
-    !response.Parameters ||
-    response.Parameters?.length != 2 ||
-    !response.Parameters[0].Value ||
-    !response.Parameters[1].Value
-  ) {
-    throw new Error('Unable to grab the parameters in SSM needed for token verification.');
-  }
-
-  const userPoolId =
-    response.Parameters[0].Name === userPoolIdPath
-      ? response.Parameters[0].Value
-      : response.Parameters[1].Value;
-  const clientId =
-    response.Parameters[0].Name === clientIdPath
-      ? response.Parameters[0].Value
-      : response.Parameters[1].Value;
+export const getTokenPayload = async (
+  idToken: string,
+  userPoolInfo: CognitoUserPoolInfo
+): Promise<CognitoIdTokenPayload> => {
   const verifier = CognitoJwtVerifier.create({
-    userPoolId: userPoolId,
+    userPoolId: userPoolInfo.userPoolId,
     tokenUse: 'id',
-    clientId: clientId,
+    clientId: userPoolInfo.clientId,
   });
 
   try {
@@ -63,8 +36,8 @@ export const getDeaUserFromToken = async (
   const deaUser: DeaUserInput = {
     tokenId: idTokenPayload.sub,
     idPoolId,
-    firstName: idTokenPayload['given_name'] + '',
-    lastName: idTokenPayload['family_name'] + '',
+    firstName: String(idTokenPayload['given_name']),
+    lastName: String(idTokenPayload['family_name']),
   };
 
   return deaUser;

@@ -7,14 +7,29 @@ import Axios from 'axios';
 import { auditLogLabels, caseDetailLabels, commonLabels } from '../../src/common/labels';
 import { NotificationsProvider } from '../../src/context/NotificationsContext';
 import CaseDetailsPage from '../../src/pages/case-detail';
+import Breadcrumb from '../../src/components/common-components/Breadcrumb';
 
 const push = jest.fn();
-const CASE_ID = '100';
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockImplementation(() => ({
-    query: { caseId: CASE_ID },
+
+const CASE_ID = '01GV15BH762P6MW1QH8EQDGBFQ';
+const CASE_NAME = 'fakecase';
+interface Query {
+  caseId: string | object;
+  caseName: string | object;
+  fileId?: string | object;
+  fileName?: string | object;
+}
+let query: Query = {
+  caseId: CASE_ID,
+  caseName: CASE_NAME,
+};
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => ({
+    get: jest.fn().mockImplementation((key: keyof Query) => query[key]),
+  }),
+  useRouter: () => ({
     push,
-  })),
+  }),
 }));
 
 global.fetch = jest.fn(() => Promise.resolve({ blob: () => Promise.resolve('foo') }));
@@ -78,6 +93,47 @@ const mockFilesRoot = {
       updated: '2023-03-10T01:30:14.326Z',
       isFile: true,
     },
+    {
+      ulid: '01HD2SGVA662N6TMREH510BWZW',
+      caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
+      fileName: 'a-folder',
+      contentType: 'Directory',
+      createdBy: '01GV13XRYZE1VKY7TY88Y7RPH0',
+      filePath: '/',
+      fileSizeMb: 0,
+      status: 'ACTIVE',
+      created: '2023-03-11T17:08:40.682Z',
+      updated: '2023-03-11T17:08:40.682Z',
+      isFile: false,
+    },
+    {
+      ulid: '01HD2SGVHV8DEAZQP5ZEEZ6F81',
+      fileName: 'README.md',
+      filePath: '/a-folder/',
+      caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
+      isFile: true,
+      fileSizeMb: 458,
+      createdBy: 'John Doe',
+      contentType: 'md',
+      sha256Hash: 'SHA256:52773d75ca79b81253ad1409880ab061d66f0e5bbcc1e820b008e7617c78d745',
+      status: 'ACTIVE',
+      created: '2023-03-10T01:30:04.877Z',
+      updated: '2023-03-10T01:30:14.326Z',
+    },
+    {
+      ulid: '01HD2SGVHV8DEAZQP5ZEEZ6F81',
+      fileName: 'API.md',
+      filePath: '/a-folder/',
+      caseUlid: '01GV15BH762P6MW1QH8EQDGBFQ',
+      isFile: true,
+      fileSizeMb: 458,
+      createdBy: 'John Doe',
+      contentType: 'md',
+      sha256Hash: 'SHA256:52773d75ca79b81253ad1409880ab061d66f0e5bbcc1e820b008e7617c78d745',
+      status: 'ACTIVE',
+      created: '2023-03-10T01:30:04.877Z',
+      updated: '2023-03-10T01:30:14.326Z',
+    },
   ],
   total: 2,
 };
@@ -108,7 +164,7 @@ const mockFilesFood = {
 
 const mockedCaseDetail = {
   ulid: CASE_ID,
-  name: 'mocked case',
+  name: CASE_NAME,
   status: 'ACTIVE',
 };
 
@@ -284,7 +340,7 @@ describe('CaseDetailsPage', () => {
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
-    const mockedCaseInfo = await screen.findAllByText('mocked case');
+    const mockedCaseInfo = await screen.findAllByText(CASE_NAME);
     expect(mockedCaseInfo.length).toEqual(2); // Header and breadcrumb
     expect(mockedCaseInfo).toBeTruthy();
 
@@ -320,12 +376,12 @@ describe('CaseDetailsPage', () => {
     // we should now see the new file "sushi.png"
     await waitFor(() => expect(screen.getByTestId('sushi.png-file-button')).toBeDefined());
 
-    const breadcrumb = wrapper(page.container).findBreadcrumbGroup();
+    const breadcrumb = screen.getByTestId('breadcrumb-length-2');
 
-    await waitFor(() => expect(breadcrumb?.findBreadcrumbLinks().length).toEqual(2));
+    expect(breadcrumb).toBeDefined();
 
     // click the breadcrumb to return to the root
-    const rootLink = await screen.findByText('/');
+    const rootLink = await screen.findByTestId('files-breadcrumb');
     fireEvent.click(rootLink);
 
     // should find the original rows again
@@ -358,10 +414,8 @@ describe('CaseDetailsPage', () => {
     }
 
     const textToInput = 'Carlos Salazar';
-    const searchInput = await screen.findByRole('combobox', {
-      description:
-        'Members added or removed will be notified by email. Their access to case details will be based on permissions set.',
-    });
+    const searchInput = await screen.findByTestId('manage-access-search-user-form-combobox');
+
     await act(async () => {
       await userEvent.type(searchInput, textToInput);
       searchUserInputWrapper.selectSuggestionByValue(textToInput);
@@ -416,7 +470,7 @@ describe('CaseDetailsPage', () => {
     //assert notifications
     const notificationsWrapper = wrapper(page.container).findFlashbar()!;
     expect(notificationsWrapper).toBeTruthy();
-    waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(3));
+    waitFor(() => expect(notificationsWrapper.findItems().length).toEqual(1));
     const item = notificationsWrapper.findItems()[0];
     await act(async () => {
       item.findDismissButton()!.click();
@@ -424,6 +478,11 @@ describe('CaseDetailsPage', () => {
   }, 30000);
 
   it('navigates to upload files page', async () => {
+    query = {
+      caseId: CASE_ID,
+      caseName: mockedCaseDetail.name,
+    };
+
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
@@ -450,6 +509,13 @@ describe('CaseDetailsPage', () => {
   });
 
   it('navigates to file details page', async () => {
+    query = {
+      caseId: CASE_ID,
+      fileId: mockFilesRoot.files[1].ulid,
+      caseName: mockedCaseDetail.name,
+      fileName: mockFilesRoot.files[1].fileName,
+    };
+
     const page = render(<CaseDetailsPage />);
     expect(page).toBeTruthy();
 
@@ -459,5 +525,40 @@ describe('CaseDetailsPage', () => {
     expect(push).toHaveBeenCalledWith(
       `/file-detail?caseId=${mockFilesRoot.files[1].caseUlid}&fileId=${mockFilesRoot.files[1].ulid}&caseName=${mockedCaseDetail.name}`
     );
+  });
+
+  it('resets the filter on folder navigation', async () => {
+    const page = render(<CaseDetailsPage />);
+    const pageWrapper = wrapper(page.baseElement);
+
+    const headerWrapper = pageWrapper.findHeader();
+    if (!headerWrapper) fail();
+    expect(headerWrapper.findHeadingText().getElement()).toHaveTextContent(CASE_NAME);
+
+    // navigates inside the folder
+    const folderEntry = await screen.findByText('a-folder');
+    expect(folderEntry).toBeTruthy();
+    fireEvent.click(folderEntry);
+
+    // filters by text
+    const table = await screen.findByTestId('file-table');
+    const tableWrapper = wrapper(table);
+    const textFilter = tableWrapper.findTextFilter();
+    if (!textFilter) {
+      fail();
+    }
+    const textFilterInput = textFilter.findInput();
+    textFilterInput.setInputValue('README.md');
+
+    // after filtering, README.md should be visible but API.md should not.
+    await waitFor(() => expect(screen.queryByTestId('README.md-file-button')).toBeTruthy());
+    await waitFor(() => expect(screen.queryByTestId('API.md-file-button')).toBeFalsy());
+
+    // click the breadcrumb to return to the root
+    const rootLink = await screen.findByTestId('files-breadcrumb');
+    fireEvent.click(rootLink);
+
+    // upon clicking the link in the breadcrumb the filter text should be reset.
+    await waitFor(() => expect(textFilterInput.getInputValue()).toBeFalsy());
   });
 });

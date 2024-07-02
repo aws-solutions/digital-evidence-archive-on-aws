@@ -7,9 +7,8 @@ import { getRequiredPathParam, getRequiredPayload } from '../../lambda-http-help
 import { RemoveCaseAssociationDTO } from '../../models/case-file';
 import { removeCaseAssociationRequestSchema } from '../../models/validation/case-file';
 import { joiUlid } from '../../models/validation/joi-common';
-import { defaultProvider } from '../../persistence/schema/entities';
 import { disassociateFileFromCases } from '../services/data-vault-file-service';
-import { DEAGatewayProxyHandler } from './dea-gateway-proxy-handler';
+import { DEAGatewayProxyHandler, defaultProviders } from './dea-gateway-proxy-handler';
 import { responseNoContent } from './dea-lambda-utils';
 
 export const deleteCaseAssociation: DEAGatewayProxyHandler = async (
@@ -17,7 +16,7 @@ export const deleteCaseAssociation: DEAGatewayProxyHandler = async (
   context,
   /* the default cases are handled in e2e tests */
   /* istanbul ignore next */
-  repositoryProvider = defaultProvider
+  providers = defaultProviders
 ) => {
   const dataVaultId = getRequiredPathParam(event, 'dataVaultId', joiUlid);
   const fileId = getRequiredPathParam(event, 'fileId', joiUlid);
@@ -31,7 +30,7 @@ export const deleteCaseAssociation: DEAGatewayProxyHandler = async (
     dataVaultId,
     fileId,
     removeCaseAssociationRequest.caseUlids,
-    repositoryProvider
+    providers.repositoryProvider
   );
 
   return responseNoContent(event);
